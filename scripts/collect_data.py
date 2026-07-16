@@ -460,6 +460,191 @@ def collect_eu_trade():
     print(f"  Found {len(items)} items from EU Trade")
     return items
 
+# ---- Article Extraction ----
+class ArticleTextExtractor(HTMLParser):
+    """Extract plain text from HTML, skipping script/style/nav elements."""
+    SKIP_TAGS = {'script', 'style', 'noscript', 'nav', 'header', 'footer',
+                 'aside', 'form', 'svg', 'button'}
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.text_parts = []
+        self.skip_depth = 0
+        self.current_tag = ''
+
+    def handle_starttag(self, tag, attrs):
+        if tag in self.SKIP_TAGS:
+            self.skip_depth += 1
+        self.current_tag = tag
+
+    def handle_endtag(self, tag):
+        if tag in self.SKIP_TAGS and self.skip_depth > 0:
+            self.skip_depth -= 1
+        # Add a space after block-level tags
+        if self.skip_depth == 0 and tag in ('p', 'br', 'div', 'li', 'tr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'section', 'article'):
+            self.text_parts.append(' ')
+
+    def handle_data(self, data):
+        if self.skip_depth == 0:
+            self.text_parts.append(data)
+
+    def get_text(self):
+        text = ''.join(self.text_parts)
+        # Collapse whitespace
+        text = re.sub(r'\s+', ' ', text).strip()
+        return text
+
+
+def _extract_by_selector(html, selector_pattern):
+    """Try to extract content matching a CSS class/id/element selector pattern using regex.
+
+    selector_pattern is a compiled regex that matches the opening tag.
+    Returns raw HTML string of the first match, or None.
+    """
+    # Find the matching opening tag and then parse to find closing tag
+    m = selector_pattern.search(html)
+    if not m:
+        return None
+    start = m.start()
+    # Determine tag name
+    tag_match = re.match(r'<\s*([a-zA-Z0-9]+)', m.group(0))
+    if not tag_match:
+        return None
+    tag_name = tag_match.group(1).lower()
+
+    # Walk forward, tracking nesting
+    depth = 1
+    pos = m.end()
+    pattern = re.compile(rf'<\s*(/)?\s*{re.escape(tag_name)}\b[^>]*>', re.IGNORECASE)
+    while depth > 0 and pos < len(html):
+        next_match = pattern.search(html, pos)
+        if not next_match:
+            break
+        if next_match.group(1):  # closing tag
+            depth -= 1
+            if depth == 0:
+                return html[start:next_match.end()]
+        else:  # opening tag
+            depth += 1
+        pos = next_match.end()
+    return None
+
+
+def extract_article_summary(url):
+    """Fetch an article page and extract a 500-char text summary from its main content area.
+
+    Returns summary string on success, or empty string on any failure.
+    """
+    if not url:
+        return ''
+    html = fetch_html(url, headers={
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8'
+    })
+    if not html:
+        return ''
+
+    # Selectors to try, in priority order
+    selectors = [
+        re.compile(r'<article\b[^>]*>', re.IGNORECASE),
+        re.compile(r'<main\b[^>]*>', re.IGNORECASE),
+        re.compile(r'<div\b[^>]*class="[^"]*article-content[^"]*"[^>]*>', re.IGNORECASE),
+        re.compile(r'<div\b[^>]*class="[^"]*post-content[^"]*"[^>]*>', re.IGNORECASE),
+        re.compile(r'<div\b[^>]*class="[^"]*entry-content[^"]*"[^>]*>', re.IGNORECASE),
+        re.compile(r'<div\b[^>]*id="article-content"[^>]*>', re.IGNORECASE),
+        re.compile(r'<div\b[^>]*id="post-content"[^>]*>', re.IGNORECASE),
+        re.compile(r'<div\b[^>]*class="[^"]*content[^"]*article[^"]*"[^>]*>', re.IGNORECASE),
+        re.compile(r'<div\b[^>]*class="[^"]*article__content[^"]*"[^>]*>', re.IGNORECASE),
+        re.compile(r'<div\b[^>]*class="[^"]*rich_media_content[^"]*"[^>]*>', re.IGNORECASE),
+    ]
+
+    extracted_html = None
+    for sel in selectors:
+        result = _extract_by_selector(html, sel)
+        if result and len(result) > 200:
+            extracted_html = result
+            break
+
+    if not extracted_html:
+        # Fallback: try <body>
+        body_m = re.search(r'<body\b[^>]*>(.*?)</body>', html, re.IGNORECASE | re.DOTALL)
+        if body_m:
+            extracted_html = body_m.group(1)
+        else:
+            extracted_html = html
+
+    # Extract text
+    parser = ArticleTextExtractor()
+    try:
+        parser.feed(extracted_html)
+    except Exception:
+        return ''
+    text = parser.get_text()
+
+    # Trim to 500 chars
+    if len(text) > 500:
+        text = text[:500] + '...'
+    return text.strip()
+
+
+# ---- AI Summarization ----
+def ai_summarize(title, raw_text, item_type):
+    """Use an OpenAI-compatible API to generate a 200-char Chinese summary.
+
+    Requires AI_API_KEY and AI_API_URL env vars. Returns None if not configured
+    or if the call fails.
+    """
+    api_key = os.environ.get('AI_API_KEY', '').strip()
+    api_url = os.environ.get('AI_API_URL', '').strip()
+    if not api_key or not api_url:
+        return None
+
+    if not raw_text or not raw_text.strip():
+        return None
+
+    type_label = '政策' if item_type == 'policy' else ('平台规则' if item_type == 'rule' else '资讯')
+    prompt = (
+        f"请根据以下{type_label}标题和正文内容，生成一条200字以内的中文摘要，"
+        f"重点分析其对跨境电商卖家的业务影响与风险点，语言简洁专业。\n\n"
+        f"标题：{title}\n\n"
+        f"正文片段：\n{raw_text[:2000]}\n"
+    )
+
+    payload = json.dumps({
+        'model': os.environ.get('AI_MODEL', 'gpt-3.5-turbo'),
+        'messages': [
+            {'role': 'system', 'content': '你是跨境电商行业分析师，擅长提炼政策与平台规则对卖家的影响。'},
+            {'role': 'user', 'content': prompt}
+        ],
+        'max_tokens': 400,
+        'temperature': 0.3
+    }).encode('utf-8')
+
+    req = Request(
+        api_url,
+        data=payload,
+        headers={
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {api_key}',
+            'User-Agent': 'MercatorBot/1.0 (GitHub Actions)'
+        },
+        method='POST'
+    )
+
+    try:
+        with urlopen(req, timeout=30) as resp:
+            result = json.loads(resp.read().decode('utf-8'))
+        content = result['choices'][0]['message']['content'].strip()
+        # Limit to ~200 Chinese chars
+        if len(content) > 220:
+            content = content[:200] + '...'
+        return content
+    except Exception as e:
+        print(f"  [WARN] AI summarization failed: {e}")
+        return None
+
+
 # ---- Merge & Deduplicate ----
 def merge_data(existing_file, new_items, key_fields=['title']):
     """Merge new items with existing data, dedup by title similarity."""
@@ -561,6 +746,51 @@ def main():
     except Exception as e:
         print(f"  [ERROR] Amazon: {e}")
         traceback.print_exc()
+    
+    print(f"\n--- Article Extraction ---")
+    
+    # Extract article summaries for items with empty summary
+    # Limit total to 30 articles to avoid GitHub Actions timeout
+    all_items = all_policies + all_rules
+    empty_summary_items = [item for item in all_items if not item.get('summary', '').strip() and item.get('source_url')]
+    article_limit = min(30, len(empty_summary_items))
+    ai_limit = 20
+    ai_count = 0
+    article_count = 0
+    print(f"  Items with empty summary: {len(empty_summary_items)}")
+    print(f"  Article extraction limit: {article_limit}")
+    print(f"  AI summarization limit: {ai_limit}")
+    
+    for item in empty_summary_items[:article_limit]:
+        url = item.get('source_url', '')
+        if not url:
+            continue
+        print(f"  [{article_count+1}/{article_limit}] Extracting: {item['title'][:60]}...")
+        raw_text = extract_article_summary(url)
+        article_count += 1
+        
+        if not raw_text:
+            print(f"    -> No content extracted")
+            continue
+        
+        # Determine item type
+        item_type = 'policy' if item in all_policies else 'rule'
+        
+        # Try AI summarization if configured and under limit
+        if ai_count < ai_limit:
+            ai_result = ai_summarize(item['title'], raw_text, item_type)
+            if ai_result:
+                item['summary'] = ai_result
+                ai_count += 1
+                print(f"    -> AI summary generated ({len(ai_result)} chars)")
+                continue
+        
+        # Fallback: use extracted text
+        item['summary'] = raw_text
+        print(f"    -> Text-only summary ({len(raw_text)} chars)")
+    
+    print(f"  Article extraction complete: {article_count} attempted")
+    print(f"  AI summaries generated: {ai_count}")
     
     print(f"\n--- Merge Results ---")
     

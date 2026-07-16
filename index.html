@@ -653,6 +653,13 @@
 .al-empty-icon{font-size:48px;margin-bottom:12px}
 .al-empty h3{font-size:15px;color:var(--ink);margin-bottom:6px}
 .al-empty p{font-size:12px;margin-bottom:16px}
+.al-dyn-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(74,133,217,.08),rgba(74,133,217,.02));border:1px solid rgba(74,133,217,.25);border-radius:8px;padding:12px 16px;margin-bottom:14px}
+.al-dyn-icon{font-size:22px}
+.al-dyn-text{font-size:12px;color:var(--ink);flex:1;line-height:1.5}
+.al-dyn-text b{color:#2a5a8a;font-weight:600}
+.al-dyn-count{display:inline-block;background:rgba(74,133,217,.15);color:#2a5a8a;font:bold 12px 'DM Mono';padding:1px 7px;border-radius:9px;margin:0 2px}
+.al-src-tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;margin-left:6px;vertical-align:middle}
+.al-src-tag.ai{background:rgba(74,144,217,.12);color:#4a90d9;border:1px solid rgba(74,144,217,.25)}
 /* Alert Settings Modal */
 .al-modal-overlay{position:fixed;inset:0;background:rgba(26,35,50,.5);z-index:200;display:none;align-items:center;justify-content:center;animation:wlFadeIn .25s ease}
 .al-modal-overlay.show{display:flex}
@@ -5058,6 +5065,8 @@ async function loadPoliciesData() {
       plInitFromJson();
       const time = new Date(data.updated_at).toLocaleString('zh-CN');
       $('#pl-data-info').innerHTML = '📡 数据更新时间: ' + time + ' | 数据来源: ' + (data.source_count || '?') + '个';
+      // Refresh alerts linkage
+      if (typeof refreshDynamicAlerts === 'function') refreshDynamicAlerts();
     } else {
       throw new Error('Empty data');
     }
@@ -5389,6 +5398,8 @@ async function loadRulesData() {
       rlInitFromJson();
       const time = new Date(data.updated_at).toLocaleString('zh-CN');
       $('#rl-data-info').innerHTML = '📡 数据更新时间: ' + time + ' | 数据来源: ' + (data.source_count || '?') + '个';
+      // Refresh alerts linkage
+      if (typeof refreshDynamicAlerts === 'function') refreshDynamicAlerts();
     } else {
       throw new Error('Empty data');
     }
@@ -7429,6 +7440,109 @@ function renderAIInsight(pageId){
 
 
 // ========== ALERTS CENTER ==========
+// Dynamic alerts auto-generated from policies and rules data (Mercator AI)
+var dynamicAlerts = [];
+var dynamicAlertsLoaded = false;
+
+function generateDynamicAlerts(){
+  dynamicAlerts = [];
+  // --- from policies: impact_level === 'high' ---
+  var pItems = policiesJsonData ? policiesJsonData.items : defaultPoliciesData.items;
+  var regionLabelMap = {US:'美国',EU:'欧盟',SEA:'东南亚',CN:'中国',UK:'英国',JP:'日本',KR:'韩国',Global:'全球',JP:'日本',IN:'印度',BR:'巴西',MX:'墨西哥'};
+  pItems.forEach(function(p, idx){
+    if(p.impact_level !== 'high') return;
+    var region = regionLabelMap[p.region] || p.region || '全球';
+    var title = p.title || '未命名政策';
+    var summary = p.summary || '详见来源链接';
+    dynamicAlerts.push({
+      id: 'dyn-p-' + (p.id || idx),
+      type: 'policy',
+      level: 'high',
+      title: title,
+      country: region,
+      platform: '-',
+      detail: summary,
+      date: p.published_at || p.effective_date || '2026-07-13',
+      read: false,
+      source: 'Mercator AI 自动生成',
+      refId: p.id,
+      category: p.category || 'regulation'
+    });
+  });
+
+  // --- from rules: impact_level === 'high' ---
+  var rItems = rulesJsonData ? rulesJsonData.items : defaultRulesData.items;
+  rItems.forEach(function(r, idx){
+    if(r.impact_level !== 'high') return;
+    var platform = r.platform || '多平台';
+    var market = regionLabelMap[r.market] || r.market || '全球';
+    var title = r.title || '未命名规则';
+    var summary = r.summary || '详见平台公告';
+    dynamicAlerts.push({
+      id: 'dyn-r-' + (r.id || idx),
+      type: 'platform',
+      level: 'high',
+      title: title,
+      country: market,
+      platform: platform,
+      detail: summary,
+      date: r.effective_date || r.published_at || '2026-07-13',
+      read: false,
+      source: 'Mercator AI 自动生成',
+      refId: r.id,
+      category: r.category || 'regulation'
+    });
+  });
+
+  // Sort by date desc
+  dynamicAlerts.sort(function(a,b){
+    return (b.date||'').localeCompare(a.date||'');
+  });
+  dynamicAlertsLoaded = true;
+}
+
+var alDynReadMap = {};
+
+// Merge hardcoded alertsFull + dynamic alerts into combined list for rendering
+function getCombinedAlerts(){
+  // Convert array-format alertsFull entries to objects for unified handling
+  var base = alertsFull.map(function(a){
+    return {
+      id: a[0], type: a[1], level: a[2], title: a[3],
+      country: a[4], platform: a[5], detail: a[6],
+      date: a[7], read: a[8],
+      source: '系统内置'
+    };
+  });
+  // Apply read-state map to dynamic alerts
+  var dyn = dynamicAlerts.map(function(a){
+    return {
+      id: a.id, type: a.type, level: a.level, title: a.title,
+      country: a.country, platform: a.platform, detail: a.detail,
+      date: a.date,
+      read: !!alDynReadMap[a.id],
+      source: a.source || 'Mercator AI 自动生成'
+    };
+  });
+  // Filter out dynamic alerts that duplicate base ones (by title similarity)
+  var baseTitles = {};
+  base.forEach(function(a){ baseTitles[a.title] = true; });
+  dyn = dyn.filter(function(a){ return !baseTitles[a.title]; });
+  return base.concat(dyn);
+}
+
+// Trigger alert page refresh whenever policies/rules data loads
+function refreshDynamicAlerts(){
+  generateDynamicAlerts();
+  // If alerts page is currently active, re-render
+  var alertsPage = document.getElementById('alerts');
+  if(alertsPage && alertsPage.classList.contains('active')){
+    renderAlerts();
+  }
+  // Update sidebar badge
+  updateAlBadge();
+}
+
 var alCurrentTab='all';
 var alCurrentPage=1;
 var alPerPage=10;
@@ -7457,13 +7571,14 @@ function getFilteredAlerts(){
   var searchQ=(document.getElementById('al-search-input').value||'').toLowerCase();
   var tabType=alCurrentTab;
   var now=new Date('2026-07-15');
-  return alertsFull.filter(function(a){
-    if(tabType!=='all'&&a[1]!==tabType)return false;
-    if(typeF!=='all'&&a[1]!==typeF)return false;
-    if(levelF!=='all'&&a[2]!==levelF)return false;
-    if(searchQ&&a[3].toLowerCase().indexOf(searchQ)<0&&a[5].toLowerCase().indexOf(searchQ)<0&&a[6].toLowerCase().indexOf(searchQ)<0)return false;
+  var all = getCombinedAlerts();
+  return all.filter(function(a){
+    if(tabType!=='all'&&a.type!==tabType)return false;
+    if(typeF!=='all'&&a.type!==typeF)return false;
+    if(levelF!=='all'&&a.level!==levelF)return false;
+    if(searchQ&&a.title.toLowerCase().indexOf(searchQ)<0&&(a.platform||'').toLowerCase().indexOf(searchQ)<0&&a.detail.toLowerCase().indexOf(searchQ)<0)return false;
     if(timeF!=='all'){
-      var d=new Date(a[7]);
+      var d=new Date(a.date);
       var diff=Math.floor((now-d)/(86400000));
       if(timeF==='today'&&diff>0)return false;
       if(timeF==='3d'&&diff>3)return false;
@@ -7474,22 +7589,33 @@ function getFilteredAlerts(){
 }
 
 function renderAlSummary(){
-  var total=alertsFull.filter(function(a){return!a[8]}).length;
-  var high=alertsFull.filter(function(a){return a[2]==='high'&&!a[8]}).length;
-  var today=alertsFull.filter(function(a){return a[7]==='2026-07-15'}).length;
-  var done=alertsFull.filter(function(a){return a[8]}).length;
+  var all = getCombinedAlerts();
+  var total=all.filter(function(a){return!a.read}).length;
+  var high=all.filter(function(a){return a.level==='high'&&!a.read}).length;
+  var today=all.filter(function(a){return a.date==='2026-07-15'}).length;
+  var done=all.filter(function(a){return a.read}).length;
+  var dynCount = dynamicAlerts.length;
   var el=document.getElementById('al-summary');
   el.innerHTML='<div class="al-summary-card sc-total"><div class="al-sc-label">未读预警</div><div class="al-sc-val">'+total+'</div><div class="al-sc-sub">较昨日 +3</div></div>'
     +'<div class="al-summary-card sc-high"><div class="al-sc-label">高风险紧急</div><div class="al-sc-val">'+high+'</div><div class="al-sc-sub">需立即处理</div></div>'
     +'<div class="al-summary-card sc-today"><div class="al-sc-label">今日新增</div><div class="al-sc-val">'+today+'</div><div class="al-sc-sub">实时更新</div></div>'
     +'<div class="al-summary-card sc-done"><div class="al-sc-label">已处理归档</div><div class="al-sc-val">'+done+'</div><div class="al-sc-sub">累计已处理</div></div>';
+  // Add dynamic alert count banner
+  var bannerHtml = '<div class="al-dyn-banner">'
+    + '<span class="al-dyn-icon">🤖</span>'
+    + '<div class="al-dyn-text">'
+    + '<b>Mercator AI 自动预警</b>：基于政策与规则数据自动生成 <span class="al-dyn-count">' + dynCount + '</span> 条预警'
+    + '（政策变动 ' + dynamicAlerts.filter(function(a){return a.type==='policy'}).length + ' 条 · 平台规则 ' + dynamicAlerts.filter(function(a){return a.type==='platform'}).length + ' 条）'
+    + '</div></div>';
+  el.innerHTML = bannerHtml + el.innerHTML;
 }
 
 function renderAlTabs(){
   var tabs=[{k:'all',l:'全部'},{k:'shop',l:'店铺追踪'},{k:'cat',l:'类目爆款'},{k:'policy',l:'政策合规'},{k:'macro',l:'宏观数据'},{k:'platform',l:'平台规则'}];
   var html='';
+  var all = getCombinedAlerts();
   tabs.forEach(function(t){
-    var cnt=t.k==='all'?alertsFull.length:alertsFull.filter(function(a){return a[1]===t.k}).length;
+    var cnt=t.k==='all'?all.length:all.filter(function(a){return a.type===t.k}).length;
     var cls=alCurrentTab===t.k?'al-tab active':'al-tab';
     html+='<button class="'+cls+'" onclick="alSwitchTab(\''+t.k+'\')">'+ t.l +'<span class="tab-count">'+cnt+'</span></button>';
   });
@@ -7517,22 +7643,23 @@ function renderAlList(filtered){
   var pageItems=filtered.slice(start,start+alPerPage);
   var html='';
   pageItems.forEach(function(a){
-    var id=a[0],type=a[1],level=a[2],title=a[3],country=a[4],platform=a[5],detail=a[6],date=a[7],read=a[8];
+    var id=a.id,type=a.type,level=a.level,title=a.title,country=a.country,platform=a.platform,detail=a.detail,date=a.date,read=a.read;
     var icon=alTypeIcons[type]||'📋';
     var typeLabel=alTypeLabels[type]||type;
     var levelLabel=alLevelLabels[level]||level;
     var checked=alSelected.has(id)?'checked':'';
     var readCls=read?'read':'unread';
+    var srcTag = a.source === 'Mercator AI 自动生成' ? '<span class="al-src-tag ai">🤖 Mercator AI 自动生成</span>' : '';
     html+='<div class="al-card '+readCls+'" id="al-card-'+id+'">';
     html+='<div class="al-card-check"><input type="checkbox" '+checked+' onchange="alToggleSelect(\''+id+'\',this.checked)"></div>';
     html+='<div class="al-card-icon type-'+type+'">'+icon+'</div>';
     html+='<div class="al-card-body">';
-    html+='<div class="al-card-title">'+title+'</div>';
+    html+='<div class="al-card-title">'+title+' '+srcTag+'</div>';
     html+='<div class="al-card-meta">';
     html+='<span class="meta-tag '+level+'">'+levelLabel+'</span>';
     html+='<span>'+typeLabel+'</span>';
-    if(country!=='-')html+='<span>📍 '+country+'</span>';
-    if(platform!=='-')html+='<span>🛒 '+platform+'</span>';
+    if(country&&country!=='-')html+='<span>📍 '+country+'</span>';
+    if(platform&&platform!=='-')html+='<span>🛒 '+platform+'</span>';
     html+='<span>📅 '+date+'</span>';
     html+='</div>';
     html+='<div class="al-card-detail">'+parseDetail(detail)+'</div>';
@@ -7583,7 +7710,7 @@ function alToggleSelectAll(checked){
   var filtered=getFilteredAlerts();
   var start=(alCurrentPage-1)*alPerPage;
   var pageItems=filtered.slice(start,start+alPerPage);
-  pageItems.forEach(function(a){if(checked)alSelected.add(a[0]);else alSelected.delete(a[0]);});
+  pageItems.forEach(function(a){if(checked)alSelected.add(a.id);else alSelected.delete(a.id);});
   renderAlerts();
 }
 
@@ -7591,18 +7718,21 @@ function alArchive(id){
   for(var i=0;i<alertsFull.length;i++){
     if(alertsFull[i][0]===id){alertsFull[i][8]=true;break;}
   }
+  alDynReadMap[id] = true;
   alSelected.delete(id);
   toast('已归档该预警');
   renderAlerts();
 }
 function alMarkAllRead(){
   alertsFull.forEach(function(a){a[8]=true;});
+  dynamicAlerts.forEach(function(a){ alDynReadMap[a.id] = true; });
   toast('已全部标为已读');
   renderAlerts();
 }
 function alBatchArchive(){
   alSelected.forEach(function(id){
     for(var i=0;i<alertsFull.length;i++){if(alertsFull[i][0]===id){alertsFull[i][8]=true;break;}}
+    alDynReadMap[id] = true;
   });
   var n=alSelected.size;
   alSelected.clear();
@@ -7617,19 +7747,20 @@ function alBatchWatch(){
 }
 
 function alViewDetail(id){
-  var a=alertsFull.find(function(x){return x[0]===id});
+  var all = getCombinedAlerts();
+  var a = all.find(function(x){return x.id===id});
   if(!a)return;
-  var target=alTypeTargets[a[1]]||'overview';
-  if(a[1]==='shop'||a[1]==='cat')switchPage('products');
-  else if(a[1]==='policy')switchPage('policies');
-  else if(a[1]==='macro')switchPage('countries');
-  else if(a[1]==='platform')switchPage('rules');
+  if(a.type==='shop'||a.type==='cat')switchPage('products');
+  else if(a.type==='policy')switchPage('policies');
+  else if(a.type==='macro')switchPage('countries');
+  else if(a.type==='platform')switchPage('rules');
   else switchPage('overview');
-  toast('已跳转到'+alTypeLabels[a[1]]+'板块');
+  toast('已跳转到'+alTypeLabels[a.type]+'板块');
 }
 
 function alAiAnalysis(id){
-  var a=alertsFull.find(function(x){return x[0]===id});
+  var all = getCombinedAlerts();
+  var a = all.find(function(x){return x.id===id});
   if(!a)return;
   var analyses={
     shop:'AI 风险诊断：该店铺异动主要由运营指标下滑引起。建议：① 立即排查核心 SKU 的库存和评价状态；② 对比同期竞品数据确认是否为行业趋势；③ 调整广告投放策略，优先保 ROI。',
@@ -7638,13 +7769,14 @@ function alAiAnalysis(id){
     macro:'AI 宏观研判：该经济指标变化可能影响跨境利润。建议：① 评估汇率波动对毛利的影响幅度；② 考虑调整结算货币或增加对冲工具；③ 监控趋势是否持续恶化。',
     platform:'AI 规则影响：平台规则调整将改变运营环境。建议：① 仔细阅读完整规则文本；② 评估对现有商品和店铺的具体影响；③ 在生效日期前完成合规调整。'
   };
-  toast(analyses[a[1]]||'AI 分析功能需升级专业版');
+  toast(analyses[a.type]||'AI 分析功能需升级专业版');
 }
 
 function alExport(){toast('预警报告导出功能需升级专业版');}
 
 function updateAlBadge(){
-  var unread=alertsFull.filter(function(a){return!a[8]}).length;
+  var all = getCombinedAlerts();
+  var unread = all.filter(function(a){return!a.read}).length;
   var badge=document.getElementById('al-unread-badge');
   if(badge){badge.textContent=unread;badge.style.display=unread>0?'inline-block':'none';}
   var navBadge=document.querySelector('a[data-page="alerts"] .danger');
