@@ -1,0 +1,31 @@
+name: Mercator Data Update
+
+on:
+  schedule:
+    - cron: '15 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python scripts/collect_data.py
+      - id: git-check
+        run: git diff --quiet data/ || echo "changed=true" >> $GITHUB_OUTPUT
+      - if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config user.name "Mercator Bot"
+          git config user.email "mercator-bot@users.noreply.github.com"
+          git add data/
+          git commit -m "chore: auto-update policies & rules data"
+          git push
