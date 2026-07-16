@@ -892,6 +892,299 @@ def collect_platform_updates():
         print("  No new platform updates found")
 
 
+# ---- Country Profile Updates ----
+COUNTRY_CONFIG = {
+    # Southeast Asia
+    'id': {'name': '印度尼西亚', 'en': 'Indonesia', 'search_terms': ['Indonesia', '印尼', '印尼电商']},
+    'th': {'name': '泰国', 'en': 'Thailand', 'search_terms': ['Thailand', '泰国', '泰国电商']},
+    'my': {'name': '马来西亚', 'en': 'Malaysia', 'search_terms': ['Malaysia', '马来西亚', '马来电商']},
+    'vn': {'name': '越南', 'en': 'Vietnam', 'search_terms': ['Vietnam', '越南', '越南电商']},
+    'ph': {'name': '菲律宾', 'en': 'Philippines', 'search_terms': ['Philippines', '菲律宾', '菲律宾电商']},
+    'sg': {'name': '新加坡', 'en': 'Singapore', 'search_terms': ['Singapore', '新加坡', '新加坡电商']},
+    # Americas
+    'us': {'name': '美国', 'en': 'United States', 'search_terms': ['US tariff', 'China tariff', '美国关税', '美国电商']},
+    'br': {'name': '巴西', 'en': 'Brazil', 'search_terms': ['Brazil', '巴西', '巴西电商', 'Remessa Conforme']},
+    'ca': {'name': '加拿大', 'en': 'Canada', 'search_terms': ['Canada', '加拿大', '加拿大电商']},
+    'mx': {'name': '墨西哥', 'en': 'Mexico', 'search_terms': ['Mexico', '墨西哥', '墨西哥电商']},
+    'ar': {'name': '阿根廷', 'en': 'Argentina', 'search_terms': ['Argentina', '阿根廷', '阿根廷电商']},
+    'co': {'name': '哥伦比亚', 'en': 'Colombia', 'search_terms': ['Colombia', '哥伦比亚', '哥伦比亚电商']},
+    'cl': {'name': '智利', 'en': 'Chile', 'search_terms': ['Chile', '智利', '智利电商']},
+    # Europe
+    'gb': {'name': '英国', 'en': 'United Kingdom', 'search_terms': ['UK', '英国', '英国电商']},
+    'de': {'name': '德国', 'en': 'Germany', 'search_terms': ['Germany', '德国', '德国电商']},
+    'fr': {'name': '法国', 'en': 'France', 'search_terms': ['France', '法国', '法国电商']},
+    'it': {'name': '意大利', 'en': 'Italy', 'search_terms': ['Italy', '意大利', '意大利电商']},
+    'es': {'name': '西班牙', 'en': 'Spain', 'search_terms': ['Spain', '西班牙', '西班牙电商']},
+    'nl': {'name': '荷兰', 'en': 'Netherlands', 'search_terms': ['Netherlands', '荷兰', '荷兰电商']},
+    'pl': {'name': '波兰', 'en': 'Poland', 'search_terms': ['Poland', '波兰', '波兰电商']},
+    'se': {'name': '瑞典', 'en': 'Sweden', 'search_terms': ['Sweden', '瑞典', '瑞典电商']},
+    'be': {'name': '比利时', 'en': 'Belgium', 'search_terms': ['Belgium', '比利时', '比利时电商']},
+    # Middle East & Africa
+    'sa': {'name': '沙特阿拉伯', 'en': 'Saudi Arabia', 'search_terms': ['Saudi Arabia', '沙特', '中东电商']},
+    'ae': {'name': '阿联酋', 'en': 'UAE', 'search_terms': ['UAE', '阿联酋', '迪拜电商']},
+    'eg': {'name': '埃及', 'en': 'Egypt', 'search_terms': ['Egypt', '埃及', '埃及电商']},
+    'tr': {'name': '土耳其', 'en': 'Turkey', 'search_terms': ['Turkey', '土耳其', '土耳其电商']},
+    'il': {'name': '以色列', 'en': 'Israel', 'search_terms': ['Israel', '以色列', '以色列电商']},
+    'ng': {'name': '尼日利亚', 'en': 'Nigeria', 'search_terms': ['Nigeria', '尼日利亚', '尼日利亚电商']},
+    'za': {'name': '南非', 'en': 'South Africa', 'search_terms': ['South Africa', '南非', '南非电商']},
+    'ke': {'name': '肯尼亚', 'en': 'Kenya', 'search_terms': ['Kenya', '肯尼亚', '肯尼亚电商']},
+    'ma': {'name': '摩洛哥', 'en': 'Morocco', 'search_terms': ['Morocco', '摩洛哥', '摩洛哥电商']},
+    # Asia Pacific
+    'jp': {'name': '日本', 'en': 'Japan', 'search_terms': ['Japan', '日本', '日本电商']},
+    'kr': {'name': '韩国', 'en': 'South Korea', 'search_terms': ['South Korea', '韩国', '韩国电商']},
+    'au': {'name': '澳大利亚', 'en': 'Australia', 'search_terms': ['Australia', '澳大利亚', '澳洲电商']},
+    'in': {'name': '印度', 'en': 'India', 'search_terms': ['India', '印度', '印度电商']},
+    'pk': {'name': '巴基斯坦', 'en': 'Pakistan', 'search_terms': ['Pakistan', '巴基斯坦', '巴基斯坦电商']},
+    # CIS
+    'ru': {'name': '俄罗斯', 'en': 'Russia', 'search_terms': ['Russia', '俄罗斯', '俄罗斯电商']},
+    'ua': {'name': '乌克兰', 'en': 'Ukraine', 'search_terms': ['Ukraine', '乌克兰', '乌克兰电商']},
+    'kz': {'name': '哈萨克斯坦', 'en': 'Kazakhstan', 'search_terms': ['Kazakhstan', '哈萨克斯坦', '哈萨克电商']},
+}
+
+def _search_country_federal_register(country_key, country_en):
+    """Search Federal Register for trade policies related to a specific country."""
+    items = []
+    # Build search terms for Federal Register
+    terms = [country_en, f'{country_en} tariff', f'{country_en} trade']
+    if country_key == 'us':
+        terms = ['China tariff', 'China trade', 'Section 301', 'de minimis']
+    
+    for term in terms[:3]:
+        url = (
+            f"https://www.federalregister.gov/api/v1/documents.json?"
+            f"conditions[term]={term}"
+            f"&conditions[type]=RULE"
+            f"&per_page=5&order=newest"
+            f"&fields[]=title&fields[]=abstract&fields[]=publication_date&fields[]=html_url"
+        )
+        data = fetch_json(url)
+        if not data or 'results' not in data:
+            continue
+        for doc in data['results']:
+            title = doc.get('title', '').strip()
+            abstract = doc.get('abstract', '') or ''
+            abstract = re.sub(r'<[^>]+>', '', abstract).strip()
+            pub_date = doc.get('publication_date', NOW_DATE)
+            html_url = doc.get('html_url', '')
+            if not title:
+                continue
+            # Check relevance - must mention country or trade keywords
+            lower_title = title.lower()
+            relevant = False
+            if country_key == 'us':
+                relevant = any(kw in lower_title for kw in ['china', 'tariff', 'duty', 'trade', 'import', 'export', 'sanction'])
+            else:
+                relevant = country_en.lower() in lower_title or any(
+                    kw in lower_title for kw in ['tariff', 'trade', 'sanction', 'import', 'export']
+                )
+            if not relevant:
+                continue
+            
+            # Determine impact level
+            impact = 'mid'
+            high_kw = ['tariff', 'duty', 'sanction', 'embargo', 'quota', 'ban', 'prohibit']
+            if any(kw in lower_title for kw in high_kw):
+                impact = 'high'
+            
+            items.append({
+                'impact': impact,
+                'title': title,
+                'date': pub_date,
+                'source': 'Federal Register',
+                'source_url': html_url,
+                'description': abstract[:200] if abstract else title,
+            })
+        if items:
+            break
+    return items
+
+
+def _search_country_news(country_key, search_terms):
+    """Search Chinese e-commerce news sites for country-related news."""
+    items = []
+    # Search AMZ123
+    for term in search_terms[:2]:
+        url = f'https://www.amz123.com/search?q={term}'
+        html = fetch_html(url)
+        if not html:
+            continue
+        patterns = [
+            r'<a[^>]+href="(/[^"]+)"[^>]*>([^<]*' + re.escape(term) + r'[^<]*)</a>',
+            r'"title":"([^"]*' + re.escape(term) + r'[^"]*)"',
+            r'<h[234][^>]*>([^<]*' + re.escape(term) + r'[^<]*)</h[234]>',
+        ]
+        seen = set()
+        for pat in patterns:
+            matches = re.findall(pat, html, re.IGNORECASE)
+            for m in matches:
+                title = m.strip() if isinstance(m, str) else str(m).strip()
+                if len(title) < 8 or title in seen:
+                    continue
+                seen.add(title)
+                items.append({
+                    'title': title[:100],
+                    'source': 'AMZ123',
+                })
+        if items:
+            break
+    
+    # Search 雨果网
+    for term in search_terms[:2]:
+        url = f'https://www.cifnews.com/search?keyword={term}'
+        html = fetch_html(url)
+        if not html:
+            continue
+        patterns = [
+            r'"title":"([^"]*' + re.escape(term) + r'[^"]*)"',
+            r'<a[^>]+href="(https?://[^"]*cifnews[^"]*)"[^>]*>([^<]*' + re.escape(term) + r'[^<]*)</a>',
+            r'<h[234][^>]*>\s*<a[^>]+>([^<]*' + re.escape(term) + r'[^<]*)</a>',
+        ]
+        seen = set()
+        for pat in patterns:
+            matches = re.findall(pat, html, re.IGNORECASE)
+            for m in matches:
+                title = m.strip() if isinstance(m, str) else str(m).strip()
+                if isinstance(title, str) and len(title) < 8:
+                    continue
+                if title in seen:
+                    continue
+                seen.add(title)
+                items.append({
+                    'title': title[:100],
+                    'source': '雨果网',
+                })
+        if items:
+            break
+    
+    return items
+
+
+def collect_country_updates():
+    """Collect latest trade policy updates for each country profile.
+    Rotates through 4 countries per run to avoid timeout.
+    Updates ai.risks and comp.policies in data/countries.json.
+    """
+    print("\n[Country Updates] Collecting country profile dynamics...")
+    
+    countries_file = os.path.join(DATA_DIR, 'countries.json')
+    if not os.path.exists(countries_file):
+        print("  [WARN] data/countries.json not found, skipping country updates")
+        return
+    
+    with open(countries_file, 'r', encoding='utf-8') as f:
+        countries = json.load(f)
+    
+    print(f"  Loaded {len(countries)} country profiles")
+    
+    # Rotate: update 8 countries per run based on date
+    # With 39 countries and 4-hour intervals, all countries cycle in ~2 days
+    all_keys = list(COUNTRY_CONFIG.keys())
+    day_of_year = NOW.timetuple().tm_yday
+    hour = NOW.hour
+    start_idx = (day_of_year * 6 + hour // 4) % len(all_keys)
+    # Pick 8 consecutive countries in rotation
+    rotate_keys = []
+    for i in range(8):
+        rotate_keys.append(all_keys[(start_idx + i) % len(all_keys)])
+    
+    print(f"  Rotating: updating {rotate_keys}")
+    
+    updated_count = 0
+    for country_key in rotate_keys:
+        if country_key not in countries:
+            continue
+        
+        config = COUNTRY_CONFIG[country_key]
+        country_data = countries[country_key]
+        print(f"\n  [{country_key}] {config['name']} ({config['en']})")
+        
+        has_update = False
+        
+        # 1. Search Federal Register for trade policies
+        fr_items = []
+        try:
+            fr_items = _search_country_federal_register(country_key, config['en'])
+            print(f"    Federal Register: {len(fr_items)} relevant items")
+        except Exception as e:
+            print(f"    [WARN] Federal Register search failed: {e}")
+        
+        # 2. Search Chinese e-commerce news
+        news_items = []
+        try:
+            news_items = _search_country_news(country_key, config['search_terms'])
+            print(f"    News sources: {len(news_items)} items")
+        except Exception as e:
+            print(f"    [WARN] News search failed: {e}")
+        
+        # Update ai.risks - add new risk warnings from Federal Register
+        if fr_items:
+            existing_risks = country_data.get('ai', {}).get('risks', [])
+            for item in fr_items[:2]:  # Add at most 2 new risks
+                risk_text = f"⚠️ {item['title'][:60]}（{item.get('source', '')} {item.get('date', '')}）"
+                # Check if similar risk already exists
+                is_dup = any(
+                    item['title'][:20].lower() in r.lower()
+                    for r in existing_risks
+                )
+                if not is_dup:
+                    # Insert after existing warnings (keep max 5)
+                    existing_risks.insert(0, risk_text)
+                    has_update = True
+                    print(f"    + Risk: {risk_text[:60]}...")
+            # Keep max 5 risks
+            country_data['ai']['risks'] = existing_risks[:5]
+        
+        # Update comp.policies - add high-impact policies from news
+        if news_items:
+            existing_policies = country_data.get('comp', {}).get('policies', [])
+            for item in news_items[:2]:  # Add at most 2 new policy items
+                policy_title = item['title'][:50]
+                # Check if similar policy already exists
+                is_dup = any(
+                    policy_title[:15].lower() in p[1].lower() if len(p) > 1 else False
+                    for p in existing_policies
+                )
+                if not is_dup:
+                    # Determine impact level
+                    impact = 'low'
+                    high_kw = ['关税', '制裁', '禁止', '新规', '强制', 'ban', 'tariff', 'sanction']
+                    mid_kw = ['监管', '合规', '认证', '税务', 'tax', 'regulation']
+                    if any(kw in policy_title.lower() for kw in high_kw):
+                        impact = 'high'
+                    elif any(kw in policy_title.lower() for kw in mid_kw):
+                        impact = 'mid'
+                    
+                    # Format: [level, policy_name, date, category, platform, description]
+                    new_policy = [
+                        impact,
+                        policy_title,
+                        NOW_DATE,
+                        '全品类',
+                        '全平台',
+                        f"来源: {item.get('source', '网络')}"
+                    ]
+                    existing_policies.insert(0, new_policy)
+                    has_update = True
+                    print(f"    + Policy: {policy_title}")
+            # Keep max 6 policies (high priority first)
+            country_data['comp']['policies'] = existing_policies[:6]
+        
+        if has_update:
+            updated_count += 1
+    
+    if updated_count > 0:
+        # Add metadata
+        countries['_metadata'] = {
+            'last_updated': NOW_ISO,
+            'updated_countries': rotate_keys,
+        }
+        with open(countries_file, 'w', encoding='utf-8') as f:
+            json.dump(countries, f, ensure_ascii=False, indent=2)
+        print(f"\n  Updated {updated_count} country profiles in countries.json")
+    else:
+        print("  No new country updates found")
+
+
 # ---- Main ----
 def main():
     print(f"=== Mercator Data Collector ===")
@@ -1028,6 +1321,13 @@ def main():
         collect_platform_updates()
     except Exception as e:
         print(f"  [ERROR] Platform updates: {e}")
+        traceback.print_exc()
+    
+    # Update country profiles
+    try:
+        collect_country_updates()
+    except Exception as e:
+        print(f"  [ERROR] Country updates: {e}")
         traceback.print_exc()
     
     print(f"\n=== Collection complete ===")
