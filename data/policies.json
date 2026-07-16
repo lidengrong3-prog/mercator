@@ -1,7 +1,91 @@
 {
-  "updated_at": "2026-07-16T16:52:56.223124+08:00",
+  "updated_at": "2026-07-16T19:33:29.537807+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260716-6778791b",
+      "title": "Submission for OMB Review; Comment Request",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/16/2026-14382/submission-for-omb-review-comment-request",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-16",
+      "collected_at": "2026-07-16T19:33:29.537807+08:00"
+    },
+    {
+      "id": "p20260716-7554f5ea",
+      "title": "Endangered Species; File No. 29736",
+      "summary": "Notice is hereby given that Katrina Phillips, Ph.D., Dauphin Island Sea Lab 101, Bienville Blvd., Dauphin Island, AL 36528, has applied in due form for a permit to take loggerhead (Caretta caretta), green (Chelonia mydas), Kemp's ridley (Lepidochelys kempii), hawksbill (Eretmochelys imbricata), and ",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/16/2026-14383/endangered-species-file-no-29736",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-16",
+      "collected_at": "2026-07-16T19:33:29.537807+08:00"
+    },
+    {
+      "id": "p20260716-eae0b301",
+      "title": "Agency Information Collection Activities; Proposed eCollection eComments Requested; Title-Semi-Annual Progress Report for Grantees From the Tribal Sexual Assault Services Program",
+      "summary": "The Office on Violence Against Women (OVW), Department of Justice (DOJ), will be submitting the following information collection request to the Office of Management and Budget (OMB) for review and approval in accordance with the Paperwork Reduction Act of 1995.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/16/2026-14386/agency-information-collection-activities-proposed-ecollection-ecomments-requested-title-semi-annual",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-16",
+      "collected_at": "2026-07-16T19:33:29.537807+08:00"
+    },
+    {
+      "id": "p20260716-a5d6aaeb",
+      "title": "Amendment of Class D Airspace and Class E Airspace Over New Bedford, MA",
+      "summary": "This action amends Class D and Class E airspace over New Bedford, MA. This action adds a 0.7 mile long, 3.6-mile-wide extension to the northwest side of the existing Class D airspace to properly contain current Instrument Flight Rules (IFR) operations. This action also updates the airport name and g",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/16/2026-14391/amendment-of-class-d-airspace-and-class-e-airspace-over-new-bedford-ma",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-16",
+      "collected_at": "2026-07-16T19:33:29.537807+08:00"
+    },
+    {
+      "id": "p20260716-a948e5f7",
+      "title": "Presidential Declaration of a Major Disaster for Public Assistance Only for the Territory of Guam",
+      "summary": "This is notice of the Presidential declaration of a major disaster for Public Assistance Only for the territory of Guam (FEMA- 4921-DR), dated June 30, 2026. Incident: Super Typhoon Sinlaku.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/16/2026-14431/presidential-declaration-of-a-major-disaster-for-public-assistance-only-for-the-territory-of-guam",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-16",
+      "collected_at": "2026-07-16T19:33:29.537807+08:00"
+    },
+    {
+      "id": "p20260716-737d6150",
+      "title": "Regulatory Relief for Certain Stationary Sources To Promote American Chemical Manufacturing Security",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/16/2026-14452/regulatory-relief-for-certain-stationary-sources-to-promote-american-chemical-manufacturing-security",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-16",
+      "collected_at": "2026-07-16T19:33:29.537807+08:00"
+    },
+    {
+      "id": "p20260716-8acef25c",
+      "title": "Continuation of the National Emergency With Respect to Significant Transnational Criminal Organizations",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/16/2026-14454/continuation-of-the-national-emergency-with-respect-to-significant-transnational-criminal",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-16",
+      "collected_at": "2026-07-16T19:33:29.537807+08:00"
+    },
     {
       "id": "p20260716-8a6a7045",
       "title": "9610跨境电商监管模式",
