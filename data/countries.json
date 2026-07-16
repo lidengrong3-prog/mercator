@@ -6049,6 +6049,7 @@
         "家居日用 +20% 城镇化需求旺盛"
       ],
       "risks": [
+        "⚠️ Emergency Import Restrictions on Categories of Archaeologica（Federal Register 2025-05-14）",
         "⚠️ 外汇管制严格，美元获取困难",
         "⚠️ 清关流程复杂周期长",
         "⚠️ 电商基础设施仍不完善"
@@ -11768,5 +11769,18 @@
         ]
       ]
     }
+  },
+  "_metadata": {
+    "last_updated": "2026-07-16T21:07:52.210051+08:00",
+    "updated_countries": [
+      "es",
+      "nl",
+      "pl",
+      "se",
+      "be",
+      "sa",
+      "ae",
+      "eg"
+    ]
   }
 }
