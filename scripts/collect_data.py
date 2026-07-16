@@ -1,0 +1,586 @@
+#!/usr/bin/env python3
+"""
+Mercator Data Collector
+Collects trade policies and platform rules from multiple sources.
+Runs via GitHub Actions every 4 hours.
+"""
+
+import json
+import os
+import re
+import sys
+import hashlib
+import traceback
+from datetime import datetime, timezone, timedelta
+from urllib.request import urlopen, Request
+from urllib.error import URLError, HTTPError
+from html.parser import HTMLParser
+
+# ---- Config ----
+DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
+BJT = timezone(timedelta(hours=8))
+NOW = datetime.now(BJT)
+NOW_ISO = NOW.isoformat()
+NOW_DATE = NOW.strftime('%Y-%m-%d')
+
+def gen_id(prefix, title):
+    h = hashlib.md5(title.encode()).hexdigest()[:8]
+    return f"{prefix}{NOW.strftime('%Y%m%d')}-{h}"
+
+# ---- HTTP helpers ----
+def fetch_json(url, headers=None):
+    """Fetch URL and parse JSON response."""
+    hdrs = {'User-Agent': 'MercatorBot/1.0 (GitHub Actions)'}
+    if headers:
+        hdrs.update(headers)
+    req = Request(url, headers=hdrs)
+    try:
+        with urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode('utf-8'))
+    except Exception as e:
+        print(f"  [WARN] fetch_json failed for {url}: {e}")
+        return None
+
+def fetch_html(url, headers=None):
+    """Fetch URL and return HTML text."""
+    hdrs = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8'
+    }
+    if headers:
+        hdrs.update(headers)
+    req = Request(url, headers=hdrs)
+    try:
+        with urlopen(req, timeout=30) as resp:
+            data = resp.read()
+            # Try utf-8 first, then fall back
+            for enc in ['utf-8', 'gbk', 'gb2312', 'latin-1']:
+                try:
+                    return data.decode(enc)
+                except:
+                    continue
+            return data.decode('utf-8', errors='replace')
+    except Exception as e:
+        print(f"  [WARN] fetch_html failed for {url}: {e}")
+        return None
+
+# ---- Source: Federal Register API (US Trade Policies) ----
+def collect_federal_register():
+    """Collect US trade-related regulations from Federal Register API."""
+    print("[1/6] Collecting Federal Register (US trade regulations)...")
+    items = []
+    
+    # Search for trade-related documents
+    agencies = [
+        'trade-representative-office',
+        'commerce-department',
+        'customs-and-border-protection'
+    ]
+    
+    for agency in agencies:
+        url = (
+            f"https://www.federalregister.gov/api/v1/documents.json?"
+            f"filter[conditions][agencies][]={agency}"
+            f"&filter[conditions][type]=RULE"
+            f"&per_page=10&order=newest&fields[]=title&fields[]=abstract"
+            f"&fields[]=publication_date&fields[]=html_url&fields[]=type"
+        )
+        data = fetch_json(url)
+        if not data or 'results' not in data:
+            continue
+            
+        for doc in data['results']:
+            title = doc.get('title', '').strip()
+            abstract = doc.get('abstract', '') or ''
+            # Clean HTML tags from abstract
+            abstract = re.sub(r'<[^>]+>', '', abstract).strip()
+            if not title:
+                continue
+                
+            pub_date = doc.get('publication_date', NOW_DATE)
+            html_url = doc.get('html_url', '')
+            
+            # Determine impact level based on keywords
+            impact = 'medium'
+            high_kw = ['tariff', 'duty', 'sanction', 'embargo', 'quota', 'trade remedy', 'anti-dumping', 'countervailing']
+            if any(kw in title.lower() for kw in high_kw):
+                impact = 'high'
+            
+            # Determine category
+            category = 'regulation'
+            if any(kw in title.lower() for kw in ['tariff', 'duty', 'rate']):
+                category = 'tariff'
+            elif any(kw in title.lower() for kw in ['sanction', 'embargo', 'restricted']):
+                category = 'sanction'
+            
+            items.append({
+                'id': gen_id('p', title),
+                'title': title,
+                'summary': abstract[:300] if abstract else 'See source for details.',
+                'source': f"Federal Register ({agency.replace('-', ' ').title()})",
+                'source_url': html_url,
+                'region': 'US',
+                'category': category,
+                'impact_level': impact,
+                'published_at': pub_date,
+                'collected_at': NOW_ISO
+            })
+    
+    print(f"  Found {len(items)} items from Federal Register")
+    return items
+
+# ---- Source: USTR Press Releases ----
+def collect_ustr():
+    """Collect USTR press releases and fact sheets."""
+    print("[2/6] Collecting USTR press releases...")
+    items = []
+    
+    html = fetch_html('https://ustr.gov/news-events/press-releases')
+    if not html:
+        html = fetch_html('https://ustr.gov/news-events')
+    if not html:
+        # Fallback: use Federal Register with USTR-specific filter
+        print("  [INFO] USTR site unreachable, skipping (covered by Federal Register)")
+        return items
+    
+    # Parse press release links
+    pattern = r'<a[^>]+href="(/news-events/press-releases/[^"]+)"[^>]*>([^<]+)</a>'
+    matches = re.findall(pattern, html)
+    if not matches:
+        pattern = r'<a[^>]+href="(/[^"]*press[^"]+)"[^>]*>([^<]{10,})</a>'
+        matches = re.findall(pattern, html)
+    
+    seen_titles = set()
+    for url_path, title in matches:
+        title = title.strip()
+        if not title or title in seen_titles or len(title) < 10:
+            continue
+        seen_titles.add(title)
+        
+        full_url = f"https://ustr.gov{url_path}"
+        impact = 'high' if any(kw in title.lower() for kw in ['tariff', 'sanction', 'trade', 'agreement', 'investigation']) else 'medium'
+        
+        items.append({
+            'id': gen_id('p', title),
+            'title': title,
+            'summary': '',  # Will be filled by detail fetch if needed
+            'source': 'USTR',
+            'source_url': full_url,
+            'region': 'US',
+            'category': 'tariff' if 'tariff' in title.lower() else 'regulation',
+            'impact_level': impact,
+            'published_at': NOW_DATE,
+            'collected_at': NOW_ISO
+        })
+        
+        if len(items) >= 10:
+            break
+    
+    print(f"  Found {len(items)} items from USTR")
+    return items
+
+# ---- Source: TikTok Shop Policy Center ----
+def collect_tiktok_shop():
+    """Collect TikTok Shop policy updates."""
+    print("[3/6] Collecting TikTok Shop policy updates...")
+    items = []
+    
+    # TikTok Shop seller academy policy page
+    urls = [
+        'https://seller.tiktokshopglobalselling.com/university/new-policies?identity=1&module_id=latest_policies',
+    ]
+    
+    for url in urls:
+        html = fetch_html(url)
+        if not html:
+            continue
+        
+        # Try to find policy update entries
+        # Look for text patterns like policy titles
+        patterns = [
+            r'(?:规则速递|政策更新|Policy Update|New Polic)[^<]{5,200}',
+            r'<h[23][^>]*>([^<]{10,100})</h[23]>',
+            r'"title":"([^"]{10,100})"',
+        ]
+        
+        for pat in patterns:
+            matches = re.findall(pat, html)
+            for m in matches:
+                title = m.strip() if isinstance(m, str) else m
+                if len(title) < 10 or title in [x.get('title','') for x in items]:
+                    continue
+                items.append({
+                    'id': gen_id('r', title),
+                    'title': title,
+                    'summary': '',
+                    'platform': 'TikTok Shop',
+                    'market': 'SEA/US',
+                    'category': 'policy',
+                    'impact_level': 'medium',
+                    'effective_date': NOW_DATE,
+                    'source_url': 'https://seller.tiktokshopglobalselling.com/',
+                    'published_at': NOW_DATE,
+                    'collected_at': NOW_ISO
+                })
+        
+        if items:
+            break
+    
+    print(f"  Found {len(items)} items from TikTok Shop")
+    return items
+
+# ---- Source: Amazon Seller Central News ----
+def collect_amazon():
+    """Collect Amazon Seller Central announcements."""
+    print("[4/6] Collecting Amazon Seller Central announcements...")
+    items = []
+    
+    html = fetch_html('https://sellercentral.amazon.com/news')
+    if not html:
+        html = fetch_html('https://sellercentral.amazon.com/gp/help/news')
+    if not html:
+        print("  [WARN] Could not fetch Amazon Seller Central news")
+        return items
+    
+    # Find announcement titles
+    patterns = [
+        r'<h[23][^>]*>([^<]{15,120})</h[23]>',
+        r'"headline":"([^"]{15,120})"',
+        r'<a[^>]+href="[^"]*news[^"]*"[^>]*>([^<]{15,120})</a>',
+    ]
+    
+    seen = set()
+    for pat in patterns:
+        matches = re.findall(pat, html)
+        for m in matches:
+            title = m.strip()
+            if title in seen or len(title) < 15:
+                continue
+            seen.add(title)
+            
+            # Filter for relevant content
+            skip_kw = ['cookie', 'javascript', 'sign in', 'log in']
+            if any(kw in title.lower() for kw in skip_kw):
+                continue
+            
+            impact = 'high' if any(kw in title.lower() for kw in ['fee', 'policy', 'requirement', 'mandatory', 'change', 'update', 'new']) else 'medium'
+            
+            items.append({
+                'id': gen_id('r', title),
+                'title': title,
+                'summary': '',
+                'platform': 'Amazon',
+                'market': 'US',
+                'category': 'policy',
+                'impact_level': impact,
+                'effective_date': NOW_DATE,
+                'source_url': 'https://sellercentral.amazon.com/',
+                'published_at': NOW_DATE,
+                'collected_at': NOW_ISO
+            })
+            
+            if len(items) >= 15:
+                break
+        if len(items) >= 15:
+            break
+    
+    print(f"  Found {len(items)} items from Amazon")
+    return items
+
+# ---- Source: Chinese Cross-border E-commerce News ----
+def collect_cn_news():
+    """Collect from Chinese cross-border e-commerce news aggregators."""
+    print("[5/6] Collecting Chinese cross-border news (cifnews/amz123)...")
+    items = []
+    
+    # 雨果网 - cross-border e-commerce news
+    html = fetch_html('https://www.cifnews.com/')
+    if html:
+        # Find article links with titles
+        pattern = r'<a[^>]+href="(https?://[^"]*cifnews[^"]*)"[^>]*>([^<]{10,100})</a>'
+        matches = re.findall(pattern, html)
+        seen = set()
+        for url, title in matches:
+            title = title.strip()
+            if title in seen or len(title) < 10:
+                continue
+            # Filter for policy/rule related content
+            policy_kw = ['政策', '新规', '规则', '关税', '合规', '监管', '禁止', '调整', '变更', '实施', '生效']
+            if not any(kw in title for kw in policy_kw):
+                continue
+            seen.add(title)
+            items.append({
+                'id': gen_id('p', title),
+                'title': title,
+                'summary': '',
+                'source': '雨果网',
+                'source_url': url,
+                'region': 'Global',
+                'category': 'regulation',
+                'impact_level': 'medium',
+                'published_at': NOW_DATE,
+                'collected_at': NOW_ISO
+            })
+            if len(items) >= 8:
+                break
+    
+    # AMZ123
+    html2 = fetch_html('https://www.amz123.com/')
+    if html2:
+        pattern = r'<a[^>]+href="(/t/[^"]+)"[^>]*>([^<]{10,100})</a>'
+        matches = re.findall(pattern, html2)
+        seen2 = set()
+        for path, title in matches:
+            title = title.strip()
+            if title in seen2 or len(title) < 10:
+                continue
+            policy_kw = ['政策', '新规', '规则', '关税', '合规', '调整', '变更', '费用', 'FBA', '物流']
+            if not any(kw in title for kw in policy_kw):
+                continue
+            seen2.add(title)
+            items.append({
+                'id': gen_id('p', title),
+                'title': title,
+                'summary': '',
+                'source': 'AMZ123',
+                'source_url': f'https://www.amz123.com{path}',
+                'region': 'Global',
+                'category': 'regulation',
+                'impact_level': 'medium',
+                'published_at': NOW_DATE,
+                'collected_at': NOW_ISO
+            })
+            if len(items) >= 15:
+                break
+    
+    print(f"  Found {len(items)} items from CN news sources")
+    return items
+
+# ---- Source: China MOFCOM ----
+def collect_mofcom():
+    """Collect China Ministry of Commerce trade policy updates."""
+    print("[6/7] Collecting China MOFCOM...")
+    items = []
+    
+    # MOFCOM policy release page
+    urls = [
+        'http://www.mofcom.gov.cn/article/aecc/agreement/',
+        'http://www.mofcom.gov.cn/article/zcfb/',
+    ]
+    
+    for url in urls:
+        html = fetch_html(url)
+        if not html:
+            continue
+        
+        # Find article links
+        pattern = r'<a[^>]+href="([^"]+)"[^>]*>([^<]{10,100})</a>'
+        matches = re.findall(pattern, html)
+        seen = set()
+        for link, title in matches:
+            title = title.strip()
+            if title in seen or len(title) < 10:
+                continue
+            # Filter for trade-related content
+            trade_kw = ['贸易', '出口', '进口', '关税', '合作', '协定', '跨境', '电商', 'WTO', 'RCEP']
+            if not any(kw in title for kw in trade_kw):
+                continue
+            seen.add(title)
+            
+            full_url = link if link.startswith('http') else f"http://www.mofcom.gov.cn{link}"
+            items.append({
+                'id': gen_id('p', title),
+                'title': title,
+                'summary': '',
+                'source': '中国商务部',
+                'source_url': full_url,
+                'region': 'CN',
+                'category': 'trade_agreement' if any(kw in title for kw in ['协定', '合作', 'RCEP']) else 'regulation',
+                'impact_level': 'medium',
+                'published_at': NOW_DATE,
+                'collected_at': NOW_ISO
+            })
+            if len(items) >= 8:
+                break
+        if items:
+            break
+    
+    print(f"  Found {len(items)} items from MOFCOM")
+    return items
+
+# ---- Source: EU Trade ----
+def collect_eu_trade():
+    """Collect EU trade policy updates."""
+    print("[6/6] Collecting EU trade policy updates...")
+    items = []
+    
+    url = "https://policy.trade.ec.europa.eu/news_en"
+    html = fetch_html(url)
+    if not html:
+        url = "https://trade.ec.europa.eu/news_en"
+        html = fetch_html(url)
+    if not html:
+        print("  [WARN] Could not fetch EU trade page")
+        return items
+    
+    # Find news items
+    patterns = [
+        r'<a[^>]+href="([^"]*)"[^>]*class="[^"]*news[^"]*"[^>]*>([^<]{10,150})</a>',
+        r'<h[23][^>]*>\s*<a[^>]+href="([^"]*)"[^>]*>([^<]{10,150})</a>',
+    ]
+    
+    seen = set()
+    for pat in patterns:
+        matches = re.findall(pat, html)
+        for url_path, title in matches:
+            title = title.strip()
+            if title in seen or len(title) < 10:
+                continue
+            seen.add(title)
+            
+            full_url = url_path if url_path.startswith('http') else f"https://policy.trade.ec.europa.eu{url_path}"
+            items.append({
+                'id': gen_id('p', title),
+                'title': title,
+                'summary': '',
+                'source': 'EU Trade',
+                'source_url': full_url,
+                'region': 'EU',
+                'category': 'regulation',
+                'impact_level': 'medium',
+                'published_at': NOW_DATE,
+                'collected_at': NOW_ISO
+            })
+            if len(items) >= 8:
+                break
+        if len(items) >= 8:
+            break
+    
+    print(f"  Found {len(items)} items from EU Trade")
+    return items
+
+# ---- Merge & Deduplicate ----
+def merge_data(existing_file, new_items, key_fields=['title']):
+    """Merge new items with existing data, dedup by title similarity."""
+    if os.path.exists(existing_file):
+        with open(existing_file, 'r', encoding='utf-8') as f:
+            existing = json.load(f)
+    else:
+        existing = {'updated_at': NOW_ISO, 'source_count': 0, 'items': []}
+    
+    existing_titles = set()
+    for item in existing['items']:
+        t = item.get('title', '').strip()
+        existing_titles.add(t.lower())
+        # Also add a hash of first 20 chars for fuzzy match
+        if len(t) > 20:
+            existing_titles.add(t[:20].lower())
+    
+    added = 0
+    for item in new_items:
+        t = item.get('title', '').strip().lower()
+        if t in existing_titles or t[:20] in existing_titles:
+            continue
+        existing['items'].insert(0, item)
+        existing_titles.add(t)
+        if len(t) > 20:
+            existing_titles.add(t[:20].lower())
+        added += 1
+    
+    # Keep only last 200 items to prevent file bloat
+    existing['items'] = existing['items'][:200]
+    existing['updated_at'] = NOW_ISO
+    existing['source_count'] = 6  # We have 6 source groups
+    
+    return existing, added
+
+# ---- Main ----
+def main():
+    print(f"=== Mercator Data Collector ===")
+    print(f"Time: {NOW_ISO}")
+    print(f"Data dir: {DATA_DIR}")
+    print()
+    
+    # Collect from all sources
+    all_policies = []
+    all_rules = []
+    
+    # Policy sources
+    try:
+        all_policies.extend(collect_federal_register())
+    except Exception as e:
+        print(f"  [ERROR] Federal Register: {e}")
+        traceback.print_exc()
+    
+    try:
+        all_policies.extend(collect_ustr())
+    except Exception as e:
+        print(f"  [ERROR] USTR: {e}")
+        traceback.print_exc()
+    
+    try:
+        all_policies.extend(collect_eu_trade())
+    except Exception as e:
+        print(f"  [ERROR] EU Trade: {e}")
+        traceback.print_exc()
+    
+    try:
+        all_policies.extend(collect_mofcom())
+    except Exception as e:
+        print(f"  [ERROR] MOFCOM: {e}")
+        traceback.print_exc()
+    
+    try:
+        cn_items = collect_cn_news()
+        # Separate CN news into policies vs rules based on content
+        for item in cn_items:
+            rule_kw = ['平台', '亚马逊', 'TikTok', 'Shopee', 'Temu', 'SHEIN', 'Lazada', '店铺', '卖家']
+            if any(kw in item.get('title', '') for kw in rule_kw):
+                item.pop('region', None)
+                item.pop('source', None)
+                item['platform'] = 'Multi'
+                item['market'] = 'Global'
+                item['id'] = gen_id('r', item['title'])
+                all_rules.append(item)
+            else:
+                all_policies.append(item)
+    except Exception as e:
+        print(f"  [ERROR] CN News: {e}")
+        traceback.print_exc()
+    
+    # Rule sources
+    try:
+        all_rules.extend(collect_tiktok_shop())
+    except Exception as e:
+        print(f"  [ERROR] TikTok Shop: {e}")
+        traceback.print_exc()
+    
+    try:
+        all_rules.extend(collect_amazon())
+    except Exception as e:
+        print(f"  [ERROR] Amazon: {e}")
+        traceback.print_exc()
+    
+    print(f"\n--- Merge Results ---")
+    
+    # Merge with existing data
+    policies_file = os.path.join(DATA_DIR, 'policies.json')
+    rules_file = os.path.join(DATA_DIR, 'rules.json')
+    
+    policies_data, p_added = merge_data(policies_file, all_policies)
+    rules_data, r_added = merge_data(rules_file, all_rules)
+    
+    # Save
+    os.makedirs(DATA_DIR, exist_ok=True)
+    with open(policies_file, 'w', encoding='utf-8') as f:
+        json.dump(policies_data, f, ensure_ascii=False, indent=2)
+    with open(rules_file, 'w', encoding='utf-8') as f:
+        json.dump(rules_data, f, ensure_ascii=False, indent=2)
+    
+    print(f"Policies: {len(policies_data['items'])} total, +{p_added} new")
+    print(f"Rules: {len(rules_data['items'])} total, +{r_added} new")
+    print(f"\n=== Collection complete ===")
+
+if __name__ == '__main__':
+    main()
