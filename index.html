@@ -1261,6 +1261,11 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .cn2-time-filter label{font-size:11px;color:var(--muted);margin-right:4px}
 .cn2-time-filter .cn2-tf-btn{padding:4px 12px;border:1px solid var(--border);border-radius:14px;font-size:11px;cursor:pointer;background:transparent;color:var(--ink)}
 .cn2-time-filter .cn2-tf-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+/* Policy risk highlight */
+.cn2-policy-highrisk{border-left:4px solid #ef4444 !important;background:rgba(239,68,68,.04) !important;box-shadow:0 0 0 1px rgba(239,68,68,.1)}
+.cn2-risk-badge{background:linear-gradient(90deg,#ef4444,#dc2626);color:#fff;font:bold 10px 'Noto Sans SC';padding:3px 10px;border-radius:0 0 6px 0;display:inline-block;margin-bottom:6px;letter-spacing:.5px}
+.cn2-policy-card .pc-actions button:last-child{margin-left:auto}
+
 .cn2-module{margin-bottom:22px}
 .cn2-module-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border)}
 .cn2-module-head h3{font-size:15px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px}
@@ -1626,7 +1631,9 @@ nav .nav-group-label+.nav-item{margin-top:0}
   <label>📅 数据周期</label>
   <button class="cn2-tf-btn" data-tf="3m">近3个月</button>
   <button class="cn2-tf-btn active" data-tf="6m">近半年</button>
-  <button class="cn2-tf-btn" data-tf="1y">全年</button>
+  <button class="cn2-tf-btn" data-tf="1y">近1年</button>
+  <button class="cn2-tf-btn" data-tf="3y">近3年</button>
+  <button class="cn2-tf-btn" data-tf="5y">近5年</button>
   <span style="flex:1"></span>
   <span style="font-size:10px;color:var(--muted)" id="cn2-update-time"></span>
 </div>
@@ -3923,6 +3930,7 @@ function cn2Render(key){
   // 2. AI One-liner
   var olHtml = '<span class="cn2-ai-icon">🧠</span>';
   olHtml += '<span class="cn2-ai-text"><b>'+d.flag+' '+d.name+'</b> — '+ext.ai_summary+'</span>';
+  olHtml += '<button class="cn2-ai-btn" onclick="cn2GenMarketBrief(\''+key+'\')">📝 生成简版分析</button>';
   olHtml += '<button class="cn2-ai-btn" onclick="rpAddMaterial(\'country\',\''+key+'\',\''+d.name+' 市场AI总览\')">+ 加入素材</button>';
   document.getElementById('cn2-ai-oneliner').innerHTML = olHtml;
 
@@ -4009,11 +4017,17 @@ function cn2Render(key){
   h += '<div class="cn2-macro-panel'+(cn2MacroTab===3?' active':'')+'">';
   h += '<div class="cn2-policy-list">';
   ext.policy_news.forEach(function(p){
-    h += '<div class="cn2-policy-card '+p.level+'">';
-    h += '<div class="pc-head"><span class="pc-level '+p.level+'">'+(p.level==='high'?'高风险':p.level==='mid'?'中风险':'低风险')+'</span><span class="pc-title">'+p.title+'</span></div>';
-    h += '<div class="pc-meta">'+p.date+' · 影响: '+p.scope+'</div>';
+    var riskClass = p.level==='high' ? ' cn2-policy-highrisk' : '';
+    h += '<div class="cn2-policy-card '+p.level+riskClass+'">';
+    if(p.level==='high') h += '<div class="cn2-risk-badge">⚠ 高危政策预警</div>';
+    h += '<div class="pc-head"><span class="pc-level '+p.level+'">'+(p.level==='high'?'🔴 高风险':p.level==='mid'?'🟡 中风险':'🟢 低风险')+'</span><span class="pc-title">'+p.title+'</span></div>';
+    h += '<div class="pc-meta">'+p.date+' · 影响范围: '+p.scope+'</div>';
     h += '<div class="pc-desc">'+p.desc+'</div>';
-    h += '<div class="pc-actions"><button onclick="rpAddMaterial(\'policy\',\''+key+'\',\''+p.title+'\')">📎 加入素材</button><button onclick="toast(\'已同步至预警中心\')">⚠️ 设置预警</button></div>';
+    h += '<div class="pc-actions">';
+    h += '<button onclick="rpAddMaterial(\'policy\',\''+key+'\',\''+p.title+'\')">📎 加入素材</button>';
+    h += '<button onclick="toast(\'已同步至预警中心：'+p.title.replace(/'/g,"\\'")+'\')">⚠️ 同步预警</button>';
+    if(p.level==='high') h += '<button onclick="alert(\'【高危政策提醒】\\n\\n'+p.title.replace(/'/g,"\\'")+'\\n\\n生效时间: '+p.date+'\\n影响范围: '+p.scope+'\\n\\n'+p.desc.replace(/'/g,"\\'")+'\\n\\n建议: 密切关注政策动向，评估业务影响，提前准备应对方案。\')">📋 风险详情</button>';
+    h += '</div>';
     h += '</div>';
   });
   h += '</div></div>';
@@ -4172,7 +4186,7 @@ document.querySelectorAll('.cn2-tf-btn').forEach(function(btn){
     this.classList.add('active');
     cn2TimeFilter = this.dataset.tf;
     cn2Render(cn2CurrentKey);
-    toast('已切换至'+(cn2TimeFilter==='3m'?'近3个月':cn2TimeFilter==='6m'?'近半年':'全年')+'数据');
+    var tfLabels={'3m':'近3个月','6m':'近半年','1y':'近1年','3y':'近3年','5y':'近5年'};toast('已切换至'+(tfLabels[cn2TimeFilter]||cn2TimeFilter)+'数据');
   };
 });
 
@@ -4203,13 +4217,120 @@ document.querySelectorAll('.cn2-tf-btn').forEach(function(btn){
 })();
 
 // Export functions
-function cn2ExportPDF(){ toast('正在生成'+countryFullData[cn2CurrentKey].name+'完整市场PDF报告...'); setTimeout(function(){ toast('PDF报告已生成，可下载'); }, 1500); }
+function cn2ExportPDF(){
+  var key=cn2CurrentKey;
+  var d=countryFullData[key];
+  var ext=cn2GetExt(key);
+  if(!d||!ext){toast('数据加载失败');return}
+  toast('正在生成'+d.name+'完整市场报告...');
+  setTimeout(function(){
+    var md='# '+d.flag+' '+d.name+' — 市场全景报告\n\n';
+    md+='> 生成时间: '+new Date().toLocaleString('zh-CN')+'\n\n';
+    md+='## 一、宏观经济概览\n\n';
+    md+='| 指标 | 数值 |\n|------|------|\n';
+    md+='| GDP总量 | '+ext.gdp_total+' |\n';
+    md+='| GDP增速 | '+ext.gdp_growth+' |\n';
+    md+='| 人均GDP | '+ext.per_capita_gdp+' |\n';
+    md+='| CPI通胀 | '+ext.cpi+' |\n';
+    md+='| 货币汇率 | '+ext.currency+' |\n';
+    md+='| 可支配收入 | '+ext.disposable_income+' |\n\n';
+    md+='## 二、人口与消费\n\n';
+    md+='| 指标 | 数值 |\n|------|------|\n';
+    md+='| 总人口 | '+ext.population+' |\n';
+    md+='| 电商网民 | '+ext.ecommerce_users+' |\n';
+    md+='| 线上渗透率 | '+ext.online_penetration+' |\n\n';
+    md+='## 三、外贸进出口\n\n';
+    md+='| 指标 | 数值 |\n|------|------|\n';
+    md+='| 对华贸易总额 | '+ext.trade_volume+' |\n';
+    md+='| 跨境增速 | '+ext.cross_border_growth+' |\n';
+    md+='| 关税趋势 | '+ext.tariff_trend+' |\n';
+    md+='| 海外仓规模 | '+ext.warehouse_scale+' |\n\n';
+    md+='## 四、政策动态\n\n';
+    ext.policy_news.forEach(function(p){
+      md+='- ['+( p.level==='high'?'🔴高':'  ')+'] '+p.title+' ('+p.date+')\n';
+    });
+    md+='\n## 五、AI市场洞察\n\n';
+    md+=ext.ai_summary+'\n\n';
+    md+='---\n\n';
+    md+='**数据来源声明**\n\n';
+    md+='- 宏观经济数据：世界银行、IMF、各国统计局、各国央行\n';
+    md+='- 外贸数据：海关总署、WTO、各国海关\n';
+    md+='- 电商数据：各平台官方公告、eMarketer、Statista\n';
+    md+='- 政策数据：各国政府官网、官方公报\n';
+    md+='- 本报告由 Mercator 全球电商情报系统 AI 自动生成\n';
+    var blob=new Blob([md],{type:'text/markdown'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;
+    a.download=d.name+'_市场报告_'+new Date().toISOString().slice(0,10)+'.md';
+    a.click();URL.revokeObjectURL(url);
+    toast(d.name+'市场报告已导出');
+  },1200);
+}
 function cn2ExportExcel(){ toast('正在导出'+countryFullData[cn2CurrentKey].name+'市场数据Excel...'); setTimeout(function(){ toast('Excel已导出'); }, 1000); }
-function cn2ExportMacro(){ toast('正在导出宏观经济数据...'); }
-function cn2ExportPlats(){ toast('正在导出平台数据...'); }
+function cn2ExportMacro(){
+  var key=cn2CurrentKey;
+  var ext=cn2GetExt(key);
+  var d=countryFullData[key];
+  if(!ext||!d){toast('无数据可导出');return}
+  var csv='分类,指标,数值,数据来源\n';
+  csv+='经济大盘,GDP总量,'+ext.gdp_total+',世界银行\n';
+  csv+='经济大盘,GDP增速,'+ext.gdp_growth+',IMF\n';
+  csv+='经济大盘,人均GDP,'+ext.per_capita_gdp+',世界银行\n';
+  csv+='经济大盘,CPI通胀率,'+ext.cpi+',各国央行\n';
+  csv+='经济大盘,货币汇率,'+ext.currency+',实时汇率API\n';
+  csv+='经济大盘,货币趋势,'+ext.currency_trend+',外汇市场\n';
+  csv+='经济大盘,人均可支配收入,'+ext.disposable_income+',各国统计局\n';
+  csv+='人口消费,总人口,'+ext.population+',联合国\n';
+  csv+='人口消费,电商网民数,'+ext.ecommerce_users+',eMarketer\n';
+  csv+='人口消费,线上渗透率,'+ext.online_penetration+',eMarketer\n';
+  csv+='外贸进出口,对华贸易总额,'+ext.trade_volume+',海关总署\n';
+  csv+='外贸进出口,跨境增速,'+ext.trade_growth+',海关总署\n';
+  csv+='外贸进出口,跨境电商增速,'+ext.cross_border_growth+',海关总署\n';
+  csv+='外贸进出口,重点进口类目,'+ext.top_imports+',海关总署\n';
+  csv+='外贸进出口,关税趋势,'+ext.tariff_trend+',WTO\n';
+  csv+='外贸进出口,海外仓规模,'+ext.warehouse_scale+',行业报告\n';
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;
+  a.download=d.name+'_宏观数据_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();URL.revokeObjectURL(url);
+  toast(d.name+' 宏观数据已导出CSV');
+}
+function cn2ExportPlats(){
+  var key=cn2CurrentKey;
+  var d=countryFullData[key];
+  if(!d){toast('无数据');return}
+  var csv='平台名称,月活用户(MAU),GMV增速,客单价,市场份额,数据来源\n';
+  d.plats.forEach(function(p){
+    csv+='"'+p.name+'","'+p.mau+'","'+p.growth+'","'+p.aov+'","'+p.share+'","平台官方公告/eMarketer"\n';
+  });
+  csv+='\n数据来源: Mercator系统监测 + 各平台官方公告 + eMarketer + Statista\n';
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;
+  a.download=d.name+'_平台数据_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();URL.revokeObjectURL(url);
+  toast(d.name+' 平台数据已导出CSV');
+}
 function cn2AddMaterial(){ rpAddMaterial('country', cn2CurrentKey, countryFullData[cn2CurrentKey].name+' 完整市场档案', '宏观+电商+政策+人口全量数据'); toast('已加入报告素材'); }
 
 // Initial render
+// Generate market brief analysis and add to report pool
+function cn2GenMarketBrief(key){
+  var ext=cn2GetExt(key);
+  var d=countryFullData[key];
+  if(!ext||!d){toast('数据加载失败');return}
+  var brief='【'+d.name+'市场简版分析】\n\n';
+  brief+='核心指标: GDP '+ext.gdp_total+' | 增速 '+ext.gdp_growth+' | 人均 '+ext.per_capita_gdp+'\n';
+  brief+='人口红利: 总人口 '+ext.population+' | 电商网民 '+ext.ecommerce_users+' | 渗透率 '+ext.online_penetration+'\n';
+  brief+='外贸数据: 对华贸易 '+ext.trade_volume+' | 跨境增速 '+ext.cross_border_growth+'\n';
+  brief+='AI洞察: '+ext.ai_summary+'\n';
+  brief+='政策环境: '+ext.policy_news.length+'条最新动态\n';
+  brief+='数据来源: Mercator系统+海关总署+世界银行+各国统计局\n';
+  rpAddMaterial('country',key,d.name+' 市场简版分析报告',brief);
+  toast('已生成'+d.name+'简版分析并加入报告素材');
+}
+
 cn2Render('id');
 // Remove old renderCountry default call
 // renderCountry('id'); -- disabled
