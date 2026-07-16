@@ -2021,27 +2021,24 @@ nav .nav-group-label+.nav-item{margin-top:0}
       <div class="pl-top-bar">
         <div><p class="eyebrow">POLICY TRACKER</p><h2>政策动态</h2></div>
         <div class="pl-search-box">
-          <input type="text" id="pl-search" placeholder="搜索政策名称/国家...">
+          <input type="text" id="pl-search" placeholder="搜索政策名称/地区...">
           <button class="filter-button" onclick="plSearch()">搜索</button>
           <button class="filter-button" onclick="plExportReport()" style="background:var(--green)">导出报告</button>
         </div>
       </div>
+      <div class="pl-data-info" id="pl-data-info" style="font-size:.78rem;color:#888;padding:0 0 8px"></div>
       <div class="pl-ai-panel" id="pl-ai-panel">
         <div class="pl-ai-tabs" id="pl-ai-tabs"></div>
         <div class="pl-ai-content" id="pl-ai-content"></div>
       </div>
       <div class="pl-stats-row" id="pl-stats-row"></div>
       <div class="pl-filter-bar" id="pl-filter-bar">
-        <span class="pl-filter-label">国家</span>
-        <select id="pl-f-country"><option value="all">全部国家</option></select>
-        <span class="pl-filter-label">风险等级</span>
-        <select id="pl-f-level"><option value="all">全部等级</option><option value="重大">重大</option><option value="中等">中等</option></select>
-        <span class="pl-filter-label">政策类型</span>
-        <select id="pl-f-type"><option value="all">全部类型</option><option value="关税调整">关税调整</option><option value="进口认证">进口认证</option><option value="电商合规">电商合规</option><option value="进出口禁令">进出口禁令</option><option value="税务新规">税务新规</option></select>
-        <span class="pl-filter-label">生效状态</span>
-        <select id="pl-f-status"><option value="all">全部状态</option><option value="已生效">已生效</option><option value="征求意见稿">征求意见稿</option></select>
-        <span class="pl-filter-label">影响</span>
-        <select id="pl-f-impact"><option value="all">全部影响</option><option value="negative">利空</option><option value="positive">利好</option></select>
+        <span class="pl-filter-label">地区</span>
+        <select id="pl-f-region"><option value="all">全部地区</option></select>
+        <span class="pl-filter-label">类别</span>
+        <select id="pl-f-category"><option value="all">全部类别</option></select>
+        <span class="pl-filter-label">影响等级</span>
+        <select id="pl-f-impact"><option value="all">全部等级</option><option value="high">🔴 高</option><option value="medium">🟡 中</option><option value="low">🔵 低</option></select>
         <button class="filter-button" onclick="plFilterChange()">筛选</button>
         <button class="filter-button" onclick="plClearFilters()" style="background:#eee;color:#666">重置</button>
         <span id="pl-filter-count" style="font-size:.78rem;color:#888;margin-left:auto"></span>
@@ -2065,11 +2062,12 @@ nav .nav-group-label+.nav-item{margin-top:0}
 
     <section id="rules" class="page">
       <div id="ai-rules"></div>
+      <div class="pl-data-info" id="rl-data-info" style="font-size:.78rem;color:#888;padding:0 0 8px"></div>
       <div class="filter-row" style="flex-wrap:wrap;gap:8px">
         <select id="rl-platform"><option value="all">全部平台</option></select>
-        <select id="rl-type"><option value="all">全部类型</option></select>
-        <select id="rl-region"><option value="all">全部区域</option></select>
-        <select id="rl-category"><option value="all">全部类目</option></select>
+        <select id="rl-market"><option value="all">全部市场</option></select>
+        <select id="rl-category"><option value="all">全部类别</option></select>
+        <select id="rl-impact-level"><option value="all">全部影响等级</option><option value="high">🔴 高</option><option value="medium">🟡 中</option><option value="low">🔵 低</option></select>
         <select id="rl-act-type"><option value="all">全部活动类型</option></select>
         <button class="filter-button" id="apply-rl">应用筛选</button>
         <button class="filter-button" id="reset-rl" style="background:#999">重置</button>
@@ -5020,9 +5018,80 @@ renderPlatforms();
 // renderMacro, fillSelect, onclick removed - section no longer exists
 
 
-// -- 政策动态 (Full Rebuild) --
-// Populate filter selects
-fillSelect('#pl-f-country',[...new Set(policyData.map(p=>p[1]))].sort());
+// -- 政策动态 (Full Rebuild) -- JSON dynamic loading
+// Default policies data (fallback) - converted from hardcoded array to JSON format
+const defaultPoliciesData = {
+  updated_at: '2026-07-13T00:00:00+08:00',
+  source_count: 6,
+  items: policyData.map((p, i) => {
+    const ext = plExtData[i] || {};
+    const catMap = {'关税调整':'tariff','进口认证':'regulation','电商合规':'regulation','进出口禁令':'sanction','税务新规':'tariff'};
+    const regionMap = {'美国':'US','印尼':'SEA','越南':'SEA','泰国':'SEA','马来西亚':'SEA','沙特':'Global','阿联酋':'Global','巴西':'Global','德国':'EU','法国':'EU','印度':'Global','尼日利亚':'Global','埃及':'Global','南非':'Global'};
+    return {
+      id: 'p-fallback-' + i,
+      title: p[0],
+      summary: p[8] || '',
+      source: p[4].replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'),
+      source_url: '',
+      region: regionMap[p[1]] || 'Global',
+      category: catMap[ext.type] || 'regulation',
+      impact_level: p[3] === '重大' ? 'high' : p[3] === '中等' ? 'medium' : 'low',
+      published_at: p[2],
+      collected_at: p[2] + 'T00:00:00+08:00'
+    };
+  })
+};
+
+let policiesJsonData = null;
+let policiesDataLoading = false;
+
+async function loadPoliciesData() {
+  if (policiesDataLoading) return;
+  policiesDataLoading = true;
+  $('#pl-data-info').innerHTML = '<span style="color:#3366cc">⏳ 正在加载最新数据...</span>';
+  try {
+    const resp = await fetch('./data/policies.json');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if (data && data.items && data.items.length > 0) {
+      policiesJsonData = data;
+      plInitFromJson();
+      const time = new Date(data.updated_at).toLocaleString('zh-CN');
+      $('#pl-data-info').innerHTML = '📡 数据更新时间: ' + time + ' | 数据来源: ' + (data.source_count || '?') + '个';
+    } else {
+      throw new Error('Empty data');
+    }
+  } catch (e) {
+    console.warn('Failed to load policies.json, using fallback:', e);
+    policiesJsonData = defaultPoliciesData;
+    plInitFromJson();
+    $('#pl-data-info').innerHTML = '📦 使用内置数据 (离线模式) | 更新时间: 2026-07-13';
+  }
+  policiesDataLoading = false;
+}
+
+function plInitFromJson() {
+  const items = policiesJsonData.items;
+  fillSelect('#pl-f-region', [...new Set(items.map(p => p.region))].filter(Boolean).sort());
+  fillSelect('#pl-f-category', [...new Set(items.map(p => p.category))].filter(Boolean).sort());
+  // Update nav badge
+  const navBadge = document.querySelector('a[data-page="policies"] b');
+  if (navBadge) navBadge.textContent = items.length;
+  plCurrentPage = 1;
+  renderPoliciesPage();
+}
+
+function plGetJsonItems() {
+  return (policiesJsonData || defaultPoliciesData).items;
+}
+
+const plCategoryLabels = {tariff:'关税', regulation:'监管合规', sanction:'制裁/禁令', trade_agreement:'贸易协定'};
+const plRegionLabels = {US:'美国', EU:'欧盟', SEA:'东南亚', CN:'中国', Global:'全球'};
+const plImpactLabels = {high:'高', medium:'中', low:'低'};
+
+// Populate filter selects (initial with fallback data)
+fillSelect('#pl-f-region',[...new Set(defaultPoliciesData.items.map(p=>p.region))].filter(Boolean).sort());
+fillSelect('#pl-f-category',[...new Set(defaultPoliciesData.items.map(p=>p.category))].filter(Boolean).sort());
 
 let plCurrentPage=1, plPerPage=10, plSelected=new Set(), plAiTab=0;
 const plAiTabs=['全球重大新政汇总','各国准入认证变动','关税调整清单','合规风险预警'];
@@ -5046,17 +5115,17 @@ const plAiData=[
 function plGetExt(idx){return plExtData[idx]||{type:'其他',status:'已确认',effectiveDate:'N/A',impact:'neutral',categories:'N/A',platforms:'N/A',countdown:0,affectedShops:'N/A',costImpact:'N/A',detail:'暂无详细信息'};}
 
 function renderPlStats(){
-  const total=policyData.length;
-  const majorCount=policyData.filter(p=>p[3]==='重大').length;
-  const pendingCount=plExtData.filter(e=>e.status==='征求意见稿').length;
-  const tariffCountries=new Set();
-  plExtData.forEach((e,i)=>{if(e.type==='关税调整')tariffCountries.add(policyData[i]?.[1]||'');});
-  const certCount=plExtData.filter(e=>e.type==='进口认证').length;
+  const items=plGetJsonItems();
+  const total=items.length;
+  const highCount=items.filter(p=>p.impact_level==='high').length;
+  const medCount=items.filter(p=>p.impact_level==='medium').length;
+  const regions=new Set(items.map(p=>p.region).filter(Boolean));
+  const categories=new Set(items.map(p=>p.category).filter(Boolean));
   $('#pl-stats-row').innerHTML=`
-    <div class="pl-stat-card"><div class="pl-stat-val">${majorCount}</div><div class="pl-stat-label">重大政策数量</div><div class="pl-stat-sub">高风险红线提醒</div></div>
-    <div class="pl-stat-card"><div class="pl-stat-val">${pendingCount}</div><div class="pl-stat-label">待生效/征求意见</div><div class="pl-stat-sub">预留筹备时间</div></div>
-    <div class="pl-stat-card"><div class="pl-stat-val">${tariffCountries.size}</div><div class="pl-stat-label">关税调整国家</div><div class="pl-stat-sub">本年度累计</div></div>
-    <div class="pl-stat-card"><div class="pl-stat-val">${certCount}</div><div class="pl-stat-label">强制认证新增</div><div class="pl-stat-sub">品类/认证更新</div></div>`;
+    <div class="pl-stat-card"><div class="pl-stat-val">${total}</div><div class="pl-stat-label">政策总数</div><div class="pl-stat-sub">实时追踪</div></div>
+    <div class="pl-stat-card"><div class="pl-stat-val" style="color:#e74c3c">${highCount}</div><div class="pl-stat-label">高影响政策</div><div class="pl-stat-sub">高风险红线提醒</div></div>
+    <div class="pl-stat-card"><div class="pl-stat-val">${regions.size}</div><div class="pl-stat-label">覆盖地区</div><div class="pl-stat-sub">多地区监控</div></div>
+    <div class="pl-stat-card"><div class="pl-stat-val">${categories.size}</div><div class="pl-stat-label">政策类别</div><div class="pl-stat-sub">分类统计</div></div>`;
 }
 
 function renderPlAi(){
@@ -5073,18 +5142,15 @@ function plAiLocatePolicy(idx){toast('已定位到相关政策条目');}
 
 function plGetFiltered(){
   const search=$('#pl-search').value.toLowerCase();
-  const country=$('#pl-f-country').value, level=$('#pl-f-level').value;
-  const type=$('#pl-f-type').value, status=$('#pl-f-status').value;
+  const region=$('#pl-f-region').value;
+  const category=$('#pl-f-category').value;
   const impact=$('#pl-f-impact').value;
-  return policyData.map((p,i)=>({...p,_ext:plGetExt(i),_idx:i})).filter(p=>{
-    const ext=p._ext;
-    if(search && !p[0].toLowerCase().includes(search) && !p[1].toLowerCase().includes(search))return false;
-    if(country!=='all' && p[1]!==country)return false;
-    if(level!=='all' && p[3]!==level)return false;
-    if(type!=='all' && ext.type!==type)return false;
-    if(status!=='all' && ext.status!==status)return false;
-    if(impact==='negative' && ext.impact!=='negative')return false;
-    if(impact==='positive' && ext.impact!=='positive')return false;
+  const items=plGetJsonItems();
+  return items.map((p,i)=>({...p,_idx:i})).filter(p=>{
+    if(search && !p.title.toLowerCase().includes(search) && !(plRegionLabels[p.region]||p.region).toLowerCase().includes(search))return false;
+    if(region!=='all' && p.region!==region)return false;
+    if(category!=='all' && p.category!==category)return false;
+    if(impact!=='all' && p.impact_level!==impact)return false;
     return true;
   });
 }
@@ -5108,37 +5174,34 @@ function renderPlList(){
   $('#pl-filter-count').textContent=total+' 条政策';
 
   $('#pl-list').innerHTML=pageData.map(p=>{
-    const ext=p._ext;
-    const levelClass=p[3]==='重大'?'level-major':p[3]==='中等'?'level-medium':'level-normal';
-    const badgeClass=p[3]==='重大'?'badge-major':p[3]==='中等'?'badge-medium':'badge-normal';
-    const impactClass=ext.impact==='negative'?'impact-negative':ext.impact==='positive'?'impact-positive':'impact-neutral';
-    const impactLabel=ext.impact==='negative'?'利空':ext.impact==='positive'?'利好':'中性';
-    const statusClass=ext.status==='已生效'?'pl-status-active':'pl-status-pending';
-    const countdownHtml=ext.countdown>0?`<span class="pl-countdown">⏰ ${ext.countdown}天后生效</span>`:'';
+    const levelClass=p.impact_level==='high'?'level-major':p.impact_level==='medium'?'level-medium':'level-normal';
+    const badgeClass=p.impact_level==='high'?'badge-major':p.impact_level==='medium'?'badge-medium':'badge-normal';
+    const impactColor=p.impact_level==='high'?'#e74c3c':p.impact_level==='medium'?'#f39c12':'#3498db';
+    const impactLabel=plImpactLabels[p.impact_level]||p.impact_level;
+    const regionLabel=plRegionLabels[p.region]||p.region;
+    const catLabel=plCategoryLabels[p.category]||p.category;
     const checked=plSelected.has(p._idx)?'checked':'';
-    const sourceClean=p[4].replace(/\[([^\]]+)\]\([^)]+\)/g,'$1');
+    const sourceLink=p.source_url?`<a href="${p.source_url}" target="_blank" style="color:#3366cc;text-decoration:none">📎 ${p.source||'来源'}</a>`:`<span>📎 ${p.source||'未知来源'}</span>`;
+    const titleLink=p.source_url?`<a href="${p.source_url}" target="_blank" style="color:inherit;text-decoration:none">${p.title}</a>`:p.title;
+    const pubDate=p.published_at||'';
     return `<div class="pl-card">
       <div class="pl-risk-bar ${levelClass}"></div>
       <input type="checkbox" class="pl-card-check" ${checked} onclick="event.stopPropagation();plToggleSelect(${p._idx})">
       <div class="pl-card-body">
-        <h3>${p[0]}</h3>
+        <h3>${titleLink}</h3>
         <div class="pl-meta">
-          <span class="pl-country-tag">🏳 ${p[1]}</span>
-          <span>📅 ${p[2]}</span>
-          <span class="${statusClass}">${ext.status}</span>
-          ${countdownHtml}
-          <span>📎 ${sourceClean}</span>
+          <span class="pl-country-tag">🌍 ${regionLabel}</span>
+          <span>📅 ${pubDate}</span>
+          <span>${sourceLink}</span>
         </div>
         <div class="pl-tags-row">
-          <span class="pl-type-tag">${ext.type}</span>
-          <span class="pl-impact-tag ${impactClass}">${impactLabel}</span>
-          ${ext.categories!=='N/A'?`<span class="pl-type-tag">📦 ${ext.categories.substring(0,20)}${ext.categories.length>20?'...':''}</span>`:''}
-          ${ext.platforms!=='N/A'?`<span class="pl-type-tag">🛒 ${ext.platforms.substring(0,20)}${ext.platforms.length>20?'...':''}</span>`:''}
+          <span class="pl-type-tag">${catLabel}</span>
+          <span class="pl-impact-tag" style="color:${impactColor};border-color:${impactColor};background:${impactColor}15">${impactLabel}影响</span>
         </div>
-        <div class="pl-summary">${p[8]}</div>
+        ${p.summary?'<div class="pl-summary">'+p.summary+'</div>':''}
       </div>
       <div class="pl-card-right">
-        <span class="pl-level-badge ${badgeClass}">${p[3]}</span>
+        <span class="pl-level-badge ${badgeClass}">${impactLabel}</span>
         <div class="pl-card-ops">
           <button onclick="event.stopPropagation();openPlDetail(${p._idx})">查看详情</button>
           <button class="btn-ai" onclick="event.stopPropagation();plAiCompliance(${p._idx})">AI 解读</button>
@@ -5165,68 +5228,52 @@ function plGoPage(n){plCurrentPage=n;renderPlList();window.scrollTo({top:$('#pl-
 function plToggleSelect(idx){if(plSelected.has(idx))plSelected.delete(idx);else plSelected.add(idx);$('#pl-selected-count').textContent=plSelected.size?`已选 ${plSelected.size} 条`:'';renderPlList();}
 function plSearch(){plCurrentPage=1;renderPlList();}
 function plFilterChange(){plCurrentPage=1;renderPlList();}
-function plClearFilters(){$('#pl-search').value='';$('#pl-f-country').value='all';$('#pl-f-level').value='all';$('#pl-f-type').value='all';$('#pl-f-status').value='all';$('#pl-f-impact').value='all';plCurrentPage=1;renderPlList();toast('筛选条件已重置');}
+function plClearFilters(){$('#pl-search').value='';$('#pl-f-region').value='all';$('#pl-f-category').value='all';$('#pl-f-impact').value='all';plCurrentPage=1;renderPlList();toast('筛选条件已重置');}
 function plExportReport(){toast('政策动态报告导出功能（企业版）');}
 function plBatchAlert(){if(!plSelected.size){toast('请先选择政策');return;}toast(`已为 ${plSelected.size} 条政策开启预警`);plSelected.clear();$('#pl-selected-count').textContent='';renderPlList();}
 function plBatchWatch(){if(!plSelected.size){toast('请先选择政策');return;}toast(`已将 ${plSelected.size} 条政策加入看板`);plSelected.clear();$('#pl-selected-count').textContent='';renderPlList();}
 function plBatchArchive(){if(!plSelected.size){toast('请先选择政策');return;}toast(`已归档 ${plSelected.size} 条政策`);plSelected.clear();$('#pl-selected-count').textContent='';renderPlList();}
 
 function openPlDetail(idx){
-  const p=policyData[idx];
+  const items=plGetJsonItems();
+  const p=items[idx];
   if(!p)return;
-  const ext=plGetExt(idx);
-  const levelLabel=p[3];
-  const countdownHtml=ext.countdown>0?`<span style="color:#c0392b;font-weight:600">⏰ 距生效还有 ${ext.countdown} 天</span>`:'<span style="color:var(--green)">已生效</span>';
+  const impactColor=p.impact_level==='high'?'#e74c3c':p.impact_level==='medium'?'#f39c12':'#3498db';
+  const impactLabel=plImpactLabels[p.impact_level]||p.impact_level;
+  const regionLabel=plRegionLabels[p.region]||p.region;
+  const catLabel=plCategoryLabels[p.category]||p.category;
+  const sourceLink=p.source_url?`<a href="${p.source_url}" target="_blank" style="color:#3366cc">${p.source||'来源链接'}</a>`:(p.source||'未知');
+  const titleLink=p.source_url?`<a href="${p.source_url}" target="_blank" style="color:inherit;text-decoration:none">${p.title}</a>`:p.title;
 
   let html=`<button class="pl-detail-close" onclick="closePlDetail()">✕</button>
-    <h2>${p[0]}</h2>
-    <div class="pl-detail-sub">${p[1]} · ${levelLabel} · ${ext.type} · ${countdownHtml} · 数据基于 2026 Q2</div>
+    <h2>${titleLink}</h2>
+    <div class="pl-detail-sub">${regionLabel} · ${impactLabel}影响 · ${catLabel} · 发布于 ${p.published_at||'N/A'} · 采集于 ${p.collected_at?p.collected_at.substring(0,10):'N/A'}</div>
 
     <div class="pl-detail-section"><h4>📋 政策基础档案</h4>
       <div class="pl-detail-grid">
-        <div class="pl-detail-item"><b>发布机构：</b>${p[4].replace(/\[([^\]]+)\]\([^)]+\)/g,'$1')}</div>
-        <div class="pl-detail-item"><b>发布日期：</b>${p[2]}</div>
-        <div class="pl-detail-item"><b>生效日期：</b>${ext.effectiveDate}</div>
-        <div class="pl-detail-item"><b>生效状态：</b>${ext.status}</div>
-        <div class="pl-detail-item"><b>适用国家：</b>${p[1]}</div>
-        <div class="pl-detail-item"><b>覆盖平台：</b>${ext.platforms}</div>
+        <div class="pl-detail-item"><b>信息来源：</b>${sourceLink}</div>
+        <div class="pl-detail-item"><b>发布日期：</b>${p.published_at||'N/A'}</div>
+        <div class="pl-detail-item"><b>采集时间：</b>${p.collected_at?p.collected_at.substring(0,16).replace('T',' '):'N/A'}</div>
+        <div class="pl-detail-item"><b>影响地区：</b>${regionLabel}</div>
+        <div class="pl-detail-item"><b>政策类别：</b>${catLabel}</div>
+        <div class="pl-detail-item"><b>影响等级：</b><span style="color:${impactColor};font-weight:600">${impactLabel}</span></div>
       </div>
     </div>
 
-    <div class="pl-detail-section"><h4>📦 受影响范围</h4>
-      <div class="pl-detail-grid">
-        <div class="pl-detail-item"><b>受影响品类：</b>${ext.categories}</div>
-        <div class="pl-detail-item"><b>受影响店铺：</b>${ext.affectedShops}</div>
-        <div class="pl-detail-item"><b>成本影响：</b><span style="color:#c0392b;font-weight:600">${ext.costImpact}</span></div>
-        <div class="pl-detail-item"><b>影响性质：</b>${ext.impact==='negative'?'<span style="color:#c0392b">利空</span>':ext.impact==='positive'?'<span style="color:var(--green)">利好</span>':'中性'}</div>
-      </div>
+    <div class="pl-detail-section"><h4>📝 政策详情</h4>
+      <div class="pl-detail-item" style="line-height:1.8">${p.summary||'暂无详细摘要'}</div>
     </div>
 
-    <div class="pl-detail-section"><h4>📝 政策详细条文</h4>
-      <div class="pl-detail-item" style="line-height:1.8">${p[8]}</div>
-      <div class="pl-detail-item" style="margin-top:10px;line-height:1.8;color:#555">${ext.detail}</div>
-    </div>
-
-    <div class="pl-detail-section"><h4>⚠️ 合规落地操作指南</h4>
+    <div class="pl-detail-section"><h4>⚠️ 合规落地建议</h4>
       <div class="pl-detail-item">
-        <b>1. 需要办理的认证/资质：</b>${ext.categories!=='N/A'?ext.categories.split(',').map(c=>c.trim()).join('、'):'根据具体品类确定'}<br>
-        <b>2. 预计合规成本：</b>${ext.costImpact}<br>
-        <b>3. 审批周期：</b>通常1-6个月，建议提前准备<br>
-        <b>4. 备货调整：</b>建议提前3-6个月备货，规避政策窗口期风险
+        <b>1. 关注要点：</b>该政策属于 ${catLabel} 类别，影响 ${regionLabel} 地区跨境业务<br>
+        <b>2. 影响等级：</b><span style="color:${impactColor}">${impactLabel}</span> — ${p.impact_level==='high'?'建议立即评估业务影响并制定应对方案':'建议持续关注并及时调整合规策略'}<br>
+        <b>3. 备货调整：</b>建议提前3-6个月备货，规避政策窗口期风险
       </div>
-    </div>
-
-    <div class="pl-detail-section"><h4>💰 经营风险测算</h4>
-      <table><tr><th>费用项</th><th>调整前</th><th>调整后</th><th>影响</th></tr>
-      <tr><td>关税/税费</td><td>基准</td><td>${ext.costImpact}</td><td style="color:#c0392b">成本上升</td></tr>
-      <tr><td>合规成本</td><td>无</td><td>认证+资质费用</td><td style="color:#c0392b">新增支出</td></tr>
-      <tr><td>利润影响</td><td>基准</td><td>预计压缩10-30%</td><td style="color:#c0392b">利润下降</td></tr>
-      <tr><td>替代方案</td><td colspan="3">考虑海外仓布局/转移市场/调整品类结构</td></tr>
-      </table>
     </div>
 
     <div class="pl-detail-section">
-      <button class="filter-button" style="background:#c0392b;margin-right:8px" onclick="plAiComplianceDetail(${idx})">AI 合规深度解读</button>
+      <button class="filter-button" style="background:#c0392b;margin-right:8px" onclick="plAiCompliance(${idx})">AI 合规深度解读</button>
       <button class="filter-button" onclick="toast('已添加预警')">添加预警监控</button>
       <button class="filter-button" onclick="toast('已加入看板')">加入看板</button>
       <div id="pl-ai-detail-result"></div>
@@ -5238,14 +5285,16 @@ function openPlDetail(idx){
 function closePlDetail(){$('#pl-detail-overlay').classList.remove('show');}
 
 function plAiCompliance(idx){
-  const p=policyData[idx];
+  const items=plGetJsonItems();
+  const p=items[idx];
   if(!p)return;
-  const ext=plGetExt(idx);
-  const analysis=`<div class="pl-ai-compliance"><h5>🤖 AI 合规解读 - ${p[0]}</h5>
-    <b>政策影响：</b>${ext.impact==='negative'?'该政策对跨境卖家构成成本压力和合规挑战。':'该政策带来新的市场机遇或监管放宽。'}<br>
-    <b>应对建议：</b>建议提前办理相关认证，预留${ext.costImpact}合规预算，调整定价策略。<br>
-    <b>风险提示：</b>未合规可能导致商品被扣、店铺被封、罚款等风险。<br>
-    <b>时间窗口：</b>${ext.countdown>0?`距生效还有${ext.countdown}天，建议立即启动合规准备。`:'政策已生效，需立即执行合规措施。'}</div>`;
+  const impactLabel=plImpactLabels[p.impact_level]||p.impact_level;
+  const regionLabel=plRegionLabels[p.region]||p.region;
+  const analysis=`<div class="pl-ai-compliance"><h5>🤖 AI 合规解读 - ${p.title}</h5>
+    <b>政策影响：</b>${p.impact_level==='high'?'该政策对跨境卖家构成重大成本压力和合规挑战。':p.impact_level==='medium'?'该政策需要关注并适时调整合规策略。':'该政策影响较小，保持关注即可。'}<br>
+    <b>影响地区：</b>${regionLabel} | <b>影响等级：</b>${impactLabel}<br>
+    <b>应对建议：</b>建议提前了解政策要求，预留合规预算，调整定价策略。<br>
+    <b>风险提示：</b>未合规可能导致商品被扣、店铺被封、罚款等风险。</div>`;
   const div=document.createElement('div');
   div.innerHTML=analysis;
   div.style.cssText='position:fixed;bottom:80px;right:20px;z-index:3000;max-width:400px;animation:fadeIn .3s';
@@ -5254,15 +5303,18 @@ function plAiCompliance(idx){
 }
 
 function plAiComplianceDetail(idx){
-  const p=policyData[idx];
+  const items=plGetJsonItems();
+  const p=items[idx];
   if(!p)return;
-  const ext=plGetExt(idx);
-  $('#pl-ai-detail-result').innerHTML=`<div class="pl-ai-compliance"><h5>🤖 AI 深度合规报告 - ${p[0]}</h5>
-    <b>一、政策背景：</b>${p[0]}由${p[1]}发布，${ext.type}类型政策，于${ext.effectiveDate}生效。<br><br>
-    <b>二、核心影响：</b>${ext.detail}<br><br>
+  const regionLabel=plRegionLabels[p.region]||p.region;
+  const catLabel=plCategoryLabels[p.category]||p.category;
+  const impactLabel=plImpactLabels[p.impact_level]||p.impact_level;
+  $('#pl-ai-detail-result').innerHTML=`<div class="pl-ai-compliance"><h5>🤖 AI 深度合规报告 - ${p.title}</h5>
+    <b>一、政策背景：</b>${p.title}，来源: ${p.source||'未知'}，${catLabel}类型政策，发布于 ${p.published_at||'N/A'}。<br><br>
+    <b>二、核心影响：</b>${p.summary||'暂无详细摘要'}<br><br>
     <b>三、合规操作清单：</b><br>
-    1. 办理${ext.categories!=='N/A'?ext.categories.split(',').slice(0,3).join('、'):'相关'}认证/资质<br>
-    2. 预算${ext.costImpact}用于合规成本<br>
+    1. 了解 ${regionLabel} 地区 ${catLabel} 类别最新政策要求<br>
+    2. 评估当前业务受该政策影响的程度<br>
     3. 调整供应链/物流模式以适配新规<br>
     4. 更新产品标签/包装符合要求<br>
     5. 培训团队了解新政策要求<br><br>
@@ -5270,7 +5322,7 @@ function plAiComplianceDetail(idx){
     - 短期：提前备货规避政策窗口期<br>
     - 中期：考虑海外仓/本土化生产<br>
     - 长期：评估替代市场或品类调整<br><br>
-    <b>五、成本测算：</b>${ext.costImpact}，预计利润压缩10-30%，建议提价10-20%或优化供应链降低成本。</div>`;
+    <b>五、影响等级：</b>${impactLabel} — 建议持续关注并及时调整合规策略。</div>`;
 }
 
 function renderPoliciesPage(){
@@ -5278,14 +5330,88 @@ function renderPoliciesPage(){
   renderPlAi();
   renderPlList();
 }
-renderPoliciesPage();
+// Load policies from JSON, then render
+loadPoliciesData();
 
 
 // -- 平台规则 --
-fillSelect('#rl-platform',[...new Set(rulesData.map(r=>r[0]))].filter(Boolean).sort());
-fillSelect('#rl-type',[...new Set(rulesData.map(r=>r[1]))].filter(Boolean).sort());
-fillSelect('#rl-region',[...new Set(rulesData.map(r=>r[4]))].filter(Boolean).sort());
-fillSelect('#rl-category',[...new Set(rulesData.map(r=>r[2]))].filter(Boolean).sort());
+// -- Rules page: JSON dynamic loading --
+// Default rules data (fallback) - converted from hardcoded array to JSON format
+const defaultRulesData = {
+  updated_at: '2026-07-13T00:00:00+08:00',
+  source_count: 6,
+  items: rulesData.map((r, i) => {
+    const key=r[0]+'_'+r[1];
+    const ext=rlExtData[key]||{};
+    const platMap={'TikTok Shop东南亚':'TikTok Shop','TikTok Shop印尼':'TikTok Shop','TikTok Shop沙特':'TikTok Shop','TikTok Shop英国':'TikTok Shop','Shopee东南亚':'Shopee','Shopee巴西':'Shopee','Lazada东南亚':'Lazada','Amazon北美':'Amazon','Amazon欧洲':'Amazon','Amazon印度':'Amazon','Temu北美':'Temu','SHEIN北美':'SHEIN','Noon中东':'Multi','MercadoLibre拉美':'Multi','Jumia非洲':'Multi'};
+    const marketMap={'东南亚':'SEA','北美':'US','欧洲':'EU','中东':'Global','拉美':'Global','南亚':'Global','非洲':'Global'};
+    const catMap={'佣金调整':'fee','物流新规':'fulfillment','扣分政策':'penalty','类目限制':'category','其他':'regulation'};
+    return {
+      id: 'r-fallback-' + i,
+      title: r[0] + ' - ' + r[1],
+      summary: r[5] + (r[6] ? ' | 建议: ' + r[6] : ''),
+      source_url: '',
+      platform: platMap[r[0]] || r[0],
+      market: marketMap[r[4]] || 'Global',
+      category: catMap[r[1]] || 'regulation',
+      impact_level: ext.level === 'high' ? 'high' : ext.level === 'mid' ? 'medium' : 'low',
+      effective_date: ext.effectiveDate || r[3],
+      published_at: r[3],
+      collected_at: r[3] + 'T00:00:00+08:00'
+    };
+  })
+};
+
+let rulesJsonData = null;
+let rulesDataLoading = false;
+
+async function loadRulesData() {
+  if (rulesDataLoading) return;
+  rulesDataLoading = true;
+  $('#rl-data-info').innerHTML = '<span style="color:#3366cc">⏳ 正在加载最新数据...</span>';
+  try {
+    const resp = await fetch('./data/rules.json');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if (data && data.items && data.items.length > 0) {
+      rulesJsonData = data;
+      rlInitFromJson();
+      const time = new Date(data.updated_at).toLocaleString('zh-CN');
+      $('#rl-data-info').innerHTML = '📡 数据更新时间: ' + time + ' | 数据来源: ' + (data.source_count || '?') + '个';
+    } else {
+      throw new Error('Empty data');
+    }
+  } catch (e) {
+    console.warn('Failed to load rules.json, using fallback:', e);
+    rulesJsonData = defaultRulesData;
+    rlInitFromJson();
+    $('#rl-data-info').innerHTML = '📦 使用内置数据 (离线模式) | 更新时间: 2026-07-13';
+  }
+  rulesDataLoading = false;
+}
+
+function rlInitFromJson() {
+  const items = rulesJsonData.items;
+  fillSelect('#rl-platform', [...new Set(items.map(r => r.platform))].filter(Boolean).sort());
+  fillSelect('#rl-market', [...new Set(items.map(r => r.market))].filter(Boolean).sort());
+  fillSelect('#rl-category', [...new Set(items.map(r => r.category))].filter(Boolean).sort());
+  fillSelect('#rl-act-type',['月度大促','新品招商补贴','直播挑战赛','短视频带货挑战赛','免佣金补贴','类目流量扶持'].sort());
+  rlRulesPage = 1;
+  renderRulesPage();
+}
+
+function rlGetJsonItems() {
+  return (rulesJsonData || defaultRulesData).items;
+}
+
+const rlCategoryLabels = {listing:'商品发布', fee:'费用佣金', fulfillment:'物流履约', compliance:'合规要求', penalty:'处罚扣分', category:'类目管理', policy:'平台政策', regulation:'监管规则'};
+const rlMarketLabels = {US:'北美', EU:'欧洲', SEA:'东南亚', SG:'新加坡', Global:'全球'};
+const rlImpactLabels = {high:'高', medium:'中', low:'低'};
+
+// Initialize with fallback data
+fillSelect('#rl-platform',[...new Set(defaultRulesData.items.map(r=>r.platform))].filter(Boolean).sort());
+fillSelect('#rl-market',[...new Set(defaultRulesData.items.map(r=>r.market))].filter(Boolean).sort());
+fillSelect('#rl-category',[...new Set(defaultRulesData.items.map(r=>r.category))].filter(Boolean).sort());
 fillSelect('#rl-act-type',['月度大促','新品招商补贴','直播挑战赛','短视频带货挑战赛','免佣金补贴','类目流量扶持'].sort());
 
 let rlRulesPage=1,rlActPage=1;const RL_PAGE=8;
@@ -5293,16 +5419,17 @@ let rlChecked=new Set();
 
 // Stats
 function renderRlStats(){
-  const pending=rulesData.filter(r=>{const ext=rlExtData[r[0]+'_'+r[1]];if(!ext)return false;return new Date(ext.effectiveDate)>new Date()}).length;
+  const items=rlGetJsonItems();
+  const highCount=items.filter(r=>r.impact_level==='high').length;
+  const pendingCount=items.filter(r=>{const d=r.effective_date;return d&&new Date(d)>new Date()}).length;
   const activeActs=activitiesData.filter(a=>parseInt(a[9])>0||a[9]==='7'||a[9]==='10').length;
   const highSubsidy=activitiesData.filter(a=>a[7].includes('免佣金')||a[7].includes('返现')).length;
-  const up=rulesData.filter(r=>r[1]==='佣金调整'&&r[5].includes('上调')).length;
-  const down=rulesData.filter(r=>r[1]==='佣金调整'&&!r[5].includes('上调')).length;
+  const platforms=new Set(items.map(r=>r.platform));
   $('#rl-stats-grid').innerHTML=[
-    ['待执行规则',pending+'条','需提前准备','#e74c3c'],
-    ['报名中活动',activeActs+'个','抓紧参与','#3366cc'],
-    ['高补贴活动',highSubsidy+'个','重点关注','#16a34a'],
-    ['佣金调整',up+'↑ '+down+'↓','近30天','#e67e22']
+    ['规则总数',items.length+'条','实时追踪','#3366cc'],
+    ['高影响规则',highCount+'条','重点关注','#e74c3c'],
+    ['待执行规则',pendingCount+'条','需提前准备','#e67e22'],
+    ['覆盖平台',platforms.size+'个','多维度监控','#16a34a']
   ].map(s=>'<div class="rl-stat-card"><div class="val" style="color:'+s[3]+'">'+s[1]+'</div><div class="lbl">'+s[0]+'</div><div class="sub">'+s[2]+'</div></div>').join('');
 }
 
@@ -5314,13 +5441,10 @@ function renderRlAi(){
 function switchRlAiTab(t){
   $$('#rl-ai-tabs .ai-tab').forEach(e=>e.classList.toggle('active',e.dataset.t===t));
   if(t==='rule'){
-    $('#rl-ai-content').innerHTML='<ul>'
-    +'<li>⚠️ <strong>TikTok Shop东南亚</strong>佣金从1%→2.5%，叠加0.5%手续费，每单成本增加约$0.20 <button class="ai-action" onclick="rlLocate(\'rule\',\'TikTok Shop东南亚\')">定位</button><button class="ai-action" onclick="toast(\'已加入预警\')">加入预警</button></li>'
-    +'<li>🔴 <strong>印尼站</strong>食品类需BPOM认证，跨境食品基本无法合规，需转本土店模式 <button class="ai-action" onclick="rlLocate(\'rule\',\'TikTok Shop印尼\')">定位</button><button class="ai-action" onclick="toast(\'已加入预警\')">加入预警</button></li>'
-    +'<li>⚠️ <strong>Amazon欧洲</strong>GPSR新规要求欧盟授权代表，无证商品将无法销售 <button class="ai-action" onclick="rlLocate(\'rule\',\'Amazon欧洲\')">定位</button><button class="ai-action" onclick="toast(\'已加入预警\')">加入预警</button></li>'
-    +'<li>🟡 <strong>SHEIN北美</strong>质量投诉率超3%即下架，品控要求极严 <button class="ai-action" onclick="rlLocate(\'rule\',\'SHEIN北美\')">定位</button><button class="ai-action" onclick="toast(\'已加入预警\')">加入预警</button></li>'
-    +'<li>✅ <strong>Jumia非洲</strong>佣金仅上调1.5个百分点，绝对值影响较小 <button class="ai-action" onclick="rlLocate(\'rule\',\'Jumia非洲\')">定位</button></li>'
-    +'</ul>';
+    const items=rlGetJsonItems();
+    const highItems=items.filter(r=>r.impact_level==='high').slice(0,3);
+    const aiHtml=highItems.length?highItems.map(r=>'<li>⚠️ <strong>'+r.platform+'</strong> '+(r.title||r.summary||'').substring(0,60)+' <button class="ai-action" onclick="rlLocate(\'rule\',\''+r.platform.replace(/'/g,"")+'\')">定位</button><button class="ai-action" onclick="toast(\'已加入预警\')">加入预警</button></li>').join(''):'<li>暂无高影响规则</li>';
+    $('#rl-ai-content').innerHTML='<ul>'+aiHtml+'</ul>';
   } else {
     $('#rl-ai-content').innerHTML='<ul>'
     +'<li>🔥 <strong>TikTok Shop东南亚7.7大促</strong>免佣3天+广告返现20%，剩余7天报名 <button class="ai-action" onclick="rlLocate(\'act\',\'TikTok Shop东南亚\')">定位</button><button class="ai-action" onclick="toast(\'已加入预警\')">报名预警</button></li>'
@@ -5332,7 +5456,7 @@ function switchRlAiTab(t){
   }
 }
 function rlLocate(type,name){
-  if(type==='rule'){switchRlTab('rules');const idx=rulesData.findIndex(r=>r[0]===name);if(idx>=0){rlRulesPage=Math.floor(idx/RL_PAGE)+1;renderRlRules();setTimeout(()=>{const el=document.querySelector('.rl-rule-card[data-idx="'+idx+'"]');if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},100)}}
+  if(type==='rule'){switchRlTab('rules');const items=rlGetJsonItems();const idx=items.findIndex(r=>r.platform===name||r.title.includes(name));if(idx>=0){rlRulesPage=Math.floor(idx/RL_PAGE)+1;renderRlRules();setTimeout(()=>{const el=document.querySelector('.rl-rule-card[data-idx="'+idx+'"]');if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},100)}}
   else{switchRlTab('activities');const idx=activitiesData.findIndex(a=>a[0]===name);if(idx>=0){rlActPage=Math.floor(idx/RL_PAGE)+1;renderRlActs();setTimeout(()=>{const el=document.querySelector('.rl-act-card[data-idx="'+idx+'"]');if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},100)}}
 }
 
@@ -5386,19 +5510,24 @@ function renderRlRules(){
   const list=$('#rl-rules-list');
   if(!slice.length){list.innerHTML='<div class="empty-state"><p>暂无匹配规则</p><button onclick="resetRlFilters()" class="btn-primary">清除筛选</button></div>';$('#rl-rules-pagination').innerHTML='';return}
   list.innerHTML=slice.map((r,si)=>{
-    const globalIdx=rulesData.indexOf(r);
-    const key=r[0]+'_'+r[1];
-    const ext=rlExtData[key]||{level:'low',effectiveDate:r[3],costImpact:'-',affectedShops:'-',platforms:[],detail:r[5]};
-    const days=Math.ceil((new Date(ext.effectiveDate)-new Date())/86400000);
+    const globalIdx=rlGetJsonItems().indexOf(rlGetJsonItems().find(item=>item.id===r.id));
+    const riskLevel=r.impact_level==='high'?'high':r.impact_level==='medium'?'mid':'low';
+    const impactColor=r.impact_level==='high'?'#e74c3c':r.impact_level==='medium'?'#f39c12':'#27ae60';
+    const impactLabel=rlImpactLabels[r.impact_level]||r.impact_level;
+    const catLabel=rlCategoryLabels[r.category]||r.category;
+    const marketLabel=rlMarketLabels[r.market]||r.market;
+    const effDate=r.effective_date||r.published_at||'';
+    const days=effDate?Math.ceil((new Date(effDate)-new Date())/86400000):0;
     const isFuture=days>0;
+    const titleLink=r.source_url?`<a href="${r.source_url}" target="_blank" style="color:inherit;text-decoration:none">${r.title}</a>`:r.title;
     return '<div class="rl-rule-card" data-idx="'+globalIdx+'">'
-    +'<div class="rl-risk-bar rl-risk-'+ext.level+'"></div>'
+    +'<div class="rl-risk-bar rl-risk-'+riskLevel+'"></div>'
     +'<div class="rl-card-body">'
-    +'<h4><input type="checkbox" class="rl-check" data-idx="'+globalIdx+'" '+((rlChecked.has(globalIdx))?'checked':'')+' onchange="rlToggleCheck('+globalIdx+')"> '+r[0]+' <span class="tag '+rlTypeClass(r[1])+'">'+r[1]+'</span></h4>'
-    +'<div class="rl-card-meta"><span>📅 '+r[3]+'</span><span class="tag watch">'+r[4]+'</span><span>'+r[2]+'</span>'
-    +(isFuture?'<span class="rl-countdown '+(days<=7?(days<=3?'rl-countdown-urgent':'rl-countdown-warn'):'rl-countdown-ok')+'">'+(isFuture?days+'天后生效':'已生效')+'</span>':'')
+    +'<h4><input type="checkbox" class="rl-check" data-idx="'+r.id+'" '+((rlChecked.has(r.id))?'checked':'')+' onchange="rlToggleCheck(\''+r.id+'\')"> '+titleLink+' <span class="tag" style="color:'+impactColor+';border-color:'+impactColor+'">'+catLabel+'</span></h4>'
+    +'<div class="rl-card-meta"><span>📅 '+(r.published_at||'')+'</span><span class="tag watch">'+marketLabel+'</span><span>'+r.platform+'</span>'
+    +(isFuture?'<span class="rl-countdown '+(days<=7?(days<=3?'rl-countdown-urgent':'rl-countdown-warn'):'rl-countdown-ok')+'">'+days+'天后生效</span>':'<span class="rl-countdown rl-countdown-ok">已生效</span>')
     +'</div>'
-    +'<div class="rl-card-summary">'+r[5].substring(0,80)+(r[5].length>80?'…':'')+'</div>'
+    +'<div class="rl-card-summary">'+(r.summary||'').substring(0,80)+((r.summary||'').length>80?'…':'')+'</div>'
     +'</div>'
     +'<div class="rl-card-actions">'
     +'<button onclick="openRlRuleDetail('+globalIdx+')">查看详情</button>'
@@ -5409,7 +5538,7 @@ function renderRlRules(){
   let pHtml='';
   for(let i=1;i<=pages;i++)pHtml+='<button class="'+(i===rlRulesPage?'active':'')+'" onclick="rlRulesPage='+i+';renderRlRules()">'+i+'</button>';
   $('#rl-rules-pagination').innerHTML=pHtml;
-  $('#rl-count').textContent='规则 '+rulesData.length+' 条 | 活动 '+activitiesData.length+' 条';
+  $('#rl-count').textContent='规则 '+rlGetJsonItems().length+' 条 | 活动 '+activitiesData.length+' 条';
 }
 
 // Activities list
@@ -5446,8 +5575,9 @@ function renderRlActs(){
 
 // Filter logic
 function getFilteredRules(){
-  const p=$('#rl-platform').value,t=$('#rl-type').value,reg=$('#rl-region').value,cat=$('#rl-category').value;
-  return rulesData.filter(r=>(p==='all'||r[0]===p)&&(t==='all'||r[1]===t)&&(reg==='all'||r[4]===reg)&&(cat==='all'||r[2]===cat));
+  const p=$('#rl-platform').value,m=$('#rl-market').value,cat=$('#rl-category').value,impact=$('#rl-impact-level').value;
+  const items=rlGetJsonItems();
+  return items.filter(r=>(p==='all'||r.platform===p)&&(m==='all'||r.market===m)&&(cat==='all'||r.category===cat)&&(impact==='all'||r.impact_level===impact));
 }
 function getFilteredActs(){
   const p=$('#rl-platform').value,at=$('#rl-act-type').value;
@@ -5469,35 +5599,37 @@ function rlExport(){toast('报表导出中…')}
 
 // Reset
 function resetRlFilters(){
-  ['#rl-platform','#rl-type','#rl-region','#rl-category','#rl-act-type'].forEach(s=>$(s).value='all');
+  ['#rl-platform','#rl-market','#rl-category','#rl-impact-level','#rl-act-type'].forEach(s=>$(s).value='all');
   rlRulesPage=1;rlActPage=1;rlChecked.clear();
   renderRulesPage();renderRlActs();toast('筛选已重置');
 }
 
 // Detail - Rule
 function openRlRuleDetail(idx){
-  const r=rulesData[idx];
-  const key=r[0]+'_'+r[1];
-  const ext=rlExtData[key]||{level:'low',effectiveDate:r[3],costImpact:'-',affectedShops:'-',platforms:[],detail:r[5]};
+  const items=rlGetJsonItems();
+  const r=items[idx];
+  if(!r)return;
+  const riskLevel=r.impact_level==='high'?'high':r.impact_level==='medium'?'mid':'low';
+  const impactColor=r.impact_level==='high'?'#e74c3c':r.impact_level==='medium'?'#f39c12':'#27ae60';
+  const impactLabel=rlImpactLabels[r.impact_level]||r.impact_level;
+  const catLabel=rlCategoryLabels[r.category]||r.category;
+  const marketLabel=rlMarketLabels[r.market]||r.market;
+  const sourceLink=r.source_url?`<a href="${r.source_url}" target="_blank" style="color:#3366cc">查看原始来源</a>`:'无';
   const overlay=document.createElement('div');
   overlay.className='rl-detail-overlay';
   overlay.onclick=e=>{if(e.target===overlay)overlay.remove()};
   overlay.innerHTML='<div class="rl-detail-modal"><button class="close-btn" onclick="this.closest(\'.rl-detail-overlay\').remove()">×</button>'
-  +'<h2>'+r[0]+' · '+r[1]+'</h2>'
+  +'<h2>'+r.title+'</h2>'
   +'<div class="rl-detail-section"><h3>📋 基础信息</h3><div class="info-grid">'
-  +'<div class="info-item"><div class="lbl">平台</div><div class="val">'+r[0]+'</div></div>'
-  +'<div class="info-item"><div class="lbl">规则类型</div><div class="val"><span class="tag '+rlTypeClass(r[1])+'">'+r[1]+'</span></div></div>'
-  +'<div class="info-item"><div class="lbl">生效日期</div><div class="val">'+ext.effectiveDate+'</div></div>'
-  +'<div class="info-item"><div class="lbl">影响区域</div><div class="val">'+r[4]+'</div></div>'
-  +'<div class="info-item"><div class="lbl">影响类目</div><div class="val">'+r[2]+'</div></div>'
-  +'<div class="info-item"><div class="lbl">风险等级</div><div class="val" style="color:'+(ext.level==='high'?'#e74c3c':ext.level==='mid'?'#f39c12':'#27ae60')+'">'+(ext.level==='high'?'🔴 重大':ext.level==='mid'?'🟡 中等':'🟢 普通')+'</div></div>'
+  +'<div class="info-item"><div class="lbl">平台</div><div class="val">'+r.platform+'</div></div>'
+  +'<div class="info-item"><div class="lbl">规则类别</div><div class="val"><span class="tag" style="color:'+impactColor+'">'+catLabel+'</span></div></div>'
+  +'<div class="info-item"><div class="lbl">生效日期</div><div class="val">'+(r.effective_date||r.published_at||'N/A')+'</div></div>'
+  +'<div class="info-item"><div class="lbl">影响市场</div><div class="val">'+marketLabel+'</div></div>'
+  +'<div class="info-item"><div class="lbl">影响等级</div><div class="val" style="color:'+impactColor+'">'+(r.impact_level==='high'?'🔴 高':r.impact_level==='medium'?'🟡 中':'🔵 低')+'</div></div>'
+  +'<div class="info-item"><div class="lbl">来源链接</div><div class="val">'+sourceLink+'</div></div>'
   +'</div></div>'
-  +'<div class="rl-detail-section"><h3>📝 变更详情</h3><p>'+ext.detail+'</p></div>'
-  +'<div class="rl-detail-section"><h3>💰 成本影响</h3><div class="info-grid">'
-  +'<div class="info-item"><div class="lbl">成本变化</div><div class="val" style="color:#e74c3c">'+ext.costImpact+'</div></div>'
-  +'<div class="info-item"><div class="lbl">受影响店铺</div><div class="val">'+ext.affectedShops+'</div></div>'
-  +'</div></div>'
-  +'<div class="rl-detail-section"><h3>✅ AI 应对建议</h3><p>'+r[6]+'</p></div>'
+  +'<div class="rl-detail-section"><h3>📝 规则详情</h3><p>'+(r.summary||'暂无详细摘要')+'</p></div>'
+  +'<div class="rl-detail-section"><h3>✅ 应对建议</h3><p>建议关注 '+r.platform+' 平台 '+marketLabel+' 市场的 '+catLabel+' 类规则变化，及时调整运营策略。</p></div>'
   +'<div class="rl-detail-section"><h3>🔗 关联联动</h3><p>'
   +'<button onclick="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'alerts\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看预警中心</button>'
   +'<button onclick="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'policies\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看政策动态</button>'
@@ -5550,7 +5682,8 @@ function openRlActDetail(idx){
 
 $('#apply-rl').onclick=()=>{rlRulesPage=1;rlActPage=1;renderRlRules();renderRlActs();const f=getFilteredRules().length+getFilteredActs().length;toast('已筛选 '+f+' 条结果')};
 $('#reset-rl').onclick=()=>resetRlFilters();
-renderRulesPage();
+// Load rules from JSON, then render
+loadRulesData();
 
 // -- 热门内容 --
 
@@ -7064,23 +7197,23 @@ $('#login-form').onsubmit=e=>{e.preventDefault();$('#login-screen').style.displa
         page:'policies'
       });
     });
-    // policyData: [title, country, date, impact, ...]
-    policyData.forEach(p=>{
+    // Policies from JSON data
+    plGetJsonItems().forEach(p=>{
       items.push({
-        color:p[3]==='重大'?'red':'orange',
-        title:p[0],
-        tags:[p[1],'政策'],
-        time:p[2],
+        color:p.impact_level==='high'?'red':'orange',
+        title:p.title||'',
+        tags:[plRegionLabels[p.region]||p.region,'政策'],
+        time:p.published_at||'',
         page:'policies'
       });
     });
-    // rulesData: [platform, type, category, date, region, content, advice]
-    rulesData.forEach(r=>{
+    // Rules from JSON data
+    rlGetJsonItems().forEach(r=>{
       items.push({
         color:'orange',
-        title:r[5].substring(0,50)+(r[5].length>50?'…':''),
-        tags:[r[0],r[1]],
-        time:r[3],
+        title:(r.summary||r.title||'').substring(0,50)+((r.summary||r.title||'').length>50?'…':''),
+        tags:[r.platform||'',rlCategoryLabels[r.category]||r.category||''],
+        time:r.published_at||'',
         page:'rules'
       });
     });
