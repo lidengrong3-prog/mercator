@@ -3024,7 +3024,7 @@ const shops=[
 ['Dazzle Me Official','Shopee','东南亚','US$ 85万','+8.0%','正常','美妆个护',145,'+4.1%','低价竞品',68000,'4.5','6h'],
 ['Toplux Nutrition Official','TikTok Shop','欧美','US$ 291万','-7.5%','正常','保健品',78,'-3.2%','潜在对手',85000,'4.6','4h']
 ];
-const platformsData=[
+let platformsData=[
 ['Walmart Marketplace','欧美','日用品,食品饮料,家居家电,服装,电子产品','420','10','佣金6%-15%按品类，WFS仓储费$0.75/立方英尺/月，无月费或入驻费','货架电商','50000','1. WFS履约中心扩至47个，88%美国人口两日达\n2. 推出AI listing优化工具beta版\n3. 搜索算法Q1更新加大销售速度权重'],
 ['SOUQ / Amazon中东站','中东','电子产品,图书,家居家电,美妆个护,时尚服饰','175','10','佣金抽成5-15%因品类而异 + FBA物流费 + 广告推广费','货架电商','4200','2026年推出FBA新卖家头程返现计划及新品激励计划(NSP)，降低卖家物流成本；Prime会员在中东持续增长，亚马逊Fresh生鲜配送业务扩展中；市场份额约35%稳居中东第一大电商'],
 ['Namshi','中东','时尚服饰,鞋履,美妆,配饰,运动装','5','15','混合模式(自营+第三方品牌入驻)，佣金12-18%','货架电商','1100','2025年推出斋月专属界面，阿拉伯语支持率达95%；整合Tabby和Tamara本地BNPL支付方式；月均访问量超1100万，70%以上来自移动端，被Noon集团收购后保持独立运营'],
@@ -3066,7 +3066,7 @@ const platformsData=[
 ['eBay','欧美','汽配,二手商品,电子数码,收藏品,服饰','750','14','成交价佣金约13-15%','货架电商','13000','聚焦汽配和翻新电子品类;拍卖弱化固定价占比超85%;卖家费用优化'],
 ['Tokopedia','东南亚','家电,家居,美妆个护,服饰,食品','250','1','佣金0-1%+支付手续费0.5-1%','货架电商','10000','与TikTok Shop印尼合并运营;GoTo集团与Gojek生态整合;本土商家保护加强'],
 ['MercadoLibre 美客多','拉美','3C数码,家居家电,服饰,汽配,美妆','200','14.5','品类佣金12-17%+支付+物流费','货架电商','30000','GMV同比增长35%;Mercado Pago成拉美最大金融科技;自有物流覆盖18国']];
-const pfExtData={
+let pfExtData={
 'Walmart Marketplace':{growth:'+12.3%',risk:'low',shipping:'WFS本土仓+跨境',entry:'跨境店可入驻',priceRange:'$15-80',hotCats:['家居家电','食品饮料'],blueCats:['健康食品','宠物用品'],founded:'1994',users:'1.5亿/月',payments:'信用卡/PayPal/Afterpay',events:'Black Friday, Cyber Monday, Summer Sale'},
 'SOUQ / Amazon中东站':{growth:'+18.5%',risk:'low',shipping:'FBA本土仓',entry:'需本地资质',priceRange:'$20-150',hotCats:['电子产品','美妆个护'],blueCats:['智能家居','母婴'],founded:'2017(中东)',users:'5000万/月',payments:'COD/信用卡/Apple Pay',events:'White Friday, Ramadan Sale'},
 'TikTok Shop东南亚':{growth:'+65.2%',risk:'mid',shipping:'跨境直邮+本土仓',entry:'跨境店可入驻',priceRange:'$3-30',hotCats:['美妆个护','服饰'],blueCats:['小家电','户外运动'],founded:'2021',users:'3.25亿/月',payments:'COD/电子钱包/信用卡',events:'9.9/11.11/12.12大促'},
@@ -3109,6 +3109,32 @@ const pfExtData={
 'Socios Live/拉美社交电商':{growth:'+88.3%',risk:'high',shipping:'本土仓+社交分销',entry:'拉美本地公司',priceRange:'$5-30',hotCats:['美妆','服饰','食品'],blueCats:['健康','家居'],founded:'2021',users:'200万/月',payments:'PIX/梅卡多 Pago/COD',events:'社交裂变促销期'},
 'Kwai Shop/拉美':{growth:'+125.6%',risk:'high',shipping:'跨境直邮+本土仓',entry:'跨境/本土均可',priceRange:'$3-25',hotCats:['美妆','时尚配饰','3C'],blueCats:['小家电','运动'],founded:'2022',users:'3500万/月',payments:'PIX/Boleto/COD/信用卡',events:'Kwai 大促, Carnival Sale'}
 };
+
+// -- 动态加载平台数据 --
+async function loadPlatformData(){
+  try{
+    const base=document.querySelector('base')?document.querySelector('base').href:location.pathname.replace(/[^/]*$/,'');
+    const url=base+'data/platforms.json';
+    const resp=await fetch(url);
+    if(!resp.ok)throw new Error('HTTP '+resp.status);
+    const data=await resp.json();
+    if(!Array.isArray(data)||!data.length)return;
+    // Rebuild platformsData from JSON
+    platformsData=data.map(d=>[d.name||'',d.region||'',d.categories||'',d.gmv||'',d.fee||'',d.feeDesc||'',d.type||'',d.mau||'',d.updates||'']);
+    // Rebuild pfExtData from JSON
+    pfExtData={};
+    data.forEach(d=>{if(d.ext&&Object.keys(d.ext).length){pfExtData[d.name]=d.ext;}});
+    // Repopulate filter selects
+    fillSelect('#pf-f-region',[...new Set(platformsData.map(p=>p[1]))].sort());
+    fillSelect('#pf-f-type',[...new Set(platformsData.map(p=>p[6]))].sort());
+    // Re-render
+    renderPlatforms();
+    console.log('[Mercator] Platform data loaded dynamically:',data.length,'platforms');
+  }catch(e){
+    console.log('[Mercator] Using built-in platform data (dynamic load failed):',e.message);
+  }
+}
+loadPlatformData();
 
 const macroData=[
 ['全球','GDP增速(%)','3.2','0.1','2026-07-13','World Bank/IMF 2026'],

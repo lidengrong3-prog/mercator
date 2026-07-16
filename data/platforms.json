@@ -1,0 +1,1570 @@
+[
+  {
+    "name": "Walmart Marketplace",
+    "region": "欧美",
+    "categories": "日用品,食品饮料,家居家电,服装,电子产品",
+    "gmv": "420",
+    "fee": "10",
+    "feeDesc": "佣金6%-15%按品类，WFS仓储费$0.75/立方英尺/月，无月费或入驻费",
+    "type": "货架电商",
+    "mau": "50000",
+    "updates": "1. WFS履约中心扩至47个，88%美国人口两日达\n2. 推出AI listing优化工具beta版\n3. 搜索算法Q1更新加大销售速度权重",
+    "ext": {
+      "growth": "+12.3%",
+      "risk": "low",
+      "shipping": "WFS本土仓+跨境",
+      "entry": "跨境店可入驻",
+      "priceRange": "$15-80",
+      "hotCats": [
+        "家居家电",
+        "食品饮料"
+      ],
+      "blueCats": [
+        "健康食品",
+        "宠物用品"
+      ],
+      "founded": "1994",
+      "users": "1.5亿/月",
+      "payments": "信用卡/PayPal/Afterpay",
+      "events": "Black Friday, Cyber Monday, Summer Sale"
+    }
+  },
+  {
+    "name": "SOUQ / Amazon中东站",
+    "region": "中东",
+    "categories": "电子产品,图书,家居家电,美妆个护,时尚服饰",
+    "gmv": "175",
+    "fee": "10",
+    "feeDesc": "佣金抽成5-15%因品类而异 + FBA物流费 + 广告推广费",
+    "type": "货架电商",
+    "mau": "4200",
+    "updates": "2026年推出FBA新卖家头程返现计划及新品激励计划(NSP)，降低卖家物流成本；Prime会员在中东持续增长，亚马逊Fresh生鲜配送业务扩展中；市场份额约35%稳居中东第一大电商",
+    "ext": {
+      "growth": "+18.5%",
+      "risk": "low",
+      "shipping": "FBA本土仓",
+      "entry": "需本地资质",
+      "priceRange": "$20-150",
+      "hotCats": [
+        "电子产品",
+        "美妆个护"
+      ],
+      "blueCats": [
+        "智能家居",
+        "母婴"
+      ],
+      "founded": "2017(中东)",
+      "users": "5000万/月",
+      "payments": "COD/信用卡/Apple Pay",
+      "events": "White Friday, Ramadan Sale"
+    }
+  },
+  {
+    "name": "Namshi",
+    "region": "中东",
+    "categories": "时尚服饰,鞋履,美妆,配饰,运动装",
+    "gmv": "5",
+    "fee": "15",
+    "feeDesc": "混合模式(自营+第三方品牌入驻)，佣金12-18%",
+    "type": "货架电商",
+    "mau": "1100",
+    "updates": "2025年推出斋月专属界面，阿拉伯语支持率达95%；整合Tabby和Tamara本地BNPL支付方式；月均访问量超1100万，70%以上来自移动端，被Noon集团收购后保持独立运营",
+    "ext": {}
+  },
+  {
+    "name": "Wayfair",
+    "region": "欧美",
+    "categories": "家具,家居装饰,家纺,卫浴,家电",
+    "gmv": "125",
+    "fee": "0",
+    "feeDesc": "供应商批发模式+广告推广费，无传统佣金",
+    "type": "货架电商",
+    "mau": "10000",
+    "updates": "1. FY2025营收125亿美元同比增5.1%，退出德国聚焦美英加\n2. 与Google合作开发UCP协议实现AI购物闭环\n3. CastleGate物流扩展多渠道服务",
+    "ext": {}
+  },
+  {
+    "name": "Jumia",
+    "region": "非洲",
+    "categories": "电子产品,时尚服饰,家居用品,美妆个护,母婴",
+    "gmv": "8.19",
+    "fee": "12",
+    "feeDesc": "佣金抽成+广告费+物流费(Jumia Logistics)；佣金率因品类而异",
+    "type": "货架电商",
+    "mau": "540",
+    "updates": "2025年全年GMV达8.186亿美元同比增14%，营收1.889亿美元同比增13%；在义乌设立办事处强化供应链，国际卖家销量增长82%；尼日利亚市场GMV同比大涨50%，目标2026Q4实现EBITDA盈亏平衡、2027年全年盈利",
+    "ext": {
+      "growth": "+19.6%",
+      "risk": "high",
+      "shipping": "Jumia物流+COD",
+      "entry": "非洲本地公司",
+      "priceRange": "$5-40",
+      "hotCats": [
+        "电子",
+        "时尚",
+        "家居"
+      ],
+      "blueCats": [
+        "太阳能产品",
+        "手机配件"
+      ],
+      "founded": "2012",
+      "users": "3000万/月",
+      "payments": "COD/信用卡/JumiaPay",
+      "events": "Black Friday, Ramadan Sale"
+    }
+  },
+  {
+    "name": "Takealot",
+    "region": "非洲",
+    "categories": "电子产品,家居园艺,小家电,时尚,运动户外",
+    "gmv": "25",
+    "fee": "13",
+    "feeDesc": "佣金8-18%因品类而异 + 月租约400南非兰特(约170元人民币)；新店前4个月免月租",
+    "type": "货架电商",
+    "mau": "480",
+    "updates": "2026财年首次实现全年盈利，营收177亿兰特(约10亿美元)同比增18%；2026年4月重新开放中国卖家入驻通道，禁止跟卖形式；TFS物流商业化服务收入增长93.5%，活跃用户达620万",
+    "ext": {}
+  },
+  {
+    "name": "Etsy",
+    "region": "欧美",
+    "categories": "手工制品,复古物品,珠宝首饰,家居装饰,个性化定制品",
+    "gmv": "119",
+    "fee": "16.5",
+    "feeDesc": "上架费$0.20/件+交易佣金6.5%+支付处理费3%+$0.25+Etsy Ads可选",
+    "type": "货架电商",
+    "mau": "8660",
+    "updates": "1. 出售Reverb业务(2025.6)，拟以12亿美元出售Depop给eBay\n2. 推出$29店铺开设费提升卖家质量\n3. 与OpenAI合作推出Agentic Commerce Protocol即时结账",
+    "ext": {}
+  },
+  {
+    "name": "Kilimall",
+    "region": "非洲",
+    "categories": "手机,电子产品,时尚服饰,家电,美妆个护",
+    "gmv": "0.5",
+    "fee": "10",
+    "feeDesc": "佣金抽成+物流费；无月租，中国卖家占比超40%",
+    "type": "货架电商",
+    "mau": "720",
+    "updates": "2026年注册用户突破1000万，服务8000多家企业开通1.2万家网店；2026年重点扶持海外仓+本地配送模式；自建物流体系实现内罗毕当日达、主要城市次日达，库存准确率超99.9%",
+    "ext": {
+      "growth": "+31.5%",
+      "risk": "mid",
+      "shipping": "东非本土仓",
+      "entry": "肯尼亚/乌干达本地",
+      "priceRange": "$3-30",
+      "hotCats": [
+        "手机配件",
+        "服饰",
+        "家居"
+      ],
+      "blueCats": [
+        "中国小商品",
+        "美妆"
+      ],
+      "founded": "2014",
+      "users": "800万/月",
+      "payments": "M-Pesa/COD/信用卡",
+      "events": "Black Friday, 周年庆典"
+    }
+  },
+  {
+    "name": "Linio",
+    "region": "拉美",
+    "categories": "电子产品,时尚服饰,家居用品,美妆,运动",
+    "gmv": "10",
+    "fee": "11",
+    "feeDesc": "无月租，佣金7-15%；支持7种以上线上线下支付方式",
+    "type": "货架电商",
+    "mau": "9500",
+    "updates": "2025年被Falabella集团收购整合后继续运营；墨西哥站贡献约41%的GMV，全站月流量过亿；通过线下实体店Tienda Linio构建O2O生态；只接受公司资质入驻",
+    "ext": {}
+  },
+  {
+    "name": "Cdiscount",
+    "region": "欧美",
+    "categories": "消费电子,家用电器,家居园艺,时尚服饰,母婴玩具",
+    "gmv": "47",
+    "fee": "11.5",
+    "feeDesc": "月订阅费€39.99+品类佣金5%-20%(二手+2%)",
+    "type": "货架电商",
+    "mau": "2400",
+    "updates": "1. 月流量超1700万，年销售额26亿欧元\n2. 2025年进军中国市场推动全球化\n3. 启动黑色十一月大促，全品类需提供5%折扣",
+    "ext": {}
+  },
+  {
+    "name": "Fnac Darty",
+    "region": "欧美",
+    "categories": "消费电子,家用电器,图书,游戏,玩具文具",
+    "gmv": "24",
+    "fee": "12",
+    "feeDesc": "Marketplace佣金+服务费，按品类不同",
+    "type": "货架电商",
+    "mau": "3000",
+    "updates": "1. FY2025营收103亿欧元，线上销售占比21%同比增近6%\n2. 收购Unieuro拓展意大利市场，发布Beyond Everyday 2030战略\n3. EP集团发起收购要约，Click&Collect占比近50%",
+    "ext": {}
+  },
+  {
+    "name": "Zalando",
+    "region": "欧美",
+    "categories": "时尚服饰,运动鞋服,美妆护肤,儿童家庭,设计师品牌",
+    "gmv": "192",
+    "fee": "15",
+    "feeDesc": "Marketplace佣金+物流配送费+广告费，按品类不同",
+    "type": "货架电商",
+    "mau": "6200",
+    "updates": "1. FY2025 GMV 175.6亿欧元同比增14.7%，营收123亿欧元增16.8%\n2. 收购ABOUT YOU后活跃用户达6200万创新高\n3. Plus会员1680万贡献Q4近半GMV，推出AI发现信息流",
+    "ext": {}
+  },
+  {
+    "name": "Blibli",
+    "region": "东南亚",
+    "categories": "数码家电,时尚服饰,美妆个护,家居百货,食品生鲜",
+    "gmv": "17",
+    "fee": "8.5",
+    "feeDesc": "佣金抽成为主(8.5% Take Rate)，广告费，物流费",
+    "type": "货架电商",
+    "mau": "1430",
+    "updates": "2025财年营收22.36万亿印尼盾(+34%)，TPV达83.3万亿印尼盾，亏损收窄；市场份额从4%降至3%；完成全渠道会员体系打通(Blibli/tiket.com/Ranch Market/Dekoruma)，线下门店扩至265家",
+    "ext": {}
+  },
+  {
+    "name": "Tiki",
+    "region": "东南亚",
+    "categories": "3C数码,日用百货,图书文具,美妆个护,母婴用品",
+    "gmv": "2",
+    "fee": "7.5",
+    "feeDesc": "佣金抽成5-10%，广告费",
+    "type": "货架电商",
+    "mau": "65",
+    "updates": "2025上半年销售额同比暴跌63%，市场份额降至不足1%；在Shopee/TikTok Shop双寡头格局下生存空间被严重挤压；越南电商市场整体增长34.8%但Tiki逆势下滑，面临严峻转型压力",
+    "ext": {}
+  },
+  {
+    "name": "Coupang",
+    "region": "日韩",
+    "categories": "全品类,生鲜食品,家电数码,美妆个护,日用百货",
+    "gmv": "500",
+    "fee": "10",
+    "feeDesc": "佣金抽成8-12%，广告费，会员费(Coupang Wow)，物流费",
+    "type": "货架电商",
+    "mau": "3312",
+    "updates": "2025年韩国电商市场份额33%稳居第一，MAU超3300万；2026年Q1信任危机后MAU迅速恢复至3345万；面临Naver SmartStore(+22.8% YoY)的结构性竞争",
+    "ext": {
+      "growth": "+18.6%",
+      "risk": "low",
+      "shipping": "Rocket Delivery自建物流",
+      "entry": "需韩国公司/代理",
+      "priceRange": "$10-80",
+      "hotCats": [
+        "食品",
+        "日用",
+        "电子"
+      ],
+      "blueCats": [
+        "保健品",
+        "宠物"
+      ],
+      "founded": "2010",
+      "users": "3000万/月",
+      "payments": "信用卡/银行转账/Coupang Pay",
+      "events": "Black Friday, 年末大促"
+    }
+  },
+  {
+    "name": "Gmarket/Auction",
+    "region": "日韩",
+    "categories": "时尚服饰,美妆个护,数码家电,食品百货,家居用品",
+    "gmv": "140",
+    "fee": "10",
+    "feeDesc": "佣金抽成8-12%，广告费，年投入5000亿韩元卖家补贴",
+    "type": "货架电商",
+    "mau": "3500",
+    "updates": "2025年9月与阿里国际成立合资公司，通过Lazada向东南亚5国出口韩品；2026上半年GMV 4年来首次同比正增长(+14%)；反向海淘爆发，1.7万卖家参与，3000万商品接入东南亚",
+    "ext": {
+      "growth": "+8.3%",
+      "risk": "low",
+      "shipping": "韩国本土配送",
+      "entry": "需韩国公司",
+      "priceRange": "$15-100",
+      "hotCats": [
+        "电子产品",
+        "时尚",
+        "美妆"
+      ],
+      "blueCats": [
+        "设计师品牌",
+        "健康食品"
+      ],
+      "founded": "2000",
+      "users": "1800万/月",
+      "payments": "信用卡/银行转账/SmilePay",
+      "events": "Super Sale, 年中/年末大促"
+    }
+  },
+  {
+    "name": "Qoo10",
+    "region": "日韩",
+    "categories": "美妆护肤,时尚服饰,健康食品,K-Beauty,生活杂货",
+    "gmv": "30",
+    "fee": "10",
+    "feeDesc": "佣金抽成约10%，广告费",
+    "type": "货架电商",
+    "mau": "3500",
+    "updates": "2025年日本线上美妆市占率超30%，成K-Beauty入日核心渠道；Mega Debut项目一年孵化200个品牌，累计销售约35亿日元；2026年将在东京开设美妆旗舰店，直播购物Q3观看量增4倍",
+    "ext": {}
+  },
+  {
+    "name": "Rakuten 乐天",
+    "region": "日韩",
+    "categories": "综合百货,食品家电,时尚美妆,旅游服务,数字内容",
+    "gmv": "420",
+    "fee": "4",
+    "feeDesc": "佣金抽成2-6%+月额固定费65000日元起，广告费(RPP)，会员费(积分体系)",
+    "type": "货架电商",
+    "mau": "4400",
+    "updates": "2025财年集团营收2.4966万亿日元(+9.5%)连续29年创新高，电商GMV 6.35万亿日元(+3.9%)；2026年推出千店出海计划开放中国品牌入驻；与YouTube合作实现视频直接跳转购买",
+    "ext": {}
+  },
+  {
+    "name": "Yahoo! Shopping",
+    "region": "日韩",
+    "categories": "综合百货,时尚家电,食品日用品,ふるさと納税,LOHACO",
+    "gmv": "300",
+    "fee": "5.5",
+    "feeDesc": "佣金抽成3-8%，广告费；2026年9月起新增月费1万日元+LINE购物2-4%推荐费",
+    "type": "货架电商",
+    "mau": "6000",
+    "updates": "2025年GMV同比+8%，PayPayポイント限定化推动复购超预期；2026年9月13年来首次向卖家收月费1万日元+2.5%佣金；LINE应用新增购物标签页，上线AI购物助手和EC Pilot卖家顾问",
+    "ext": {}
+  },
+  {
+    "name": "Mercari 煤炉",
+    "region": "日韩, 欧美",
+    "categories": "二手服饰,数码家电,动漫周边,玩具手办,美妆个护",
+    "gmv": "75",
+    "fee": "10",
+    "feeDesc": "佣金抽成10%(卖家承担)，无月租费",
+    "type": "货架电商",
+    "mau": "2300",
+    "updates": "FY2025 GMV 1.12万亿日元，娱乐/动漫品类GMV同比+32%，跨境GMV超900亿日元(3年增长15倍)；Mercari Hallo用户破1200万；Fintechメルカード发卡突破500万张，金融科技收入+25.2%",
+    "ext": {}
+  },
+  {
+    "name": "Ozon",
+    "region": "东南亚, 欧美",
+    "categories": "全品类,数码3C,服饰美妆,家居百货,食品日百",
+    "gmv": "550",
+    "fee": "11.5",
+    "feeDesc": "佣金抽成8-15%，广告费，物流费(FBP半托管)",
+    "type": "货架电商",
+    "mau": "4300",
+    "updates": "2025年GMV 4.16万亿卢布(+45%)，交付24.8亿单(+69%)，2017-2025年CAGR 91%；2026年目标GMV翻倍，跨境销售增100%，百亿补贴持续加码；自建物流500万㎡仓储，8.4万自提点，旺季时效+30%",
+    "ext": {
+      "growth": "+45.7%",
+      "risk": "mid",
+      "shipping": "FBO/FBS模式",
+      "entry": "中国企业可入驻",
+      "priceRange": "$5-60",
+      "hotCats": [
+        "电子",
+        "家居",
+        "服装"
+      ],
+      "blueCats": [
+        "中国3C",
+        "户外"
+      ],
+      "founded": "1998",
+      "users": "1.1亿/月",
+      "payments": "银行卡/Ozon Pay/COD",
+      "events": "Black Friday, New Year"
+    }
+  },
+  {
+    "name": "Wildberries",
+    "region": "东南亚, 欧美",
+    "categories": "时尚服饰,家居用品,美妆鞋靴,母婴用品,数码家电",
+    "gmv": "800",
+    "fee": "12",
+    "feeDesc": "佣金抽成+物流费+仓储费(具体费率按品类浮动)",
+    "type": "货架电商",
+    "mau": "5000",
+    "updates": "2025年GMV 6.1万亿卢布(+49%)，俄罗斯市场份额51.8%稳居第一；与Ozon合计占俄电商87%，双寡头格局稳固；持续扩展独联体国家物流网络，强化时尚品类优势",
+    "ext": {
+      "growth": "+38.2%",
+      "risk": "mid",
+      "shipping": "FBO仓储模式",
+      "entry": "需俄罗斯公司",
+      "priceRange": "$5-50",
+      "hotCats": [
+        "服饰",
+        "鞋靴",
+        "美妆"
+      ],
+      "blueCats": [
+        "家居装饰",
+        "运动"
+      ],
+      "founded": "2004",
+      "users": "1.3亿/月",
+      "payments": "银行卡/WB Wallet/COD",
+      "events": "Black Friday, 新年促销"
+    }
+  },
+  {
+    "name": "Joom",
+    "region": "欧美",
+    "categories": "电子配件,家居日用,服饰鞋靴,美妆健康,玩具母婴",
+    "gmv": "5",
+    "fee": "10",
+    "feeDesc": "佣金抽成+广告费+Joom Logistics物流费",
+    "type": "货架电商",
+    "mau": "700",
+    "updates": "2025年持续深耕俄罗斯/独联体市场；拓展越南等新兴市场，JoomShopping独立站方案在俄/乌/德等国有3700+活跃店铺；面临Temu/SHEIN等中国跨境平台竞争压力加大",
+    "ext": {}
+  },
+  {
+    "name": "Rozetka",
+    "region": "欧美",
+    "categories": "消费电子,家用电器,时尚服饰,美妆个护,家居日用",
+    "gmv": "7.6",
+    "fee": "7.5",
+    "feeDesc": "佣金抽成5-10%，广告费，物流费，RozetkaPay支付服务费",
+    "type": "货架电商",
+    "mau": "1800",
+    "updates": "2025年1-9月营收302亿格里夫纳，占乌克兰十大电商总营收76%，稳居第一；2025年9月与Unex Bank合作推出RozetkaPay支付卡；2026年6月基辅门店遭俄导弹袭击仍坚持运营",
+    "ext": {}
+  },
+  {
+    "name": "ASOS",
+    "region": "欧美",
+    "categories": "女装,男装,鞋靴,配饰,美妆",
+    "gmv": "45",
+    "fee": "18",
+    "feeDesc": "Marketplace佣金15-25%+广告费+物流费",
+    "type": "货架电商",
+    "mau": "7000",
+    "updates": "1. FY2025营收约35亿英镑，恢复盈利\n2. 聚焦核心年轻客群，优化库存与退货管理\n3. 与OpenAI合作推出AI购物助手，强化移动应用体验",
+    "ext": {}
+  },
+  {
+    "name": "Carrefour线上商城",
+    "region": "欧美, 拉美",
+    "categories": "食品生鲜,日用百货,家电,服装,母婴",
+    "gmv": "65",
+    "fee": "10",
+    "feeDesc": "Marketplace佣金8-15%+物流费+零售媒体广告费",
+    "type": "货架电商",
+    "mau": "5000",
+    "updates": "1. 电商GMV同比增长18%，目标2026年达100亿欧元\n2. 投资30亿欧元数字化，与Google合作AI商务\n3. 整合Cora/Match门店，Unlimitail零售媒体平台扩展",
+    "ext": {}
+  },
+  {
+    "name": "Target",
+    "region": "欧美",
+    "categories": "日用百货,服装,电子,家居,食品",
+    "gmv": "110",
+    "fee": "10",
+    "feeDesc": "Marketplace佣金5-15%+广告费+物流费",
+    "type": "货架电商",
+    "mau": "15000",
+    "updates": "1. 线上销售约1100亿美元，同店数字销售持续增长\n2. Target Circle会员体系超1亿会员\n3. 扩展同日配送覆盖，Target+精选卖家计划推进",
+    "ext": {}
+  },
+  {
+    "name": "Best Buy",
+    "region": "欧美",
+    "categories": "消费电子,电脑,手机,家电,游戏",
+    "gmv": "135",
+    "fee": "8",
+    "feeDesc": "Marketplace佣金+Best Buy Ads广告费",
+    "type": "货架电商",
+    "mau": "10000",
+    "updates": "1. FY26营收约417亿美元，线上占比约32%\n2. 2025年推出Best Buy Marketplace第三方平台，已有1000+卖家\n3. Best Buy Ads零售媒体网络已实现高盈利",
+    "ext": {}
+  },
+  {
+    "name": "Instagram Shop / Facebook Shop",
+    "region": "欧美, 东南亚",
+    "categories": "服装时尚、美妆个护、家居装饰、食品饮料、电子产品",
+    "gmv": "184",
+    "fee": "5",
+    "feeDesc": "平台费5%/单，主要通过广告变现（无直接佣金），Facebook Shops免入驻费",
+    "type": "社交电商",
+    "mau": "210000",
+    "updates": "2025-2026年Meta持续强化AI推荐购物功能；Instagram Live Shopping年GMV达$8.2B；Meta Shops年GMV $2.4B；整合Shopify商品同步；推出AI驱动的商品发现与个性化推荐；创作者合作工具升级",
+    "ext": {}
+  },
+  {
+    "name": "YouTube Shopping",
+    "region": "欧美, 东南亚, 日韩, 南亚",
+    "categories": "电子产品、时尚服饰、美妆护肤、家居生活、食品",
+    "gmv": "150",
+    "fee": "5",
+    "feeDesc": "创作者佣金3-8%，平台抽成约2-3%（通过Google Shopping），无入驻费",
+    "type": "社交电商",
+    "mau": "285000",
+    "updates": "2025-2026年直播购物GMV同比增长212%；东南亚购物视频达600万+；商品页转化率3.8%；与Shopify深度集成商品目录同步；200万+商家关联商品目录；AI智能商品标签自动识别；东南亚推出Commerce Media Suite与Shopee合作",
+    "ext": {}
+  },
+  {
+    "name": "Pinterest Shop",
+    "region": "欧美",
+    "categories": "家居装饰、时尚穿搭、美食食谱、美妆护肤、DIY手工",
+    "gmv": "42",
+    "fee": "0",
+    "feeDesc": "无佣金，通过广告变现（CPC约$0.83），Product Pins免费添加",
+    "type": "社交电商",
+    "mau": "53700",
+    "updates": "2025-2026年广告收入达$42亿；85%用户基于Pin内容做出购买决策；IDEA广告格式升级支持多商品轮播；与Shopify/BigCommerce集成商品同步；Shuffles拼贴购物功能优化；AI视觉搜索增强商品发现能力",
+    "ext": {}
+  },
+  {
+    "name": "TikTok Shop",
+    "region": "东南亚, 欧美",
+    "categories": "美妆个护,服饰鞋包,3C数码,家居日用,食品饮料",
+    "gmv": "350",
+    "fee": "6.5",
+    "feeDesc": "佣金5-8%+交易服务费2%",
+    "type": "内容电商",
+    "mau": "150000",
+    "updates": "2025年美区GMV突破200亿美元;2026年欧洲扩站至14国;全托管模式持续扩张",
+    "ext": {
+      "growth": "+65.2%",
+      "risk": "mid",
+      "shipping": "跨境直邮+本土仓",
+      "entry": "跨境店可入驻",
+      "priceRange": "$3-30",
+      "hotCats": [
+        "美妆个护",
+        "服饰"
+      ],
+      "blueCats": [
+        "小家电",
+        "户外运动"
+      ],
+      "founded": "2021",
+      "users": "3.25亿/月",
+      "payments": "COD/电子钱包/信用卡",
+      "events": "9.9/11.11/12.12大促"
+    }
+  },
+  {
+    "name": "Shopee",
+    "region": "东南亚, 拉美",
+    "categories": "美妆个护,服饰鞋包,家居日用,3C数码,母婴",
+    "gmv": "900",
+    "fee": "4.5",
+    "feeDesc": "佣金1-5.5%+交易费2%",
+    "type": "货架电商",
+    "mau": "60000",
+    "updates": "2025年GMV同比增长30%达900亿美元;拉美持续扩张;强化直播电商",
+    "ext": {
+      "growth": "+22.1%",
+      "risk": "mid",
+      "shipping": "SLS物流+本土仓",
+      "entry": "跨境店可入驻",
+      "priceRange": "$3-40",
+      "hotCats": [
+        "服饰",
+        "美妆",
+        "3C配件"
+      ],
+      "blueCats": [
+        "家居收纳",
+        "宠物用品"
+      ],
+      "founded": "2015",
+      "users": "6.5亿/月",
+      "payments": "ShopeePay/COD/信用卡",
+      "events": "Shopee 9.9/11.11/12.12"
+    }
+  },
+  {
+    "name": "Lazada",
+    "region": "东南亚",
+    "categories": "3C数码,美妆个护,家居家电,服饰,母婴",
+    "gmv": "200",
+    "fee": "3.5",
+    "feeDesc": "佣金1-4%+支付手续费1-2%",
+    "type": "货架电商",
+    "mau": "15000",
+    "updates": "阿里持续注资物流升级;强化LazMall品牌商城",
+    "ext": {
+      "growth": "+15.8%",
+      "risk": "low",
+      "shipping": "LEL物流+海外仓",
+      "entry": "跨境店可入驻(阿里系)",
+      "priceRange": "$5-50",
+      "hotCats": [
+        "电子产品",
+        "家居",
+        "母婴"
+      ],
+      "blueCats": [
+        "健身器材",
+        "智能穿戴"
+      ],
+      "founded": "2012",
+      "users": "1.6亿/月",
+      "payments": "COD/Lazada Wallet/信用卡",
+      "events": "Lazada Birthday Sale, 11.11"
+    }
+  },
+  {
+    "name": "Amazon",
+    "region": "欧美, 日韩, 中东",
+    "categories": "3C数码,家居家电,服饰鞋包,图书,美妆",
+    "gmv": "7000",
+    "fee": "12",
+    "feeDesc": "品类佣金8-15%+FBA仓储费+广告费",
+    "type": "货架电商",
+    "mau": "300000",
+    "updates": "Prime会员超2.5亿;FBA费用上涨;AI购物助手Rufus上线;广告收入破500亿美元",
+    "ext": {
+      "growth": "+9.5%",
+      "risk": "low",
+      "shipping": "FBA+FBM",
+      "entry": "跨境店可入驻",
+      "priceRange": "$10-100",
+      "hotCats": [
+        "电子",
+        "家居",
+        "美妆"
+      ],
+      "blueCats": [
+        "宠物",
+        "户外",
+        "健康"
+      ],
+      "founded": "1994",
+      "users": "3.1亿/月",
+      "payments": "信用卡/Amazon Pay/Afterpay",
+      "events": "Prime Day, Black Friday, Cyber Monday"
+    }
+  },
+  {
+    "name": "Temu",
+    "region": "欧美, 日韩",
+    "categories": "服饰鞋包,家居日用,美妆个护,3C配件,户外",
+    "gmv": "500",
+    "fee": "0",
+    "feeDesc": "全托管平台统一定价",
+    "type": "跨境专供",
+    "mau": "20000",
+    "updates": "全球扩张至80+国家;半托管模式铺开;面临欧盟DSA合规审查",
+    "ext": {
+      "growth": "+183.5%",
+      "risk": "high",
+      "shipping": "全托管/半托管模式",
+      "entry": "跨境卖家申请",
+      "priceRange": "$1-25",
+      "hotCats": [
+        "家居小商品",
+        "服饰",
+        "工具"
+      ],
+      "blueCats": [
+        "户外用品",
+        "汽车配件"
+      ],
+      "founded": "2022",
+      "users": "1.2亿/月",
+      "payments": "信用卡/PayPal/Apple Pay",
+      "events": "Black Friday, New Year Sale"
+    }
+  },
+  {
+    "name": "SHEIN Marketplace",
+    "region": "欧美, 东南亚, 中东, 拉美",
+    "categories": "女装快时尚,美妆个护,配饰,家居,男装",
+    "gmv": "450",
+    "fee": "15",
+    "feeDesc": "第三方佣金10-20%+物流费",
+    "type": "货架电商",
+    "mau": "15000",
+    "updates": "Marketplace第三方卖家超5万;伦敦IPO筹备中;供应链本土化转移",
+    "ext": {
+      "growth": "+42.6%",
+      "risk": "mid",
+      "shipping": "跨境直邮+海外仓",
+      "entry": "供应商/卖家入驻",
+      "priceRange": "$3-20",
+      "hotCats": [
+        "快时尚女装",
+        "配饰"
+      ],
+      "blueCats": [
+        "大码女装",
+        "家居装饰"
+      ],
+      "founded": "2008",
+      "users": "1.5亿/月",
+      "payments": "信用卡/PayPal/Afterpay",
+      "events": "SHEIN Sale, 黑五"
+    }
+  },
+  {
+    "name": "AliExpress 速卖通",
+    "region": "欧美, 中东, 拉美",
+    "categories": "3C数码,服饰鞋包,家居家装,汽配,美妆",
+    "gmv": "400",
+    "fee": "7",
+    "feeDesc": "品类佣金5-8%+交易服务费5%",
+    "type": "跨境专供",
+    "mau": "20000",
+    "updates": "全面推Choice全托管+半托管双模式;韩国市场增长迅猛;欧洲仓本土化加速",
+    "ext": {}
+  },
+  {
+    "name": "eBay",
+    "region": "欧美",
+    "categories": "汽配,二手商品,电子数码,收藏品,服饰",
+    "gmv": "750",
+    "fee": "14",
+    "feeDesc": "成交价佣金约13-15%",
+    "type": "货架电商",
+    "mau": "13000",
+    "updates": "聚焦汽配和翻新电子品类;拍卖弱化固定价占比超85%;卖家费用优化",
+    "ext": {}
+  },
+  {
+    "name": "Tokopedia",
+    "region": "东南亚",
+    "categories": "家电,家居,美妆个护,服饰,食品",
+    "gmv": "250",
+    "fee": "1",
+    "feeDesc": "佣金0-1%+支付手续费0.5-1%",
+    "type": "货架电商",
+    "mau": "10000",
+    "updates": "与TikTok Shop印尼合并运营;GoTo集团与Gojek生态整合;本土商家保护加强",
+    "ext": {
+      "growth": "+20.3%",
+      "risk": "low",
+      "shipping": "本土仓为主",
+      "entry": "需本土公司",
+      "priceRange": "$5-60",
+      "hotCats": [
+        "电子产品",
+        "穆斯林服饰",
+        "家居"
+      ],
+      "blueCats": [
+        "健康保健",
+        "智能设备"
+      ],
+      "founded": "2009",
+      "users": "1.05亿/月",
+      "payments": "GoPay/银行转账/COD",
+      "events": "Harbolnas 12.12, Ramadan Sale"
+    }
+  },
+  {
+    "name": "MercadoLibre 美客多",
+    "region": "拉美",
+    "categories": "3C数码,家居家电,服饰,汽配,美妆",
+    "gmv": "200",
+    "fee": "14.5",
+    "feeDesc": "品类佣金12-17%+支付+物流费",
+    "type": "货架电商",
+    "mau": "30000",
+    "updates": "GMV同比增长35%;Mercado Pago成拉美最大金融科技;自有物流覆盖18国",
+    "ext": {
+      "growth": "+34.8%",
+      "risk": "low",
+      "shipping": "Mercado Envios物流",
+      "entry": "跨境店可入驻",
+      "priceRange": "$10-80",
+      "hotCats": [
+        "电子",
+        "家居",
+        "时尚"
+      ],
+      "blueCats": [
+        "汽摩配件",
+        "工具"
+      ],
+      "founded": "1999",
+      "users": "6500万/月",
+      "payments": "Mercado Pago/信用卡/COD",
+      "events": "Hot Sale, Cyber Monday拉美"
+    }
+  },
+  {
+    "name": "Bukalapak",
+    "region": "",
+    "categories": "日用品,食品,电子配件",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "4000万/月",
+    "updates": "",
+    "ext": {
+      "growth": "-5.2%",
+      "risk": "mid",
+      "shipping": "本土仓",
+      "entry": "需本土公司",
+      "priceRange": "$3-30",
+      "hotCats": [
+        "日用品",
+        "食品",
+        "电子配件"
+      ],
+      "blueCats": [
+        "手工艺品",
+        "本地特产"
+      ],
+      "founded": "2010",
+      "users": "4000万/月",
+      "payments": "Bukapay/银行转账/COD",
+      "events": "12.12促销, 独立日大促"
+    }
+  },
+  {
+    "name": "Noon",
+    "region": "",
+    "categories": "电子,美妆,家居",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "2000万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+28.4%",
+      "risk": "low",
+      "shipping": "Noon Express本土仓",
+      "entry": "需本地TR号",
+      "priceRange": "$10-100",
+      "hotCats": [
+        "电子",
+        "美妆",
+        "家居"
+      ],
+      "blueCats": [
+        "香水",
+        "有机食品"
+      ],
+      "founded": "2017",
+      "users": "2000万/月",
+      "payments": "COD/信用卡/Noon Pay",
+      "events": "Yellow Friday, Ramadan"
+    }
+  },
+  {
+    "name": "Allegro",
+    "region": "",
+    "categories": "电子,家居,母婴",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "2200万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+22.5%",
+      "risk": "low",
+      "shipping": "本土仓+Allegro物流",
+      "entry": "需欧盟公司",
+      "priceRange": "€5-80",
+      "hotCats": [
+        "电子",
+        "家居",
+        "母婴"
+      ],
+      "blueCats": [
+        "户外",
+        "汽车配件"
+      ],
+      "founded": "1999",
+      "users": "2200万/月",
+      "payments": "BLIK/银行转账/信用卡",
+      "events": "Black Friday, Smart Weekend"
+    }
+  },
+  {
+    "name": "eMAG",
+    "region": "",
+    "categories": "电子,家居,运动",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "1200万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+26.3%",
+      "risk": "low",
+      "shipping": "本土仓+eMAG Fulfillment",
+      "entry": "需罗马尼亚公司",
+      "priceRange": "€10-80",
+      "hotCats": [
+        "电子",
+        "家居",
+        "运动"
+      ],
+      "blueCats": [
+        "DIY工具",
+        "美妆"
+      ],
+      "founded": "2001",
+      "users": "1200万/月",
+      "payments": "银行转账/信用卡/COD",
+      "events": "eMAG Days, Black Friday"
+    }
+  },
+  {
+    "name": "Zalora",
+    "region": "",
+    "categories": "时尚服饰,美妆,鞋靴",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "1500万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+16.2%",
+      "risk": "low",
+      "shipping": "本土仓+跨境",
+      "entry": "品牌/经销商入驻",
+      "priceRange": "$10-60",
+      "hotCats": [
+        "时尚服饰",
+        "美妆",
+        "鞋靴"
+      ],
+      "blueCats": [
+        "运动休闲",
+        "设计师品牌"
+      ],
+      "founded": "2012",
+      "users": "1500万/月",
+      "payments": "COD/信用卡/Zalora Wallet",
+      "events": "ZALORA Sale, 年中大促"
+    }
+  },
+  {
+    "name": "Flipkart",
+    "region": "",
+    "categories": "电子,服饰,家居",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "2.5亿/月",
+    "updates": "",
+    "ext": {
+      "growth": "+25.4%",
+      "risk": "low",
+      "shipping": "Ekart物流+本土仓",
+      "entry": "需印度公司(GST)",
+      "priceRange": "₹200-5000",
+      "hotCats": [
+        "电子",
+        "服饰",
+        "家居"
+      ],
+      "blueCats": [
+        "食品杂货",
+        "健康"
+      ],
+      "founded": "2007",
+      "users": "2.5亿/月",
+      "payments": "PhonePe/UPI/COD/信用卡",
+      "events": "Big Billion Days, Diwali Sale"
+    }
+  },
+  {
+    "name": "Meesho",
+    "region": "",
+    "categories": "低价服饰,家居,配饰",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "1.2亿/月",
+    "updates": "",
+    "ext": {
+      "growth": "+52.8%",
+      "risk": "mid",
+      "shipping": "卖家自发+第三方物流",
+      "entry": "印度本土卖家",
+      "priceRange": "₹100-1000",
+      "hotCats": [
+        "低价服饰",
+        "家居",
+        "配饰"
+      ],
+      "blueCats": [
+        "手工艺品",
+        "本地品牌"
+      ],
+      "founded": "2015",
+      "users": "1.2亿/月",
+      "payments": "UPI/COD/银行转账",
+      "events": "Meesho Sale, Festival Sale"
+    }
+  },
+  {
+    "name": "Amazon欧洲站",
+    "region": "",
+    "categories": "家居,电子,服饰",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "2.5亿/月",
+    "updates": "",
+    "ext": {
+      "growth": "+7.8%",
+      "risk": "low",
+      "shipping": "FBA欧洲仓",
+      "entry": "需VAT/EORI号",
+      "priceRange": "€10-80",
+      "hotCats": [
+        "家居",
+        "电子",
+        "服饰"
+      ],
+      "blueCats": [
+        "有机食品",
+        "环保产品"
+      ],
+      "founded": "1998(英国)",
+      "users": "2.5亿/月",
+      "payments": "信用卡/银行转账/Amazon Pay",
+      "events": "Prime Day, Black Friday"
+    }
+  },
+  {
+    "name": "Amazon日本站",
+    "region": "",
+    "categories": "电子,家居,动漫周边",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "6500万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+6.2%",
+      "risk": "low",
+      "shipping": "FBA日本仓",
+      "entry": "跨境可入驻(需日文)",
+      "priceRange": "¥1000-10000",
+      "hotCats": [
+        "电子",
+        "家居",
+        "动漫周边"
+      ],
+      "blueCats": [
+        "保健品",
+        "户外"
+      ],
+      "founded": "2000",
+      "users": "6500万/月",
+      "payments": "信用卡/便利店支付/Amazon Pay",
+      "events": "Prime Day, Black Friday, 年末"
+    }
+  },
+  {
+    "name": "Shopee巴西",
+    "region": "",
+    "categories": "电子,服饰,美妆",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "3000万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+58.3%",
+      "risk": "mid",
+      "shipping": "SLS+本土仓",
+      "entry": "跨境可入驻",
+      "priceRange": "R$20-100",
+      "hotCats": [
+        "电子",
+        "服饰",
+        "美妆"
+      ],
+      "blueCats": [
+        "家居",
+        "运动"
+      ],
+      "founded": "2019(巴西)",
+      "users": "3000万/月",
+      "payments": "PIX/Boleto/信用卡",
+      "events": "Black Friday, Shopee 11.11"
+    }
+  },
+  {
+    "name": "Kaspi.kz",
+    "region": "",
+    "categories": "电子,家居,日用",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "1300万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+42.1%",
+      "risk": "low",
+      "shipping": "本土配送",
+      "entry": "需哈萨克斯坦公司",
+      "priceRange": "$10-60",
+      "hotCats": [
+        "电子",
+        "家居",
+        "日用"
+      ],
+      "blueCats": [
+        "健身",
+        "宠物"
+      ],
+      "founded": "2002(电商2018)",
+      "users": "1300万/月",
+      "payments": "Kaspi Pay/银行卡",
+      "events": "Nauryz Sale, Black Friday"
+    }
+  },
+  {
+    "name": "Yandex Market",
+    "region": "",
+    "categories": "电子,家居,食品",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "4500万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+35.6%",
+      "risk": "mid",
+      "shipping": "Yandex Delivery",
+      "entry": "俄罗斯公司优先",
+      "priceRange": "$5-50",
+      "hotCats": [
+        "电子",
+        "家居",
+        "食品"
+      ],
+      "blueCats": [
+        "中国3C",
+        "运动"
+      ],
+      "founded": "2000",
+      "users": "4500万/月",
+      "payments": "Yandex Pay/银行卡/COD",
+      "events": "Black Friday, New Year Sale"
+    }
+  },
+  {
+    "name": "Trendyol",
+    "region": "",
+    "categories": "时尚,家居,美妆",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "3500万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+48.9%",
+      "risk": "low",
+      "shipping": "本土仓+Trendyol Express",
+      "entry": "需土耳其公司",
+      "priceRange": "$5-40",
+      "hotCats": [
+        "时尚",
+        "家居",
+        "美妆"
+      ],
+      "blueCats": [
+        "食品",
+        "电子产品"
+      ],
+      "founded": "2010",
+      "users": "3500万/月",
+      "payments": "信用卡/银行转账/COD",
+      "events": "Trendyol Sale, Black Friday"
+    }
+  },
+  {
+    "name": "Hepsiburada",
+    "region": "",
+    "categories": "电子,家居,食品",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "2000万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+22.7%",
+      "risk": "low",
+      "shipping": "本土仓+HepsiJet",
+      "entry": "需土耳其公司",
+      "priceRange": "$10-60",
+      "hotCats": [
+        "电子",
+        "家居",
+        "食品"
+      ],
+      "blueCats": [
+        "母婴",
+        "户外"
+      ],
+      "founded": "2000",
+      "users": "2000万/月",
+      "payments": "信用卡/银行转账/COD",
+      "events": "Black Friday, 年中大促"
+    }
+  },
+  {
+    "name": "Salla",
+    "region": "",
+    "categories": "时尚,香水,电子",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "800万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+62.4%",
+      "risk": "low",
+      "shipping": "商家自发+Salla Ship",
+      "entry": "沙特本地公司",
+      "priceRange": "$10-80",
+      "hotCats": [
+        "时尚",
+        "香水",
+        "电子"
+      ],
+      "blueCats": [
+        "有机食品",
+        "健康"
+      ],
+      "founded": "2015",
+      "users": "800万/月",
+      "payments": "Mada/Apple Pay/Tamara",
+      "events": "Saudi National Day, Ramadan"
+    }
+  },
+  {
+    "name": "MyNavi/日本内容电商",
+    "region": "",
+    "categories": "美妆,时尚,食品",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "1200万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+38.5%",
+      "risk": "low",
+      "shipping": "本土配送",
+      "entry": "需日本公司",
+      "priceRange": "¥2000-8000",
+      "hotCats": [
+        "美妆",
+        "时尚",
+        "食品"
+      ],
+      "blueCats": [
+        "健康保健",
+        "宠物"
+      ],
+      "founded": "2012",
+      "users": "1200万/月",
+      "payments": "信用卡/便利店支付/PayPay",
+      "events": "Super Sale, 年末"
+    }
+  },
+  {
+    "name": "Grabi/泰国内容电商",
+    "region": "",
+    "categories": "美妆,食品,时尚",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "500万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+55.2%",
+      "risk": "mid",
+      "shipping": "泰国本土仓",
+      "entry": "泰国本地公司",
+      "priceRange": "฿100-1000",
+      "hotCats": [
+        "美妆",
+        "食品",
+        "时尚"
+      ],
+      "blueCats": [
+        "健康",
+        "家居"
+      ],
+      "founded": "2020",
+      "users": "500万/月",
+      "payments": "PromptPay/COD/信用卡",
+      "events": "Songkran Sale, 11.11"
+    }
+  },
+  {
+    "name": "Shopify独立站生态",
+    "region": "",
+    "categories": "DTC品牌,时尚,美妆",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "N/A(独立站)",
+    "updates": "",
+    "ext": {
+      "growth": "+25.3%",
+      "risk": "low",
+      "shipping": "商家自选3PL",
+      "entry": "无门槛(付费建站)",
+      "priceRange": "$10-200",
+      "hotCats": [
+        "DTC品牌",
+        "时尚",
+        "美妆"
+      ],
+      "blueCats": [
+        "订阅盒子",
+        "定制品"
+      ],
+      "founded": "2006",
+      "users": "N/A(独立站)",
+      "payments": "Shopify Payments/PayPal/Afterpay",
+      "events": "Shop Now, Black Friday"
+    }
+  },
+  {
+    "name": "MakeShop/日本",
+    "region": "",
+    "categories": "美妆,食品,家居",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "600万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+15.8%",
+      "risk": "low",
+      "shipping": "本土配送",
+      "entry": "日本公司",
+      "priceRange": "¥1500-6000",
+      "hotCats": [
+        "美妆",
+        "食品",
+        "家居"
+      ],
+      "blueCats": [
+        "宠物",
+        "健康"
+      ],
+      "founded": "2000",
+      "users": "600万/月",
+      "payments": "信用卡/便利店支付/银行转账",
+      "events": "年末大促, 夏季特卖"
+    }
+  },
+  {
+    "name": "BASE/日本",
+    "region": "",
+    "categories": "手工艺品,设计师品牌,食品",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "400万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+28.6%",
+      "risk": "low",
+      "shipping": "本土配送",
+      "entry": "日本个人/公司均可",
+      "priceRange": "¥1000-5000",
+      "hotCats": [
+        "手工艺品",
+        "设计师品牌",
+        "食品"
+      ],
+      "blueCats": [
+        "古着",
+        "独立品牌"
+      ],
+      "founded": "2012",
+      "users": "400万/月",
+      "payments": "信用卡/便利店支付/PayPay",
+      "events": "BASE Sale, 年末"
+    }
+  },
+  {
+    "name": "Storenvy",
+    "region": "",
+    "categories": "独立设计,手工艺品,复古",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "300万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+12.5%",
+      "risk": "low",
+      "shipping": "商家自发",
+      "entry": "全球卖家可入驻",
+      "priceRange": "$10-60",
+      "hotCats": [
+        "独立设计",
+        "手工艺品",
+        "复古"
+      ],
+      "blueCats": [
+        "Z世代潮牌",
+        "环保产品"
+      ],
+      "founded": "2010",
+      "users": "300万/月",
+      "payments": "信用卡/PayPal",
+      "events": "Holiday Market, Spring Sale"
+    }
+  },
+  {
+    "name": "BigCommerce",
+    "region": "",
+    "categories": "B2B,工业品,品牌DTC",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "N/A(独立站)",
+    "updates": "",
+    "ext": {
+      "growth": "+18.3%",
+      "risk": "low",
+      "shipping": "商家自选3PL",
+      "entry": "无门槛(SaaS建站)",
+      "priceRange": "$15-150",
+      "hotCats": [
+        "B2B",
+        "工业品",
+        "品牌DTC"
+      ],
+      "blueCats": [
+        "订阅服务",
+        "数字产品"
+      ],
+      "founded": "2009",
+      "users": "N/A(独立站)",
+      "payments": "Stripe/PayPal/Square",
+      "events": "根据商家自定义"
+    }
+  },
+  {
+    "name": "Faspify",
+    "region": "",
+    "categories": "数字产品,订阅,小型DTC",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "100万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+120.5%",
+      "risk": "mid",
+      "shipping": "极简结算+3PL对接",
+      "entry": "无门槛(轻量建站)",
+      "priceRange": "$5-80",
+      "hotCats": [
+        "数字产品",
+        "订阅",
+        "小型DTC"
+      ],
+      "blueCats": [
+        "创作者经济",
+        "NFT衍生"
+      ],
+      "founded": "2022",
+      "users": "100万/月",
+      "payments": "信用卡/PayPal/Apple Pay",
+      "events": "平台促销期"
+    }
+  },
+  {
+    "name": "Socios Live/拉美社交电商",
+    "region": "",
+    "categories": "美妆,服饰,食品",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "200万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+88.3%",
+      "risk": "high",
+      "shipping": "本土仓+社交分销",
+      "entry": "拉美本地公司",
+      "priceRange": "$5-30",
+      "hotCats": [
+        "美妆",
+        "服饰",
+        "食品"
+      ],
+      "blueCats": [
+        "健康",
+        "家居"
+      ],
+      "founded": "2021",
+      "users": "200万/月",
+      "payments": "PIX/梅卡多 Pago/COD",
+      "events": "社交裂变促销期"
+    }
+  },
+  {
+    "name": "Kwai Shop/拉美",
+    "region": "",
+    "categories": "美妆,时尚配饰,3C",
+    "gmv": "",
+    "fee": "",
+    "feeDesc": "",
+    "type": "",
+    "mau": "3500万/月",
+    "updates": "",
+    "ext": {
+      "growth": "+125.6%",
+      "risk": "high",
+      "shipping": "跨境直邮+本土仓",
+      "entry": "跨境/本土均可",
+      "priceRange": "$3-25",
+      "hotCats": [
+        "美妆",
+        "时尚配饰",
+        "3C"
+      ],
+      "blueCats": [
+        "小家电",
+        "运动"
+      ],
+      "founded": "2022",
+      "users": "3500万/月",
+      "payments": "PIX/Boleto/COD/信用卡",
+      "events": "Kwai 大促, Carnival Sale"
+    }
+  }
+]

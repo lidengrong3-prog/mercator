@@ -680,6 +680,218 @@ def merge_data(existing_file, new_items, key_fields=['title']):
     
     return existing, added
 
+# ---- Platform Updates Collector ----
+
+# Platform name aliases for news search
+PLATFORM_ALIASES = {
+    'Amazon': ['Amazon', '亚马逊'],
+    'TikTok Shop': ['TikTok Shop', 'TikTok电商'],
+    'Shopee': ['Shopee', '虾皮'],
+    'Temu': ['Temu', '拼多多跨境'],
+    'SHEIN Marketplace': ['SHEIN', '希音'],
+    'AliExpress 速卖通': ['AliExpress', '速卖通'],
+    'eBay': ['eBay'],
+    'Lazada': ['Lazada', '来赞达'],
+    'Tokopedia': ['Tokopedia'],
+    'MercadoLibre 美客多': ['MercadoLibre', '美客多'],
+    'Ozon': ['Ozon'],
+    'Wildberries': ['Wildberries'],
+    'Coupang': ['Coupang', '酷澎'],
+    'Jumia': ['Jumia'],
+    'Walmart Marketplace': ['Walmart Marketplace', '沃尔玛电商'],
+    'Etsy': ['Etsy'],
+    'Zalando': ['Zalando'],
+    'Rakuten 乐天': ['Rakuten', '乐天'],
+    'Mercari 煤炉': ['Mercari', '煤炉'],
+    'Cdiscount': ['Cdiscount'],
+    'ASOS': ['ASOS'],
+    'Qoo10': ['Qoo10'],
+    'Instagram Shop / Facebook Shop': ['Instagram Shop', 'Facebook Shop', 'Meta电商'],
+    'YouTube Shopping': ['YouTube Shopping', 'YouTube购物'],
+    'Pinterest Shop': ['Pinterest Shop'],
+}
+
+# Federal Register search terms per platform
+PLATFORM_FR_TERMS = {
+    'Amazon': 'amazon ecommerce',
+    'TikTok Shop': 'tiktok shop social commerce',
+    'Temu': 'temu ecommerce',
+    'SHEIN Marketplace': 'shein fast fashion',
+    'AliExpress 速卖通': 'aliexpress cross-border ecommerce',
+    'Shopee': 'shopee ecommerce',
+    'eBay': 'ebay marketplace',
+    'Walmart Marketplace': 'walmart ecommerce',
+    'Lazada': 'lazada alibaba ecommerce',
+    'MercadoLibre 美客多': 'mercadolibre latin america ecommerce',
+}
+
+
+def _search_amz123(platform_name, aliases):
+    """Search AMZ123 for platform news."""
+    items = []
+    for alias in aliases[:2]:
+        url = f'https://www.amz123.com/search?q={alias}'
+        html = fetch_html(url)
+        if not html:
+            continue
+        # Find article titles
+        patterns = [
+            r'<a[^>]+href="(/[^"]+)"[^>]*>([^<]*' + re.escape(alias) + r'[^<]*)</a>',
+            r'<h[234][^>]*>([^<]*' + re.escape(alias) + r'[^<]*)</h[234]>',
+            r'"title":"([^"]*' + re.escape(alias) + r'[^"]*)"',
+        ]
+        seen = set()
+        for pat in patterns:
+            matches = re.findall(pat, html, re.IGNORECASE)
+            for m in matches:
+                title = m.strip() if isinstance(m, str) else str(m).strip()
+                if len(title) < 8 or title in seen:
+                    continue
+                seen.add(title)
+                items.append(title)
+        if items:
+            break
+    return items
+
+
+def _search_cifnews(platform_name, aliases):
+    """Search 雨果网 for platform news."""
+    items = []
+    for alias in aliases[:2]:
+        url = f'https://www.cifnews.com/search?keyword={alias}'
+        html = fetch_html(url)
+        if not html:
+            continue
+        patterns = [
+            r'<a[^>]+href="(https?://[^"]*cifnews[^"]*)"[^>]*>([^<]*' + re.escape(alias) + r'[^<]*)</a>',
+            r'"title":"([^"]*' + re.escape(alias) + r'[^"]*)"',
+            r'<h[234][^>]*>\s*<a[^>]+>([^<]*' + re.escape(alias) + r'[^<]*)</a>',
+        ]
+        seen = set()
+        for pat in patterns:
+            matches = re.findall(pat, html, re.IGNORECASE)
+            for m in matches:
+                if isinstance(m, tuple):
+                    title = m[1].strip() if len(m) > 1 else m[0].strip()
+                else:
+                    title = m.strip()
+                if len(title) < 8 or title in seen:
+                    continue
+                seen.add(title)
+                items.append(title)
+        if items:
+            break
+    return items
+
+
+def _search_federal_register(platform_name, term):
+    """Search Federal Register for platform-related policy changes."""
+    items = []
+    url = (
+        f"https://www.federalregister.gov/api/v1/documents.json?"
+        f"filter[conditions][term]={term}"
+        f"&per_page=5&order=newest"
+        f"&fields[]=title&fields[]=abstract"
+    )
+    data = fetch_json(url)
+    if data and 'results' in data:
+        for doc in data['results']:
+            title = doc.get('title', '').strip()
+            if title and len(title) > 5:
+                items.append(title)
+    return items
+
+
+def collect_platform_updates():
+    """Collect latest updates for each platform and merge into data/platforms.json."""
+    print("\n[Platform Updates] Collecting platform dynamics...")
+    
+    platforms_file = os.path.join(DATA_DIR, 'platforms.json')
+    if not os.path.exists(platforms_file):
+        print("  [WARN] data/platforms.json not found, skipping platform updates")
+        return
+    
+    with open(platforms_file, 'r', encoding='utf-8') as f:
+        platforms = json.load(f)
+    
+    print(f"  Loaded {len(platforms)} platforms")
+    
+    # Limit to 10 platforms per run to avoid timeout
+    MAX_UPDATES_PER_RUN = 10
+    updated_count = 0
+    
+    for platform in platforms:
+        if updated_count >= MAX_UPDATES_PER_RUN:
+            break
+        
+        pname = platform.get('name', '')
+        if not pname:
+            continue
+        
+        # Get aliases for search
+        aliases = PLATFORM_ALIASES.get(pname, [pname])
+        fr_term = PLATFORM_FR_TERMS.get(pname, pname.lower())
+        
+        new_titles = []
+        
+        # 1. Search AMZ123
+        try:
+            amz_titles = _search_amz123(pname, aliases)
+            new_titles.extend(amz_titles[:3])
+        except Exception as e:
+            print(f"  [WARN] AMZ123 search failed for {pname}: {e}")
+        
+        # 2. Search 雨果网
+        try:
+            cif_titles = _search_cifnews(pname, aliases)
+            new_titles.extend(cif_titles[:3])
+        except Exception as e:
+            print(f"  [WARN] cifnews search failed for {pname}: {e}")
+        
+        # 3. Federal Register (US platforms)
+        if fr_term and pname in PLATFORM_FR_TERMS:
+            try:
+                fr_titles = _search_federal_register(pname, fr_term)
+                new_titles.extend(fr_titles[:2])
+            except Exception as e:
+                print(f"  [WARN] Federal Register search failed for {pname}: {e}")
+        
+        if new_titles:
+            # Deduplicate against existing updates
+            existing_updates = platform.get('updates', '')
+            existing_parts = [u.strip() for u in existing_updates.split(';') if u.strip()]
+            
+            added = 0
+            for title in new_titles:
+                # Skip if similar to existing
+                title_clean = title.strip()
+                if not title_clean or len(title_clean) < 8:
+                    continue
+                is_dup = False
+                for ep in existing_parts:
+                    # Simple overlap check
+                    if any(w in ep for w in title_clean.split() if len(w) > 3):
+                        is_dup = True
+                        break
+                if not is_dup:
+                    existing_parts.append(title_clean[:100])
+                    added += 1
+            
+            if added > 0:
+                # Keep only latest 8 updates
+                platform['updates'] = ';'.join(existing_parts[-8:])
+                updated_count += 1
+                print(f"  [{updated_count}/{MAX_UPDATES_PER_RUN}] {pname}: +{added} new updates")
+    
+    if updated_count > 0:
+        # Add metadata
+        with open(platforms_file, 'w', encoding='utf-8') as f:
+            json.dump(platforms, f, ensure_ascii=False, indent=2)
+        print(f"  Updated {updated_count} platforms in platforms.json")
+    else:
+        print("  No new platform updates found")
+
+
 # ---- Main ----
 def main():
     print(f"=== Mercator Data Collector ===")
@@ -810,6 +1022,14 @@ def main():
     
     print(f"Policies: {len(policies_data['items'])} total, +{p_added} new")
     print(f"Rules: {len(rules_data['items'])} total, +{r_added} new")
+    
+    # Update platform dynamics
+    try:
+        collect_platform_updates()
+    except Exception as e:
+        print(f"  [ERROR] Platform updates: {e}")
+        traceback.print_exc()
+    
     print(f"\n=== Collection complete ===")
 
 if __name__ == '__main__':
