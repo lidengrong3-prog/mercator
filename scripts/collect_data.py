@@ -1185,6 +1185,126 @@ def collect_country_updates():
         print("  No new country updates found")
 
 
+# ---- Supabase Sync ----
+def sync_to_supabase(policies_data, rules_data):
+    """Sync collected data to Supabase PostgreSQL database.
+    Uses service_role key from environment variables.
+    Only syncs if SUPABASE_URL and SUPABASE_SERVICE_KEY are configured.
+    """
+    supabase_url = os.environ.get('SUPABASE_URL', '').strip()
+    service_key = os.environ.get('SUPABASE_SERVICE_KEY', '').strip()
+    
+    if not supabase_url or not service_key:
+        print("\n[Supabase Sync] Skipped - no credentials configured")
+        print("  Set SUPABASE_URL and SUPABASE_SERVICE_KEY env vars to enable")
+        return
+    
+    print("\n[Supabase Sync] Starting data sync...")
+    api_url = f"{supabase_url}/rest/v1"
+    headers = {
+        'apikey': service_key,
+        'Authorization': f'Bearer {service_key}',
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal,resolution=merge-duplicates'
+    }
+    
+    sync_count = 0
+    
+    # 1. Sync policies
+    try:
+        payload = json.dumps({
+            'key': 'policies',
+            'data': policies_data,
+            'meta': {
+                'source': 'policies.json',
+                'updated_at': policies_data.get('updated_at', NOW_ISO),
+                'source_count': policies_data.get('source_count', 0),
+                'item_count': len(policies_data.get('items', []))
+            }
+        }).encode('utf-8')
+        req = Request(f"{api_url}/market_data", data=payload, headers=headers, method='POST')
+        with urlopen(req, timeout=30) as resp:
+            if resp.status in (200, 201):
+                sync_count += 1
+                print(f"  ✅ policies synced ({len(policies_data.get('items', []))} items)")
+    except Exception as e:
+        print(f"  ❌ policies sync failed: {e}")
+    
+    # 2. Sync rules
+    try:
+        payload = json.dumps({
+            'key': 'rules',
+            'data': rules_data,
+            'meta': {
+                'source': 'rules.json',
+                'updated_at': rules_data.get('updated_at', NOW_ISO),
+                'source_count': rules_data.get('source_count', 0),
+                'item_count': len(rules_data.get('items', []))
+            }
+        }).encode('utf-8')
+        req = Request(f"{api_url}/market_data", data=payload, headers=headers, method='POST')
+        with urlopen(req, timeout=30) as resp:
+            if resp.status in (200, 201):
+                sync_count += 1
+                print(f"  ✅ rules synced ({len(rules_data.get('items', []))} items)")
+    except Exception as e:
+        print(f"  ❌ rules sync failed: {e}")
+    
+    # 3. Sync countries (read from file)
+    countries_file = os.path.join(DATA_DIR, 'countries.json')
+    if os.path.exists(countries_file):
+        try:
+            with open(countries_file, 'r', encoding='utf-8') as f:
+                countries = json.load(f)
+            # Filter out metadata
+            cleaned = {k: v for k, v in countries.items() if not k.startswith('_')}
+            payload = json.dumps({
+                'key': 'countries',
+                'data': cleaned,
+                'meta': {
+                    'source': 'countries.json',
+                    'country_count': len(cleaned),
+                    'country_codes': list(cleaned.keys()),
+                    'updated_at': NOW_ISO
+                }
+            }).encode('utf-8')
+            req = Request(f"{api_url}/market_data", data=payload, headers=headers, method='POST')
+            with urlopen(req, timeout=30) as resp:
+                if resp.status in (200, 201):
+                    sync_count += 1
+                    print(f"  ✅ countries synced ({len(cleaned)} profiles)")
+        except Exception as e:
+            print(f"  ❌ countries sync failed: {e}")
+    
+    # 4. Sync platforms (read from file)
+    platforms_file = os.path.join(DATA_DIR, 'platforms.json')
+    if os.path.exists(platforms_file):
+        try:
+            with open(platforms_file, 'r', encoding='utf-8') as f:
+                platforms = json.load(f)
+            if isinstance(platforms, list):
+                regions = set(p.get('region', '') for p in platforms if p.get('region'))
+                payload = json.dumps({
+                    'key': 'platforms',
+                    'data': platforms,
+                    'meta': {
+                        'source': 'platforms.json',
+                        'platform_count': len(platforms),
+                        'regions': sorted(regions),
+                        'updated_at': NOW_ISO
+                    }
+                }).encode('utf-8')
+                req = Request(f"{api_url}/market_data", data=payload, headers=headers, method='POST')
+                with urlopen(req, timeout=30) as resp:
+                    if resp.status in (200, 201):
+                        sync_count += 1
+                        print(f"  ✅ platforms synced ({len(platforms)} platforms)")
+        except Exception as e:
+            print(f"  ❌ platforms sync failed: {e}")
+    
+    print(f"[Supabase Sync] Complete: {sync_count}/4 datasets synced")
+
+
 # ---- Main ----
 def main():
     print(f"=== Mercator Data Collector ===")
@@ -1328,6 +1448,13 @@ def main():
         collect_country_updates()
     except Exception as e:
         print(f"  [ERROR] Country updates: {e}")
+        traceback.print_exc()
+    
+    # Sync data to Supabase
+    try:
+        sync_to_supabase(policies_data, rules_data)
+    except Exception as e:
+        print(f"  [ERROR] Supabase sync: {e}")
         traceback.print_exc()
     
     print(f"\n=== Collection complete ===")
