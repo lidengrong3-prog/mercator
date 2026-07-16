@@ -19,7 +19,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: python scripts/collect_data.py
+          - name: Run data collector
+        env:
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_API_URL: ${{ secrets.AI_API_URL }}
+          AI_MODEL: ${{ secrets.AI_MODEL }}
+        run: python scripts/collect_data.py
       - id: git-check
         run: git diff --quiet data/ || echo "changed=true" >> $GITHUB_OUTPUT
       - if: steps.git-check.outputs.changed == 'true'
