@@ -1,0 +1,1118 @@
+{
+  "gb": {
+    "name": "UK",
+    "full_name": "United Kingdom",
+    "population": {
+      "value": 69281000.0,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.TOTL?locations=GBR"
+    },
+    "gdppc": {
+      "value": 53341.3131094262,
+      "source_url": "https://data.worldbank.org/indicator/NY.GDP.PCAP.CD?locations=GBR"
+    },
+    "pop_growth": {
+      "value": 1.09574630336216,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.GROW?locations=GBR"
+    },
+    "urbanization": {
+      "value": 83.2429544416085,
+      "source_url": "https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS?locations=GBR"
+    },
+    "internet": {
+      "value": 95.4720993,
+      "source_url": "https://data.worldbank.org/indicator/IT.NET.USER.ZS?locations=GBR"
+    },
+    "age_0_14": {
+      "value": 17.1850467046133,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.0014.TO.ZS?locations=GBR"
+    },
+    "age_15_64": {
+      "value": null,
+      "source_url": null
+    },
+    "age_65_plus": {
+      "value": 19.4997673608515,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.65UP.TO.ZS?locations=GBR"
+    }
+  },
+  "de": {
+    "name": "Germany",
+    "full_name": "Germany",
+    "population": {
+      "value": 82348669.0,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.TOTL?locations=DEU"
+    },
+    "gdppc": {
+      "value": 116.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tec00114/default/table?lang=en"
+    },
+    "pop_growth": {
+      "value": 83516593.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/demo_gind/default/table?lang=en"
+    },
+    "urbanization": {
+      "value": 82.0211432579125,
+      "source_url": "https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS?locations=DEU"
+    },
+    "internet": {
+      "value": 93.49999579,
+      "source_url": "https://data.worldbank.org/indicator/IT.NET.USER.ZS?locations=DEU"
+    },
+    "age_0_14": {
+      "value": 100.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/demo_poppcctb/default/table?lang=en"
+    },
+    "age_15_64": {
+      "value": 57.1,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/demo_pjanind/default/table?lang=en"
+    },
+    "age_65_plus": {
+      "value": 23.1955871731941,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.65UP.TO.ZS?locations=DEU"
+    }
+  },
+  "fr": {
+    "name": "France",
+    "full_name": "France",
+    "population": {
+      "value": null,
+      "source_url": null
+    },
+    "gdppc": {
+      "value": 42680.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/nama_10_pc/default/table?lang=en"
+    },
+    "pop_growth": {
+      "value": 0.261995241898747,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.GROW?locations=FRA"
+    },
+    "urbanization": {
+      "value": null,
+      "source_url": null
+    },
+    "internet": {
+      "value": 88.65381638,
+      "source_url": "https://data.worldbank.org/indicator/IT.NET.USER.ZS?locations=FRA"
+    },
+    "age_0_14": {
+      "value": 15.6434358194543,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.0014.FE.ZS?locations=FRA"
+    },
+    "age_15_64": {
+      "value": null,
+      "source_url": null
+    },
+    "age_65_plus": {
+      "value": 21.5,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tps00028/default/table?lang=en"
+    }
+  },
+  "it": {
+    "name": "Italy",
+    "full_name": "Italy",
+    "population": {
+      "value": 58971230.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tps00001/default/table?lang=en"
+    },
+    "gdppc": {
+      "value": 37350.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/nama_10_pc/default/table?lang=en"
+    },
+    "pop_growth": {
+      "value": -0.0534387378437725,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.GROW?locations=ITA"
+    },
+    "urbanization": {
+      "value": 69.6047535143071,
+      "source_url": "https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS?locations=ITA"
+    },
+    "internet": {
+      "value": 89.23,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tin00028/default/table?lang=en"
+    },
+    "age_0_14": {
+      "value": 11.892304596608,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.0014.TO.ZS?locations=ITA"
+    },
+    "age_15_64": {
+      "value": 57.6,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/demo_pjanind/default/table?lang=en"
+    },
+    "age_65_plus": {
+      "value": 24.3,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tps00028/default/table?lang=en"
+    }
+  },
+  "es": {
+    "name": "Spain",
+    "full_name": "Spain",
+    "population": {
+      "value": 48619695.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tps00001/default/table?lang=en"
+    },
+    "gdppc": {
+      "value": 32630.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/nama_10_pc/default/table?lang=en"
+    },
+    "pop_growth": {
+      "value": 1.02121260938381,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.GROW?locations=ESP"
+    },
+    "urbanization": {
+      "value": null,
+      "source_url": null
+    },
+    "internet": {
+      "value": 95.78,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tin00028/default/table?lang=en"
+    },
+    "age_0_14": {
+      "value": 12.9217448695747,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.0014.TO.ZS?locations=ESP"
+    },
+    "age_15_64": {
+      "value": 50.7,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/demo_pjanind/default/table?lang=en"
+    },
+    "age_65_plus": {
+      "value": 21.1454438932121,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.65UP.TO.ZS?locations=ESP"
+    }
+  },
+  "nl": {
+    "name": "Netherlands",
+    "full_name": "Netherlands",
+    "population": {
+      "value": 17942942.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tps00001/default/table?lang=en"
+    },
+    "gdppc": {
+      "value": 67465.3208126875,
+      "source_url": "https://data.worldbank.org/indicator/NY.GDP.PCAP.CD?locations=NLD"
+    },
+    "pop_growth": {
+      "value": 17993485.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/demo_gind/default/table?lang=en"
+    },
+    "urbanization": {
+      "value": null,
+      "source_url": null
+    },
+    "internet": {
+      "value": 99.52,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tin00028/default/table?lang=en"
+    },
+    "age_0_14": {
+      "value": 15.0256450781311,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.0014.TO.ZS?locations=NLD"
+    },
+    "age_15_64": {
+      "value": null,
+      "source_url": null
+    },
+    "age_65_plus": {
+      "value": 20.5,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tps00028/default/table?lang=en"
+    }
+  },
+  "pl": {
+    "name": "Poland",
+    "full_name": "Poland",
+    "population": {
+      "value": 36620970.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tps00001/default/table?lang=en"
+    },
+    "gdppc": {
+      "value": 25103.565661423,
+      "source_url": "https://data.worldbank.org/indicator/NY.GDP.PCAP.CD?locations=POL"
+    },
+    "pop_growth": {
+      "value": 36559233.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/demo_gind/default/table?lang=en"
+    },
+    "urbanization": {
+      "value": 59.9705468695101,
+      "source_url": "https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS?locations=POL"
+    },
+    "internet": {
+      "value": 88.58496367,
+      "source_url": "https://data.worldbank.org/indicator/IT.NET.USER.ZS?locations=POL"
+    },
+    "age_0_14": {
+      "value": 14.8057804830982,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.0014.TO.ZS?locations=POL"
+    },
+    "age_15_64": {
+      "value": 65.0508166995989,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.1564.TO.ZS?locations=POL"
+    },
+    "age_65_plus": {
+      "value": 20.1434028173028,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.65UP.TO.ZS?locations=POL"
+    }
+  },
+  "se": {
+    "name": "Sweden",
+    "full_name": "Sweden",
+    "population": {
+      "value": 10551707.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tps00001/default/table?lang=en"
+    },
+    "gdppc": {
+      "value": 57222.7100565003,
+      "source_url": "https://data.worldbank.org/indicator/NY.GDP.PCAP.CD?locations=SWE"
+    },
+    "pop_growth": {
+      "value": 0.313432129983607,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.GROW?locations=SWE"
+    },
+    "urbanization": {
+      "value": 88.8559748346228,
+      "source_url": "https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS?locations=SWE"
+    },
+    "internet": {
+      "value": 95.52930428,
+      "source_url": "https://data.worldbank.org/indicator/IT.NET.USER.ZS?locations=SWE"
+    },
+    "age_0_14": {
+      "value": 17.650117992462,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.0014.TO.ZS?locations=SWE"
+    },
+    "age_15_64": {
+      "value": 60.8,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/demo_pjanind/default/table?lang=en"
+    },
+    "age_65_plus": {
+      "value": 20.7467682423653,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.65UP.TO.ZS?locations=SWE"
+    }
+  },
+  "au": {
+    "name": "Australia",
+    "full_name": "Australia",
+    "population": {
+      "value": 27194286.0,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.TOTL?locations=AUS"
+    },
+    "gdppc": {
+      "value": 50084.4440606385,
+      "source_url": "https://data.worldbank.org/indicator/NY.GDP.PCAP.CD?locations=AUS"
+    },
+    "pop_growth": {
+      "value": 1.98454886891555,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.GROW?locations=AUS"
+    },
+    "urbanization": {
+      "value": 87.6021469990446,
+      "source_url": "https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS?locations=AUS"
+    },
+    "internet": {
+      "value": 96.13140106,
+      "source_url": "https://data.worldbank.org/indicator/IT.NET.USER.ZS?locations=AUS"
+    },
+    "age_0_14": {
+      "value": 17.8418482544494,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.0014.TO.ZS?locations=AUS"
+    },
+    "age_15_64": {
+      "value": 64.4281358227139,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.1564.TO.ZS?locations=AUS"
+    },
+    "age_65_plus": {
+      "value": 17.7300159228367,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.65UP.TO.ZS?locations=AUS"
+    }
+  },
+  "ca": {
+    "name": "Canada",
+    "full_name": "Canada",
+    "population": {
+      "value": null,
+      "source_url": null
+    },
+    "gdppc": {
+      "value": 5.9598e-05,
+      "source_url": "https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3610070601"
+    },
+    "pop_growth": {
+      "value": null,
+      "source_url": null
+    },
+    "urbanization": {
+      "value": 82.7002565766633,
+      "source_url": "https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS?locations=CAN"
+    },
+    "internet": {
+      "value": null,
+      "source_url": null
+    },
+    "age_0_14": {
+      "value": 15.1113205709867,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.0014.TO.ZS?locations=CAN"
+    },
+    "age_15_64": {
+      "value": null,
+      "source_url": null
+    },
+    "age_65_plus": {
+      "value": 19.7995907648324,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.65UP.TO.ZS?locations=CAN"
+    }
+  },
+  "be": {
+    "name": "Belgium",
+    "full_name": "Belgium",
+    "population": {
+      "value": 11817096.0,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tps00001/default/table?lang=en"
+    },
+    "gdppc": {
+      "value": 56581.9375642531,
+      "source_url": "https://data.worldbank.org/indicator/NY.GDP.PCAP.CD?locations=BEL"
+    },
+    "pop_growth": {
+      "value": 0.66555918543206,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.GROW?locations=BEL"
+    },
+    "urbanization": {
+      "value": null,
+      "source_url": null
+    },
+    "internet": {
+      "value": 95.78,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tin00028/default/table?lang=en"
+    },
+    "age_0_14": {
+      "value": 15.9961268493057,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.0014.TO.ZS?locations=BEL"
+    },
+    "age_15_64": {
+      "value": 56.8,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/demo_pjanind/default/table?lang=en"
+    },
+    "age_65_plus": {
+      "value": 19.9,
+      "source_url": "https://ec.europa.eu/eurostat/databrowser/view/tps00028/default/table?lang=en"
+    }
+  },
+  "ae": {
+    "name": "UAE",
+    "full_name": "United Arab Emirates",
+    "population": {
+      "value": 8935095.0,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.TOTL?locations=ARE"
+    },
+    "gdppc": {
+      "value": 50273.5126243239,
+      "source_url": "https://data.worldbank.org/indicator/NY.GDP.PCAP.CD?locations=ARE"
+    },
+    "pop_growth": {
+      "value": 4.68316095317394,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.GROW?locations=ARE"
+    },
+    "urbanization": {
+      "value": 85.8171088279791,
+      "source_url": "https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS?locations=ARE"
+    },
+    "internet": {
+      "value": 100.0,
+      "source_url": "https://data.worldbank.org/indicator/IT.NET.USER.ZS?locations=ARE"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": 82.1220600575181,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.1564.TO.ZS?locations=ARE"
+    },
+    "age_65_plus": {
+      "value": 1.76696037563358,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.65UP.TO.ZS?locations=ARE"
+    }
+  },
+  "eg": {
+    "name": "Egypt",
+    "full_name": "Egypt",
+    "population": {
+      "value": 116538258.0,
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.TOTL?locations=EGY"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "tr": {
+    "name": "Turkey",
+    "full_name": "Turkey",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "il": {
+    "name": "Israel",
+    "full_name": "Israel",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "ph": {
+    "name": "Philippines",
+    "full_name": "Philippines",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "sg": {
+    "name": "Singapore",
+    "full_name": "Singapore",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "mx": {
+    "name": "Mexico",
+    "full_name": "Mexico",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "ar": {
+    "name": "Argentina",
+    "full_name": "Argentina",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "co": {
+    "name": "Colombia",
+    "full_name": "Colombia",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "cl": {
+    "name": "Chile",
+    "full_name": "Chile",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "ng": {
+    "name": "Nigeria",
+    "full_name": "Nigeria",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "za": {
+    "name": "South Africa",
+    "full_name": "South Africa",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "ke": {
+    "name": "Kenya",
+    "full_name": "Kenya",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "ma": {
+    "name": "Morocco",
+    "full_name": "Morocco",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "kr": {
+    "name": "South Korea",
+    "full_name": "South Korea",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "ru": {
+    "name": "Russia",
+    "full_name": "Russia",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "ua": {
+    "name": "Ukraine",
+    "full_name": "Ukraine",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "kz": {
+    "name": "Kazakhstan",
+    "full_name": "Kazakhstan",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "in": {
+    "name": "India",
+    "full_name": "India",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  },
+  "pk": {
+    "name": "Pakistan",
+    "full_name": "Pakistan",
+    "population": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "gdppc": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "pop_growth": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "urbanization": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "internet": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_0_14": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_15_64": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    },
+    "age_65_plus": {
+      "value": null,
+      "error": "Expecting value: line 1 column 1 (char 0)"
+    }
+  }
+}
