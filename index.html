@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mercator - 跨境市场监控</title>
 <style>
-:root{--ink:#1c2b29;--muted:#71807c;--paper:#f6f4ef;--line:#dddcd5;--orange:#df6f3d;--orange-light:#fff0e8;--green:#3c6c62;--sage:#dce4db}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans SC',sans-serif;font-size:14px}aside.sidebar{width:244px;position:fixed;inset:0 auto 0 0;background:#1c2b29;color:#eef2eb;padding:28px 17px;display:flex;flex-direction:column;z-index:2}.brand{display:flex;align-items:center;gap:11px;margin:0 9px 45px}.brand-mark{font:700 25px 'Playfair Display';border:1px solid #91a69b;width:35px;height:35px;display:grid;place-items:center}.brand strong{font-family:'Playfair Display';font-size:20px;letter-spacing:.2px}.brand small,.workspace small{display:block;color:#9eafa9;font:10px 'DM Mono';letter-spacing:.7px;margin-top:2px}nav{display:grid;gap:5px}.nav-item{color:#bec9c2;text-decoration:none;display:flex;align-items:center;gap:12px;padding:12px 12px;border-radius:4px;cursor:pointer}.nav-item span{font-size:17px;color:#a9bbb2}.nav-item:hover,.nav-item.active{background:#31423e;color:white}.nav-item.active span{color:#f3a173}.nav-item b{margin-left:auto;background:#476158;font:10px 'DM Mono';padding:2px 6px;border-radius:9px}.nav-item b.danger{background:#9e513a}.sidebar-bottom{margin-top:auto}.workspace{border-top:1px solid #40504d;padding:21px 9px 16px;display:flex;align-items:center;gap:9px}.workspace>span:last-child{margin-left:auto}.avatar{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;background:#df7040;color:white;font:12px 'DM Mono'}.avatar.green{background:#527b70}main{margin-left:244px;min-height:100vh;padding:35px 48px}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:33px}.eyebrow{font:10px 'DM Mono';letter-spacing:1.1px;color:#84908b;margin:0 0 7px}h1,h2{margin:0;font-weight:600}h1{font:29px 'Playfair Display';letter-spacing:-.4px}h2{font-size:20px}.header-tools{display:flex;gap:11px;align-items:center}.search{width:268px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:4px}.search span{font-size:20px;color:#77857f}.search input{border:0;outline:0;width:100%;font-family:inherit;font-size:12px}.search kbd{white-space:nowrap;font:10px 'DM Mono';color:#98a09c;border:1px solid #ddd;padding:2px 4px;border-radius:3px}.icon-btn,.export,.outline,.filter-button{border:0;background:white;font-family:inherit;cursor:pointer;border-radius:4px}.icon-btn{position:relative;width:37px;height:37px;font-size:18px}.icon-btn i{position:absolute;right:8px;top:8px;width:5px;height:5px;background:var(--orange);border-radius:50%}.export{background:var(--ink);color:#fff;padding:10px 14px;font-size:12px}.export span{margin-left:6px}.page{display:none}.page.active{display:block}.hero-grid{display:grid;grid-template-columns:1.8fr .9fr;gap:18px}.market-pulse,.panel,.country-profile{background:#fff;border:1px solid var(--line);border-radius:5px}.market-pulse{padding:23px 25px}.card-title{display:flex;justify-content:space-between;font-weight:600}.card-title em{font:10px 'DM Mono';font-style:normal;color:#7b8883}.card-title i,.source-ok{color:#4d946e}.card-title i{display:inline-block;width:6px;height:6px;background:#54a875;border-radius:50%;margin-right:5px}.pulse-main{display:grid;grid-template-columns:repeat(3,1fr);margin:33px 0 27px}.pulse-main p{color:var(--muted);margin:0 0 7px;font-size:12px}.pulse-main strong{font:31px 'Playfair Display';display:block;letter-spacing:-1px}.pulse-main span{font:11px 'DM Mono'}.up{color:#4d8a68}.pulse-foot{border-top:1px solid #e9e7e2;padding-top:13px;color:#88928e;font-size:11px;display:flex;gap:14px}.source-warn{color:#c9944a}.pulse-foot a{margin-left:auto;color:var(--ink);text-decoration:none}.focus-card{background:var(--orange);color:#fff;padding:23px 26px;border-radius:5px;position:relative;overflow:hidden}.focus-card:after{content:'↗';font:180px 'Playfair Display';opacity:.12;position:absolute;right:-22px;bottom:-68px}.focus-card .eyebrow{color:#ffdac7}.focus-card h2{font:24px 'Playfair Display';line-height:1.35}.focus-card h2 em{font-style:normal;color:#ffe4cc}.focus-stats{display:flex;gap:22px;margin:23px 0 16px;font-size:11px;position:relative;z-index:1}.focus-stats span{display:grid;gap:4px}.focus-stats b{font:15px 'DM Mono'}.focus-card button{background:none;border:0;border-top:1px solid #f5a47e;color:#fff;padding:10px 0 0;font-family:inherit;font-size:12px;cursor:pointer;position:relative;z-index:1}.section-heading{display:flex;align-items:end;justify-content:space-between;margin:34px 0 15px}.text-button{border:0;background:none;color:var(--green);font:12px 'Noto Sans SC';cursor:pointer}.country-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.country-card{background:white;border:1px solid var(--line);border-radius:5px;padding:18px;cursor:pointer;transition:.15s}.country-card:hover{transform:translateY(-2px);border-color:#aebbb3}.country-top{display:flex;justify-content:space-between;align-items:center}.flag{font-size:22px}.country-card h3{font-size:15px;margin:15px 0 3px}.country-card p{font:11px 'DM Mono';color:var(--muted);margin:0}.country-row{display:flex;justify-content:space-between;border-top:1px solid #eee;margin-top:17px;padding-top:10px;font-size:10px;color:#7d8985}.country-row b{font:12px 'DM Mono';color:var(--ink)}.growth{color:#478067!important}.lower-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;margin-top:18px}.panel{padding:22px 24px}.panel-head{display:flex;justify-content:space-between;align-items:flex-start}.panel-head select,.filter-row select{border:1px solid var(--line);padding:7px;background:#fff;border-radius:3px;color:#52605b;font:11px 'Noto Sans SC'}.chart-labels{display:flex;justify-content:space-between;margin-top:24px;font-size:11px;color:#56635e}.bar-chart{height:120px;margin-top:9px;padding:0 25px;display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid var(--line);background:repeating-linear-gradient(to bottom,transparent,transparent 39px,#f0eee9 40px)}.bar-chart i{width:42px;height:var(--h);background:var(--c);border-radius:3px 3px 0 0}.chart-axis{display:flex;justify-content:space-between;color:#8b9590;font:10px 'DM Mono';margin-top:7px}.alert-item{display:grid;grid-template-columns:8px 1fr auto;gap:10px;padding:13px 0;border-bottom:1px solid #efede9}.alert-item:last-child{border-bottom:0}.alert-dot{width:7px;height:7px;border-radius:50%;margin-top:5px}.alert-item p{margin:0;font-size:12px}.alert-item small{color:#87918d;font:10px 'DM Mono'}.alert-item time{font:10px 'DM Mono';color:#9aa29e}.tabbar{border-bottom:1px solid var(--line);margin-bottom:20px}.tabbar button{background:none;border:0;padding:12px 18px 13px 0;margin-right:20px;font-family:inherit;color:#76837e;cursor:pointer}.tabbar .selected{color:var(--ink);border-bottom:2px solid var(--orange);font-weight:600}.filter-row{display:flex;gap:10px;margin-bottom:18px}.filter-button{background:var(--ink);color:#fff;padding:0 16px}.table-panel{padding:0 24px 14px}.table-panel .panel-head{padding:22px 0 15px}table{width:100%;border-collapse:collapse;text-align:left}th{font:10px 'DM Mono';letter-spacing:.5px;color:#87928d;padding:12px 8px;border-top:1px solid #e9e7e2;border-bottom:1px solid #e9e7e2}td{padding:13px 8px;border-bottom:1px solid #f0efeb;font-size:12px}td strong{font-size:12px}td small{display:block;font:10px 'DM Mono';color:#89938e;margin-top:3px}.product-cell{display:flex;gap:10px;align-items:center}.product-thumb{width:32px;height:32px;border-radius:4px;background:linear-gradient(135deg,#e8c49b,#c77b5a);display:grid;place-items:center;font-size:17px}.tag{display:inline-block;border-radius:12px;padding:3px 7px;font:9px 'DM Mono'}.tag.hot{background:#fff0e8;color:#bc5932}.tag.watch{background:#eaf2ed;color:#39735c}.market-layout{display:grid;grid-template-columns:2fr .8fr;gap:18px}.country-profile{padding:29px}.country-hero{display:flex;align-items:center;gap:16px}.flag.big{font-size:43px}.country-hero h2{font:27px 'Playfair Display'}.country-hero div span{font-size:12px;color:var(--muted)}.outline{border:1px solid #b8c2bc;color:var(--green);background:#fff;padding:8px 11px;font-size:11px;margin-left:auto}.metric-strip{background:#f1f4ef;display:grid;grid-template-columns:repeat(4,1fr);margin:29px 0;padding:18px}.metric-strip div{border-right:1px solid #d8dfd8;padding:0 16px}.metric-strip div:last-child{border:0}.metric-strip span{display:block;color:#71807a;font-size:11px}.metric-strip b{display:block;margin-top:5px;font:16px 'DM Mono'}.profile-sections{display:grid;grid-template-columns:1fr 1fr;gap:34px}.profile-sections h3{font-size:14px;margin:0 0 10px}.profile-sections p{font-size:12px;line-height:1.8;color:#65726d;margin:0}.pills{display:flex;gap:7px;margin-top:14px}.pills span{background:#f4ebe4;color:#a75836;padding:4px 7px;border-radius:3px;font-size:10px}.channel-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px}.channel-row span{color:#74817c}.policy-card{background:#26423c;color:white;padding:25px;border-radius:5px}.policy-card .eyebrow{color:#b3c6bd}.policy-card h2{font:20px 'Playfair Display';margin-bottom:22px}.policy-alert{background:#f4c9ad;color:#573323;padding:13px}.policy-alert strong{font:9px 'DM Mono';background:#dc6d3f;color:white;padding:3px 5px}.policy-alert p{font-size:12px;margin:9px 0 3px}.policy-alert small{font-size:10px;color:#875946}.policy-item{border-bottom:1px solid #4b625d;padding:14px 0;font-size:12px;display:flex;justify-content:space-between;color:#e0e7e2}.policy-card .text-button{color:#d7e6dc;margin-top:18px}.settings{max-width:700px}.settings>p:not(.eyebrow){color:#6f7c77;margin:9px 0 25px}.member{display:flex;gap:10px;align-items:center;border-top:1px solid #e8e6e1;padding:13px 0}.member div{display:grid;gap:2px}.member small{color:#7b8883;font-size:11px}.toast{position:fixed;right:30px;bottom:25px;background:#213c36;color:white;padding:12px 17px;border-radius:4px;transform:translateY(80px);opacity:0;transition:.25s;font-size:12px;z-index:5}.toast.show{transform:none;opacity:1}@media(max-width:1000px){.country-grid{grid-template-columns:repeat(2,1fr)}.hero-grid,.lower-grid,.market-layout{grid-template-columns:1fr}.search{display:none}}@media(max-width:700px){aside.sidebar{width:58px;padding:17px 8px}.brand{margin:0 4px 32px}.brand>div,.nav-item:not(.active)::after,.nav-item{font-size:0}.brand-mark{width:34px}.nav-item{justify-content:center;padding:13px 0}.nav-item span{font-size:17px}.nav-item b{display:none}.workspace{padding:15px 4px}.workspace div,.workspace>span:last-child,.sidebar-bottom .nav-item{display:none}main{margin-left:58px;padding:23px 18px}header{margin-bottom:24px}.header-tools .icon-btn{display:none}h1{font-size:24px}.export{padding:9px}.pulse-main{gap:12px}.pulse-main strong{font-size:23px}.pulse-foot{flex-wrap:wrap}.country-grid{grid-template-columns:1fr}.profile-sections,.metric-strip{grid-template-columns:1fr 1fr}.metric-strip{gap:14px}.metric-strip div{border:0;padding:0}.table-panel{overflow-x:auto}.table-panel table{min-width:660px}}
-:root{}.login-screen{position:fixed;inset:0;z-index:20;background:linear-gradient(124deg,#1c2b29 0%,#29453e 62%,#db713f 180%);display:flex;align-items:center;justify-content:center;gap:130px;color:#fff}.login-brand{width:280px}.login-brand .brand-mark{width:52px;height:52px;font-size:36px;margin-bottom:18px}.login-brand strong{font:42px 'Playfair Display';display:block}.login-brand small{font:10px 'DM Mono';letter-spacing:1.5px;color:#b8ccc2}.login-card{background:#fff;color:#1c2b29;width:370px;padding:32px;border-radius:6px;box-shadow:0 20px 70px #10221d80}.login-card h1{font-size:25px;line-height:1.2}.login-card>p:not(.eyebrow){font-size:12px;line-height:1.7;color:#71807c;margin:11px 0 23px}.login-card label{display:grid;gap:6px;font-size:11px;margin:14px 0}.login-card input{border:1px solid #d8dcd6;border-radius:3px;padding:10px;font-family:inherit;outline-color:#3c6c62}.login-button{width:100%;border:0;background:#df6f3d;color:white;padding:11px;margin-top:8px;border-radius:3px;font-family:inherit;cursor:pointer}.login-card>small{display:block;color:#89948f;font-size:10px;margin-top:13px;text-align:center}.watch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.watch-card{background:#fff;border:1px solid #dddcd5;padding:21px;border-radius:5px}.watch-card .watch-top{display:flex;justify-content:space-between;align-items:center}.watch-card h3{margin:18px 0 3px;font-size:17px}.watch-card p{margin:0;color:#798680;font-size:11px}.watch-card b{display:block;font:25px 'DM Mono';margin:17px 0 4px}.watch-card button{border:0;background:none;color:#c0663c;font-size:11px;cursor:pointer;padding:0}.search-results{display:none;position:fixed;right:145px;top:77px;width:360px;background:#fff;border:1px solid #dddcd5;border-radius:5px;z-index:10;box-shadow:0 12px 34px #263c3520;padding:8px}.search-results.show{display:block}.result{padding:10px;border-radius:3px;cursor:pointer}.result:hover{background:#f2f4f0}.result b{font-size:12px}.result small{display:block;color:#82908a;margin-top:2px;font:10px 'DM Mono'}
+:root{--ink:#1a2332;--muted:#6b7b8d;--paper:#f4f6fa;--line:#d5dbe3;--orange:#3b7dd8;--orange-light:#e8f0fc;--green:#2c5f8a;--sage:#dce4ef}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans SC',sans-serif;font-size:14px}aside.sidebar{width:244px;position:fixed;inset:0 auto 0 0;background:#1a2332;color:#e8edf4;padding:28px 17px;display:flex;flex-direction:column;z-index:2}.brand{display:flex;align-items:center;gap:11px;margin:0 9px 45px}.brand-mark{font:700 25px 'Playfair Display';border:1px solid #7a9ec5;width:35px;height:35px;display:grid;place-items:center}.brand strong{font-family:'Playfair Display';font-size:20px;letter-spacing:.2px}.brand small,.workspace small{display:block;color:#8e9fb5;font:10px 'DM Mono';letter-spacing:.7px;margin-top:2px}nav{display:grid;gap:5px;overflow-y:auto;max-height:calc(100vh - 280px);padding-right:4px}.nav-item{color:#b0bdd0;text-decoration:none;display:flex;align-items:center;gap:12px;padding:12px 12px;border-radius:4px;cursor:pointer}.nav-item span{font-size:17px;color:#96a8c0}.nav-item:hover,.nav-item.active{background:#283850;color:white}.nav-item.active span{color:#6aadff}.nav-item b{margin-left:auto;background:#3a5575;font:10px 'DM Mono';padding:2px 6px;border-radius:9px}.nav-item b.danger{background:#9e513a}.sidebar-bottom{margin-top:auto}.workspace{border-top:1px solid #354560;padding:21px 9px 16px;display:flex;align-items:center;gap:9px}.workspace>span:last-child{margin-left:auto}.avatar{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;background:#df7040;color:white;font:12px 'DM Mono'}.avatar.green{background:#527b70}main{margin-left:244px;min-height:100vh;padding:35px 48px}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:33px}.eyebrow{font:10px 'DM Mono';letter-spacing:1.1px;color:#84908b;margin:0 0 7px}h1,h2{margin:0;font-weight:600}h1{font:29px 'Playfair Display';letter-spacing:-.4px}h2{font-size:20px}.header-tools{display:flex;gap:11px;align-items:center}.search{width:268px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:4px}.search span{font-size:20px;color:#77857f}.search input{border:0;outline:0;width:100%;font-family:inherit;font-size:12px}.search kbd{white-space:nowrap;font:10px 'DM Mono';color:#98a09c;border:1px solid #ddd;padding:2px 4px;border-radius:3px}.icon-btn,.export,.outline,.filter-button{border:0;background:white;font-family:inherit;cursor:pointer;border-radius:4px}.icon-btn{position:relative;width:37px;height:37px;font-size:18px}.icon-btn i{position:absolute;right:8px;top:8px;width:5px;height:5px;background:var(--orange);border-radius:50%}.export{background:var(--ink);color:#fff;padding:10px 14px;font-size:12px}.export span{margin-left:6px}.page{display:none}.page.active{display:block}.hero-grid{display:grid;grid-template-columns:1.8fr .9fr;gap:18px}.market-pulse,.panel,.country-profile{background:#fff;border:1px solid var(--line);border-radius:5px}.market-pulse{padding:23px 25px}.card-title{display:flex;justify-content:space-between;font-weight:600}.card-title em{font:10px 'DM Mono';font-style:normal;color:#7b8883}.card-title i,.source-ok{color:#4a80c8}.card-title i{display:inline-block;width:6px;height:6px;background:#54a875;border-radius:50%;margin-right:5px}.pulse-main{display:grid;grid-template-columns:repeat(3,1fr);margin:33px 0 27px}.pulse-main p{color:var(--muted);margin:0 0 7px;font-size:12px}.pulse-main strong{font:31px 'Playfair Display';display:block;letter-spacing:-1px}.pulse-main span{font:11px 'DM Mono'}.up{color:#4d8a68}.pulse-foot{border-top:1px solid #e9e7e2;padding-top:13px;color:#88928e;font-size:11px;display:flex;gap:14px}.source-warn{color:#c9944a}.pulse-foot a{margin-left:auto;color:var(--ink);text-decoration:none}.focus-card{background:var(--orange);color:#fff;padding:23px 26px;border-radius:5px;position:relative;overflow:hidden}.focus-card:after{content:'↗';font:180px 'Playfair Display';opacity:.12;position:absolute;right:-22px;bottom:-68px}.focus-card .eyebrow{color:#ffdac7}.focus-card h2{font:24px 'Playfair Display';line-height:1.35}.focus-card h2 em{font-style:normal;color:#ffe4cc}.focus-stats{display:flex;gap:22px;margin:23px 0 16px;font-size:11px;position:relative;z-index:1}.focus-stats span{display:grid;gap:4px}.focus-stats b{font:15px 'DM Mono'}.focus-card button{background:none;border:0;border-top:1px solid #f5a47e;color:#fff;padding:10px 0 0;font-family:inherit;font-size:12px;cursor:pointer;position:relative;z-index:1}.section-heading{display:flex;align-items:end;justify-content:space-between;margin:34px 0 15px}.text-button{border:0;background:none;color:var(--green);font:12px 'Noto Sans SC';cursor:pointer}.country-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.country-card{background:white;border:1px solid var(--line);border-radius:5px;padding:18px;cursor:pointer;transition:.15s}.country-card:hover{transform:translateY(-2px);border-color:#a8b8d0}.country-top{display:flex;justify-content:space-between;align-items:center}.flag{font-size:22px}.country-card h3{font-size:15px;margin:15px 0 3px}.country-card p{font:11px 'DM Mono';color:var(--muted);margin:0}.country-row{display:flex;justify-content:space-between;border-top:1px solid #eee;margin-top:17px;padding-top:10px;font-size:10px;color:#7d8985}.country-row b{font:12px 'DM Mono';color:var(--ink)}.growth{color:#3a6ea8!important}.lower-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;margin-top:18px}.panel{padding:22px 24px}.panel-head{display:flex;justify-content:space-between;align-items:flex-start}.panel-head select,.filter-row select{border:1px solid var(--line);padding:7px;background:#fff;border-radius:3px;color:#465668;font:11px 'Noto Sans SC'}.chart-labels{display:flex;justify-content:space-between;margin-top:24px;font-size:11px;color:#56635e}.bar-chart{height:120px;margin-top:9px;padding:0 25px;display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid var(--line);background:repeating-linear-gradient(to bottom,transparent,transparent 39px,#f0eee9 40px)}.bar-chart i{width:42px;height:var(--h);background:var(--c);border-radius:3px 3px 0 0}.chart-axis{display:flex;justify-content:space-between;color:#8b9590;font:10px 'DM Mono';margin-top:7px}.alert-item{display:grid;grid-template-columns:8px 1fr auto;gap:10px;padding:13px 0;border-bottom:1px solid #efede9}.alert-item:last-child{border-bottom:0}.alert-dot{width:7px;height:7px;border-radius:50%;margin-top:5px}.alert-item p{margin:0;font-size:12px}.alert-item small{color:#87918d;font:10px 'DM Mono'}.alert-item time{font:10px 'DM Mono';color:#9aa29e}.tabbar{border-bottom:1px solid var(--line);margin-bottom:20px}.tabbar button{background:none;border:0;padding:12px 18px 13px 0;margin-right:20px;font-family:inherit;color:#76837e;cursor:pointer}.tabbar .selected{color:var(--ink);border-bottom:2px solid var(--orange);font-weight:600}.filter-row{display:flex;gap:10px;margin-bottom:18px}.filter-button{background:var(--ink);color:#fff;padding:0 16px}.table-panel{padding:0 24px 14px}.table-panel .panel-head{padding:22px 0 15px}table{width:100%;border-collapse:collapse;text-align:left}th{font:10px 'DM Mono';letter-spacing:.5px;color:#87928d;padding:12px 8px;border-top:1px solid #e9e7e2;border-bottom:1px solid #e9e7e2}td{padding:13px 8px;border-bottom:1px solid #f0f2f6;font-size:12px}td strong{font-size:12px}td small{display:block;font:10px 'DM Mono';color:#89938e;margin-top:3px}.product-cell{display:flex;gap:10px;align-items:center}.product-thumb{width:32px;height:32px;border-radius:4px;background:linear-gradient(135deg,#e8c49b,#c77b5a);display:grid;place-items:center;font-size:17px}.tag{display:inline-block;border-radius:12px;padding:3px 7px;font:9px 'DM Mono'}.tag.hot{background:#e8f0fc;color:#2a5a8a}.tag.watch{background:#eaf0f8;color:#2c5f8a}.market-layout{display:grid;grid-template-columns:2fr .8fr;gap:18px}.country-profile{padding:29px}.country-hero{display:flex;align-items:center;gap:16px}.flag.big{font-size:43px}.country-hero h2{font:27px 'Playfair Display'}.country-hero div span{font-size:12px;color:var(--muted)}.outline{border:1px solid #b8c2bc;color:var(--green);background:#fff;padding:8px 11px;font-size:11px;margin-left:auto}.metric-strip{background:#f1f4ef;display:grid;grid-template-columns:repeat(4,1fr);margin:29px 0;padding:18px}.metric-strip div{border-right:1px solid #d8dfd8;padding:0 16px}.metric-strip div:last-child{border:0}.metric-strip span{display:block;color:#71807a;font-size:11px}.metric-strip b{display:block;margin-top:5px;font:16px 'DM Mono'}.profile-sections{display:grid;grid-template-columns:1fr 1fr;gap:34px}.profile-sections h3{font-size:14px;margin:0 0 10px}.profile-sections p{font-size:12px;line-height:1.8;color:#5e6d80;margin:0}.pills{display:flex;gap:7px;margin-top:14px}.pills span{background:#f4ebe4;color:#a75836;padding:4px 7px;border-radius:3px;font-size:10px}.channel-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px}.channel-row span{color:#74817c}.policy-card{background:#26423c;color:white;padding:25px;border-radius:5px}.policy-card .eyebrow{color:#b3c6bd}.policy-card h2{font:20px 'Playfair Display';margin-bottom:22px}.policy-alert{background:#f4c9ad;color:#573323;padding:13px}.policy-alert strong{font:9px 'DM Mono';background:#dc6d3f;color:white;padding:3px 5px}.policy-alert p{font-size:12px;margin:9px 0 3px}.policy-alert small{font-size:10px;color:#875946}.policy-item{border-bottom:1px solid #4b625d;padding:14px 0;font-size:12px;display:flex;justify-content:space-between;color:#e0e7e2}.policy-card .text-button{color:#d7e6dc;margin-top:18px}.settings{max-width:700px}.settings>p:not(.eyebrow){color:#6f7c77;margin:9px 0 25px}.member{display:flex;gap:10px;align-items:center;border-top:1px solid #e8e6e1;padding:13px 0}.member div{display:grid;gap:2px}.member small{color:#7b8883;font-size:11px}.toast{position:fixed;right:30px;bottom:25px;background:#213c36;color:white;padding:12px 17px;border-radius:4px;transform:translateY(80px);opacity:0;transition:.25s;font-size:12px;z-index:5}.toast.show{transform:none;opacity:1}@media(max-width:1000px){.country-grid{grid-template-columns:repeat(2,1fr)}.hero-grid,.lower-grid,.market-layout{grid-template-columns:1fr}.search{display:none}}@media(max-width:700px){aside.sidebar{width:58px;padding:17px 8px}.brand{margin:0 4px 32px}.brand>div,.nav-item:not(.active)::after,.nav-item{font-size:0}.brand-mark{width:34px}.nav-item{justify-content:center;padding:13px 0}.nav-item span{font-size:17px}.nav-item b{display:none}.workspace{padding:15px 4px}.workspace div,.workspace>span:last-child,.sidebar-bottom .nav-item{display:none}main{margin-left:58px;padding:23px 18px}header{margin-bottom:24px}.header-tools .icon-btn{display:none}h1{font-size:24px}.export{padding:9px}.pulse-main{gap:12px}.pulse-main strong{font-size:23px}.pulse-foot{flex-wrap:wrap}.country-grid{grid-template-columns:1fr}.profile-sections,.metric-strip{grid-template-columns:1fr 1fr}.metric-strip{gap:14px}.metric-strip div{border:0;padding:0}.table-panel{overflow-x:auto}.table-panel table{min-width:660px}}
+:root{}.login-screen{position:fixed;inset:0;z-index:20;background:linear-gradient(124deg,#1a2332 0%,#253b58 62%,#4a8ae6 180%);display:flex;align-items:center;justify-content:center;gap:130px;color:#fff}.login-brand{width:280px}.login-brand .brand-mark{width:52px;height:52px;font-size:36px;margin-bottom:18px}.login-brand strong{font:42px 'Playfair Display';display:block}.login-brand small{font:10px 'DM Mono';letter-spacing:1.5px;color:#b8ccc2}.login-card{background:#fff;color:#1a2332;width:370px;padding:32px;border-radius:6px;box-shadow:0 20px 70px #10221d80}.login-card h1{font-size:25px;line-height:1.2}.login-card>p:not(.eyebrow){font-size:12px;line-height:1.7;color:#6b7b8d;margin:11px 0 23px}.login-card label{display:grid;gap:6px;font-size:11px;margin:14px 0}.login-card input{border:1px solid #d8dcd6;border-radius:3px;padding:10px;font-family:inherit;outline-color:#2c5f8a}.login-button{width:100%;border:0;background:#3b7dd8;color:white;padding:11px;margin-top:8px;border-radius:3px;font-family:inherit;cursor:pointer}.login-card>small{display:block;color:#89948f;font-size:10px;margin-top:13px;text-align:center}.watch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.watch-card{background:#fff;border:1px solid #d5dbe3;padding:21px;border-radius:5px}.watch-card .watch-top{display:flex;justify-content:space-between;align-items:center}.watch-card h3{margin:18px 0 3px;font-size:17px}.watch-card p{margin:0;color:#798680;font-size:11px}.watch-card b{display:block;font:25px 'DM Mono';margin:17px 0 4px}.watch-card button{border:0;background:none;color:#c0663c;font-size:11px;cursor:pointer;padding:0}.search-results{display:none;position:fixed;right:145px;top:77px;width:360px;background:#fff;border:1px solid #d5dbe3;border-radius:5px;z-index:10;box-shadow:0 12px 34px #263c3520;padding:8px}.search-results.show{display:block}.result{padding:10px;border-radius:3px;cursor:pointer}.result:hover{background:#f2f4f0}.result b{font-size:12px}.result small{display:block;color:#82908a;margin-top:2px;font:10px 'DM Mono'}
 
 /* === 电商平台档案 === */
 .platform-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .platform-card{background:#fff;border:1px solid var(--line);border-radius:5px;padding:20px;transition:.15s}
-.platform-card:hover{transform:translateY(-2px);border-color:#aebbb3}
+.platform-card:hover{transform:translateY(-2px);border-color:#a8b8d0}
 .platform-card h3{font-size:15px;margin:0 0 8px}
 .platform-card .pc-region{font:10px 'DM Mono';color:var(--muted);letter-spacing:.5px}
-.platform-card .pc-cats{font-size:11px;color:#65726d;margin:10px 0;line-height:1.6}
+.platform-card .pc-cats{font-size:11px;color:#5e6d80;margin:10px 0;line-height:1.6}
 .platform-card .pc-stats{display:flex;justify-content:space-between;border-top:1px solid #eee;margin-top:12px;padding-top:10px;font-size:10px;color:#7d8985}
 .platform-card .pc-stats b{font:12px 'DM Mono';color:var(--ink);display:block;margin-top:2px}
 .platform-card .pc-fee{font:10px 'DM Mono';color:var(--orange);margin-top:8px}
@@ -23,7 +23,7 @@
 .policy-timeline{display:grid;gap:14px}
 .pt-card{background:#fff;border:1px solid var(--line);border-radius:5px;padding:18px 22px;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start}
 .pt-card .pt-dot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex-shrink:0}
-.pt-card .pt-dot.major{background:#dc7140}
+.pt-card .pt-dot.major{background:#4a85d9}
 .pt-card .pt-dot.medium{background:#c39142}
 .pt-card h3{font-size:14px;margin:0 0 5px}
 .pt-card .pt-meta{font:10px 'DM Mono';color:var(--muted);margin:0;display:flex;gap:12px;flex-wrap:wrap}
@@ -31,12 +31,12 @@
 .pt-card .pt-right{text-align:right;min-width:80px}
 .pt-card .pt-right .tag{margin-bottom:4px}
 .pt-card .pt-right small{display:block;font:10px 'DM Mono';color:#9aa29e}
-.pt-card .pt-summary{font-size:11px;color:#65726d;margin:6px 0 0;line-height:1.6}
+.pt-card .pt-summary{font-size:11px;color:#5e6d80;margin:6px 0 0;line-height:1.6}
 
 /* === 热门内容 === */
 .content-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .ct-card{background:#fff;border:1px solid var(--line);border-radius:5px;padding:18px;transition:.15s}
-.ct-card:hover{transform:translateY(-2px);border-color:#aebbb3}
+.ct-card:hover{transform:translateY(-2px);border-color:#a8b8d0}
 .ct-card h3{font-size:13px;margin:0 0 8px;line-height:1.4}
 .ct-card .ct-meta{font:10px 'DM Mono';color:var(--muted);margin:0 0 6px}
 .ct-card .ct-stats{display:flex;gap:14px;font-size:10px;color:#7d8985;margin-top:10px;border-top:1px solid #eee;padding-top:8px}
@@ -48,14 +48,14 @@
 @media(max-width:700px){.platform-grid,.content-grid{grid-template-columns:1fr}.pt-card{grid-template-columns:auto 1fr;gap:10px}.pt-card .pt-right{text-align:left}}
 
 /* === 实时快讯组件 === */
-.live-ticker-btn{position:fixed;right:24px;bottom:24px;width:48px;height:48px;border-radius:50%;background:#1c2b29;color:#f3a173;border:2px solid #3c6c62;cursor:pointer;z-index:100;display:grid;place-items:center;font-size:20px;box-shadow:0 4px 16px rgba(28,43,41,.35);transition:all .25s ease}
-.live-ticker-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(28,43,41,.45)}
-.live-ticker-btn .pulse-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:#dc7140;border-radius:50%;animation:tickerPulse 2s infinite}
+.live-ticker-btn{position:fixed;right:24px;bottom:24px;width:48px;height:48px;border-radius:50%;background:#1a2332;color:#6aadff;border:2px solid #2c5f8a;cursor:pointer;z-index:100;display:grid;place-items:center;font-size:20px;box-shadow:0 4px 16px rgba(26,35,50,.35);transition:all .25s ease}
+.live-ticker-btn:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(26,35,50,.45)}
+.live-ticker-btn .pulse-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:#4a85d9;border-radius:50%;animation:tickerPulse 2s infinite}
 @keyframes tickerPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
-.live-ticker-panel{position:fixed;right:24px;bottom:84px;width:340px;max-height:0;overflow:hidden;background:#1c2b29;border-radius:8px;z-index:99;box-shadow:0 8px 32px rgba(28,43,41,.5);transition:max-height .35s ease,opacity .3s ease;opacity:0}
+.live-ticker-panel{position:fixed;right:24px;bottom:84px;width:340px;max-height:0;overflow:hidden;background:#1a2332;border-radius:8px;z-index:99;box-shadow:0 8px 32px rgba(26,35,50,.5);transition:max-height .35s ease,opacity .3s ease;opacity:0}
 .live-ticker-panel.open{max-height:380px;opacity:1}
 .live-ticker-panel .ticker-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;border-bottom:1px solid #3c5550}
-.live-ticker-panel .ticker-header h4{color:#eef2eb;font-size:13px;margin:0;display:flex;align-items:center;gap:6px}
+.live-ticker-panel .ticker-header h4{color:#e8edf4;font-size:13px;margin:0;display:flex;align-items:center;gap:6px}
 .live-ticker-panel .ticker-header h4 span{font-size:14px}
 .live-ticker-panel .ticker-header small{font:10px 'DM Mono';color:#7a9088;cursor:pointer}
 .live-ticker-panel .ticker-list{max-height:290px;overflow-y:auto;padding:8px 0;scrollbar-width:thin;scrollbar-color:#3c5550 transparent}
@@ -64,7 +64,7 @@
 .ticker-item{display:grid;grid-template-columns:8px 1fr auto;gap:10px;padding:10px 18px;cursor:pointer;transition:background .15s;animation:tickerFadeIn .4s ease}
 .ticker-item:hover{background:rgba(255,255,255,.06)}
 .ticker-item .t-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
-.ticker-item .t-body p{margin:0;font-size:12px;color:#dce4db;line-height:1.5}
+.ticker-item .t-body p{margin:0;font-size:12px;color:#dce4ef;line-height:1.5}
 .ticker-item .t-body .t-tags{display:flex;gap:6px;margin-top:3px}
 .ticker-item .t-body .t-tags span{font:9px 'DM Mono';color:#7a9088;background:rgba(255,255,255,.06);padding:1px 5px;border-radius:3px}
 .ticker-item .t-time{font:9px 'DM Mono';color:#5a706a;white-space:nowrap;margin-top:3px}
@@ -79,31 +79,31 @@
 .ai-insight-head h4{margin:0;font-size:13px;color:var(--ink)}
 .ai-insight-head small{font:10px 'DM Mono';color:var(--muted);margin-left:auto}
 .ai-insight ul{margin:0;padding:0 0 0 20px;list-style:none}
-.ai-insight li{font-size:12px;line-height:1.8;color:#52605b;position:relative;padding-left:8px}
+.ai-insight li{font-size:12px;line-height:1.8;color:#465668;position:relative;padding-left:8px}
 .ai-insight li::before{content:'→';position:absolute;left:-14px;color:var(--orange);font-size:11px}
 
 /* === Overview Rework: Block 1 - Welcome & CTA === */
-.ov-welcome{display:flex;justify-content:space-between;align-items:stretch;gap:20px;background:linear-gradient(135deg,#1c2b29 0%,#2c4a44 60%,#3c6c62 100%);border-radius:8px;padding:28px 32px;margin-bottom:22px;color:#fff;position:relative;overflow:hidden}
+.ov-welcome{display:flex;justify-content:space-between;align-items:stretch;gap:20px;background:linear-gradient(135deg,#1a2332 0%,#2c4a44 60%,#2c5f8a 100%);border-radius:8px;padding:28px 32px;margin-bottom:22px;color:#fff;position:relative;overflow:hidden}
 .ov-welcome::after{content:'M';position:absolute;right:-30px;bottom:-50px;font:220px 'Playfair Display';opacity:.05;color:#fff;pointer-events:none}
 .ov-welcome-left{flex:1.2;display:flex;flex-direction:column;justify-content:center}
 .ov-welcome-left .ov-greeting{font:27px 'Playfair Display';margin-bottom:6px;letter-spacing:-.3px}
-.ov-welcome-left .ov-greeting span{color:#f3a173}
+.ov-welcome-left .ov-greeting span{color:#6aadff}
 .ov-welcome-left .ov-value{font-size:12.5px;color:#b3c6bd;line-height:1.7;max-width:480px}
 .ov-welcome-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:relative;z-index:1}
 .ov-cta{border:0;border-radius:5px;padding:10px 16px;font-family:inherit;font-size:12px;cursor:pointer;transition:.2s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
-.ov-cta-primary{background:#df6f3d;color:#fff}
+.ov-cta-primary{background:#3b7dd8;color:#fff}
 .ov-cta-primary:hover{background:#c75f30}
-.ov-cta-outline{background:transparent;color:#eef2eb;border:1px solid rgba(255,255,255,.25)}
+.ov-cta-outline{background:transparent;color:#e8edf4;border:1px solid rgba(255,255,255,.25)}
 .ov-cta-outline:hover{background:rgba(255,255,255,.1)}
 
 /* === Overview Rework: Block 2 - Data Dashboard === */
 .ov-dashboard{margin-bottom:22px}
 .ov-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
 .ov-metric-card{background:#fff;border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;align-items:center;gap:18px;transition:.2s}
-.ov-metric-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(28,43,41,.08)}
+.ov-metric-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,35,50,.08)}
 .ov-ring{position:relative;width:64px;height:64px;flex-shrink:0}
 .ov-ring svg{transform:rotate(-90deg)}
-.ov-ring .ring-bg{fill:none;stroke:#eef2eb;stroke-width:6}
+.ov-ring .ring-bg{fill:none;stroke:#e8edf4;stroke-width:6}
 .ov-ring .ring-fg{fill:none;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .8s ease}
 .ov-ring .ring-label{position:absolute;inset:0;display:grid;place-items:center;font:bold 14px 'DM Mono';color:var(--ink)}
 .ov-metric-info h3{font-size:13px;margin:0 0 3px;color:var(--ink)}
@@ -112,25 +112,25 @@
 .ov-trend-card{background:#fff;border:1px solid var(--line);border-radius:6px;padding:22px 26px}
 .ov-trend-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .ov-trend-header h3{font-size:14px;margin:0}
-.ov-trend-header .ov-trend-badge{font:10px 'DM Mono';background:#eaf2ed;color:#39735c;padding:3px 8px;border-radius:10px}
+.ov-trend-header .ov-trend-badge{font:10px 'DM Mono';background:#eaf0f8;color:#2c5f8a;padding:3px 8px;border-radius:10px}
 .ov-trend-svg{width:100%;height:100px}
 .ov-trend-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
 .ov-trend-foot small{font:10px 'DM Mono';color:var(--muted)}
-.ov-data-source{text-align:right;font:10px 'DM Mono';color:#a0aba6;margin-top:8px}
+.ov-data-source{text-align:right;font:10px 'DM Mono';color:#98a5b5;margin-top:8px}
 
 /* === Overview Rework: Block 3 - Market Opportunities === */
-.ov-opportunities{background:linear-gradient(135deg,#1c2b29 0%,#2c4a44 40%,#3c6c62 100%);border-radius:8px;padding:26px 30px;margin-bottom:22px;color:#fff;position:relative;overflow:hidden}
-.ov-opportunities::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(223,111,61,.12),transparent 70%);pointer-events:none}
+.ov-opportunities{background:linear-gradient(135deg,#1a2332 0%,#2c4a44 40%,#2c5f8a 100%);border-radius:8px;padding:26px 30px;margin-bottom:22px;color:#fff;position:relative;overflow:hidden}
+.ov-opportunities::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(59,125,216,.12),transparent 70%);pointer-events:none}
 .ov-opp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .ov-opp-head h2{font:20px 'Playfair Display';margin:0;color:#fff}
 .ov-opp-head .eyebrow{color:#7a9a8e}
 .ov-opp-tabs{display:flex;gap:0;margin-bottom:18px;border-bottom:1px solid rgba(255,255,255,.12)}
 .ov-opp-tab{background:none;border:0;color:#8aaa9e;padding:10px 18px 12px;font-family:inherit;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;transition:.2s}
-.ov-opp-tab:hover{color:#dce4db}
-.ov-opp-tab.active{color:#f3a173;border-bottom-color:#f3a173;font-weight:600}
+.ov-opp-tab:hover{color:#dce4ef}
+.ov-opp-tab.active{color:#6aadff;border-bottom-color:#6aadff;font-weight:600}
 .ov-opp-content{min-height:140px}
 .ov-opp-title{font:22px 'Playfair Display';margin-bottom:14px;color:#fff}
-.ov-opp-title em{font-style:normal;color:#f3a173}
+.ov-opp-title em{font-style:normal;color:#6aadff}
 .ov-opp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
 .ov-opp-stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:14px 16px;text-align:center}
 .ov-opp-stat .stat-icon{font-size:20px;margin-bottom:6px}
@@ -138,7 +138,7 @@
 .ov-opp-stat .stat-label{font-size:10px;color:#8aaa9e}
 .ov-opp-actions{display:flex;gap:12px;margin-top:6px}
 .ov-opp-btn{border:0;border-radius:4px;padding:9px 18px;font-family:inherit;font-size:12px;cursor:pointer;transition:.2s}
-.ov-opp-btn-primary{background:#df6f3d;color:#fff}
+.ov-opp-btn-primary{background:#3b7dd8;color:#fff}
 .ov-opp-btn-primary:hover{background:#c75f30}
 .ov-opp-btn-ghost{background:transparent;color:#b3c6bd;border:1px solid rgba(255,255,255,.2)}
 .ov-opp-btn-ghost:hover{background:rgba(255,255,255,.08)}
@@ -147,25 +147,25 @@
 .ov-countries{margin-bottom:22px}
 .ov-country-filters{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
 .ov-region-btn{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 16px;font-family:inherit;font-size:11px;cursor:pointer;color:var(--muted);transition:.2s}
-.ov-region-btn:hover{border-color:#aebbb3;color:var(--ink)}
+.ov-region-btn:hover{border-color:#a8b8d0;color:var(--ink)}
 .ov-region-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
 .ov-country-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
 .ov-ccard{background:#fff;border:1px solid var(--line);border-radius:6px;padding:18px;transition:.2s;position:relative;overflow:hidden}
-.ov-ccard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(28,43,41,.08)}
-.ov-ccard.hot-card{border-color:#4d946e;border-width:2px}
-.ov-ccard.risk-card{border-color:#dc7140;border-left:3px solid #dc7140}
+.ov-ccard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,35,50,.08)}
+.ov-ccard.hot-card{border-color:#4a80c8;border-width:2px}
+.ov-ccard.risk-card{border-color:#4a85d9;border-left:3px solid #4a85d9}
 .ov-ccard-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .ov-ccard-top .flag{font-size:24px}
 .ov-ccard-top h3{font-size:15px;margin:0 0 2px}
 .ov-ccard-top .ov-heat{font:9px 'DM Mono';padding:2px 7px;border-radius:10px;font-weight:600}
-.ov-heat.hot{background:#eaf2ed;color:#39735c}
+.ov-heat.hot{background:#eaf0f8;color:#2c5f8a}
 .ov-heat.risk{background:#fce8e0;color:#b95532}
 .ov-heat.stable{background:#f4f2ed;color:#8a8578}
 .ov-ccard-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0;padding:10px 0;border-top:1px solid #eee;border-bottom:1px solid #eee}
 .ov-ccard-metrics div{text-align:center}
 .ov-ccard-metrics span{display:block;font:9px 'DM Mono';color:var(--muted);margin-bottom:2px}
 .ov-ccard-metrics b{font:11px 'DM Mono';color:var(--ink)}
-.ov-ccard-metrics .growth b{color:#478067}
+.ov-ccard-metrics .growth b{color:#3a6ea8}
 .ov-ccard-cats{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}
 .ov-ccard-cats span{background:#f4f2ed;color:#6b7b73;font:9px 'DM Mono';padding:2px 6px;border-radius:3px}
 .ov-ccard-policy{font:10px 'DM Mono';color:#9aa29e;margin:6px 0 10px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -175,14 +175,14 @@
 /* === Overview Rework: Block 5 - Trust Footer === */
 .ov-trust{background:#fff;border:1px solid var(--line);border-radius:6px;padding:26px 30px;display:grid;grid-template-columns:1fr 1.3fr .7fr;gap:28px;align-items:start}
 .ov-trust-col h4{font-size:13px;margin:0 0 10px;color:var(--ink)}
-.ov-trust-col p{font-size:11.5px;color:#65726d;margin:4px 0;line-height:1.6}
+.ov-trust-col p{font-size:11.5px;color:#5e6d80;margin:4px 0;line-height:1.6}
 .ov-trust-col .trust-icon{font-size:16px;margin-right:6px;vertical-align:middle}
 .ov-trust-col ul{margin:0;padding:0 0 0 0;list-style:none}
-.ov-trust-col li{font-size:11.5px;color:#52605b;line-height:1.8;padding-left:16px;position:relative}
+.ov-trust-col li{font-size:11.5px;color:#465668;line-height:1.8;padding-left:16px;position:relative}
 .ov-trust-col li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:700;font-size:11px}
 .ov-trust-cta{display:flex;align-items:center;justify-content:center;height:100%}
 .ov-trust-cta button{background:var(--ink);color:#fff;border:0;border-radius:5px;padding:12px 20px;font-family:inherit;font-size:12px;cursor:pointer;transition:.2s;white-space:nowrap}
-.ov-trust-cta button:hover{background:#31423e}
+.ov-trust-cta button:hover{background:#283850}
 
 /* === Overview Responsive === */
 @media(max-width:1000px){
@@ -213,19 +213,19 @@
 .ov-trend-range button:first-child{border-radius:4px 0 0 4px}
 .ov-trend-range button:last-child{border-radius:0 4px 4px 0}
 .ov-trend-range button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
-.ov-trend-conclusion{font:11px 'Noto Sans SC';color:#52605b;margin-top:8px;padding:8px 12px;background:#f8faf8;border-radius:4px;border-left:3px solid #4d946e}
+.ov-trend-conclusion{font:11px 'Noto Sans SC';color:#465668;margin-top:8px;padding:8px 12px;background:#f8fafc;border-radius:4px;border-left:3px solid #4a80c8}
 
 /* === Round 2: Tab badges === */
-.ov-opp-tab-badge{display:inline-block;background:rgba(255,255,255,.15);color:#f3a173;font:bold 9px 'DM Mono';padding:1px 5px;border-radius:8px;margin-left:4px;vertical-align:middle}
+.ov-opp-tab-badge{display:inline-block;background:rgba(255,255,255,.15);color:#6aadff;font:bold 9px 'DM Mono';padding:1px 5px;border-radius:8px;margin-left:4px;vertical-align:middle}
 .ov-opp-tab.risk-tab{color:#ff6b6b;font-weight:700}
 .ov-opp-tab.risk-tab.active{color:#ff6b6b;border-bottom-color:#ff6b6b}
 
 /* === Round 2: Opportunity card action buttons === */
 .ov-opp-card-actions{display:flex;gap:10px;margin-top:16px;align-items:center}
-.ov-opp-card-btn{border:0;background:rgba(255,255,255,.1);color:#dce4db;border-radius:4px;padding:8px 16px;font-family:inherit;font-size:11px;cursor:pointer;transition:.2s}
+.ov-opp-card-btn{border:0;background:rgba(255,255,255,.1);color:#dce4ef;border-radius:4px;padding:8px 16px;font-family:inherit;font-size:11px;cursor:pointer;transition:.2s}
 .ov-opp-card-btn:hover{background:rgba(255,255,255,.18)}
 .ov-opp-subscribe-btn{border:1px solid rgba(255,255,255,.2);background:transparent;color:#8aaa9e;border-radius:4px;padding:6px 14px;font-family:inherit;font-size:10px;cursor:pointer;transition:.2s;margin-top:12px}
-.ov-opp-subscribe-btn:hover{background:rgba(255,255,255,.08);color:#dce4db}
+.ov-opp-subscribe-btn:hover{background:rgba(255,255,255,.08);color:#dce4ef}
 
 /* === Round 2: Country card AI tooltip === */
 .ov-ccard-ai-icon{position:absolute;top:10px;right:10px;font-size:14px;cursor:pointer;opacity:.6;transition:.2s}
@@ -235,7 +235,7 @@
 /* === Round 2: Country tag filters === */
 .ov-tag-filters{display:flex;gap:6px;margin-bottom:14px}
 .ov-tag-btn{border:1px solid var(--line);background:#fff;border-radius:14px;padding:4px 12px;font-family:inherit;font-size:10px;cursor:pointer;color:var(--muted);transition:.2s}
-.ov-tag-btn:hover{border-color:#aebbb3;color:var(--ink)}
+.ov-tag-btn:hover{border-color:#a8b8d0;color:var(--ink)}
 .ov-tag-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
 
 /* === Round 2: AI Diagnosis card === */
@@ -263,7 +263,7 @@
 .export-modal-overlay.open{display:flex}
 .export-modal{background:#fff;border-radius:8px;padding:32px 36px;width:400px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .export-modal h3{font-size:18px;margin:0 0 8px;color:var(--ink)}
-.export-modal p{font-size:13px;color:#65726d;margin:0 0 24px;line-height:1.6}
+.export-modal p{font-size:13px;color:#5e6d80;margin:0 0 24px;line-height:1.6}
 .export-modal .modal-btns{display:flex;gap:12px;justify-content:center}
 .export-modal .modal-btn{border:0;border-radius:5px;padding:10px 24px;font-family:inherit;font-size:13px;cursor:pointer;transition:.2s}
 .export-modal .modal-btn-primary{background:var(--orange);color:#fff}
@@ -274,26 +274,26 @@
 /* === Round 2: Ticker tabs === */
 .ticker-tabs{display:flex;gap:0;padding:0 18px;border-bottom:1px solid #3c5550}
 .ticker-tab{background:none;border:0;color:#7a9088;font:10px 'Noto Sans SC';padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;transition:.15s}
-.ticker-tab.active{color:#f3a173;border-bottom-color:#f3a173}
+.ticker-tab.active{color:#6aadff;border-bottom-color:#6aadff}
 .ticker-pro-hint{font:9px 'DM Mono';color:#5a706a;padding:8px 18px;text-align:center;border-top:1px solid #3c5550}
 
 /* === Round 2: Risk highlight === */
-.risk-highlight{color:#dc7140!important;font-weight:700}
+.risk-highlight{color:#4a85d9!important;font-weight:700}
 
 /* === Round 2: Trust footer enhancements === */
 .ov-trust-cta button{background:var(--orange)!important;color:#fff!important;padding:14px 28px!important;font-size:14px!important}
 .ov-trust-cta button:hover{background:#c75f30!important}
-.ov-trust-source{font:10px 'DM Mono';color:#a0aba6;margin-top:12px;text-align:center;grid-column:1/-1}
+.ov-trust-source{font:10px 'DM Mono';color:#98a5b5;margin-top:12px;text-align:center;grid-column:1/-1}
 
 /* === Round 2: Pulse animation for numbers === */
 @keyframes numPulse{0%,100%{opacity:1}50%{opacity:.7}}
 .ov-metric-val{animation:numPulse 2s ease-in-out infinite}
 
 /* === Round 2: Card hover enhanced === */
-.ov-metric-card:hover,.ov-ccard:hover,.platform-card:hover,.ct-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(28,43,41,.1)}
+.ov-metric-card:hover,.ov-ccard:hover,.platform-card:hover,.ct-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(26,35,50,.1)}
 
 /* === Round 2: Ticker badge === */
-.ticker-badge{position:absolute;top:-4px;right:-4px;background:#dc7140;color:#fff;font:bold 9px 'DM Mono';min-width:16px;height:16px;display:grid;place-items:center;border-radius:8px;padding:0 4px}
+.ticker-badge{position:absolute;top:-4px;right:-4px;background:#4a85d9;color:#fff;font:bold 9px 'DM Mono';min-width:16px;height:16px;display:grid;place-items:center;border-radius:8px;padding:0 4px}
 
 
 /* === Watchlist Redesign === */
@@ -301,9 +301,9 @@
 .wl-header-left{display:flex;flex-direction:column;gap:10px}
 .wl-title{font:24px 'Playfair Display';margin:0}
 .wl-group-select{display:flex;gap:8px;align-items:center}
-.wl-group-select select{border:1px solid var(--line);padding:6px 10px;border-radius:4px;font:11px 'Noto Sans SC';background:#fff;color:#52605b}
+.wl-group-select select{border:1px solid var(--line);padding:6px 10px;border-radius:4px;font:11px 'Noto Sans SC';background:#fff;color:#465668}
 .wl-btn-sm{border:1px solid var(--line);background:#fff;padding:6px 12px;border-radius:4px;font:11px 'Noto Sans SC';color:var(--green);cursor:pointer;transition:.15s}
-.wl-btn-sm:hover{background:#f0f4ef;border-color:#aebbb3}
+.wl-btn-sm:hover{background:#f0f4ef;border-color:#a8b8d0}
 .wl-header-right{display:flex;align-items:center;gap:8px}
 .wl-toolbar{display:flex;justify-content:space-between;align-items:center;margin:12px 0 16px;flex-wrap:wrap;gap:10px}
 .wl-batch-btns{display:flex;gap:6px}
@@ -323,15 +323,15 @@
 .wl-free-hint a{color:var(--orange);text-decoration:none;font-weight:600}
 .wl-alert-banner{margin-bottom:18px}
 .wl-alert-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin-bottom:10px}
-.wl-alert-count{background:#dc7140;color:#fff;font:10px 'DM Mono';padding:2px 7px;border-radius:10px}
+.wl-alert-count{background:#4a85d9;color:#fff;font:10px 'DM Mono';padding:2px 7px;border-radius:10px}
 .wl-alert-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:#fff;border:1px solid var(--line);border-radius:4px;margin-bottom:6px;border-left:4px solid var(--orange);transition:.15s}
-.wl-alert-item:hover{box-shadow:0 2px 8px rgba(28,43,41,.06)}
-.wl-alert-item.high{border-left-color:#dc7140}
+.wl-alert-item:hover{box-shadow:0 2px 8px rgba(26,35,50,.06)}
+.wl-alert-item.high{border-left-color:#4a85d9}
 .wl-alert-item.mid{border-left-color:#c39142}
 .wl-alert-item p{margin:0;font-size:12px;color:var(--ink);flex:1;line-height:1.5}
 .wl-alert-item .wl-ai-btn{border:0;background:rgba(74,144,217,.08);color:#4a90d9;font:10px 'Noto Sans SC';padding:4px 10px;border-radius:3px;cursor:pointer;white-space:nowrap}
 .wl-alert-item .wl-ai-btn:hover{background:rgba(74,144,217,.15)}
-.wl-alert-none{padding:14px 18px;background:#f0f8f0;border:1px solid #c8e0c8;border-radius:4px;font-size:12px;color:#3c6c62;text-align:center}
+.wl-alert-none{padding:14px 18px;background:#f0f8f0;border:1px solid #c8e0c8;border-radius:4px;font-size:12px;color:#2c5f8a;text-align:center}
 .wl-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:16px}
 .wl-tab{background:none;border:0;padding:10px 18px 12px;font:12px 'Noto Sans SC';color:#76837e;cursor:pointer;border-bottom:2px solid transparent;transition:.15s}
 .wl-tab.active{color:var(--ink);border-bottom-color:var(--orange);font-weight:600}
@@ -339,25 +339,25 @@
 /* Watch Card Redesign */
 .watch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
 .watch-card{background:#fff;border:1px solid var(--line);border-radius:6px;padding:20px;transition:.2s;position:relative}
-.watch-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(28,43,41,.1)}
+.watch-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(26,35,50,.1)}
 .wc-top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .wc-flag{font-size:20px}
 .wc-name{font-size:14px;font-weight:600;color:var(--ink);flex:1}
 .wc-platforms{font:10px 'DM Mono';color:var(--muted)}
 .wc-status{font:9px 'DM Mono';padding:3px 8px;border-radius:10px;white-space:nowrap}
-.wc-status.hot{background:#eaf2ed;color:#39735c}
+.wc-status.hot{background:#eaf0f8;color:#2c5f8a}
 .wc-status.up{background:#f0f7ff;color:#4a90d9}
-.wc-status.monitor{background:#f0f0ec;color:#71807c}
-.wc-status.risk{background:var(--orange-light);color:#bc5932}
+.wc-status.monitor{background:#f0f0ec;color:#6b7b8d}
+.wc-status.risk{background:var(--orange-light);color:#2a5a8a}
 .wc-metrics{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
 .wc-metric{font-size:12px;color:var(--ink)}
 .wc-metric b{font:14px 'DM Mono';display:block}
 .wc-detail{font-size:11px;color:var(--muted);margin:0 0 10px;line-height:1.5}
 .wc-trend{margin:8px 0 12px}
 .wc-trend svg{width:100%;height:40px}
-.wc-actions{display:flex;gap:6px;border-top:1px solid #f0efeb;padding-top:12px;flex-wrap:wrap}
+.wc-actions{display:flex;gap:6px;border-top:1px solid #f0f2f6;padding-top:12px;flex-wrap:wrap}
 .wc-action-btn{border:1px solid var(--line);background:#fff;padding:5px 10px;border-radius:3px;font:10px 'Noto Sans SC';color:var(--muted);cursor:pointer;transition:.15s}
-.wc-action-btn:hover{background:#f0f4ef;color:var(--ink);border-color:#aebbb3}
+.wc-action-btn:hover{background:#f0f4ef;color:var(--ink);border-color:#a8b8d0}
 .wc-action-btn.ai{background:rgba(74,144,217,.06);border-color:#c8ddf5;color:#4a90d9}
 .wc-action-btn.ai:hover{background:rgba(74,144,217,.12)}
 .wc-action-btn.remove{border:0;background:none;color:#c0663c;padding:5px 6px}
@@ -367,7 +367,7 @@
 .wl-recommend h4{font-size:14px;margin:0 0 14px}
 .wl-rec-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .wl-rec-card{background:#fff;border:1px solid var(--line);border-radius:5px;padding:14px 16px;display:flex;align-items:center;gap:12px;transition:.15s}
-.wl-rec-card:hover{border-color:#aebbb3;box-shadow:0 2px 8px rgba(28,43,41,.05)}
+.wl-rec-card:hover{border-color:#a8b8d0;box-shadow:0 2px 8px rgba(26,35,50,.05)}
 .wl-rec-info{flex:1}
 .wl-rec-info h5{font-size:12px;margin:0 0 3px}
 .wl-rec-info p{font-size:10px;color:var(--muted);margin:0;line-height:1.4}
@@ -384,15 +384,15 @@
 .wl-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
 .wl-bar-row:last-child{margin-bottom:0}
 .wl-bar-label{font:11px 'Noto Sans SC';color:var(--ink);width:60px;flex-shrink:0}
-.wl-bar-track{flex:1;height:16px;background:#f0efeb;border-radius:3px;overflow:hidden}
+.wl-bar-track{flex:1;height:16px;background:#f0f2f6;border-radius:3px;overflow:hidden}
 .wl-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
 .wl-bar-val{font:bold 12px 'DM Mono';color:var(--ink);width:40px;text-align:right}
 /* Modal */
-.wl-modal-overlay{position:fixed;inset:0;background:rgba(28,43,41,.5);z-index:200;display:none;align-items:center;justify-content:center;animation:wlFadeIn .25s ease}
+.wl-modal-overlay{position:fixed;inset:0;background:rgba(26,35,50,.5);z-index:200;display:none;align-items:center;justify-content:center;animation:wlFadeIn .25s ease}
 .wl-modal-overlay.show{display:flex}
 @keyframes wlFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes wlSlideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-.wl-modal{background:#fff;width:560px;max-width:92vw;max-height:85vh;border-radius:8px;overflow:hidden;box-shadow:0 20px 60px rgba(28,43,41,.25);animation:wlSlideUp .3s ease}
+.wl-modal{background:#fff;width:560px;max-width:92vw;max-height:85vh;border-radius:8px;overflow:hidden;box-shadow:0 20px 60px rgba(26,35,50,.25);animation:wlSlideUp .3s ease}
 .wl-modal-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
 .wl-modal-head h3{font-size:15px;margin:0}
 .wl-modal-close{border:0;background:none;font-size:18px;color:var(--muted);cursor:pointer}
@@ -404,15 +404,15 @@
 .wl-search-row input{flex:1;border:1px solid var(--line);padding:9px 12px;border-radius:4px;font:12px 'Noto Sans SC';outline:none}
 .wl-search-row input:focus{border-color:var(--green)}
 .wl-search-row button{border:0;background:var(--ink);color:#fff;padding:9px 16px;border-radius:4px;font:12px 'Noto Sans SC';cursor:pointer}
-.wl-search-result{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0efeb}
+.wl-search-result{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f2f6}
 .wl-search-result b{font-size:12px}
 .wl-search-result small{font:10px 'DM Mono';color:var(--muted);display:block;margin-top:2px}
-.wl-rec-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0efeb}
+.wl-rec-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f2f6}
 .wl-rec-item-info h5{font-size:12px;margin:0 0 3px}
 .wl-rec-item-info p{font:10px 'DM Mono';color:var(--muted);margin:0}
 .wl-rec-item button{border:0;background:var(--green);color:#fff;padding:6px 14px;border-radius:3px;font:11px 'Noto Sans SC';cursor:pointer}
 .wl-rec-item button:hover{background:#2c4a44}
-.wl-template-card{background:#f8faf8;border:1px solid #e0e8de;border-radius:5px;padding:16px;margin-bottom:10px}
+.wl-template-card{background:#f8fafc;border:1px solid #e0e8de;border-radius:5px;padding:16px;margin-bottom:10px}
 .wl-template-card h5{font-size:13px;margin:0 0 4px}
 .wl-template-card p{font-size:11px;color:var(--muted);margin:0 0 10px}
 .wl-template-card button{border:0;background:var(--ink);color:#fff;padding:8px 16px;border-radius:4px;font:11px 'Noto Sans SC';cursor:pointer}
@@ -420,9 +420,9 @@
 .wl-modal-foot button{border:0;background:none;color:var(--muted);font:12px 'Noto Sans SC';cursor:pointer}
 .wl-modal-foot button:hover{color:var(--ink)}
 /* PRO Modal */
-.pro-modal-overlay{position:fixed;inset:0;background:rgba(28,43,41,.5);z-index:210;display:none;align-items:center;justify-content:center;animation:wlFadeIn .25s ease}
+.pro-modal-overlay{position:fixed;inset:0;background:rgba(26,35,50,.5);z-index:210;display:none;align-items:center;justify-content:center;animation:wlFadeIn .25s ease}
 .pro-modal-overlay.show{display:flex}
-.pro-modal{background:#fff;width:400px;max-width:90vw;border-radius:8px;padding:32px;text-align:center;box-shadow:0 20px 60px rgba(28,43,41,.25);animation:wlSlideUp .3s ease}
+.pro-modal{background:#fff;width:400px;max-width:90vw;border-radius:8px;padding:32px;text-align:center;box-shadow:0 20px 60px rgba(26,35,50,.25);animation:wlSlideUp .3s ease}
 .pro-modal h3{font:20px 'Playfair Display';margin:0 0 8px}
 .pro-modal p{font-size:12px;color:var(--muted);margin:0 0 20px;line-height:1.7}
 .pro-modal-btns{display:flex;gap:10px;justify-content:center}
@@ -439,13 +439,13 @@
 .ct-dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:50;display:none;max-height:280px;overflow-y:auto}
 .ct-dropdown.open{display:block}
 .ct-dropdown-item{padding:10px 14px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f0ede6}
-.ct-dropdown-item:hover{background:#f6f4ef}
+.ct-dropdown-item:hover{background:#f4f6fa}
 .ct-fav-tabs{display:flex;gap:6px;flex-wrap:wrap}
 .ct-fav-tab{padding:6px 14px;border:1px solid var(--line);border-radius:20px;font-size:12px;cursor:pointer;background:#fff;transition:.2s;white-space:nowrap}
 .ct-fav-tab:hover,.ct-fav-tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
 .ct-actions{display:flex;gap:8px;margin-left:auto}
 .ct-actions button{padding:7px 14px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid var(--line);background:#fff;transition:.2s}
-.ct-actions button:hover{background:#f6f4ef}
+.ct-actions button:hover{background:#f4f6fa}
 .ct-layout{display:flex;gap:22px;align-items:flex-start}
 .ct-main{flex:1;min-width:0}
 .ct-sidebar{width:280px;flex-shrink:0;position:sticky;top:60px;max-height:calc(100vh - 80px);overflow-y:auto;background:#fff;border:1px solid var(--line);border-radius:8px;padding:20px}
@@ -462,7 +462,7 @@
 .ct-ai-content{font-size:13px;line-height:1.7;color:var(--ink);margin-bottom:14px}
 .ct-ai-tracks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
 .ct-ai-track{background:#fff;border:1px solid #d0e3f5;border-radius:6px;padding:12px;font-size:12px}
-.ct-ai-track b{color:#3c6c62;font-size:13px}
+.ct-ai-track b{color:#2c5f8a;font-size:13px}
 .ct-ai-risk-item{padding:6px 0;font-size:12px;border-bottom:1px solid #e8f0f8}
 .ct-ai-advice-item{padding:8px 0;font-size:12px;border-bottom:1px solid #e8f0f8}
 .ct-ai-advice-item b{color:#4a90d9}
@@ -478,9 +478,9 @@
 .ct-macro-card .mc-label{font-size:11px;color:var(--muted);margin-bottom:4px}
 .ct-macro-card .mc-value{font:bold 22px 'Playfair Display';color:var(--ink);margin-bottom:2px}
 .ct-macro-card .mc-trend{font:11px 'DM Mono';margin-bottom:4px}
-.ct-macro-card .mc-trend.up{color:#3c6c62}
-.ct-macro-card .mc-trend.down{color:#df6f3d}
-.ct-macro-card .mc-note{font:10px 'DM Mono';color:#a0aba6}
+.ct-macro-card .mc-trend.up{color:#2c5f8a}
+.ct-macro-card .mc-trend.down{color:#3b7dd8}
+.ct-macro-card .mc-note{font:10px 'DM Mono';color:#98a5b5}
 
 /* Demographics */
 .ct-demo-section{margin-bottom:20px}
@@ -490,7 +490,7 @@
 .ct-demo-box h4{font-size:13px;margin:0 0 10px;color:var(--ink)}
 .ct-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
 .ct-bar-label{width:60px;flex-shrink:0;font-size:11px;color:var(--muted)}
-.ct-bar-track{flex:1;height:18px;background:#eef2eb;border-radius:9px;overflow:hidden;position:relative}
+.ct-bar-track{flex:1;height:18px;background:#e8edf4;border-radius:9px;overflow:hidden;position:relative}
 .ct-bar-fill{height:100%;border-radius:9px;transition:width .6s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font:bold 10px 'DM Mono';color:#fff}
 .ct-bar-desc{width:180px;flex-shrink:0;font-size:10px;color:var(--muted);text-align:right}
 .ct-ai-tip{background:#f0f7ff;border-left:3px solid #4a90d9;padding:8px 12px;font-size:11px;color:#2a6cb5;border-radius:0 4px 4px 0;margin-top:8px}
@@ -503,9 +503,9 @@
 .ct-religion-bar{flex:1;text-align:center;padding:8px;border-radius:6px;font-size:11px}
 .ct-risk-opp{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
 .ct-risk-box{padding:12px;border-radius:6px;font-size:11px;line-height:1.8}
-.ct-risk-box.red{background:#fef2f0;border-left:3px solid #df6f3d}
-.ct-risk-box.green{background:#f0faf5;border-left:3px solid #3c6c62}
-.ct-festival-timeline{font-size:11px;color:var(--muted);padding:6px 0;text-align:center;background:#f6f4ef;border-radius:4px}
+.ct-risk-box.red{background:#fef2f0;border-left:3px solid #3b7dd8}
+.ct-risk-box.green{background:#f0faf5;border-left:3px solid #2c5f8a}
+.ct-festival-timeline{font-size:11px;color:var(--muted);padding:6px 0;text-align:center;background:#f4f6fa;border-radius:4px}
 .ct-income-bars{margin-bottom:8px}
 .ct-price-bands{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:10px}
 .ct-price-card{background:#fff;border:1px solid var(--line);border-radius:6px;padding:14px;text-align:center}
@@ -517,17 +517,17 @@
 .ct-channel-box{background:#fff;border:1px solid var(--line);border-radius:6px;padding:14px}
 .ct-channel-box h4{font-size:12px;margin:0 0 6px}
 .ct-channel-box p{font-size:11px;color:var(--muted);margin:0;line-height:1.7}
-.ct-payment-info{display:flex;gap:16px;font-size:11px;color:var(--muted);margin-top:10px;padding:8px 12px;background:#f6f4ef;border-radius:4px}
+.ct-payment-info{display:flex;gap:16px;font-size:11px;color:var(--muted);margin-top:10px;padding:8px 12px;background:#f4f6fa;border-radius:4px}
 
 /* Categories */
 .ct-cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
 .ct-cat-col h4{font-size:13px;margin:0 0 10px;padding-bottom:6px;border-bottom:2px solid}
-.ct-cat-col.blue-ocean h4{border-color:#3c6c62;color:#3c6c62}
+.ct-cat-col.blue-ocean h4{border-color:#2c5f8a;color:#2c5f8a}
 .ct-cat-col.stable h4{border-color:#4a90d9;color:#4a90d9}
-.ct-cat-col.risk h4{border-color:#df6f3d;color:#df6f3d}
+.ct-cat-col.risk h4{border-color:#3b7dd8;color:#3b7dd8}
 .ct-cat-item{padding:8px 0;border-bottom:1px solid #f0ede6;font-size:12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
 .ct-cat-item:hover{color:#4a90d9}
-.ct-cat-item .cat-growth{font:bold 11px 'DM Mono';color:#3c6c62}
+.ct-cat-item .cat-growth{font:bold 11px 'DM Mono';color:#2c5f8a}
 .ct-cat-item .cat-reason{font-size:10px;color:var(--muted)}
 
 /* Platform Grid */
@@ -543,17 +543,17 @@
 .ct-plat-card .plc-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .ct-plat-card .plc-head .plc-emoji{font-size:20px}
 .ct-plat-card .plc-head .plc-name{font-weight:600;font-size:13px}
-.ct-plat-card .plc-head .plc-share{font:bold 12px 'DM Mono';color:#3c6c62;margin-left:auto}
+.ct-plat-card .plc-head .plc-share{font:bold 12px 'DM Mono';color:#2c5f8a;margin-left:auto}
 .ct-plat-card .plc-detail{font-size:10px;color:var(--muted);line-height:1.8}
 
 /* Sidebar Policy */
 .ct-sidebar .ct-sb-title{font-size:14px;font-weight:600;margin:0 0 4px}
 .ct-sidebar .ct-sb-badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:600;margin-bottom:14px}
-.ct-sidebar .ct-sb-badge.strict{background:#fef2f0;color:#df6f3d}
+.ct-sidebar .ct-sb-badge.strict{background:#fef2f0;color:#3b7dd8}
 .ct-sidebar .ct-sb-badge.medium{background:#fff8e6;color:#b8860b}
 .ct-policy-item{padding:10px 0;border-bottom:1px solid #f0ede6}
 .ct-policy-item .pi-level{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
-.ct-policy-item .pi-level.high{background:#df6f3d}
+.ct-policy-item .pi-level.high{background:#3b7dd8}
 .ct-policy-item .pi-level.mid{background:#e8b84a}
 .ct-policy-item .pi-level.low{background:#aab5b0}
 .ct-policy-item .pi-title{font-size:12px;font-weight:600;margin-bottom:3px}
@@ -562,12 +562,12 @@
 .ct-policy-item .pi-ai:hover{text-decoration:underline}
 .ct-sb-footer{margin-top:14px;text-align:center}
 .ct-sb-footer button{padding:8px 16px;border:1px solid var(--line);border-radius:6px;font-size:11px;cursor:pointer;background:#fff;width:100%}
-.ct-sb-footer button:hover{background:#f6f4ef}
+.ct-sb-footer button:hover{background:#f4f6fa}
 
 /* Section headers */
 .ct-section-header{display:flex;align-items:center;gap:8px;margin:24px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
 .ct-section-header h3{font-size:15px;margin:0}
-.ct-section-header .ct-sh-badge{font-size:10px;padding:2px 8px;border-radius:10px;background:#eaf2ed;color:#3c6c62}
+.ct-section-header .ct-sh-badge{font-size:10px;padding:2px 8px;border-radius:10px;background:#eaf0f8;color:#2c5f8a}
 
 @media(max-width:1000px){
 .ct-layout{flex-direction:column}
@@ -585,7 +585,7 @@
 .al-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px}
 .al-title-group{display:flex;align-items:center;gap:12px}
 .al-title-group h2{font-size:20px;font-weight:700;color:var(--ink);margin:0}
-.al-title-group .al-badge{background:#dc7140;color:#fff;font:bold 11px 'DM Mono';padding:2px 8px;border-radius:10px}
+.al-title-group .al-badge{background:#4a85d9;color:#fff;font:bold 11px 'DM Mono';padding:2px 8px;border-radius:10px}
 .al-search{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 12px;min-width:220px}
 .al-search input{border:0;outline:0;font:13px 'Noto Sans SC';background:transparent;flex:1;color:var(--ink)}
 .al-search input::placeholder{color:#aaa}
@@ -600,7 +600,7 @@
 .al-summary-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px;position:relative;overflow:hidden}
 .al-summary-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .al-summary-card.sc-total::before{background:var(--ink)}
-.al-summary-card.sc-high::before{background:#dc7140}
+.al-summary-card.sc-high::before{background:#4a85d9}
 .al-summary-card.sc-today::before{background:var(--orange)}
 .al-summary-card.sc-done::before{background:var(--green)}
 .al-sc-label{font-size:11px;color:var(--muted);margin-bottom:4px}
@@ -611,32 +611,32 @@
 .al-tab:hover{color:var(--ink)}
 .al-tab.active{color:var(--orange);border-bottom-color:var(--orange);font-weight:600}
 .al-tab .tab-count{display:inline-block;background:#eee;padding:1px 6px;border-radius:8px;font-size:10px;margin-left:4px;font-family:'DM Mono'}
-.al-tab.active .tab-count{background:rgba(223,111,61,.12);color:var(--orange)}
-.al-batch{display:flex;gap:8px;padding:10px 0;border-bottom:1px solid #f0efeb;align-items:center}
+.al-tab.active .tab-count{background:rgba(59,125,216,.12);color:var(--orange)}
+.al-batch{display:flex;gap:8px;padding:10px 0;border-bottom:1px solid #f0f2f6;align-items:center}
 .al-batch-info{font-size:11px;color:var(--muted);margin-left:auto}
 .al-list{padding:0}
-.al-card{display:flex;gap:14px;padding:14px 16px;border-bottom:1px solid #f0efeb;position:relative;transition:background .2s;cursor:default}
+.al-card{display:flex;gap:14px;padding:14px 16px;border-bottom:1px solid #f0f2f6;position:relative;transition:background .2s;cursor:default}
 .al-card:hover{background:#faf9f5}
 .al-card.unread{background:#fff}
 .al-card.unread::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:3px;background:var(--orange);border-radius:2px}
 .al-card.read{opacity:.6}
 .al-card.read:hover{opacity:.85}
 .al-card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.al-card-icon.type-shop{background:rgba(223,111,61,.1)}
-.al-card-icon.type-cat{background:rgba(60,108,98,.1)}
-.al-card-icon.type-policy{background:rgba(220,113,64,.1)}
+.al-card-icon.type-shop{background:rgba(59,125,216,.1)}
+.al-card-icon.type-cat{background:rgba(44,95,138,.1)}
+.al-card-icon.type-policy{background:rgba(74,133,217,.1)}
 .al-card-icon.type-macro{background:rgba(100,140,180,.1)}
 .al-card-icon.type-platform{background:rgba(140,120,180,.1)}
 .al-card-body{flex:1;min-width:0}
 .al-card-title{font:600 13px 'Noto Sans SC';color:var(--ink);margin-bottom:3px;line-height:1.4}
 .al-card-meta{font-size:11px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .al-card-meta .meta-tag{padding:1px 6px;border-radius:3px;font-size:10px;font-weight:500}
-.al-card-meta .meta-tag.high{background:rgba(220,113,64,.12);color:#dc7140}
+.al-card-meta .meta-tag.high{background:rgba(74,133,217,.12);color:#4a85d9}
 .al-card-meta .meta-tag.mid{background:rgba(195,145,66,.12);color:#c39142}
-.al-card-meta .meta-tag.low{background:rgba(113,131,126,.1);color:#71807c}
+.al-card-meta .meta-tag.low{background:rgba(107,123,141,.1);color:#6b7b8d}
 .al-card-detail{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5}
-.al-card-detail .val-up{color:#3c6c62;font-weight:600}
-.al-card-detail .val-down{color:#dc7140;font-weight:600}
+.al-card-detail .val-up{color:#2c5f8a;font-weight:600}
+.al-card-detail .val-down{color:#4a85d9;font-weight:600}
 .al-card-actions{display:flex;gap:6px;flex-shrink:0;align-items:flex-start;padding-top:2px}
 .al-card-actions button{font:11px 'Noto Sans SC';padding:4px 10px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--ink);cursor:pointer;transition:.2s;white-space:nowrap}
 .al-card-actions button:hover{border-color:var(--orange);color:var(--orange)}
@@ -654,9 +654,9 @@
 .al-empty h3{font-size:15px;color:var(--ink);margin-bottom:6px}
 .al-empty p{font-size:12px;margin-bottom:16px}
 /* Alert Settings Modal */
-.al-modal-overlay{position:fixed;inset:0;background:rgba(28,43,41,.5);z-index:200;display:none;align-items:center;justify-content:center;animation:wlFadeIn .25s ease}
+.al-modal-overlay{position:fixed;inset:0;background:rgba(26,35,50,.5);z-index:200;display:none;align-items:center;justify-content:center;animation:wlFadeIn .25s ease}
 .al-modal-overlay.show{display:flex}
-.al-modal{background:#fff;width:520px;max-width:92vw;border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(28,43,41,.25);animation:wlSlideUp .3s ease}
+.al-modal{background:#fff;width:520px;max-width:92vw;border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(26,35,50,.25);animation:wlSlideUp .3s ease}
 .al-modal-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
 .al-modal-head h3{font-size:15px;margin:0}
 .al-modal-close{border:0;background:none;font-size:18px;color:var(--muted);cursor:pointer}
@@ -679,29 +679,29 @@
 .pf-top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px}
 .pf-top-bar h2{margin:0;font-size:1.3rem;color:var(--ink)}
 .pf-search-box{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.pf-search-box input{padding:6px 12px;border:1px solid #d5d0c5;border-radius:6px;font-size:.85rem;width:200px;background:#fff}
-.pf-ai-panel{background:linear-gradient(135deg,#eef6f3,#f6f4ef);border:1px solid #d5d0c5;border-radius:10px;padding:16px 20px;margin-bottom:18px}
+.pf-search-box input{padding:6px 12px;border:1px solid #c5cdd8;border-radius:6px;font-size:.85rem;width:200px;background:#fff}
+.pf-ai-panel{background:linear-gradient(135deg,#eef6f3,#f4f6fa);border:1px solid #c5cdd8;border-radius:10px;padding:16px 20px;margin-bottom:18px}
 .pf-ai-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
-.pf-ai-tab{padding:5px 14px;border-radius:20px;font-size:.78rem;cursor:pointer;border:1px solid #d5d0c5;background:#fff;color:var(--ink);transition:all .2s}
+.pf-ai-tab{padding:5px 14px;border-radius:20px;font-size:.78rem;cursor:pointer;border:1px solid #c5cdd8;background:#fff;color:var(--ink);transition:all .2s}
 .pf-ai-tab.active{background:var(--green);color:#fff;border-color:var(--green)}
 .pf-ai-content{font-size:.85rem;line-height:1.6;color:var(--ink)}
 .pf-ai-content .ai-item{padding:8px 0;border-bottom:1px solid #e8e4da}
 .pf-ai-content .ai-item:last-child{border:none}
 .pf-ai-content .ai-btn{display:inline-block;margin-left:10px;font-size:.75rem;color:var(--green);cursor:pointer;text-decoration:underline}
 .pf-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-.pf-stat-card{background:#fff;border:1px solid #e0ddd4;border-radius:10px;padding:14px 16px;text-align:center}
+.pf-stat-card{background:#fff;border:1px solid #d8dce6;border-radius:10px;padding:14px 16px;text-align:center}
 .pf-stat-card .pf-stat-val{font-size:1.5rem;font-weight:700;color:var(--ink)}
 .pf-stat-card .pf-stat-label{font-size:.75rem;color:#888;margin-top:4px}
 .pf-stat-card .pf-stat-sub{font-size:.7rem;color:var(--green);margin-top:2px}
-.pf-filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px 14px;background:#f6f4ef;border-radius:8px}
-.pf-filter-bar select,.pf-filter-bar input{padding:5px 10px;border:1px solid #d5d0c5;border-radius:6px;font-size:.8rem;background:#fff}
+.pf-filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px 14px;background:#f4f6fa;border-radius:8px}
+.pf-filter-bar select,.pf-filter-bar input{padding:5px 10px;border:1px solid #c5cdd8;border-radius:6px;font-size:.8rem;background:#fff}
 .pf-filter-bar .pf-filter-label{font-size:.75rem;color:#888;margin-right:2px}
 .pf-batch-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-.pf-batch-bar button{padding:5px 14px;border-radius:6px;font-size:.78rem;cursor:pointer;border:1px solid #d5d0c5;background:#fff;color:var(--ink)}
+.pf-batch-bar button{padding:5px 14px;border-radius:6px;font-size:.78rem;cursor:pointer;border:1px solid #c5cdd8;background:#fff;color:var(--ink)}
 .pf-batch-bar button:hover{background:var(--green);color:#fff;border-color:var(--green)}
 .pf-batch-bar .pf-selected-count{font-size:.78rem;color:#888}
 .pf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:18px}
-.pf-card{position:relative;background:#fff;border:1px solid #e0ddd4;border-radius:10px;padding:16px;cursor:pointer;transition:box-shadow .2s,transform .15s}
+.pf-card{position:relative;background:#fff;border:1px solid #d8dce6;border-radius:10px;padding:16px;cursor:pointer;transition:box-shadow .2s,transform .15s}
 .pf-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-2px)}
 .pf-card.type-content{background:linear-gradient(135deg,#f0f7fb,#fff)}
 .pf-card.type-shelf{background:linear-gradient(135deg,#faf8f2,#fff)}
@@ -723,13 +723,13 @@
 .pf-card .pf-data-item .val-up{color:var(--green)}
 .pf-card .pf-data-item .val-down{color:#e05a3a}
 .pf-card .pf-card-ops{display:flex;gap:6px;flex-wrap:wrap}
-.pf-card .pf-card-ops button{padding:4px 10px;border-radius:5px;font-size:.72rem;cursor:pointer;border:1px solid #d5d0c5;background:#fff;color:var(--ink)}
+.pf-card .pf-card-ops button{padding:4px 10px;border-radius:5px;font-size:.72rem;cursor:pointer;border:1px solid #c5cdd8;background:#fff;color:var(--ink)}
 .pf-card .pf-card-ops button:hover{background:var(--green);color:#fff;border-color:var(--green)}
 .pf-card .pf-card-ops button.btn-ai{border-color:var(--green);color:var(--green)}
 .pf-card .pf-card-ops button.btn-ai:hover{background:var(--green);color:#fff}
 .pf-card .pf-card-check{position:absolute;top:8px;right:8px;width:18px;height:18px;cursor:pointer}
 .pf-pagination{display:flex;justify-content:center;align-items:center;gap:6px;margin:16px 0}
-.pf-pagination button{padding:4px 12px;border:1px solid #d5d0c5;border-radius:5px;background:#fff;cursor:pointer;font-size:.8rem}
+.pf-pagination button{padding:4px 12px;border:1px solid #c5cdd8;border-radius:5px;background:#fff;cursor:pointer;font-size:.8rem}
 .pf-pagination button.active{background:var(--green);color:#fff;border-color:var(--green)}
 .pf-pagination button:disabled{opacity:.4;cursor:default}
 .pf-empty{text-align:center;padding:40px;color:#888;font-size:.9rem}
@@ -750,9 +750,9 @@
 .pf-detail-section .pf-risk-tag.tag-mid{background:#fef6e0;color:#8a6d00}
 .pf-detail-section .pf-risk-tag.tag-low{background:#e6f3ef;color:#2d5f50}
 .pf-detail-section table{width:100%;border-collapse:collapse;font-size:.8rem}
-.pf-detail-section th{text-align:left;padding:6px 8px;background:#f6f4ef;border-bottom:1px solid #e0ddd4;font-weight:600}
+.pf-detail-section th{text-align:left;padding:6px 8px;background:#f4f6fa;border-bottom:1px solid #d8dce6;font-weight:600}
 .pf-detail-section td{padding:6px 8px;border-bottom:1px solid #eee}
-.pf-ai-diagnosis{background:#f0f7f4;border:1px solid #c8ddd5;border-radius:8px;padding:14px 18px;margin-top:10px;font-size:.83rem;line-height:1.7;color:var(--ink)}
+.pf-ai-diagnosis{background:#f0f4fa;border:1px solid #c8ddd5;border-radius:8px;padding:14px 18px;margin-top:10px;font-size:.83rem;line-height:1.7;color:var(--ink)}
 .pf-ai-diagnosis h5{margin:0 0 8px;color:var(--green);font-size:.88rem}
 .pf-mini-chart{display:flex;align-items:flex-end;gap:4px;height:50px;margin-top:8px}
 .pf-mini-chart .bar{flex:1;background:var(--green);border-radius:3px 3px 0 0;min-width:20px;position:relative;transition:height .3s}
@@ -764,10 +764,10 @@
 .pl-top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px}
 .pl-top-bar h2{margin:0;font-size:1.3rem;color:var(--ink)}
 .pl-search-box{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.pl-search-box input{padding:6px 12px;border:1px solid #d5d0c5;border-radius:6px;font-size:.85rem;width:200px;background:#fff}
-.pl-ai-panel{background:linear-gradient(135deg,#fdf2f0,#f6f4ef);border:1px solid #d5d0c5;border-radius:10px;padding:16px 20px;margin-bottom:18px}
+.pl-search-box input{padding:6px 12px;border:1px solid #c5cdd8;border-radius:6px;font-size:.85rem;width:200px;background:#fff}
+.pl-ai-panel{background:linear-gradient(135deg,#fdf2f0,#f4f6fa);border:1px solid #c5cdd8;border-radius:10px;padding:16px 20px;margin-bottom:18px}
 .pl-ai-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
-.pl-ai-tab{padding:5px 14px;border-radius:20px;font-size:.78rem;cursor:pointer;border:1px solid #d5d0c5;background:#fff;color:var(--ink);transition:all .2s}
+.pl-ai-tab{padding:5px 14px;border-radius:20px;font-size:.78rem;cursor:pointer;border:1px solid #c5cdd8;background:#fff;color:var(--ink);transition:all .2s}
 .pl-ai-tab.active{background:#c0392b;color:#fff;border-color:#c0392b}
 .pl-ai-content{font-size:.85rem;line-height:1.6;color:var(--ink)}
 .pl-ai-content .ai-item{padding:8px 0;border-bottom:1px solid #e8e4da}
@@ -776,19 +776,19 @@
 .pl-ai-content .ai-tag-green{color:var(--green);font-weight:600}
 .pl-ai-content .ai-btn{display:inline-block;margin-left:10px;font-size:.75rem;color:var(--green);cursor:pointer;text-decoration:underline}
 .pl-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-.pl-stat-card{background:#fff;border:1px solid #e0ddd4;border-radius:10px;padding:14px 16px;text-align:center}
+.pl-stat-card{background:#fff;border:1px solid #d8dce6;border-radius:10px;padding:14px 16px;text-align:center}
 .pl-stat-card .pl-stat-val{font-size:1.5rem;font-weight:700;color:var(--ink)}
 .pl-stat-card .pl-stat-label{font-size:.75rem;color:#888;margin-top:4px}
 .pl-stat-card .pl-stat-sub{font-size:.7rem;color:#c0392b;margin-top:2px}
-.pl-filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px 14px;background:#f6f4ef;border-radius:8px}
-.pl-filter-bar select,.pl-filter-bar input{padding:5px 10px;border:1px solid #d5d0c5;border-radius:6px;font-size:.8rem;background:#fff}
+.pl-filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px 14px;background:#f4f6fa;border-radius:8px}
+.pl-filter-bar select,.pl-filter-bar input{padding:5px 10px;border:1px solid #c5cdd8;border-radius:6px;font-size:.8rem;background:#fff}
 .pl-filter-bar .pl-filter-label{font-size:.75rem;color:#888;margin-right:2px}
 .pl-batch-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-.pl-batch-bar button{padding:5px 14px;border-radius:6px;font-size:.78rem;cursor:pointer;border:1px solid #d5d0c5;background:#fff;color:var(--ink)}
+.pl-batch-bar button{padding:5px 14px;border-radius:6px;font-size:.78rem;cursor:pointer;border:1px solid #c5cdd8;background:#fff;color:var(--ink)}
 .pl-batch-bar button:hover{background:var(--green);color:#fff;border-color:var(--green)}
 .pl-batch-bar .pl-selected-count{font-size:.78rem;color:#888}
 .pl-list{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
-.pl-card{position:relative;background:#fff;border:1px solid #e0ddd4;border-radius:10px;padding:16px 16px 16px 24px;display:flex;gap:14px;transition:box-shadow .2s}
+.pl-card{position:relative;background:#fff;border:1px solid #d8dce6;border-radius:10px;padding:16px 16px 16px 24px;display:flex;gap:14px;transition:box-shadow .2s}
 .pl-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.06)}
 .pl-card .pl-risk-bar{position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:10px 0 0 10px}
 .pl-card .pl-risk-bar.level-major{background:#c0392b}
@@ -814,13 +814,13 @@
 .pl-card .pl-card-right .pl-level-badge.badge-medium{background:#e8b73d;color:#fff}
 .pl-card .pl-card-right .pl-level-badge.badge-normal{background:#ddd;color:#666}
 .pl-card .pl-card-ops{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
-.pl-card .pl-card-ops button{padding:4px 10px;border-radius:5px;font-size:.72rem;cursor:pointer;border:1px solid #d5d0c5;background:#fff;color:var(--ink)}
+.pl-card .pl-card-ops button{padding:4px 10px;border-radius:5px;font-size:.72rem;cursor:pointer;border:1px solid #c5cdd8;background:#fff;color:var(--ink)}
 .pl-card .pl-card-ops button:hover{background:var(--green);color:#fff;border-color:var(--green)}
 .pl-card .pl-card-ops button.btn-ai{border-color:var(--green);color:var(--green)}
 .pl-card .pl-card-ops button.btn-ai:hover{background:var(--green);color:#fff}
 .pl-card .pl-card-check{position:absolute;top:8px;right:8px;width:18px;height:18px;cursor:pointer}
 .pl-pagination{display:flex;justify-content:center;align-items:center;gap:6px;margin:16px 0}
-.pl-pagination button{padding:4px 12px;border:1px solid #d5d0c5;border-radius:5px;background:#fff;cursor:pointer;font-size:.8rem}
+.pl-pagination button{padding:4px 12px;border:1px solid #c5cdd8;border-radius:5px;background:#fff;cursor:pointer;font-size:.8rem}
 .pl-pagination button.active{background:var(--green);color:#fff;border-color:var(--green)}
 .pl-pagination button:disabled{opacity:.4;cursor:default}
 .pl-empty{text-align:center;padding:40px;color:#888;font-size:.9rem}
@@ -837,7 +837,7 @@
 .pl-detail-section .pl-detail-item{font-size:.82rem;color:#555;line-height:1.5}
 .pl-detail-section .pl-detail-item b{color:var(--ink)}
 .pl-detail-section table{width:100%;border-collapse:collapse;font-size:.8rem}
-.pl-detail-section th{text-align:left;padding:6px 8px;background:#f6f4ef;border-bottom:1px solid #e0ddd4;font-weight:600}
+.pl-detail-section th{text-align:left;padding:6px 8px;background:#f4f6fa;border-bottom:1px solid #d8dce6;font-weight:600}
 .pl-detail-section td{padding:6px 8px;border-bottom:1px solid #eee}
 .pl-ai-compliance{background:#fdf6f5;border:1px solid #e8c5c0;border-radius:8px;padding:14px 18px;margin-top:10px;font-size:.83rem;line-height:1.7;color:var(--ink)}
 .pl-ai-compliance h5{margin:0 0 8px;color:#c0392b;font-size:.88rem}
@@ -869,7 +869,7 @@
 .rl-type-logistics{background:#e8f4fd;color:#2980b9}
 .rl-type-penalty{background:#fde8e8;color:#c0392b}
 .rl-type-restriction{background:#f0f0f0;color:#666}
-.rl-type-other{background:#e8f8f0;color:#27ae60}
+.rl-type-other{background:#e8f0fc;color:#27ae60}
 .rl-card-summary{font-size:13px;color:#555;margin-top:6px;line-height:1.5}
 .rl-card-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
 .rl-card-actions button{padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;font-size:12px;cursor:pointer;white-space:nowrap}
@@ -878,7 +878,7 @@
 .rl-countdown{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
 .rl-countdown-urgent{background:#fde8e8;color:#c0392b}
 .rl-countdown-warn{background:#fff3e6;color:#e67e22}
-.rl-countdown-ok{background:#e8f8f0;color:#27ae60}
+.rl-countdown-ok{background:#e8f0fc;color:#27ae60}
 .rl-countdown-done{background:#f0f0f0;color:#999}
 .rl-act-type{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
 .rl-act-promo{background:#e8f0ff;color:#3366cc}
@@ -886,7 +886,7 @@
 .rl-act-challenge{background:#ffe8f0;color:#db2777}
 .rl-act-subsidy{background:#e8ffe8;color:#16a34a}
 .rl-act-traffic{background:#fff8e6;color:#ca8a04}
-.rl-act-commission-free{background:#e8f8f0;color:#059669}
+.rl-act-commission-free{background:#e8f0fc;color:#059669}
 .rl-batch-bar{display:flex;gap:8px;align-items:center;margin:10px 0;flex-wrap:wrap}
 .rl-batch-bar button{padding:5px 14px;border-radius:6px;border:1px solid #ddd;background:#fff;font-size:12px;cursor:pointer}
 .rl-batch-bar button:hover{border-color:var(--orange);color:var(--orange)}
@@ -908,13 +908,14 @@
 .rl-detail-section .cost-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
 .rl-detail-section .cost-table th{background:var(--paper);padding:8px;text-align:left;font-weight:600;border-bottom:2px solid #ddd}
 .rl-detail-section .cost-table td{padding:8px;border-bottom:1px solid #eee}
-.rl-act-benefit{background:#e8f8f0;border-left:3px solid var(--green);padding:10px 14px;border-radius:0 8px 8px 0;margin:8px 0;font-size:13px;color:#1a6b3a}
+.rl-act-benefit{background:#e8f0fc;border-left:3px solid var(--green);padding:10px 14px;border-radius:0 8px 8px 0;margin:8px 0;font-size:13px;color:#2a5a8a}
 .rl-act-risk-warn{background:#fff8e6;border-left:3px solid #ca8a04;padding:10px 14px;border-radius:0 8px 8px 0;margin:8px 0;font-size:13px;color:#8a6d00}
 @media(max-width:1000px){.rl-stats-grid{grid-template-columns:repeat(2,1fr)}.rl-detail-section .info-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.rl-rule-card,.rl-act-card{grid-template-columns:4px 1fr;}.rl-card-actions{flex-direction:row;margin-top:8px;grid-column:1/-1}}
 
 
-.nav-group-label{font:600 9px 'DM Mono';letter-spacing:1.2px;color:#6b7f78;text-transform:uppercase;padding:18px 12px 6px;margin:0}
+nav::-webkit-scrollbar{width:3px}nav::-webkit-scrollbar-track{background:transparent}nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}nav::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.3)}
+.nav-group-label{font:600 9px 'DM Mono';letter-spacing:1.2px;color:#6880a0;text-transform:uppercase;padding:18px 12px 6px;margin:0}
 .nav-group-label:first-child{padding-top:0}
 nav .nav-group-label+.nav-item{margin-top:0}
 /* === 报告生成中心 v2 全面重建 === */
@@ -931,8 +932,8 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .rp-v2-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
 .rp-v2-stat{background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px}
 .rp-v2-stat-icon{width:38px;height:38px;border-radius:8px;display:grid;place-items:center;font-size:18px;flex-shrink:0}
-.rp-v2-stat-icon.green{background:rgba(60,108,98,.1);color:var(--green)}
-.rp-v2-stat-icon.orange{background:rgba(223,111,61,.1);color:var(--orange)}
+.rp-v2-stat-icon.green{background:rgba(44,95,138,.1);color:var(--green)}
+.rp-v2-stat-icon.orange{background:rgba(59,125,216,.1);color:var(--orange)}
 .rp-v2-stat-icon.blue{background:rgba(99,102,241,.1);color:#6366f1}
 .rp-v2-stat-icon.purple{background:rgba(139,92,246,.1);color:#8b5cf6}
 .rp-v2-stat-icon.red{background:rgba(239,68,68,.1);color:#ef4444}
@@ -958,7 +959,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .rp-v2-pool-group-header:hover{color:var(--ink)}
 .rp-v2-pool-group-header .rp-v2-pool-gcount{font-weight:400;color:#b5b0a8}
 .rp-v2-pool-item{display:flex;align-items:flex-start;gap:10px;padding:8px 16px;cursor:pointer;transition:.1s;border-left:3px solid transparent}
-.rp-v2-pool-item:hover{background:#f8faf8}
+.rp-v2-pool-item:hover{background:#f8fafc}
 .rp-v2-pool-item.selected{background:#f0f5f3;border-left-color:var(--green)}
 .rp-v2-pool-item input[type=checkbox]{margin-top:3px;accent-color:var(--green);width:14px;height:14px;flex-shrink:0}
 .rp-v2-pool-item-body{flex:1;min-width:0}
@@ -970,13 +971,13 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .rp-v2-pool-empty{text-align:center;padding:40px 20px;color:var(--muted)}
 .rp-v2-pool-empty .rp-v2-pool-empty-icon{font-size:36px;display:block;margin-bottom:8px;color:#d5d0c8}
 .rp-v2-pool-empty p{font-size:13px;margin:4px 0}
-.rp-v2-pool-empty small{font-size:11px;color:#a0aba6;display:block;margin-top:4px;line-height:1.6}
+.rp-v2-pool-empty small{font-size:11px;color:#98a5b5;display:block;margin-top:4px;line-height:1.6}
 /* Center: Generation Wizard */
 .rp-v2-center{display:flex;flex-direction:column;gap:16px}
 .rp-v2-step-bar{display:flex;align-items:center;gap:0;background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 8px;margin-bottom:4px}
 .rp-v2-step{flex:1;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:6px;transition:.15s;cursor:default}
 .rp-v2-step.active{background:var(--sage)}
-.rp-v2-step.done{background:rgba(60,108,98,.08)}
+.rp-v2-step.done{background:rgba(44,95,138,.08)}
 .rp-v2-step-num{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:bold 11px 'DM Mono';background:var(--line);color:var(--muted);flex-shrink:0}
 .rp-v2-step.active .rp-v2-step-num{background:var(--green);color:#fff}
 .rp-v2-step.done .rp-v2-step-num{background:var(--green);color:#fff}
@@ -990,7 +991,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 /* Template Cards */
 .rp-v2-tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .rp-v2-tpl-card{border:2px solid var(--line);border-radius:10px;padding:18px;cursor:pointer;transition:.2s;position:relative}
-.rp-v2-tpl-card:hover{border-color:var(--green);background:#f8faf8}
+.rp-v2-tpl-card:hover{border-color:var(--green);background:#f8fafc}
 .rp-v2-tpl-card.selected{border-color:var(--green);background:#f0f5f3}
 .rp-v2-tpl-card.selected::after{content:'\2713';position:absolute;top:10px;right:12px;background:var(--green);color:#fff;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px}
 .rp-v2-tpl-icon{font-size:24px;margin-bottom:10px}
@@ -1003,11 +1004,11 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .rp-v2-config-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
 .rp-v2-config-group{display:flex;flex-direction:column;gap:6px}
 .rp-v2-config-group label{font:600 12px 'Noto Sans SC';color:var(--ink)}
-.rp-v2-config-group small{font:10px 'Noto Sans SC';color:#a0aba6}
+.rp-v2-config-group small{font:10px 'Noto Sans SC';color:#98a5b5}
 .rp-v2-config-group select,.rp-v2-config-group input[type=text]{padding:8px 12px;border:1px solid var(--line);border-radius:6px;font:12px 'Noto Sans SC';background:#fff;color:var(--ink);transition:.15s}
-.rp-v2-config-group select:focus,.rp-v2-config-group input[type=text]:focus{border-color:var(--green);outline:none;box-shadow:0 0 0 2px rgba(60,108,98,.1)}
+.rp-v2-config-group select:focus,.rp-v2-config-group input[type=text]:focus{border-color:var(--green);outline:none;box-shadow:0 0 0 2px rgba(44,95,138,.1)}
 .rp-v2-config-group textarea{padding:10px 12px;border:1px solid var(--line);border-radius:6px;font:12px 'Noto Sans SC';background:#fff;color:var(--ink);resize:vertical;min-height:70px;transition:.15s}
-.rp-v2-config-group textarea:focus{border-color:var(--green);outline:none;box-shadow:0 0 0 2px rgba(60,108,98,.1)}
+.rp-v2-config-group textarea:focus{border-color:var(--green);outline:none;box-shadow:0 0 0 2px rgba(44,95,138,.1)}
 .rp-v2-toggle-row{display:flex;gap:8px;flex-wrap:wrap}
 .rp-v2-toggle{padding:6px 14px;border:1px solid var(--line);border-radius:6px;font:11px 'Noto Sans SC';background:#fff;cursor:pointer;transition:.15s}
 .rp-v2-toggle.active{background:var(--green);color:#fff;border-color:var(--green)}
@@ -1017,7 +1018,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .rp-v2-generate-info b{color:var(--green)}
 .rp-v2-gen-btn{padding:10px 28px;border-radius:8px;font:bold 13px 'Noto Sans SC';border:none;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px}
 .rp-v2-gen-btn.go{background:var(--green);color:#fff}
-.rp-v2-gen-btn.go:hover{background:#2d5a51;transform:translateY(-1px);box-shadow:0 4px 12px rgba(60,108,98,.25)}
+.rp-v2-gen-btn.go:hover{background:#2d5a51;transform:translateY(-1px);box-shadow:0 4px 12px rgba(44,95,138,.25)}
 .rp-v2-gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 /* Report Preview */
 .rp-v2-preview-panel{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -1041,12 +1042,12 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .rp-v2-rpt table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12px}
 .rp-v2-rpt th{background:var(--sage);color:var(--green);padding:8px 10px;text-align:left;font-weight:600;font-size:11px}
 .rp-v2-rpt td{padding:7px 10px;border-bottom:1px solid var(--line)}
-.rp-v2-rpt tr:hover td{background:#f8faf8}
-.rp-v2-rpt .rp-v2-rpt-highlight{background:rgba(223,111,61,.08);border-left:3px solid var(--orange);padding:10px 14px;margin:10px 0;border-radius:0 6px 6px 0}
+.rp-v2-rpt tr:hover td{background:#f8fafc}
+.rp-v2-rpt .rp-v2-rpt-highlight{background:rgba(59,125,216,.08);border-left:3px solid var(--orange);padding:10px 14px;margin:10px 0;border-radius:0 6px 6px 0}
 .rp-v2-rpt .rp-v2-rpt-risk{background:rgba(239,68,68,.06);border-left:3px solid #ef4444;padding:10px 14px;margin:10px 0;border-radius:0 6px 6px 0}
-.rp-v2-rpt .rp-v2-rpt-success{background:rgba(60,108,98,.06);border-left:3px solid var(--green);padding:10px 14px;margin:10px 0;border-radius:0 6px 6px 0}
-.rp-v2-rpt .rp-v2-rpt-source{font:10px 'DM Mono';color:#a0aba6;margin-top:2px}
-.rp-v2-rpt .rp-v2-rpt-meta{font:11px 'DM Mono';color:var(--muted);margin-bottom:16px;padding:8px 12px;background:#f8faf8;border-radius:6px}
+.rp-v2-rpt .rp-v2-rpt-success{background:rgba(44,95,138,.06);border-left:3px solid var(--green);padding:10px 14px;margin:10px 0;border-radius:0 6px 6px 0}
+.rp-v2-rpt .rp-v2-rpt-source{font:10px 'DM Mono';color:#98a5b5;margin-top:2px}
+.rp-v2-rpt .rp-v2-rpt-meta{font:11px 'DM Mono';color:var(--muted);margin-bottom:16px;padding:8px 12px;background:#f8fafc;border-radius:6px}
 .rp-v2-rpt .rp-v2-rpt-section{margin-bottom:20px;padding-bottom:12px}
 .rp-v2-rpt .rp-v2-rpt-chart-placeholder{background:#f0f5f3;border:1px dashed #c5d5cf;border-radius:8px;padding:20px;text-align:center;margin:12px 0;color:var(--green);font:12px 'Noto Sans SC'}
 /* Generating Animation */
@@ -1074,14 +1075,14 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .rp-v2-ai-tool-body li{margin:2px 0}
 .rp-v2-ai-tool-btn{display:block;width:100%;padding:8px;border:1px solid var(--green);background:#fff;color:var(--green);border-radius:6px;font:600 11px 'Noto Sans SC';cursor:pointer;text-align:center;margin-top:10px;transition:.15s}
 .rp-v2-ai-tool-btn:hover{background:var(--green);color:#fff}
-.rp-v2-ai-result{background:#f8faf8;border-radius:6px;padding:12px;margin-top:10px;font:12px 'Noto Sans SC';line-height:1.7;max-height:200px;overflow-y:auto}
+.rp-v2-ai-result{background:#f8fafc;border-radius:6px;padding:12px;margin-top:10px;font:12px 'Noto Sans SC';line-height:1.7;max-height:200px;overflow-y:auto}
 .rp-v2-ai-result h5{font:bold 12px 'Noto Sans SC';margin:0 0 6px;color:var(--green)}
 .rp-v2-ai-result ul{margin:4px 0;padding-left:16px}
 /* Recent Reports */
 .rp-v2-recent{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px}
 .rp-v2-recent h4{font:bold 13px 'Noto Sans SC';margin:0 0 12px;display:flex;align-items:center;gap:6px}
 .rp-v2-recent-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:.1s}
-.rp-v2-recent-item:hover{background:#f8faf8;margin:0 -8px;padding:8px 8px;border-radius:4px}
+.rp-v2-recent-item:hover{background:#f8fafc;margin:0 -8px;padding:8px 8px;border-radius:4px}
 .rp-v2-recent-item:last-child{border-bottom:none}
 .rp-v2-recent-icon{width:32px;height:32px;border-radius:6px;background:var(--sage);display:grid;place-items:center;font-size:14px;color:var(--green);flex-shrink:0}
 .rp-v2-recent-info{flex:1;min-width:0}
@@ -1098,7 +1099,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .pr-ai-tabs{display:flex;gap:0;margin-bottom:16px;background:#f0eee9;border-radius:8px;padding:3px;width:fit-content}
 .pr-ai-tab{padding:8px 20px;border:none;background:none;font:12px 'Noto Sans SC';color:var(--muted);cursor:pointer;border-radius:6px;transition:.15s}
 .pr-ai-tab.active{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.pr-ai-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f0efeb;font-size:12px;line-height:1.7}
+.pr-ai-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f0f2f6;font-size:12px;line-height:1.7}
 .pr-ai-item:last-child{border-bottom:none}
 .pr-ai-item span.pr-ai-text{flex:1}
 .pr-ai-jump{font:10px 'DM Mono';color:var(--green);cursor:pointer;white-space:nowrap;padding:2px 8px;border:1px solid var(--green);border-radius:3px;background:none}
@@ -1109,7 +1110,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .pr-tab{padding:12px 22px;border:none;background:none;font:13px 'Noto Sans SC';color:#76837e;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s}
 .pr-tab.active{color:var(--ink);font-weight:600;border-bottom-color:var(--orange)}
 .pr-tab:hover{color:var(--ink)}
-.pr-filter-advanced{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;padding:16px;background:#f9f8f5;border-radius:8px;border:1px solid #ebe9e4}
+.pr-filter-advanced{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;padding:16px;background:#f5f7fa;border-radius:8px;border:1px solid #ebe9e4}
 .pr-filter-group label{display:block;font:600 10px 'DM Mono';color:#87928d;letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase}
 .pr-filter-group input,.pr-filter-group select{width:100%;border:1px solid var(--line);padding:7px 10px;border-radius:4px;font:12px 'Noto Sans SC';background:#fff}
 .pr-filter-group .pr-range-row{display:flex;gap:6px;align-items:center}
@@ -1141,11 +1142,11 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .pr-dual-price .pr-rmb{font:10px 'DM Mono';color:var(--muted)}
 .pr-signal{display:inline-flex;align-items:center;gap:4px}
 .pr-signal-dot{width:6px;height:6px;border-radius:50%}
-.pr-signal-dot.burst{background:#df6f3d}
-.pr-signal-dot.rise{background:#3c6c62}
+.pr-signal-dot.burst{background:#3b7dd8}
+.pr-signal-dot.rise{background:#2c5f8a}
 .pr-signal-dot.stable{background:#999}
 .pr-signal-dot.decline{background:#e53935}
-.pr-time-col{font:10px 'DM Mono';color:#a0aba6;white-space:nowrap}
+.pr-time-col{font:10px 'DM Mono';color:#98a5b5;white-space:nowrap}
 .pr-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;justify-content:center;align-items:center}
 .pr-modal-bg.open{display:flex}
 .pr-modal{background:#fff;border-radius:10px;width:680px;max-height:85vh;overflow-y:auto;padding:28px 30px;position:relative}
@@ -1154,14 +1155,14 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .pr-modal h3{font:18px 'Playfair Display';margin:0 0 4px}
 .pr-modal .pr-m-sub{font:11px 'DM Mono';color:var(--muted);margin-bottom:20px}
 .pr-m-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.pr-m-stat{background:#f9f8f5;padding:14px;border-radius:6px;text-align:center}
+.pr-m-stat{background:#f5f7fa;padding:14px;border-radius:6px;text-align:center}
 .pr-m-stat b{display:block;font:20px 'Playfair Display';color:var(--ink)}
 .pr-m-stat span{font:10px 'DM Mono';color:var(--muted)}
-.pr-m-chart{height:100px;background:#f9f8f5;border-radius:6px;margin-bottom:16px;display:flex;align-items:end;padding:10px 16px;gap:3px}
+.pr-m-chart{height:100px;background:#f5f7fa;border-radius:6px;margin-bottom:16px;display:flex;align-items:end;padding:10px 16px;gap:3px}
 .pr-m-chart i{flex:1;background:var(--green);border-radius:2px 2px 0 0;min-width:4px}
 .pr-m-section{margin-bottom:16px}
 .pr-m-section h4{font-size:13px;margin:0 0 8px;color:var(--ink)}
-.pr-m-section p{font-size:12px;color:#65726d;line-height:1.7;margin:0}
+.pr-m-section p{font-size:12px;color:#5e6d80;line-height:1.7;margin:0}
 .pr-m-tags{display:flex;gap:6px;flex-wrap:wrap}
 .pr-m-tag{font:10px 'DM Mono';padding:3px 8px;border-radius:10px;background:#f0eee9;color:var(--muted)}
 .pr-m-tag.warn{background:#fff3e0;color:#e65100}
@@ -1169,7 +1170,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .pr-shop-input-row{display:flex;gap:10px;margin-bottom:16px;align-items:center}
 .pr-shop-input-row select{flex:1;border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px 'Noto Sans SC'}
 .pr-shop-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.pr-shop-stat{background:#f9f8f5;padding:12px;border-radius:6px;text-align:center}
+.pr-shop-stat{background:#f5f7fa;padding:12px;border-radius:6px;text-align:center}
 .pr-shop-stat b{font:18px 'Playfair Display';display:block}
 .pr-shop-stat span{font:10px 'DM Mono';color:var(--muted)}
 @media(max-width:1000px){.pr-filter-advanced{grid-template-columns:repeat(2,1fr)}.pr-m-stats{grid-template-columns:repeat(2,1fr)}.pr-modal{width:95%;padding:20px}}
@@ -1183,7 +1184,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .sh-grp { padding:5px 14px; border:1px solid #ddd; border-radius:16px; background:transparent; cursor:pointer; font-size:12px; color:var(--ink); transition:all .2s }
 .sh-grp.active { background:var(--orange); color:#fff; border-color:var(--orange) }
 .sh-add-grp { font-size:11px; color:var(--green); background:transparent; border:1px dashed var(--green); border-radius:16px; padding:3px 12px; cursor:pointer; margin-bottom:10px }
-.sh-filter-bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:14px; padding:12px; background:#f9f8f5; border-radius:8px; border:1px solid #e8e4dd }
+.sh-filter-bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:14px; padding:12px; background:#f5f7fa; border-radius:8px; border:1px solid #e0e4ec }
 .sh-filter-bar select, .sh-filter-bar input { padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; background:#fff }
 .sh-action-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px }
 .sh-batch-bar { display:flex; gap:8px; align-items:center; padding:10px 14px; background:#fff3e0; border:1px solid var(--orange); border-radius:8px; margin-bottom:12px }
@@ -1202,13 +1203,13 @@ nav .nav-group-label+.nav-item{margin-top:0}
 
 
 /* ===== CONTENT PAGE STYLES ===== */
-.ct-ai-panel { background:#f9f8f5; border:1px solid #e8e4dd; border-radius:8px; padding:16px; margin-bottom:18px }
+.ct-ai-panel { background:#f5f7fa; border:1px solid #e0e4ec; border-radius:8px; padding:16px; margin-bottom:18px }
 .ct-ai-tab { padding:6px 16px; border:1px solid #ddd; border-radius:6px; background:transparent; cursor:pointer; font-size:13px; color:var(--ink); transition:all .2s }
 .ct-ai-tab.active { background:var(--green); color:#fff; border-color:var(--green) }
 .ct-main-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid var(--line) }
 .ct-main-tab { padding:8px 18px; border:1px solid #ddd; border-radius:20px; background:transparent; cursor:pointer; font-size:13px; color:var(--ink); transition:all .2s }
 .ct-main-tab.active { background:var(--ink); color:#fff; border-color:var(--ink) }
-.ct-filter-bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:14px; padding:12px; background:#f9f8f5; border-radius:8px; border:1px solid #e8e4dd }
+.ct-filter-bar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:14px; padding:12px; background:#f5f7fa; border-radius:8px; border:1px solid #e0e4ec }
 .ct-filter-bar select, .ct-filter-bar input { padding:6px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px; background:#fff }
 .ct-action-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px }
 .ct-batch-bar { display:flex; gap:8px; align-items:center; padding:10px 14px; background:#fff3e0; border:1px solid var(--orange); border-radius:8px; margin-bottom:12px }
@@ -1216,19 +1217,19 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .ct-batch-bar span { font-size:13px; font-weight:600; color:var(--orange); margin-right:8px }
 .ct-card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px }
 .ct-card-new { background:#fff; border:1px solid var(--line); border-radius:8px; padding:16px; position:relative; transition:all .2s }
-.ct-card-new:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.08); border-color:#aebbb3 }
+.ct-card-new:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.08); border-color:#a8b8d0 }
 .ct-card-check { position:absolute; top:12px; right:12px }
 .ct-card-title { font-size:14px; margin:0 0 6px; line-height:1.4; color:var(--ink) }
 .ct-card-title:hover { color:var(--green) }
-.ct-card-actions { display:flex; gap:6px; margin-top:10px; padding-top:8px; border-top:1px solid #f0efeb }
+.ct-card-actions { display:flex; gap:6px; margin-top:10px; padding-top:8px; border-top:1px solid #f0f2f6 }
 .ct-card-actions button { background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px; border-radius:4px; transition:background .2s }
-.ct-card-actions button:hover { background:#f0efeb }
+.ct-card-actions button:hover { background:#f0f2f6 }
 .ct-fav-btn { padding:6px 14px; border:1px solid var(--green); color:var(--green); border-radius:6px; background:transparent; cursor:pointer; font-size:12px }
-.ct-fav-panel { background:#f9f8f5; border:1px solid #e8e4dd; border-radius:8px; padding:16px; margin-bottom:14px }
+.ct-fav-panel { background:#f5f7fa; border:1px solid #e0e4ec; border-radius:8px; padding:16px; margin-bottom:14px }
 .ct-live-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:16px }
 .ct-live-card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:16px; transition:all .2s }
 .ct-live-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.08) }
-.alert-tag-ct { display:inline-block; padding:2px 6px; border-radius:10px; font-size:10px; background:#f0efeb; color:var(--muted); border:1px solid #ddd }
+.alert-tag-ct { display:inline-block; padding:2px 6px; border-radius:10px; font-size:10px; background:#f0f2f6; color:var(--muted); border:1px solid #ddd }
 .ct-modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:2000; justify-content:center; align-items:center }
 .ct-modal-overlay.show { display:flex }
 .ct-modal { background:#fff; border-radius:12px; max-width:800px; width:90%; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.3) }
@@ -1250,7 +1251,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .cn2-quick-tags{display:flex;gap:6px;flex-wrap:wrap;flex:1}
 .cn2-quick-tags .cn2-qtag{padding:5px 12px;border:1px solid var(--border);border-radius:16px;font-size:11px;cursor:pointer;background:transparent;color:var(--ink);transition:all .2s;white-space:nowrap}
 .cn2-quick-tags .cn2-qtag:hover,.cn2-quick-tags .cn2-qtag.active{background:var(--green);color:#fff;border-color:var(--green)}
-.cn2-ai-oneliner{flex:1 1 100%;padding:12px 16px;background:linear-gradient(135deg,rgba(60,108,98,.06),rgba(223,111,61,.04));border-radius:8px;font-size:13px;color:var(--ink);line-height:1.6;display:flex;align-items:flex-start;gap:10px}
+.cn2-ai-oneliner{flex:1 1 100%;padding:12px 16px;background:linear-gradient(135deg,rgba(44,95,138,.06),rgba(59,125,216,.04));border-radius:8px;font-size:13px;color:var(--ink);line-height:1.6;display:flex;align-items:flex-start;gap:10px}
 .cn2-ai-oneliner .cn2-ai-icon{font-size:18px;flex-shrink:0;margin-top:2px}
 .cn2-ai-oneliner .cn2-ai-text{flex:1}
 .cn2-ai-oneliner .cn2-ai-btn{padding:4px 12px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0;align-self:center}
@@ -1306,7 +1307,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .cn2-policy-card .pc-actions button{padding:3px 8px;border:1px solid var(--border);border-radius:3px;background:transparent;font-size:10px;cursor:pointer}
 .cn2-plat-compare{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .cn2-plat-card-v2{padding:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;transition:all .2s}
-.cn2-plat-card-v2:hover{border-color:var(--green);box-shadow:0 2px 8px rgba(60,108,98,.1)}
+.cn2-plat-card-v2:hover{border-color:var(--green);box-shadow:0 2px 8px rgba(44,95,138,.1)}
 .cn2-plat-card-v2 .pv-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .cn2-plat-card-v2 .pv-emoji{font-size:22px}
 .cn2-plat-card-v2 .pv-name{font-size:14px;font-weight:700;color:var(--ink);flex:1}
@@ -1332,7 +1333,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .cn2-cat-item-v2 .ci-note{font-size:10px;color:var(--muted)}
 .cn2-link-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .cn2-link-card{padding:16px;background:var(--card);border:1px solid var(--border);border-radius:10px;cursor:pointer;text-align:center;transition:all .2s}
-.cn2-link-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 4px 12px rgba(60,108,98,.08)}
+.cn2-link-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 4px 12px rgba(44,95,138,.08)}
 .cn2-link-card .lc-icon{font-size:28px;margin-bottom:8px}
 .cn2-link-card .lc-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
 .cn2-link-card .lc-desc{font-size:11px;color:var(--muted)}
@@ -2285,7 +2286,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
           <!-- AI Tool: Product Suggestions -->
           <div class="rp-v2-ai-tool">
             <div class="rp-v2-ai-tool-header">
-              <div class="rp-v2-ai-tool-icon" style="background:rgba(60,108,98,.1);color:var(--green)">◈</div>
+              <div class="rp-v2-ai-tool-icon" style="background:rgba(44,95,138,.1);color:var(--green)">◈</div>
               <div><h4>选品建议速出</h4><p>快速输出潜力品类推荐</p></div>
             </div>
             <div class="rp-v2-ai-tool-body">仅勾选商品/国家素材，AI 快速输出 3-5 个潜力品类推荐及入选理由。</div>
@@ -2450,29 +2451,29 @@ const countries=[
 ['🇮🇳','印度','印度','US$ 1.20T','+25.0%','Amazon'],
 ['🇰🇷','韩国','韩国','US$ 1.05T','+8.0%','AliExpress']];
 const alerts=[
-['#dc7140','美国','对华301关税大幅提升','2026-07-13'],
-['#dc7140','美国','TikTok Shop合规审查','2026-07-13'],
-['#dc7140','印尼','进口商品免税门槛取消','2026-07-13'],
-['#dc7140','印尼','SNI强制认证扩展','2026-07-13'],
-['#dc7140','越南','跨境电商税务新规','2026-07-13'],
+['#4a85d9','美国','对华301关税大幅提升','2026-07-13'],
+['#4a85d9','美国','TikTok Shop合规审查','2026-07-13'],
+['#4a85d9','印尼','进口商品免税门槛取消','2026-07-13'],
+['#4a85d9','印尼','SNI强制认证扩展','2026-07-13'],
+['#4a85d9','越南','跨境电商税务新规','2026-07-13'],
 ['#c39142','越南','电子发票强制要求','2026-07-13'],
 ['#c39142','泰国','VAT电商免税门槛调整','2026-07-13'],
 ['#c39142','泰国','进口商品TISI认证加强','2026-07-13'],
 ['#c39142','马来西亚','跨境电商所得税新规','2026-07-13'],
 ['#c39142','沙特','VAT 15%实施','2026-07-13'],
-['#dc7140','沙特','SABER认证强制实施','2026-07-13'],
+['#4a85d9','沙特','SABER认证强制实施','2026-07-13'],
 ['#c39142','阿联酋','VAT 5%及电商监管加强','2026-07-13'],
 ['#c39142','阿联酋','进口商品ESMA标准加强','2026-07-13'],
-['#dc7140','巴西','Remessa Conforme进口税计划','2026-07-13'],
+['#4a85d9','巴西','Remessa Conforme进口税计划','2026-07-13'],
 ['#c39142','巴西','电商数字税征收','2026-07-13'],
-['#dc7140','德国','数字服务法DSA全面执行','2026-07-13'],
-['#dc7140','法国','GPSR通用产品安全法规','2026-07-13'],
+['#4a85d9','德国','数字服务法DSA全面执行','2026-07-13'],
+['#4a85d9','法国','GPSR通用产品安全法规','2026-07-13'],
 ['#c39142','法国','数字服务法DSA法国执行','2026-07-13'],
-['#dc7140','印度','FDI外资限制加强','2026-07-13'],
-['#dc7140','印度','BIS强制认证扩展','2026-07-13'],
-['#dc7140','尼日利亚','进口许可与NIMP合规','2026-07-13'],
-['#dc7140','尼日利亚','外汇管制与进口付汇限制','2026-07-13'],
-['#dc7140','埃及','ACID预登记系统升级','2026-07-13'],
+['#4a85d9','印度','FDI外资限制加强','2026-07-13'],
+['#4a85d9','印度','BIS强制认证扩展','2026-07-13'],
+['#4a85d9','尼日利亚','进口许可与NIMP合规','2026-07-13'],
+['#4a85d9','尼日利亚','外汇管制与进口付汇限制','2026-07-13'],
+['#4a85d9','埃及','ACID预登记系统升级','2026-07-13'],
 ['#c39142','南非','进口关税调整与本地化要求','2026-07-13']];
 
 const alertsFull=[
@@ -3039,7 +3040,7 @@ function prShowDetail(idx){
     '<div class="pr-m-sub">'+p[2]+' · '+p[3]+' · '+p[5]+' · 更新: '+p[13]+'前</div>'+
     '<div class="pr-m-stats">'+
       '<div class="pr-m-stat"><b>'+p[8]+'</b><span>累计销量</span></div>'+
-      '<div class="pr-m-stat"><b style="color:#478067">'+p[9]+'</b><span>增速</span></div>'+
+      '<div class="pr-m-stat"><b style="color:#3a6ea8">'+p[9]+'</b><span>增速</span></div>'+
       '<div class="pr-m-stat"><b>'+p[6]+'</b><span>售价区间</span></div>'+
       '<div class="pr-m-stat"><b>'+age+'天</b><span>上架周期</span></div>'+
     '</div>'+
@@ -3231,7 +3232,7 @@ function prExportPDF(){
     var hotCount=shopProducts.filter(function(p){return p[10]==='爆发'||p[10]==='上升'}).length;
     $('#pr-shop-stats').innerHTML=
       '<div class="pr-shop-stat"><b>'+shopProducts.length+'</b><span>在售商品</span></div>'+
-      '<div class="pr-shop-stat"><b style="color:#478067">'+hotCount+'</b><span>热销款</span></div>'+
+      '<div class="pr-shop-stat"><b style="color:#3a6ea8">'+hotCount+'</b><span>热销款</span></div>'+
       '<div class="pr-shop-stat"><b style="color:var(--orange)">'+(shopProducts.length-hotCount)+'</b><span>滞销款</span></div>';
     prRenderTable(shopProducts);
     $('#pr-count').textContent='● '+shopProducts.length+' 件商品 | 店铺: '+shop;
@@ -3754,7 +3755,7 @@ function shExportPDF() {
 })();
 
 
-const countryFullData={id:{flag:'🇮🇩',name:'印度尼西亚',subtitle:'Indonesia · 东南亚核心市场',region:'东南亚',ai:{opp:'蓝海市场，2.78亿人口+年轻结构+电商渗透率仅31%，增长空间巨大。核心动力：移动互联网普及+穆斯林时尚需求+本土品牌化趋势',tracks:['美妆个护 +42.8% 年轻女性驱动，TikTok直播带货爆发','穆斯林时尚 +28% Hijab头巾/长袍市场巨大，本土品牌稀缺','平价消费电子 +35% 智能手机渗透率持续攀升'],risks:['⚠️ 进口商品标签合规严格，需印尼语标注','⚠️ 化妆品需BPOM认证，周期3-6个月','⚠️ 本土电商最低价格监管，低于成本价禁售'],advice:['新手：跨境店+Shopee起步，低门槛试水','工厂：本土店+Shopee/TikTok双渠道，成本优势','精品：品牌化本土店+TikTok内容营销，中高端'],},macro:[['总人口','2.78亿','+1.1%','东南亚第一人口大国'],['电商规模','US$ 624亿','+18.5%','年增速领跑东南亚'],['电商渗透率','31.2%','↑','仍有巨大增长空间'],['人均可支配收入','US$ 4,580','+5.2%','中产阶层持续扩大'],['汇率','16,260 IDR/USD','±1.2%','30日波动稳定'],['外贸环境','利好','→','RCEP+ASEAN自贸区加持'],],demo:{age:[['0-14岁',26,'母婴玩具学习用品'],['15-29岁',28,'短视频美妆穿搭潮品'],['30-49岁',30,'家居家电母婴刚需'],['50岁+',16,'保守刚需性价比'],],ai_age:'投放首选15-35岁，重点美妆时尚',gender:{m:52,f:48},f_pref:'美妆护肤、服饰配饰、母婴、家居软装',m_pref:'3C数码、户外工具、汽车配件',religion:[['伊斯兰教',87],['基督教',10],['印度教',2],['其他',1],],risk:['严禁猪肉/酒精产品图像','避免暴露女性形象广告','斋月期间白天营销限制'],opp:['穆斯林时尚(Hijab/长袍)市场巨大','清真认证食品化妆品溢价大','斋月大促(3-4月)年度最大消费季'],fest:'斋月(3-4月) → 独立日(8月) → 年终大促(12月)',income:[['底层低收入',40,'极致低价走量','#e8e4dd'],['中产主流层',35,'中端性价比·卖家首选','#3c6c62'],['中高收入',20,'品质款功能升级','#4a90d9'],['高收入精英',5,'高端品牌定制化','#c8a84e'],],price:[['低价直播','TikTok','$3-15','冲动消费高频复购'],['中端货架','Shopee/Lazada','$15-50','比价型重评价'],['高端品牌','品牌独立站','$50+','品牌忠诚品质优先'],],price_trend:'客单价年增+8%，消费升级趋势明显',shelf:'理性比价、重销量评价、刚需囤货、复购稳定',content:'冲动消费、颜值优先、追网红爆款、新奇小众',payment:'GoPay/DANA/OVO',cod:35,peak:'20:00-23:00',},cat:{blue:[['美妆个护','+42.8%'],['穆斯林时尚','+28%'],['平价消费电子','+35%'],['母婴用品','+22%'],],stable:['家居日用','食品饮料','服装基础款'],risk:[['药品保健品','BPOM认证门槛高'],['进口食品','Halal认证必须'],['二手商品','平台禁止'],],},plats:[['Shopee','🟠',36,'货架+内容','跨境/本土','5-8%','美妆时尚家居','★★☆'],['TikTok Shop','🎵',19,'内容电商','本土优先','3-5%','美妆个护时尚','★★★'],['Tokopedia','🟢',15,'货架电商','本土','4-7%','3C数码家居','★★☆'],['Lazada','🔵',12,'货架电商','跨境/本土','5-8%','家居电子时尚','★★☆'],['Bukalapak','🟡',8,'货架电商','本土','3-6%','日用品食品','★☆☆'],],comp:{level:'中等偏严格',cls:'strict',policies:[['high','进口商品印尼语标签强制要求','2025-01生效','全品类','全平台','所有进口商品必须有印尼语标签，否则海关扣押'],['high','化妆品BPOM认证强制监管','持续执行','美妆个护','全平台','认证周期3-6个月，未认证产品下架风险极高'],['mid','电商最低价格监管政策','2024-12更新','全品类','Shopee/Lazada','低于成本价销售将被处罚'],['low','跨境电商税收新规讨论中','2025-Q2','跨境商品','全平台','可能取消低价商品免税额度'],]}},us:{flag:'🇺🇸',name:'美国',subtitle:'United States · 全球最大消费市场',region:'北美',ai:{opp:'成熟市场，全球最大消费经济体。高客单价+完善履约体系，品牌化与差异化是核心竞争策略',tracks:['家居生活 +18% 远程办公持续驱动需求','消费电子 +15% 新品迭代快、品牌忠诚度高','健康个护 +22% 天然有机成分趋势强劲'],risks:['⚠️ 对华关税145%全品类承压','⚠️ 各州销售税规则复杂，平台代扣','⚠️ 产品责任诉讼风险高，需购买保险'],advice:['新手：Temu/TikTok Shop跨境试水，低成本验证','工厂：Amazon FBA+独立站双轨，海外仓必备','精品：品牌DTC+Amazon Brand Registry，重内容营销'],},macro:[['总人口','3.41亿','+0.5%','全球第三人口大国'],['电商规模','US$ 1.23万亿','+9.8%','全球第二大电商市场'],['电商渗透率','16.1%','↑','渗透率趋稳'],['人均可支配收入','US$ 52,800','+3.1%','高消费力基础'],['汇率','1.00 USD','→','全球储备货币'],['外贸环境','收紧','↓','对华关税+贸易保护'],],demo:{age:[['0-14岁',18,'母婴高品质产品'],['15-29岁',20,'Z世代社交电商冲动消费'],['30-49岁',27,'家庭消费主力高客单'],['50岁+',35,'银发经济健康品需求'],],ai_age:'核心人群25-45岁，注重品质与评价',gender:{m:49,f:51},f_pref:'美妆护肤、瑜伽运动服饰、家居装饰、轻奢饰品',m_pref:'3C数码、户外装备、BBQ工具、运动器械',religion:[['基督教',65],['无宗教',26],['犹太教',2],['其他',7],],risk:['产品责任诉讼风险高','FTC广告合规要求严格','加州65提案警示标签必须'],opp:['天然有机成分产品需求旺盛','DTC品牌独立站机会大','Prime Day/黑五爆款效应强'],fest:'黑五(11月) → 圣诞(12月) → Prime Day(7月)',income:[['底层低收入',25,'极致性价比','#e8e4dd'],['中产主流层',40,'中端品质·核心市场','#3c6c62'],['中高收入',25,'品牌溢价功能升级','#4a90d9'],['高收入精英',10,'奢侈品定制化','#c8a84e'],],price:[['低价平台','Temu/Wish','$3-20','价格敏感型'],['中端主流','Amazon','$20-80','重评价重物流'],['高端品牌','DTC独立站','$80+','品牌忠诚体验优先'],],price_trend:'通胀压力下消费者更注重性价比',shelf:'重评价评分、物流速度、退货政策',content:'TikTok种草→Amazon转化、社交媒体驱动',payment:'信用卡/Apple Pay/Amazon Pay',cod:2,peak:'19:00-22:00',},cat:{blue:[['家居生活','+18%'],['健康个护','+22%'],['宠物用品','+25%'],['户外装备','+15%'],],stable:['消费电子','服装基础款','办公用品'],risk:[['处方药品','FDA严格管制'],['武器配件','多州禁售'],['含铅儿童产品','CPSIA标准极高'],],},plats:[['Amazon','📦',38,'货架电商','跨境FBA','8-15%','全品类','★★★'],['TikTok Shop','🎵',8,'内容电商','跨境','3-5%','美妆时尚家居','★★☆'],['Walmart','🏬',12,'货架电商','跨境/本土','6-12%','家居电子日用','★★★'],['Temu','🟠',6,'低价平台','跨境','平台承担','全品类低价','★★☆'],['eBay','🏷️',5,'货架/C2C','跨境','8-13%','电子收藏二手','★★☆'],],comp:{level:'中等',cls:'medium',policies:[['high','对华关税145%全品类','持续执行','全品类','全平台','所有中国原产商品加征145%关税，成本大幅上升'],['high','消费品安全合规(CPSC)','持续执行','玩具/电子','Amazon/Walmart','需CPC认证+第三方检测'],['mid','各州销售税规则','持续更新','全品类','全平台','各州税率不同，平台代扣为主'],['low','产品责任保险建议','建议','全品类','全平台','美国诉讼风险高，建议购买保险'],]}},jp:{flag:'🇯🇵',name:'日本',subtitle:'Japan · 高成熟度精品市场',region:'东亚',ai:{opp:'高度成熟市场，消费者注重品质与细节。跨境电商接受度高，精品路线+极致产品力是制胜关键',tracks:['美妆护肤 +12% 天然成分+小包规格受欢迎','家居收纳 +15% 小户型需求驱动','健康食品 +18% 老龄化社会保健品需求旺盛'],risks:['⚠️ PSE/PSC认证要求严格','⚠️ 日本药机法对化妆品宣传限制多','⚠️ 消费者退货率较高，包装要求极致'],advice:['新手：Amazon日本站跨境，选品精细化','工厂：乐天+Amazon双平台，本土化包装','精品：品牌独立站+Instagram营销，极致用户体验'],},macro:[['总人口','1.23亿','-0.5%','老龄化严重'],['电商规模','US$ 2,380亿','+5.2%','成熟稳定增长'],['电商渗透率','12.8%','↑','仍有提升空间'],['人均可支配收入','US$ 33,800','+1.8%','消费趋于保守'],['汇率','157 JPY/USD','±2.1%','日元贬值利好出口'],['外贸环境','平稳','→','贸易协定广泛'],],demo:{age:[['0-14岁',12,'少子化母婴精品'],['15-29岁',17,'Z世代性价比+个性化'],['30-49岁',28,'家庭消费中坚力量'],['50岁+',43,'银发经济最大群体'],],ai_age:'30-60岁为核心消费力，品质至上',gender:{m:49,f:51},f_pref:'美妆护肤、精致便当盒、小众设计配饰',m_pref:'数码 gadgets、钓鱼户外、模型手办',religion:[['神道教',32],['佛教',30],['无宗教',35],['其他',3],],risk:['PSE/PSC认证要求严格','药机法宣传限制多','包装品质要求极致'],opp:['老龄化健康品需求巨大','精致包装小规格产品受欢迎','积分文化+会员复购体系成熟'],fest:'新年(1月) → 樱花季(3-4月) → 年末商战(12月)',income:[['底层低收入',20,'百元店/折扣店','#e8e4dd'],['中产主流层',50,'中端品质·最大市场','#3c6c62'],['中高收入',22,'品牌功能升级','#4a90d9'],['高收入精英',8,'奢侈品精品','#c8a84e'],],price:[['折扣平台','Mercari/PayPay','$5-20','二手+新品混合'],['中端主流','Amazon/乐天','$20-80','积分+评价驱动'],['高端精品','品牌官网','$80+','极致品质服务'],],price_trend:'消费分级明显，性价比与精品两极分化',shelf:'极重评价、包装品质、配送准时',content:'Instagram+YouTube种草、KOL推荐转化',payment:'信用卡/便利店支付/PayPay',cod:8,peak:'21:00-23:00',},cat:{blue:[['美妆护肤','+12%'],['健康食品','+18%'],['宠物用品','+15%'],['智能家居','+20%'],],stable:['家居收纳','服装配饰','文具'],risk:[['药品保健品','药机法严格'],['食品','进口检验检疫极严'],['无线电产品','TELEC认证必须'],],},plats:[['Amazon','📦',24,'货架电商','跨境/本土','8-15%','全品类','★★★'],['乐天','🔴',22,'货架+内容','本土优先','5-8%','食品日用时尚','★★★'],['Yahoo Shopping','🟡',12,'货架电商','本土','5-9%','全品类','★★☆'],['Mercari','🌐',8,'C2C/二手','本土','10%','二手闲置','★☆☆'],['ZOZO','👗',4,'时尚垂直','本土','8-12%','服饰鞋包','★★☆'],],comp:{level:'严格',cls:'strict',policies:[['high','PSE/PSC电气安全认证','持续执行','电子产品','全平台','无认证产品禁止销售，处罚严厉'],['high','药机法化妆品宣传限制','持续执行','美妆','全平台','不得夸大功效，需日文全成分标注'],['mid','食品进口检验检疫','持续执行','食品','全平台','检查项目多，周期1-2周'],['low','包装品质标准','行业惯例','全品类','全平台','日本消费者包装要求极高'],]}},br:{flag:'🇧🇷',name:'巴西',subtitle:'Brazil · 拉美最大电商市场',region:'拉美',ai:{opp:'拉美最大电商市场，2.1亿人口+移动购物快速增长。社交电商+分期付款是核心打法',tracks:['个护电器 +35% 吹风机脱毛仪需求旺盛','时尚配饰 +28% 巴西风格色彩鲜艳产品热销','3C配件 +22% 智能手机配件市场巨大'],risks:['⚠️ Remessa Conforme新规50$以下征20%税','⚠️ 清关流程复杂，物流时效长','⚠️ 退货率高达15%，消费者权益保护强'],advice:['新手：Shopee巴西站跨境起步','工厂：Mercado Livre本土店+海外仓','精品：品牌本土化+Instagram+TikTok内容营销'],},macro:[['总人口','2.16亿','+0.5%','拉美最大人口国'],['电商规模','US$ 850亿','+22%','拉美电商领头羊'],['电商渗透率','11.5%','↑','增长潜力巨大'],['人均可支配收入','US$ 8,920','+2.8%','中产扩大中'],['汇率','5.07 BRL/USD','±3.2%','汇率波动较大'],['外贸环境','利好','↑','Mercosur+RCEP机遇'],],demo:{age:[['0-14岁',22,'母婴用品需求大'],['15-29岁',25,'社交电商冲动消费'],['30-49岁',30,'家庭消费主力'],['50岁+',23,'保守消费刚需'],],ai_age:'18-40岁核心人群，分期付款驱动消费',gender:{m:49,f:51},f_pref:'美妆护肤、时尚配饰、健身服饰',m_pref:'足球周边、3C配件、户外工具',religion:[['天主教',64],['新教',22],['无宗教',8],['其他',6],],risk:['Remessa Conforme新规增税','清关复杂物流时效长','退货率高达15%'],opp:['分期付款(12x)是核心购买驱动','社交电商增长迅猛','巴西风格色彩鲜明产品热销'],fest:'黑色星期五(11月) → 圣诞(12月) → 狂欢节(2月)',income:[['底层低收入',35,'极致低价走量','#e8e4dd'],['中产主流层',40,'分期性价比·核心市场','#3c6c62'],['中高收入',18,'品质升级品牌','#4a90d9'],['高收入精英',7,'高端进口品牌','#c8a84e'],],price:[['社交电商','Shopee/TikTok','$3-15','冲动+低价'],['中端主流','Mercado Livre','$15-60','分期+免运费'],['高端品牌','品牌独立站','$60+','品质+服务'],],price_trend:'分期消费文化，12x无息是标配',shelf:'重免运费、分期选项、卖家评分',content:'Instagram+TikTok网红推荐驱动',payment:'PIX/Boleto/信用卡分期',cod:12,peak:'20:00-23:00',},cat:{blue:[['个护电器','+35%'],['时尚配饰','+28%'],['3C配件','+22%'],['健身器材','+20%'],],stable:['家居日用','食品饮料','服装'],risk:[['药品','ANVISA认证复杂'],['无人机','ANAC注册必须'],['含电池产品','运输限制严格'],],},plats:[['Mercado Livre','🟡',35,'货架+支付','跨境/本土','11-16%','全品类','★★★'],['Shopee','🟠',18,'货架+内容','跨境','5-8%','美妆时尚低价','★★☆'],['Amazon','📦',12,'货架电商','跨境FBA','8-15%','电子图书','★★★'],['Magazine Luiza','🔵',10,'货架+零售','本土','7-12%','家电家居','★★☆'],['Temu','🟠',5,'低价平台','跨境','平台承担','全品类低价','★☆☆'],],comp:{level:'中等偏严格',cls:'strict',policies:[['high','Remessa Conforme税务新规','2024-08','全品类','全平台','50美元以下征20%进口税'],['high','ANVISA药品保健品审批','持续执行','药品保健品','全平台','审批周期长，未批准禁售'],['mid','清关流程复杂','持续','全品类','全平台','清关时效7-30天，需提供完整文件'],['low','消费者权益保护(CDC)','持续','全品类','全平台','15天无理由退货，退货率高'],]}},sa:{flag:'🇸🇦',name:'沙特阿拉伯',subtitle:'Saudi Arabia · 中东高消费力市场',region:'中东',ai:{opp:'中东高消费力市场，人均GDP超3万美元。年轻人口占比高，数字化转型加速，电商渗透率快速提升',tracks:['美妆香水 +38% 阿拉伯香水市场全球领先','时尚服饰 +25% 穆斯林时尚+西方品牌融合','电子产品 +20% 游戏主机配件需求旺盛'],risks:['⚠️ VAT 15%增值税+进口关税高','⚠️ SABER认证门槛高，合规成本大','⚠️ 文化禁忌严格，营销素材需本土化审核'],advice:['新手：Noon/Amazon沙特站跨境','工厂：本土代理+Noon自营模式','精品：品牌本土化+Snapchat/TikTok营销'],},macro:[['总人口','3,640万','+1.8%','年轻人口占比高'],['电商规模','US$ 280亿','+28%','中东增速最快'],['电商渗透率','14.2%','↑','数字化加速'],['人均可支配收入','US$ 32,500','+3.5%','高消费力市场'],['汇率','3.75 SAR/USD','固定','盯住美元汇率'],['外贸环境','利好','↑','Vision 2030数字化'],],demo:{age:[['0-14岁',25,'母婴用品高消费'],['15-29岁',30,'数字化原住民消费力强'],['30-49岁',30,'家庭消费核心'],['50岁+',15,'保守消费'],],ai_age:'15-35岁年轻化人群，高客单价',gender:{m:57,f:43},f_pref:'高端香水、美妆护肤、奢华服饰',m_pref:'电子产品、游戏配件、户外装备',religion:[['伊斯兰教',97],['其他',3],],risk:['VAT 15%+高关税','SABER认证门槛高','文化禁忌严格'],opp:['阿拉伯香水市场全球领先','奢侈品消费力强','Vision 2030推动数字化'],fest:'斋月(3-4月) → 开斋节 → 国庆日(9月)',income:[['底层低收入',20,'低价走量','#e8e4dd'],['中产主流层',45,'中端品质·核心市场','#3c6c62'],['中高收入',25,'品牌溢价','#4a90d9'],['高收入精英',10,'高端奢侈品','#c8a84e'],],price:[['低价平台','Noon Express','$5-20','性价比'],['中端主流','Noon/Amazon','$20-80','品牌+品质'],['高端精品','Ounass/品牌','$80+','奢侈品'],],price_trend:'高客单价市场，奢侈品接受度极高',shelf:'重品牌认证、阿拉伯语服务',content:'Snapchat+TikTok社交种草',payment:'信用卡/Apple Pay/Mada',cod:25,peak:'21:00-01:00',},cat:{blue:[['美妆香水','+38%'],['时尚服饰','+25%'],['电子产品','+20%'],['游戏配件','+30%'],],stable:['家居用品','食品','母婴'],risk:[['酒精相关','严禁进口'],['猪肉制品','Haram禁售'],['暴露形象商品','文化审查严格'],],},plats:[['Amazon','📦',22,'货架电商','跨境/本土','8-15%','全品类','★★★'],['Noon','🟡',28,'货架电商','跨境/本土','5-12%','全品类','★★☆'],['TikTok Shop','🎵',8,'内容电商','本土优先','3-5%','美妆时尚','★★★'],['Temu','🟠',5,'低价平台','跨境','平台承担','全品类低价','★★☆'],['Shein','👗',6,'快时尚','跨境','10-15%','服饰配饰','★★☆'],],comp:{level:'严格',cls:'strict',policies:[['high','SABER产品认证强制','持续执行','全品类','全平台','无SABER证书产品无法清关'],['high','VAT 15%增值税','持续','全品类','全平台','进口商品+本土销售均征收'],['mid','文化内容审查','持续','服装/媒体','全平台','需符合伊斯兰文化规范'],['low','Halal认证建议','建议','食品/化妆品','全平台','清真认证提升市场接受度'],]}},th:{flag:'🇹🇭',name:'泰国',subtitle:'Thailand · 东南亚旅游消费大国',region:'东南亚',ai:{opp:'东南亚旅游消费大国，电商渗透率中等但增速稳定。内容电商渗透率高，直播+社交购物是主流',tracks:['美妆护肤 +30% 泰国美妆品牌国际化趋势','食品饮料 +20% 方便食品零食出口强劲','健康养生 +25% 草药保健品需求旺盛'],risks:['⚠️ 数字服务税4%影响跨境收入','⚠️ FDA审批对食品药品要求严格','⚠️ 竞争趋于饱和，需差异化定位'],advice:['新手：Shopee/Lazada泰国站跨境','工厂：TikTok Shop本土店+直播带货','精品：品牌独立站+Line@私域运营'],},macro:[['总人口','7,180万','+0.2%','人口增速放缓'],['电商规模','US$ 380亿','+15%','东南亚第三大'],['电商渗透率','15.8%','↑','移动购物普及'],['人均可支配收入','US$ 7,640','+3.2%','消费稳健'],['汇率','36.2 THB/USD','±1.5%','相对稳定'],['外贸环境','平稳','→','旅游复苏带动消费'],],demo:{age:[['0-14岁',18,'母婴用品稳定'],['15-29岁',23,'社交电商活跃'],['30-49岁',32,'消费核心力量'],['50岁+',27,'银发消费增长'],],ai_age:'25-45岁核心人群，直播购物接受度极高',gender:{m:49,f:51},f_pref:'美妆护肤、泰式养生、时尚服饰',m_pref:'汽车配件、电子设备、运动户外',religion:[['佛教',94],['伊斯兰教',5],['其他',1],],risk:['数字服务税4%','FDA审批严格','竞争饱和需差异化'],opp:['泰国美妆品牌国际化趋势','草药保健品需求旺盛','直播带货渗透率全东南亚最高'],fest:'泼水节(4月) → 水灯节(11月) → 年终大促(12月)',income:[['底层低收入',30,'极致性价比','#e8e4dd'],['中产主流层',45,'中端消费·核心市场','#3c6c62'],['中高收入',18,'品质升级','#4a90d9'],['高收入精英',7,'高端品牌','#c8a84e'],],price:[['直播电商','TikTok Shop','$3-15','冲动消费'],['中端货架','Shopee/Lazada','$15-50','比价+促销驱动'],['高端品牌','Central Online','$50+','品质服务'],],price_trend:'消费升级中，有机健康品增长快',shelf:'重促销折扣、免运费、评价',content:'TikTok/Instagram直播转化率全东南亚最高',payment:'PromptPay/信用卡/COD',cod:28,peak:'19:00-23:00',},cat:{blue:[['美妆护肤','+30%'],['食品饮料','+20%'],['健康养生','+25%'],['旅游用品','+18%'],],stable:['家居日用','电子配件','服装'],risk:[['电子烟','严禁进口销售'],['保健品','FDA审批严格'],['化妆品','FDA注册必须'],],},plats:[['Shopee','🟠',35,'货架+内容','跨境/本土','5-8%','美妆时尚家居','★★☆'],['Lazada','🔵',25,'货架电商','跨境/本土','5-8%','全品类','★★☆'],['TikTok Shop','🎵',18,'内容电商','本土优先','3-5%','美妆时尚食品','★★★'],['Central Online','🏬',6,'百货电商','本土','8-12%','品牌时尚','★★☆'],['JD Central','🔴',4,'货架电商','跨境/本土','6-10%','电子家居','★★☆'],],comp:{level:'中等',cls:'medium',policies:[['mid','数字服务税4%','2024','全品类','全平台','跨境电商收入征收4%增值税'],['mid','FDA食品药品审批','持续执行','食品保健品','全平台','审批周期2-4周'],['low','电子烟严禁进口','持续','电子烟','全平台','持有/销售均违法'],['low','化妆品FDA注册','持续执行','美妆','全平台','需泰语标签+成分申报'],]}},my:{flag:'🇲🇾',name:'马来西亚',subtitle:'Malaysia · 多元文化电商市场',region:'东南亚',ai:{opp:'多元文化市场，马来/华人/印度三大族群消费偏好各异。数字基础设施完善，跨境贸易便利',tracks:['清真产品 +28% 全球清真经济中心','电子数码 +22% 消费电子需求稳定','家居园艺 +18% 中产阶级扩大带动需求'],risks:['⚠️ 数字服务税新规需关注','⚠️ 清真认证流程严格但必要','⚠️ 多语言运营增加成本'],advice:['新手：Shopee马来站+Lazada跨境','工厂：本土店+多语言listing优化','精品：品牌化+Shopee Mall入驻'],},macro:[['总人口','3,430万','+1.2%','多元文化社会'],['电商规模','US$ 195亿','+18%','东南亚稳健增长'],['电商渗透率','18.5%','↑','数字基建完善'],['人均可支配收入','US$ 12,380','+4.1%','中产主力消费'],['汇率','4.72 MYR/USD','±1.0%','波动较小'],['外贸环境','利好','→','RCEP+伊斯兰经济中心'],],demo:{age:[['0-14岁',23,'母婴多文化适配'],['15-29岁',25,'多元文化消费'],['30-49岁',30,'家庭消费核心'],['50岁+',22,'保守稳健消费'],],ai_age:'20-45岁核心人群，多语言运营关键',gender:{m:51,f:49},f_pref:'美妆护肤、穆斯林时尚、家居',m_pref:'电子产品、运动装备、汽车配件',religion:[['伊斯兰教',61],['佛教',20],['基督教',9],['其他',10],],risk:['数字服务税新规','清真认证严格','多语言成本'],opp:['全球清真经济中心','RCEP贸易便利','多元文化产品需求'],fest:'开斋节 → 春节 → 屠妖节 → 年终大促',income:[['底层低收入',25,'低价走量','#e8e4dd'],['中产主流层',45,'中端品质·核心','#3c6c62'],['中高收入',22,'品牌升级','#4a90d9'],['高收入精英',8,'高端进口','#c8a84e'],],price:[['低价平台','Shopee','$3-15','性价比'],['中端主流','Lazada/Shopee','$15-50','评价驱动'],['高端品牌','品牌官网','$50+','品质认证'],],price_trend:'消费升级，清真品类溢价空间大',shelf:'重清真认证、多语言、促销',content:'Facebook+Instagram社交电商',payment:'FPX/GrabPay/TnG',cod:18,peak:'20:00-23:00',},cat:{blue:[['清真产品','+28%'],['电子数码','+22%'],['家居园艺','+18%'],['母婴用品','+20%'],],stable:['服装配饰','食品','日用品'],risk:[['非清真食品','需明确标识'],['宗教相关印刷品','内政部审查'],['加密货币相关','监管严格'],],},plats:[['Shopee','🟠',38,'货架+内容','跨境/本土','5-8%','美妆时尚家居','★★☆'],['Lazada','🔵',25,'货架电商','跨境/本土','5-8%','全品类','★★☆'],['TikTok Shop','🎵',12,'内容电商','本土优先','3-5%','美妆时尚食品','★★★'],['PG Mall','🟢',5,'货架电商','本土','6-10%','全品类','★☆☆'],['PG Mall','🏬',4,'百货电商','本土','8-12%','品牌家居','★☆☆'],],comp:{level:'中等',cls:'medium',policies:[['mid','数字服务税新规','2024','全品类','全平台','外国数字服务提供商征税'],['mid','清真认证要求','建议','食品化妆品','全平台','JAKIM认证权威性最高'],['low','多语言标签要求','建议','全品类','全平台','建议马来语+英语双语'],['low','进口关税差异化','持续','全品类','全平台','RCEP成员国优惠税率'],]}},vn:{flag:'🇻🇳',name:'越南',subtitle:'Vietnam · 东南亚高增速新兴市场',region:'东南亚',ai:{opp:'东南亚高增速新兴市场，GDP增速6.5%领跑。年轻人口+移动互联网渗透推动电商快速增长',tracks:['家居生活 +32% 城镇化驱动家居消费升级','时尚服饰 +28% 年轻消费者追求韩流日系风格','小家电 +25% 生活品质提升需求旺盛'],risks:['⚠️ 本土电商保护政策趋严','⚠️ 物流最后一公里仍是挑战','⚠️ 价格敏感度高，利润空间有限'],advice:['新手：Shopee越南站跨境试水','工厂：TikTok Shop+Shopee双渠道本土店','精品：品牌本土化+Facebook私域社群'],},macro:[['总人口','9,880万','+0.8%','东南亚第三人口'],['电商规模','US$ 320亿','+25%','东南亚增速最快之一'],['电商渗透率','12.5%','↑','移动电商爆发'],['人均可支配收入','US$ 4,280','+6.5%','GDP高速增长'],['汇率','25,200 VND/USD','±0.8%','政府管控稳定'],['外贸环境','利好','↑','制造业转移+出口强劲'],],demo:{age:[['0-14岁',24,'母婴市场增长'],['15-29岁',28,'Z世代社交电商'],['30-49岁',28,'家庭消费核心'],['50岁+',20,'保守性价比'],],ai_age:'18-35岁核心人群，价格敏感但增长快',gender:{m:50,f:50},f_pref:'美妆护肤、韩流服饰、母婴',m_pref:'3C数码、运动装备、电子配件',religion:[['无宗教',73],['佛教',14],['天主教',7],['其他',6],],risk:['本土电商保护政策','物流基础设施薄弱','价格竞争激烈利润薄'],opp:['GDP 6.5%领跑东南亚','韩流日系风格影响大','社交电商Facebook社群强'],fest:'越南新年(1-2月) → 女王节(10月) → 黑五(11月)',income:[['底层低收入',35,'极致低价','#e8e4dd'],['中产主流层',40,'性价比核心','#3c6c62'],['中高收入',18,'品质升级','#4a90d9'],['高收入精英',7,'品牌消费','#c8a84e'],],price:[['社交电商','Shopee/TikTok','$2-12','极致低价'],['中端货架','Lazada/Tiki','$12-40','评价+促销'],['高端品牌','品牌独立站','$40+','品质服务'],],price_trend:'价格敏感度高，但消费升级趋势明显',shelf:'重价格、免运费、促销',content:'Facebook+TikTok+Zalo社群营销',payment:'MoMo/ZaloPay/COD',cod:42,peak:'20:00-23:00',},cat:{blue:[['家居生活','+32%'],['时尚服饰','+28%'],['小家电','+25%'],['美妆个护','+30%'],],stable:['食品','日用品','电子配件'],risk:[['二手商品','限制进口'],['含酒精饮料','进口许可严格'],['药品保健品','卫生部审批复杂'],],},plats:[['Shopee','🟠',35,'货架+内容','跨境/本土','5-8%','美妆时尚家居','★★☆'],['TikTok Shop','🎵',22,'内容电商','本土优先','3-5%','美妆时尚食品','★★★'],['Lazada','🔵',18,'货架电商','跨境/本土','5-8%','全品类','★★☆'],['Tiki','🔵',8,'正品电商','本土','7-12%','正品品牌','★★☆'],['Sendo','🟢',5,'货架电商','本土','5-8%','日用品低价','★☆☆'],],comp:{level:'中等偏严格',cls:'strict',policies:[['mid','本土电商保护政策','2025讨论','全品类','全平台','可能限制外资电商平台'],['mid','物流基础设施限制','持续','全品类','全平台','最后一公里配送时效不稳定'],['low','价格竞争激烈','行业','全品类','全平台','利润空间被压缩'],['low','外汇管制','持续','跨境','全平台','利润汇出需合规申报'],]}},};
+const countryFullData={id:{flag:'🇮🇩',name:'印度尼西亚',subtitle:'Indonesia · 东南亚核心市场',region:'东南亚',ai:{opp:'蓝海市场，2.78亿人口+年轻结构+电商渗透率仅31%，增长空间巨大。核心动力：移动互联网普及+穆斯林时尚需求+本土品牌化趋势',tracks:['美妆个护 +42.8% 年轻女性驱动，TikTok直播带货爆发','穆斯林时尚 +28% Hijab头巾/长袍市场巨大，本土品牌稀缺','平价消费电子 +35% 智能手机渗透率持续攀升'],risks:['⚠️ 进口商品标签合规严格，需印尼语标注','⚠️ 化妆品需BPOM认证，周期3-6个月','⚠️ 本土电商最低价格监管，低于成本价禁售'],advice:['新手：跨境店+Shopee起步，低门槛试水','工厂：本土店+Shopee/TikTok双渠道，成本优势','精品：品牌化本土店+TikTok内容营销，中高端'],},macro:[['总人口','2.78亿','+1.1%','东南亚第一人口大国'],['电商规模','US$ 624亿','+18.5%','年增速领跑东南亚'],['电商渗透率','31.2%','↑','仍有巨大增长空间'],['人均可支配收入','US$ 4,580','+5.2%','中产阶层持续扩大'],['汇率','16,260 IDR/USD','±1.2%','30日波动稳定'],['外贸环境','利好','→','RCEP+ASEAN自贸区加持'],],demo:{age:[['0-14岁',26,'母婴玩具学习用品'],['15-29岁',28,'短视频美妆穿搭潮品'],['30-49岁',30,'家居家电母婴刚需'],['50岁+',16,'保守刚需性价比'],],ai_age:'投放首选15-35岁，重点美妆时尚',gender:{m:52,f:48},f_pref:'美妆护肤、服饰配饰、母婴、家居软装',m_pref:'3C数码、户外工具、汽车配件',religion:[['伊斯兰教',87],['基督教',10],['印度教',2],['其他',1],],risk:['严禁猪肉/酒精产品图像','避免暴露女性形象广告','斋月期间白天营销限制'],opp:['穆斯林时尚(Hijab/长袍)市场巨大','清真认证食品化妆品溢价大','斋月大促(3-4月)年度最大消费季'],fest:'斋月(3-4月) → 独立日(8月) → 年终大促(12月)',income:[['底层低收入',40,'极致低价走量','#e0e4ec'],['中产主流层',35,'中端性价比·卖家首选','#2c5f8a'],['中高收入',20,'品质款功能升级','#4a90d9'],['高收入精英',5,'高端品牌定制化','#c8a84e'],],price:[['低价直播','TikTok','$3-15','冲动消费高频复购'],['中端货架','Shopee/Lazada','$15-50','比价型重评价'],['高端品牌','品牌独立站','$50+','品牌忠诚品质优先'],],price_trend:'客单价年增+8%，消费升级趋势明显',shelf:'理性比价、重销量评价、刚需囤货、复购稳定',content:'冲动消费、颜值优先、追网红爆款、新奇小众',payment:'GoPay/DANA/OVO',cod:35,peak:'20:00-23:00',},cat:{blue:[['美妆个护','+42.8%'],['穆斯林时尚','+28%'],['平价消费电子','+35%'],['母婴用品','+22%'],],stable:['家居日用','食品饮料','服装基础款'],risk:[['药品保健品','BPOM认证门槛高'],['进口食品','Halal认证必须'],['二手商品','平台禁止'],],},plats:[['Shopee','🟠',36,'货架+内容','跨境/本土','5-8%','美妆时尚家居','★★☆'],['TikTok Shop','🎵',19,'内容电商','本土优先','3-5%','美妆个护时尚','★★★'],['Tokopedia','🟢',15,'货架电商','本土','4-7%','3C数码家居','★★☆'],['Lazada','🔵',12,'货架电商','跨境/本土','5-8%','家居电子时尚','★★☆'],['Bukalapak','🟡',8,'货架电商','本土','3-6%','日用品食品','★☆☆'],],comp:{level:'中等偏严格',cls:'strict',policies:[['high','进口商品印尼语标签强制要求','2025-01生效','全品类','全平台','所有进口商品必须有印尼语标签，否则海关扣押'],['high','化妆品BPOM认证强制监管','持续执行','美妆个护','全平台','认证周期3-6个月，未认证产品下架风险极高'],['mid','电商最低价格监管政策','2024-12更新','全品类','Shopee/Lazada','低于成本价销售将被处罚'],['low','跨境电商税收新规讨论中','2025-Q2','跨境商品','全平台','可能取消低价商品免税额度'],]}},us:{flag:'🇺🇸',name:'美国',subtitle:'United States · 全球最大消费市场',region:'北美',ai:{opp:'成熟市场，全球最大消费经济体。高客单价+完善履约体系，品牌化与差异化是核心竞争策略',tracks:['家居生活 +18% 远程办公持续驱动需求','消费电子 +15% 新品迭代快、品牌忠诚度高','健康个护 +22% 天然有机成分趋势强劲'],risks:['⚠️ 对华关税145%全品类承压','⚠️ 各州销售税规则复杂，平台代扣','⚠️ 产品责任诉讼风险高，需购买保险'],advice:['新手：Temu/TikTok Shop跨境试水，低成本验证','工厂：Amazon FBA+独立站双轨，海外仓必备','精品：品牌DTC+Amazon Brand Registry，重内容营销'],},macro:[['总人口','3.41亿','+0.5%','全球第三人口大国'],['电商规模','US$ 1.23万亿','+9.8%','全球第二大电商市场'],['电商渗透率','16.1%','↑','渗透率趋稳'],['人均可支配收入','US$ 52,800','+3.1%','高消费力基础'],['汇率','1.00 USD','→','全球储备货币'],['外贸环境','收紧','↓','对华关税+贸易保护'],],demo:{age:[['0-14岁',18,'母婴高品质产品'],['15-29岁',20,'Z世代社交电商冲动消费'],['30-49岁',27,'家庭消费主力高客单'],['50岁+',35,'银发经济健康品需求'],],ai_age:'核心人群25-45岁，注重品质与评价',gender:{m:49,f:51},f_pref:'美妆护肤、瑜伽运动服饰、家居装饰、轻奢饰品',m_pref:'3C数码、户外装备、BBQ工具、运动器械',religion:[['基督教',65],['无宗教',26],['犹太教',2],['其他',7],],risk:['产品责任诉讼风险高','FTC广告合规要求严格','加州65提案警示标签必须'],opp:['天然有机成分产品需求旺盛','DTC品牌独立站机会大','Prime Day/黑五爆款效应强'],fest:'黑五(11月) → 圣诞(12月) → Prime Day(7月)',income:[['底层低收入',25,'极致性价比','#e0e4ec'],['中产主流层',40,'中端品质·核心市场','#2c5f8a'],['中高收入',25,'品牌溢价功能升级','#4a90d9'],['高收入精英',10,'奢侈品定制化','#c8a84e'],],price:[['低价平台','Temu/Wish','$3-20','价格敏感型'],['中端主流','Amazon','$20-80','重评价重物流'],['高端品牌','DTC独立站','$80+','品牌忠诚体验优先'],],price_trend:'通胀压力下消费者更注重性价比',shelf:'重评价评分、物流速度、退货政策',content:'TikTok种草→Amazon转化、社交媒体驱动',payment:'信用卡/Apple Pay/Amazon Pay',cod:2,peak:'19:00-22:00',},cat:{blue:[['家居生活','+18%'],['健康个护','+22%'],['宠物用品','+25%'],['户外装备','+15%'],],stable:['消费电子','服装基础款','办公用品'],risk:[['处方药品','FDA严格管制'],['武器配件','多州禁售'],['含铅儿童产品','CPSIA标准极高'],],},plats:[['Amazon','📦',38,'货架电商','跨境FBA','8-15%','全品类','★★★'],['TikTok Shop','🎵',8,'内容电商','跨境','3-5%','美妆时尚家居','★★☆'],['Walmart','🏬',12,'货架电商','跨境/本土','6-12%','家居电子日用','★★★'],['Temu','🟠',6,'低价平台','跨境','平台承担','全品类低价','★★☆'],['eBay','🏷️',5,'货架/C2C','跨境','8-13%','电子收藏二手','★★☆'],],comp:{level:'中等',cls:'medium',policies:[['high','对华关税145%全品类','持续执行','全品类','全平台','所有中国原产商品加征145%关税，成本大幅上升'],['high','消费品安全合规(CPSC)','持续执行','玩具/电子','Amazon/Walmart','需CPC认证+第三方检测'],['mid','各州销售税规则','持续更新','全品类','全平台','各州税率不同，平台代扣为主'],['low','产品责任保险建议','建议','全品类','全平台','美国诉讼风险高，建议购买保险'],]}},jp:{flag:'🇯🇵',name:'日本',subtitle:'Japan · 高成熟度精品市场',region:'东亚',ai:{opp:'高度成熟市场，消费者注重品质与细节。跨境电商接受度高，精品路线+极致产品力是制胜关键',tracks:['美妆护肤 +12% 天然成分+小包规格受欢迎','家居收纳 +15% 小户型需求驱动','健康食品 +18% 老龄化社会保健品需求旺盛'],risks:['⚠️ PSE/PSC认证要求严格','⚠️ 日本药机法对化妆品宣传限制多','⚠️ 消费者退货率较高，包装要求极致'],advice:['新手：Amazon日本站跨境，选品精细化','工厂：乐天+Amazon双平台，本土化包装','精品：品牌独立站+Instagram营销，极致用户体验'],},macro:[['总人口','1.23亿','-0.5%','老龄化严重'],['电商规模','US$ 2,380亿','+5.2%','成熟稳定增长'],['电商渗透率','12.8%','↑','仍有提升空间'],['人均可支配收入','US$ 33,800','+1.8%','消费趋于保守'],['汇率','157 JPY/USD','±2.1%','日元贬值利好出口'],['外贸环境','平稳','→','贸易协定广泛'],],demo:{age:[['0-14岁',12,'少子化母婴精品'],['15-29岁',17,'Z世代性价比+个性化'],['30-49岁',28,'家庭消费中坚力量'],['50岁+',43,'银发经济最大群体'],],ai_age:'30-60岁为核心消费力，品质至上',gender:{m:49,f:51},f_pref:'美妆护肤、精致便当盒、小众设计配饰',m_pref:'数码 gadgets、钓鱼户外、模型手办',religion:[['神道教',32],['佛教',30],['无宗教',35],['其他',3],],risk:['PSE/PSC认证要求严格','药机法宣传限制多','包装品质要求极致'],opp:['老龄化健康品需求巨大','精致包装小规格产品受欢迎','积分文化+会员复购体系成熟'],fest:'新年(1月) → 樱花季(3-4月) → 年末商战(12月)',income:[['底层低收入',20,'百元店/折扣店','#e0e4ec'],['中产主流层',50,'中端品质·最大市场','#2c5f8a'],['中高收入',22,'品牌功能升级','#4a90d9'],['高收入精英',8,'奢侈品精品','#c8a84e'],],price:[['折扣平台','Mercari/PayPay','$5-20','二手+新品混合'],['中端主流','Amazon/乐天','$20-80','积分+评价驱动'],['高端精品','品牌官网','$80+','极致品质服务'],],price_trend:'消费分级明显，性价比与精品两极分化',shelf:'极重评价、包装品质、配送准时',content:'Instagram+YouTube种草、KOL推荐转化',payment:'信用卡/便利店支付/PayPay',cod:8,peak:'21:00-23:00',},cat:{blue:[['美妆护肤','+12%'],['健康食品','+18%'],['宠物用品','+15%'],['智能家居','+20%'],],stable:['家居收纳','服装配饰','文具'],risk:[['药品保健品','药机法严格'],['食品','进口检验检疫极严'],['无线电产品','TELEC认证必须'],],},plats:[['Amazon','📦',24,'货架电商','跨境/本土','8-15%','全品类','★★★'],['乐天','🔴',22,'货架+内容','本土优先','5-8%','食品日用时尚','★★★'],['Yahoo Shopping','🟡',12,'货架电商','本土','5-9%','全品类','★★☆'],['Mercari','🌐',8,'C2C/二手','本土','10%','二手闲置','★☆☆'],['ZOZO','👗',4,'时尚垂直','本土','8-12%','服饰鞋包','★★☆'],],comp:{level:'严格',cls:'strict',policies:[['high','PSE/PSC电气安全认证','持续执行','电子产品','全平台','无认证产品禁止销售，处罚严厉'],['high','药机法化妆品宣传限制','持续执行','美妆','全平台','不得夸大功效，需日文全成分标注'],['mid','食品进口检验检疫','持续执行','食品','全平台','检查项目多，周期1-2周'],['low','包装品质标准','行业惯例','全品类','全平台','日本消费者包装要求极高'],]}},br:{flag:'🇧🇷',name:'巴西',subtitle:'Brazil · 拉美最大电商市场',region:'拉美',ai:{opp:'拉美最大电商市场，2.1亿人口+移动购物快速增长。社交电商+分期付款是核心打法',tracks:['个护电器 +35% 吹风机脱毛仪需求旺盛','时尚配饰 +28% 巴西风格色彩鲜艳产品热销','3C配件 +22% 智能手机配件市场巨大'],risks:['⚠️ Remessa Conforme新规50$以下征20%税','⚠️ 清关流程复杂，物流时效长','⚠️ 退货率高达15%，消费者权益保护强'],advice:['新手：Shopee巴西站跨境起步','工厂：Mercado Livre本土店+海外仓','精品：品牌本土化+Instagram+TikTok内容营销'],},macro:[['总人口','2.16亿','+0.5%','拉美最大人口国'],['电商规模','US$ 850亿','+22%','拉美电商领头羊'],['电商渗透率','11.5%','↑','增长潜力巨大'],['人均可支配收入','US$ 8,920','+2.8%','中产扩大中'],['汇率','5.07 BRL/USD','±3.2%','汇率波动较大'],['外贸环境','利好','↑','Mercosur+RCEP机遇'],],demo:{age:[['0-14岁',22,'母婴用品需求大'],['15-29岁',25,'社交电商冲动消费'],['30-49岁',30,'家庭消费主力'],['50岁+',23,'保守消费刚需'],],ai_age:'18-40岁核心人群，分期付款驱动消费',gender:{m:49,f:51},f_pref:'美妆护肤、时尚配饰、健身服饰',m_pref:'足球周边、3C配件、户外工具',religion:[['天主教',64],['新教',22],['无宗教',8],['其他',6],],risk:['Remessa Conforme新规增税','清关复杂物流时效长','退货率高达15%'],opp:['分期付款(12x)是核心购买驱动','社交电商增长迅猛','巴西风格色彩鲜明产品热销'],fest:'黑色星期五(11月) → 圣诞(12月) → 狂欢节(2月)',income:[['底层低收入',35,'极致低价走量','#e0e4ec'],['中产主流层',40,'分期性价比·核心市场','#2c5f8a'],['中高收入',18,'品质升级品牌','#4a90d9'],['高收入精英',7,'高端进口品牌','#c8a84e'],],price:[['社交电商','Shopee/TikTok','$3-15','冲动+低价'],['中端主流','Mercado Livre','$15-60','分期+免运费'],['高端品牌','品牌独立站','$60+','品质+服务'],],price_trend:'分期消费文化，12x无息是标配',shelf:'重免运费、分期选项、卖家评分',content:'Instagram+TikTok网红推荐驱动',payment:'PIX/Boleto/信用卡分期',cod:12,peak:'20:00-23:00',},cat:{blue:[['个护电器','+35%'],['时尚配饰','+28%'],['3C配件','+22%'],['健身器材','+20%'],],stable:['家居日用','食品饮料','服装'],risk:[['药品','ANVISA认证复杂'],['无人机','ANAC注册必须'],['含电池产品','运输限制严格'],],},plats:[['Mercado Livre','🟡',35,'货架+支付','跨境/本土','11-16%','全品类','★★★'],['Shopee','🟠',18,'货架+内容','跨境','5-8%','美妆时尚低价','★★☆'],['Amazon','📦',12,'货架电商','跨境FBA','8-15%','电子图书','★★★'],['Magazine Luiza','🔵',10,'货架+零售','本土','7-12%','家电家居','★★☆'],['Temu','🟠',5,'低价平台','跨境','平台承担','全品类低价','★☆☆'],],comp:{level:'中等偏严格',cls:'strict',policies:[['high','Remessa Conforme税务新规','2024-08','全品类','全平台','50美元以下征20%进口税'],['high','ANVISA药品保健品审批','持续执行','药品保健品','全平台','审批周期长，未批准禁售'],['mid','清关流程复杂','持续','全品类','全平台','清关时效7-30天，需提供完整文件'],['low','消费者权益保护(CDC)','持续','全品类','全平台','15天无理由退货，退货率高'],]}},sa:{flag:'🇸🇦',name:'沙特阿拉伯',subtitle:'Saudi Arabia · 中东高消费力市场',region:'中东',ai:{opp:'中东高消费力市场，人均GDP超3万美元。年轻人口占比高，数字化转型加速，电商渗透率快速提升',tracks:['美妆香水 +38% 阿拉伯香水市场全球领先','时尚服饰 +25% 穆斯林时尚+西方品牌融合','电子产品 +20% 游戏主机配件需求旺盛'],risks:['⚠️ VAT 15%增值税+进口关税高','⚠️ SABER认证门槛高，合规成本大','⚠️ 文化禁忌严格，营销素材需本土化审核'],advice:['新手：Noon/Amazon沙特站跨境','工厂：本土代理+Noon自营模式','精品：品牌本土化+Snapchat/TikTok营销'],},macro:[['总人口','3,640万','+1.8%','年轻人口占比高'],['电商规模','US$ 280亿','+28%','中东增速最快'],['电商渗透率','14.2%','↑','数字化加速'],['人均可支配收入','US$ 32,500','+3.5%','高消费力市场'],['汇率','3.75 SAR/USD','固定','盯住美元汇率'],['外贸环境','利好','↑','Vision 2030数字化'],],demo:{age:[['0-14岁',25,'母婴用品高消费'],['15-29岁',30,'数字化原住民消费力强'],['30-49岁',30,'家庭消费核心'],['50岁+',15,'保守消费'],],ai_age:'15-35岁年轻化人群，高客单价',gender:{m:57,f:43},f_pref:'高端香水、美妆护肤、奢华服饰',m_pref:'电子产品、游戏配件、户外装备',religion:[['伊斯兰教',97],['其他',3],],risk:['VAT 15%+高关税','SABER认证门槛高','文化禁忌严格'],opp:['阿拉伯香水市场全球领先','奢侈品消费力强','Vision 2030推动数字化'],fest:'斋月(3-4月) → 开斋节 → 国庆日(9月)',income:[['底层低收入',20,'低价走量','#e0e4ec'],['中产主流层',45,'中端品质·核心市场','#2c5f8a'],['中高收入',25,'品牌溢价','#4a90d9'],['高收入精英',10,'高端奢侈品','#c8a84e'],],price:[['低价平台','Noon Express','$5-20','性价比'],['中端主流','Noon/Amazon','$20-80','品牌+品质'],['高端精品','Ounass/品牌','$80+','奢侈品'],],price_trend:'高客单价市场，奢侈品接受度极高',shelf:'重品牌认证、阿拉伯语服务',content:'Snapchat+TikTok社交种草',payment:'信用卡/Apple Pay/Mada',cod:25,peak:'21:00-01:00',},cat:{blue:[['美妆香水','+38%'],['时尚服饰','+25%'],['电子产品','+20%'],['游戏配件','+30%'],],stable:['家居用品','食品','母婴'],risk:[['酒精相关','严禁进口'],['猪肉制品','Haram禁售'],['暴露形象商品','文化审查严格'],],},plats:[['Amazon','📦',22,'货架电商','跨境/本土','8-15%','全品类','★★★'],['Noon','🟡',28,'货架电商','跨境/本土','5-12%','全品类','★★☆'],['TikTok Shop','🎵',8,'内容电商','本土优先','3-5%','美妆时尚','★★★'],['Temu','🟠',5,'低价平台','跨境','平台承担','全品类低价','★★☆'],['Shein','👗',6,'快时尚','跨境','10-15%','服饰配饰','★★☆'],],comp:{level:'严格',cls:'strict',policies:[['high','SABER产品认证强制','持续执行','全品类','全平台','无SABER证书产品无法清关'],['high','VAT 15%增值税','持续','全品类','全平台','进口商品+本土销售均征收'],['mid','文化内容审查','持续','服装/媒体','全平台','需符合伊斯兰文化规范'],['low','Halal认证建议','建议','食品/化妆品','全平台','清真认证提升市场接受度'],]}},th:{flag:'🇹🇭',name:'泰国',subtitle:'Thailand · 东南亚旅游消费大国',region:'东南亚',ai:{opp:'东南亚旅游消费大国，电商渗透率中等但增速稳定。内容电商渗透率高，直播+社交购物是主流',tracks:['美妆护肤 +30% 泰国美妆品牌国际化趋势','食品饮料 +20% 方便食品零食出口强劲','健康养生 +25% 草药保健品需求旺盛'],risks:['⚠️ 数字服务税4%影响跨境收入','⚠️ FDA审批对食品药品要求严格','⚠️ 竞争趋于饱和，需差异化定位'],advice:['新手：Shopee/Lazada泰国站跨境','工厂：TikTok Shop本土店+直播带货','精品：品牌独立站+Line@私域运营'],},macro:[['总人口','7,180万','+0.2%','人口增速放缓'],['电商规模','US$ 380亿','+15%','东南亚第三大'],['电商渗透率','15.8%','↑','移动购物普及'],['人均可支配收入','US$ 7,640','+3.2%','消费稳健'],['汇率','36.2 THB/USD','±1.5%','相对稳定'],['外贸环境','平稳','→','旅游复苏带动消费'],],demo:{age:[['0-14岁',18,'母婴用品稳定'],['15-29岁',23,'社交电商活跃'],['30-49岁',32,'消费核心力量'],['50岁+',27,'银发消费增长'],],ai_age:'25-45岁核心人群，直播购物接受度极高',gender:{m:49,f:51},f_pref:'美妆护肤、泰式养生、时尚服饰',m_pref:'汽车配件、电子设备、运动户外',religion:[['佛教',94],['伊斯兰教',5],['其他',1],],risk:['数字服务税4%','FDA审批严格','竞争饱和需差异化'],opp:['泰国美妆品牌国际化趋势','草药保健品需求旺盛','直播带货渗透率全东南亚最高'],fest:'泼水节(4月) → 水灯节(11月) → 年终大促(12月)',income:[['底层低收入',30,'极致性价比','#e0e4ec'],['中产主流层',45,'中端消费·核心市场','#2c5f8a'],['中高收入',18,'品质升级','#4a90d9'],['高收入精英',7,'高端品牌','#c8a84e'],],price:[['直播电商','TikTok Shop','$3-15','冲动消费'],['中端货架','Shopee/Lazada','$15-50','比价+促销驱动'],['高端品牌','Central Online','$50+','品质服务'],],price_trend:'消费升级中，有机健康品增长快',shelf:'重促销折扣、免运费、评价',content:'TikTok/Instagram直播转化率全东南亚最高',payment:'PromptPay/信用卡/COD',cod:28,peak:'19:00-23:00',},cat:{blue:[['美妆护肤','+30%'],['食品饮料','+20%'],['健康养生','+25%'],['旅游用品','+18%'],],stable:['家居日用','电子配件','服装'],risk:[['电子烟','严禁进口销售'],['保健品','FDA审批严格'],['化妆品','FDA注册必须'],],},plats:[['Shopee','🟠',35,'货架+内容','跨境/本土','5-8%','美妆时尚家居','★★☆'],['Lazada','🔵',25,'货架电商','跨境/本土','5-8%','全品类','★★☆'],['TikTok Shop','🎵',18,'内容电商','本土优先','3-5%','美妆时尚食品','★★★'],['Central Online','🏬',6,'百货电商','本土','8-12%','品牌时尚','★★☆'],['JD Central','🔴',4,'货架电商','跨境/本土','6-10%','电子家居','★★☆'],],comp:{level:'中等',cls:'medium',policies:[['mid','数字服务税4%','2024','全品类','全平台','跨境电商收入征收4%增值税'],['mid','FDA食品药品审批','持续执行','食品保健品','全平台','审批周期2-4周'],['low','电子烟严禁进口','持续','电子烟','全平台','持有/销售均违法'],['low','化妆品FDA注册','持续执行','美妆','全平台','需泰语标签+成分申报'],]}},my:{flag:'🇲🇾',name:'马来西亚',subtitle:'Malaysia · 多元文化电商市场',region:'东南亚',ai:{opp:'多元文化市场，马来/华人/印度三大族群消费偏好各异。数字基础设施完善，跨境贸易便利',tracks:['清真产品 +28% 全球清真经济中心','电子数码 +22% 消费电子需求稳定','家居园艺 +18% 中产阶级扩大带动需求'],risks:['⚠️ 数字服务税新规需关注','⚠️ 清真认证流程严格但必要','⚠️ 多语言运营增加成本'],advice:['新手：Shopee马来站+Lazada跨境','工厂：本土店+多语言listing优化','精品：品牌化+Shopee Mall入驻'],},macro:[['总人口','3,430万','+1.2%','多元文化社会'],['电商规模','US$ 195亿','+18%','东南亚稳健增长'],['电商渗透率','18.5%','↑','数字基建完善'],['人均可支配收入','US$ 12,380','+4.1%','中产主力消费'],['汇率','4.72 MYR/USD','±1.0%','波动较小'],['外贸环境','利好','→','RCEP+伊斯兰经济中心'],],demo:{age:[['0-14岁',23,'母婴多文化适配'],['15-29岁',25,'多元文化消费'],['30-49岁',30,'家庭消费核心'],['50岁+',22,'保守稳健消费'],],ai_age:'20-45岁核心人群，多语言运营关键',gender:{m:51,f:49},f_pref:'美妆护肤、穆斯林时尚、家居',m_pref:'电子产品、运动装备、汽车配件',religion:[['伊斯兰教',61],['佛教',20],['基督教',9],['其他',10],],risk:['数字服务税新规','清真认证严格','多语言成本'],opp:['全球清真经济中心','RCEP贸易便利','多元文化产品需求'],fest:'开斋节 → 春节 → 屠妖节 → 年终大促',income:[['底层低收入',25,'低价走量','#e0e4ec'],['中产主流层',45,'中端品质·核心','#2c5f8a'],['中高收入',22,'品牌升级','#4a90d9'],['高收入精英',8,'高端进口','#c8a84e'],],price:[['低价平台','Shopee','$3-15','性价比'],['中端主流','Lazada/Shopee','$15-50','评价驱动'],['高端品牌','品牌官网','$50+','品质认证'],],price_trend:'消费升级，清真品类溢价空间大',shelf:'重清真认证、多语言、促销',content:'Facebook+Instagram社交电商',payment:'FPX/GrabPay/TnG',cod:18,peak:'20:00-23:00',},cat:{blue:[['清真产品','+28%'],['电子数码','+22%'],['家居园艺','+18%'],['母婴用品','+20%'],],stable:['服装配饰','食品','日用品'],risk:[['非清真食品','需明确标识'],['宗教相关印刷品','内政部审查'],['加密货币相关','监管严格'],],},plats:[['Shopee','🟠',38,'货架+内容','跨境/本土','5-8%','美妆时尚家居','★★☆'],['Lazada','🔵',25,'货架电商','跨境/本土','5-8%','全品类','★★☆'],['TikTok Shop','🎵',12,'内容电商','本土优先','3-5%','美妆时尚食品','★★★'],['PG Mall','🟢',5,'货架电商','本土','6-10%','全品类','★☆☆'],['PG Mall','🏬',4,'百货电商','本土','8-12%','品牌家居','★☆☆'],],comp:{level:'中等',cls:'medium',policies:[['mid','数字服务税新规','2024','全品类','全平台','外国数字服务提供商征税'],['mid','清真认证要求','建议','食品化妆品','全平台','JAKIM认证权威性最高'],['low','多语言标签要求','建议','全品类','全平台','建议马来语+英语双语'],['low','进口关税差异化','持续','全品类','全平台','RCEP成员国优惠税率'],]}},vn:{flag:'🇻🇳',name:'越南',subtitle:'Vietnam · 东南亚高增速新兴市场',region:'东南亚',ai:{opp:'东南亚高增速新兴市场，GDP增速6.5%领跑。年轻人口+移动互联网渗透推动电商快速增长',tracks:['家居生活 +32% 城镇化驱动家居消费升级','时尚服饰 +28% 年轻消费者追求韩流日系风格','小家电 +25% 生活品质提升需求旺盛'],risks:['⚠️ 本土电商保护政策趋严','⚠️ 物流最后一公里仍是挑战','⚠️ 价格敏感度高，利润空间有限'],advice:['新手：Shopee越南站跨境试水','工厂：TikTok Shop+Shopee双渠道本土店','精品：品牌本土化+Facebook私域社群'],},macro:[['总人口','9,880万','+0.8%','东南亚第三人口'],['电商规模','US$ 320亿','+25%','东南亚增速最快之一'],['电商渗透率','12.5%','↑','移动电商爆发'],['人均可支配收入','US$ 4,280','+6.5%','GDP高速增长'],['汇率','25,200 VND/USD','±0.8%','政府管控稳定'],['外贸环境','利好','↑','制造业转移+出口强劲'],],demo:{age:[['0-14岁',24,'母婴市场增长'],['15-29岁',28,'Z世代社交电商'],['30-49岁',28,'家庭消费核心'],['50岁+',20,'保守性价比'],],ai_age:'18-35岁核心人群，价格敏感但增长快',gender:{m:50,f:50},f_pref:'美妆护肤、韩流服饰、母婴',m_pref:'3C数码、运动装备、电子配件',religion:[['无宗教',73],['佛教',14],['天主教',7],['其他',6],],risk:['本土电商保护政策','物流基础设施薄弱','价格竞争激烈利润薄'],opp:['GDP 6.5%领跑东南亚','韩流日系风格影响大','社交电商Facebook社群强'],fest:'越南新年(1-2月) → 女王节(10月) → 黑五(11月)',income:[['底层低收入',35,'极致低价','#e0e4ec'],['中产主流层',40,'性价比核心','#2c5f8a'],['中高收入',18,'品质升级','#4a90d9'],['高收入精英',7,'品牌消费','#c8a84e'],],price:[['社交电商','Shopee/TikTok','$2-12','极致低价'],['中端货架','Lazada/Tiki','$12-40','评价+促销'],['高端品牌','品牌独立站','$40+','品质服务'],],price_trend:'价格敏感度高，但消费升级趋势明显',shelf:'重价格、免运费、促销',content:'Facebook+TikTok+Zalo社群营销',payment:'MoMo/ZaloPay/COD',cod:42,peak:'20:00-23:00',},cat:{blue:[['家居生活','+32%'],['时尚服饰','+28%'],['小家电','+25%'],['美妆个护','+30%'],],stable:['食品','日用品','电子配件'],risk:[['二手商品','限制进口'],['含酒精饮料','进口许可严格'],['药品保健品','卫生部审批复杂'],],},plats:[['Shopee','🟠',35,'货架+内容','跨境/本土','5-8%','美妆时尚家居','★★☆'],['TikTok Shop','🎵',22,'内容电商','本土优先','3-5%','美妆时尚食品','★★★'],['Lazada','🔵',18,'货架电商','跨境/本土','5-8%','全品类','★★☆'],['Tiki','🔵',8,'正品电商','本土','7-12%','正品品牌','★★☆'],['Sendo','🟢',5,'货架电商','本土','5-8%','日用品低价','★☆☆'],],comp:{level:'中等偏严格',cls:'strict',policies:[['mid','本土电商保护政策','2025讨论','全品类','全平台','可能限制外资电商平台'],['mid','物流基础设施限制','持续','全品类','全平台','最后一公里配送时效不稳定'],['low','价格竞争激烈','行业','全品类','全平台','利润空间被压缩'],['low','外汇管制','持续','跨境','全平台','利润汇出需合规申报'],]}},};
 var currentCountry='id';
 var aiTabIdx=0;
 
@@ -4056,7 +4057,7 @@ function cn2Render(key){
 
   // Platform cards
   h += '<div class="cn2-plat-compare">';
-  var platColors2 = ['#df6f3d','#3c6c62','#4a90d9','#c8a84e','#e8879a'];
+  var platColors2 = ['#3b7dd8','#2c5f8a','#4a90d9','#c8a84e','#e8879a'];
   d.plats.forEach(function(p, i){
     h += '<div class="cn2-plat-card-v2">';
     h += '<div class="pv-head"><span class="pv-emoji">'+p[1]+'</span><span class="pv-name">'+p[0]+'</span><span class="pv-share">'+p[2]+'%</span></div>';
@@ -4081,7 +4082,7 @@ function cn2Render(key){
 
   // Blue ocean / Stable / Risk categories
   h += '<div style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">';
-  h += '<div style="padding:14px;background:rgba(60,108,98,.05);border:1px solid rgba(60,108,98,.2);border-radius:10px"><h4 style="font-size:12px;color:var(--green);margin-bottom:8px">🌊 蓝海低竞争类目</h4>';
+  h += '<div style="padding:14px;background:rgba(44,95,138,.05);border:1px solid rgba(44,95,138,.2);border-radius:10px"><h4 style="font-size:12px;color:var(--green);margin-bottom:8px">🌊 蓝海低竞争类目</h4>';
   d.cat.blue.forEach(function(c){ h += '<div style="font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)">'+c[0]+' <span style="color:var(--green);font-weight:600;font-size:11px">'+c[1]+'</span></div>'; });
   h += '</div>';
   h += '<div style="padding:14px;background:rgba(200,168,78,.05);border:1px solid rgba(200,168,78,.2);border-radius:10px"><h4 style="font-size:12px;color:#c8a84e;margin-bottom:8px">📦 稳定大盘类目</h4>';
@@ -4154,7 +4155,7 @@ function cn2Render(key){
   sh += '<div style="font-size:11px;font-weight:600;color:#c0392b;margin-bottom:4px">⚠️ 营销禁忌</div>';
   d.demo.risk.forEach(function(r){ sh += '<div style="font-size:10px;color:#555;padding:2px 0">• '+r+'</div>'; });
   sh += '</div>';
-  sh += '<div style="margin-top:6px;padding:8px;background:rgba(60,108,98,.05);border-radius:6px">';
+  sh += '<div style="margin-top:6px;padding:8px;background:rgba(44,95,138,.05);border-radius:6px">';
   sh += '<div style="font-size:11px;font-weight:600;color:var(--green);margin-bottom:4px">✅ 文化机会</div>';
   d.demo.opp.forEach(function(o){ sh += '<div style="font-size:10px;color:#555;padding:2px 0">• '+o+'</div>'; });
   sh += '</div></div>';
@@ -5741,9 +5742,9 @@ $('#ov-plan-btn').onclick=function(){toast('即将跳转至套餐页面…')};
 // -- Block 2: Metric cards with ring charts --
 (function(){
   var metrics=[
-    {label:'监测覆盖国家',val:'26',sub:'目标 40+ 国',pct:65,color:'#3c6c62',desc:'目标拓展 40 个全球国家'},
-    {label:'接入电商平台',val:'41',sub:'货架 + 内容电商',pct:82,color:'#df6f3d',desc:'覆盖货架 + 内容全电商渠道'},
-    {label:'有效商品数据',val:'299万+',sub:'日新增 8 万条',pct:75,color:'#4d946e',desc:'日新增 8 万条爆款数据'},
+    {label:'监测覆盖国家',val:'26',sub:'目标 40+ 国',pct:65,color:'#2c5f8a',desc:'目标拓展 40 个全球国家'},
+    {label:'接入电商平台',val:'41',sub:'货架 + 内容电商',pct:82,color:'#3b7dd8',desc:'覆盖货架 + 内容全电商渠道'},
+    {label:'有效商品数据',val:'299万+',sub:'日新增 8 万条',pct:75,color:'#4a80c8',desc:'日新增 8 万条爆款数据'},
     {label:'政策 & 风险资讯',val:'2400+',sub:'每日实时更新',pct:90,color:'#c39142',desc:'每日实时更新各国新规'}
   ];
   var circ=2*Math.PI*26;
@@ -5768,7 +5769,7 @@ function renderTrendSVG(days){
   for(var i=0;i<vals.length;i++){var x=pad+i*(w-2*pad)/(vals.length-1);var y=h-pad-(vals[i]-minV)/(maxV-minV)*(h-2*pad);pts.push(x.toFixed(1)+','+y.toFixed(1));}
   var area=pts.join(' ')+' '+(w-pad)+','+(h-pad)+' '+pad+','+(h-pad);
   var startV=vals[0],endV=vals[vals.length-1];
-  svg.innerHTML='<defs><linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3c6c62" stop-opacity="0.3"/><stop offset="100%" stop-color="#3c6c62" stop-opacity="0.02"/></linearGradient></defs><polygon points="'+area+'" fill="url(#trendGrad)"/><polyline points="'+pts.join(' ')+'" fill="none" stroke="#3c6c62" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="'+pad+'" cy="'+(h-pad-(vals[0]-minV)/(maxV-minV)*(h-2*pad)).toFixed(1)+'" r="4" fill="#3c6c62"/><circle cx="'+(w-pad)+'" cy="'+(h-pad-(vals[vals.length-1]-minV)/(maxV-minV)*(h-2*pad)).toFixed(1)+'" r="4" fill="#df6f3d"/><text x="'+(pad+6)+'" y="'+(h-pad-(vals[0]-minV)/(maxV-minV)*(h-2*pad)-8).toFixed(1)+'" font-size="11" fill="#3c6c62" font-family="DM Mono">'+startV+'万</text><text x="'+(w-pad-40)+'" y="'+(h-pad-(vals[vals.length-1]-minV)/(maxV-minV)*(h-2*pad)-8).toFixed(1)+'" font-size="11" fill="#df6f3d" font-family="DM Mono">'+endV+'万</text>';
+  svg.innerHTML='<defs><linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2c5f8a" stop-opacity="0.3"/><stop offset="100%" stop-color="#2c5f8a" stop-opacity="0.02"/></linearGradient></defs><polygon points="'+area+'" fill="url(#trendGrad)"/><polyline points="'+pts.join(' ')+'" fill="none" stroke="#2c5f8a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="'+pad+'" cy="'+(h-pad-(vals[0]-minV)/(maxV-minV)*(h-2*pad)).toFixed(1)+'" r="4" fill="#2c5f8a"/><circle cx="'+(w-pad)+'" cy="'+(h-pad-(vals[vals.length-1]-minV)/(maxV-minV)*(h-2*pad)).toFixed(1)+'" r="4" fill="#3b7dd8"/><text x="'+(pad+6)+'" y="'+(h-pad-(vals[0]-minV)/(maxV-minV)*(h-2*pad)-8).toFixed(1)+'" font-size="11" fill="#2c5f8a" font-family="DM Mono">'+startV+'万</text><text x="'+(w-pad-40)+'" y="'+(h-pad-(vals[vals.length-1]-minV)/(maxV-minV)*(h-2*pad)-8).toFixed(1)+'" font-size="11" fill="#3b7dd8" font-family="DM Mono">'+endV+'万</text>';
   var badge=$('#ov-trend-badge');if(badge)badge.textContent=ovTrendLabels[days];
   var label=$('#ov-trend-range-label');if(label)label.textContent='起点 '+startV+' 万 → 终点 '+endV+' 万';
   var conclusion=$('#ov-trend-conclusion');if(conclusion)conclusion.textContent='📊 '+ovTrendConclusions[days];
@@ -5972,7 +5973,7 @@ function renderOvCountries(region,tag){
     var html='<article class="ov-ccard '+cardClass+'">';
     if(aiTip)html+='<span class="ov-ccard-ai-icon" data-tip="'+aiTip.replace(/"/g,'&quot;')+'">✨</span>';
     html+='<div class="ov-ccard-top"><span class="flag">'+flag+'</span><div><h3>'+name+'</h3></div><span class="ov-heat '+heatClass+'">'+heatLabel+'</span></div>';
-    html+='<div class="ov-ccard-metrics"><div><span>线上零售规模</span><b>'+retail+'</b></div><div><span>GDP 增速</span><b'+(macro.gdp!=='—'?' style="color:#478067"':'')+'>'+macro.gdp+'</b></div><div><span>CPI 通胀</span><b>'+macro.cpi+'</b></div></div>';
+    html+='<div class="ov-ccard-metrics"><div><span>线上零售规模</span><b>'+retail+'</b></div><div><span>GDP 增速</span><b'+(macro.gdp!=='—'?' style="color:#3a6ea8"':'')+'>'+macro.gdp+'</b></div><div><span>CPI 通胀</span><b>'+macro.cpi+'</b></div></div>';
     html+='<div class="ov-ccard-cats">'+cats.slice(0,3).map(function(ct){return '<span>'+ct+'</span>'}).join('')+'</div>';
     if(policy)html+='<div class="ov-ccard-policy">📋 '+policy+'</div>';
     html+='<button class="ov-ccard-btn" data-page="countries">进入国家全景库 →</button>';
@@ -6485,7 +6486,7 @@ if(name==='policies')renderPoliciesPage();
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}$('#export').onclick=()=>toast('报告正在生成，稍后将下载 Excel 文件。');// read-all button replaced by alerts center redesign$('#bell').onclick=()=>switchPage('alerts');
 
 // === Watchlist Redesign ===
-const watchlistData=[{type:'track',flag:'\u{1F1EE}\u{1F1E9}',name:'\u5370\u5c3c\uff5c\u7f8e\u5986\u8d5b\u9053',platforms:'Shopee/TikTok Shop',status:'hot',statusText:'HOT \u9ad8\u589e\u957f',metrics:['7\u65e5GMV +42.8%','\u5e02\u573a\u89c4\u6a21 $650\u4ebf'],detail:'\u70ed\u95e8\u7ec6\u5206\uff1a\u5507\u91c9\u3001\u62a4\u80a4\u5957\u88c5 | \u7ade\u4e89\u5ea6\uff1a\u4e2d\u7b49',trend:[30,35,32,40,45,48,52],trendColor:'#3c6c62'},{type:'shop',flag:'\u{1F3EA}',name:'GLOW LAB Official',platforms:'Shopee \u5370\u5c3c',status:'up',statusText:'\u{1F4C8} \u589e\u957f\u4e2d',metrics:['30\u5929GMV $128\u4e07','\u8ba2\u5355\u589e\u901f +18%'],detail:'\u8bc4\u52064.8 | \u7206\u6b3e\u657012',trend:[80,85,82,78,75,72,70],trendColor:'#df6f3d'},{type:'track',flag:'\u{1F1FA}\u{1F1F8}',name:'\u7f8e\u56fd\uff5c\u5145\u7535\u914d\u4ef6',platforms:'Amazon/Temu',status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d',metrics:['7\u65e5\u9500\u91cf +23.5%','\u5747\u4ef7 $15-35'],detail:'\u5229\u6da6\u7a7a\u95f4\uff1a\u4e2d\u9ad8 | \u8fd17\u65e5\u4e0a\u65b0 156\u4ef6',trend:[20,22,25,24,28,30,33],trendColor:'#3c6c62'},{type:'shop',flag:'\u{1F3EA}',name:'TECHZONE Official',platforms:'Amazon \u7f8e\u56fd',status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d',metrics:['30\u5929GMV $85\u4e07','\u8ba2\u5355\u589e\u901f +8%'],detail:'\u8bc4\u52064.6 | \u7206\u6b3e\u65708',trend:[50,52,51,53,55,54,56],trendColor:'#3c6c62'},{type:'track',flag:'\u{1F1E7}\u{1F1F7}',name:'\u5df4\u897f\uff5c\u4e2a\u62a4\u7535\u5668',platforms:'Mercado Livre/Shopee',status:'hot',statusText:'HOT \u9ad8\u589e\u957f',metrics:['7\u65e5GMV +35.2%','\u5e02\u573a\u89c4\u6a21 $180\u4ebf'],detail:'\u70ed\u95e8\u7ec6\u5206\uff1a\u5439\u98ce\u673a\u3001\u8131\u6bdb\u4efb | \u7ade\u4e89\u5ea6\uff1a\u4f4e',trend:[15,18,22,25,28,33,38],trendColor:'#3c6c62'}];
+const watchlistData=[{type:'track',flag:'\u{1F1EE}\u{1F1E9}',name:'\u5370\u5c3c\uff5c\u7f8e\u5986\u8d5b\u9053',platforms:'Shopee/TikTok Shop',status:'hot',statusText:'HOT \u9ad8\u589e\u957f',metrics:['7\u65e5GMV +42.8%','\u5e02\u573a\u89c4\u6a21 $650\u4ebf'],detail:'\u70ed\u95e8\u7ec6\u5206\uff1a\u5507\u91c9\u3001\u62a4\u80a4\u5957\u88c5 | \u7ade\u4e89\u5ea6\uff1a\u4e2d\u7b49',trend:[30,35,32,40,45,48,52],trendColor:'#2c5f8a'},{type:'shop',flag:'\u{1F3EA}',name:'GLOW LAB Official',platforms:'Shopee \u5370\u5c3c',status:'up',statusText:'\u{1F4C8} \u589e\u957f\u4e2d',metrics:['30\u5929GMV $128\u4e07','\u8ba2\u5355\u589e\u901f +18%'],detail:'\u8bc4\u52064.8 | \u7206\u6b3e\u657012',trend:[80,85,82,78,75,72,70],trendColor:'#3b7dd8'},{type:'track',flag:'\u{1F1FA}\u{1F1F8}',name:'\u7f8e\u56fd\uff5c\u5145\u7535\u914d\u4ef6',platforms:'Amazon/Temu',status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d',metrics:['7\u65e5\u9500\u91cf +23.5%','\u5747\u4ef7 $15-35'],detail:'\u5229\u6da6\u7a7a\u95f4\uff1a\u4e2d\u9ad8 | \u8fd17\u65e5\u4e0a\u65b0 156\u4ef6',trend:[20,22,25,24,28,30,33],trendColor:'#2c5f8a'},{type:'shop',flag:'\u{1F3EA}',name:'TECHZONE Official',platforms:'Amazon \u7f8e\u56fd',status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d',metrics:['30\u5929GMV $85\u4e07','\u8ba2\u5355\u589e\u901f +8%'],detail:'\u8bc4\u52064.6 | \u7206\u6b3e\u65708',trend:[50,52,51,53,55,54,56],trendColor:'#2c5f8a'},{type:'track',flag:'\u{1F1E7}\u{1F1F7}',name:'\u5df4\u897f\uff5c\u4e2a\u62a4\u7535\u5668',platforms:'Mercado Livre/Shopee',status:'hot',statusText:'HOT \u9ad8\u589e\u957f',metrics:['7\u65e5GMV +35.2%','\u5e02\u573a\u89c4\u6a21 $180\u4ebf'],detail:'\u70ed\u95e8\u7ec6\u5206\uff1a\u5439\u98ce\u673a\u3001\u8131\u6bdb\u4efb | \u7ade\u4e89\u5ea6\uff1a\u4f4e',trend:[15,18,22,25,28,33,38],trendColor:'#2c5f8a'}];
 const alertMessages=[{level:'high',text:'\u5370\u5c3c\u7f8e\u5986 7\u65e5GMV\u6da8\u5e45\u63d0\u5347\u81f342.8%\uff0c\u65b0\u589e23\u4e2a\u7206\u5355\u65b0\u54c1',icon:'\u{1F534}'},{level:'mid',text:'GLOW LAB\u5e97\u94fa\u8fd13\u65e5\u9500\u91cf\u4e0b\u6ed112%\uff0c\u5934\u90e8\u7ade\u54c1\u4e0a\u65b0\u5206\u6d41',icon:'\u{1F7E1}'},{level:'mid',text:'\u5317\u7f8e\u5145\u7535\u914d\u4ef6\u7c7b\u76ee\u65b0\u589e\u5173\u7a0e\u9884\u5ba1\u653f\u7b56',icon:'\u{1F7E0}'}];
 const recommendTracks=[{flag:'\u{1F1FB}\u{1F1F3}',name:'\u8d8a\u5357\uff5c\u5bb6\u5c45\u751f\u6d3b',platforms:'Shopee/TikTok Shop',reason:'GDP\u589e\u901f6.5%\uff0c\u5bb6\u5c45\u54c1\u7c7b\u6e17\u900f\u7387\u5feb\u901f\u63d0\u5347'},{flag:'\u{1F1F2}\u{1F1FD}',name:'\u58a8\u897f\u54e5\uff5c3C\u914d\u4ef6',platforms:'Mercado Libre/Amazon',reason:'\u8fd1\u5cb8\u5916\u5305\u8d8b\u52bf\u5229\u597d\uff0c\u7f8e\u5ba2\u591a\u4efd\u989d\u9886\u5148'},{flag:'\u{1F1F9}\u{1F1ED}',name:'\u6cf0\u56fd\uff5c\u98df\u54c1\u996e\u6599',platforms:'Shopee/Lazada',reason:'\u5ba2\u5355\u4ef7\u7a33\u5b9a\uff0c\u590d\u8d2d\u7387\u9ad8\u4e8e\u5927\u76d8\u5747\u503c'}];
 
@@ -6503,7 +6504,7 @@ function renderWatchCards(filterType){
   var grid=document.getElementById('watch-grid');
   grid.innerHTML=filtered.map(function(d,idx){
     var trendDir=d.trend[d.trend.length-1]>=d.trend[0];
-    var tc=trendDir?'#3c6c62':'#df6f3d';
+    var tc=trendDir?'#2c5f8a':'#3b7dd8';
     var svg=buildMiniTrendSVG(d.trend,tc);
     var viewLabel=d.type==='shop'?'\u67e5\u770b\u5e97\u94fa':'\u67e5\u770b\u699c\u5355';
     return '<article class="watch-card"><div class="wc-top"><span class="wc-flag">'+d.flag+'</span><span class="wc-name">'+d.name+'</span><span class="wc-platforms">'+d.platforms+'</span><span class="wc-status '+d.status+'">'+d.statusText+'</span></div><div class="wc-metrics"><div class="wc-metric"><b>'+d.metrics[0]+'</b></div><div class="wc-metric"><b>'+d.metrics[1]+'</b></div></div><p class="wc-detail">'+d.detail+'</p><div class="wc-trend">'+svg+'</div><div class="wc-actions"><button class="wc-action-btn ai" onclick="toast(\'AI\u8bca\u65ad\u62a5\u544a\u751f\u6210\u4e2d...\u4e13\u4e1a\u7248\u53ef\u67e5\u770b\u5b8c\u6574\u5206\u6790\')">\u2728 AI\u8bca\u65ad</button><button class="wc-action-btn" onclick="toast(\'\\u6b63\u5728\\u52a0\\u8f7d\\u8be6\\u7ec6\\u6570\\u636e...\')">'+viewLabel+'</button><button class="wc-action-btn" onclick="toast(\'\\u5df2\\u8bbe\\u7f6e\\u6b64\\u9879\\u76d1\\u63a7\\u63d0\\u9192\')">\u8bbe\u7f6e\u63d0\u9192</button><button class="wc-action-btn remove" onclick="this.closest(\'.watch-card\').remove();toast(\'\\u5df2\\u4ece\\u4e2a\\u4eba\\u770b\\u677f\\u79fb\\u9664\')">\u53d6\u6d88\u5173\u6ce8</button></div></article>';
@@ -6638,7 +6639,7 @@ $('#login-form').onsubmit=e=>{e.preventDefault();$('#login-screen').style.displa
     // alerts: [color, country, title, date]
     alerts.forEach(a=>{
       items.push({
-        color:a[0]==='#dc7140'?'red':'orange',
+        color:a[0]==='#4a85d9'?'red':'orange',
         title:a[2],
         tags:[a[1]],
         time:a[3],
@@ -6684,7 +6685,7 @@ $('#login-form').onsubmit=e=>{e.preventDefault();$('#login-screen').style.displa
     tickerItems=buildTickerData();
     tickerCount.textContent=tickerItems.length+' 条';
     tickerList.innerHTML=tickerItems.map((item,i)=>{
-      const colorMap={red:'#dc7140',orange:'#c39142',green:'#4d946e'};
+      const colorMap={red:'#4a85d9',orange:'#c39142',green:'#4a80c8'};
       return `<div class="ticker-item" data-index="${i}" data-page="${item.page}">
         <i class="t-dot" style="background:${colorMap[item.color]}"></i>
         <div class="t-body">
