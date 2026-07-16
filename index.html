@@ -5070,8 +5070,19 @@ async function loadPoliciesData() {
   policiesDataLoading = false;
 }
 
+function enrichPolicySummary(p) {
+  if (p.summary && p.summary.trim()) return;
+  const region = plRegionLabels[p.region] || p.region || '相关地区';
+  const cat = plCategoryLabels[p.category] || p.category || '政策';
+  const impact = plImpactLabels[p.impact_level] || p.impact_level || '中';
+  const source = p.source || '未注明';
+  const date = p.published_at || '近期';
+  p.summary = `【${region}】${cat}动态 — ${date}，${source}发布，影响等级：${impact}。该${cat}变化可能对跨境电商业务产生${impact==='高'?'重大':'一定'}影响，建议持续关注并评估合规风险。`;
+}
+
 function plInitFromJson() {
   const items = policiesJsonData.items;
+  items.forEach(enrichPolicySummary);
   fillSelect('#pl-f-region', [...new Set(items.map(p => p.region))].filter(Boolean).sort());
   fillSelect('#pl-f-category', [...new Set(items.map(p => p.category))].filter(Boolean).sort());
   // Update nav badge
@@ -5261,7 +5272,7 @@ function openPlDetail(idx){
     </div>
 
     <div class="pl-detail-section"><h4>📝 政策详情</h4>
-      <div class="pl-detail-item" style="line-height:1.8">${p.summary||'暂无详细摘要'}</div>
+      <div class="pl-detail-item" style="line-height:1.8">${p.summary||p.title||'暂无详细摘要'}</div>
     </div>
 
     <div class="pl-detail-section"><h4>⚠️ 合规落地建议</h4>
@@ -5311,7 +5322,7 @@ function plAiComplianceDetail(idx){
   const impactLabel=plImpactLabels[p.impact_level]||p.impact_level;
   $('#pl-ai-detail-result').innerHTML=`<div class="pl-ai-compliance"><h5>🤖 AI 深度合规报告 - ${p.title}</h5>
     <b>一、政策背景：</b>${p.title}，来源: ${p.source||'未知'}，${catLabel}类型政策，发布于 ${p.published_at||'N/A'}。<br><br>
-    <b>二、核心影响：</b>${p.summary||'暂无详细摘要'}<br><br>
+    <b>二、核心影响：</b>${p.summary||p.title||'暂无详细摘要'}<br><br>
     <b>三、合规操作清单：</b><br>
     1. 了解 ${regionLabel} 地区 ${catLabel} 类别最新政策要求<br>
     2. 评估当前业务受该政策影响的程度<br>
@@ -5390,8 +5401,19 @@ async function loadRulesData() {
   rulesDataLoading = false;
 }
 
+function enrichRuleSummary(r) {
+  if (r.summary && r.summary.trim()) return;
+  const platform = r.platform || '多平台';
+  const market = rlMarketLabels[r.market] || r.market || '全球';
+  const cat = rlCategoryLabels[r.category] || r.category || '规则';
+  const impact = rlImpactLabels[r.impact_level] || r.impact_level || '中';
+  const date = r.effective_date || r.published_at || '近期';
+  r.summary = `【${platform}】${market}市场${cat}变动 — 生效日期：${date}，影响等级：${impact}。该${cat}调整可能影响卖家运营策略，建议及时调整以符合最新平台要求。`;
+}
+
 function rlInitFromJson() {
   const items = rulesJsonData.items;
+  items.forEach(enrichRuleSummary);
   fillSelect('#rl-platform', [...new Set(items.map(r => r.platform))].filter(Boolean).sort());
   fillSelect('#rl-market', [...new Set(items.map(r => r.market))].filter(Boolean).sort());
   fillSelect('#rl-category', [...new Set(items.map(r => r.category))].filter(Boolean).sort());
@@ -5628,7 +5650,7 @@ function openRlRuleDetail(idx){
   +'<div class="info-item"><div class="lbl">影响等级</div><div class="val" style="color:'+impactColor+'">'+(r.impact_level==='high'?'🔴 高':r.impact_level==='medium'?'🟡 中':'🔵 低')+'</div></div>'
   +'<div class="info-item"><div class="lbl">来源链接</div><div class="val">'+sourceLink+'</div></div>'
   +'</div></div>'
-  +'<div class="rl-detail-section"><h3>📝 规则详情</h3><p>'+(r.summary||'暂无详细摘要')+'</p></div>'
+  +'<div class="rl-detail-section"><h3>📝 规则详情</h3><p>'+(r.summary||r.title||'暂无详细摘要')+'</p></div>'
   +'<div class="rl-detail-section"><h3>✅ 应对建议</h3><p>建议关注 '+r.platform+' 平台 '+marketLabel+' 市场的 '+catLabel+' 类规则变化，及时调整运营策略。</p></div>'
   +'<div class="rl-detail-section"><h3>🔗 关联联动</h3><p>'
   +'<button onclick="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'alerts\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看预警中心</button>'
