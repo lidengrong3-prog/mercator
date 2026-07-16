@@ -7447,8 +7447,8 @@ function closeProModal(){var m=document.getElementById('pro-modal-overlay');if(m
 const searchIndex=[['防水持久液体腮红','商品 · 印度尼西亚 TikTok Shop','products'],['GLOW LAB Official','店铺 · 印尼 TikTok Shop','shops'],['印度尼西亚进口标签要求','政策 · 合规提醒','countries'],['北美充电配件','类目 · 美国 Amazon','products'],['Shopee','电商平台 · 东南亚','platforms'],['GDP增速','国家市场宏观数据','countries'],['对华关税','政策动态','policies'],['TikTok Shop规则','平台规则','rules'],['身体乳测评','热门内容','content']];const search=$('#global-search'),results=$('#search-results');search.oninput=()=>{const q=search.value.trim();if(!q){results.classList.remove('show');return}const hits=searchIndex.filter(x=>x[0].includes(q)||x[1].includes(q));results.innerHTML=(hits.length?hits:[['未找到精确结果','可尝试商品名、店铺名、政策关键词或类目','overview']]).map(x=>`<div class="result" data-page="${x[2]}"><b>${x[0]}</b><small>${x[1]}</small></div>`).join('');results.classList.add('show')};results.onclick=e=>{const item=e.target.closest('.result');if(item){switchPage(item.dataset.page);results.classList.remove('show');search.value=''}};
 
 // ========== Mercator SaaS Auth Module ==========
-var MERCATOR_SUPABASE_URL = 'YOUR_SUPABASE_URL';
-var MERCATOR_SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+var MERCATOR_SUPABASE_URL = 'https://ftlzofrnosgvdvwajhuz.supabase.co';
+var MERCATOR_SUPABASE_KEY = 'sb_publishable_y2zfDKmuW9Lj4gUqIYKpxw_COuX1JQQ';
 var mercatorUser = null;
 var mercatorProfile = null;
 var supabaseClient = null;
