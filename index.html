@@ -7384,7 +7384,7 @@ function renderAlertBanner(){
 function renderRecommendTracks(){
   var container=document.getElementById('wl-rec-cards');
   container.innerHTML=recommendTracks.map(function(t){
-    return '<div class="wl-rec-card"><span style="font-size:22px">'+t.flag+'</span><div class="wl-rec-info"><h5>'+t.name+'</h5><p>'+t.platforms+' \u00b7 '+t.reason+'</p></div><button class="wl-rec-add" onclick="addFromSearch(this, '"+t.flag+' '+t.name+"', 'track')">\u6dfb\u52a0</button></div>';
+    return '<div class="wl-rec-card"><span style="font-size:22px">'+t.flag+'</span><div class="wl-rec-info"><h5>'+t.name+'</h5><p>'+t.platforms+' \u00b7 '+t.reason+'</p></div><button class="wl-rec-add" onclick="addFromSearch(this, &#39;"+t.flag+"&#39; &#39;"+t.name+"&#39;,&#39;track&#39;)>\u6dfb\u52a0</button></div>';
   }).join('');
 }
 
@@ -7448,7 +7448,7 @@ function renderModalTab(tab){
     body.innerHTML='<div class="wl-search-row"><input type="text" id="wl-search-input" placeholder="\u641c\u7d22\u56fd\u5bb6\u3001\u8d5b\u9053\u3001\u5e97\u94fa\u6216\u5355\u54c1..."><button onclick="doModalSearch()">\u641c\u7d22</button></div><div id="wl-search-results"><p style="font-size:11px;color:#999;text-align:center;padding:20px 0">\u8f93\u5165\u5173\u952e\u8bcd\u641c\u7d22\u53ef\u76d1\u63a7\u7684\u8d5b\u9053\u3001\u5e97\u94fa\u6216\u5355\u54c1</p></div>';
   }else if(tab==='ai'){
     body.innerHTML='<p style="font-size:12px;color:#4a6a8a;margin:0 0 14px">\u2728 \u57fa\u4e8e\u4f60\u5df2\u5173\u6ce8\u7684\u54c1\u7c7b\uff0c\u4ee5\u4e0b\u540c\u8d5b\u9053\u6f5c\u529b\u5e02\u573a\u503c\u5f97\u5173\u6ce8\uff1a</p>'+recommendTracks.map(function(t){
-      return '<div class="wl-rec-item"><div class="wl-rec-item-info"><h5>'+t.flag+' '+t.name+'</h5><p>'+t.platforms+'</p></div><button onclick="addFromSearch(this, '"+t.flag+' '+t.name+"', 'track')">\u4e00\u952e\u6dfb\u52a0</button></div>';
+      return '<div class="wl-rec-item"><div class="wl-rec-item-info"><h5>'+t.flag+' '+t.name+'</h5><p>'+t.platforms+'</p></div><button onclick="addFromSearch(this, &#39;"+t.flag+"&#39; &#39;"+t.name+"&#39;,&#39;track&#39;)>\u4e00\u952e\u6dfb\u52a0</button></div>';
     }).join('');
   }else if(tab==='template'){
     body.innerHTML='<div class="wl-template-card"><h5>\u{1F30F} \u4e1c\u5357\u4e9a\u7f8e\u5986\u5356\u5bb6\u770b\u677f</h5><p>\u5305\u542b\u5370\u5c3c\u3001\u6cf0\u56fd\u3001\u8d8a\u5357\u7f8e\u5986\u8d5b\u9053\u76d1\u63a7 + 5\u5bb6\u5934\u90e8\u7ade\u5e97\u8ffd\u8e2a</p><button onclick="addTemplateToWatchlist(this)">\u4e00\u952e\u6dfb\u52a0</button></div><div class="wl-template-card"><h5>\u{1F1FA}\u{1F1F8} \u6b27\u7f8e3C\u8d27\u67b6\u7535\u5546\u770b\u677f</h5><p>\u5305\u542b\u7f8e\u56fd\u3001\u52a0\u62ff\u5927 3C\u914d\u4ef6\u8d5b\u9053 + Amazon/Temu\u5e73\u53f0\u6570\u636e</p><button onclick="addTemplateToWatchlist(this)">\u4e00\u952e\u6dfb\u52a0</button></div><div class="wl-template-card"><h5>\u{1F4F1} TikTok\u672c\u571f\u5e97\u7efc\u5408\u76d1\u63a7\u6a21\u677f</h5><p>\u8986\u76d6\u5370\u5c3c\u3001\u6cf0\u56fd\u3001\u9a6c\u6765\u897f\u4e9a TikTok Shop\u672c\u571f\u5e97\u6570\u636e</p><button onclick="addTemplateToWatchlist(this)">\u4e00\u952e\u6dfb\u52a0</button></div>';
@@ -7466,7 +7466,7 @@ function doModalSearch(){
     {name:'\u{1F4E6} \u5145\u7535\u5b9d\u54c1\u7c7b',sub:'Amazon/Temu \u00b7 \u5747\u4ef7$12-25',type:'product'}
   ];
   results.innerHTML=mockResults.map(function(r){
-    return '<div class="wl-search-result"><div><b>'+r.name+'</b><small>'+r.sub+'</small></div><button class="wl-rec-add" onclick="addFromSearch(this, '"+r.name.replace(/'/g, "\\'")+"', '"+r.type+"')">\u6dfb\u52a0</button></div>';
+    return '<div class="wl-search-result"><div><b>'+r.name+'</b><small>'+r.sub+'</small></div><button class="wl-rec-add" onclick="addFromSearch(this, &#39;"+r.name.replace(/&#39;/g,"&#39;")+"&#39;,&#39;"+r.type+"&#39;)>\u6dfb\u52a0</button></div>';
   }).join('');
 }
 
