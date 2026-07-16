@@ -5745,6 +5745,7 @@
         "电子产品 +22% 游戏配件需求旺盛"
       ],
       "risks": [
+        "⚠️ Enhanced Favorable Treatment for the United Arab Emirates Un（Federal Register 2026-07-14）",
         "⚠️ 文化禁忌严格，营销需本土化审核",
         "⚠️ VAT 5%+关税",
         "⚠️ 部分品类需SABER认证"
@@ -11767,5 +11768,18 @@
         ]
       ]
     }
+  },
+  "_metadata": {
+    "last_updated": "2026-07-16T16:52:56.223124+08:00",
+    "updated_countries": [
+      "it",
+      "es",
+      "nl",
+      "pl",
+      "se",
+      "be",
+      "sa",
+      "ae"
+    ]
   }
 }
