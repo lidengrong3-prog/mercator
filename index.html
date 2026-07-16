@@ -3191,13 +3191,15 @@ let pfExtData={
 };
 
 // -- 动态加载平台数据 --
+var MERCATOR_SUPABASE_URL = 'https://ftlzofrnosgvdvwajhuz.supabase.co';
+var MERCATOR_SUPABASE_KEY = 'sb_publishable_y2zfDKmuW9Lj4gUqIYKpxw_COuX1JQQ';
+
 async function loadPlatformData(){
   try{
     const base=document.querySelector('base')?document.querySelector('base').href:location.pathname.replace(/[^/]*$/,'');
     const url=base+'data/platforms.json';
-    const resp=await fetch(url);
-    if(!resp.ok)throw new Error('HTTP '+resp.status);
-    const data=await resp.json();
+    const data=await mercatorFetchMarketData('platforms', url);
+    if(!data)throw new Error('Failed to load platform data');
     if(!Array.isArray(data)||!data.length)return;
     // Rebuild platformsData from JSON
     platformsData=data.map(d=>[d.name||'',d.region||'',d.categories||'',d.gmv||'',d.fee||'',d.feeDesc||'',d.type||'',d.mau||'',d.updates||'']);
@@ -4967,9 +4969,8 @@ cn2Render('id');
 var countryDataLoaded = false;
 async function loadCountryData(){
   try {
-    var resp = await fetch('./data/countries.json');
-    if(!resp.ok) throw new Error('HTTP '+resp.status);
-    var data = await resp.json();
+    var data = await mercatorFetchMarketData('countries', './data/countries.json');
+    if(!data) throw new Error('Failed to load country data');
     if(data && typeof data === 'object' && Object.keys(data).length > 0){
       // Filter out metadata keys (e.g. _metadata) - only keep 2-letter country codes
       var cleaned = {};
@@ -5293,9 +5294,8 @@ async function loadPoliciesData() {
   policiesDataLoading = true;
   $('#pl-data-info').innerHTML = '<span style="color:#3366cc">⏳ 正在加载最新数据...</span>';
   try {
-    const resp = await fetch('./data/policies.json');
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const data = await resp.json();
+    const data = await mercatorFetchMarketData('policies', './data/policies.json');
+    if (!data) throw new Error('Failed to load policies data');
     if (data && data.items && data.items.length > 0) {
       policiesJsonData = data;
       plInitFromJson();
@@ -5626,9 +5626,8 @@ async function loadRulesData() {
   rulesDataLoading = true;
   $('#rl-data-info').innerHTML = '<span style="color:#3366cc">⏳ 正在加载最新数据...</span>';
   try {
-    const resp = await fetch('./data/rules.json');
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const data = await resp.json();
+    const data = await mercatorFetchMarketData('rules', './data/rules.json');
+    if (!data) throw new Error('Failed to load rules data');
     if (data && data.items && data.items.length > 0) {
       rulesJsonData = data;
       rlInitFromJson();
@@ -7447,8 +7446,40 @@ function closeProModal(){var m=document.getElementById('pro-modal-overlay');if(m
 const searchIndex=[['防水持久液体腮红','商品 · 印度尼西亚 TikTok Shop','products'],['GLOW LAB Official','店铺 · 印尼 TikTok Shop','shops'],['印度尼西亚进口标签要求','政策 · 合规提醒','countries'],['北美充电配件','类目 · 美国 Amazon','products'],['Shopee','电商平台 · 东南亚','platforms'],['GDP增速','国家市场宏观数据','countries'],['对华关税','政策动态','policies'],['TikTok Shop规则','平台规则','rules'],['身体乳测评','热门内容','content']];const search=$('#global-search'),results=$('#search-results');search.oninput=()=>{const q=search.value.trim();if(!q){results.classList.remove('show');return}const hits=searchIndex.filter(x=>x[0].includes(q)||x[1].includes(q));results.innerHTML=(hits.length?hits:[['未找到精确结果','可尝试商品名、店铺名、政策关键词或类目','overview']]).map(x=>`<div class="result" data-page="${x[2]}"><b>${x[0]}</b><small>${x[1]}</small></div>`).join('');results.classList.add('show')};results.onclick=e=>{const item=e.target.closest('.result');if(item){switchPage(item.dataset.page);results.classList.remove('show');search.value=''}};
 
 // ========== Mercator SaaS Auth Module ==========
-var MERCATOR_SUPABASE_URL = 'https://ftlzofrnosgvdvwajhuz.supabase.co';
-var MERCATOR_SUPABASE_KEY = 'sb_publishable_y2zfDKmuW9Lj4gUqIYKpxw_COuX1JQQ';
+// (moved to top)
+// (moved to top)
+// === Mercator Supabase Data Layer ===
+var MERCATOR_API_URL = MERCATOR_SUPABASE_URL + '/rest/v1';
+var MERCATOR_ANON_KEY = MERCATOR_SUPABASE_KEY;
+
+async function mercatorFetchMarketData(key, fallbackUrl) {
+  // Try Supabase first
+  if (MERCATOR_SUPABASE_URL && MERCATOR_SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+    try {
+      var resp = await fetch(MERCATOR_API_URL + '/market_data?key=eq.' + key + '&select=data,meta', {
+        headers: { 'apikey': MERCATOR_ANON_KEY, 'Authorization': 'Bearer ' + MERCATOR_ANON_KEY }
+      });
+      if (resp.ok) {
+        var rows = await resp.json();
+        if (rows && rows.length > 0 && rows[0].data) {
+          console.log('[Mercator] Loaded ' + key + ' from Supabase');
+          return rows[0].data;
+        }
+      }
+    } catch(e) { console.warn('[Mercator] Supabase fetch failed for ' + key + ', using fallback:', e.message); }
+  }
+  // Fallback to local JSON
+  try {
+    var resp2 = await fetch(fallbackUrl);
+    if (resp2.ok) {
+      var data2 = await resp2.json();
+      console.log('[Mercator] Loaded ' + key + ' from local JSON');
+      return data2;
+    }
+  } catch(e2) { console.warn('[Mercator] Local fallback failed for ' + key + ':', e2.message); }
+  return null;
+}
+
 var mercatorUser = null;
 var mercatorProfile = null;
 var supabaseClient = null;
