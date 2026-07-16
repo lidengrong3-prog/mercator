@@ -1494,10 +1494,73 @@ nav .nav-group-label+.nav-item{margin-top:0}
 @media(max-width:1000px){.cn2-layout{grid-template-columns:1fr}.cn2-aside{position:static;max-height:none}.cn2-link-cards{grid-template-columns:1fr 1fr}.cn2-ecom-compare{grid-template-columns:1fr}}
 @media(max-width:700px){.cn2-top-bar{flex-direction:column}.cn2-search-wrap{flex:1 1 100%;width:100%}.cn2-metric-grid{grid-template-columns:1fr 1fr}.cn2-plat-compare{grid-template-columns:1fr}.cn2-link-cards{grid-template-columns:1fr}}
 
+
+/* === SaaS 登录/注册增强 === */
+.auth-tabs{display:flex;border-bottom:1px solid #e9e7e2;margin-bottom:16px}
+.auth-tabs button{flex:1;border:0;background:none;padding:10px;font-family:inherit;font-size:13px;color:#6b7b8d;cursor:pointer;border-bottom:2px solid transparent}
+.auth-tabs button.active{color:var(--ink);border-bottom-color:var(--orange);font-weight:600}
+.auth-form .auth-field{display:none}
+.auth-form .auth-field.show{display:grid}
+.auth-form .auth-field label{display:grid;gap:6px;font-size:11px;margin:14px 0}
+.auth-form .auth-field input{border:1px solid #d8dcd6;border-radius:3px;padding:10px;font-family:inherit;outline-color:#2c5f8a}
+.auth-error{color:#c0392b;font-size:11px;margin-top:8px;display:none;text-align:center}
+.auth-error.show{display:block}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:#aaa;font-size:11px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:#e0e0e0}
+.login-button.loading{opacity:.7;pointer-events:none}
+.login-button.loading::after{content:'...'}
+.user-menu-btn{background:none;border:0;cursor:pointer;padding:0;display:flex;align-items:center;gap:8px;color:#b0bdd0;font-family:inherit;font-size:12px}
+.user-menu-btn:hover{color:#fff}
+.ws-name{display:block;font-size:12px;color:#e8edf4;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ws-tier{font:9px 'DM Mono';color:#6aadff;background:rgba(106,173,255,.15);padding:2px 6px;border-radius:3px}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="login-screen" id="login-screen" style="display:none"><div class="login-brand"><span class="brand-mark">M</span><strong>Mercator</strong><small>GLOBAL MARKET INTELLIGENCE</small></div><form class="login-card" id="login-form"><p class="eyebrow">SECURE ACCESS</p><h1>进入全球市场情报台</h1><p>一处洞察全平台电商机会与国家市场环境。</p><label>账号<input type="email" value="admin@mercator.com" required></label><label>密码<input type="password" value="mercator" required></label><button class="login-button" type="submit">登录系统 →</button><small>演示账号已预填 · 管理员权限</small></form></div>
+<div class="login-screen" id="login-screen" style="display:none">
+  <div class="login-brand">
+    <span class="brand-mark">M</span>
+    <strong>Mercator</strong>
+    <small>GLOBAL MARKET INTELLIGENCE</small>
+    <div style="margin-top:24px;font-size:12px;color:#8fa8c0;line-height:1.8">
+      <div>✓ 39国市场全景数据库</div>
+      <div>✓ 66个电商平台实时监控</div>
+      <div>✓ 爆款商品趋势追踪</div>
+      <div>✓ 政策风险智能预警</div>
+    </div>
+  </div>
+  <div class="login-card">
+    <p class="eyebrow">SECURE ACCESS</p>
+    <h1 id="auth-title">进入全球市场情报台</h1>
+    <div class="auth-tabs">
+      <button class="active" onclick="switchAuthTab('login')">登录</button>
+      <button onclick="switchAuthTab('register')">免费注册</button>
+    </div>
+    <form class="auth-form" id="auth-form" onsubmit="handleAuthSubmit(event)">
+      <div class="auth-field show" id="field-email">
+        <label>邮箱地址<input type="email" id="auth-email" placeholder="your@email.com" required></label>
+      </div>
+      <div class="auth-field show" id="field-password">
+        <label>密码<input type="password" id="auth-password" placeholder="至少6个字符" required minlength="6"></label>
+      </div>
+      <div class="auth-field" id="field-name">
+        <label>你的称呼<input type="text" id="auth-display-name" placeholder="显示在个人中心的名称"></label>
+      </div>
+      <div class="auth-field" id="field-company">
+        <label>公司/团队名称<input type="text" id="auth-company" placeholder="选填"></label>
+      </div>
+      <div class="auth-error" id="auth-error"></div>
+      <button class="login-button" type="submit" id="auth-submit-btn">登录 →</button>
+      <div class="auth-divider">或</div>
+      <div id="auth-reset-link" style="text-align:center;font-size:11px">
+        <a href="#" onclick="handlePasswordReset(event)" style="color:#3b7dd8;text-decoration:none">忘记密码？</a>
+      </div>
+    </form>
+    <small style="display:block;color:#89948f;font-size:10px;margin-top:13px;text-align:center">
+      注册即同意服务条款 · 免费版永久可用基础功能
+    </small>
+  </div>
+</div>
   <aside class="sidebar">
     <div class="brand"><span class="brand-mark">M</span><div><strong>Mercator</strong><small>MARKET INTELLIGENCE</small></div></div>
     <nav>
@@ -1520,7 +1583,24 @@ nav .nav-group-label+.nav-item{margin-top:0}
       <a class="nav-item" href="#report" data-page="report"><span>✦</span>报告生成中心</a>
     </nav>
     <div class="sidebar-bottom">
-      <div class="workspace"><span class="avatar">L</span><div><strong>陆安然</strong><small>运营管理员</small></div><span>⌄</span></div>
+      <div class="workspace" style="position:relative;cursor:pointer" onclick="toggleUserMenu()">
+    <span class="avatar">U</span>
+    <div style="flex:1;min-width:0">
+      <strong class="ws-name" style="font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">未登录</strong>
+      <small class="ws-tier" style="font:9px 'DM Mono';color:#6aadff;background:rgba(106,173,255,.15);padding:1px 5px;border-radius:3px;display:none"></small>
+    </div>
+    <span style="color:#6b7b8d">⌄</span>
+  </div>
+  <div id="user-dropdown" style="display:none;position:absolute;bottom:70px;left:9px;right:9px;background:#253b58;border:1px solid #3c5575;border-radius:5px;padding:6px 0;z-index:10;box-shadow:0 -4px 16px rgba(0,0,0,.3)">
+    <div style="padding:10px 14px;border-bottom:1px solid #3c5575">
+      <div style="font-size:12px;color:#e8edf4" class="dropdown-email">—</div>
+      <div style="font:10px 'DM Mono';color:#6b7b8d;margin-top:2px" class="dropdown-tier">免费版</div>
+    </div>
+    <div style="padding:6px 0">
+      <a href="#settings" onclick="switchPage('settings');toggleUserMenu()" style="display:block;padding:8px 14px;color:#b0bdd0;text-decoration:none;font-size:12px;cursor:pointer">⚙ 账户设置</a>
+      <a onclick="mercatorLogout()" style="display:block;padding:8px 14px;color:#e07050;font-size:12px;cursor:pointer;text-decoration:none">↩ 退出登录</a>
+    </div>
+  </div>
       <a class="nav-item" href="#settings" data-page="settings"><span>⚙</span>设置与权限</a>
     </div>
   </aside>
@@ -7366,7 +7446,254 @@ function closeProModal(){var m=document.getElementById('pro-modal-overlay');if(m
 
 const searchIndex=[['防水持久液体腮红','商品 · 印度尼西亚 TikTok Shop','products'],['GLOW LAB Official','店铺 · 印尼 TikTok Shop','shops'],['印度尼西亚进口标签要求','政策 · 合规提醒','countries'],['北美充电配件','类目 · 美国 Amazon','products'],['Shopee','电商平台 · 东南亚','platforms'],['GDP增速','国家市场宏观数据','countries'],['对华关税','政策动态','policies'],['TikTok Shop规则','平台规则','rules'],['身体乳测评','热门内容','content']];const search=$('#global-search'),results=$('#search-results');search.oninput=()=>{const q=search.value.trim();if(!q){results.classList.remove('show');return}const hits=searchIndex.filter(x=>x[0].includes(q)||x[1].includes(q));results.innerHTML=(hits.length?hits:[['未找到精确结果','可尝试商品名、店铺名、政策关键词或类目','overview']]).map(x=>`<div class="result" data-page="${x[2]}"><b>${x[0]}</b><small>${x[1]}</small></div>`).join('');results.classList.add('show')};results.onclick=e=>{const item=e.target.closest('.result');if(item){switchPage(item.dataset.page);results.classList.remove('show');search.value=''}};
 
-$('#login-form').onsubmit=e=>{e.preventDefault();$('#login-screen').style.display='none';toast('欢迎回来，陆安然。')};
+// ========== Mercator SaaS Auth Module ==========
+var MERCATOR_SUPABASE_URL = 'YOUR_SUPABASE_URL';
+var MERCATOR_SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+var mercatorUser = null;
+var mercatorProfile = null;
+var supabaseClient = null;
+var authMode = 'login';
+
+function initMercatorAuth() {
+  if (typeof supabase !== 'undefined' && MERCATOR_SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+    supabaseClient = supabase.createClient(MERCATOR_SUPABASE_URL, MERCATOR_SUPABASE_KEY);
+    checkMercatorSession();
+  } else {
+    initDemoAuth();
+  }
+}
+
+function initDemoAuth() {
+  var s = localStorage.getItem('mercator_demo');
+  if (s) {
+    try {
+      var d = JSON.parse(s);
+      mercatorUser = { email: d.email, id: d.id };
+      mercatorProfile = { display_name: d.name || d.email.split('@')[0], email: d.email, tier: d.tier || 'pro', company: '' };
+      onAuthSuccess();
+    } catch(e) { showLoginScreen(); }
+  } else {
+    showLoginScreen();
+  }
+}
+
+async function checkMercatorSession() {
+  if (!supabaseClient) return;
+  var r = await supabaseClient.auth.getSession();
+  if (r.data.session) {
+    mercatorUser = r.data.session.user;
+    await loadMercatorProfile();
+    onAuthSuccess();
+  } else { showLoginScreen(); }
+}
+
+async function loadMercatorProfile() {
+  if (!supabaseClient || !mercatorUser) return;
+  var r = await supabaseClient.from('profiles').select('*').eq('id', mercatorUser.id).single();
+  mercatorProfile = r.data || { display_name: mercatorUser.email.split('@')[0], email: mercatorUser.email, tier: 'free', company: '' };
+}
+
+function switchAuthTab(mode) {
+  authMode = mode;
+  var tabs = document.querySelectorAll('.auth-tabs button');
+  tabs.forEach(function(t,i){ t.classList.toggle('active', (i===0 && mode==='login') || (i===1 && mode==='register')); });
+  document.getElementById('field-name').classList.toggle('show', mode==='register');
+  document.getElementById('field-company').classList.toggle('show', mode==='register');
+  document.getElementById('auth-title').textContent = mode==='login' ? '进入全球市场情报台' : '创建免费账号';
+  document.getElementById('auth-submit-btn').textContent = mode==='login' ? '登录 →' : '注册 →';
+  document.getElementById('auth-reset-link').style.display = mode==='login' ? '' : 'none';
+  document.getElementById('auth-error').classList.remove('show');
+}
+
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  var email = document.getElementById('auth-email').value.trim();
+  var password = document.getElementById('auth-password').value;
+  var btn = document.getElementById('auth-submit-btn');
+  var errEl = document.getElementById('auth-error');
+  errEl.classList.remove('show');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    if (authMode === 'login') {
+      var r = await doLogin(email, password);
+      if (!r.success) { errEl.textContent = r.error; errEl.classList.add('show'); }
+    } else {
+      var name = document.getElementById('auth-display-name').value.trim();
+      var company = document.getElementById('auth-company').value.trim();
+      var r = await doRegister(email, password, name, company);
+      if (!r.success) { errEl.textContent = r.error; errEl.classList.add('show'); }
+      else if (r.needsEmailConfirm) { errEl.textContent = '注册成功！请查收验证邮件后登录。'; errEl.style.color='#27ae60'; errEl.classList.add('show'); }
+    }
+  } catch(err) {
+    errEl.textContent = '网络错误，请重试';
+    errEl.classList.add('show');
+  }
+  btn.classList.remove('loading');
+  btn.disabled = false;
+}
+
+async function doLogin(email, password) {
+  if (!supabaseClient) {
+    if (email && password) {
+      mercatorUser = { email: email, id: 'demo-' + Date.now() };
+      mercatorProfile = { display_name: email.split('@')[0], email: email, tier: 'pro', company: '' };
+      localStorage.setItem('mercator_demo', JSON.stringify({ email: email, id: mercatorUser.id, name: email.split('@')[0], tier: 'pro' }));
+      onAuthSuccess();
+      return { success: true };
+    }
+    return { success: false, error: '请输入邮箱和密码' };
+  }
+  var r = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+  if (r.error) return { success: false, error: translateAuthErr(r.error.message) };
+  mercatorUser = r.data.user;
+  await loadMercatorProfile();
+  supabaseClient.from('profiles').update({ last_login_at: new Date().toISOString() }).eq('id', mercatorUser.id);
+  onAuthSuccess();
+  return { success: true };
+}
+
+async function doRegister(email, password, name, company) {
+  if (!supabaseClient) {
+    if (email && password) {
+      mercatorUser = { email: email, id: 'demo-' + Date.now() };
+      mercatorProfile = { display_name: name || email.split('@')[0], email: email, tier: 'free', company: company || '' };
+      localStorage.setItem('mercator_demo', JSON.stringify({ email: email, id: mercatorUser.id, name: mercatorProfile.display_name, tier: 'free' }));
+      onAuthSuccess();
+      return { success: true };
+    }
+    return { success: false, error: '请输入邮箱和密码' };
+  }
+  var r = await supabaseClient.auth.signUp({ email: email, password: password, options: { data: { display_name: name || email.split('@')[0], company: company } } });
+  if (r.error) return { success: false, error: translateAuthErr(r.error.message) };
+  if (company && r.data.user) await supabaseClient.from('profiles').update({ company: company, display_name: name || email.split('@')[0] }).eq('id', r.data.user.id);
+  if (r.data.session) { mercatorUser = r.data.user; await loadMercatorProfile(); onAuthSuccess(); }
+  else return { success: true, needsEmailConfirm: true };
+  return { success: true };
+}
+
+async function mercatorLogout() {
+  localStorage.removeItem('mercator_demo');
+  if (supabaseClient) await supabaseClient.auth.signOut();
+  mercatorUser = null; mercatorProfile = null;
+  showLoginScreen();
+  toast('已安全登出');
+}
+
+async function handlePasswordReset(e) {
+  e.preventDefault();
+  var email = document.getElementById('auth-email').value.trim();
+  if (!email) { toast('请先输入邮箱地址'); return; }
+  if (!supabaseClient) { toast('演示模式暂不支持密码重置'); return; }
+  var r = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+  toast(r.error ? '发送失败：' + translateAuthErr(r.error.message) : '重置链接已发送到 ' + email);
+}
+
+function translateAuthErr(m) {
+  if (m.includes('Invalid login')) return '邮箱或密码错误';
+  if (m.includes('Email not confirmed')) return '请先验证邮箱';
+  if (m.includes('already registered')) return '该邮箱已注册，请直接登录';
+  if (m.includes('at least')) return '密码至少需要6个字符';
+  if (m.includes('Too many')) return '请求太频繁，请稍后再试';
+  return m;
+}
+
+function onAuthSuccess() {
+  var ls = document.getElementById('login-screen');
+  if (ls) ls.style.display = 'none';
+  updateSidebarUserInfo();
+  var name = mercatorProfile ? (mercatorProfile.display_name || mercatorProfile.email.split('@')[0]) : '用户';
+  if (!localStorage.getItem('mercator_welcomed_' + (mercatorUser ? mercatorUser.id : ''))) {
+    toast('欢迎加入 Mercator，' + name + '！');
+    localStorage.setItem('mercator_welcomed_' + (mercatorUser ? mercatorUser.id : 'demo'), '1');
+  }
+}
+
+function showLoginScreen() {
+  var ls = document.getElementById('login-screen');
+  if (ls) ls.style.display = 'flex';
+}
+
+function updateSidebarUserInfo() {
+  if (!mercatorProfile) return;
+  var av = document.querySelector('.sidebar .avatar');
+  if (av) {
+    var name = mercatorProfile.display_name || mercatorProfile.email.split('@')[0];
+    av.textContent = name.charAt(0).toUpperCase();
+    av.title = name;
+  }
+  var tierLabels = { free: '免费版', pro: 'Pro', enterprise: '企业版' };
+  var tier = mercatorProfile.tier || 'free';
+  var wsName = document.querySelector('.sidebar .ws-name');
+  if (wsName) wsName.textContent = mercatorProfile.display_name || mercatorProfile.email.split('@')[0];
+  var wsTier = document.querySelector('.sidebar .ws-tier');
+  if (wsTier) { wsTier.textContent = tierLabels[tier] || tier; wsTier.style.display = ''; }
+}
+
+function checkAccess(feature) {
+  if (!mercatorProfile) return false;
+  var tier = mercatorProfile.tier;
+  var map = { overview: true, country_basic: true, product_radar: true, policies: true, country_detail: tier!=='free', product_full: tier!=='free', rules: tier!=='free', reports: tier!=='free', alerts_full: tier!=='free', api_access: tier==='enterprise' };
+  return map[feature] !== undefined ? map[feature] : (tier !== 'free');
+}
+
+function showUpgradePrompt(feature) {
+  var names = { country_detail:'国家市场详情', product_full:'完整商品数据', rules:'平台规则库', reports:'报告生成中心', alerts_full:'完整预警中心', api_access:'API 数据接口' };
+  var overlay = document.createElement('div');
+  overlay.setAttribute('data-upgrade-modal', '1');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(26,35,50,.6);z-index:999;display:flex;align-items:center;justify-content:center';
+  var card = document.createElement('div');
+  card.style.cssText = 'background:#fff;border-radius:8px;padding:32px;max-width:400px;text-align:center';
+  card.innerHTML = '<div style="font-size:32px;margin-bottom:16px">★</div>'
+    + '<h3 style="margin:0 0 8px;font-size:18px">升级到 Pro 版</h3>'
+    + '<p style="color:#6b7b8d;font-size:13px;line-height:1.6;margin:0 0 20px">' + (names[feature]||'该功能') + ' 为 Pro 版专属功能。<br>解锁全部高级功能，深度洞察全球市场。</p>'
+    + '<button id="upgrade-ok" style="border:0;background:#3b7dd8;color:#fff;padding:10px 24px;border-radius:4px;cursor:pointer;font-size:13px">了解 Pro 版 →</button>'
+    + '<br><button id="upgrade-cancel" style="border:0;background:none;color:#6b7b8d;padding:8px;cursor:pointer;font-size:12px;margin-top:8px">稍后再说</button>';
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+  card.querySelector('#upgrade-ok').onclick = function(){ overlay.remove(); };
+  card.querySelector('#upgrade-cancel').onclick = function(){ overlay.remove(); };
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+}
+
+// Init auth on page load
+document.addEventListener('DOMContentLoaded', function() { setTimeout(initMercatorAuth, 200); });
+
+function toggleUserMenu() {
+  var dd = document.getElementById('user-dropdown');
+  if (dd) dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  var ws = document.querySelector('.workspace');
+  var dd = document.getElementById('user-dropdown');
+  if (dd && ws && !ws.contains(e.target) && !dd.contains(e.target)) {
+    dd.style.display = 'none';
+  }
+});
+
+// Update dropdown with user info when auth succeeds
+var _origOnAuthSuccess = onAuthSuccess;
+onAuthSuccess = function() {
+  _origOnAuthSuccess();
+  if (mercatorProfile) {
+    var de = document.querySelector('.dropdown-email');
+    if (de) de.textContent = mercatorProfile.email;
+    var dt = document.querySelector('.dropdown-tier');
+    var tierLabels = { free: '免费版', pro: 'Pro 专业版', enterprise: '企业版' };
+    if (dt) dt.textContent = tierLabels[mercatorProfile.tier] || '免费版';
+    // Update page title greeting
+    var pageTitle = document.getElementById('page-title');
+    if (pageTitle) {
+      var hour = new Date().getHours();
+      var greeting = hour < 12 ? '早上好' : (hour < 18 ? '下午好' : '晚上好');
+      var name = mercatorProfile.display_name || mercatorProfile.email.split('@')[0];
+      pageTitle.textContent = greeting + '，' + name;
+    }
+  }
+};
 
 // === 实时快讯组件 ===
 (function(){
