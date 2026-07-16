@@ -7300,12 +7300,52 @@ function rpUpdatePoolUI(){rpV2RefreshPoolUI()}
 function switchPage(name){$$('.page').forEach(p=>p.classList.toggle('active',p.id===name));$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===name));const titles={overview:'早上好，陆安然',watchlist:'我的重点看板',products:'产品全域雷达',countries:'国家市场档案',shops:'店铺追踪',alerts:'预警中心',report:'报告生成中心',settings:'设置与权限',platforms:'电商平台档案',policies:'政策动态',rules:'平台规则变动',content:'热门内容追踪'};$('#page-title').textContent=titles[name]||name;$('#breadcrumb').textContent='GLOBAL / '+name.toUpperCase();if(name==='alerts')renderAlerts();if(name==='settings'){stInit();}if(name==='report'){rpV2RefreshPoolUI();rpV2LoadRecent();}
 if(name==='platforms')renderPlatforms();
 if(name==='policies')renderPoliciesPage();
-  if(name==='rules')renderRulesPage();window.scrollTo({top:0,behavior:'smooth'})}$$('[data-page]').forEach(e=>e.addEventListener('click',e=>{e.preventDefault();switchPage(e.currentTarget.dataset.page)}));
+  if(name==='rules')renderRulesPage();
+if (typeof trackActivity === 'function' && name !== 'overview') {
+  var actMap = { countries: 'view_country', platforms: 'view_platform', policies: 'view_policy', rules: 'view_rule', report: 'export_report' };
+  var actType = actMap[name] || 'search';
+  trackActivity(actType, name, name, { source: 'navigation' });
+}
+window.scrollTo({top:0,behavior:'smooth'})}$$('[data-page]').forEach(e=>e.addEventListener('click',e=>{e.preventDefault();switchPage(e.currentTarget.dataset.page)}));
 
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}$('#export').onclick=()=>toast('报告正在生成，稍后将下载 Excel 文件。');// read-all button replaced by alerts center redesign$('#bell').onclick=()=>switchPage('alerts');
 
 // === Watchlist Redesign ===
-const watchlistData=[{type:'track',flag:'\u{1F1EE}\u{1F1E9}',name:'\u5370\u5c3c\uff5c\u7f8e\u5986\u8d5b\u9053',platforms:'Shopee/TikTok Shop',status:'hot',statusText:'HOT \u9ad8\u589e\u957f',metrics:['7\u65e5GMV +42.8%','\u5e02\u573a\u89c4\u6a21 $650\u4ebf'],detail:'\u70ed\u95e8\u7ec6\u5206\uff1a\u5507\u91c9\u3001\u62a4\u80a4\u5957\u88c5 | \u7ade\u4e89\u5ea6\uff1a\u4e2d\u7b49',trend:[30,35,32,40,45,48,52],trendColor:'#2c5f8a'},{type:'shop',flag:'\u{1F3EA}',name:'GLOW LAB Official',platforms:'Shopee \u5370\u5c3c',status:'up',statusText:'\u{1F4C8} \u589e\u957f\u4e2d',metrics:['30\u5929GMV $128\u4e07','\u8ba2\u5355\u589e\u901f +18%'],detail:'\u8bc4\u52064.8 | \u7206\u6b3e\u657012',trend:[80,85,82,78,75,72,70],trendColor:'#3b7dd8'},{type:'track',flag:'\u{1F1FA}\u{1F1F8}',name:'\u7f8e\u56fd\uff5c\u5145\u7535\u914d\u4ef6',platforms:'Amazon/Temu',status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d',metrics:['7\u65e5\u9500\u91cf +23.5%','\u5747\u4ef7 $15-35'],detail:'\u5229\u6da6\u7a7a\u95f4\uff1a\u4e2d\u9ad8 | \u8fd17\u65e5\u4e0a\u65b0 156\u4ef6',trend:[20,22,25,24,28,30,33],trendColor:'#2c5f8a'},{type:'shop',flag:'\u{1F3EA}',name:'TECHZONE Official',platforms:'Amazon \u7f8e\u56fd',status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d',metrics:['30\u5929GMV $85\u4e07','\u8ba2\u5355\u589e\u901f +8%'],detail:'\u8bc4\u52064.6 | \u7206\u6b3e\u65708',trend:[50,52,51,53,55,54,56],trendColor:'#2c5f8a'},{type:'track',flag:'\u{1F1E7}\u{1F1F7}',name:'\u5df4\u897f\uff5c\u4e2a\u62a4\u7535\u5668',platforms:'Mercado Livre/Shopee',status:'hot',statusText:'HOT \u9ad8\u589e\u957f',metrics:['7\u65e5GMV +35.2%','\u5e02\u573a\u89c4\u6a21 $180\u4ebf'],detail:'\u70ed\u95e8\u7ec6\u5206\uff1a\u5439\u98ce\u673a\u3001\u8131\u6bdb\u4efb | \u7ade\u4e89\u5ea6\uff1a\u4f4e',trend:[15,18,22,25,28,33,38],trendColor:'#2c5f8a'}];
+var watchlistData = [];
+var watchlistDbMap = {};
+var mockWatchlistData = [{type:'track',flag:'\u{1F1EE}\u{1F1E9}',name:'\u5370\u5c3c\uff5c\u7f8e\u5986\u8d5b\u9053',platforms:'Shopee/TikTok Shop',status:'hot',statusText:'HOT \u9ad8\u589e\u957f',metrics:['7\u65e5GMV +42.8%','\u5e02\u573a\u89c4\u6a21 $650\u4ebf'],detail:'\u70ed\u95e8\u7ec6\u5206\uff1a\u5507\u91c9\u3001\u62a4\u80a4\u5957\u88c5 | \u7ade\u4e89\u5ea6\uff1a\u4e2d\u7b49',trend:[30,35,32,40,45,48,52],trendColor:'#2c5f8a',_dbId:null},{type:'shop',flag:'\u{1F3EA}',name:'GLOW LAB Official',platforms:'Shopee \u5370\u5c3c',status:'up',statusText:'\u{1F4C8} \u589e\u957f\u4e2d',metrics:['30\u5929GMV $128\u4e07','\u8ba2\u5355\u589e\u901f +18%'],detail:'\u8bc4\u52064.8 | \u7206\u6b3e\u657012',trend:[80,85,82,78,75,72,70],trendColor:'#3b7dd8',_dbId:null},{type:'track',flag:'\u{1F1FA}\u{1F1F8}',name:'\u7f8e\u56fd\uff5c\u5145\u7535\u914d\u4ef6',platforms:'Amazon/Temu',status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d',metrics:['7\u65e5\u9500\u91cf +23.5%','\u5747\u4ef7 $15-35'],detail:'\u5229\u6da6\u7a7a\u95f4\uff1a\u4e2d\u9ad8 | \u8fd17\u65e5\u4e0a\u65b0 156\u4ef6',trend:[20,22,25,24,28,30,33],trendColor:'#2c5f8a',_dbId:null},{type:'shop',flag:'\u{1F3EA}',name:'TECHZONE Official',platforms:'Amazon \u7f8e\u56fd',status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d',metrics:['30\u5929GMV $85\u4e07','\u8ba2\u5355\u589e\u901f +8%'],detail:'\u8bc4\u52064.6 | \u7206\u6b3e\u65708',trend:[50,52,51,53,55,54,56],trendColor:'#2c5f8a',_dbId:null},{type:'track',flag:'\u{1F1E7}\u{1F1F7}',name:'\u5df4\u897f\uff5c\u4e2a\u62a4\u7535\u5668',platforms:'Mercado Livre/Shopee',status:'hot',statusText:'HOT \u9ad8\u589e\u957f',metrics:['7\u65e5GMV +35.2%','\u5e02\u573a\u89c4\u6a21 $180\u4ebf'],detail:'\u70ed\u95e8\u7ec6\u5206\uff1a\u5439\u98ce\u673a\u3001\u8131\u6bdb\u4efb | \u7ade\u4e89\u5ea6\uff1a\u4f4e',trend:[15,18,22,25,28,33,38],trendColor:'#2c5f8a',_dbId:null}];
+
+async function loadWatchlistFromDb() {
+  var items = (typeof loadUserWatchlist === 'function') ? await loadUserWatchlist() : null;
+  if (items && items.length > 0) {
+    watchlistData = items.map(function(row) {
+      var typeMap = { country: 'track', platform: 'track', category: 'track', product: 'product', policy: 'track' };
+      var flagMap = { 'indonesia': '\u{1F1EE}\u{1F1E9}', 'usa': '\u{1F1FA}\u{1F1F8}', 'brazil': '\u{1F1E7}\u{1F1F7}', 'thailand': '\u{1F1F9}\u{1F1ED}', 'vietnam': '\u{1F1FB}\u{1F1F3}', 'mexico': '\u{1F1F2}\u{1F1FD}', 'philippines': '\u{1F1F5}\u{1F1ED}', 'malaysia': '\u{1F1F2}\u{1F1FE}', 'singapore': '\u{1F1F8}\u{1F1EC}', 'japan': '\u{1F1EF}\u{1F1F5}', 'korea': '\u{1F1F0}\u{1F1F7}', 'uk': '\u{1F1EC}\u{1F1E7}', 'germany': '\u{1F1E9}\u{1F1EA}', 'france': '\u{1F1EB}\u{1F1F7}', 'india': '\u{1F1EE}\u{1F1F3}', 'saudi_arabia': '\u{1F1F8}\u{1F1E6}', 'uae': '\u{1F1E6}\u{1F1EA}', 'egypt': '\u{1F1EA}\u{1F1EC}' };
+      var flag = '\u{1F4CA}';
+      var itemId = (row.item_id || '').toLowerCase();
+      for (var k in flagMap) { if (itemId.indexOf(k) >= 0) { flag = flagMap[k]; break; } }
+      var statusOptions = [{status:'hot',statusText:'HOT \u9ad8\u589e\u957f'},{status:'up',statusText:'\u{1F4C8} \u589e\u957f\u4e2d'},{status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d'}];
+      var so = statusOptions[Math.floor(Math.random() * statusOptions.length)];
+      return {
+        type: typeMap[row.item_type] || 'track',
+        flag: flag,
+        name: row.item_name || row.item_id,
+        platforms: row.note || '\u5f85\u914d\u7f6e',
+        status: so.status,
+        statusText: so.statusText,
+        metrics: ['\u5df2\u5173\u6ce8', '\u6570\u636e\u52a0\u8f7d\u4e2d...'],
+        detail: '\u5173\u6ce8\u4e8e ' + new Date(row.created_at).toLocaleDateString('zh-CN'),
+        trend: [20, 25, 22, 28, 30, 33, 35].map(function(v) { return v + Math.floor(Math.random() * 10); }),
+        trendColor: '#2c5f8a',
+        _dbId: row.id
+      };
+    });
+    console.log('[Mercator] Watchlist loaded from DB: ' + watchlistData.length + ' items');
+  } else {
+    watchlistData = mockWatchlistData.slice();
+  }
+  renderWatchCards('all');
+}
 const alertMessages=[{level:'high',text:'\u5370\u5c3c\u7f8e\u5986 7\u65e5GMV\u6da8\u5e45\u63d0\u5347\u81f342.8%\uff0c\u65b0\u589e23\u4e2a\u7206\u5355\u65b0\u54c1',icon:'\u{1F534}'},{level:'mid',text:'GLOW LAB\u5e97\u94fa\u8fd13\u65e5\u9500\u91cf\u4e0b\u6ed112%\uff0c\u5934\u90e8\u7ade\u54c1\u4e0a\u65b0\u5206\u6d41',icon:'\u{1F7E1}'},{level:'mid',text:'\u5317\u7f8e\u5145\u7535\u914d\u4ef6\u7c7b\u76ee\u65b0\u589e\u5173\u7a0e\u9884\u5ba1\u653f\u7b56',icon:'\u{1F7E0}'}];
 const recommendTracks=[{flag:'\u{1F1FB}\u{1F1F3}',name:'\u8d8a\u5357\uff5c\u5bb6\u5c45\u751f\u6d3b',platforms:'Shopee/TikTok Shop',reason:'GDP\u589e\u901f6.5%\uff0c\u5bb6\u5c45\u54c1\u7c7b\u6e17\u900f\u7387\u5feb\u901f\u63d0\u5347'},{flag:'\u{1F1F2}\u{1F1FD}',name:'\u58a8\u897f\u54e5\uff5c3C\u914d\u4ef6',platforms:'Mercado Libre/Amazon',reason:'\u8fd1\u5cb8\u5916\u5305\u8d8b\u52bf\u5229\u597d\uff0c\u7f8e\u5ba2\u591a\u4efd\u989d\u9886\u5148'},{flag:'\u{1F1F9}\u{1F1ED}',name:'\u6cf0\u56fd\uff5c\u98df\u54c1\u996e\u6599',platforms:'Shopee/Lazada',reason:'\u5ba2\u5355\u4ef7\u7a33\u5b9a\uff0c\u590d\u8d2d\u7387\u9ad8\u4e8e\u5927\u76d8\u5747\u503c'}];
 
@@ -7326,7 +7366,7 @@ function renderWatchCards(filterType){
     var tc=trendDir?'#2c5f8a':'#3b7dd8';
     var svg=buildMiniTrendSVG(d.trend,tc);
     var viewLabel=d.type==='shop'?'\u67e5\u770b\u5e97\u94fa':'\u67e5\u770b\u699c\u5355';
-    return '<article class="watch-card"><div class="wc-top"><span class="wc-flag">'+d.flag+'</span><span class="wc-name">'+d.name+'</span><span class="wc-platforms">'+d.platforms+'</span><span class="wc-status '+d.status+'">'+d.statusText+'</span></div><div class="wc-metrics"><div class="wc-metric"><b>'+d.metrics[0]+'</b></div><div class="wc-metric"><b>'+d.metrics[1]+'</b></div></div><p class="wc-detail">'+d.detail+'</p><div class="wc-trend">'+svg+'</div><div class="wc-actions"><button class="wc-action-btn ai" onclick="toast(\'AI\u8bca\u65ad\u62a5\u544a\u751f\u6210\u4e2d...\u4e13\u4e1a\u7248\u53ef\u67e5\u770b\u5b8c\u6574\u5206\u6790\')">\u2728 AI\u8bca\u65ad</button><button class="wc-action-btn" onclick="toast(\'\\u6b63\u5728\\u52a0\\u8f7d\\u8be6\\u7ec6\\u6570\\u636e...\')">'+viewLabel+'</button><button class="wc-action-btn" onclick="toast(\'\\u5df2\\u8bbe\\u7f6e\\u6b64\\u9879\\u76d1\\u63a7\\u63d0\\u9192\')">\u8bbe\u7f6e\u63d0\u9192</button><button class="wc-action-btn remove" onclick="this.closest(\'.watch-card\').remove();toast(\'\\u5df2\\u4ece\\u4e2a\\u4eba\\u770b\\u677f\\u79fb\\u9664\')">\u53d6\u6d88\u5173\u6ce8</button></div></article>';
+    return '<article class="watch-card"><div class="wc-top"><span class="wc-flag">'+d.flag+'</span><span class="wc-name">'+d.name+'</span><span class="wc-platforms">'+d.platforms+'</span><span class="wc-status '+d.status+'">'+d.statusText+'</span></div><div class="wc-metrics"><div class="wc-metric"><b>'+d.metrics[0]+'</b></div><div class="wc-metric"><b>'+d.metrics[1]+'</b></div></div><p class="wc-detail">'+d.detail+'</p><div class="wc-trend">'+svg+'</div><div class="wc-actions"><button class="wc-action-btn ai" onclick="toast(\'AI\u8bca\u65ad\u62a5\u544a\u751f\u6210\u4e2d...\u4e13\u4e1a\u7248\u53ef\u67e5\u770b\u5b8c\u6574\u5206\u6790\')">\u2728 AI\u8bca\u65ad</button><button class="wc-action-btn" onclick="toast(\'\\u6b63\u5728\\u52a0\\u8f7d\\u8be6\\u7ec6\\u6570\\u636e...\')">'+viewLabel+'</button><button class="wc-action-btn" onclick="toast(\'\\u5df2\\u8bbe\\u7f6e\\u6b64\\u9879\\u76d1\\u63a7\\u63d0\\u9192\')">\u8bbe\u7f6e\u63d0\u9192</button><button class="wc-action-btn remove" onclick=\"removeWatchItem(this,"+idx+")\">\u53d6\u6d88\u5173\u6ce8</button></div></article>';
   }).join('');
 }
 
@@ -7344,10 +7384,11 @@ function renderAlertBanner(){
 function renderRecommendTracks(){
   var container=document.getElementById('wl-rec-cards');
   container.innerHTML=recommendTracks.map(function(t){
-    return '<div class="wl-rec-card"><span style="font-size:22px">'+t.flag+'</span><div class="wl-rec-info"><h5>'+t.name+'</h5><p>'+t.platforms+' \u00b7 '+t.reason+'</p></div><button class="wl-rec-add" onclick="this.textContent=\'\u2705 \u5df2\u6dfb\u52a0\';this.disabled=true;toast(\'\u5df2\u6dfb\u52a0\\u5230\\u76d1\\u63a7\\u770b\\u677f\')">\u6dfb\u52a0</button></div>';
+    return '<div class="wl-rec-card"><span style="font-size:22px">'+t.flag+'</span><div class="wl-rec-info"><h5>'+t.name+'</h5><p>'+t.platforms+' \u00b7 '+t.reason+'</p></div><button class="wl-rec-add" onclick="addFromSearch(this, '"+t.flag+' '+t.name+"', 'track')">\u6dfb\u52a0</button></div>';
   }).join('');
 }
 
+watchlistData = mockWatchlistData.slice();
 renderWatchCards('all');
 renderAlertBanner();
 renderRecommendTracks();
@@ -7407,10 +7448,10 @@ function renderModalTab(tab){
     body.innerHTML='<div class="wl-search-row"><input type="text" id="wl-search-input" placeholder="\u641c\u7d22\u56fd\u5bb6\u3001\u8d5b\u9053\u3001\u5e97\u94fa\u6216\u5355\u54c1..."><button onclick="doModalSearch()">\u641c\u7d22</button></div><div id="wl-search-results"><p style="font-size:11px;color:#999;text-align:center;padding:20px 0">\u8f93\u5165\u5173\u952e\u8bcd\u641c\u7d22\u53ef\u76d1\u63a7\u7684\u8d5b\u9053\u3001\u5e97\u94fa\u6216\u5355\u54c1</p></div>';
   }else if(tab==='ai'){
     body.innerHTML='<p style="font-size:12px;color:#4a6a8a;margin:0 0 14px">\u2728 \u57fa\u4e8e\u4f60\u5df2\u5173\u6ce8\u7684\u54c1\u7c7b\uff0c\u4ee5\u4e0b\u540c\u8d5b\u9053\u6f5c\u529b\u5e02\u573a\u503c\u5f97\u5173\u6ce8\uff1a</p>'+recommendTracks.map(function(t){
-      return '<div class="wl-rec-item"><div class="wl-rec-item-info"><h5>'+t.flag+' '+t.name+'</h5><p>'+t.platforms+'</p></div><button onclick="this.textContent=\'\u2705 \u5df2\u6dfb\u52a0\';this.disabled=true;toast(\'\u5df2\u6dfb\u52a0\u5230\u76d1\u63a7\')">\u4e00\u952e\u6dfb\u52a0</button></div>';
+      return '<div class="wl-rec-item"><div class="wl-rec-item-info"><h5>'+t.flag+' '+t.name+'</h5><p>'+t.platforms+'</p></div><button onclick="addFromSearch(this, '"+t.flag+' '+t.name+"', 'track')">\u4e00\u952e\u6dfb\u52a0</button></div>';
     }).join('');
   }else if(tab==='template'){
-    body.innerHTML='<div class="wl-template-card"><h5>\u{1F30F} \u4e1c\u5357\u4e9a\u7f8e\u5986\u5356\u5bb6\u770b\u677f</h5><p>\u5305\u542b\u5370\u5c3c\u3001\u6cf0\u56fd\u3001\u8d8a\u5357\u7f8e\u5986\u8d5b\u9053\u76d1\u63a7 + 5\u5bb6\u5934\u90e8\u7ade\u5e97\u8ffd\u8e2a</p><button onclick="toast(\'\u6a21\u677f\u5df2\u4e00\u952e\u6dfb\u52a0\');closeAddWatchModal()">\u4e00\u952e\u6dfb\u52a0</button></div><div class="wl-template-card"><h5>\u{1F1FA}\u{1F1F8} \u6b27\u7f8e3C\u8d27\u67b6\u7535\u5546\u770b\u677f</h5><p>\u5305\u542b\u7f8e\u56fd\u3001\u52a0\u62ff\u5927 3C\u914d\u4ef6\u8d5b\u9053 + Amazon/Temu\u5e73\u53f0\u6570\u636e</p><button onclick="toast(\'\u6a21\u677f\u5df2\u4e00\u952e\u6dfb\u52a0\');closeAddWatchModal()">\u4e00\u952e\u6dfb\u52a0</button></div><div class="wl-template-card"><h5>\u{1F4F1} TikTok\u672c\u571f\u5e97\u7efc\u5408\u76d1\u63a7\u6a21\u677f</h5><p>\u8986\u76d6\u5370\u5c3c\u3001\u6cf0\u56fd\u3001\u9a6c\u6765\u897f\u4e9a TikTok Shop\u672c\u571f\u5e97\u6570\u636e</p><button onclick="toast(\'\u6a21\u677f\u5df2\u4e00\u952e\u6dfb\u52a0\');closeAddWatchModal()">\u4e00\u952e\u6dfb\u52a0</button></div>';
+    body.innerHTML='<div class="wl-template-card"><h5>\u{1F30F} \u4e1c\u5357\u4e9a\u7f8e\u5986\u5356\u5bb6\u770b\u677f</h5><p>\u5305\u542b\u5370\u5c3c\u3001\u6cf0\u56fd\u3001\u8d8a\u5357\u7f8e\u5986\u8d5b\u9053\u76d1\u63a7 + 5\u5bb6\u5934\u90e8\u7ade\u5e97\u8ffd\u8e2a</p><button onclick="addTemplateToWatchlist(this)">\u4e00\u952e\u6dfb\u52a0</button></div><div class="wl-template-card"><h5>\u{1F1FA}\u{1F1F8} \u6b27\u7f8e3C\u8d27\u67b6\u7535\u5546\u770b\u677f</h5><p>\u5305\u542b\u7f8e\u56fd\u3001\u52a0\u62ff\u5927 3C\u914d\u4ef6\u8d5b\u9053 + Amazon/Temu\u5e73\u53f0\u6570\u636e</p><button onclick="addTemplateToWatchlist(this)">\u4e00\u952e\u6dfb\u52a0</button></div><div class="wl-template-card"><h5>\u{1F4F1} TikTok\u672c\u571f\u5e97\u7efc\u5408\u76d1\u63a7\u6a21\u677f</h5><p>\u8986\u76d6\u5370\u5c3c\u3001\u6cf0\u56fd\u3001\u9a6c\u6765\u897f\u4e9a TikTok Shop\u672c\u571f\u5e97\u6570\u636e</p><button onclick="addTemplateToWatchlist(this)">\u4e00\u952e\u6dfb\u52a0</button></div>';
   }
 }
 
@@ -7425,7 +7466,7 @@ function doModalSearch(){
     {name:'\u{1F4E6} \u5145\u7535\u5b9d\u54c1\u7c7b',sub:'Amazon/Temu \u00b7 \u5747\u4ef7$12-25',type:'product'}
   ];
   results.innerHTML=mockResults.map(function(r){
-    return '<div class="wl-search-result"><div><b>'+r.name+'</b><small>'+r.sub+'</small></div><button class="wl-rec-add" onclick="this.textContent=\'\u2705\';this.disabled=true;toast(\'\u5df2\u6dfb\u52a0\')">\u6dfb\u52a0</button></div>';
+    return '<div class="wl-search-result"><div><b>'+r.name+'</b><small>'+r.sub+'</small></div><button class="wl-rec-add" onclick="addFromSearch(this, '"+r.name.replace(/'/g, "\\'")+"', '"+r.type+"')">\u6dfb\u52a0</button></div>';
   }).join('');
 }
 
@@ -7638,6 +7679,182 @@ function onAuthSuccess() {
   if (!localStorage.getItem('mercator_welcomed_' + (mercatorUser ? mercatorUser.id : ''))) {
     toast('欢迎加入 Mercator，' + name + '！');
     localStorage.setItem('mercator_welcomed_' + (mercatorUser ? mercatorUser.id : 'demo'), '1');
+  }
+  // Load user watchlist from Supabase
+  if (typeof loadWatchlistFromDb === 'function') {
+    loadWatchlistFromDb();
+  }
+}
+
+// ========== Mercator User Service ==========
+
+function mercatorAuthHeaders() {
+  return {
+    'apikey': MERCATOR_ANON_KEY,
+    'Authorization': 'Bearer ' + MERCATOR_ANON_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+}
+
+async function mercatorUserHeaders() {
+  if (!supabaseClient) return mercatorAuthHeaders();
+  var session = await supabaseClient.auth.getSession();
+  var token = session.data.session ? session.data.session.access_token : MERCATOR_ANON_KEY;
+  return {
+    'apikey': MERCATOR_ANON_KEY,
+    'Authorization': 'Bearer ' + token,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+}
+
+async function loadUserWatchlist() {
+  if (!supabaseClient || !mercatorUser) {
+    console.log('[Mercator] No user session, using mock watchlist');
+    return null;
+  }
+  try {
+    var headers = await mercatorUserHeaders();
+    var resp = await fetch(MERCATOR_API_URL + '/user_watchlist?select=*&order=created_at.desc', { headers: headers });
+    if (resp.ok) {
+      var rows = await resp.json();
+      console.log('[Mercator] Loaded ' + rows.length + ' watchlist items from Supabase');
+      return rows;
+    }
+  } catch(e) { console.warn('[Mercator] Failed to load watchlist:', e.message); }
+  return null;
+}
+
+async function addToWatchlist(itemType, itemId, itemName, note) {
+  if (!supabaseClient || !mercatorUser) { toast('\u8bf7\u5148\u767b\u5f55'); return false; }
+  try {
+    var headers = await mercatorUserHeaders();
+    var resp = await fetch(MERCATOR_API_URL + '/user_watchlist', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        user_id: mercatorUser.id,
+        item_type: itemType,
+        item_id: itemId,
+        item_name: itemName,
+        note: note || ''
+      })
+    });
+    if (resp.ok) {
+      console.log('[Mercator] Added to watchlist: ' + itemName);
+      return true;
+    } else {
+      var err = await resp.json();
+      console.warn('[Mercator] Add watchlist failed:', err);
+      if (err.code === '23505') { toast('\u8be5\u9879\u5df2\u5728\u4f60\u7684\u770b\u677f\u4e2d'); return false; }
+    }
+  } catch(e) { console.warn('[Mercator] Add watchlist error:', e.message); }
+  return false;
+}
+
+async function removeFromWatchlist(watchId) {
+  if (!supabaseClient || !mercatorUser) { return false; }
+  try {
+    var headers = await mercatorUserHeaders();
+    var resp = await fetch(MERCATOR_API_URL + '/user_watchlist?id=eq.' + watchId, {
+      method: 'DELETE',
+      headers: headers
+    });
+    if (resp.ok) {
+      console.log('[Mercator] Removed watchlist item: ' + watchId);
+      return true;
+    }
+  } catch(e) { console.warn('[Mercator] Remove watchlist error:', e.message); }
+  return false;
+}
+
+async function trackActivity(activityType, itemId, itemName, metadata) {
+  if (!supabaseClient || !mercatorUser) return;
+  try {
+    var headers = await mercatorUserHeaders();
+    await fetch(MERCATOR_API_URL + '/user_activity', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        user_id: mercatorUser.id,
+        activity_type: activityType,
+        item_id: itemId || '',
+        item_name: itemName || '',
+        metadata: metadata || {}
+      })
+    });
+  } catch(e) { /* silent */ }
+}
+
+async function saveUserPreferences(prefs) {
+  if (!supabaseClient || !mercatorUser) return false;
+  try {
+    var headers = await mercatorUserHeaders();
+    var resp = await fetch(MERCATOR_API_URL + '/user_preferences?user_id=eq.' + mercatorUser.id, {
+      method: 'PATCH',
+      headers: headers,
+      body: JSON.stringify(prefs)
+    });
+    return resp.ok;
+  } catch(e) { return false; }
+}
+
+async function removeWatchItem(btn, idx) {
+  var card = btn.closest('.watch-card');
+  var item = watchlistData[idx];
+  if (item && item._dbId) {
+    var ok = await removeFromWatchlist(item._dbId);
+    if (ok) {
+      watchlistData.splice(idx, 1);
+      card.remove();
+      toast('\u5df2\u4ece\u770b\u677f\u79fb\u9664');
+      var activeTab = document.querySelector('.wl-tab.active');
+      renderWatchCards(activeTab ? activeTab.dataset.type : 'all');
+    } else {
+      toast('\u79fb\u9664\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5');
+    }
+  } else {
+    card.remove();
+    watchlistData.splice(idx, 1);
+    toast('\u5df2\u4ece\u770b\u677f\u79fb\u9664');
+  }
+}
+
+async function addFromSearch(btn, name, type) {
+  var typeMap = { track: 'country', shop: 'product', product: 'product' };
+  var dbType = typeMap[type] || 'country';
+  var itemId = name.replace(/[\u{1F1EE}\u{1F1E9}\u{1F1FA}\u{1F1F8}\u{1F1E7}\u{1F1F7}\u{1F1F9}\u{1F1ED}\u{1F1FB}\u{1F1F3}\u{1F1F2}\u{1F1FD}\u{1F1F5}\u{1F1ED}\u{1F1F2}\u{1F1FE}\u{1F1F8}\u{1F1EC}\u{1F1EF}\u{1F1F5}\u{1F1F0}\u{1F1F7}\u{1F1EC}\u{1F1E7}\u{1F1E9}\u{1F1EA}\u{1F1EB}\u{1F1F7}\u{1F1EE}\u{1F1F3}\u{1F1F8}\u{1F1E6}\u{1F1E6}\u{1F1EA}\u{1F1EA}\u{1F1EC}\u{1F3EA}\u{1F4E6}]/g, '').trim();
+  var ok = await addToWatchlist(dbType, itemId, name, '');
+  if (ok) {
+    btn.textContent = '\u2705 \u5df2\u6dfb\u52a0';
+    btn.disabled = true;
+    toast('\u5df2\u6dfb\u52a0\u5230\u770b\u677f');
+    await loadWatchlistFromDb();
+  } else if (supabaseClient && mercatorUser) {
+    toast('\u6dfb\u52a0\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5');
+  } else {
+    btn.textContent = '\u2705';
+    btn.disabled = true;
+    toast('\u5df2\u6dfb\u52a0');
+  }
+}
+
+async function addTemplateToWatchlist(btn) {
+  var card = btn.closest('.wl-template-card');
+  var title = card ? card.querySelector('h5').textContent : 'template';
+  var ok = await addToWatchlist('category', title, title, '');
+  if (ok) {
+    btn.textContent = '\u2705 \u5df2\u6dfb\u52a0';
+    btn.disabled = true;
+    toast('\u6a21\u677f\u5df2\u4e00\u952e\u6dfb\u52a0\u5230\u770b\u677f');
+    await loadWatchlistFromDb();
+  } else if (supabaseClient && mercatorUser) {
+    toast('\u6dfb\u52a0\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5');
+  } else {
+    btn.textContent = '\u2705 \u5df2\u6dfb\u52a0';
+    btn.disabled = true;
+    toast('\u6a21\u677f\u5df2\u4e00\u952e\u6dfb\u52a0');
   }
 }
 
