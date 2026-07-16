@@ -5183,7 +5183,7 @@ renderPlatforms();
 
 // -- 政策动态 (Full Rebuild) -- JSON dynamic loading
 // Default policies data (fallback) - converted from hardcoded array to JSON format
-const defaultPoliciesData = {
+var defaultPoliciesData = {
   updated_at: '2026-07-13T00:00:00+08:00',
   source_count: 6,
   items: policyData.map((p, i) => {
@@ -5205,8 +5205,8 @@ const defaultPoliciesData = {
   })
 };
 
-let policiesJsonData = null;
-let policiesDataLoading = false;
+var policiesJsonData = null;
+var policiesDataLoading = false;
 
 async function loadPoliciesData() {
   if (policiesDataLoading) return;
@@ -5269,7 +5269,7 @@ const plImpactLabels = {high:'高', medium:'中', low:'低'};
 fillSelect('#pl-f-region',[...new Set(defaultPoliciesData.items.map(p=>p.region))].filter(Boolean).sort());
 fillSelect('#pl-f-category',[...new Set(defaultPoliciesData.items.map(p=>p.category))].filter(Boolean).sort());
 
-let plCurrentPage=1, plPerPage=10, plSelected=new Set(), plAiTab=0;
+var plCurrentPage=1, plPerPage=10, plSelected=new Set(), plAiTab=0;
 const plAiTabs=['全球重大新政汇总','各国准入认证变动','关税调整清单','合规风险预警'];
 const plAiData=[
   ['<span class="ai-tag-red">美国对华301关税提升至145%</span>，覆盖电子、纺织、日用品等品类，部分商品加征25%附加税，跨境卖家成本压力剧增。',
@@ -5513,7 +5513,7 @@ loadPoliciesData();
 // -- 平台规则 --
 // -- Rules page: JSON dynamic loading --
 // Default rules data (fallback) - converted from hardcoded array to JSON format
-const defaultRulesData = {
+var defaultRulesData = {
   updated_at: '2026-07-13T00:00:00+08:00',
   source_count: 6,
   items: rulesData.map((r, i) => {
@@ -5538,8 +5538,8 @@ const defaultRulesData = {
   })
 };
 
-let rulesJsonData = null;
-let rulesDataLoading = false;
+var rulesJsonData = null;
+var rulesDataLoading = false;
 
 async function loadRulesData() {
   if (rulesDataLoading) return;
@@ -5603,7 +5603,7 @@ fillSelect('#rl-market',[...new Set(defaultRulesData.items.map(r=>r.market))].fi
 fillSelect('#rl-category',[...new Set(defaultRulesData.items.map(r=>r.category))].filter(Boolean).sort());
 fillSelect('#rl-act-type',['月度大促','新品招商补贴','直播挑战赛','短视频带货挑战赛','免佣金补贴','类目流量扶持'].sort());
 
-let rlRulesPage=1,rlActPage=1;const RL_PAGE=8;
+var rlRulesPage=1,rlActPage=1;const RL_PAGE=8;
 let rlChecked=new Set();
 
 // Stats
