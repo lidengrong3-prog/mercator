@@ -4891,7 +4891,10 @@ async function loadCountryData(){
     if(!resp.ok) throw new Error('HTTP '+resp.status);
     var data = await resp.json();
     if(data && typeof data === 'object' && Object.keys(data).length > 0){
-      countryFullData = data;
+      // Filter out metadata keys (e.g. _metadata) - only keep 2-letter country codes
+      var cleaned = {};
+      for(var k in data){ if(/^([a-z]{2})$/.test(k) && data[k] && data[k].flag) cleaned[k] = data[k]; }
+      countryFullData = cleaned;
       countryDataLoaded = true;
       console.log('Country data loaded from countries.json');
       // Re-render if cn2 page is active
