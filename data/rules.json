@@ -1,7 +1,19 @@
 {
-  "updated_at": "2026-07-16T14:16:39.085850+08:00",
+  "updated_at": "2026-07-16T14:29:13.294846+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "r20260716-6d6b48e7",
+      "title": "欧盟新规落地！卖家感叹：成本暴涨",
+      "summary": "",
+      "source_url": "https://www.cifnews.com/article/187553",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-16",
+      "collected_at": "2026-07-16T14:29:13.294846+08:00",
+      "platform": "Multi",
+      "market": "Global"
+    },
     {
       "id": "r20260716-7b69c771",
       "title": "亚马逊标题新规：75 字符标题+商品亮点",
