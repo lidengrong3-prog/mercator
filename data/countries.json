@@ -6345,6 +6345,7 @@
         "美妆个护 +28% 年轻女性驱动"
       ],
       "risks": [
+        "⚠️ Extension of Import Restrictions Imposed on Categories of Ar（Federal Register 2026-05-13）",
         "⚠️ 里拉汇率波动极大",
         "⚠️ 通胀率超60%",
         "⚠️ 进口关税高+额外关税"
@@ -11771,16 +11772,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-16T21:07:52.210051+08:00",
+    "last_updated": "2026-07-17T03:51:32.921699+08:00",
     "updated_countries": [
-      "es",
       "nl",
       "pl",
       "se",
       "be",
       "sa",
       "ae",
-      "eg"
+      "eg",
+      "tr"
     ]
   }
 }
