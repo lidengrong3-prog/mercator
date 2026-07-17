@@ -1,7 +1,31 @@
 {
-  "updated_at": "2026-07-17T20:20:45.174605+08:00",
+  "updated_at": "2026-07-18T04:13:26.954368+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260718-a814d43d",
+      "title": "Aerospace Safety Advisory Panel; Meeting",
+      "summary": "In accordance with the Federal Advisory Committee Act, the National Aeronautics and Space Administration announces a forthcoming meeting of the Aerospace Safety Advisory Panel (ASAP).",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/17/2026-14507/aerospace-safety-advisory-panel-meeting",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-17",
+      "collected_at": "2026-07-18T04:13:26.954368+08:00"
+    },
+    {
+      "id": "p20260718-7b638a4e",
+      "title": "Privacy Act of 1974; System of Records",
+      "summary": "The United States Postal Service (USPS) is proposing to create a new General Privacy Act System of Records (SOR) to coincide with its proposal to amend the Mailing Standards of the United States Postal Service, Domestic Mail Manual (DMM), regarding the transmission of mail-in or absentee ballots for",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/17/2026-14508/privacy-act-of-1974-system-of-records",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-17",
+      "collected_at": "2026-07-18T04:13:26.954368+08:00"
+    },
     {
       "id": "p20260717-9bcf1059",
       "title": "Margin Requirements for Uncleared Swaps for Swap Dealers and Major Swap Participants",
