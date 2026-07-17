@@ -8766,6 +8766,7 @@
         "美妆个护 +25% 非洲美妆市场爆发"
       ],
       "risks": [
+        "⚠️ Control of Communicable Diseases; Foreign Quarantine: Import（Federal Register 2024-05-13）",
         "⚠️ 奈拉汇率剧烈波动",
         "⚠️ 物流基础设施极不完善",
         "⚠️ 欺诈风险较高"
@@ -11772,16 +11773,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-17T03:51:32.921699+08:00",
+    "last_updated": "2026-07-17T15:36:23.235198+08:00",
     "updated_countries": [
-      "nl",
-      "pl",
-      "se",
       "be",
       "sa",
       "ae",
       "eg",
-      "tr"
+      "tr",
+      "il",
+      "ng",
+      "za"
     ]
   }
 }
