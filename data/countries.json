@@ -9672,6 +9672,8 @@
         "3C配件 +20% 智能手机普及"
       ],
       "risks": [
+        "⚠️ Extension of Import Restrictions on Categories of Archaeolog（Federal Register 2026-01-14）",
+        "⚠️ Federal Acquisition Regulation: Trade Agreements Thresholds（Federal Register 2026-03-13）",
         "⚠️ 阿拉伯语+法语双语运营",
         "⚠️ 清关流程复杂",
         "⚠️ 电商基础设施待完善"
@@ -11773,16 +11775,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-17T15:36:23.235198+08:00",
+    "last_updated": "2026-07-17T20:20:45.174605+08:00",
     "updated_countries": [
-      "be",
-      "sa",
       "ae",
       "eg",
       "tr",
       "il",
       "ng",
-      "za"
+      "za",
+      "ke",
+      "ma"
     ]
   }
 }
