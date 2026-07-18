@@ -10277,6 +10277,8 @@
         "3C配件 +20% 平行进口渠道"
       ],
       "risks": [
+        "⚠️ Publication of Venezuela Sanctions Regulations Web General L（Federal Register 2026-06-10）",
+        "⚠️ Enhanced Favorable Treatment for the United Arab Emirates Un（Federal Register 2026-07-14）",
         "⚠️ 国际制裁影响支付和物流",
         "⚠️ 卢布汇率波动大",
         "⚠️ 跨境收款渠道受限"
@@ -11776,16 +11778,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-18T15:12:23.402792+08:00",
+    "last_updated": "2026-07-18T23:35:33.229314+08:00",
     "updated_countries": [
-      "ng",
-      "za",
       "ke",
       "ma",
       "jp",
       "kr",
       "au",
-      "in"
+      "in",
+      "pk",
+      "ru"
     ]
   }
 }
