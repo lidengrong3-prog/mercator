@@ -4836,6 +4836,7 @@
         "家居园艺 +18% 品质升级"
       ],
       "risks": [
+        "⚠️ Enhanced Favorable Treatment for the United Arab Emirates Un（Federal Register 2026-07-14）",
         "⚠️ 生物安全检验极严格",
         "⚠️ 距离远物流成本高",
         "⚠️ 消费者权益法ACL严格"
@@ -11775,16 +11776,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-17T20:20:45.174605+08:00",
+    "last_updated": "2026-07-18T15:12:23.402792+08:00",
     "updated_countries": [
-      "ae",
-      "eg",
-      "tr",
-      "il",
       "ng",
       "za",
       "ke",
-      "ma"
+      "ma",
+      "jp",
+      "kr",
+      "au",
+      "in"
     ]
   }
 }
