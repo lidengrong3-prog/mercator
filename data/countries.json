@@ -10582,6 +10582,7 @@
         "家居用品 +18% 重建需求旺盛"
       ],
       "risks": [
+        "⚠️ Enhanced Favorable Treatment for the United Arab Emirates Un（Federal Register 2026-07-14）",
         "⚠️ 战争影响物流和安全",
         "⚠️ 部分地区配送受限",
         "⚠️ 汇率波动+经济不确定"
@@ -11778,16 +11779,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-18T23:35:33.229314+08:00",
+    "last_updated": "2026-07-19T04:06:58.468839+08:00",
     "updated_countries": [
-      "ke",
-      "ma",
       "jp",
       "kr",
       "au",
       "in",
       "pk",
-      "ru"
+      "ru",
+      "ua",
+      "kz"
     ]
   }
 }
