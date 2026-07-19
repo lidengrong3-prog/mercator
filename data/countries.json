@@ -7249,6 +7249,7 @@
         "家居用品 +16% 品质生活需求"
       ],
       "risks": [
+        "⚠️ Federal Acquisition Regulation: Trade Agreements Thresholds（Federal Register 2026-03-13）",
         "⚠️ 市场规模小(600万)",
         "⚠️ 运营成本高",
         "⚠️ 竞争激烈但客单价高"
@@ -11780,16 +11781,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-19T19:43:47.786633+08:00",
+    "last_updated": "2026-07-20T04:10:51.920785+08:00",
     "updated_countries": [
-      "in",
-      "pk",
-      "ru",
       "ua",
       "kz",
       "id",
       "th",
-      "my"
+      "my",
+      "vn",
+      "ph",
+      "sg"
     ]
   }
 }
