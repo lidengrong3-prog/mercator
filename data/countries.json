@@ -1818,6 +1818,7 @@
         "家居园艺 +18% 中产阶级扩大带动需求"
       ],
       "risks": [
+        "⚠️ Regulations Enhancing the Administration of the Antidumping （Federal Register 2024-12-16）",
         "⚠️ 数字服务税新规需关注",
         "⚠️ 清真认证流程严格但必要",
         "⚠️ 多语言运营增加成本"
@@ -11779,16 +11780,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-19T04:06:58.468839+08:00",
+    "last_updated": "2026-07-19T19:43:47.786633+08:00",
     "updated_countries": [
-      "jp",
-      "kr",
-      "au",
       "in",
       "pk",
       "ru",
       "ua",
-      "kz"
+      "kz",
+      "id",
+      "th",
+      "my"
     ]
   }
 }
