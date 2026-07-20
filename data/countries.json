@@ -8165,6 +8165,8 @@
         "3C配件 +22% 智能手机普及推动"
       ],
       "risks": [
+        "⚠️ Extension of Import Restrictions Imposed on Certain Archaeol（Federal Register 2026-03-11）",
+        "⚠️ Federal Acquisition Regulation: Trade Agreements Thresholds（Federal Register 2026-03-13）",
         "⚠️ 安全形势部分地区不稳定",
         "⚠️ 物流基础设施待完善",
         "⚠️ 汇率波动影响进口成本"
@@ -11783,16 +11785,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-20T19:23:13.102424+08:00",
+    "last_updated": "2026-07-21T07:40:15.851431+08:00",
     "updated_countries": [
-      "th",
-      "my",
-      "vn",
       "ph",
       "sg",
       "us",
       "br",
-      "ca"
+      "ca",
+      "mx",
+      "ar",
+      "co"
     ]
   }
 }
