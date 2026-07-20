@@ -5141,6 +5141,8 @@
         "家居用品 +16% 远程办公持续"
       ],
       "risks": [
+        "⚠️ Endangered and Threatened Wildlife and Plants; Revised Desig（Federal Register 2026-07-16）",
+        "⚠️ Airworthiness Directives; Bell Textron Canada Limited Helico（Federal Register 2026-07-17）",
         "⚠️ 英法双语listing必要",
         "⚠️ 美国关税政策联动",
         "⚠️ 加拿大产品安全标准"
@@ -11781,16 +11783,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-20T04:10:51.920785+08:00",
+    "last_updated": "2026-07-20T19:23:13.102424+08:00",
     "updated_countries": [
-      "ua",
-      "kz",
-      "id",
       "th",
       "my",
       "vn",
       "ph",
-      "sg"
+      "sg",
+      "us",
+      "br",
+      "ca"
     ]
   }
 }
