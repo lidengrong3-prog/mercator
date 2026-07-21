@@ -8470,6 +8470,7 @@
         "家居用品 +16% 品质生活需求"
       ],
       "risks": [
+        "⚠️ Federal Acquisition Regulation: Trade Agreements Thresholds（Federal Register 2026-03-13）",
         "⚠️ 距离远物流成本高",
         "⚠️ VAT 19%",
         "⚠️ 消费者保护法严格"
@@ -11785,16 +11786,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-21T07:40:15.851431+08:00",
+    "last_updated": "2026-07-21T17:38:36.059142+08:00",
     "updated_countries": [
-      "ph",
-      "sg",
-      "us",
       "br",
       "ca",
       "mx",
       "ar",
-      "co"
+      "co",
+      "cl",
+      "gb",
+      "de"
     ]
   }
 }
