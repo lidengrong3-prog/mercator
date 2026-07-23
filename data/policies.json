@@ -1,7 +1,91 @@
 {
-  "updated_at": "2026-07-23T07:43:12.526391+08:00",
+  "updated_at": "2026-07-23T17:31:51.186612+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260723-17fb2f3b",
+      "title": "Foreign-Trade Zone (FTZ) 72; Authorization of Production Activity; General Electric Company; (Commercial Aerospace Propulsion Parts and Engine Cores); Lafayette, Indiana",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/23/2026-14957/foreign-trade-zone-ftz-72-authorization-of-production-activity-general-electric-company-commercial",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-23",
+      "collected_at": "2026-07-23T17:31:51.186612+08:00"
+    },
+    {
+      "id": "p20260723-9a871bee",
+      "title": "Implementation of the Administrative False Claims Act",
+      "summary": "This proposed rule would establish procedural regulations for the Administrative False Claims Act (AFCA) at the Export-Import Bank of the United States (EXIM).",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/23/2026-14959/implementation-of-the-administrative-false-claims-act",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-23",
+      "collected_at": "2026-07-23T17:31:51.186612+08:00"
+    },
+    {
+      "id": "p20260723-1d2d3785",
+      "title": "Further Strengthening Actions Taken To Adjust Imports of Aluminum Into the United States",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/23/2026-14990/further-strengthening-actions-taken-to-adjust-imports-of-aluminum-into-the-united-states",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-23",
+      "collected_at": "2026-07-23T17:31:51.186612+08:00"
+    },
+    {
+      "id": "p20260723-e2f0ff55",
+      "title": "Imposing Additional Duties To Offset Canadian Discrimination Against the Commerce of the United States With Respect to Motor Vehicles",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/23/2026-14997/imposing-additional-duties-to-offset-canadian-discrimination-against-the-commerce-of-the-united",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-23",
+      "collected_at": "2026-07-23T17:31:51.186612+08:00"
+    },
+    {
+      "id": "p20260723-4b85032a",
+      "title": "Captive Nations Week, 2026",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/23/2026-14998/captive-nations-week-2026",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-23",
+      "collected_at": "2026-07-23T17:31:51.186612+08:00"
+    },
+    {
+      "id": "p20260723-a7831013",
+      "title": "Made in America Week, 2026",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/23/2026-14999/made-in-america-week-2026",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-23",
+      "collected_at": "2026-07-23T17:31:51.186612+08:00"
+    },
+    {
+      "id": "p20260723-1153ab9c",
+      "title": "Securing America's Defense Supply Chains and Ensuring Domestic Acquisition of Critical Materials",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/23/2026-15003/securing-americas-defense-supply-chains-and-ensuring-domestic-acquisition-of-critical-materials",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-23",
+      "collected_at": "2026-07-23T17:31:51.186612+08:00"
+    },
     {
       "id": "p20260722-6729acab",
       "title": "13 Carcinogens (4-Nitrobiphenyl, etc.)",
