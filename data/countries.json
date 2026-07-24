@@ -618,6 +618,7 @@
         "健康食品 +18% 老龄化社会保健品需求旺盛"
       ],
       "risks": [
+        "⚠️ Implementation of EAR Export Controls on Silencers, Mufflers（Federal Register 2026-07-23）",
         "⚠️ PSE/PSC认证要求严格",
         "⚠️ 日本药机法对化妆品宣传限制多",
         "⚠️ 消费者退货率较高，包装要求极致"
@@ -11786,16 +11787,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-21T17:38:36.059142+08:00",
+    "last_updated": "2026-07-24T17:12:54.985111+08:00",
     "updated_countries": [
-      "br",
-      "ca",
-      "mx",
-      "ar",
-      "co",
-      "cl",
-      "gb",
-      "de"
+      "tr",
+      "il",
+      "ng",
+      "za",
+      "ke",
+      "ma",
+      "jp",
+      "kr"
     ]
   }
 }
