@@ -4838,6 +4838,7 @@
         "家居园艺 +18% 品质升级"
       ],
       "risks": [
+        "⚠️ Implementation of EAR Export Controls on Silencers, Mufflers（Federal Register 2026-07-23）",
         "⚠️ Enhanced Favorable Treatment for the United Arab Emirates Un（Federal Register 2026-07-14）",
         "⚠️ 生物安全检验极严格",
         "⚠️ 距离远物流成本高",
@@ -11197,6 +11198,7 @@
         "美妆个护 +30% 印度美妆市场爆发"
       ],
       "risks": [
+        "⚠️ Implementation of EAR Export Controls on Silencers, Mufflers（Federal Register 2026-07-23）",
         "⚠️ 关税极高(基本税率+IGST)",
         "⚠️ BIS认证门槛高",
         "⚠️ 价格敏感度全球最高"
@@ -11787,16 +11789,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-24T17:12:54.985111+08:00",
+    "last_updated": "2026-07-25T01:57:52.432829+08:00",
     "updated_countries": [
-      "tr",
-      "il",
       "ng",
       "za",
       "ke",
       "ma",
       "jp",
-      "kr"
+      "kr",
+      "au",
+      "in"
     ]
   }
 }
