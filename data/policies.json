@@ -1,7 +1,31 @@
 {
-  "updated_at": "2026-07-25T07:46:39.331379+08:00",
+  "updated_at": "2026-07-25T15:35:53.198153+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260725-0130048d",
+      "title": "Proposed Extension of Information Collection: Safety Program for Surface Mobile Equipment",
+      "summary": "The Department of Labor (DOL), as part of its continuing effort to reduce paperwork and respondent burden, conducts a pre- clearance consultation program for all information collections, to provide the public and Federal agencies with an opportunity to comment on proposed collections of information,",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/27/2026-15141/proposed-extension-of-information-collection-safety-program-for-surface-mobile-equipment",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-27",
+      "collected_at": "2026-07-25T15:35:53.198153+08:00"
+    },
+    {
+      "id": "p20260725-bafaedd9",
+      "title": "Modernizing Reactor Licensing, Safety Oversight, and Siting Practices; Correction",
+      "summary": "The U.S. Nuclear Regulatory Commission (NRC) is correcting a notice published in the Federal Register on July 16, 2026, regarding the modernization of reactor licensing, safety oversight, and siting practices to address sections 5(f), 5(h), and 5(i) of Executive Order 14300, and additional items tha",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/27/2026-15145/modernizing-reactor-licensing-safety-oversight-and-siting-practices-correction",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-27",
+      "collected_at": "2026-07-25T15:35:53.198153+08:00"
+    },
     {
       "id": "p20260724-2276b378",
       "title": "美国新301关税正式落地！不取代历史对华301关税，二者叠加计征",

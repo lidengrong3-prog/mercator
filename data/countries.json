@@ -10286,11 +10286,11 @@
         "3C配件 +20% 平行进口渠道"
       ],
       "risks": [
+        "⚠️ Implementation of EAR Export Controls on Silencers, Mufflers（Federal Register 2026-07-23）",
         "⚠️ Publication of Venezuela Sanctions Regulations Web General L（Federal Register 2026-06-10）",
         "⚠️ Enhanced Favorable Treatment for the United Arab Emirates Un（Federal Register 2026-07-14）",
         "⚠️ 国际制裁影响支付和物流",
-        "⚠️ 卢布汇率波动大",
-        "⚠️ 跨境收款渠道受限"
+        "⚠️ 卢布汇率波动大"
       ],
       "advice": [
         "新手：Ozon跨境+Wildberries",
@@ -10591,6 +10591,7 @@
         "家居用品 +18% 重建需求旺盛"
       ],
       "risks": [
+        "⚠️ Implementation of EAR Export Controls on Silencers, Mufflers（Federal Register 2026-07-23）",
         "⚠️ Enhanced Favorable Treatment for the United Arab Emirates Un（Federal Register 2026-07-14）",
         "⚠️ 战争影响物流和安全",
         "⚠️ 部分地区配送受限",
@@ -11789,16 +11790,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-25T01:57:52.432829+08:00",
+    "last_updated": "2026-07-25T15:35:53.198153+08:00",
     "updated_countries": [
-      "ng",
-      "za",
-      "ke",
       "ma",
       "jp",
       "kr",
       "au",
-      "in"
+      "in",
+      "pk",
+      "ru",
+      "ua"
     ]
   }
 }
