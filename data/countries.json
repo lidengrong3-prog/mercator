@@ -10896,6 +10896,7 @@
         "家居用品 +18% 城镇化需求"
       ],
       "risks": [
+        "⚠️ Implementation of EAR Export Controls on Silencers, Mufflers（Federal Register 2026-07-23）",
         "⚠️ EAEU认证体系(类EAC)",
         "⚠️ 物流距离远成本高",
         "⚠️ 俄语/哈萨克语双语"
@@ -11790,16 +11791,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-25T15:35:53.198153+08:00",
+    "last_updated": "2026-07-25T19:57:16.604939+08:00",
     "updated_countries": [
-      "ma",
       "jp",
       "kr",
       "au",
       "in",
       "pk",
       "ru",
-      "ua"
+      "ua",
+      "kz"
     ]
   }
 }
