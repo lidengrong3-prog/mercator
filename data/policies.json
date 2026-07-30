@@ -1,7 +1,91 @@
 {
-  "updated_at": "2026-07-30T07:45:25.436216+08:00",
+  "updated_at": "2026-07-30T17:43:35.580544+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260730-77571ef2",
+      "title": "Oswego Hydro Partners, LP; Notice of Availability of Environmental Assessment",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15442/oswego-hydro-partners-lp-notice-of-availability-of-environmental-assessment",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-30",
+      "collected_at": "2026-07-30T17:43:35.580544+08:00"
+    },
+    {
+      "id": "p20260730-7ae8d4b7",
+      "title": "Tennessee Gas Pipeline Company, L.L.C.; Notice of Request Under Blanket Authorization and Establishing Intervention and Protest Deadline",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15443/tennessee-gas-pipeline-company-llc-notice-of-request-under-blanket-authorization-and-establishing",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-30",
+      "collected_at": "2026-07-30T17:43:35.580544+08:00"
+    },
+    {
+      "id": "p20260730-e1043bee",
+      "title": "Domtar Paper Company, LLC; Notice of Application for Non-Capacity Amendment of License Accepted for Filing, Soliciting Comments, Motions To Intervene, and Protests",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15444/domtar-paper-company-llc-notice-of-application-for-non-capacity-amendment-of-license-accepted-for",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-30",
+      "collected_at": "2026-07-30T17:43:35.580544+08:00"
+    },
+    {
+      "id": "p20260730-dea8201d",
+      "title": "Southern Star Central Gas Pipeline, Inc.; Notice of Request Under Blanket Authorization and Establishing Intervention and Protest Deadline",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15445/southern-star-central-gas-pipeline-inc-notice-of-request-under-blanket-authorization-and",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-30",
+      "collected_at": "2026-07-30T17:43:35.580544+08:00"
+    },
+    {
+      "id": "p20260730-0999a421",
+      "title": "Medicare Program; Updates to the Master List of Items Potentially Subject to Face-to-Face Encounter and Written Order Prior to Delivery and/or Prior Authorization Requirements; Updates to the Required Face-to-Face Encounter and Written Order Prior to Delivery List; and Updates to the Required Prior Authorization List",
+      "summary": "This document announces updates to the Healthcare Common Procedure Coding System (HCPCS) codes on the Master List. It also announces updates to the HCPCS codes on the Required Face-to-Face Encounter and Written Order Prior to Delivery List and the Required Prior Authorization List.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15446/medicare-program-updates-to-the-master-list-of-items-potentially-subject-to-face-to-face-encounter",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-30",
+      "collected_at": "2026-07-30T17:43:35.580544+08:00"
+    },
+    {
+      "id": "p20260730-f22fac3b",
+      "title": "Exchange Visitor Program-Termination of Program Participation, Extension of Program and Reinstatement to Valid Program Status",
+      "summary": "The Department of State's (Department's) Bureau of Educational and Cultural Affairs administers the Exchange Visitor Program, as set forth at 22 CFR part 62, wherein exchange visitors on educational and cultural exchange programs travel to the United States in the J visa category. The Department tra",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15450/exchange-visitor-program-termination-of-program-participation-extension-of-program-and-reinstatement",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-30",
+      "collected_at": "2026-07-30T17:43:35.580544+08:00"
+    },
+    {
+      "id": "p20260730-2139142b",
+      "title": "Civil Money Penalty for Actions in Contempt of an Immigration Judge's Proper Exercise of Authority",
+      "summary": "This notice of proposed rulemaking (\"NPRM\") would implement a provision of the Immigration and Nationality Act (\"INA\" or \"the Act\") that authorizes Immigration Judges, under regulations prescribed by the Attorney General, to sanction by civil money penalty any action (or inaction) in contempt of the",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15458/civil-money-penalty-for-actions-in-contempt-of-an-immigration-judges-proper-exercise-of-authority",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-30",
+      "collected_at": "2026-07-30T17:43:35.580544+08:00"
+    },
     {
       "id": "p20260729-72d33fac",
       "title": "60-Day Notice of Proposed Information Collection: Generic Clearance for the Collection of Qualitative Feedback on Agency Service Delivery",
