@@ -1,7 +1,79 @@
 {
-  "updated_at": "2026-07-31T07:43:27.894988+08:00",
+  "updated_at": "2026-07-31T18:10:50.441608+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260731-94fe4901",
+      "title": "FLSA Claims and Compliance",
+      "summary": "The Office of Personnel Management (OPM) is issuing this direct final rule to update the provisions concerning Fair Labor Standards Act (FLSA) claims submissions to OPM.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/31/2026-15597/flsa-claims-and-compliance",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-31",
+      "collected_at": "2026-07-31T18:10:50.441608+08:00"
+    },
+    {
+      "id": "p20260731-a20db6c4",
+      "title": "Upper C-Band (3.98-4.2 GHz); Expanding Flexible Use of the 3.7 to 4.2 GHz Band",
+      "summary": "In this document, the Federal Communications Commission (Commission) adopted a Report and Order, Order of Proposed Modification, and Order on Reconsideration (Order), that expands the ecosystem for next-generation wireless services in the 3.7-4.2 GHz band (C-band) by making 160 megahertz of the 3.98",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/31/2026-15598/upper-c-band-398-42-ghz-expanding-flexible-use-of-the-37-to-42-ghz-band",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-31",
+      "collected_at": "2026-07-31T18:10:50.441608+08:00"
+    },
+    {
+      "id": "p20260731-e8a661b0",
+      "title": "Wireless Emergency Alerts; The Emergency Alert System; Modernization of the Nation's Alerting Systems",
+      "summary": "In this document, the Federal Communications Commission (\"FCC\" or \"Commission\") adopted a Further Notice of Proposed Rulemaking that seeks comment on proposed rules intended to make the Emergency Alert System (EAS) and Wireless Emergency Alerts (WEA) more resilient, flexible, and useful.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/31/2026-15600/wireless-emergency-alerts-the-emergency-alert-system-modernization-of-the-nations-alerting-systems",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-31",
+      "collected_at": "2026-07-31T18:10:50.441608+08:00"
+    },
+    {
+      "id": "p20260731-df6ce7e7",
+      "title": "Modernization of the Nation's Alerting Systems; Protecting the Nation's Communications Systems From Cybersecurity Threats",
+      "summary": "In the Report and Order, the Federal Communications Commission (the FCC or the Commission) seeks to preserve the public's trust in the Emergency Alert System (EAS) by requiring targeted cybersecurity improvements that will help protect against hijacking by cybercriminals and our nation's adversaries",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/31/2026-15601/modernization-of-the-nations-alerting-systems-protecting-the-nations-communications-systems-from",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-31",
+      "collected_at": "2026-07-31T18:10:50.441608+08:00"
+    },
+    {
+      "id": "p20260731-630afeec",
+      "title": "Amendment of United States Area Navigation Routes (RNAV) T-285 and T-286 in the Vicinity of Thedford, NE",
+      "summary": "This action amends the published coordinates of the Thedford, NE, Very High Frequency Omnidirectional Range/Distance Measuring Equipment (VOR/DME) in the legal descriptions of Area Navigation (RNAV) routes T-285 and T-286 in the vicinity of Thedford, NE. The FAA is taking this action due to discover",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/31/2026-15603/amendment-of-united-states-area-navigation-routes-rnav-t-285-and-t-286-in-the-vicinity-of-thedford",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-31",
+      "collected_at": "2026-07-31T18:10:50.441608+08:00"
+    },
+    {
+      "id": "p20260731-106f80c8",
+      "title": "Qualification and Certification of Locomotive Engineers and Conductors; English Language Proficiency and Other Requirements",
+      "summary": "FRA proposes to amend its regulations governing the qualification and certification of locomotive engineers and conductors to establish English language proficiency as a requirement for a railroad carrier to certify and recertify locomotive engineers and conductors. FRA also proposes that each railr",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/31/2026-15605/qualification-and-certification-of-locomotive-engineers-and-conductors-english-language-proficiency",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-07-31",
+      "collected_at": "2026-07-31T18:10:50.441608+08:00"
+    },
     {
       "id": "p20260730-77571ef2",
       "title": "Oswego Hydro Partners, LP; Notice of Availability of Environmental Assessment",
