@@ -1,7 +1,79 @@
 {
-  "updated_at": "2026-08-05T07:44:44.681396+08:00",
+  "updated_at": "2026-08-05T18:14:50.799830+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260805-0d7adfc7",
+      "title": "美国25个州起诉特朗普政府新关税",
+      "summary": "据 CNBC 报道，近期美国 25 个州组成联盟，正式将特朗普政府诉至美国国际贸易法院，挑战其针对全球 60 个主要贸易伙伴推出的全面进口关税政策。这也是新关税落地之后，继小企业集体维权之后遭遇的第二轮重大法律阻击。 图源：CNBC 各州在诉状中直指这套关税存在严重程序性缺陷：美国贸易代表办公室仅用两个半月仓促完成对 60 个经济体的调查，既没有开展必要国别磋商，也无法解释为何对发展水平、贸易环境差异巨大的国家，统一套用近乎一致的关税税率。 白宫发言人库什・德赛对此作出回应，称政府是在依法行使行政权力，目的消除阻碍美国商业发展的不合理行为，并强调自特朗普第一任期开始，贸易法第 301 条关税就是持久、合法有效的贸易工具。 【美国关税壁垒加剧，欧洲成跨境新热土。8月11日深圳，2026欧洲出海卖家峰会重磅开启！独家直连 ManoMano、Bol.com、OnBuy 等欧洲本土顶流平台，从政策、选品到物流，一站剖析欧洲增量破局点，点此报名 ，席位有限，先占先赢。】 但美国司法体系此前已经多次对联邦政府大规模关税 “亮起红灯”。最高法院已经裁定《国际紧急经济权力法》不能作为征收关税的法律依据...",
+      "source": "雨果网",
+      "source_url": "https://www.cifnews.com/article/187931",
+      "region": "Global",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-05",
+      "collected_at": "2026-08-05T18:14:50.799830+08:00"
+    },
+    {
+      "id": "p20260805-99a30895",
+      "title": "Center for Scientific Review; Notice of Closed Meetings",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/05/2026-15910/center-for-scientific-review-notice-of-closed-meetings",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-05",
+      "collected_at": "2026-08-05T18:14:50.799830+08:00"
+    },
+    {
+      "id": "p20260805-855a5d5d",
+      "title": "Caremark and Zinc Health Services; Analysis of Proposed Agreement Containing Consent Order To Aid Public Comment",
+      "summary": "The consent agreement in this matter settles alleged violations of Federal law prohibiting unfair methods of competition. The attached Analysis of Proposed Agreement Containing Consent Orders to Aid Public Comment describes both the allegations in the complaint and the terms of the consent order--em",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/05/2026-15913/caremark-and-zinc-health-services-analysis-of-proposed-agreement-containing-consent-order-to-aid",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-05",
+      "collected_at": "2026-08-05T18:14:50.799830+08:00"
+    },
+    {
+      "id": "p20260805-525c200f",
+      "title": "Micro-Tracers, Inc.; Response to Objections and Requests for a Public Hearing",
+      "summary": "The Food and Drug Administration (FDA or we) received objections and requests for a public hearing submitted by Buchanan Ingersoll & Rooney PC, on behalf of Micro-Tracers, Inc. (Micro-Tracers or objector), on the order granting a color additive petition (3C0323) requesting that we repeal specified r",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/05/2026-15920/micro-tracers-inc-response-to-objections-and-requests-for-a-public-hearing",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-05",
+      "collected_at": "2026-08-05T18:14:50.799830+08:00"
+    },
+    {
+      "id": "p20260805-d1d23d8e",
+      "title": "Improving Emergency Medical Kit Efficacy and Flexibility in Commercial Airline Operations",
+      "summary": "FAA proposes to eliminate the prescriptive list of required items in emergency medical kits and first aid kits and replace it with a performance-based requirement to ensure contents are practical and sufficient to allow crewmembers to address the most common medical emergencies that occur onboard co",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/05/2026-15929/improving-emergency-medical-kit-efficacy-and-flexibility-in-commercial-airline-operations",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-05",
+      "collected_at": "2026-08-05T18:14:50.799830+08:00"
+    },
+    {
+      "id": "p20260805-61a7d7e0",
+      "title": "To Facilitate Positive Adjustment to Competition From Imports of Quartz Surface Products",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/05/2026-15975/to-facilitate-positive-adjustment-to-competition-from-imports-of-quartz-surface-products",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-05",
+      "collected_at": "2026-08-05T18:14:50.799830+08:00"
+    },
     {
       "id": "p20260805-e28c535c",
       "title": "Hazardous Materials: Reducing Burdens on Domestic Companies Using Battery-Powered Equipment in Trades",
