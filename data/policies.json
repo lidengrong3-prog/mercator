@@ -1,7 +1,91 @@
 {
-  "updated_at": "2026-08-07T12:35:38.982872+08:00",
+  "updated_at": "2026-08-07T19:12:32.255790+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260807-1e8a1acf",
+      "title": "Circular Welded Carbon Steel Standard Pipe and Tube Products From the Republic of Türkiye: Preliminary Results of Antidumping Duty Administrative Review; 2024-2025",
+      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that the sole respondent, Borusan Birle[ccedil]ik Boru Fabrikalari Sanayi ve Ticaret A.[Scedil]., subject to this review made sales of subject merchandise at less than normal value (NV) during the period of review (POR), May 1, 2024",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/07/2026-16182/circular-welded-carbon-steel-standard-pipe-and-tube-products-from-the-republic-of-trkiye-preliminary",
+      "region": "US",
+      "category": "tariff",
+      "impact_level": "high",
+      "published_at": "2026-08-07",
+      "collected_at": "2026-08-07T19:12:32.255790+08:00"
+    },
+    {
+      "id": "p20260807-02264713",
+      "title": "Tin Mill Products From Taiwan and the Republic of Türkiye: Postponement of Preliminary Determination in the Less-Than-Fair-Value Investigations",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/07/2026-16183/tin-mill-products-from-taiwan-and-the-republic-of-trkiye-postponement-of-preliminary-determination",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-07",
+      "collected_at": "2026-08-07T19:12:32.255790+08:00"
+    },
+    {
+      "id": "p20260807-be3c708f",
+      "title": "Polyethylene Retail Carrier Bags From Malaysia: Final Results of Antidumping Duty Administrative Review; 2023-2024",
+      "summary": "The U.S. Department of Commerce (Commerce) determines that polyethylene retail carrier bags (PRCBs) from Malaysia were not sold in the United States at less than normal value during the period of review (POR), August 1, 2023, through July 31, 2024.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/07/2026-16185/polyethylene-retail-carrier-bags-from-malaysia-final-results-of-antidumping-duty-administrative",
+      "region": "US",
+      "category": "tariff",
+      "impact_level": "high",
+      "published_at": "2026-08-07",
+      "collected_at": "2026-08-07T19:12:32.255790+08:00"
+    },
+    {
+      "id": "p20260807-ea1055df",
+      "title": "Certain Preserved Mushrooms From Poland: Preliminary Results of Antidumping Duty Administrative Review; 2024-2025",
+      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that the sole mandatory respondent, Okechamp S.A. (Okechamp), made sales of subject merchandise at less than normal value (NV) during the period of review (POR), May 1, 2024, through April 30, 2025. Interested parties are invited to",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/07/2026-16186/certain-preserved-mushrooms-from-poland-preliminary-results-of-antidumping-duty-administrative",
+      "region": "US",
+      "category": "tariff",
+      "impact_level": "high",
+      "published_at": "2026-08-07",
+      "collected_at": "2026-08-07T19:12:32.255790+08:00"
+    },
+    {
+      "id": "p20260807-78df7c2d",
+      "title": "Submission for Office of Management and Budget Review; National Communication System for Runaway and Homeless Youth, Currently Operated by the National Runaway Safeline Data Collection",
+      "summary": "The Family and Youth Services Bureau's (FYSB) Runaway and Homeless Youth Division has a legislative requirement to fund a National Communication System, which is currently operated by the National Runaway Safeline (NRS). The NRS provides information, referral services, crisis intervention, and preve",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/07/2026-16187/submission-for-office-of-management-and-budget-review-national-communication-system-for-runaway-and",
+      "region": "US",
+      "category": "tariff",
+      "impact_level": "medium",
+      "published_at": "2026-08-07",
+      "collected_at": "2026-08-07T19:12:32.255790+08:00"
+    },
+    {
+      "id": "p20260807-8529e670",
+      "title": "Build America: Eliminating Barriers to Wireline Deployments",
+      "summary": "In this document, the Federal Communications Commission (Commission) proposes and seeks comment on rules that would eliminate state and local requirements that constrain the deployment of modern high-speed wireline infrastructure in violation of section 253 of the Communications Act (Act), particula",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/07/2026-16196/build-america-eliminating-barriers-to-wireline-deployments",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-07",
+      "collected_at": "2026-08-07T19:12:32.255790+08:00"
+    },
+    {
+      "id": "p20260807-0f43658c",
+      "title": "Protecting Against National Security Threats to the Communications Supply Chain Through the Equipment Authorization Program",
+      "summary": "The Federal Communications Commission (Commission or FCC) issues a Third Further Notice of Proposed Rulemaking seeking comment on a broad set of additional measures to strengthen the security and integrity of its equipment authorization program. The measures include bifurcating the Covered List into",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/07/2026-16197/protecting-against-national-security-threats-to-the-communications-supply-chain-through-the",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-07",
+      "collected_at": "2026-08-07T19:12:32.255790+08:00"
+    },
     {
       "id": "p20260807-84c02238",
       "title": "Cancellation Order for Certain Pesticide Registrations and/or Amendments To Terminate Uses (From February 19, 2026, Notice)",
