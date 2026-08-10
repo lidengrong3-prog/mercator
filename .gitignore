@@ -1,0 +1,33 @@
+# ============ Dependencies ============
+node_modules/
+__pycache__/
+*.pyc
+*.egg-info/
+
+# ============ Secrets / local config ============
+.env
+.env.*
+*.local
+credentials.json
+service_key*.json
+
+# ============ Build / deploy copies ============
+dist/
+web/
+
+# ============ Project memory (private, not for public repo) ============
+.workbuddy/
+
+# ============ OS / editor ============
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+~*
+
+# ============ Large binary assets ============
+image_*.png
+*.bak
+
+# ============ Logs ============
+*.log
