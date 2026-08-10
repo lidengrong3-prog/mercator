@@ -1,0 +1,18 @@
+
+/* === 评测修复：术语表 tooltip === */
+.jay-term{border-bottom:1px dotted #3b7dd8;cursor:help;color:#2c5f8a}
+#jay-gloss-tip{position:fixed;z-index:9999;max-width:280px;background:#1a2332;color:#fff;
+  font-size:12px;line-height:1.5;padding:8px 11px;border-radius:7px;box-shadow:0 6px 20px rgba(0,0,0,.25);
+  pointer-events:none;display:none}
+#jay-gloss-tip b{color:#7fc0ff}
+/* 回到顶部 */
+#jay-totop{position:fixed;right:22px;bottom:24px;width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,#3b7dd8,#2c5f8a);color:#fff;border:0;font-size:20px;cursor:pointer;
+  box-shadow:0 6px 18px rgba(59,125,216,.4);display:none;align-items:center;justify-content:center;z-index:900}
+#jay-totop:hover{transform:translateY(-2px)}
+/* 页脚 */
+.jay-footer{margin-top:40px;padding:22px 28px;border-top:1px solid var(--line);
+  background:#fff;color:var(--muted);font-size:12px;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center}
+.jay-footer b{color:var(--ink)}
+.jay-footer a{color:#3b7dd8;text-decoration:none}
+.jay-footer .jay-f-sep{flex:1}

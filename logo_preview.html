@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JAY观海 · 极简 LOGO 预览</title>
+<style>
+  :root{--ink:#1a2332;--muted:#6b7b8d;--paper:#f4f6fa;--line:#d5dbe3;--sea:#3b9fe0;--sea-deep:#1e5fae;--sea-soft:#eaf5fe;--wave:#cfe8fb}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans SC',system-ui,sans-serif;padding:48px}
+  h1{font:26px 'Playfair Display',serif;margin:0 0 4px}
+  .eyebrow{font:10px 'DM Mono',monospace;letter-spacing:1.2px;color:var(--sea-deep);margin:0 0 26px}
+  .row{display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin-bottom:34px}
+  .mark{display:grid;place-items:center}
+  .cap{font:11px 'DM Mono',monospace;color:var(--muted);text-align:center;margin-top:8px}
+  .jmark{font:800 'Playfair Display',serif;line-height:1;color:var(--ink)}
+  .on-dark{background:#1a2332;border-radius:14px;padding:26px}
+  .on-dark .jmark{color:#fff}
+  .brand-combo{display:flex;align-items:center;gap:12px;background:#1a2332;border-radius:12px;padding:18px 24px}
+  .brand-combo .jmark{color:#fff;font-size:30px}
+  .brand-combo strong{font:22px 'Playfair Display',serif;color:#fff}
+  .brand-combo small{display:block;color:#8e9fb5;font:10px 'DM Mono',monospace;letter-spacing:.7px;margin-top:2px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;max-width:520px;transition:.2s}
+  .card:hover{border-color:var(--sea);box-shadow:0 8px 22px rgba(30,95,174,.14)}
+  .card h3{margin:0 0 8px;font-size:16px}
+  .card p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}
+  .wave-divider{height:22px;margin:10px 0 26px;color:var(--wave)}
+  .wave-divider svg{width:100%;height:100%}
+  .note{background:var(--sea-soft);border-left:4px solid var(--sea);border-radius:0 8px 8px 0;padding:14px 18px;font-size:13px;line-height:1.8;max-width:680px;color:#243b52}
+  .note b{color:var(--sea-deep)}
+  .pill{display:inline-block;font:10px 'DM Mono',monospace;background:rgba(59,159,224,.14);color:var(--sea-deep);padding:2px 8px;border-radius:10px;margin-right:6px}
+</style>
+</head>
+<body>
+  <p class="eyebrow">JAY观海 · BRAND PREVIEW</p>
+  <h1>极简 LOGO 预览</h1>
+
+  <div class="row">
+    <div class="mark on-dark"><span class="jmark" style="font-size:200px">J</span><div class="cap" style="color:#9fb0c6">200px（深色底）</div></div>
+    <div class="mark on-dark"><span class="jmark" style="font-size:54px">J</span><div class="cap" style="color:#9fb0c6">54px 登录页</div></div>
+    <div class="mark on-dark"><span class="jmark" style="font-size:38px">J</span><div class="cap" style="color:#9fb0c6">38px 侧边栏</div></div>
+    <div class="brand-combo"><span class="jmark">J</span><div><strong>JAY观海</strong><small>GLOBAL MARKET INTELLIGENCE</small></div></div>
+  </div>
+
+  <div class="note">
+    <span class="pill">设计方向</span>极简字标。去掉一切图形与底色，**仅保留一个字母 <b>J</b>**——与 “JAY观海” 字标采用同一字体（Playfair Display），白字呈现于深色导航 / 登录背景之上，干净利落、无缝融入界面。LOGO 与系统海洋主题刻意区分，页面视觉维持不变。
+  </div>
+
+  <h1 style="font-size:18px;margin:34px 0 0">海洋主题 · 轻点缀（保持不变）</h1>
+  <div class="wave-divider" aria-hidden="true"><svg viewBox="0 0 1200 24" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,12 C150,24 300,0 450,12 C600,24 750,0 900,12 C1050,24 1200,0 1200,12" fill="none" stroke="#9cc8ee" stroke-width="2" stroke-linecap="round"/></svg></div>
+  <div class="card">
+    <h3>国家市场 · 模块卡片</h3>
+    <p>悬停时边框转为海蓝、浮现浅蓝投影（轻点缀）。顶部内容区有柔和海蓝波浪光晕，区块标题下方有海蓝渐变短下划线。整体保持浅色、专业、清新。</p>
+  </div>
+</body>
+</html>
