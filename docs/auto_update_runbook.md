@@ -162,9 +162,66 @@ select cron.schedule(
 - [ ] 定时触发后，Supabase `market_data.updated_at` 出现新时间戳
 - [ ] SPA 中 `JAY_REFRESH_DEMO` 在生产环境设为 `false`，使 2h 周期刷新真正套用实时数据
 
+---
+
+## 线上现状（2026-08-10 核实）
+
+| 项目 | 状态 |
+|---|---|
+| 仓库 | `https://github.com/lidengrong3-prog/mercator`（public，默认分支 `main`） |
+| Actions「Mercator Data Update」 | **正常运行**，每 4h，最近 `2026-08-10T05:11Z` success |
+| Supabase secret | **已配置生效**（`market_data.updated_at` 与 Action 运行时刻吻合） |
+| GitHub Pages | **已启用在线**：`https://lidengrong3-prog.github.io/mercator/`，每次 push 到 main 自动重新部署 |
+
+> 早期文档中「Actions 未运行」的判断已作废，以本表为准。
+
+---
+
+## 人工基线保护机制（防止自动采集稀释人工数据）
+
+**背景**：采集器 `merge_data()` 是「合并去重」而非覆盖，但有条目上限，长期运行会把最早的人工整理条目挤出去。
+
+**机制**：
+- `data/policies_baseline.json`、`data/rules_baseline.json` 存放人工整理条目。
+- 每次采集时自动并入（按标题去重），且**在裁剪时豁免**——基线条目不占用 `ITEM_CAP`（当前 400）额度。
+- 需要新增/修订人工条目，直接编辑这两个基线文件即可，不会被自动更新冲掉。
+
+**命令**：
+```bash
+# 把当前 data/rules.json 快照为人工基线
+python scripts/collect_data.py --make-baseline rules
+
+# 离线把基线并回数据文件（不联网、不写库）
+python scripts/collect_data.py --merge-baseline
+```
+
+**效果实测**：`rules` 27 → 159 条，`policies` 155 → 226 条，零丢失。
+
+---
+
+## 分支推送流程（本地 dev → 远端）
+
+本地仓库与 `origin/main` 是 **unrelated histories**（本地 2026-08-10 才 `git init`）。已按下述策略组装 `dev` 分支：
+
+- **代码取本地**（index.html / scripts / supabase / docs / .gitignore / workflow）
+- **数据取远端**（policies / countries / platforms，采集器持续更新更新鲜）
+- **`alerts.json` 由本地新增**（远端从未有过）
+- **`rules` / `policies` 执行基线并集**
+
+```bash
+cd D:/AI工具/mercator-main
+git push -u origin dev            # 推测试分支，不影响公开 Pages 站点
+# 在 GitHub 上开 PR: dev → main，确认 diff 后合并
+# 合并到 main 后，Pages 会自动重新部署为新前端
+```
+
+> 推送需 GitHub 凭据：连接 GitHub 连接器，或本机 `git config --global credential.helper manager` 后首次 push 时登录，或使用 PAT。
+
+---
+
 ## 常见坑
 
-1. **git remote 为空 → GitHub Actions 实际不跑**：本机需先 `git remote add` 并 push，workflow 才会触发。
+1. ~~**git remote 为空 → GitHub Actions 实际不跑**~~：已修正，remote 已配置且 Actions 在正常运行（见上方「线上现状」）。
 2. **service key 绝不写进仓库**：仅放 GitHub Secrets / 本机环境变量 / Supabase Secrets。
 3. **CSP 放行 CDN**：`index.html` 的 CSP 须含 `script-src ... https://cdn.jsdelivr.net`，否则 supabase-js 被拦截、登录/同步失效（已处理）。
 4. **演示模式**：`JAY_REFRESH_DEMO=true` 时周期刷新走演示演进、不套实时数据；正式上线改 `false`。
