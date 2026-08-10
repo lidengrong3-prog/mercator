@@ -1,0 +1,13 @@
+# Mercator 后端脚本依赖清单
+#
+# 项目的数据收集与迁移脚本仅使用 Python 标准库，
+# 无需安装任何第三方包。运行前确保 Python 3.11+ 即可：
+#   python scripts/collect_data.py
+#   python supabase/migrate_data.py
+#
+# 环境变量（migrate_data.py 需要）：
+#   SUPABASE_URL              例如 https://xxxx.supabase.co
+#   SUPABASE_SERVICE_ROLE_KEY service_role key（切勿提交到仓库）
+#
+# 注意：collect_data.py 依赖以下环境变量（GitHub Actions secrets）：
+#   AI_API_KEY / AI_API_URL / AI_MODEL / SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY

@@ -58,7 +58,9 @@ def fetch_html(url, headers=None):
             for enc in ['utf-8', 'gbk', 'gb2312', 'latin-1']:
                 try:
                     return data.decode(enc)
-                except:
+                except UnicodeDecodeError:
+                    continue
+                except LookupError:
                     continue
             return data.decode('utf-8', errors='replace')
     except Exception as e:
@@ -645,12 +647,59 @@ def ai_summarize(title, raw_text, item_type):
         return None
 
 
+# ---- Baseline Protection ----
+# 人工整理的基线数据（data/{kind}_baseline.json）永远与采集结果做并集，
+# 且在裁剪 cap 时受保护，不会被后续自动采集的新条目挤掉。
+def load_baseline_items(kind):
+    """读取人工基线条目；不存在则返回空列表（不影响正常采集）。"""
+    path = os.path.join(DATA_DIR, f'{kind}_baseline.json')
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            d = json.load(f)
+        items = d.get('items', []) if isinstance(d, dict) else d
+        return items if isinstance(items, list) else []
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"  [WARN] 基线文件 {path} 读取失败，跳过基线保护: {e}")
+        return []
+
+
+def _title_keys(title):
+    """统一的标题去重键（全称 + 前 20 字模糊键）。"""
+    t = (title or '').strip().lower()
+    keys = {t} if t else set()
+    if len(t) > 20:
+        keys.add(t[:20])
+    return keys
+
+
+ITEM_CAP = 400  # 单个数据文件的自动采集条目上限（人工基线不占用该额度）
+
+
 # ---- Merge & Deduplicate ----
-def merge_data(existing_file, new_items, key_fields=['title']):
-    """Merge new items with existing data, dedup by title similarity."""
+def merge_data(existing_file, new_items, key_fields=['title'], baseline_kind=None, cap=ITEM_CAP):
+    """Merge new items with existing data, dedup by title similarity.
+
+    baseline_kind: 'policies' / 'rules'。给定时，会把 data/{kind}_baseline.json
+    的人工条目并入结果，并在裁剪时保护它们不被挤出。
+    """
     if os.path.exists(existing_file):
-        with open(existing_file, 'r', encoding='utf-8') as f:
-            existing = json.load(f)
+        try:
+            with open(existing_file, 'r', encoding='utf-8') as f:
+                existing = json.load(f)
+            # 结构校验：损坏或非预期结构时重建
+            if not isinstance(existing, dict) or 'items' not in existing:
+                raise ValueError('unexpected structure')
+        except (json.JSONDecodeError, ValueError, OSError) as e:
+            backup = existing_file + '.corrupt.' + NOW.strftime('%Y%m%d%H%M%S')
+            try:
+                import shutil
+                shutil.copy2(existing_file, backup)
+                print(f"  [WARN] {existing_file} 损坏已备份至 {backup}，将重建: {e}")
+            except Exception:
+                print(f"  [WARN] {existing_file} 损坏且无法备份: {e}")
+            existing = {'updated_at': NOW_ISO, 'source_count': 0, 'items': []}
     else:
         existing = {'updated_at': NOW_ISO, 'source_count': 0, 'items': []}
     
@@ -673,11 +722,35 @@ def merge_data(existing_file, new_items, key_fields=['title']):
             existing_titles.add(t[:20].lower())
         added += 1
     
-    # Keep only last 200 items to prevent file bloat
-    existing['items'] = existing['items'][:200]
+    # ---- 人工基线并集（不存在基线文件时行为与以前完全一致）----
+    baseline_titles = set()
+    baseline_added = 0
+    if baseline_kind:
+        for b in load_baseline_items(baseline_kind):
+            bt = (b.get('title') or '').strip().lower()
+            if not bt:
+                continue
+            baseline_titles |= _title_keys(bt)
+            if bt in existing_titles or bt[:20] in existing_titles:
+                continue
+            existing['items'].append(b)  # 基线追加在尾部，保持采集新条目在前
+            existing_titles |= _title_keys(bt)
+            baseline_added += 1
+
+    # Keep only last `cap` items to prevent file bloat —— 基线条目豁免裁剪
+    items = existing['items']
+    if len(items) > cap:
+        protected, ordinary = [], []
+        for it in items:
+            t = (it.get('title') or '').strip().lower()
+            (protected if (t in baseline_titles or t[:20] in baseline_titles) else ordinary).append(it)
+        room = max(cap - len(protected), 0)
+        existing['items'] = ordinary[:room] + protected
     existing['updated_at'] = NOW_ISO
     existing['source_count'] = 6  # We have 6 source groups
-    
+    if baseline_added:
+        print(f"  [BASELINE] {baseline_kind}: 并入人工基线 {baseline_added} 条（受裁剪保护）")
+
     return existing, added
 
 # ---- Platform Updates Collector ----
@@ -726,25 +799,37 @@ PLATFORM_FR_TERMS = {
 }
 
 
-def _search_amz123(platform_name, aliases):
-    """Search AMZ123 for platform news."""
+def _extract_title(m):
+    """从正则匹配结果（str 或 tuple）中提取标题文本。"""
+    if isinstance(m, tuple):
+        for part in reversed(m):
+            if isinstance(part, str) and part.strip():
+                return part.strip()
+        return ''
+    return m.strip() if isinstance(m, str) else str(m).strip()
+
+
+def _search_html_site(platform_name, aliases, url_fn, patterns_fn, max_alias=2):
+    """通用站点搜索（修复 P2-5 重复代码）。
+
+    遍历别名生成 URL，多正则提取标题并去重。
+    url_fn(alias) 返回请求 URL；patterns_fn(alias) 返回该别名对应的正则列表。
+    """
     items = []
-    for alias in aliases[:2]:
-        url = f'https://www.amz123.com/search?q={alias}'
+    for alias in aliases[:max_alias]:
+        url = url_fn(alias)
         html = fetch_html(url)
         if not html:
             continue
-        # Find article titles
-        patterns = [
-            r'<a[^>]+href="(/[^"]+)"[^>]*>([^<]*' + re.escape(alias) + r'[^<]*)</a>',
-            r'<h[234][^>]*>([^<]*' + re.escape(alias) + r'[^<]*)</h[234]>',
-            r'"title":"([^"]*' + re.escape(alias) + r'[^"]*)"',
-        ]
+        patterns = patterns_fn(alias)
         seen = set()
         for pat in patterns:
-            matches = re.findall(pat, html, re.IGNORECASE)
+            try:
+                matches = re.findall(pat, html, re.IGNORECASE)
+            except re.error:
+                continue
             for m in matches:
-                title = m.strip() if isinstance(m, str) else str(m).strip()
+                title = _extract_title(m)
                 if len(title) < 8 or title in seen:
                     continue
                 seen.add(title)
@@ -752,36 +837,34 @@ def _search_amz123(platform_name, aliases):
         if items:
             break
     return items
+
+
+def _search_amz123(platform_name, aliases):
+    """Search AMZ123 for platform news."""
+    def url_fn(alias):
+        return f'https://www.amz123.com/search?q={alias}'
+    def patterns_fn(alias):
+        esc = re.escape(alias)
+        return [
+            r'<a[^>]+href="(/[^"]+)"[^>]*>([^<]*' + esc + r'[^<]*)</a>',
+            r'<h[234][^>]*>([^<]*' + esc + r'[^<]*)</h[234]>',
+            r'"title":"([^"]*' + esc + r'[^"]*)"',
+        ]
+    return _search_html_site(platform_name, aliases, url_fn, patterns_fn)
 
 
 def _search_cifnews(platform_name, aliases):
     """Search 雨果网 for platform news."""
-    items = []
-    for alias in aliases[:2]:
-        url = f'https://www.cifnews.com/search?keyword={alias}'
-        html = fetch_html(url)
-        if not html:
-            continue
-        patterns = [
-            r'<a[^>]+href="(https?://[^"]*cifnews[^"]*)"[^>]*>([^<]*' + re.escape(alias) + r'[^<]*)</a>',
-            r'"title":"([^"]*' + re.escape(alias) + r'[^"]*)"',
-            r'<h[234][^>]*>\s*<a[^>]+>([^<]*' + re.escape(alias) + r'[^<]*)</a>',
+    def url_fn(alias):
+        return f'https://www.cifnews.com/search?keyword={alias}'
+    def patterns_fn(alias):
+        esc = re.escape(alias)
+        return [
+            r'<a[^>]+href="(https?://[^"]*cifnews[^"]*)"[^>]*>([^<]*' + esc + r'[^<]*)</a>',
+            r'"title":"([^"]*' + esc + r'[^"]*)"',
+            r'<h[234][^>]*>\s*<a[^>]+>([^<]*' + esc + r'[^<]*)</a>',
         ]
-        seen = set()
-        for pat in patterns:
-            matches = re.findall(pat, html, re.IGNORECASE)
-            for m in matches:
-                if isinstance(m, tuple):
-                    title = m[1].strip() if len(m) > 1 else m[0].strip()
-                else:
-                    title = m.strip()
-                if len(title) < 8 or title in seen:
-                    continue
-                seen.add(title)
-                items.append(title)
-        if items:
-            break
-    return items
+    return _search_html_site(platform_name, aliases, url_fn, patterns_fn)
 
 
 def _search_federal_register(platform_name, term):
@@ -1302,7 +1385,74 @@ def sync_to_supabase(policies_data, rules_data):
         except Exception as e:
             print(f"  ❌ platforms sync failed: {e}")
     
-    print(f"[Supabase Sync] Complete: {sync_count}/4 datasets synced")
+    # 5. Sync alerts (read from file)
+    alerts_file = os.path.join(DATA_DIR, 'alerts.json')
+    if os.path.exists(alerts_file):
+        try:
+            with open(alerts_file, 'r', encoding='utf-8') as f:
+                alerts = json.load(f)
+            if isinstance(alerts, list):
+                payload = json.dumps({
+                    'key': 'alerts',
+                    'data': alerts,
+                    'meta': {
+                        'source': 'alerts.json',
+                        'alert_count': len(alerts),
+                        'updated_at': NOW_ISO
+                    }
+                }).encode('utf-8')
+                req = Request(f"{api_url}/market_data", data=payload, headers=headers, method='POST')
+                with urlopen(req, timeout=30) as resp:
+                    if resp.status in (200, 201):
+                        sync_count += 1
+                        print(f"  ✅ alerts synced ({len(alerts)} alerts)")
+        except Exception as e:
+            print(f"  ❌ alerts sync failed: {e}")
+
+    print(f"[Supabase Sync] Complete: {sync_count}/5 datasets synced")
+
+
+def validate_local():
+    """Offline validation of all 5 local data files (no network).
+    Used by CI/operators to catch corrupt JSON before a sync run."""
+    print("=== Validate local data files ===")
+    specs = {
+        'countries': ('countries.json', 'object'),
+        'platforms': ('platforms.json', 'list'),
+        'policies': ('policies.json', 'object'),
+        'rules': ('rules.json', 'object'),
+        'alerts': ('alerts.json', 'list'),
+    }
+    ok = True
+    for key, (fn, exp) in specs.items():
+        fp = os.path.join(DATA_DIR, fn)
+        if not os.path.exists(fp):
+            print(f"  ❌ {key}: missing {fn}")
+            ok = False
+            continue
+        try:
+            with open(fp, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            if exp == 'list' and not isinstance(data, list):
+                print(f"  ❌ {key}: expected list, got {type(data).__name__}")
+                ok = False
+                continue
+            if exp == 'object' and not isinstance(data, dict):
+                print(f"  ❌ {key}: expected object, got {type(data).__name__}")
+                ok = False
+                continue
+            if key == 'policies':
+                cnt = len(data.get('items', []))
+            elif key == 'rules':
+                cnt = len(data.get('items', []))
+            else:
+                cnt = len(data)
+            print(f"  ✅ {key}: valid ({cnt} records)")
+        except Exception as e:
+            print(f"  ❌ {key}: parse error {e}")
+            ok = False
+    print("Validation", "PASSED ✅" if ok else "FAILED ❌")
+    return ok
 
 
 # ---- Main ----
@@ -1423,8 +1573,8 @@ def main():
     policies_file = os.path.join(DATA_DIR, 'policies.json')
     rules_file = os.path.join(DATA_DIR, 'rules.json')
     
-    policies_data, p_added = merge_data(policies_file, all_policies)
-    rules_data, r_added = merge_data(rules_file, all_rules)
+    policies_data, p_added = merge_data(policies_file, all_policies, baseline_kind='policies')
+    rules_data, r_added = merge_data(rules_file, all_rules, baseline_kind='rules')
     
     # Save
     os.makedirs(DATA_DIR, exist_ok=True)
@@ -1460,4 +1610,70 @@ def main():
     print(f"\n=== Collection complete ===")
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Mercator data collector / syncer')
+    parser.add_argument('--sync-only', action='store_true',
+                        help='只把现有本地 JSON 上传到 Supabase（不采集网络），用于快速补数/修复')
+    parser.add_argument('--validate', action='store_true',
+                        help='仅离线校验本地 5 个数据文件结构，不联网、不写库')
+    parser.add_argument('--merge-baseline', action='store_true',
+                        help='离线把 data/{policies,rules}_baseline.json 并入对应数据文件（不联网、不写库）')
+    parser.add_argument('--make-baseline', metavar='KIND',
+                        help='把当前 data/KIND.json 快照为人工基线 data/KIND_baseline.json（KIND=policies|rules）')
+    args = parser.parse_args()
+
+    if args.validate:
+        sys.exit(0 if validate_local() else 1)
+
+    if args.make_baseline:
+        kind = args.make_baseline
+        if kind not in ('policies', 'rules'):
+            print(f"❌ KIND 必须是 policies 或 rules，收到: {kind}")
+            sys.exit(1)
+        src = os.path.join(DATA_DIR, f'{kind}.json')
+        if not os.path.exists(src):
+            print(f"❌ 找不到 {src}")
+            sys.exit(1)
+        with open(src, 'r', encoding='utf-8') as f:
+            d = json.load(f)
+        items = d.get('items', []) if isinstance(d, dict) else d
+        dst = os.path.join(DATA_DIR, f'{kind}_baseline.json')
+        with open(dst, 'w', encoding='utf-8') as f:
+            json.dump({
+                'note': '人工整理基线，采集器每次运行都会并入并保护其不被裁剪。新增/修订请直接编辑本文件。',
+                'created_at': NOW_ISO,
+                'items': items,
+            }, f, ensure_ascii=False, indent=2)
+        print(f"✅ 基线已生成: {dst}（{len(items)} 条）")
+        sys.exit(0)
+
+    if args.merge_baseline:
+        rc = 0
+        for kind in ('policies', 'rules'):
+            path = os.path.join(DATA_DIR, f'{kind}.json')
+            if not os.path.exists(path):
+                print(f"  [SKIP] {path} 不存在")
+                continue
+            before = 0
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    before = len(json.load(f).get('items', []))
+            except Exception:
+                pass
+            merged, _ = merge_data(path, [], baseline_kind=kind)
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(merged, f, ensure_ascii=False, indent=2)
+            print(f"✅ {kind}: {before} → {len(merged['items'])} 条")
+        sys.exit(rc)
+
+    if args.sync_only:
+        pf = os.path.join(DATA_DIR, 'policies.json')
+        rf = os.path.join(DATA_DIR, 'rules.json')
+        pol = json.load(open(pf, encoding='utf-8')) if os.path.exists(pf) else {'items': []}
+        rul = json.load(open(rf, encoding='utf-8')) if os.path.exists(rf) else {'items': []}
+        # sync_to_supabase 会从本地文件读取 countries/platforms/alerts，
+        # 这里只把已合并的 policies/rules 传入即可完成全部 5 个 key 的上传
+        sync_to_supabase(pol, rul)
+        sys.exit(0)
+
     main()
