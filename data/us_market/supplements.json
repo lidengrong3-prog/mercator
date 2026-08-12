@@ -1,0 +1,565 @@
+{
+  "meta": {
+    "market": "美国保健品 (US Dietary Supplements)",
+    "cat_key": "supplements",
+    "generated_at": "2026-08-12T15:10:26.531044+00:00",
+    "as_of": "2026-08-12",
+    "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
+    "sections": [
+      "country",
+      "platforms",
+      "rules",
+      "policies",
+      "alerts"
+    ],
+    "counts": {
+      "country": 1,
+      "platforms": 7,
+      "rules": 4,
+      "policies": 17,
+      "alerts": 3
+    }
+  },
+  "country": {
+    "market": "美国保健品",
+    "cat_key": "supplements",
+    "name_en": "Dietary Supplements",
+    "icon": "💊",
+    "flag": "🇺🇸",
+    "subtitle": "United States · 高增速 + 严 FDA/cGMP 监管",
+    "macro": [
+      [
+        "保健品市场规模(2026E)",
+        "US$ 773.7 亿 (2026E)",
+        "CAGR 7.9% (2026-2031)",
+        "Polaris / 行业研究, 2026"
+      ],
+      [
+        "保健品市场说明",
+        "广义营养健康（含 OTC）≈ $8,540 亿；膳食补充剂为最高增速品类之一",
+        "—",
+        "Polaris / 行业研究, 2026"
+      ],
+      [
+        "美国零售电商规模(2026E)",
+        "≈ US$ 1.6 万亿",
+        "同比 +10.4%（2025 为 $1.23 万亿）",
+        "eMarketer / US Census, 2026"
+      ],
+      [
+        "电商渗透率(Q1 2026)",
+        "16.9%（季调）",
+        "剔除汽车/汽油/餐饮后约 23.8%，历史第二高",
+        "US Census Bureau, 2026-05"
+      ],
+      [
+        "线上购物人口",
+        "≈ 2.95 亿（约 80% 成年人）",
+        "增长来自存量用户钱包份额提升",
+        "eMarketer, 2026"
+      ],
+      [
+        "Amazon 市占",
+        "≈ 36%–40% 美国电商",
+        "最大流量入口，品牌信任背书强",
+        "Marketplace Pulse, 2025-2026"
+      ],
+      [
+        "对华关税环境",
+        "收紧 + 复审",
+        "Section 301 附加税覆盖多品类；强迫劳动禁令提案推进",
+        "USTR Section 301, 2026"
+      ],
+      [
+        "内容电商增量",
+        "TikTok Shop 高速扩张",
+        "年轻客群 + 直播/短视频转化，跨境店可入驻",
+        "TikTok Shop 美国, 2026"
+      ]
+    ],
+    "segments": [
+      {
+        "name": "维生素矿物质",
+        "note": "最大基础细分，复购强"
+      },
+      {
+        "name": "蛋白/运动营养",
+        "note": "健身人群驱动，TikTok 热"
+      },
+      {
+        "name": "草本植物",
+        "note": "植物提取，NDI 合规关键"
+      },
+      {
+        "name": "益生菌/功能",
+        "note": "肠道/睡眠，高溢价"
+      }
+    ],
+    "opportunity": "保健品为高增速品类（CAGR ≈ 7.9%），维生素/蛋白/草本复购强。TikTok 内容种草驱动增量，cGMP+NDI 合规完备是壁垒也是信任。",
+    "risks": [
+      "⚠️ cGMP 强制 + NDI 上市前 75 天备案",
+      "⚠️ 结构/功能宣称须 substantiation，禁疾病治疗宣称",
+      "⚠️ FTC 严打功效/减重虚假宣传",
+      "⚠️ 对华 Section 301 多不直接覆盖，但包材/设备受约束"
+    ],
+    "advice": [
+      "新手：维生素/蛋白 TikTok 试水",
+      "工厂：Amazon + 独立站，重 cGMP/NDI",
+      "品牌：DTC + 科学叙事，重真实功效"
+    ],
+    "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
+    "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
+    "as_of": "2026-08-12"
+  },
+  "findings": [
+    "保健品为高增速品类（CAGR ≈ 7.9%），维生素/蛋白/草本复购强。",
+    "cGMP 强制 + NDI 上市前 75 天备案，结构/功能宣称须 substantiation。",
+    "FTC 严打疾病治疗/减重虚假宣传；TikTok 内容红线严格。",
+    "对华 Section 301 多不直接覆盖成品，但包材/设备受约束。",
+    "工厂路径：TikTok 爆款 → Amazon+独立站 → DTC 科学叙事。"
+  ],
+  "platforms": [
+    {
+      "name": "Amazon（美国）",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "多数品类佣金 8%–20%（如消费电子 8%、服饰 17%、家居 15%、美妆 8%–15%、玩具 15%、运动 15%、汽配 12%–15%、保健品 15%）；专业计划 $39.99/月 + FBA 仓储配送费",
+      "feeDesc": "最大流量与信任背书；FBA 本土履约；Brand Registry 防跟卖",
+      "entry": "跨境可入驻；部分类目需审核/资质（如保健品、美妆、汽配）",
+      "strength": "最大流量与信任背书，高客单承接力强",
+      "risk": "佣金高、价格战、账号合规风险",
+      "source": "Amazon Seller Central 销售费用(2026)",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "维生素",
+        "蛋白",
+        "草本",
+        "益生菌"
+      ]
+    },
+    {
+      "name": "TikTok Shop（美国）",
+      "type": "内容电商",
+      "market": "美国",
+      "commission": "平台佣金约 6%–8%（按类目）+ 支付手续费；卖家中心 2026 更新内容合规红线",
+      "feeDesc": "内容种草+直播转化；跨境店需本地主体/合规资质",
+      "entry": "跨境店可入驻；需本地主体/合规资质",
+      "strength": "内容种草+直播转化，年轻客群增量大",
+      "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
+      "source": "TikTok Shop 美国卖家中心(2026)",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "蛋白",
+        " gummies",
+        "草本",
+        "睡眠"
+      ]
+    },
+    {
+      "name": "Walmart Marketplace",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "佣金 6%–15%（按品类），WFS 仓储费 $0.75/立方英尺/月，无月费/入驻费",
+      "feeDesc": "WFS 本土仓 + 跨境；47 个履约中心，88% 美国人口两日达",
+      "entry": "跨境店可入驻，审核较严",
+      "strength": "高信任、低佣金、本土履约",
+      "risk": "流量弱于 Amazon、品类受限",
+      "source": "Walmart Marketplace 费用说明",
+      "source_url": "https://marketplace.walmart.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "家庭基础",
+        "维生素",
+        "蛋白"
+      ]
+    },
+    {
+      "name": "eBay",
+      "type": "货架/拍卖",
+      "market": "美国",
+      "commission": "成交费约 13%（按品类），店铺订阅另计；无月费基础店",
+      "feeDesc": "开放入驻门槛低；二手/长尾天然场",
+      "entry": "开放入驻，门槛低",
+      "strength": "二手/收藏/长尾流量，国际站点可触达",
+      "risk": "假货争议、价格透明压利润",
+      "source": "eBay 费用说明（参考）",
+      "source_url": "https://www.ebay.com/sellercenter",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "收藏/长尾",
+        "二手"
+      ]
+    },
+    {
+      "name": "Etsy",
+      "type": "手作/设计师",
+      "market": "美国",
+      "commission": "上架费 $0.20/件 + 交易费 6.5% + 支付处理费 6.5%（按国别）",
+      "feeDesc": "无月费；手作/复古/定制定位",
+      "entry": "开放入驻",
+      "strength": "设计师/手工溢价高、客群精准",
+      "risk": "流量小于综合平台、仿品管控",
+      "source": "Etsy Seller Handbook（参考）",
+      "source_url": "https://www.etsy.com/seller-handbook",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "手工草本",
+        "天然",
+        "定制"
+      ]
+    },
+    {
+      "name": "Shopify（独立站 DTC）",
+      "type": "独立站",
+      "market": "美国",
+      "commission": "无平台佣金；订阅 $39–$399/月 + 支付费率 ~2.9%+$0.30",
+      "feeDesc": "品牌自主、数据自有；需自引流量",
+      "entry": "自助建站",
+      "strength": "品牌资产沉淀、毛利高",
+      "risk": "获客成本高、运营重",
+      "source": "Shopify 定价（参考）",
+      "source_url": "https://www.shopify.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "品牌官网",
+        "订阅制",
+        "定制"
+      ]
+    },
+    {
+      "name": "Temu / SHEIN",
+      "type": "低价全托管",
+      "market": "美国",
+      "commission": "全托管/半托管模式，平台定价，卖家挣供货价",
+      "feeDesc": "极致低价流量，卖家利润薄；关税敏感",
+      "entry": "供货商入驻（全托管）",
+      "strength": "海量低价流量",
+      "risk": "利润极低、品牌稀释、关税敏感",
+      "source": "平台公开模式（参考）",
+      "source_url": "https://www.temu.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "低价软糖",
+        "基础维生素"
+      ]
+    }
+  ],
+  "matrix": [
+    [
+      "Amazon（美国）",
+      "工厂 / 品牌出海",
+      "中（类目审核）",
+      "中",
+      "FBA + cGMP/NDI 合规"
+    ],
+    [
+      "TikTok Shop（美国）",
+      "工厂爆款试水",
+      "中（本地主体）",
+      "高（功效红线）",
+      "成分种草验证爆款"
+    ],
+    [
+      "Walmart",
+      "本土履约卖家",
+      "中高",
+      "低",
+      "高信任基础款"
+    ],
+    [
+      "eBay",
+      "二手 / 长尾",
+      "低",
+      "中",
+      "长尾+收藏"
+    ],
+    [
+      "Etsy",
+      "手工/天然",
+      "低",
+      "低",
+      "手工溢价"
+    ],
+    [
+      "Shopify",
+      "品牌 DTC",
+      "自助",
+      "中（获客）",
+      "订阅制沉淀"
+    ],
+    [
+      "Temu / SHEIN",
+      "低价供货商",
+      "低（全托管）",
+      "高（利润薄）",
+      "走量谨慎"
+    ]
+  ],
+  "rules": [
+    {
+      "platform": "FDA",
+      "title": "DSHEA / cGMP / NDI 备案",
+      "detail": "膳食补充剂受 DSHEA 监管，须符合 cGMP (21 CFR Part 111)；新 dietary ingredient (NDI) 须上市前 75 天备案；结构/功能宣称须有 substantiation 且不宣称治病。",
+      "severity": "high",
+      "source": "FDA",
+      "source_url": "https://www.fda.gov/food/dietary-supplements",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "FTC",
+      "title": "功效宣称合规",
+      "detail": "「抗衰老/治愈/减重」等健康宣称须有可靠科学证据；禁止疾病治疗宣称，网红须披露。",
+      "severity": "high",
+      "source": "FTC",
+      "source_url": "https://www.ftc.gov/business-guidance/industry/health-care",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "Amazon",
+      "title": "保健品类目资质",
+      "detail": "保健品为受限类目，需 cGMP/检测报告与合规声明；建议 Brand Registry。",
+      "severity": "medium",
+      "source": "Amazon Seller Central",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "TikTok Shop（美国）",
+      "title": "内容合规红线（2026 更新）",
+      "detail": "90 天内累计违规可撤销权限；禁医疗/疾病治疗宣称、禁减肥夸大；须真实演示。",
+      "severity": "high",
+      "source": "TikTok Shop 卖家中心",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12"
+    }
+  ],
+  "policies": [
+    {
+      "title": "Schedules of Controlled Substances: Temporary Placement of O-Desmethyltramadol in Schedule I",
+      "date": "2026-08-12",
+      "agency": "Justice Department",
+      "summary": "The Drug Enforcement Administration issues this temporary order to schedule O-desmethyltramadol (other names: O-DSMT; desmetramadol; 3-[(1R,2R)-2-[(dimethylamino)methyl]-1- hydroxycyclohexyl]phenol), including its isomers, esters, ethers, salts, and salts of isomers, esters and e…",
+      "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16413/schedules-of-controlled-substances-temporary-placement-of-o-desmethyltramadol-in-schedule-i",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Substances Generally Recognized as Safe",
+      "date": "2026-08-11",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) is proposing to require the submission of generally recognized as safe (GRAS) notices for the use of a human or animal food substance purported to be GRAS under the conditions of its intended use under the Federal Food, Drug, and Cosme…",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16296/substances-generally-recognized-as-safe",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Reauthorization of the Generic Drug User Fee Amendments; Public Meeting; Request for Comments",
+      "date": "2026-08-11",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is hosting a public meeting to discuss proposed recommendations for the reauthorization of the Generic Drug User Fee Amendments (GDUFA) for fiscal years (FYs) 2028 to 2032. GDUFA amended the Federal Food, Drug, and Cosmeti…",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16353/reauthorization-of-the-generic-drug-user-fee-amendments-public-meeting-request-for-comments",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Radiology Devices; Reclassification of Digital Breast Tomosynthesis System",
+      "date": "2026-08-10",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is proposing to reclassify digital breast tomosynthesis (DBT) systems, product code OTE, which are postamendments class III devices, from class III (premarket approval) into class II (special controls), subject to premarket notification. FDA…",
+      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16209/radiology-devices-reclassification-of-digital-breast-tomosynthesis-system",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Micro-Tracers, Inc.; Response to Objections and Requests for a Public Hearing",
+      "date": "2026-08-05",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) received objections and requests for a public hearing submitted by Buchanan Ingersoll & Rooney PC, on behalf of Micro-Tracers, Inc. (Micro-Tracers or objector), on the order granting a color additive petition (3C0323) requesting that w…",
+      "url": "https://www.federalregister.gov/documents/2026/08/05/2026-15920/micro-tracers-inc-response-to-objections-and-requests-for-a-public-hearing",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Biosimilar and Interchangeable Biosimilar Products: Considerations for Container Closure Systems and Device Constituent Parts; Draft Guidance for Industry; Availability",
+      "date": "2026-08-03",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, Agency, or we) is announcing the availability of a draft guidance for industry entitled \"Biosimilar and Interchangeable Biosimilar Products: Considerations for Container Closure Systems and Device Constituent Parts.\" This draft guidance is i…",
+      "url": "https://www.federalregister.gov/documents/2026/08/03/2026-15630/biosimilar-and-interchangeable-biosimilar-products-considerations-for-container-closure-systems-and",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Butylated Hydroxytoluene (BHT); Request for Information; Reopening of Comment Period",
+      "date": "2026-07-30",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) is reopening the comment period for the notice titled \"Butylated Hydroxytoluene (BHT); Request for Information,\" which published in the Federal Register of May 13, 2026. We are taking this action in response to a request from stakehold…",
+      "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15429/butylated-hydroxytoluene-bht-request-for-information-reopening-of-comment-period",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Biosimilar User Fee Rates for Fiscal Year 2027",
+      "date": "2026-07-30",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, Agency, or we) is announcing the rates for biosimilar user fees for fiscal year (FY) 2027. The Federal Food, Drug, and Cosmetic Act (FD&C Act), as amended by the Biosimilar User Fee Amendments of 2022 (BsUFA III), authorizes FDA to assess an…",
+      "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15346/biosimilar-user-fee-rates-for-fiscal-year-2027",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Generic Drug User Fee Rates for Fiscal Year 2027",
+      "date": "2026-07-30",
+      "agency": "Health and Human Services Department",
+      "summary": "The Federal Food, Drug, and Cosmetic Act (FD&C Act or statute), as amended by the Generic Drug User Fee Amendments of 2022 (GDUFA III), authorizes the Food and Drug Administration (FDA, Agency, or we) to assess and collect fees for abbreviated new drug applications (ANDAs); drug …",
+      "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15343/generic-drug-user-fee-rates-for-fiscal-year-2027",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Animal Generic Drug User Fee Program Rates and Payment Procedures for Fiscal Year 2027",
+      "date": "2026-07-30",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is announcing the fee rates and payment procedures for fiscal year (FY) 2027 generic new animal drug program user fees. The Federal Food, Drug, and Cosmetic Act (FD&C Act), as amended by the Animal Generic Drug User Fee Am…",
+      "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15341/animal-generic-drug-user-fee-program-rates-and-payment-procedures-for-fiscal-year-2027",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "CERCLA Administrative Settlement Agreement With Prospective Purchaser and Covenants Not To Sue, McCormick & Baxter Creosoting Company Superfund Site, Portland, Oregon",
+      "date": "2026-07-30",
+      "agency": "Environmental Protection Agency",
+      "summary": "Notice is hereby given by the U.S. Environmental Protection Agency (EPA), Region 10, of a prospective purchaser settlement agreement embodied in an \"Administrative Settlement Agreement with Prospective Purchaser and Covenants Not to Sue,\" with EPA, and the prospective purchaser, …",
+      "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15395/cercla-administrative-settlement-agreement-with-prospective-purchaser-and-covenants-not-to-sue",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Statement of Organization, Functions, and Delegations of Authority",
+      "date": "2026-07-29",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration's (FDA) plans to centralize and enhance key functions across the agency. These changes will reduce redundancies, improve efficiency, and advance alignment to better serve the American public.",
+      "url": "https://www.federalregister.gov/documents/2026/07/29/2026-15297/statement-of-organization-functions-and-delegations-of-authority",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Food Standards of Identity Modernization; Pasteurized Orange Juice",
+      "date": "2026-07-20",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) is issuing a final rule to amend the standard of identity for pasteurized orange juice by lowering the minimum orange juice soluble solids content from 10.5[deg] to 10[deg] Brix and permitting up to 15 percent Citrus reticulata juice o…",
+      "url": "https://www.federalregister.gov/documents/2026/07/20/2026-14573/food-standards-of-identity-modernization-pasteurized-orange-juice",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Drug Establishment Registration and Drug Listing Requirements for Establishments Engaged in Distributed Manufacturing and Certain Foreign Establishments",
+      "date": "2026-07-13",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is proposing to amend the drug establishment registration and drug listing requirements with respect to establishments engaged in distributed manufacturing and foreign drug establishments. This action, if finalized, will p…",
+      "url": "https://www.federalregister.gov/documents/2026/07/13/2026-14073/drug-establishment-registration-and-drug-listing-requirements-for-establishments-engaged-in",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "New Animal Drugs; Approval of New Animal Drug Applications; Withdrawal of Approval of New Animal Drug Application; Change of Sponsor",
+      "date": "2026-07-07",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) is amending the animal drug regulations to reflect application-related actions for new animal drug applications (NADAs), abbreviated new animal drug applications (ANADAs), and conditionally approved new animal drug applications (CNADAs…",
+      "url": "https://www.federalregister.gov/documents/2026/07/07/2026-13716/new-animal-drugs-approval-of-new-animal-drug-applications-withdrawal-of-approval-of-new-animal-drug",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Special Supplemental Nutrition Program for Women, Infants, and Children (WIC): Revisions in the WIC Food Packages; Delay of Vitamin D in Yogurt Implementation Date and Technical Corrections",
+      "date": "2026-06-24",
+      "agency": "Agriculture Department",
+      "summary": "On April 18, 2024, the Food and Nutrition Administration (FNA) published a final rule that revised the WIC food package regulations. The final rule contained incorrect table entries. This rule corrects those tables. In addition to the corrections, this rule extends the implementa…",
+      "url": "https://www.federalregister.gov/documents/2026/06/24/2026-12700/special-supplemental-nutrition-program-for-women-infants-and-children-wic-revisions-in-the-wic-food",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Protein Efficiency Ratio Rat Bioassay Studies To Demonstrate That a New Infant Formula Supports the Quality Factor of Sufficient Biological Quality of Protein; Guidance for Industry; Availability",
+      "date": "2026-05-22",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) is announcing the availability of a guidance entitled \"Protein Efficiency Ratio (PER) Rat Bioassay Studies to Demonstrate That a New Infant Formula Supports the Quality Factor of Sufficient Biological Quality of Protein.\" The guidance …",
+      "url": "https://www.federalregister.gov/documents/2026/05/22/2026-10284/protein-efficiency-ratio-rat-bioassay-studies-to-demonstrate-that-a-new-infant-formula-supports-the",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ],
+  "alerts": [
+    {
+      "level": "low",
+      "title": "保健品成品多为零关税，包材/设备受 Section 301 约束",
+      "market": "美国",
+      "platform": "USTR / CBP",
+      "detail": "HTS 2106(营养制剂) 多为零基础关税，但胶囊/瓶体包材与生产设备受 Section 301 附加税约束。出口须以 USTR 检索确认具体编码税率。",
+      "date": "2026-08-12",
+      "source": "USTR Section 301",
+      "url": "https://ustr.gov/node/9608",
+      "as_of": "2026-08-12",
+      "live": false
+    },
+    {
+      "level": "medium",
+      "title": "Schedules of Controlled Substances: Temporary Placement of O-Desmethyltramadol in Schedule I",
+      "market": "美国",
+      "platform": "Justice Department",
+      "detail": "The Drug Enforcement Administration issues this temporary order to schedule O-desmethyltramadol (other names: O-DSMT; desmetramadol; 3-[(1R,2R)-2-[(dimethylamino)methyl]-1- hydroxycyclohexyl]phenol), …",
+      "date": "2026-08-12",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16413/schedules-of-controlled-substances-temporary-placement-of-o-desmethyltramadol-in-schedule-i",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Radiology Devices; Reclassification of Digital Breast Tomosynthesis System",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "The Food and Drug Administration (FDA) is proposing to reclassify digital breast tomosynthesis (DBT) systems, product code OTE, which are postamendments class III devices, from class III (premarket ap…",
+      "date": "2026-08-10",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16209/radiology-devices-reclassification-of-digital-breast-tomosynthesis-system",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ]
+}

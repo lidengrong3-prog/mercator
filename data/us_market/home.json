@@ -1,0 +1,603 @@
+{
+  "meta": {
+    "market": "美国家居厨具 (US Home & Kitchen)",
+    "cat_key": "home",
+    "generated_at": "2026-08-12T15:09:20.755306+00:00",
+    "as_of": "2026-08-12",
+    "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
+    "sections": [
+      "country",
+      "platforms",
+      "rules",
+      "policies",
+      "alerts"
+    ],
+    "counts": {
+      "country": 1,
+      "platforms": 7,
+      "rules": 5,
+      "policies": 13,
+      "alerts": 9
+    }
+  },
+  "country": {
+    "market": "美国家居厨具",
+    "cat_key": "home",
+    "name_en": "Home & Kitchen",
+    "icon": "🍳",
+    "flag": "🇺🇸",
+    "subtitle": "United States · 高客单耐用品 + 强复购耗材",
+    "macro": [
+      [
+        "家居厨具市场规模(2026E)",
+        "厨具 US$ 60.8 亿 (2026E)；家居耐用品 ≈ $418 亿",
+        "厨具 CAGR 2.26% (2026-2031)",
+        "Statista / Circana / NKBA, 2026"
+      ],
+      [
+        "家居厨具市场说明",
+        "厨房/卫浴改造市场 ≈ $2,280 亿 (NKBA)；家居为 Amazon 高客单主力类目",
+        "—",
+        "Statista / Circana / NKBA, 2026"
+      ],
+      [
+        "美国零售电商规模(2026E)",
+        "≈ US$ 1.6 万亿",
+        "同比 +10.4%（2025 为 $1.23 万亿）",
+        "eMarketer / US Census, 2026"
+      ],
+      [
+        "电商渗透率(Q1 2026)",
+        "16.9%（季调）",
+        "剔除汽车/汽油/餐饮后约 23.8%，历史第二高",
+        "US Census Bureau, 2026-05"
+      ],
+      [
+        "线上购物人口",
+        "≈ 2.95 亿（约 80% 成年人）",
+        "增长来自存量用户钱包份额提升",
+        "eMarketer, 2026"
+      ],
+      [
+        "Amazon 市占",
+        "≈ 36%–40% 美国电商",
+        "最大流量入口，品牌信任背书强",
+        "Marketplace Pulse, 2025-2026"
+      ],
+      [
+        "对华关税环境",
+        "收紧 + 复审",
+        "Section 301 附加税覆盖多品类；强迫劳动禁令提案推进",
+        "USTR Section 301, 2026"
+      ],
+      [
+        "内容电商增量",
+        "TikTok Shop 高速扩张",
+        "年轻客群 + 直播/短视频转化，跨境店可入驻",
+        "TikTok Shop 美国, 2026"
+      ]
+    ],
+    "segments": [
+      {
+        "name": "厨房小电",
+        "note": "空气炸锅/咖啡机/料理机，Amazon 爆款集中"
+      },
+      {
+        "name": "锅具餐具",
+        "note": "不粘/不锈钢/陶瓷，FDA 食品接触合规"
+      },
+      {
+        "name": "家具家纺",
+        "note": "高客单重货，海外仓履约关键"
+      },
+      {
+        "name": "收纳清洁",
+        "note": "清洁机器人/收纳，复购稳"
+      }
+    ],
+    "opportunity": "家居厨具为 Amazon 高客单主力类目，厨房小电+锅具为爆款集中地；海外仓履约解决重货痛点。FDA 食品接触合规是核心门槛也是差异化护城河。",
+    "risks": [
+      "⚠️ 食品接触部件须 FDA 合规（铅迁移/氟聚合物）",
+      "⚠️ 小电须 UL/ETL 安全认证，儿童家具须 ASTM + STURDY",
+      "⚠️ PFAS 多州限制与 Prop 65 警示",
+      "⚠️ 重货履约成本高，海外仓为必选项"
+    ],
+    "advice": [
+      "新手：厨房小电/锅具 Amazon 爆款试水",
+      "工厂：海外仓 + 家具家纺高客单",
+      "品牌：DTC 重设计感与食品接触合规"
+    ],
+    "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
+    "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
+    "as_of": "2026-08-12"
+  },
+  "findings": [
+    "家居厨具为 Amazon 高客单主力类目，厨房小电+锅具是爆款集中地。",
+    "食品接触部件须 FDA 合规（铅迁移/氟聚合物），是核心门槛与差异化护城河。",
+    "小电须 UL/ETL 认证，儿童家具须 ASTM + STURDY 防倾倒法。",
+    "PFAS 多州限制与 Prop 65 警示需提前规避。",
+    "重货履约成本高，海外仓为必选项；工厂路径：Amazon 爆款 → 海外仓高客单 → DTC。"
+  ],
+  "platforms": [
+    {
+      "name": "Amazon（美国）",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "多数品类佣金 8%–20%（如消费电子 8%、服饰 17%、家居 15%、美妆 8%–15%、玩具 15%、运动 15%、汽配 12%–15%、保健品 15%）；专业计划 $39.99/月 + FBA 仓储配送费",
+      "feeDesc": "最大流量与信任背书；FBA 本土履约；Brand Registry 防跟卖",
+      "entry": "跨境可入驻；部分类目需审核/资质（如保健品、美妆、汽配）",
+      "strength": "最大流量与信任背书，高客单承接力强",
+      "risk": "佣金高、价格战、账号合规风险",
+      "source": "Amazon Seller Central 销售费用(2026)",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "厨房小电",
+        "锅具餐具",
+        "家具家纺",
+        "收纳清洁"
+      ]
+    },
+    {
+      "name": "TikTok Shop（美国）",
+      "type": "内容电商",
+      "market": "美国",
+      "commission": "平台佣金约 6%–8%（按类目）+ 支付手续费；卖家中心 2026 更新内容合规红线",
+      "feeDesc": "内容种草+直播转化；跨境店需本地主体/合规资质",
+      "entry": "跨境店可入驻；需本地主体/合规资质",
+      "strength": "内容种草+直播转化，年轻客群增量大",
+      "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
+      "source": "TikTok Shop 美国卖家中心(2026)",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "空气炸锅",
+        "咖啡机",
+        "收纳好物",
+        "装饰"
+      ]
+    },
+    {
+      "name": "Walmart Marketplace",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "佣金 6%–15%（按品类），WFS 仓储费 $0.75/立方英尺/月，无月费/入驻费",
+      "feeDesc": "WFS 本土仓 + 跨境；47 个履约中心，88% 美国人口两日达",
+      "entry": "跨境店可入驻，审核较严",
+      "strength": "高信任、低佣金、本土履约",
+      "risk": "流量弱于 Amazon、品类受限",
+      "source": "Walmart Marketplace 费用说明",
+      "source_url": "https://marketplace.walmart.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "家庭装",
+        "基础家具",
+        "厨具"
+      ]
+    },
+    {
+      "name": "eBay",
+      "type": "货架/拍卖",
+      "market": "美国",
+      "commission": "成交费约 13%（按品类），店铺订阅另计；无月费基础店",
+      "feeDesc": "开放入驻门槛低；二手/长尾天然场",
+      "entry": "开放入驻，门槛低",
+      "strength": "二手/收藏/长尾流量，国际站点可触达",
+      "risk": "假货争议、价格透明压利润",
+      "source": "eBay 费用说明（参考）",
+      "source_url": "https://www.ebay.com/sellercenter",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "二手家具",
+        "收藏餐具",
+        "长尾"
+      ]
+    },
+    {
+      "name": "Etsy",
+      "type": "手作/设计师",
+      "market": "美国",
+      "commission": "上架费 $0.20/件 + 交易费 6.5% + 支付处理费 6.5%（按国别）",
+      "feeDesc": "无月费；手作/复古/定制定位",
+      "entry": "开放入驻",
+      "strength": "设计师/手工溢价高、客群精准",
+      "risk": "流量小于综合平台、仿品管控",
+      "source": "Etsy Seller Handbook（参考）",
+      "source_url": "https://www.etsy.com/seller-handbook",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "手作家居",
+        "定制餐具",
+        "复古"
+      ]
+    },
+    {
+      "name": "Shopify（独立站 DTC）",
+      "type": "独立站",
+      "market": "美国",
+      "commission": "无平台佣金；订阅 $39–$399/月 + 支付费率 ~2.9%+$0.30",
+      "feeDesc": "品牌自主、数据自有；需自引流量",
+      "entry": "自助建站",
+      "strength": "品牌资产沉淀、毛利高",
+      "risk": "获客成本高、运营重",
+      "source": "Shopify 定价（参考）",
+      "source_url": "https://www.shopify.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "品牌官网",
+        "设计款",
+        "定制"
+      ]
+    },
+    {
+      "name": "Temu / SHEIN",
+      "type": "低价全托管",
+      "market": "美国",
+      "commission": "全托管/半托管模式，平台定价，卖家挣供货价",
+      "feeDesc": "极致低价流量，卖家利润薄；关税敏感",
+      "entry": "供货商入驻（全托管）",
+      "strength": "海量低价流量",
+      "risk": "利润极低、品牌稀释、关税敏感",
+      "source": "平台公开模式（参考）",
+      "source_url": "https://www.temu.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "低价厨具",
+        "合金/塑料"
+      ]
+    }
+  ],
+  "matrix": [
+    [
+      "Amazon（美国）",
+      "工厂 / 品牌出海",
+      "中",
+      "中",
+      "FBA + 海外仓，重 UL/FDA 认证"
+    ],
+    [
+      "TikTok Shop（美国）",
+      "工厂爆款试水",
+      "中（本地主体）",
+      "高（内容红线）",
+      "厨房小电内容种草"
+    ],
+    [
+      "Walmart",
+      "本土履约卖家",
+      "中高",
+      "低",
+      "高信任基础款"
+    ],
+    [
+      "eBay",
+      "二手 / 长尾",
+      "低",
+      "中",
+      "二手家具+长尾"
+    ],
+    [
+      "Etsy",
+      "设计师/手作",
+      "低",
+      "低",
+      "手工溢价"
+    ],
+    [
+      "Shopify",
+      "品牌 DTC",
+      "自助",
+      "中（获客）",
+      "设计款沉淀"
+    ],
+    [
+      "Temu / SHEIN",
+      "低价供货商",
+      "低（全托管）",
+      "高（利润薄）",
+      "走量谨慎"
+    ]
+  ],
+  "rules": [
+    {
+      "platform": "FDA",
+      "title": "食品接触材料合规 (FDA 21 CFR)",
+      "detail": "锅具/餐具/小电接触食品的部件须符合 FDA 食品接触物质标准（如氟聚合物、不锈钢铅迁移限值）；不合规可被扣留。",
+      "severity": "high",
+      "source": "FDA",
+      "source_url": "https://www.fda.gov/food/food-packaging-food-contact-substances-fcs",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "CPSC",
+      "title": "耐用婴幼儿/家具安全",
+      "detail": "儿童家具须符合 ASTM 标准与防倾倒（如抽屉柜 STURDY 法）；小电须 UL 安全认证。",
+      "severity": "high",
+      "source": "CPSC",
+      "source_url": "https://www.cpsc.gov/",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "EPA / 州",
+      "title": "PFAS 与化学品限制",
+      "detail": "不粘涂层等含 PFAS 产品面临多州限制与标识要求；加州 65 提案管铅/镉。",
+      "severity": "medium",
+      "source": "EPA / California",
+      "source_url": "https://www.epa.gov/pfas",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "Amazon",
+      "title": "家居类目审核与认证",
+      "detail": "家具/小电需 UL/ETL 认证与合规声明；儿童家具额外要求。",
+      "severity": "medium",
+      "source": "Amazon Seller Central",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "TikTok Shop（美国）",
+      "title": "内容合规红线（2026 更新）",
+      "detail": "90 天内累计违规可撤销电商权限；须真实演示、明示价格与赠品条件。",
+      "severity": "high",
+      "source": "TikTok Shop 卖家中心",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12"
+    }
+  ],
+  "policies": [
+    {
+      "title": "Wooden Bedroom Furniture From the People's Republic of China: Final Results of Antidumping Duty Administrative Review; 2024",
+      "date": "2026-08-12",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) continues to determine that 11 companies under review did not establish their entitlement to a separate rate and are thus part of the People's Republic of China (China)-wide entity and subject to the China-wide entity rate. The period re…",
+      "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16446/wooden-bedroom-furniture-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Mattresses From Malaysia: Final Results of Antidumping Duty Administrative Review; 2024-2025",
+      "date": "2026-08-11",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) determines that mattresses from Malaysia were sold at prices below than normal value (NV) during the period of review (POR), May 1, 2024, through April 30, 2025.",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16361/mattresses-from-malaysia-final-results-of-antidumping-duty-administrative-review-2024-2025",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Hazardous Materials: Adoption of Department of Transportation Special Permit 21287",
+      "date": "2026-08-04",
+      "agency": "Transportation Department",
+      "summary": "This final rule removes undue regulatory burdens by adopting the provisions of U.S Department of Transportation (DOT) special permit (SP) 21287 to streamline the transportation of refrigerating machines-- including common household appliances like refrigerators, window- mounted a…",
+      "url": "https://www.federalregister.gov/documents/2026/08/04/2026-15817/hazardous-materials-adoption-of-department-of-transportation-special-permit-21287",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Mattresses From the People's Republic of China: Final Results of the Expedited First Sunset Review of the Countervailing Duty Order",
+      "date": "2026-07-24",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) finds that revocation of the countervailing duty (CVD) order on mattresses from the People's Republic of China (China) would likely to lead to continuation or recurrence of countervailable subsidies at the levels indicated in the \"Final …",
+      "url": "https://www.federalregister.gov/documents/2026/07/24/2026-15034/mattresses-from-the-peoples-republic-of-china-final-results-of-the-expedited-first-sunset-review-of",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "General Technical, Organizational, Conforming, and Correcting Amendments to the Federal Motor Carrier Safety Regulations",
+      "date": "2026-07-21",
+      "agency": "Transportation Department",
+      "summary": "FMCSA amends its regulations by making technical corrections throughout the Federal Motor Carrier Safety Regulations (FMCSR). The Agency makes minor changes to correct inadvertent errors and omissions, remove or update obsolete references, and improve the clarity and consistency …",
+      "url": "https://www.federalregister.gov/documents/2026/07/21/2026-14701/general-technical-organizational-conforming-and-correcting-amendments-to-the-federal-motor-carrier",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Energy Conservation Program: Procedures, Interpretations, and Policies for Consideration of New or Revised Energy Conservation Standards and Test Procedures for Consumer Products and Certain Commercial/Industrial Equipment",
+      "date": "2026-07-07",
+      "agency": "Energy Department",
+      "summary": "The U.S. Department of Energy (\"DOE\" or \"the Department\") proposes to update the Department's current rulemaking methodology titled, \"Procedures, Interpretations, and Policies for Consideration of New or Revised Energy Conservation Standards and Test Procedures for Consumer Produ…",
+      "url": "https://www.federalregister.gov/documents/2026/07/07/2026-13674/energy-conservation-program-procedures-interpretations-and-policies-for-consideration-of-new-or",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Certain Kitchen Appliance Shelving and Racks From the People's Republic of China: Continuation of Antidumping Duty Order and Countervailing Duty Order",
+      "date": "2026-04-13",
+      "agency": "Commerce Department",
+      "summary": "As a result of the determinations by the U.S. Department of Commerce (Commerce) and the U.S. International Trade Commission (ITC) that revocation of the antidumping duty (AD) order and countervailing duty (CVD) order on kitchen appliance shelving and racks (kitchen racks) from th…",
+      "url": "https://www.federalregister.gov/documents/2026/04/13/2026-07107/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-continuation-of",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Kitchen Appliance Shelving and Racks From China",
+      "date": "2026-04-01",
+      "agency": "International Trade Commission",
+      "summary": "",
+      "url": "https://www.federalregister.gov/documents/2026/04/01/2026-06313/kitchen-appliance-shelving-and-racks-from-china",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Certain Kitchen Appliance Shelving and Racks From the People's Republic of China: Final Results of the Expedited Third Sunset Reviews of the Antidumping Duty Order",
+      "date": "2026-03-12",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) finds that revocation of the antidumping duty (AD) order on kitchen appliance shelving and racks (kitchen racks) from the People's Republic of China (China) would be likely to lead to continuation or recurrence of dumping at the levels i…",
+      "url": "https://www.federalregister.gov/documents/2026/03/12/2026-04884/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-final-results-of-the",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Certain Kitchen Appliance Shelving and Racks From the People's Republic of China: Final Results of the Expedited Third Sunset Review of the Countervailing Duty Order",
+      "date": "2026-03-12",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) finds that revocation of the countervailing duty (CVD) order on certain kitchen appliance shelving and racks (kitchen racks) from the People's Republic of China (China) would be likely to lead to continuation or recurrence of countervail…",
+      "url": "https://www.federalregister.gov/documents/2026/03/12/2026-04878/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-final-results-of-the",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Kitchen Appliance Shelving and Racks From China; Scheduling of Expedited Five-Year Reviews",
+      "date": "2026-02-09",
+      "agency": "International Trade Commission",
+      "summary": "The Commission hereby gives notice of the scheduling of expedited reviews pursuant to the Tariff Act of 1930 (\"the Act\") to determine whether revocation of the antidumping and countervailing duty orders on kitchen appliance shelving and racks from China would be likely to lead to…",
+      "url": "https://www.federalregister.gov/documents/2026/02/09/2026-02538/kitchen-appliance-shelving-and-racks-from-china-scheduling-of-expedited-five-year-reviews",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Kitchen Appliance Shelving and Racks From China; Revised Schedule for the Subject Proceeding",
+      "date": "2025-12-03",
+      "agency": "International Trade Commission",
+      "summary": "",
+      "url": "https://www.federalregister.gov/documents/2025/12/03/2025-21794/kitchen-appliance-shelving-and-racks-from-china-revised-schedule-for-the-subject-proceeding",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Energy Conservation Program: Energy Conservation Standards for Consumer Conventional Cooking Products",
+      "date": "2024-02-14",
+      "agency": "Energy Department",
+      "summary": "The Energy Policy and Conservation Act, as amended (\"EPCA\"), prescribes energy conservation standards for various consumer products and certain commercial and industrial equipment, including consumer conventional cooking products. In this direct final rule, the U.S. Department of…",
+      "url": "https://www.federalregister.gov/documents/2024/02/14/2024-02008/energy-conservation-program-energy-conservation-standards-for-consumer-conventional-cooking-products",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ],
+  "alerts": [
+    {
+      "level": "medium",
+      "title": "对华 Section 301 附加关税覆盖家居厨具税则",
+      "market": "美国",
+      "platform": "USTR / CBP",
+      "detail": "HTS 94(家具)/7323-7324(餐厨金属制品)/8516(小电) 等受 Section 301 约束；2026 强迫劳动提案对部分经济体加征附加税。精确税率须用 USTR 检索或 CBP 裁定确认。",
+      "date": "2026-08-12",
+      "source": "USTR Section 301",
+      "url": "https://ustr.gov/node/9608",
+      "as_of": "2026-08-12",
+      "live": false
+    },
+    {
+      "level": "high",
+      "title": "Wooden Bedroom Furniture From the People's Republic of China: Final Results of Antidumping Duty Administrative Review; 2024",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) continues to determine that 11 companies under review did not establish their entitlement to a separate rate and are thus part of the People's Republic of Ch…",
+      "date": "2026-08-12",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16446/wooden-bedroom-furniture-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Mattresses From Malaysia: Final Results of Antidumping Duty Administrative Review; 2024-2025",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) determines that mattresses from Malaysia were sold at prices below than normal value (NV) during the period of review (POR), May 1, 2024, through April 30, 2…",
+      "date": "2026-08-11",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16361/mattresses-from-malaysia-final-results-of-antidumping-duty-administrative-review-2024-2025",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Mattresses From the People's Republic of China: Final Results of the Expedited First Sunset Review of the Countervailing Duty Order",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) finds that revocation of the countervailing duty (CVD) order on mattresses from the People's Republic of China (China) would likely to lead to continuation o…",
+      "date": "2026-07-24",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/07/24/2026-15034/mattresses-from-the-peoples-republic-of-china-final-results-of-the-expedited-first-sunset-review-of",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "General Technical, Organizational, Conforming, and Correcting Amendments to the Federal Motor Carrier Safety Regulations",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "FMCSA amends its regulations by making technical corrections throughout the Federal Motor Carrier Safety Regulations (FMCSR). The Agency makes minor changes to correct inadvertent errors and omissions…",
+      "date": "2026-07-21",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/07/21/2026-14701/general-technical-organizational-conforming-and-correcting-amendments-to-the-federal-motor-carrier",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Certain Kitchen Appliance Shelving and Racks From the People's Republic of China: Continuation of Antidumping Duty Order and Countervailing Duty Order",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "As a result of the determinations by the U.S. Department of Commerce (Commerce) and the U.S. International Trade Commission (ITC) that revocation of the antidumping duty (AD) order and countervailing …",
+      "date": "2026-04-13",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/04/13/2026-07107/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-continuation-of",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Certain Kitchen Appliance Shelving and Racks From the People's Republic of China: Final Results of the Expedited Third Sunset Reviews of the Antidumping Duty Order",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) finds that revocation of the antidumping duty (AD) order on kitchen appliance shelving and racks (kitchen racks) from the People's Republic of China (China) …",
+      "date": "2026-03-12",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/03/12/2026-04884/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-final-results-of-the",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Certain Kitchen Appliance Shelving and Racks From the People's Republic of China: Final Results of the Expedited Third Sunset Review of the Countervailing Duty Order",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) finds that revocation of the countervailing duty (CVD) order on certain kitchen appliance shelving and racks (kitchen racks) from the People's Republic of Ch…",
+      "date": "2026-03-12",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/03/12/2026-04878/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-final-results-of-the",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Kitchen Appliance Shelving and Racks From China; Scheduling of Expedited Five-Year Reviews",
+      "market": "美国",
+      "platform": "International Trade Commission",
+      "detail": "The Commission hereby gives notice of the scheduling of expedited reviews pursuant to the Tariff Act of 1930 (\"the Act\") to determine whether revocation of the antidumping and countervailing duty orde…",
+      "date": "2026-02-09",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/02/09/2026-02538/kitchen-appliance-shelving-and-racks-from-china-scheduling-of-expedited-five-year-reviews",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ]
+}

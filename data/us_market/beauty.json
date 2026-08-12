@@ -1,0 +1,690 @@
+{
+  "meta": {
+    "market": "美国美妆个护 (US Beauty & Personal Care)",
+    "cat_key": "beauty",
+    "generated_at": "2026-08-12T15:09:40.142204+00:00",
+    "as_of": "2026-08-12",
+    "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
+    "sections": [
+      "country",
+      "platforms",
+      "rules",
+      "policies",
+      "alerts"
+    ],
+    "counts": {
+      "country": 1,
+      "platforms": 7,
+      "rules": 4,
+      "policies": 24,
+      "alerts": 7
+    }
+  },
+  "country": {
+    "market": "美国美妆个护",
+    "cat_key": "beauty",
+    "name_en": "Beauty & Personal Care",
+    "icon": "💄",
+    "flag": "🇺🇸",
+    "subtitle": "United States · 高毛利 + 强内容驱动",
+    "macro": [
+      [
+        "美妆个护市场规模(2026E)",
+        "US$ 1,067.6 亿 (2026E)",
+        "CAGR 2.44% (2026-2031)",
+        "Statista / strategyh, 2026"
+      ],
+      [
+        "美妆个护市场说明",
+        "另口径 ≈ $1,367 亿 CAGR 3.87%；线上占比 ≈ 59.9%，内容电商占比最高品类之一",
+        "—",
+        "Statista / strategyh, 2026"
+      ],
+      [
+        "美国零售电商规模(2026E)",
+        "≈ US$ 1.6 万亿",
+        "同比 +10.4%（2025 为 $1.23 万亿）",
+        "eMarketer / US Census, 2026"
+      ],
+      [
+        "电商渗透率(Q1 2026)",
+        "16.9%（季调）",
+        "剔除汽车/汽油/餐饮后约 23.8%，历史第二高",
+        "US Census Bureau, 2026-05"
+      ],
+      [
+        "线上购物人口",
+        "≈ 2.95 亿（约 80% 成年人）",
+        "增长来自存量用户钱包份额提升",
+        "eMarketer, 2026"
+      ],
+      [
+        "Amazon 市占",
+        "≈ 36%–40% 美国电商",
+        "最大流量入口，品牌信任背书强",
+        "Marketplace Pulse, 2025-2026"
+      ],
+      [
+        "对华关税环境",
+        "收紧 + 复审",
+        "Section 301 附加税覆盖多品类；强迫劳动禁令提案推进",
+        "USTR Section 301, 2026"
+      ],
+      [
+        "内容电商增量",
+        "TikTok Shop 高速扩张",
+        "年轻客群 + 直播/短视频转化，跨境店可入驻",
+        "TikTok Shop 美国, 2026"
+      ]
+    ],
+    "segments": [
+      {
+        "name": "护肤",
+        "note": "最大细分，成分党+抗老驱动"
+      },
+      {
+        "name": "彩妆",
+        "note": "TikTok 爆款集中，季节性强"
+      },
+      {
+        "name": "香水",
+        "note": "高客单，品牌溢价强"
+      },
+      {
+        "name": "个护",
+        "note": "洗发/身体，复购稳"
+      }
+    ],
+    "opportunity": "美妆个护高毛利、强内容驱动（TikTok 占比最高品类之一，线上 ≈ 60%）；成分党与国货成分出海是增量。MoCRA 合规是门槛也是信任背书。",
+    "risks": [
+      "⚠️ MoCRA 工厂注册+产品备案+不良事件报告为强制要求",
+      "⚠️ 色素须 FDA 批号，功效宣称须有 substantiation",
+      "⚠️ FTC 严打功效/成分虚假宣传，网红须披露",
+      "⚠️ 对华 Section 301 覆盖部分美妆设备/包装（HTS 3304/3401 多为零但设备受约束）"
+    ],
+    "advice": [
+      "新手：TikTok Shop 成分爆款试水",
+      "工厂：Amazon + 独立站，重 MoCRA 备案",
+      "品牌：DTC + 成分叙事，重真实功效"
+    ],
+    "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
+    "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
+    "as_of": "2026-08-12"
+  },
+  "findings": [
+    "美妆个护高毛利、强内容驱动（线上 ≈ 60%，TikTok 占比最高品类之一）。",
+    "MoCRA 现代化法规强制工厂注册+产品备案+不良事件报告，是硬门槛也是信任背书。",
+    "色素须 FDA 批号，功效/成分宣称须有 substantiation，FTC 严打虚假宣传。",
+    "成分党与国货成分出海是增量；工厂路径：TikTok 爆款 → Amazon+独立站 → DTC。"
+  ],
+  "platforms": [
+    {
+      "name": "Amazon（美国）",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "多数品类佣金 8%–20%（如消费电子 8%、服饰 17%、家居 15%、美妆 8%–15%、玩具 15%、运动 15%、汽配 12%–15%、保健品 15%）；专业计划 $39.99/月 + FBA 仓储配送费",
+      "feeDesc": "最大流量与信任背书；FBA 本土履约；Brand Registry 防跟卖",
+      "entry": "跨境可入驻；部分类目需审核/资质（如保健品、美妆、汽配）",
+      "strength": "最大流量与信任背书，高客单承接力强",
+      "risk": "佣金高、价格战、账号合规风险",
+      "source": "Amazon Seller Central 销售费用(2026)",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "护肤",
+        "彩妆",
+        "香水",
+        "个护"
+      ]
+    },
+    {
+      "name": "TikTok Shop（美国）",
+      "type": "内容电商",
+      "market": "美国",
+      "commission": "平台佣金约 6%–8%（按类目）+ 支付手续费；卖家中心 2026 更新内容合规红线",
+      "feeDesc": "内容种草+直播转化；跨境店需本地主体/合规资质",
+      "entry": "跨境店可入驻；需本地主体/合规资质",
+      "strength": "内容种草+直播转化，年轻客群增量大",
+      "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
+      "source": "TikTok Shop 美国卖家中心(2026)",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "护肤爆款",
+        "彩妆",
+        "美甲",
+        "香水"
+      ]
+    },
+    {
+      "name": "Walmart Marketplace",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "佣金 6%–15%（按品类），WFS 仓储费 $0.75/立方英尺/月，无月费/入驻费",
+      "feeDesc": "WFS 本土仓 + 跨境；47 个履约中心，88% 美国人口两日达",
+      "entry": "跨境店可入驻，审核较严",
+      "strength": "高信任、低佣金、本土履约",
+      "risk": "流量弱于 Amazon、品类受限",
+      "source": "Walmart Marketplace 费用说明",
+      "source_url": "https://marketplace.walmart.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "家庭个护",
+        "基础护肤",
+        "洗护"
+      ]
+    },
+    {
+      "name": "eBay",
+      "type": "货架/拍卖",
+      "market": "美国",
+      "commission": "成交费约 13%（按品类），店铺订阅另计；无月费基础店",
+      "feeDesc": "开放入驻门槛低；二手/长尾天然场",
+      "entry": "开放入驻，门槛低",
+      "strength": "二手/收藏/长尾流量，国际站点可触达",
+      "risk": "假货争议、价格透明压利润",
+      "source": "eBay 费用说明（参考）",
+      "source_url": "https://www.ebay.com/sellercenter",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "收藏香水",
+        "二手",
+        "长尾"
+      ]
+    },
+    {
+      "name": "Etsy",
+      "type": "手作/设计师",
+      "market": "美国",
+      "commission": "上架费 $0.20/件 + 交易费 6.5% + 支付处理费 6.5%（按国别）",
+      "feeDesc": "无月费；手作/复古/定制定位",
+      "entry": "开放入驻",
+      "strength": "设计师/手工溢价高、客群精准",
+      "risk": "流量小于综合平台、仿品管控",
+      "source": "Etsy Seller Handbook（参考）",
+      "source_url": "https://www.etsy.com/seller-handbook",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "手工皂",
+        "天然护肤",
+        "定制"
+      ]
+    },
+    {
+      "name": "Shopify（独立站 DTC）",
+      "type": "独立站",
+      "market": "美国",
+      "commission": "无平台佣金；订阅 $39–$399/月 + 支付费率 ~2.9%+$0.30",
+      "feeDesc": "品牌自主、数据自有；需自引流量",
+      "entry": "自助建站",
+      "strength": "品牌资产沉淀、毛利高",
+      "risk": "获客成本高、运营重",
+      "source": "Shopify 定价（参考）",
+      "source_url": "https://www.shopify.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "品牌官网",
+        "订阅制",
+        "定制"
+      ]
+    },
+    {
+      "name": "Temu / SHEIN",
+      "type": "低价全托管",
+      "market": "美国",
+      "commission": "全托管/半托管模式，平台定价，卖家挣供货价",
+      "feeDesc": "极致低价流量，卖家利润薄；关税敏感",
+      "entry": "供货商入驻（全托管）",
+      "strength": "海量低价流量",
+      "risk": "利润极低、品牌稀释、关税敏感",
+      "source": "平台公开模式（参考）",
+      "source_url": "https://www.temu.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "低价彩妆",
+        "合金/塑料包装"
+      ]
+    }
+  ],
+  "matrix": [
+    [
+      "Amazon（美国）",
+      "工厂 / 品牌出海",
+      "中（类目审核）",
+      "中",
+      "FBA + Brand Registry，重 MoCRA"
+    ],
+    [
+      "TikTok Shop（美国）",
+      "工厂爆款试水",
+      "中（本地主体）",
+      "高（功效红线）",
+      "成分种草验证爆款"
+    ],
+    [
+      "Walmart",
+      "本土履约卖家",
+      "中高",
+      "低",
+      "高信任基础个护"
+    ],
+    [
+      "eBay",
+      "二手 / 收藏",
+      "低",
+      "中",
+      "收藏香水+长尾"
+    ],
+    [
+      "Etsy",
+      "手工/天然",
+      "低",
+      "低",
+      "手工溢价"
+    ],
+    [
+      "Shopify",
+      "品牌 DTC",
+      "自助",
+      "中（获客）",
+      "订阅制沉淀"
+    ],
+    [
+      "Temu / SHEIN",
+      "低价供货商",
+      "低（全托管）",
+      "高（利润薄）",
+      "走量谨慎"
+    ]
+  ],
+  "rules": [
+    {
+      "platform": "FDA",
+      "title": "MoCRA 现代化化妆品法规",
+      "detail": "2024 起 MoCRA 要求化妆品工厂注册、产品清单备案、不良事件报告、香精致敏原标注；色素须 FDA 批号（color additive approval）。违规可扣留/禁令。",
+      "severity": "high",
+      "source": "FDA MoCRA",
+      "source_url": "https://www.fda.gov/cosmetics/cosmetics-laws-regulations/modernization-cosmetics-regulation-act-2022-mocra",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "FTC",
+      "title": "成分与功效宣称合规",
+      "detail": "「天然/有机/临床验证」等宣称须有 substantiation；禁止误导性功效表述；网红合作须披露。",
+      "severity": "high",
+      "source": "FTC",
+      "source_url": "https://www.ftc.gov/business-guidance/industry/cosmetics",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "Amazon",
+      "title": "美妆类目审核",
+      "detail": "美妆为受限类目，需资质与成分合规；建议 Brand Registry 防跟卖。",
+      "severity": "medium",
+      "source": "Amazon Seller Central",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "TikTok Shop（美国）",
+      "title": "内容合规红线（2026 更新）",
+      "detail": "90 天内累计违规可撤销权限；禁医疗/减肥/功效夸大宣称；须真实演示。",
+      "severity": "high",
+      "source": "TikTok Shop 卖家中心",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12"
+    }
+  ],
+  "policies": [
+    {
+      "title": "Reauthorization of the Generic Drug User Fee Amendments; Public Meeting; Request for Comments",
+      "date": "2026-08-11",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is hosting a public meeting to discuss proposed recommendations for the reauthorization of the Generic Drug User Fee Amendments (GDUFA) for fiscal years (FYs) 2028 to 2032. GDUFA amended the Federal Food, Drug, and Cosmeti…",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16353/reauthorization-of-the-generic-drug-user-fee-amendments-public-meeting-request-for-comments",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Substances Generally Recognized as Safe",
+      "date": "2026-08-11",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) is proposing to require the submission of generally recognized as safe (GRAS) notices for the use of a human or animal food substance purported to be GRAS under the conditions of its intended use under the Federal Food, Drug, and Cosme…",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16296/substances-generally-recognized-as-safe",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Determination That OZOBAX (Baclofen) Oral Solution, 5 Milligrams/5 Milliliters Was Not Withdrawn From Sale for Reasons of Safety or Effectiveness",
+      "date": "2026-08-10",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, Agency, or we) has determined that OZOBAX (baclofen) oral solution, 5 milligrams (mg)/5 milliliters (mL), was not withdrawn from sale for reasons of safety or effectiveness. This determination means that FDA will not begin procedures to with…",
+      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16248/determination-that-ozobax-baclofen-oral-solution-5-milligrams5-milliliters-was-not-withdrawn-from",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Determination of Regulatory Review Period for Purposes of Patent Extension; BRINSUPRI",
+      "date": "2026-08-10",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or the Agency) has determined the regulatory review period for BRINSUPRI and is publishing this notice of that determination as required by law. FDA has made the determination because of the submission of an application to the Director of the…",
+      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16247/determination-of-regulatory-review-period-for-purposes-of-patent-extension-brinsupri",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Determination of Regulatory Review Period for Purposes of Patent Extension; DAYVIGO",
+      "date": "2026-08-10",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or the Agency) has determined the regulatory review period for DAYVIGO and is publishing this notice of that determination as required by law. FDA has made the determination because of the submission of an application to the Director of the U…",
+      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16246/determination-of-regulatory-review-period-for-purposes-of-patent-extension-dayvigo",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Radiology Devices; Reclassification of Digital Breast Tomosynthesis System",
+      "date": "2026-08-10",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is proposing to reclassify digital breast tomosynthesis (DBT) systems, product code OTE, which are postamendments class III devices, from class III (premarket approval) into class II (special controls), subject to premarket notification. FDA…",
+      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16209/radiology-devices-reclassification-of-digital-breast-tomosynthesis-system",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "2-Propenoic Acid, 2-Methyl-, Telomer With 1-Dodecanethiol, and 2-Methyloxirane Polymer With Oxirane Monoether With 1,2-Propanediol Mono(2-Methyl-2-Propenoate) in Pesticide Formulations; Exemption From the Requirement for a Tolerance",
+      "date": "2026-08-07",
+      "agency": "Environmental Protection Agency",
+      "summary": "This regulation establishes an exemption from the requirement of a tolerance for residues of 2-propenoic acid, 2-methyl-, telomer with 1-dodecanethiol, and 2-methyloxirane polymer with oxirane monoether with 1,2-propanediol mono(2-methyl-2-propenoate) (CAS Reg. No 1186225-21-7) w…",
+      "url": "https://www.federalregister.gov/documents/2026/08/07/2026-16123/2-propenoic-acid-2-methyl--telomer-with-1-dodecanethiol-and-2-methyloxirane-polymer-with-oxirane",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Bacillus thuringiensis eCry1Gb.1Ig Protein; Exemption From the Requirement of a Pesticide Tolerance",
+      "date": "2026-08-07",
+      "agency": "Environmental Protection Agency",
+      "summary": "This regulation establishes an exemption from the requirement of a tolerance for residues of Bacillus thuringiensis eCry1Gb.1Ig protein in or on the food and feed commodities of corn, field; corn, sweet; and corn, pop when used as a plant-incorporated protectant (PIP) in corn. Sy…",
+      "url": "https://www.federalregister.gov/documents/2026/08/07/2026-16120/bacillus-thuringiensis-ecry1gb1ig-protein-exemption-from-the-requirement-of-a-pesticide-tolerance",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Authorization of Emergency Use of an In Vitro Diagnostic Device in Response to an Outbreak of Mpox; Availability",
+      "date": "2026-08-06",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or Agency) is announcing the issuance of an Emergency Use Authorization (EUA) (the Authorization) under the Federal Food, Drug, and Cosmetic Act (FD&C Act) in response to an outbreak of Mpox. FDA has issued an Authorization for an in vitro di…",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15964/authorization-of-emergency-use-of-an-in-vitro-diagnostic-device-in-response-to-an-outbreak-of-mpox",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Medical Devices; Radiology Devices; Classification of the Fludeoxyglucose F18-Guided Radiation Therapy System",
+      "date": "2026-08-06",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is classifying the fludeoxyglucose F18-guided radiation therapy system into class II (special controls). The special controls that apply to the device type are identified in this order and will be part of the codified language for classifica…",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15963/medical-devices-radiology-devices-classification-of-the-fludeoxyglucose-f18-guided-radiation-therapy",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Micro-Tracers, Inc.; Response to Objections and Requests for a Public Hearing",
+      "date": "2026-08-05",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) received objections and requests for a public hearing submitted by Buchanan Ingersoll & Rooney PC, on behalf of Micro-Tracers, Inc. (Micro-Tracers or objector), on the order granting a color additive petition (3C0323) requesting that w…",
+      "url": "https://www.federalregister.gov/documents/2026/08/05/2026-15920/micro-tracers-inc-response-to-objections-and-requests-for-a-public-hearing",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Proposed Collection; Comment Request; Requirements for Cosmetic Products",
+      "date": "2026-07-17",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is announcing an opportunity for public comment on the proposed collection of certain information by the Agency. Under the Paperwork Reduction Act of 1995 (PRA), Federal Agencies are required to publish notice in the Feder…",
+      "url": "https://www.federalregister.gov/documents/2026/07/17/2026-14434/agency-information-collection-activities-proposed-collection-comment-request-requirements-for",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "FDA Records Access Authority for Cosmetics; Draft Guidance for Industry; Availability",
+      "date": "2026-01-22",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, Agency, or we) is announcing the availability of a draft document entitled \"FDA Records Access Authority for Cosmetics: Guidance for Industry.\" The draft guidance document provides answers to frequently asked questions about certain authorit…",
+      "url": "https://www.federalregister.gov/documents/2026/01/22/2026-01159/fda-records-access-authority-for-cosmetics-draft-guidance-for-industry-availability",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Questions and Answers Regarding Mandatory Cosmetics Recalls: Draft Guidance for Industry; Availability",
+      "date": "2025-12-18",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or Agency) is announcing the availability of a draft guidance document entitled \"Questions and Answers Regarding Mandatory Cosmetics Recalls: Guidance for Industry.\" The draft guidance document, when finalized, will provide answers to common …",
+      "url": "https://www.federalregister.gov/documents/2025/12/18/2025-23249/questions-and-answers-regarding-mandatory-cosmetics-recalls-draft-guidance-for-industry-availability",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Testing Methods for Detecting and Identifying Asbestos in Talc-Containing Cosmetic Products; Withdrawal",
+      "date": "2025-11-28",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, Agency, or we) is announcing the withdrawal of the proposed rule entitled \"Testing Methods for Detecting and Identifying Asbestos in Talc-Containing Cosmetic Products,\" which published in the Federal Register of December 27, 2024. FDA is tak…",
+      "url": "https://www.federalregister.gov/documents/2025/11/28/2025-21407/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Submission for Office of Management and Budget Review; Comment Request; Food and Drug Administration's Adverse Event and Product Experience Reporting Program",
+      "date": "2025-06-25",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is announcing that a proposed collection of information has been submitted to the Office of Management and Budget (OMB) for review and clearance under the Paperwork Reduction Act of 1995.",
+      "url": "https://www.federalregister.gov/documents/2025/06/25/2025-11605/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Testing Methods for Detecting and Identifying Asbestos in Talc-Containing Cosmetic Products",
+      "date": "2024-12-27",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is proposing to require testing of talc-containing cosmetic products using standardized testing methods for detecting and identifying asbestos that may be present as a contaminant in talc. We are also proposing correspondi…",
+      "url": "https://www.federalregister.gov/documents/2024/12/27/2024-30544/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Registration and Listing of Cosmetic Product Facilities and Products; Guidance for Industry; Availability",
+      "date": "2024-12-12",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, Agency, or we) is announcing the availability of a final guidance for industry entitled \"Registration and Listing of Cosmetic Product Facilities and Products.\" The guidance will assist persons submitting cosmetic product facility registratio…",
+      "url": "https://www.federalregister.gov/documents/2024/12/12/2024-29237/registration-and-listing-of-cosmetic-product-facilities-and-products-guidance-for-industry",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Statement of Organization, Functions, and Delegations of Authority",
+      "date": "2024-06-03",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA), Office of the Commissioner, Headquarters organizations, and Centers have modified their organizational structure",
+      "url": "https://www.federalregister.gov/documents/2024/06/03/2024-11893/statement-of-organization-functions-and-delegations-of-authority",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Registration and Listing of Cosmetic Product Facilities and Products; Guidance for Industry; Availability",
+      "date": "2023-12-19",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) is announcing the availability of a final guidance for industry entitled \"Registration and Listing of Cosmetic Product Facilities and Products.\" The guidance will assist persons submitting cosmetic product facility registrations and pr…",
+      "url": "https://www.federalregister.gov/documents/2023/12/19/2023-27649/registration-and-listing-of-cosmetic-product-facilities-and-products-guidance-for-industry",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Compliance Policy for Cosmetic Product Facility Registration and Cosmetic Product Listing; Guidance for Industry; Availability",
+      "date": "2023-11-09",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) is announcing the availability of a final guidance for industry and the public on the requirements related to cosmetic product facility registration and cosmetic product listing under the Federal Food, Drug, and Cosmetic Act (FD&C Act)…",
+      "url": "https://www.federalregister.gov/documents/2023/11/09/2023-24731/compliance-policy-for-cosmetic-product-facility-registration-and-cosmetic-product-listing-guidance",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Submission for Office of Management and Budget Review; Comment Request; Cosmetic Facility Registration, Product Listing, and Labeling Requirements",
+      "date": "2023-09-18",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, Agency, or we) is announcing that a proposed collection of information has been submitted to the Office of Management and Budget (OMB) for review and clearance under the Paperwork Reduction Act of 1995.",
+      "url": "https://www.federalregister.gov/documents/2023/09/18/2023-20139/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Pilot Program for Cosmetic Product Facility Registration and Listing Electronic Submissions User Acceptance Testing",
+      "date": "2023-08-08",
+      "agency": "Health and Human Services Department",
+      "summary": "The Office of Cosmetics and Colors (OCAC) and the Office of the Chief Scientist (OCS) in the Food and Drug Administration (FDA, Agency, or we) are soliciting applications from members of the cosmetic product industry interested in participating in a voluntary pilot program to con…",
+      "url": "https://www.federalregister.gov/documents/2023/08/08/2023-16772/pilot-program-for-cosmetic-product-facility-registration-and-listing-electronic-submissions-user",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Registration and Listing of Cosmetic Product Facilities and Products; Draft Guidance for Industry; Availability",
+      "date": "2023-08-08",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is announcing the availability of a draft guidance for industry entitled \"Registration and Listing of Cosmetic Product Facilities and Products.\" This draft guidance, when finalized, will assist persons submitting cosmetic …",
+      "url": "https://www.federalregister.gov/documents/2023/08/08/2023-16771/registration-and-listing-of-cosmetic-product-facilities-and-products-draft-guidance-for-industry",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ],
+  "alerts": [
+    {
+      "level": "low",
+      "title": "美妆成品多为零关税，但设备/包材受 Section 301 约束",
+      "market": "美国",
+      "platform": "USTR / CBP",
+      "detail": "HTS 3304(化妆品)/3401(洗护) 多数基础关税为零，但灌装/生产设备及部分包材受 Section 301 附加税约束。出口须以 USTR 检索确认具体编码税率。",
+      "date": "2026-08-12",
+      "source": "USTR Section 301",
+      "url": "https://ustr.gov/node/9608",
+      "as_of": "2026-08-12",
+      "live": false
+    },
+    {
+      "level": "medium",
+      "title": "Determination That OZOBAX (Baclofen) Oral Solution, 5 Milligrams/5 Milliliters Was Not Withdrawn From Sale for Reasons of Safety or Effectiveness",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "The Food and Drug Administration (FDA, Agency, or we) has determined that OZOBAX (baclofen) oral solution, 5 milligrams (mg)/5 milliliters (mL), was not withdrawn from sale for reasons of safety or ef…",
+      "date": "2026-08-10",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16248/determination-that-ozobax-baclofen-oral-solution-5-milligrams5-milliliters-was-not-withdrawn-from",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Radiology Devices; Reclassification of Digital Breast Tomosynthesis System",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "The Food and Drug Administration (FDA) is proposing to reclassify digital breast tomosynthesis (DBT) systems, product code OTE, which are postamendments class III devices, from class III (premarket ap…",
+      "date": "2026-08-10",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16209/radiology-devices-reclassification-of-digital-breast-tomosynthesis-system",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Medical Devices; Radiology Devices; Classification of the Fludeoxyglucose F18-Guided Radiation Therapy System",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "The Food and Drug Administration (FDA) is classifying the fludeoxyglucose F18-guided radiation therapy system into class II (special controls). The special controls that apply to the device type are i…",
+      "date": "2026-08-06",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15963/medical-devices-radiology-devices-classification-of-the-fludeoxyglucose-f18-guided-radiation-therapy",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Questions and Answers Regarding Mandatory Cosmetics Recalls: Draft Guidance for Industry; Availability",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "The Food and Drug Administration (FDA or Agency) is announcing the availability of a draft guidance document entitled \"Questions and Answers Regarding Mandatory Cosmetics Recalls: Guidance for Industr…",
+      "date": "2025-12-18",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2025/12/18/2025-23249/questions-and-answers-regarding-mandatory-cosmetics-recalls-draft-guidance-for-industry-availability",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Testing Methods for Detecting and Identifying Asbestos in Talc-Containing Cosmetic Products; Withdrawal",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "The Food and Drug Administration (FDA, Agency, or we) is announcing the withdrawal of the proposed rule entitled \"Testing Methods for Detecting and Identifying Asbestos in Talc-Containing Cosmetic Pro…",
+      "date": "2025-11-28",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2025/11/28/2025-21407/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Testing Methods for Detecting and Identifying Asbestos in Talc-Containing Cosmetic Products",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "The Food and Drug Administration (FDA, the Agency, or we) is proposing to require testing of talc-containing cosmetic products using standardized testing methods for detecting and identifying asbestos…",
+      "date": "2024-12-27",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2024/12/27/2024-30544/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ]
+}
