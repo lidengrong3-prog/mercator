@@ -1,0 +1,448 @@
+{
+  "meta": {
+    "market": "美国珠宝 (US Jewelry Omni-channel)",
+    "generated_at": "2026-08-12T08:49:52.054708+00:00",
+    "as_of": "2026-08-12",
+    "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
+    "sections": [
+      "country",
+      "platforms",
+      "rules",
+      "policies",
+      "alerts"
+    ],
+    "counts": {
+      "country": 1,
+      "platforms": 7,
+      "rules": 6,
+      "policies": 8,
+      "alerts": 6
+    }
+  },
+  "country": {
+    "market": "美国珠宝",
+    "flag": "🇺🇸",
+    "subtitle": "United States · 全球第三大珠宝消费市场",
+    "macro": [
+      [
+        "全球珠宝市场规模(2026)",
+        "US$ 4,086亿",
+        "CAGR 5.10% (2026-2031)",
+        "Statista Market Insights, 2026-03"
+      ],
+      [
+        "美国珠宝消费地位",
+        "全球第三",
+        "次于中国(~$1260亿)/印度",
+        "Statista, 2026"
+      ],
+      [
+        "全球奢侈珠宝市场(2025)",
+        "约 €320亿",
+        "—",
+        "Statista, 2025"
+      ],
+      [
+        "全球黄金需求(2025)",
+        ">5,025 吨",
+        "珠宝业用金 >1,648 吨",
+        "Statista / World Gold Council, 2025"
+      ],
+      [
+        "培育钻石趋势",
+        "主流化",
+        "天然钻价承压、道德/性价比驱动",
+        "Statista, 2025-2026"
+      ],
+      [
+        "对华关税环境",
+        "收紧",
+        "珠宝税则 7113/7116/7117 受 Section 301 约束",
+        "USTR Section 301, 2026"
+      ]
+    ],
+    "segments": [
+      {
+        "name": "高端婚嫁",
+        "note": "订婚戒/结婚戒为主力高客单，Signet/Pandora/Brilliant Earth 主导"
+      },
+      {
+        "name": "轻奢时尚",
+        "note": "Etsy/亚马逊快时尚饰品，Z世代冲动消费"
+      },
+      {
+        "name": "培育钻石",
+        "note": "价格优势+道德叙事，份额快速攀升"
+      },
+      {
+        "name": "银饰/半宝",
+        "note": "TikTok Shop 内容电商爆款集中地"
+      }
+    ],
+    "opportunity": "成熟市场+高客单+完善履约；品牌化与差异化（培育钻、设计师款、DTC）是核心路径。TikTok Shop 内容电商为新增量渠道。",
+    "risks": [
+      "⚠️ 对华 Section 301 附加关税覆盖珠宝税则 7113/7116/7117，需以 USTR 产品检索+CBP 裁定确认精确税率",
+      "⚠️ FTC Jewelry Guides(16 CFR Part 23) 严管贵金属/镀层标示与培育钻披露，违规可罚",
+      "⚠️ 加州 Prop 65 对铅/镉含量有警示要求",
+      "⚠️ 各州销售税规则复杂，平台通常代扣"
+    ],
+    "advice": [
+      "新手：TikTok Shop 跨境试水，低成本验证爆款",
+      "工厂：Amazon FBA + 独立站双轨，海外仓必备",
+      "精品：品牌 DTC + Amazon Brand Registry，重内容营销"
+    ],
+    "source": "Statista / USTR / FTC / 行业研究综合",
+    "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
+    "as_of": "2026-08-12"
+  },
+  "platforms": [
+    {
+      "name": "Amazon（美国）",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "珠宝 20%(≤$250)/5%(>$250)，最低 $0.30；钟表 16%(≤$1500)/3%(>$1500)",
+      "feeDesc": "专业计划 $39.99/月（或 $0.99/件 Individual）；FBA 另计仓储+配送费",
+      "entry": "跨境可入驻；珠宝属受限类目需审核，建议 Brand Registry",
+      "hotCats": [
+        "订婚戒",
+        "时尚饰品",
+        "银饰",
+        "手表"
+      ],
+      "strength": "最大流量与信任背书，高客单承接力强",
+      "risk": "佣金高、价格战、账号合规风险",
+      "source": "Amazon Seller Central 销售费用(2026)",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12"
+    },
+    {
+      "name": "TikTok Shop（美国）",
+      "type": "内容电商",
+      "market": "美国",
+      "commission": "珠宝类目佣金约 6%–8%（以卖家中心类目为准）",
+      "feeDesc": "平台佣金 + 支付手续费；卖家中心 2026 更新内容合规红线",
+      "entry": "跨境店可入驻；需本地主体/合规资质",
+      "hotCats": [
+        "银饰",
+        "时尚耳环/项链",
+        "培育钻饰品",
+        "生日/节日礼"
+      ],
+      "strength": "内容种草+直播转化，年轻客群增量大",
+      "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
+      "source": "TikTok Shop 美国卖家中心(2026)",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12"
+    },
+    {
+      "name": "Walmart Marketplace",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "佣金 6%–15%（按品类），WFS 仓储费 $0.75/立方英尺/月，无月费/入驻费",
+      "feeDesc": "WFS 本土仓 + 跨境；47 个履约中心，88% 美国人口两日达",
+      "entry": "跨境店可入驻，审核较严",
+      "hotCats": [
+        "家居珠宝",
+        "时尚饰品",
+        "手表"
+      ],
+      "strength": "高信任、低佣金、本土履约",
+      "risk": "流量弱于 Amazon、品类受限",
+      "source": "Walmart Marketplace 费用说明 / 本系统 platforms 档案",
+      "source_url": "https://marketplace.walmart.com/",
+      "as_of": "2026-08-12"
+    },
+    {
+      "name": "eBay",
+      "type": "货架/拍卖",
+      "market": "美国",
+      "commission": "成交费约 13%（按品类），店铺订阅另计",
+      "feeDesc": "无月费基础店；国际站点可触达",
+      "entry": "开放入驻，门槛低",
+      "hotCats": [
+        "二手/古董珠宝",
+        "收藏款",
+        "散珠配件"
+      ],
+      "strength": "二手/古董珠宝天然场，长尾流量",
+      "risk": "假货争议、价格透明压利润",
+      "source": "eBay 费用说明（参考）",
+      "source_url": "https://www.ebay.com/sellercenter",
+      "as_of": "2026-08-12"
+    },
+    {
+      "name": "Etsy",
+      "type": "手作/设计师",
+      "market": "美国",
+      "commission": "上架费 $0.20/件 + 交易费 6.5% + 支付处理费 6.5%（按国别）",
+      "feeDesc": "无月费；手作/复古/定制定位",
+      "entry": "开放入驻",
+      "hotCats": [
+        "手工银饰",
+        "定制刻字",
+        "复古珠宝",
+        "诞生石"
+      ],
+      "strength": "设计师/手工溢价高、客群精准",
+      "risk": "流量小于综合平台、仿品管控",
+      "source": "Etsy Seller Handbook（参考）",
+      "source_url": "https://www.ety.com/sell",
+      "as_of": "2026-08-12"
+    },
+    {
+      "name": "Shopify（独立站 DTC）",
+      "type": "独立站",
+      "market": "美国",
+      "commission": "无平台佣金；订阅 $39–$399/月 + 支付费率 ~2.9%+$0.30",
+      "feeDesc": "品牌自主、数据自有；需自引流量",
+      "entry": "自助建站",
+      "hotCats": [
+        "品牌官网",
+        "订婚戒定制",
+        "会员复购"
+      ],
+      "strength": "品牌资产沉淀、毛利高",
+      "risk": "获客成本高、运营重",
+      "source": "Shopify 定价（参考）",
+      "source_url": "https://www.shopify.com/pricing",
+      "as_of": "2026-08-12"
+    },
+    {
+      "name": "Temu / SHEIN",
+      "type": "低价全托管",
+      "market": "美国",
+      "commission": "全托管/半托管模式，平台定价，卖家挣供货价",
+      "feeDesc": "极致低价流量，卖家利润薄",
+      "entry": "供货商入驻（全托管）",
+      "hotCats": [
+        "低价时尚饰品",
+        "合金/不锈钢"
+      ],
+      "strength": "海量低价流量",
+      "risk": "利润极低、品牌稀释、关税敏感",
+      "source": "平台公开模式（参考）",
+      "source_url": "https://www.temu.com/",
+      "as_of": "2026-08-12"
+    }
+  ],
+  "rules": [
+    {
+      "platform": "FTC（美国联邦贸易委员会）",
+      "title": "Jewelry Guides (16 CFR Part 23)",
+      "detail": "贵金属/贵金属镀层（如 14K、gold-plated）标示须真实；培育钻/合成钻必须明确披露，不得冒充天然钻；原产地与重量标示要求严格。违规可面临罚款与产品下架。",
+      "severity": "high",
+      "source": "FTC Jewelry Guides",
+      "source_url": "https://www.ftc.gov/legal-library/browse/rules/jewelry-guides",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "CBP（美国海关）",
+      "title": "HTS 申报与 Section 301 附加税",
+      "detail": "进口珠宝须按 HTS 申报：7113(珠宝)、7116(宝石器)、7117(仿首饰)、7103(加工宝石)、7104(合成宝石)、7101.22(养殖珍珠)。上述多受 Section 301 对华附加关税约束，税率以 USTR 产品检索 + CBP 裁定为准。",
+      "severity": "high",
+      "source": "USTR / CBP",
+      "source_url": "https://ustr.gov/node/9608",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "加州 EPA",
+      "title": "Proposition 65 铅/镉警示",
+      "detail": "含铅/镉等有害物质超阈值的珠宝须加贴 Prop 65 警示标签，否则可遭诉讼。",
+      "severity": "medium",
+      "source": "California OEHHA",
+      "source_url": "https://oehha.ca.gov/proposition-65",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "Amazon",
+      "title": "珠宝类目限制与品牌备案",
+      "detail": "珠宝为受限类目，需审核；二手/修复珠宝受限；建议完成 Brand Registry 以防跟卖与侵权；贵金属须符合 FTC 标示。",
+      "severity": "medium",
+      "source": "Amazon Seller Central",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "TikTok Shop（美国）",
+      "title": "内容合规红线（2026 更新）",
+      "detail": "90 天内累计违规可立即撤销电商权限；须真实演示、明示价格与赠品条件；禁止医疗/减肥/性暗示/侵权内容；严禁假货/仿牌；静态图/录屏视为低质。",
+      "severity": "high",
+      "source": "TikTok Shop 卖家中心",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "Etsy",
+      "title": "手作/复古/定制定位",
+      "detail": "商品须符合手作、复古(>20年)或设计主导；标注材料与产地；禁止大规模工厂直发冒充手作。",
+      "severity": "low",
+      "source": "Etsy Seller Handbook",
+      "source_url": "https://www.etsy.com/seller-handbook",
+      "as_of": "2026-08-12"
+    }
+  ],
+  "policies": [
+    {
+      "title": "CBP 加强 Section 301 对华附加税执法（珠宝进口查验）",
+      "date": "2026-08-12",
+      "agency": "美国海关与边境保护局 (CBP)",
+      "summary": "CBP 对 HTS 7113/7116/7117 等珠宝税则逐票核验 Section 301 附加税率与原产地；建议出口商备齐 HTS 归类、原产地证与成分声明，避免清关延误与补税。",
+      "url": "https://www.cbp.gov/",
+      "source": "U.S. Customs and Border Protection",
+      "source_url": "https://www.cbp.gov/trade",
+      "as_of": "2026-08-12",
+      "live": false
+    },
+    {
+      "title": "USTR 2026 强迫劳动进口禁令提案（影响珠宝供应链尽职调查）",
+      "date": "2026-06-02",
+      "agency": "美国贸易代表办公室 (USTR)",
+      "summary": "USTR 发布 Section 301 强迫劳动进口禁令可诉性与拟议行动通知：对未有效执行强迫劳动进口禁令的经济体拟加征 10%（部分）/12.5%（其他）附加关税，并要求建立供应链尽职调查。珠宝业（黄金/钻石/珍珠开采与加工）属高风险供应链，须强化溯源。",
+      "url": "https://ustr.gov/sites/default/files/files/Press/Releases/2026/FRN%20-%20Section%20301%20Forced%20Labor%20Import%20Ban%20Actionabilty%20and%20Proposed%20Action%206-2-26%20FINAL.pdf",
+      "source": "USTR (2026-06-02 Federal Register 通知)",
+      "source_url": "https://ustr.gov/node/9608",
+      "as_of": "2026-08-12",
+      "live": false
+    },
+    {
+      "title": "List of Participating Countries and Entities in the Kimberley Process Certification Scheme, Known as “Participants” for the Purposes of the Clean Diamond Trade Act of 2003",
+      "date": "2025-03-06",
+      "agency": "State Department",
+      "summary": "The Department of State is updating the list of Participants eligible for trade in rough diamonds under the Act, and their respective Importing and Exporting Authorities, revising the previously published list of April 6, 2022, to reflect the addition of Uzbekistan as a Participa…",
+      "url": "https://www.federalregister.gov/documents/2025/03/06/2025-03623/list-of-participating-countries-and-entities-in-the-kimberley-process-certification-scheme-known-as",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Endangered and Threatened Wildlife and Plants; Proposed Listing Determinations for Ten Species of Giant Clams Under the Endangered Species Act",
+      "date": "2024-07-25",
+      "agency": "Commerce Department",
+      "summary": "We, NMFS, have completed a comprehensive status review of seven species of giant clams (Hippopus hippopus, H. porcellanus, Tridacna derasa, T. gigas, T. mbalavuana, T. squamosa, and T. squamosina) in response to a petition to list these species as threatened or endangered under t…",
+      "url": "https://www.federalregister.gov/documents/2024/07/25/2024-14970/endangered-and-threatened-wildlife-and-plants-proposed-listing-determinations-for-ten-species-of",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Foreign-Trade Zone (FTZ) 241-Fort Lauderdale, Florida; Notification of Proposed Production Activity; Almod Diamonds Ltd., Inc. (Jewelry, Precious and Semi-Precious Stones, and Pearls), Miramar, Florida",
+      "date": "2022-07-07",
+      "agency": "Commerce Department",
+      "summary": "",
+      "url": "https://www.federalregister.gov/documents/2022/07/07/2022-14414/foreign-trade-zone-ftz-241-fort-lauderdale-florida-notification-of-proposed-production-activity",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Guides for the Jewelry, Precious Metals, and Pewter Industries",
+      "date": "2018-08-16",
+      "agency": "Federal Trade Commission",
+      "summary": "The Federal Trade Commission (\"FTC\" or \"Commission\") adopts revised Guides for the Jewelry, Precious Metals, and Pewter Industries (\"Jewelry Guides\" or \"Guides\"). This document summarizes the Commission's revisions to the previous Guides and includes the final Guides as revised. …",
+      "url": "https://www.federalregister.gov/documents/2018/08/16/2018-17454/guides-for-the-jewelry-precious-metals-and-pewter-industries",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Guides for the Jewelry, Precious Metals, and Pewter Industries",
+      "date": "2016-01-12",
+      "agency": "Federal Trade Commission",
+      "summary": "The Federal Trade Commission (\"FTC\" or \"Commission\") proposes revisions to its Guides for the Jewelry, Precious Metals, and Pewter Industries (\"Jewelry Guides\" or \"Guides\"). The proposed revisions aim to respond to changes in the marketplace and help marketers avoid deceptive and…",
+      "url": "https://www.federalregister.gov/documents/2016/01/12/2016-00107/guides-for-the-jewelry-precious-metals-and-pewter-industries",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Guides for the Metallic Watch Band Industry and Guides for the Jewelry Industry",
+      "date": "1996-05-30",
+      "agency": "",
+      "summary": "The Federal Trade Commission (``Commission'') announces that it has concluded a review of its Guides for the Metallic Watch Band Industry (``Watch Band Guides'') and Guides for the Jewelry Industry (``Jewelry Guides''). The Commission rescinds the Watch Band Guides in a document …",
+      "url": "https://www.federalregister.gov/documents/1996/05/30/96-13524/guides-for-the-metallic-watch-band-industry-and-guides-for-the-jewelry-industry",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ],
+  "alerts": [
+    {
+      "level": "high",
+      "title": "对华 Section 301 附加关税覆盖珠宝税则（需逐票确认税率）",
+      "market": "美国",
+      "platform": "USTR / CBP",
+      "detail": "HTS 7113/7116/7117/7103/7104/7101.22 受 Section 301 约束；2024 四年期复审已调整税率，2026 强迫劳动提案对部分经济体加征 10%/12.5%。精确附加税率须用 USTR 产品检索或 CBP 裁定确认。",
+      "date": "2026-08-12",
+      "source": "USTR Section 301",
+      "url": "https://ustr.gov/node/9608",
+      "as_of": "2026-08-12",
+      "live": false
+    },
+    {
+      "level": "medium",
+      "title": "List of Participating Countries and Entities in the Kimberley Process Certification Scheme, Known as “Participants” for the Purposes of the Clean Diamond Trade Act of 2003",
+      "market": "美国",
+      "platform": "State Department",
+      "detail": "The Department of State is updating the list of Participants eligible for trade in rough diamonds under the Act, and their respective Importing and Exporting Authorities, revising the previously publi…",
+      "date": "2025-03-06",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2025/03/06/2025-03623/list-of-participating-countries-and-entities-in-the-kimberley-process-certification-scheme-known-as",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Foreign-Trade Zone (FTZ) 241-Fort Lauderdale, Florida; Notification of Proposed Production Activity; Almod Diamonds Ltd., Inc. (Jewelry, Precious and Semi-Precious Stones, and Pearls), Miramar, Florida",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "",
+      "date": "2022-07-07",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2022/07/07/2022-14414/foreign-trade-zone-ftz-241-fort-lauderdale-florida-notification-of-proposed-production-activity",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Guides for the Jewelry, Precious Metals, and Pewter Industries",
+      "market": "美国",
+      "platform": "Federal Trade Commission",
+      "detail": "The Federal Trade Commission (\"FTC\" or \"Commission\") adopts revised Guides for the Jewelry, Precious Metals, and Pewter Industries (\"Jewelry Guides\" or \"Guides\"). This document summarizes the Commissi…",
+      "date": "2018-08-16",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2018/08/16/2018-17454/guides-for-the-jewelry-precious-metals-and-pewter-industries",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Guides for the Jewelry, Precious Metals, and Pewter Industries",
+      "market": "美国",
+      "platform": "Federal Trade Commission",
+      "detail": "The Federal Trade Commission (\"FTC\" or \"Commission\") proposes revisions to its Guides for the Jewelry, Precious Metals, and Pewter Industries (\"Jewelry Guides\" or \"Guides\"). The proposed revisions aim…",
+      "date": "2016-01-12",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2016/01/12/2016-00107/guides-for-the-jewelry-precious-metals-and-pewter-industries",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Guides for the Metallic Watch Band Industry and Guides for the Jewelry Industry",
+      "market": "美国",
+      "platform": "政府/监管",
+      "detail": "The Federal Trade Commission (``Commission'') announces that it has concluded a review of its Guides for the Metallic Watch Band Industry (``Watch Band Guides'') and Guides for the Jewelry Industry (`…",
+      "date": "1996-05-30",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/1996/05/30/96-13524/guides-for-the-metallic-watch-band-industry-and-guides-for-the-jewelry-industry",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ]
+}
