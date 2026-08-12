@@ -162,6 +162,26 @@ def build(d, st):
                   "且纳入 4 小时自动更新流水线。", st["body"]))
     flow.append(Spacer(1, 3 * mm))
 
+    # 核心发现（高亮框）
+    flow.append(P("核心发现（Key Findings）", st["h2"]))
+    findings = [
+        "美国是全球第三大珠宝消费市场，客单高、履约成熟；品牌化与差异化（培育钻 / 设计师款 / DTC）是核心路径。",
+        "对华 Section 301 附加关税覆盖珠宝核心税则 7113 / 7116 / 7117，是出海最大政策变量，须逐票确认精确税率。",
+        "TikTok Shop 内容电商成为年轻客群（银饰 / 时尚款）新增量渠道，但内容合规红线严格（90 天累计违规可撤销权限）。",
+        "FTC Jewelry Guides 严管贵金属标示与培育钻披露，加州 Prop 65 管铅镉限量，违规可罚款或下架。",
+        "工厂出海推荐路径：TikTok Shop 试水验证爆款 → Amazon FBA + 独立站双轨 → 品牌 DTC 沉淀资产。",
+    ]
+    box = Table([[P("• " + f, st["cell"])] for f in findings], colWidths=[170 * mm])
+    box.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), LIGHT),
+        ("BOX", (0, 0), (-1, -1), 0.6, SEA),
+        ("LEFTPADDING", (0, 0), (-1, -1), 8), ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+        ("TOPPADDING", (0, 0), (-1, -1), 5), ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+        ("FONTNAME", (0, 0), (-1, -1), FONT),
+    ]))
+    flow.append(box)
+    flow.append(Spacer(1, 3 * mm))
+
     # ---------- 第一部分 宏观全景 ----------
     flow.append(P("第一部分　美国珠宝行业宏观全景", st["h1"]))
     flow.append(P("1.1 市场规模与增长趋势", st["h2"]))
@@ -206,6 +226,24 @@ def build(d, st):
                      P(p.get("commission", ""), st["cell"]), P(p.get("entry", ""), st["cell"]),
                      P("、".join(p.get("hotCats", [])[:3]), st["cell"])])
     flow.append(std_table(rows, [32 * mm, 16 * mm, 52 * mm, 30 * mm, 30 * mm], st))
+    flow.append(Spacer(1, 3 * mm))
+
+    flow.append(P("2.3 工厂出海平台适配矩阵", st["h2"]))
+    flow.append(P("针对产业带工厂老板视角，按「最适合的卖家类型 / 入驻难度 / 风险等级 / 行动建议」横向对比：", st["body"]))
+    matrix = [
+        ["Amazon（美国）", "工厂 / 品牌出海", "中（类目审核）", "中", "FBA + Brand Registry，重合规与Listing"],
+        ["TikTok Shop（美国）", "工厂爆款试水", "中（本地主体）", "高（内容红线）", "内容种草验证爆款，控退货率"],
+        ["Walmart", "本土履约卖家", "中高", "低", "WFS 降低履约成本，高信任"],
+        ["eBay", "二手 / 古董珠宝", "低", "中", "长尾 + 收藏款流量"],
+        ["Etsy", "手作 / 设计师", "低", "低", "手工溢价，客群精准"],
+        ["Shopify", "品牌 DTC", "自助", "中（获客）", "沉淀品牌资产与复购"],
+        ["Temu / SHEIN", "低价供货商", "低（全托管）", "高（利润薄）", "走量需谨慎，防品牌稀释"],
+    ]
+    mrows = [header_row(["平台", "最适合", "入驻难度", "风险", "行动建议"], st)]
+    for r in matrix:
+        mrows.append([P(r[0], st["cell"]), P(r[1], st["cell"]), P(r[2], st["cell"]),
+                      P(r[3], st["cell"]), P(r[4], st["cell"])])
+    flow.append(std_table(mrows, [34 * mm, 28 * mm, 28 * mm, 22 * mm, 58 * mm], st))
     flow.append(PageBreak())
 
     # ---------- 第三部分 规则与合规 ----------
