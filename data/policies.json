@@ -1,7 +1,91 @@
 {
-  "updated_at": "2026-08-12T06:25:17.252437+08:00",
+  "updated_at": "2026-08-12T13:49:36.177894+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260812-a342e822",
+      "title": "Prospective Grant of an Exclusive Patent License: Development and Commercialization of BL-760 Dye for Intraoperative Fluorescence Imaging",
+      "summary": "The National Cancer Institute, an institute of the National Institutes of Health, Department of Health and Human Services, is contemplating the grant of an Exclusive Patent License to practice the inventions embodied in the patents and patent applications listed in the Supplementary Information sect",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/12/2026-16444/prospective-grant-of-an-exclusive-patent-license-development-and-commercialization-of-bl-760-dye-for",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-12",
+      "collected_at": "2026-08-12T13:49:36.177894+08:00"
+    },
+    {
+      "id": "p20260812-7a69b0e5",
+      "title": "Wooden Bedroom Furniture From the People's Republic of China: Final Results of Antidumping Duty Administrative Review; 2024",
+      "summary": "The U.S. Department of Commerce (Commerce) continues to determine that 11 companies under review did not establish their entitlement to a separate rate and are thus part of the People's Republic of China (China)-wide entity and subject to the China-wide entity rate. The period review (POR) is Januar",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/12/2026-16446/wooden-bedroom-furniture-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
+      "region": "US",
+      "category": "tariff",
+      "impact_level": "high",
+      "published_at": "2026-08-12",
+      "collected_at": "2026-08-12T13:49:36.177894+08:00"
+    },
+    {
+      "id": "p20260812-86d062e8",
+      "title": "Pacific Northwest National Laboratory et al; Application(s) for Duty-Free Entry of Scientific Instruments",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/12/2026-16447/pacific-northwest-national-laboratory-et-al-applications-for-duty-free-entry-of-scientific",
+      "region": "US",
+      "category": "tariff",
+      "impact_level": "high",
+      "published_at": "2026-08-12",
+      "collected_at": "2026-08-12T13:49:36.177894+08:00"
+    },
+    {
+      "id": "p20260812-9b7cff52",
+      "title": "UChicago Argonne LLC et al; Notice of Decision on Application for Duty-Free Entry of Scientific Instruments",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/12/2026-16448/uchicago-argonne-llc-et-al-notice-of-decision-on-application-for-duty-free-entry-of-scientific",
+      "region": "US",
+      "category": "tariff",
+      "impact_level": "high",
+      "published_at": "2026-08-12",
+      "collected_at": "2026-08-12T13:49:36.177894+08:00"
+    },
+    {
+      "id": "p20260812-cbf90049",
+      "title": "Government Owned Invention Available for License: MC38 B2m KO Cell Line",
+      "summary": "The National Cancer Institute (NCI) seeks licensees for a CRISPR/Cas9-engineered MC38 B2m knockout murine colon cancer cell line that models tumor resistance to PD-1/PD-L1 checkpoint blockade caused by loss of MHC-I antigen presentation. This research tool provides an opportunity to study checkpoint",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/12/2026-16449/government-owned-invention-available-for-license-mc38-b2m-ko-cell-line",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-12",
+      "collected_at": "2026-08-12T13:49:36.177894+08:00"
+    },
+    {
+      "id": "p20260812-4421b4dd",
+      "title": "Community Reinvestment Act Regulations",
+      "summary": "The Office of the Comptroller of the Currency (OCC) and the Federal Deposit Insurance Corporation (FDIC) are proposing to amend their Community Reinvestment Act rules by making certain substantive, technical, and process-oriented changes to refocus on the statutory objective of encouraging banks to ",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/12/2026-16454/community-reinvestment-act-regulations",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-12",
+      "collected_at": "2026-08-12T13:49:36.177894+08:00"
+    },
+    {
+      "id": "p20260812-72287cf0",
+      "title": "Appellate Jurisdiction Update II",
+      "summary": "The Merit Systems Protection Board (MSPB or Board) is amending its regulations to remove references to MSPB's jurisdiction over probationary termination, suitability, and reduction-in-force (RIF) appeals. This revision reflects the Office of Personnel Management's (OPM's) rescission of the MSPB's ju",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/12/2026-16456/appellate-jurisdiction-update-ii",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-12",
+      "collected_at": "2026-08-12T13:49:36.177894+08:00"
+    },
     {
       "id": "p20260811-d0af0ac7",
       "title": "Marine Mammals; Incidental Take During Specified Activities; Proposed Incidental Harassment Authorization for Southwest Alaska Stock of Northern Sea Otters in Unalaska, Alaska",
