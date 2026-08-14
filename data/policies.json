@@ -1,7 +1,55 @@
 {
-  "updated_at": "2026-08-14T13:49:56.818683+08:00",
+  "updated_at": "2026-08-14T19:12:05.617022+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260814-9f2379ac",
+      "title": "征收100%关税！特朗普又签署新文件了",
+      "summary": "当地时间8月13日，白宫发布一则新公告，称美国总统特朗普签署行政令，宣布对进口无人机及其关键零部件加征高额关税。 根据白宫发布的公告，此次关税征收采取“分级制”： • 对于特定尺寸或具备敏感功能的无人机，将征收高达100%的从价关税。 • 尺寸较小的无人机则面临25%的关税。 • 来自欧盟、日本、韩国、瑞士、列支敦士登及中国台湾地区的无人机及零部件，将被额外征收15%的关税。 • 来自英国的无人机税率为10%。 图源：美国白宫 白宫在声明中给出的理由颇为直白——美国“过于依赖”外国无人机供应。特朗普本人更是在公告文本中强调，外国无人机生产商的“进口渗透率极高”。 【关税变局之下，新的市场机遇也在悄然生长。8月18日杭州，欧洲出海卖家峰会，独家邀约 eMAG、Bol.com、OnBuy等本土平台，帮助卖家从小众赛道里挖掘增量空间。点此报名 ，现场了解入驻门槛和实操避坑】 值得关注的是，此次被加征额外关税的经济体，几乎囊括了美国所有主要盟友——欧盟、日韩、英国、瑞士等无一幸免 对于中国无人机产业而言，虽然此次公告并未单独点名中国，但中国作为全球消费级和工业级无人机最大的生产国与出口国，实际...",
+      "source": "雨果网",
+      "source_url": "https://www.cifnews.com/article/188266",
+      "region": "Global",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-14",
+      "collected_at": "2026-08-14T19:12:05.617022+08:00"
+    },
+    {
+      "id": "p20260814-62c06fa8",
+      "title": "Notice of Lodging of Proposed Consent Decree Under the Safe Drinking Water Act",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/14/2026-16676/notice-of-lodging-of-proposed-consent-decree-under-the-safe-drinking-water-act",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-14",
+      "collected_at": "2026-08-14T19:12:05.617022+08:00"
+    },
+    {
+      "id": "p20260814-5cb1d65d",
+      "title": "Differential Pay for Prescribed Wildland Fire Activities",
+      "summary": "The Office of Personnel Management is issuing a final rule to add prescribed (planned) wildland fire duties as covered activities triggering payment of Hazardous Duty Pay (HDP) for General Schedule (GS) employees and Environmental Differential Pay (EDP) for Federal Wage System (FWS) employees. The f",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/14/2026-16687/differential-pay-for-prescribed-wildland-fire-activities",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-14",
+      "collected_at": "2026-08-14T19:12:05.617022+08:00"
+    },
+    {
+      "id": "p20260814-12a8c3a1",
+      "title": "Delivering Gold Standard Childhood Vaccine Recommendations for Americans",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/14/2026-16730/delivering-gold-standard-childhood-vaccine-recommendations-for-americans",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-14",
+      "collected_at": "2026-08-14T19:12:05.617022+08:00"
+    },
     {
       "id": "p20260814-9da22393",
       "title": "欧盟PPWR 8月12日实施，跨境包装合规别只看EPR",

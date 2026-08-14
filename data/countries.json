@@ -10286,11 +10286,11 @@
         "3C配件 +20% 平行进口渠道"
       ],
       "risks": [
+        "⚠️ Streamlining Export Controls for Drone Exports（Federal Register 2026-08-14）",
         "⚠️ Implementation of EAR Export Controls on Silencers, Mufflers（Federal Register 2026-07-23）",
         "⚠️ Publication of Venezuela Sanctions Regulations Web General L（Federal Register 2026-06-10）",
         "⚠️ Enhanced Favorable Treatment for the United Arab Emirates Un（Federal Register 2026-07-14）",
-        "⚠️ 国际制裁影响支付和物流",
-        "⚠️ 卢布汇率波动大"
+        "⚠️ 国际制裁影响支付和物流"
       ],
       "advice": [
         "新手：Ozon跨境+Wildberries",
@@ -11791,16 +11791,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-07-27T04:17:09.983315+08:00",
+    "last_updated": "2026-08-14T19:12:05.617022+08:00",
     "updated_countries": [
+      "in",
+      "pk",
+      "ru",
+      "ua",
+      "kz",
+      "id",
       "th",
-      "my",
-      "vn",
-      "ph",
-      "sg",
-      "us",
-      "br",
-      "ca"
+      "my"
     ]
   }
 }
