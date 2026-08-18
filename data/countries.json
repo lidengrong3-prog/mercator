@@ -6647,6 +6647,7 @@
         "时尚配饰 +20% 多元文化消费"
       ],
       "risks": [
+        "⚠️ Airworthiness Directives; Gulfstream Aerospace LP (Type Cert（Federal Register 2026-08-14）",
         "⚠️ 地缘政治风险影响物流",
         "⚠️ 安全合规要求高",
         "⚠️ 市场规模较小(1000万)"
@@ -11791,16 +11792,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-08-14T19:12:05.617022+08:00",
+    "last_updated": "2026-08-18T16:53:25.046236+08:00",
     "updated_countries": [
-      "in",
-      "pk",
-      "ru",
-      "ua",
-      "kz",
-      "id",
-      "th",
-      "my"
+      "pl",
+      "se",
+      "be",
+      "sa",
+      "ae",
+      "eg",
+      "tr",
+      "il"
     ]
   }
 }

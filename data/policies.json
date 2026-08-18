@@ -1,7 +1,91 @@
 {
-  "updated_at": "2026-08-18T12:52:15.976280+08:00",
+  "updated_at": "2026-08-18T16:53:25.046236+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260818-d59ecf5c",
+      "title": "Nominations to the Federal Insecticide, Fungicide, and Rodenticide Act Scientific Advisory Panel (FIFRA SAP); Request for Comments",
+      "summary": "The Environmental Protection Agency (EPA or the Agency) is now accepting public comments on the experts the Agency is considering for membership on the Federal Insecticide, Fungicide, and Rodenticide Act (FIFRA) Scientific Advisory Panel (SAP). This document identifies the individuals nominated. The",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/18/2026-16838/nominations-to-the-federal-insecticide-fungicide-and-rodenticide-act-scientific-advisory-panel-fifra",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-18",
+      "collected_at": "2026-08-18T16:53:25.046236+08:00"
+    },
+    {
+      "id": "p20260818-72d619c8",
+      "title": "Notice of Availability of Outer Continental Shelf Official Protraction Diagrams",
+      "summary": "The Bureau of Ocean Energy Management (BOEM), in accordance with its authority and responsibility under the Outer Continental Shelf Lands Act, is announcing the availability of new World Geodetic System 1984 (WGS84)-based Outer Continental Shelf (OCS) Official Protraction Diagrams (OPDs). These OPDs",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/18/2026-16840/notice-of-availability-of-outer-continental-shelf-official-protraction-diagrams",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-18",
+      "collected_at": "2026-08-18T16:53:25.046236+08:00"
+    },
+    {
+      "id": "p20260818-f3f0863a",
+      "title": "Request for Comments and Notice of Public Hearing Concerning China's Compliance With WTO Commitments",
+      "summary": "The Office of the United States Trade Representative (USTR) is seeking public comments to assist in the preparation of its annual report to Congress on China's compliance with its obligations as a Member of the World Trade Organization (WTO). This notice includes the schedule for the submission of c",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/18/2026-16841/request-for-comments-and-notice-of-public-hearing-concerning-chinas-compliance-with-wto-commitments",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-18",
+      "collected_at": "2026-08-18T16:53:25.046236+08:00"
+    },
+    {
+      "id": "p20260818-1f7f7c6c",
+      "title": "Title: Notice of Public Meeting in Preparation for the International Maritime Organization's CCC 12",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/18/2026-16842/title-notice-of-public-meeting-in-preparation-for-the-international-maritime-organizations-ccc-12",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-18",
+      "collected_at": "2026-08-18T16:53:25.046236+08:00"
+    },
+    {
+      "id": "p20260818-bf46d8d1",
+      "title": "Notice of Agreements Filed",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/18/2026-16843/notice-of-agreements-filed",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-18",
+      "collected_at": "2026-08-18T16:53:25.046236+08:00"
+    },
+    {
+      "id": "p20260818-8215a28b",
+      "title": "Notice of Request for Revision to and Extension of Approval of an Information Collection; Animal Care; Standards for Birds Not Bred for Use in Research Under the Animal Welfare Act",
+      "summary": "In accordance with the Paperwork Reduction Act of 1995, this notice announces the Animal and Plant Health Inspection Service's intention to request a revision to and extension of approval of an information collection associated with the Animal Welfare Act regulations for the humane handling, care, t",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/18/2026-16844/notice-of-request-for-revision-to-and-extension-of-approval-of-an-information-collection-animal-care",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-18",
+      "collected_at": "2026-08-18T16:53:25.046236+08:00"
+    },
+    {
+      "id": "p20260818-43d26a21",
+      "title": "Establishing the National Fraud Enforcement Division",
+      "summary": "This rule amends Part 0 of the Department of Justice's (\"Department\") organizational regulations in title 28 of the Code of Federal Regulations to establish the National Fraud Enforcement Division (\"Fraud Division\") and set forth its authorities.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/18/2026-16846/establishing-the-national-fraud-enforcement-division",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-18",
+      "collected_at": "2026-08-18T16:53:25.046236+08:00"
+    },
     {
       "id": "p20260818-f110bdfb",
       "title": "深度！白宫报告聚焦第三国转口规避关税，如何应对美丽国加码原产地监管",
