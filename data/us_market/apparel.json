@@ -2,8 +2,8 @@
   "meta": {
     "market": "美国服饰鞋包 (US Apparel & Footwear)",
     "cat_key": "apparel",
-    "generated_at": "2026-08-12T15:09:09.422039+00:00",
-    "as_of": "2026-08-12",
+    "generated_at": "2026-08-19T07:09:09.090845+00:00",
+    "as_of": "2026-08-19",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
       "country",
@@ -109,7 +109,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-08-12"
+    "as_of": "2026-08-19"
   },
   "findings": [
     "美国服饰为万亿级成熟市场（2026E ≈ $3,730 亿），线上占比 ≈ 31% 且持续提升。",
@@ -130,7 +130,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "女装",
         "男装基础款",
@@ -149,7 +149,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "女装潮款",
         "配饰",
@@ -168,7 +168,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "家庭装",
         "基础款",
@@ -186,7 +186,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "二手/古着",
         "收藏款",
@@ -204,7 +204,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "手作服饰",
         "定制刺绣",
@@ -222,7 +222,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "品牌官网",
         "会员复购",
@@ -240,7 +240,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "低价快时尚",
         "合金/合成"
@@ -306,7 +306,7 @@
       "severity": "high",
       "source": "FTC Textile & Wool Rules",
       "source_url": "https://www.ftc.gov/legal-library/browse/rules/textile-products-identification-act",
-      "as_of": "2026-08-12"
+      "as_of": "2026-08-19"
     },
     {
       "platform": "CPSC",
@@ -315,7 +315,7 @@
       "severity": "high",
       "source": "CPSC",
       "source_url": "https://www.cpsc.gov/",
-      "as_of": "2026-08-12"
+      "as_of": "2026-08-19"
     },
     {
       "platform": "CPSIA",
@@ -324,7 +324,7 @@
       "severity": "high",
       "source": "CPSC CPSIA",
       "source_url": "https://www.cpsc.gov/Business--Manufacturing/Business-Education/CPSA-Compliance-Guide-for-Manufacturers-Importers",
-      "as_of": "2026-08-12"
+      "as_of": "2026-08-19"
     },
     {
       "platform": "加州 EPA",
@@ -333,7 +333,7 @@
       "severity": "medium",
       "source": "California OEHHA",
       "source_url": "https://oehha.ca.gov/proposition-65",
-      "as_of": "2026-08-12"
+      "as_of": "2026-08-19"
     },
     {
       "platform": "TikTok Shop（美国）",
@@ -342,7 +342,7 @@
       "severity": "high",
       "source": "TikTok Shop 卖家中心",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-12"
+      "as_of": "2026-08-19"
     }
   ],
   "policies": [
@@ -354,7 +354,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/28/2026-15181/notice-of-actions-in-section-301-investigations-of-acts-policies-and-practices-of-various-economies",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -365,7 +365,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/14/2026-14111/determination-under-the-textile-and-apparel-commercial-availability-provision-of-the-dominican",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -376,7 +376,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/08/2026-13791/determination-under-the-textile-and-apparel-commercial-availability-provision-of-the-dominican",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -387,7 +387,7 @@
       "url": "https://www.federalregister.gov/documents/2026/06/25/2026-12770/agency-information-collection-activities-extension-of-collection-comment-request-standard-for-the",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -398,7 +398,7 @@
       "url": "https://www.federalregister.gov/documents/2026/06/11/2026-11693/determination-under-the-textile-and-apparel-commercial-availability-provision-of-the-dominican",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -409,7 +409,7 @@
       "url": "https://www.federalregister.gov/documents/2026/05/04/2026-08612/agency-information-collection-activity-under-omb-review-application-for-annual-clothing-allowance",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -420,7 +420,7 @@
       "url": "https://www.federalregister.gov/documents/2025/03/05/2025-03519/agency-information-collection-activities-extension-of-approval-of-information-collection-testing-and",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -431,7 +431,7 @@
       "url": "https://www.federalregister.gov/documents/2024/12/10/2024-28898/agency-information-collection-activities-extension-of-collection-comment-request-testing-and",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     }
   ],
@@ -442,10 +442,10 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 61(针织服装)/62(非针织服装)/64(鞋类) 等广泛受 Section 301 约束；2024 四年期复审已调整税率，2026 强迫劳动提案对部分经济体加征附加税。精确附加税率须用 USTR 产品检索或 CBP 裁定确认。",
-      "date": "2026-08-12",
+      "date": "2026-08-19",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": false
     },
     {
@@ -457,7 +457,7 @@
       "date": "2026-07-28",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/07/28/2026-15181/notice-of-actions-in-section-301-investigations-of-acts-policies-and-practices-of-various-economies",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -469,7 +469,7 @@
       "date": "2026-06-25",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/06/25/2026-12770/agency-information-collection-activities-extension-of-collection-comment-request-standard-for-the",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -481,7 +481,7 @@
       "date": "2025-03-05",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2025/03/05/2025-03519/agency-information-collection-activities-extension-of-approval-of-information-collection-testing-and",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -493,7 +493,7 @@
       "date": "2024-12-10",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2024/12/10/2024-28898/agency-information-collection-activities-extension-of-collection-comment-request-testing-and",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     }
   ]

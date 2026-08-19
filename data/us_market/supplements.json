@@ -2,8 +2,8 @@
   "meta": {
     "market": "美国保健品 (US Dietary Supplements)",
     "cat_key": "supplements",
-    "generated_at": "2026-08-12T15:10:26.531044+00:00",
-    "as_of": "2026-08-12",
+    "generated_at": "2026-08-19T07:09:15.869738+00:00",
+    "as_of": "2026-08-19",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
       "country",
@@ -16,8 +16,8 @@
       "country": 1,
       "platforms": 7,
       "rules": 4,
-      "policies": 17,
-      "alerts": 3
+      "policies": 22,
+      "alerts": 6
     }
   },
   "country": {
@@ -109,7 +109,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-08-12"
+    "as_of": "2026-08-19"
   },
   "findings": [
     "保健品为高增速品类（CAGR ≈ 7.9%），维生素/蛋白/草本复购强。",
@@ -130,7 +130,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "维生素",
         "蛋白",
@@ -149,7 +149,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "蛋白",
         " gummies",
@@ -168,7 +168,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "家庭基础",
         "维生素",
@@ -186,7 +186,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "收藏/长尾",
         "二手"
@@ -203,7 +203,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "手工草本",
         "天然",
@@ -221,7 +221,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "品牌官网",
         "订阅制",
@@ -239,7 +239,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "hotCats": [
         "低价软糖",
         "基础维生素"
@@ -305,7 +305,7 @@
       "severity": "high",
       "source": "FDA",
       "source_url": "https://www.fda.gov/food/dietary-supplements",
-      "as_of": "2026-08-12"
+      "as_of": "2026-08-19"
     },
     {
       "platform": "FTC",
@@ -314,7 +314,7 @@
       "severity": "high",
       "source": "FTC",
       "source_url": "https://www.ftc.gov/business-guidance/industry/health-care",
-      "as_of": "2026-08-12"
+      "as_of": "2026-08-19"
     },
     {
       "platform": "Amazon",
@@ -323,7 +323,7 @@
       "severity": "medium",
       "source": "Amazon Seller Central",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-12"
+      "as_of": "2026-08-19"
     },
     {
       "platform": "TikTok Shop（美国）",
@@ -332,10 +332,131 @@
       "severity": "high",
       "source": "TikTok Shop 卖家中心",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-12"
+      "as_of": "2026-08-19"
     }
   ],
   "policies": [
+    {
+      "title": "Gardenia Blue Interest Group; Filing of Color Additive Petition",
+      "date": "2026-08-19",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) is announcing that we have filed a petition, submitted by Gardenia Blue Interest Group (GBIG or petitioner), c/o Exponent, Inc., proposing that we amend our color additive regulations to expand the safe use of gardenia (genipin) blue i…",
+      "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16944/gardenia-blue-interest-group-filing-of-color-additive-petition",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "title": "GNT USA, LLC.; Filing of Color Additive Petition",
+      "date": "2026-08-19",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or we) is announcing that we have filed a petition, submitted by GNT USA, LLC., c/o Exponent, Inc., proposing that we amend our color additive regulations to provide for the safe use of safflower (Carthamus tinctorius L.) extract as a color a…",
+      "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16939/gnt-usa-llc-filing-of-color-additive-petition",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "title": "Food Additives Permitted in Feed and Drinking Water of Animals; Chromium DL-methionine Chelate",
+      "date": "2026-08-19",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, we, or the Agency) is amending the regulations for food additives permitted in feed and drinking water of animals to provide for the safe use of chromium DL- methionine chelate as a nutritional source of chromium in cattle feed. This action …",
+      "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16942/food-additives-permitted-in-feed-and-drinking-water-of-animals-chromium-dl-methionine-chelate",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Proposed Collection; Comment Request; Investigational New Drug Application Requirements",
+      "date": "2026-08-17",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is announcing that a proposed collection of information has been submitted to the Office of Management and Budget (OMB) for review and clearance under the Paperwork Reduction Act of 1995.",
+      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16715/agency-information-collection-activities-proposed-collection-comment-request-investigational-new",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "title": "Medical Devices; Classification of Accessories Distinct From Other Devices; Proposed List of Accessories Suitable for Class I; Request for Comments",
+      "date": "2026-08-17",
+      "agency": "Health and Human Services Department",
+      "summary": "As required by the FDA Reauthorization Act of 2017 (FDARA), the Food and Drug Administration (FDA or Agency) has identified a list of accessories for which the Agency believes general controls alone are sufficient to provide reasonable assurance of safety and effectiveness, makin…",
+      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16729/medical-devices-classification-of-accessories-distinct-from-other-devices-proposed-list-of",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "title": "Gastroenterology-Urology Devices; Reclassification of Diagnostic Endoscopic Light Source Systems To Be Renamed Cystoscopic Systems Intended as an Aid for Detection of Bladder Cancer",
+      "date": "2026-08-17",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is proposing to reclassify diagnostic endoscopic light source systems (product code OAY), which are postamendments class III devices, from class III (premarket approval) into class II (special controls), subject to premarket notification. FD…",
+      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16728/gastroenterology-urology-devices-reclassification-of-diagnostic-endoscopic-light-source-systems-to",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "title": "Hematology and Pathology Devices; Reclassification of In Situ Hybridization Test Systems for Use With a Corresponding Approved Oncology Therapeutic Product",
+      "date": "2026-08-17",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is issuing a final order reclassifying in situ hybridization (ISH) test systems indicated for use with a corresponding approved oncology therapeutic product (product codes NYQ, MVD, OWE, and PNK), all postamendments class …",
+      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16727/hematology-and-pathology-devices-reclassification-of-in-situ-hybridization-test-systems-for-use-with",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "title": "Reauthorization of the Prescription Drug User Fee Act; Public Meeting; Request for Comments",
+      "date": "2026-08-14",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is hosting a public meeting to discuss proposed recommendations for the reauthorization of the Prescription Drug User Fee Act (PDUFA) for fiscal years (FYs) 2028 through 2032. PDUFA authorizes FDA to collect user fees to s…",
+      "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16650/reauthorization-of-the-prescription-drug-user-fee-act-public-meeting-request-for-comments",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "title": "Container Closure Systems for Human Drugs and Biological Products; Draft Guidance for Industry; Availability",
+      "date": "2026-08-14",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, Agency, or we) is announcing the availability of a draft guidance for industry entitled \"Container Closure Systems for Human Drugs and Biological Products.\" This document provides guiding principles for evaluating the quality of container cl…",
+      "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16638/container-closure-systems-for-human-drugs-and-biological-products-draft-guidance-for-industry",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "title": "Kremers Urban Pharmaceuticals, Inc.; Grant of Hearing Request Regarding a Proposal To Withdraw Approval of an Abbreviated New Drug Application for Extended-Release Methylphenidate Tablets",
+      "date": "2026-08-13",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or the Agency) is announcing a formal evidentiary public hearing on the proposal to withdraw approval of the abbreviated new drug application (ANDA) 091695, submitted by Kremers Urban Pharmaceuticals, Inc. (Kremers) for methylphenidate hydroc…",
+      "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16536/kremers-urban-pharmaceuticals-inc-grant-of-hearing-request-regarding-a-proposal-to-withdraw-approval",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "title": "Formal Meetings Between the Food and Drug Administration and Sponsors or Applicants of Prescription Drug User Fee Act Products; Guidance for Industry; Availability",
+      "date": "2026-08-13",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or Agency) is announcing the availability of a final guidance for industry titled \"Formal Meetings Between the FDA and Sponsors or Applicants of PDUFA Products.\" This guidance outlines the recommendations to industry on formal meetings betwee…",
+      "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16452/formal-meetings-between-the-food-and-drug-administration-and-sponsors-or-applicants-of-prescription",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-19",
+      "live": true
+    },
     {
       "title": "Schedules of Controlled Substances: Temporary Placement of O-Desmethyltramadol in Schedule I",
       "date": "2026-08-12",
@@ -344,7 +465,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16413/schedules-of-controlled-substances-temporary-placement-of-o-desmethyltramadol-in-schedule-i",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -355,29 +476,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16296/substances-generally-recognized-as-safe",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
-      "live": true
-    },
-    {
-      "title": "Reauthorization of the Generic Drug User Fee Amendments; Public Meeting; Request for Comments",
-      "date": "2026-08-11",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is hosting a public meeting to discuss proposed recommendations for the reauthorization of the Generic Drug User Fee Amendments (GDUFA) for fiscal years (FYs) 2028 to 2032. GDUFA amended the Federal Food, Drug, and Cosmeti…",
-      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16353/reauthorization-of-the-generic-drug-user-fee-amendments-public-meeting-request-for-comments",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
-      "live": true
-    },
-    {
-      "title": "Radiology Devices; Reclassification of Digital Breast Tomosynthesis System",
-      "date": "2026-08-10",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA) is proposing to reclassify digital breast tomosynthesis (DBT) systems, product code OTE, which are postamendments class III devices, from class III (premarket approval) into class II (special controls), subject to premarket notification. FDA…",
-      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16209/radiology-devices-reclassification-of-digital-breast-tomosynthesis-system",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -388,18 +487,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/05/2026-15920/micro-tracers-inc-response-to-objections-and-requests-for-a-public-hearing",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
-      "live": true
-    },
-    {
-      "title": "Biosimilar and Interchangeable Biosimilar Products: Considerations for Container Closure Systems and Device Constituent Parts; Draft Guidance for Industry; Availability",
-      "date": "2026-08-03",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA, Agency, or we) is announcing the availability of a draft guidance for industry entitled \"Biosimilar and Interchangeable Biosimilar Products: Considerations for Container Closure Systems and Device Constituent Parts.\" This draft guidance is i…",
-      "url": "https://www.federalregister.gov/documents/2026/08/03/2026-15630/biosimilar-and-interchangeable-biosimilar-products-considerations-for-container-closure-systems-and",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -410,40 +498,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15429/butylated-hydroxytoluene-bht-request-for-information-reopening-of-comment-period",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
-      "live": true
-    },
-    {
-      "title": "Biosimilar User Fee Rates for Fiscal Year 2027",
-      "date": "2026-07-30",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA, Agency, or we) is announcing the rates for biosimilar user fees for fiscal year (FY) 2027. The Federal Food, Drug, and Cosmetic Act (FD&C Act), as amended by the Biosimilar User Fee Amendments of 2022 (BsUFA III), authorizes FDA to assess an…",
-      "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15346/biosimilar-user-fee-rates-for-fiscal-year-2027",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
-      "live": true
-    },
-    {
-      "title": "Generic Drug User Fee Rates for Fiscal Year 2027",
-      "date": "2026-07-30",
-      "agency": "Health and Human Services Department",
-      "summary": "The Federal Food, Drug, and Cosmetic Act (FD&C Act or statute), as amended by the Generic Drug User Fee Amendments of 2022 (GDUFA III), authorizes the Food and Drug Administration (FDA, Agency, or we) to assess and collect fees for abbreviated new drug applications (ANDAs); drug …",
-      "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15343/generic-drug-user-fee-rates-for-fiscal-year-2027",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
-      "live": true
-    },
-    {
-      "title": "Animal Generic Drug User Fee Program Rates and Payment Procedures for Fiscal Year 2027",
-      "date": "2026-07-30",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is announcing the fee rates and payment procedures for fiscal year (FY) 2027 generic new animal drug program user fees. The Federal Food, Drug, and Cosmetic Act (FD&C Act), as amended by the Animal Generic Drug User Fee Am…",
-      "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15341/animal-generic-drug-user-fee-program-rates-and-payment-procedures-for-fiscal-year-2027",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -454,7 +509,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15395/cercla-administrative-settlement-agreement-with-prospective-purchaser-and-covenants-not-to-sue",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -465,7 +520,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/29/2026-15297/statement-of-organization-functions-and-delegations-of-authority",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -476,7 +531,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/20/2026-14573/food-standards-of-identity-modernization-pasteurized-orange-juice",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -487,7 +542,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/13/2026-14073/drug-establishment-registration-and-drug-listing-requirements-for-establishments-engaged-in",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -498,7 +553,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/07/2026-13716/new-animal-drugs-approval-of-new-animal-drug-applications-withdrawal-of-approval-of-new-animal-drug",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -509,7 +564,7 @@
       "url": "https://www.federalregister.gov/documents/2026/06/24/2026-12700/special-supplemental-nutrition-program-for-women-infants-and-children-wic-revisions-in-the-wic-food",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     },
     {
@@ -520,7 +575,7 @@
       "url": "https://www.federalregister.gov/documents/2026/05/22/2026-10284/protein-efficiency-ratio-rat-bioassay-studies-to-demonstrate-that-a-new-infant-formula-supports-the",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     }
   ],
@@ -531,11 +586,59 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 2106(营养制剂) 多为零基础关税，但胶囊/瓶体包材与生产设备受 Section 301 附加税约束。出口须以 USTR 检索确认具体编码税率。",
-      "date": "2026-08-12",
+      "date": "2026-08-19",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": false
+    },
+    {
+      "level": "medium",
+      "title": "Medical Devices; Classification of Accessories Distinct From Other Devices; Proposed List of Accessories Suitable for Class I; Request for Comments",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "As required by the FDA Reauthorization Act of 2017 (FDARA), the Food and Drug Administration (FDA or Agency) has identified a list of accessories for which the Agency believes general controls alone a…",
+      "date": "2026-08-17",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16729/medical-devices-classification-of-accessories-distinct-from-other-devices-proposed-list-of",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Gastroenterology-Urology Devices; Reclassification of Diagnostic Endoscopic Light Source Systems To Be Renamed Cystoscopic Systems Intended as an Aid for Detection of Bladder Cancer",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "The Food and Drug Administration (FDA) is proposing to reclassify diagnostic endoscopic light source systems (product code OAY), which are postamendments class III devices, from class III (premarket a…",
+      "date": "2026-08-17",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16728/gastroenterology-urology-devices-reclassification-of-diagnostic-endoscopic-light-source-systems-to",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Hematology and Pathology Devices; Reclassification of In Situ Hybridization Test Systems for Use With a Corresponding Approved Oncology Therapeutic Product",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "The Food and Drug Administration (FDA, the Agency, or we) is issuing a final order reclassifying in situ hybridization (ISH) test systems indicated for use with a corresponding approved oncology thera…",
+      "date": "2026-08-17",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16727/hematology-and-pathology-devices-reclassification-of-in-situ-hybridization-test-systems-for-use-with",
+      "as_of": "2026-08-19",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Kremers Urban Pharmaceuticals, Inc.; Grant of Hearing Request Regarding a Proposal To Withdraw Approval of an Abbreviated New Drug Application for Extended-Release Methylphenidate Tablets",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "The Food and Drug Administration (FDA or the Agency) is announcing a formal evidentiary public hearing on the proposal to withdraw approval of the abbreviated new drug application (ANDA) 091695, submi…",
+      "date": "2026-08-13",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16536/kremers-urban-pharmaceuticals-inc-grant-of-hearing-request-regarding-a-proposal-to-withdraw-approval",
+      "as_of": "2026-08-19",
+      "live": true
     },
     {
       "level": "medium",
@@ -546,19 +649,7 @@
       "date": "2026-08-12",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16413/schedules-of-controlled-substances-temporary-placement-of-o-desmethyltramadol-in-schedule-i",
-      "as_of": "2026-08-12",
-      "live": true
-    },
-    {
-      "level": "medium",
-      "title": "Radiology Devices; Reclassification of Digital Breast Tomosynthesis System",
-      "market": "美国",
-      "platform": "Health and Human Services Department",
-      "detail": "The Food and Drug Administration (FDA) is proposing to reclassify digital breast tomosynthesis (DBT) systems, product code OTE, which are postamendments class III devices, from class III (premarket ap…",
-      "date": "2026-08-10",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16209/radiology-devices-reclassification-of-digital-breast-tomosynthesis-system",
-      "as_of": "2026-08-12",
+      "as_of": "2026-08-19",
       "live": true
     }
   ]

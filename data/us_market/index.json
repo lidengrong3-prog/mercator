@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-12T15:08:47.541043+00:00",
-  "as_of": "2026-08-12",
+  "generated_at": "2026-08-19T07:09:06.550021+00:00",
+  "as_of": "2026-08-19",
   "categories": [
     {
       "key": "electronics",
@@ -10,8 +10,8 @@
       "file": "electronics.json",
       "market_size": "US$ 2,616 亿 (2026E)",
       "cagr": "CAGR 4.8% (2026-2031)",
-      "policy_count": 23,
-      "alert_count": 11,
+      "policy_count": 17,
+      "alert_count": 10,
       "report": "reports/us_market/electronics_report.pdf"
     },
     {
@@ -34,7 +34,7 @@
       "file": "home.json",
       "market_size": "厨具 US$ 60.8 亿 (2026E)；家居耐用品 ≈ $418 亿",
       "cagr": "厨具 CAGR 2.26% (2026-2031)",
-      "policy_count": 13,
+      "policy_count": 12,
       "alert_count": 9,
       "report": "reports/us_market/home_report.pdf"
     },
@@ -70,8 +70,8 @@
       "file": "sports.json",
       "market_size": "运动用品 US$ 339 亿 (2026E)；户外装备全球 ≈ $652.8 亿",
       "cagr": "运动用品 CAGR 6% (2026-2031)",
-      "policy_count": 9,
-      "alert_count": 6,
+      "policy_count": 7,
+      "alert_count": 4,
       "report": "reports/us_market/sports_report.pdf"
     },
     {
@@ -83,7 +83,7 @@
       "market_size": "US$ 2,387.5 亿 (2026E)",
       "cagr": "CAGR 4.12% (2026-2031)",
       "policy_count": 24,
-      "alert_count": 16,
+      "alert_count": 12,
       "report": "reports/us_market/auto_report.pdf"
     },
     {
@@ -94,8 +94,8 @@
       "file": "supplements.json",
       "market_size": "US$ 773.7 亿 (2026E)",
       "cagr": "CAGR 7.9% (2026-2031)",
-      "policy_count": 17,
-      "alert_count": 3,
+      "policy_count": 22,
+      "alert_count": 6,
       "report": "reports/us_market/supplements_report.pdf"
     }
   ]
