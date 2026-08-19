@@ -12519,6 +12519,359 @@ function jayHideSearchHistory(){ var box=document.getElementById('search-history
 function jayClearSearchHistory(e){ if(e&&e.stopPropagation) e.stopPropagation(); try{ localStorage.removeItem('jay_search_history'); }catch(_){} jayRenderSearchHistory(); }
 function jayRunHistorySearch(q){ var gs=document.getElementById('global-search'); if(gs) gs.value=q; jayHideSearchHistory(); var hi=document.getElementById('ov-hero-input'); if(hi){hi.value=q; var hs=document.getElementById('ov-hero-send'); if(hs)hs.click(); switchPage('overview');} }
 
+
+
+
+// ===== US Market Enhancement (CPSC Recalls + Macro Indicators) =====
+// Auto-loaded when country data is ready; enhances US page with real-time data
+var jayUsMacroData = null;
+var jayCpscData = null;
+var jayUsDataLoaded = false;
+
+function jayLoadUsMarketData() {
+  // Load CPSC recalls
+  fetch('./data/us_market/cpsc_recalls.json')
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){
+      if(d) { jayCpscData = d; console.log('[JAY] CPSC data loaded:', d.meta.total_recalls, 'recalls'); }
+    })
+    .catch(function(){ console.warn('[JAY] CPSC data load failed'); });
+
+  // Load macro indicators
+  fetch('./data/us_market/macro_indicators.json')
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){
+      if(d) {
+        jayUsMacroData = d;
+        console.log('[JAY] US macro data loaded:', d.meta.fetched, 'indicators');
+        // Update countries.json macro section with live data
+        if(countryFullData && countryFullData.us && d.indicators) {
+          jayMergeMacroToCountry(d);
+        }
+      }
+    })
+    .catch(function(){ console.warn('[JAY] US macro data load failed'); });
+
+  jayUsDataLoaded = true;
+}
+
+function jayMergeMacroToCountry(macroData) {
+  var us = countryFullData.us;
+  if(!us || !us.macro || !macroData.indicators) return;
+  
+  var indicators = macroData.indicators;
+  var now = new Date().toLocaleDateString('zh-CN');
+  
+  // Build live macro rows from FRED/BLS data
+  var liveRows = [];
+  var mapping = [
+    ['UNRATE', '失业率', '%'],
+    ['FEDFUNDS', '联邦基金利率', '%'],
+    ['UMCSENT', '消费者信心指数', ''],
+    ['CPIAUCSL', 'CPI指数', ''],
+    ['DGS10', '10Y国债收益率', '%'],
+    ['HOUST', '新屋开工', '千套'],
+    ['MORTGAGE30US', '30Y抵押贷款利率', '%'],
+    ['RSAFS', '零售销售', '百万美元'],
+    ['PAYEMS', '非农就业', '千人'],
+    ['ICSA', '初请失业金', '人'],
+  ];
+  
+  mapping.forEach(function(m) {
+    var ind = indicators[m[0]];
+    if(ind && ind.value) {
+      var val = ind.value + (m[2] ? ' ' + m[2] : '');
+      liveRows.push([m[1] + '(' + ind.date + ')', val, 'FRED实时', ind.source_url || '']);
+    }
+  });
+  
+  // Prepend live data to macro array (keep non-FRED rows)
+  if(liveRows.length > 0) {
+    var nonFred = us.macro.filter(function(r) {
+      return !(r[2] && r[2].indexOf && r[2].indexOf('FRED') >= 0);
+    });
+    us.macro = liveRows.concat(nonFred);
+    us.macro_updated = now;
+    
+    // Re-render if US is currently shown
+    if(cn2CurrentKey === 'us') {
+      cn2Render('us');
+    }
+  }
+}
+
+function jayEnhanceUsCountry() {
+  if(cn2CurrentKey !== 'us') return;
+  
+  var mainEl = document.getElementById('cn2-main');
+  if(!mainEl) return;
+  
+  var extraHtml = '';
+  
+  // === CPSC Recalls Module ===
+  if(jayCpscData) {
+    var recalls = jayCpscData.china_related || [];
+    var recentRecalls = recalls.slice(0, 8);
+    
+    if(recalls.length > 0) {
+      extraHtml += '<div class="cn2-module" style="margin-top:20px">';
+      extraHtml += '<div class="cn2-module-head"><h3>🔴 CPSC 产品召回（中国产品）<span class="cn2-m-badge">' + recalls.length + ' 条</span></h3></div>';
+      extraHtml += '<div style="display:grid;gap:8px">';
+      
+      recentRecalls.forEach(function(r) {
+        var catIcons = {electronics:'📱',apparel:'👕',home:'🏠',beauty:'💄',toys:'🧸',sports:'⚽',auto:'🚗',health:'💊',other:'📦'};
+        var icon = catIcons[r.category] || '📦';
+        var dateStr = r.date || '未知';
+        
+        extraHtml += '<div style="padding:12px;background:#fff8f8;border:1px solid #fecaca;border-radius:8px">';
+        extraHtml += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">';
+        extraHtml += '<span>' + icon + '</span>';
+        extraHtml += '<span style="font-size:12px;font-weight:600;color:#991b1b">' + (r.title || '产品召回') + '</span>';
+        extraHtml += '<span style="margin-left:auto;font-size:10px;color:#888">' + dateStr + '</span>';
+        extraHtml += '</div>';
+        if(r.description) {
+          extraHtml += '<div style="font-size:11px;color:#666;line-height:1.4">' + r.description.substring(0, 150) + '</div>';
+        }
+        if(r.url) {
+          extraHtml += '<a href="' + r.url + '" target="_blank" style="font-size:10px;color:#3366cc;text-decoration:none">查看详情 →</a>';
+        }
+        extraHtml += '</div>';
+      });
+      
+      extraHtml += '</div></div>';
+    }
+  }
+  
+  // === Macro Indicators Dashboard ===
+  if(jayUsMacroData && jayUsMacroData.indicators) {
+    var inds = jayUsMacroData.indicators;
+    var keyIndicators = [
+      {id:'UNRATE', label:'失业率', icon:'👷', good:'low'},
+      {id:'FEDFUNDS', label:'联邦基金利率', icon:'🏦', good:'neutral'},
+      {id:'UMCSENT', label:'消费者信心', icon:'😊', good:'high'},
+      {id:'CPIAUCSL', label:'CPI', icon:'📊', good:'low'},
+      {id:'DGS10', label:'10Y国债', icon:'💰', good:'neutral'},
+      {id:'HOUST', label:'新屋开工', icon:'🏠', good:'high'},
+    ];
+    
+    var hasData = keyIndicators.some(function(k){ return inds[k.id] && inds[k.id].value; });
+    
+    if(hasData) {
+      extraHtml += '<div class="cn2-module" style="margin-top:20px">';
+      extraHtml += '<div class="cn2-module-head"><h3>💹 FRED 实时经济数据 <span class="cn2-m-badge">实时更新</span></h3>';
+      extraHtml += '<div style="font-size:10px;color:#888;margin-left:auto">来源: 美联储经济数据 FRED</div></div>';
+      extraHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px">';
+      
+      keyIndicators.forEach(function(k) {
+        var ind = inds[k.id];
+        if(!ind || !ind.value) return;
+        
+        extraHtml += '<div style="padding:14px;background:#fff;border:1px solid var(--border);border-radius:8px;text-align:center">';
+        extraHtml += '<div style="font-size:18px;margin-bottom:4px">' + k.icon + '</div>';
+        extraHtml += '<div style="font-size:18px;font-weight:700;color:var(--ink)">' + ind.value + '</div>';
+        extraHtml += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + k.label + '</div>';
+        extraHtml += '<div style="font-size:9px;color:#aaa;margin-top:4px">' + (ind.date || '') + '</div>';
+        extraHtml += '</div>';
+      });
+      
+      extraHtml += '</div></div>';
+    }
+  }
+  
+  // === US Market Category Overview ===
+  if(jayUsDataLoaded) {
+    extraHtml += '<div class="cn2-module" style="margin-top:20px">';
+    extraHtml += '<div class="cn2-module-head"><h3>📦 美国品类数据概览</h3>';
+    extraHtml += '<button onclick="jayShowAllUsCategories()" style="font-size:11px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--paper);cursor:pointer">查看全部 →</button></div>';
+    extraHtml += '<div id="jay-us-cat-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">';
+    
+    var categories = [
+      {key:'electronics', name:'消费电子', icon:'📱'},
+      {key:'apparel', name:'服饰鞋包', icon:'👕'},
+      {key:'home_cooking', name:'家居厨具', icon:'🏠'},
+      {key:'beauty', name:'美妆个护', icon:'💄'},
+      {key:'toys', name:'玩具', icon:'🧸'},
+      {key:'sports', name:'运动户外', icon:'⚽'},
+      {key:'auto_parts', name:'汽配', icon:'🚗'},
+      {key:'health', name:'保健品', icon:'💊'},
+    ];
+    
+    categories.forEach(function(cat) {
+      extraHtml += '<div style="padding:14px;background:#fff;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:.2s" onclick="jayShowUsCategory(\'' + cat.key + '\')" onmouseover="this.style.borderColor=\'#3366cc\'" onmouseout="this.style.borderColor=\'var(--border)\'">';
+      extraHtml += '<div style="font-size:24px;margin-bottom:6px">' + cat.icon + '</div>';
+      extraHtml += '<div style="font-size:13px;font-weight:600;color:var(--ink)">' + cat.name + '</div>';
+      extraHtml += '<div style="font-size:10px;color:var(--muted);margin-top:4px">查看品类详情 →</div>';
+      extraHtml += '</div>';
+    });
+    
+    extraHtml += '</div></div>';
+  }
+  
+  if(extraHtml) {
+    mainEl.insertAdjacentHTML('beforeend', extraHtml);
+  }
+}
+
+function jayShowUsCategory(catKey) {
+  // Load the category JSON and display details
+  fetch('./data/us_market/' + catKey + '.json')
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data) {
+      if(!data) return;
+      var mainEl = document.getElementById('cn2-main');
+      if(!mainEl) return;
+      
+      var meta = data.meta || {};
+      var country = data.country || {};
+      var findings = data.findings || [];
+      var risks = country.risks || [];
+      var advice = country.advice || [];
+      
+      var html = '<div style="margin-bottom:16px"><button onclick="cn2Render(\'us\')" style="font-size:12px;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:var(--paper);cursor:pointer">← 返回美国市场总览</button></div>';
+      
+      html += '<div class="cn2-module">';
+      html += '<h3 style="font-size:16px;font-weight:700;margin-bottom:12px">' + (country.icon || '📦') + ' ' + (meta.market || catKey) + '</h3>';
+      
+      // Market size
+      if(country.market) {
+        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">';
+        html += '<div style="padding:12px;background:#f0f7ff;border-radius:8px"><div style="font-size:10px;color:#666">市场规模</div><div style="font-size:14px;font-weight:700;color:#1a365d">' + (country.market.size_2026 || '-') + '</div></div>';
+        html += '<div style="padding:12px;background:#f0fff4;border-radius:8px"><div style="font-size:10px;color:#666">增长率</div><div style="font-size:14px;font-weight:700;color:#1a4d2e">' + (country.market.cagr || '-') + '</div></div>';
+        html += '</div>';
+      }
+      
+      // Key findings
+      if(findings.length > 0) {
+        html += '<h4 style="font-size:13px;font-weight:600;margin:12px 0 8px">📌 核心洞察</h4>';
+        findings.forEach(function(f) {
+          html += '<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;color:#444;line-height:1.5">' + f + '</div>';
+        });
+      }
+      
+      // Risks
+      if(risks.length > 0) {
+        html += '<h4 style="font-size:13px;font-weight:600;margin:12px 0 8px">⚠️ 风险提醒</h4>';
+        risks.forEach(function(r) {
+          html += '<div style="padding:6px 10px;margin:4px 0;background:#fff8f8;border-radius:6px;font-size:11px;color:#742a2a">' + r + '</div>';
+        });
+      }
+      
+      // Advice
+      if(advice.length > 0) {
+        html += '<h4 style="font-size:13px;font-weight:600;margin:12px 0 8px">💡 策略建议</h4>';
+        advice.forEach(function(a) {
+          html += '<div style="padding:6px 10px;margin:4px 0;background:#f0fff4;border-radius:6px;font-size:11px;color:#1a4d2e">' + a + '</div>';
+        });
+      }
+      
+      html += '</div>';
+      
+      mainEl.innerHTML = html;
+      mainEl.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+}
+
+function jayShowAllUsCategories() {
+  // Show all US market categories in a comprehensive view
+  var cats = ['electronics','apparel','home_cooking','beauty','toys','sports','auto_parts','health'];
+  var mainEl = document.getElementById('cn2-main');
+  if(!mainEl) return;
+  
+  var html = '<div style="margin-bottom:16px"><button onclick="cn2Render(\'us\')" style="font-size:12px;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:var(--paper);cursor:pointer">← 返回美国市场总览</button></div>';
+  html += '<h3 style="font-size:16px;font-weight:700;margin-bottom:16px">🇺🇸 美国市场全品类概览</h3>';
+  
+  var loaded = 0;
+  var total = cats.length;
+  
+  cats.forEach(function(catKey) {
+    fetch('./data/us_market/' + catKey + '.json')
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(data) {
+        loaded++;
+        if(!data) return;
+        var country = data.country || {};
+        var market = country.market || {};
+        
+        var cardHtml = '<div style="padding:14px;background:#fff;border:1px solid var(--border);border-radius:8px">';
+        cardHtml += '<div style="font-size:14px;font-weight:600;margin-bottom:8px">' + (country.icon || '') + ' ' + (country.name || catKey) + '</div>';
+        cardHtml += '<div style="font-size:11px;color:#666">规模: ' + (market.size_2026 || '-') + ' | ' + (market.cagr || '-') + '</div>';
+        if(country.opportunity) {
+          cardHtml += '<div style="font-size:10px;color:#888;margin-top:6px;line-height:1.4">' + country.opportunity.substring(0, 100) + '...</div>';
+        }
+        cardHtml += '</div>';
+        
+        var placeholder = document.getElementById('jay-uscat-' + catKey);
+        if(placeholder) placeholder.innerHTML = cardHtml;
+      });
+  });
+  
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px">';
+  cats.forEach(function(catKey) {
+    html += '<div id="jay-uscat-' + catKey + '" style="padding:14px;background:#f8f9fa;border:1px solid var(--border);border-radius:8px;color:#888;font-size:12px">加载中...</div>';
+  });
+  html += '</div>';
+  
+  mainEl.innerHTML = html;
+}
+
+// === Hook into existing data loading ===
+// After loadCountryData, also load US market data
+(function(){
+  var origLoadCountry = window.loadCountryData;
+  // Patch: after country data loads, load US enhancements
+  var checkInterval = setInterval(function(){
+    if(countryDataLoaded) {
+      clearInterval(checkInterval);
+      jayLoadUsMarketData();
+    }
+  }, 500);
+  // Timeout: load anyway after 10s
+  setTimeout(function(){ clearInterval(checkInterval); jayLoadUsMarketData(); }, 10000);
+})();
+
+// === Hook into cn2Render to add US-specific sections ===
+(function(){
+  var origCn2Render = window.cn2Render;
+  if(typeof origCn2Render === 'function') {
+    window.cn2Render = function(key) {
+      origCn2Render(key);
+      // After render, if US is selected, enhance with CPSC/macro data
+      if(key === 'us') {
+        setTimeout(function(){ jayEnhanceUsCountry(); }, 100);
+      }
+    };
+  }
+})();
+
+// === Hook into generateDynamicAlerts to include CPSC data ===
+(function(){
+  var origGenAlerts = window.generateDynamicAlerts;
+  if(typeof origGenAlerts === 'function') {
+    window.generateDynamicAlerts = function() {
+      origGenAlerts();
+      // Add CPSC recall alerts
+      if(jayCpscData && jayCpscData.china_related) {
+        jayCpscData.china_related.slice(0, 10).forEach(function(r) {
+          dynamicAlerts.push({
+            id: r.id || ('cpsc-' + Math.random().toString(36).substr(2,8)),
+            type: 'policy',
+            level: 'high',
+            title: 'CPSC召回: ' + (r.title || '中国产品').substring(0, 50),
+            country: '美国',
+            platform: 'CPSC',
+            detail: (r.description || '').substring(0, 200),
+            date: r.date || '2026-08-19',
+            read: false,
+            source: 'CPSC',
+            refId: r.id,
+            category: r.category || 'recall'
+          });
+        });
+      }
+    };
+  }
+})();
+
 </script>
 
 <!-- 铃铛通知面板 -->
