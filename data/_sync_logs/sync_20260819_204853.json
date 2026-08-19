@@ -1,0 +1,11 @@
+{
+  "synced_at": "2026-08-19T20:48:23.401970+00:00",
+  "dry_run": false,
+  "results": {
+    "policies": 0,
+    "rules": 0,
+    "alerts": 0,
+    "platforms": 0,
+    "us_market_data": 0
+  }
+}
