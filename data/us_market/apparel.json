@@ -1,0 +1,500 @@
+{
+  "meta": {
+    "market": "美国服饰鞋包 (US Apparel & Footwear)",
+    "cat_key": "apparel",
+    "generated_at": "2026-08-12T15:09:09.422039+00:00",
+    "as_of": "2026-08-12",
+    "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
+    "sections": [
+      "country",
+      "platforms",
+      "rules",
+      "policies",
+      "alerts"
+    ],
+    "counts": {
+      "country": 1,
+      "platforms": 7,
+      "rules": 5,
+      "policies": 8,
+      "alerts": 5
+    }
+  },
+  "country": {
+    "market": "美国服饰鞋包",
+    "cat_key": "apparel",
+    "name_en": "Apparel & Footwear",
+    "icon": "👕",
+    "flag": "🇺🇸",
+    "subtitle": "United States · 成熟高渗透的万亿级零售品类",
+    "macro": [
+      [
+        "服饰鞋包市场规模(2026E)",
+        "US$ 3,730 亿 (2026E，服饰)",
+        "CAGR 1.83% (2026-2031)",
+        "Statista, 2026"
+      ],
+      [
+        "服饰鞋包市场说明",
+        "女装 ≈ $1,960 亿 / 男装 ≈ $1,200 亿 / 童装 ≈ $570 亿；线上占比 ≈ 31%",
+        "—",
+        "Statista, 2026"
+      ],
+      [
+        "美国零售电商规模(2026E)",
+        "≈ US$ 1.6 万亿",
+        "同比 +10.4%（2025 为 $1.23 万亿）",
+        "eMarketer / US Census, 2026"
+      ],
+      [
+        "电商渗透率(Q1 2026)",
+        "16.9%（季调）",
+        "剔除汽车/汽油/餐饮后约 23.8%，历史第二高",
+        "US Census Bureau, 2026-05"
+      ],
+      [
+        "线上购物人口",
+        "≈ 2.95 亿（约 80% 成年人）",
+        "增长来自存量用户钱包份额提升",
+        "eMarketer, 2026"
+      ],
+      [
+        "Amazon 市占",
+        "≈ 36%–40% 美国电商",
+        "最大流量入口，品牌信任背书强",
+        "Marketplace Pulse, 2025-2026"
+      ],
+      [
+        "对华关税环境",
+        "收紧 + 复审",
+        "Section 301 附加税覆盖多品类；强迫劳动禁令提案推进",
+        "USTR Section 301, 2026"
+      ],
+      [
+        "内容电商增量",
+        "TikTok Shop 高速扩张",
+        "年轻客群 + 直播/短视频转化，跨境店可入驻",
+        "TikTok Shop 美国, 2026"
+      ]
+    ],
+    "segments": [
+      {
+        "name": "女装",
+        "note": "最大细分，快时尚+独立设计并行"
+      },
+      {
+        "name": "男装",
+        "note": "基础款+运动休闲，复购稳"
+      },
+      {
+        "name": "童装",
+        "note": "CPSIA 合规严，安全门槛高"
+      },
+      {
+        "name": "鞋包配饰",
+        "note": "TikTok 爆款集中，季节性强"
+      }
+    ],
+    "opportunity": "美国服饰线上占比 ≈ 31% 且持续提升，快时尚与独立设计并存；TikTok Shop 内容电商为年轻客群新增量。柔性供应链 + 小单快反是工厂核心优势。",
+    "risks": [
+      "⚠️ 纺织纤维/羊毛/原产地标示是 FTC 硬性要求，错标可罚",
+      "⚠️ 服装可燃性标准（1610）+ 童装更严（1615/1616）",
+      "⚠️ 童装须 CPSIA 第三方检测 + CPC 证书",
+      "⚠️ 对华 Section 301 覆盖服饰鞋包（HTS 61/62/64），须逐票确认税率"
+    ],
+    "advice": [
+      "新手：TikTok Shop 快时尚小单快反试水",
+      "工厂：Amazon + 独立站，柔性供应链为王",
+      "品牌：DTC + 社媒种草，重尺码/材质真实"
+    ],
+    "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
+    "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
+    "as_of": "2026-08-12"
+  },
+  "findings": [
+    "美国服饰为万亿级成熟市场（2026E ≈ $3,730 亿），线上占比 ≈ 31% 且持续提升。",
+    "FTC 纺织/羊毛标示 + 原产地是硬性合规；童装须 CPSIA 第三方检测与 CPC 证书。",
+    "对华 Section 301 覆盖服饰鞋包（HTS 61/62/64），精确税率须逐票确认。",
+    "TikTok Shop 内容电商为年轻客群新增量；柔性供应链+小单快反是工厂核心优势。",
+    "工厂推荐路径：TikTok 快反试水 → Amazon + 独立站 → 品牌 DTC 沉淀。"
+  ],
+  "platforms": [
+    {
+      "name": "Amazon（美国）",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "多数品类佣金 8%–20%（如消费电子 8%、服饰 17%、家居 15%、美妆 8%–15%、玩具 15%、运动 15%、汽配 12%–15%、保健品 15%）；专业计划 $39.99/月 + FBA 仓储配送费",
+      "feeDesc": "最大流量与信任背书；FBA 本土履约；Brand Registry 防跟卖",
+      "entry": "跨境可入驻；部分类目需审核/资质（如保健品、美妆、汽配）",
+      "strength": "最大流量与信任背书，高客单承接力强",
+      "risk": "佣金高、价格战、账号合规风险",
+      "source": "Amazon Seller Central 销售费用(2026)",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "女装",
+        "男装基础款",
+        "鞋包",
+        "运动休闲"
+      ]
+    },
+    {
+      "name": "TikTok Shop（美国）",
+      "type": "内容电商",
+      "market": "美国",
+      "commission": "平台佣金约 6%–8%（按类目）+ 支付手续费；卖家中心 2026 更新内容合规红线",
+      "feeDesc": "内容种草+直播转化；跨境店需本地主体/合规资质",
+      "entry": "跨境店可入驻；需本地主体/合规资质",
+      "strength": "内容种草+直播转化，年轻客群增量大",
+      "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
+      "source": "TikTok Shop 美国卖家中心(2026)",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "女装潮款",
+        "配饰",
+        "鞋包",
+        "节日礼"
+      ]
+    },
+    {
+      "name": "Walmart Marketplace",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "佣金 6%–15%（按品类），WFS 仓储费 $0.75/立方英尺/月，无月费/入驻费",
+      "feeDesc": "WFS 本土仓 + 跨境；47 个履约中心，88% 美国人口两日达",
+      "entry": "跨境店可入驻，审核较严",
+      "strength": "高信任、低佣金、本土履约",
+      "risk": "流量弱于 Amazon、品类受限",
+      "source": "Walmart Marketplace 费用说明",
+      "source_url": "https://marketplace.walmart.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "家庭装",
+        "基础款",
+        "童装"
+      ]
+    },
+    {
+      "name": "eBay",
+      "type": "货架/拍卖",
+      "market": "美国",
+      "commission": "成交费约 13%（按品类），店铺订阅另计；无月费基础店",
+      "feeDesc": "开放入驻门槛低；二手/长尾天然场",
+      "entry": "开放入驻，门槛低",
+      "strength": "二手/收藏/长尾流量，国际站点可触达",
+      "risk": "假货争议、价格透明压利润",
+      "source": "eBay 费用说明（参考）",
+      "source_url": "https://www.ebay.com/sellercenter",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "二手/古着",
+        "收藏款",
+        "长尾尺码"
+      ]
+    },
+    {
+      "name": "Etsy",
+      "type": "手作/设计师",
+      "market": "美国",
+      "commission": "上架费 $0.20/件 + 交易费 6.5% + 支付处理费 6.5%（按国别）",
+      "feeDesc": "无月费；手作/复古/定制定位",
+      "entry": "开放入驻",
+      "strength": "设计师/手工溢价高、客群精准",
+      "risk": "流量小于综合平台、仿品管控",
+      "source": "Etsy Seller Handbook（参考）",
+      "source_url": "https://www.etsy.com/seller-handbook",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "手作服饰",
+        "定制刺绣",
+        "复古"
+      ]
+    },
+    {
+      "name": "Shopify（独立站 DTC）",
+      "type": "独立站",
+      "market": "美国",
+      "commission": "无平台佣金；订阅 $39–$399/月 + 支付费率 ~2.9%+$0.30",
+      "feeDesc": "品牌自主、数据自有；需自引流量",
+      "entry": "自助建站",
+      "strength": "品牌资产沉淀、毛利高",
+      "risk": "获客成本高、运营重",
+      "source": "Shopify 定价（参考）",
+      "source_url": "https://www.shopify.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "品牌官网",
+        "会员复购",
+        "定制"
+      ]
+    },
+    {
+      "name": "Temu / SHEIN",
+      "type": "低价全托管",
+      "market": "美国",
+      "commission": "全托管/半托管模式，平台定价，卖家挣供货价",
+      "feeDesc": "极致低价流量，卖家利润薄；关税敏感",
+      "entry": "供货商入驻（全托管）",
+      "strength": "海量低价流量",
+      "risk": "利润极低、品牌稀释、关税敏感",
+      "source": "平台公开模式（参考）",
+      "source_url": "https://www.temu.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "低价快时尚",
+        "合金/合成"
+      ]
+    }
+  ],
+  "matrix": [
+    [
+      "Amazon（美国）",
+      "工厂 / 品牌出海",
+      "中",
+      "中",
+      "FBA + 类目审核，重尺码/材质真实"
+    ],
+    [
+      "TikTok Shop（美国）",
+      "工厂快反试水",
+      "中（本地主体）",
+      "高（内容红线）",
+      "小单快反验证爆款"
+    ],
+    [
+      "Walmart",
+      "本土履约卖家",
+      "中高",
+      "低",
+      "高信任基础款"
+    ],
+    [
+      "eBay",
+      "二手 / 古着",
+      "低",
+      "中",
+      "古着+长尾流量"
+    ],
+    [
+      "Etsy",
+      "设计师/手作",
+      "低",
+      "低",
+      "手工溢价，客群精准"
+    ],
+    [
+      "Shopify",
+      "品牌 DTC",
+      "自助",
+      "中（获客）",
+      "沉淀品牌与复购"
+    ],
+    [
+      "Temu / SHEIN",
+      "低价供货商",
+      "低（全托管）",
+      "高（利润薄）",
+      "走量需谨慎"
+    ]
+  ],
+  "rules": [
+    {
+      "platform": "FTC（美国联邦贸易委员会）",
+      "title": "纺织纤维与原产地标示 (Textile Rule / Wool Act)",
+      "detail": "服装须标示纤维成分（含量≥1% 须列明）、原产地与制造商/经销商身份；羊毛制品受 Wool Products Labeling Act 约束。违规可罚。",
+      "severity": "high",
+      "source": "FTC Textile & Wool Rules",
+      "source_url": "https://www.ftc.gov/legal-library/browse/rules/textile-products-identification-act",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "CPSC",
+      "title": "可燃性标准 (16 CFR Part 1610)",
+      "detail": "服装须符合纺织品可燃性标准（尤其儿童睡衣有更严 1615/1616）；不合规可被召回下架。",
+      "severity": "high",
+      "source": "CPSC",
+      "source_url": "https://www.cpsc.gov/",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "CPSIA",
+      "title": "儿童产品铅/邻苯限制",
+      "detail": "童装/童鞋属儿童产品，铅含量 ≤100ppm、邻苯二甲酸盐受限，须第三方检测+CPC 证书。",
+      "severity": "high",
+      "source": "CPSC CPSIA",
+      "source_url": "https://www.cpsc.gov/Business--Manufacturing/Business-Education/CPSA-Compliance-Guide-for-Manufacturers-Importers",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "加州 EPA",
+      "title": "Proposition 65 警示",
+      "detail": "含铅/甲醛等有害物质超阈值的服饰须加贴 Prop 65 警示，否则可遭诉讼。",
+      "severity": "medium",
+      "source": "California OEHHA",
+      "source_url": "https://oehha.ca.gov/proposition-65",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "TikTok Shop（美国）",
+      "title": "内容合规红线（2026 更新）",
+      "detail": "90 天内累计违规可撤销电商权限；须真实上身演示、明示价格；禁虚假尺码/材质宣传。",
+      "severity": "high",
+      "source": "TikTok Shop 卖家中心",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12"
+    }
+  ],
+  "policies": [
+    {
+      "title": "Notice of Actions in Section 301 Investigations of Acts, Policies, and Practices of Various Economies Related to the Failure of Each Economy To Impose and Effectively Enforce a Prohibition on the Importation of Goods Produced With Forced Labor",
+      "date": "2026-07-28",
+      "agency": "Trade Representative, Office of United States",
+      "summary": "The United States Trade Representative (Trade Representative) has determined under Section 301(b) and Section 304(a) of the Trade Act of 1974, as amended (Trade Act), that in each of 60 investigations, certain of the acts, policies, and practices of the economy at issue are actio…",
+      "url": "https://www.federalregister.gov/documents/2026/07/28/2026-15181/notice-of-actions-in-section-301-investigations-of-acts-policies-and-practices-of-various-economies",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Determination Under the Textile and Apparel Commercial Availability Provision of the Dominican Republic-Central America-United States Free Trade Agreement (“CAFTA-DR”)",
+      "date": "2026-07-14",
+      "agency": "Committee for the Implementation of Textile Agreements",
+      "summary": "The Committee for the Implementation of Textile Agreements (\"CITA\") has determined that certain double weave polyester/spandex fabric, as specified below, is not available in commercial quantities in a timely manner in the CAFTA-DR countries. The product is added to the list in A…",
+      "url": "https://www.federalregister.gov/documents/2026/07/14/2026-14111/determination-under-the-textile-and-apparel-commercial-availability-provision-of-the-dominican",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Determination Under the Textile and Apparel Commercial Availability Provision of the Dominican Republic-Central America-United States Free Trade Agreement (“CAFTA-DR”)",
+      "date": "2026-07-08",
+      "agency": "Committee for the Implementation of Textile Agreements",
+      "summary": "The Committee for the Implementation of Textile Agreements (\"CITA\") has determined that certain polyester/nylon blend dobby weave fabric, as specified below, is not available in commercial quantities in a timely manner in the CAFTA-DR countries. The product is added to the list i…",
+      "url": "https://www.federalregister.gov/documents/2026/07/08/2026-13791/determination-under-the-textile-and-apparel-commercial-availability-provision-of-the-dominican",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Extension of Collection; Comment Request; Standard for the Flammability of Clothing Textiles, 16 CFR Part 1610; Standard for the Flammability of Vinyl Plastic Film, 16 CFR Part 1611",
+      "date": "2026-06-25",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "As required by the Paperwork Reduction Act of 1995 (PRA), the Consumer Product Safety Commission (CPSC or Commission) requests comments on a proposed extension of approval of information collection requirements associated with the Standard for the Flammability of Clothing Textile…",
+      "url": "https://www.federalregister.gov/documents/2026/06/25/2026-12770/agency-information-collection-activities-extension-of-collection-comment-request-standard-for-the",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Determination Under the Textile and Apparel Commercial Availability Provision of the Dominican Republic-Central America-United States Free Trade Agreement (“CAFTA-DR”)",
+      "date": "2026-06-11",
+      "agency": "Committee for the Implementation of Textile Agreements",
+      "summary": "The Committee for the Implementation of Textile Agreements (\"CITA\") has determined that certain double weave nylon/polyester/ spandex fabric, as specified below, is not available in commercial quantities in a timely manner in the CAFTA-DR countries. The product is added to the li…",
+      "url": "https://www.federalregister.gov/documents/2026/06/11/2026-11693/determination-under-the-textile-and-apparel-commercial-availability-provision-of-the-dominican",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activity Under OMB Review: Application for Annual Clothing Allowance",
+      "date": "2026-05-04",
+      "agency": "Veterans Affairs Department",
+      "summary": "In compliance with the Paperwork Reduction Act (PRA) of 1995, this notice announces that the Veterans Health Administration (VHA), Department of Veterans Affairs (VA), will submit the collection of information abstracted below to the Office of Management and Budget (OMB) for revi…",
+      "url": "https://www.federalregister.gov/documents/2026/05/04/2026-08612/agency-information-collection-activity-under-omb-review-application-for-annual-clothing-allowance",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Extension of Approval of Information Collection; Testing and Recordkeeping Requirements for Carpets and Rugs",
+      "date": "2025-03-05",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "As required by the Paperwork Reduction Act of 1995, the Consumer Product Safety Commission (CPSC or Commission) announces that the Commission has submitted to the Office of Management and Budget (OMB) a request for extension of approval of information collection requirements for …",
+      "url": "https://www.federalregister.gov/documents/2025/03/05/2025-03519/agency-information-collection-activities-extension-of-approval-of-information-collection-testing-and",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Extension of Collection; Comment Request; Testing and Recordkeeping Requirements for Carpets and Rugs",
+      "date": "2024-12-10",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "As required by the Paperwork Reduction Act of 1995, the Consumer Product Safety Commission (CPSC or Commission) requests comments on a proposed extension of approval of information collection requirements for manufacturers and importers of carpets and rugs in the Standard for the…",
+      "url": "https://www.federalregister.gov/documents/2024/12/10/2024-28898/agency-information-collection-activities-extension-of-collection-comment-request-testing-and",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ],
+  "alerts": [
+    {
+      "level": "high",
+      "title": "对华 Section 301 附加关税覆盖服饰鞋包税则（须逐票确认税率）",
+      "market": "美国",
+      "platform": "USTR / CBP",
+      "detail": "HTS 61(针织服装)/62(非针织服装)/64(鞋类) 等广泛受 Section 301 约束；2024 四年期复审已调整税率，2026 强迫劳动提案对部分经济体加征附加税。精确附加税率须用 USTR 产品检索或 CBP 裁定确认。",
+      "date": "2026-08-12",
+      "source": "USTR Section 301",
+      "url": "https://ustr.gov/node/9608",
+      "as_of": "2026-08-12",
+      "live": false
+    },
+    {
+      "level": "high",
+      "title": "Notice of Actions in Section 301 Investigations of Acts, Policies, and Practices of Various Economies Related to the Failure of Each Economy To Impose and Effectively Enforce a Prohibition on the Importation of Goods Produced With Forced Labor",
+      "market": "美国",
+      "platform": "Trade Representative, Office of United States",
+      "detail": "The United States Trade Representative (Trade Representative) has determined under Section 301(b) and Section 304(a) of the Trade Act of 1974, as amended (Trade Act), that in each of 60 investigations…",
+      "date": "2026-07-28",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/07/28/2026-15181/notice-of-actions-in-section-301-investigations-of-acts-policies-and-practices-of-various-economies",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Agency Information Collection Activities; Extension of Collection; Comment Request; Standard for the Flammability of Clothing Textiles, 16 CFR Part 1610; Standard for the Flammability of Vinyl Plastic Film, 16 CFR Part 1611",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "As required by the Paperwork Reduction Act of 1995 (PRA), the Consumer Product Safety Commission (CPSC or Commission) requests comments on a proposed extension of approval of information collection re…",
+      "date": "2026-06-25",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/06/25/2026-12770/agency-information-collection-activities-extension-of-collection-comment-request-standard-for-the",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Agency Information Collection Activities; Extension of Approval of Information Collection; Testing and Recordkeeping Requirements for Carpets and Rugs",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "As required by the Paperwork Reduction Act of 1995, the Consumer Product Safety Commission (CPSC or Commission) announces that the Commission has submitted to the Office of Management and Budget (OMB)…",
+      "date": "2025-03-05",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2025/03/05/2025-03519/agency-information-collection-activities-extension-of-approval-of-information-collection-testing-and",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Agency Information Collection Activities; Extension of Collection; Comment Request; Testing and Recordkeeping Requirements for Carpets and Rugs",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "As required by the Paperwork Reduction Act of 1995, the Consumer Product Safety Commission (CPSC or Commission) requests comments on a proposed extension of approval of information collection requirem…",
+      "date": "2024-12-10",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2024/12/10/2024-28898/agency-information-collection-activities-extension-of-collection-comment-request-testing-and",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ]
+}

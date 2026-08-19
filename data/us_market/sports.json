@@ -1,0 +1,513 @@
+{
+  "meta": {
+    "market": "美国运动户外 (US Sports & Outdoor)",
+    "cat_key": "sports",
+    "generated_at": "2026-08-12T15:10:05.068545+00:00",
+    "as_of": "2026-08-12",
+    "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
+    "sections": [
+      "country",
+      "platforms",
+      "rules",
+      "policies",
+      "alerts"
+    ],
+    "counts": {
+      "country": 1,
+      "platforms": 7,
+      "rules": 4,
+      "policies": 9,
+      "alerts": 6
+    }
+  },
+  "country": {
+    "market": "美国运动户外",
+    "cat_key": "sports",
+    "name_en": "Sports & Outdoor",
+    "icon": "⛺",
+    "flag": "🇺🇸",
+    "subtitle": "United States · 健康生活方式驱动高增长",
+    "macro": [
+      [
+        "运动户外市场规模(2026E)",
+        "运动用品 US$ 339 亿 (2026E)；户外装备全球 ≈ $652.8 亿",
+        "运动用品 CAGR 6% (2026-2031)",
+        "Mordor / Grand View, 2026"
+      ],
+      [
+        "运动户外市场说明",
+        "健身/露营/骑行热驱动；运动器材美国 ≈ $294 亿",
+        "—",
+        "Mordor / Grand View, 2026"
+      ],
+      [
+        "美国零售电商规模(2026E)",
+        "≈ US$ 1.6 万亿",
+        "同比 +10.4%（2025 为 $1.23 万亿）",
+        "eMarketer / US Census, 2026"
+      ],
+      [
+        "电商渗透率(Q1 2026)",
+        "16.9%（季调）",
+        "剔除汽车/汽油/餐饮后约 23.8%，历史第二高",
+        "US Census Bureau, 2026-05"
+      ],
+      [
+        "线上购物人口",
+        "≈ 2.95 亿（约 80% 成年人）",
+        "增长来自存量用户钱包份额提升",
+        "eMarketer, 2026"
+      ],
+      [
+        "Amazon 市占",
+        "≈ 36%–40% 美国电商",
+        "最大流量入口，品牌信任背书强",
+        "Marketplace Pulse, 2025-2026"
+      ],
+      [
+        "对华关税环境",
+        "收紧 + 复审",
+        "Section 301 附加税覆盖多品类；强迫劳动禁令提案推进",
+        "USTR Section 301, 2026"
+      ],
+      [
+        "内容电商增量",
+        "TikTok Shop 高速扩张",
+        "年轻客群 + 直播/短视频转化，跨境店可入驻",
+        "TikTok Shop 美国, 2026"
+      ]
+    ],
+    "segments": [
+      {
+        "name": "健身器材",
+        "note": "居家健身+瑜伽，复购配件强"
+      },
+      {
+        "name": "户外露营",
+        "note": "帐篷/睡袋，疫情后持续热"
+      },
+      {
+        "name": "骑行运动",
+        "note": "自行车/头盔，CPSC 认证"
+      },
+      {
+        "name": "球类与水上",
+        "note": "季节性强，赛事驱动"
+      }
+    ],
+    "opportunity": "健康生活方式驱动运动户外高增长（CAGR 6%）；健身/露营/骑行持续热。DTC + 内容种草（户外场景）转化强，本土仓解决大件履约。",
+    "risks": [
+      "⚠️ 自行车/头盔须 CPSC 强制安全标准",
+      "⚠️ 健身器材须 ASTM 稳定/锐边合规",
+      "⚠️ 大件履约成本高，海外仓为必选",
+      "⚠️ 对华 Section 301 覆盖运动器材（HTS 9506/8712），须确认税率"
+    ],
+    "advice": [
+      "新手：健身配件 TikTok 试水",
+      "工厂：Amazon + 海外仓，重认证",
+      "品牌：DTC + 户外内容种草"
+    ],
+    "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
+    "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
+    "as_of": "2026-08-12"
+  },
+  "findings": [
+    "运动户外受健康生活方式驱动高增长（CAGR ≈ 6%），健身/露营/骑行持续热。",
+    "自行车/头盔须 CPSC 强制安全标准，健身器材须 ASTM 合规。",
+    "大件履约成本高，海外仓为必选。",
+    "对华 Section 301 覆盖运动器材（HTS 9506/8712），税率须逐票确认。",
+    "工厂路径：健身配件试水 → Amazon+海外仓 → DTC 户外内容种草。"
+  ],
+  "platforms": [
+    {
+      "name": "Amazon（美国）",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "多数品类佣金 8%–20%（如消费电子 8%、服饰 17%、家居 15%、美妆 8%–15%、玩具 15%、运动 15%、汽配 12%–15%、保健品 15%）；专业计划 $39.99/月 + FBA 仓储配送费",
+      "feeDesc": "最大流量与信任背书；FBA 本土履约；Brand Registry 防跟卖",
+      "entry": "跨境可入驻；部分类目需审核/资质（如保健品、美妆、汽配）",
+      "strength": "最大流量与信任背书，高客单承接力强",
+      "risk": "佣金高、价格战、账号合规风险",
+      "source": "Amazon Seller Central 销售费用(2026)",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "健身器材",
+        "露营",
+        "骑行",
+        "瑜伽"
+      ]
+    },
+    {
+      "name": "TikTok Shop（美国）",
+      "type": "内容电商",
+      "market": "美国",
+      "commission": "平台佣金约 6%–8%（按类目）+ 支付手续费；卖家中心 2026 更新内容合规红线",
+      "feeDesc": "内容种草+直播转化；跨境店需本地主体/合规资质",
+      "entry": "跨境店可入驻；需本地主体/合规资质",
+      "strength": "内容种草+直播转化，年轻客群增量大",
+      "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
+      "source": "TikTok Shop 美国卖家中心(2026)",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "健身配件",
+        "露营好物",
+        "运动服",
+        "水具"
+      ]
+    },
+    {
+      "name": "Walmart Marketplace",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "佣金 6%–15%（按品类），WFS 仓储费 $0.75/立方英尺/月，无月费/入驻费",
+      "feeDesc": "WFS 本土仓 + 跨境；47 个履约中心，88% 美国人口两日达",
+      "entry": "跨境店可入驻，审核较严",
+      "strength": "高信任、低佣金、本土履约",
+      "risk": "流量弱于 Amazon、品类受限",
+      "source": "Walmart Marketplace 费用说明",
+      "source_url": "https://marketplace.walmart.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "家庭健身",
+        "基础户外",
+        "球类"
+      ]
+    },
+    {
+      "name": "eBay",
+      "type": "货架/拍卖",
+      "market": "美国",
+      "commission": "成交费约 13%（按品类），店铺订阅另计；无月费基础店",
+      "feeDesc": "开放入驻门槛低；二手/长尾天然场",
+      "entry": "开放入驻，门槛低",
+      "strength": "二手/收藏/长尾流量，国际站点可触达",
+      "risk": "假货争议、价格透明压利润",
+      "source": "eBay 费用说明（参考）",
+      "source_url": "https://www.ebay.com/sellercenter",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "二手器材",
+        "收藏",
+        "长尾"
+      ]
+    },
+    {
+      "name": "Etsy",
+      "type": "手作/设计师",
+      "market": "美国",
+      "commission": "上架费 $0.20/件 + 交易费 6.5% + 支付处理费 6.5%（按国别）",
+      "feeDesc": "无月费；手作/复古/定制定位",
+      "entry": "开放入驻",
+      "strength": "设计师/手工溢价高、客群精准",
+      "risk": "流量小于综合平台、仿品管控",
+      "source": "Etsy Seller Handbook（参考）",
+      "source_url": "https://www.etsy.com/seller-handbook",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "手工运动饰品",
+        "定制"
+      ]
+    },
+    {
+      "name": "Shopify（独立站 DTC）",
+      "type": "独立站",
+      "market": "美国",
+      "commission": "无平台佣金；订阅 $39–$399/月 + 支付费率 ~2.9%+$0.30",
+      "feeDesc": "品牌自主、数据自有；需自引流量",
+      "entry": "自助建站",
+      "strength": "品牌资产沉淀、毛利高",
+      "risk": "获客成本高、运营重",
+      "source": "Shopify 定价（参考）",
+      "source_url": "https://www.shopify.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "品牌官网",
+        "订阅",
+        "定制"
+      ]
+    },
+    {
+      "name": "Temu / SHEIN",
+      "type": "低价全托管",
+      "market": "美国",
+      "commission": "全托管/半托管模式，平台定价，卖家挣供货价",
+      "feeDesc": "极致低价流量，卖家利润薄；关税敏感",
+      "entry": "供货商入驻（全托管）",
+      "strength": "海量低价流量",
+      "risk": "利润极低、品牌稀释、关税敏感",
+      "source": "平台公开模式（参考）",
+      "source_url": "https://www.temu.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "低价配件",
+        "合金/塑料"
+      ]
+    }
+  ],
+  "matrix": [
+    [
+      "Amazon（美国）",
+      "工厂 / 品牌出海",
+      "中",
+      "中",
+      "FBA + 海外仓，重认证"
+    ],
+    [
+      "TikTok Shop（美国）",
+      "工厂爆款试水",
+      "中（本地主体）",
+      "高（内容红线）",
+      "户外场景种草"
+    ],
+    [
+      "Walmart",
+      "本土履约卖家",
+      "中高",
+      "低",
+      "高信任基础款"
+    ],
+    [
+      "eBay",
+      "二手 / 长尾",
+      "低",
+      "中",
+      "二手+长尾"
+    ],
+    [
+      "Etsy",
+      "设计师/手工",
+      "低",
+      "低",
+      "手工溢价"
+    ],
+    [
+      "Shopify",
+      "品牌 DTC",
+      "自助",
+      "中（获客）",
+      "户外内容沉淀"
+    ],
+    [
+      "Temu / SHEIN",
+      "低价供货商",
+      "低（全托管）",
+      "高（利润薄）",
+      "走量谨慎"
+    ]
+  ],
+  "rules": [
+    {
+      "platform": "CPSC",
+      "title": "自行车/头盔安全标准",
+      "detail": "自行车须符合 CPSC 16 CFR Part 1512；自行车头盔须符合 Part 1203 冲击标准；违规可召回。",
+      "severity": "high",
+      "source": "CPSC",
+      "source_url": "https://www.cpsc.gov/",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "ASTM",
+      "title": "运动器材安全 (ASTM F963 等)",
+      "detail": "健身/游乐器材须符合相应 ASTM 安全标准（机械/稳定/锐边）；儿童运动器材并入 CPSIA。",
+      "severity": "medium",
+      "source": "ASTM International",
+      "source_url": "https://www.astm.org/",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "Amazon",
+      "title": "运动类目资质",
+      "detail": "健身/骑行类部分需安全认证与合规声明；建议 Brand Registry。",
+      "severity": "medium",
+      "source": "Amazon Seller Central",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "TikTok Shop（美国）",
+      "title": "内容合规红线（2026 更新）",
+      "detail": "90 天内累计违规可撤销权限；须真实演示、明示价格。",
+      "severity": "high",
+      "source": "TikTok Shop 卖家中心",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12"
+    }
+  ],
+  "policies": [
+    {
+      "title": "Powered Micromobility Devices",
+      "date": "2026-08-12",
+      "agency": "Interior Department",
+      "summary": "The National Park Service finalizes a management framework for the use of powered micromobility devices within the National Park System. The final rule defines powered micromobility devices separately from motor vehicles, traditional bicycles, electric bicycles, and human powered…",
+      "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16388/powered-micromobility-devices",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "First State National Historical Park; Bicycling",
+      "date": "2026-07-30",
+      "agency": "Interior Department",
+      "summary": "The National Park Service (NPS) proposes to issue special regulations for First State National Historical Park to allow for bicycle use on approximately 25 miles of trails within the Brandywine Valley unit of the park.",
+      "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15406/first-state-national-historical-park-bicycling",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Removal of Obsolete or Unnecessary Requirements",
+      "date": "2026-07-23",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "The U.S. Consumer Product Safety Commission (Commission or CPSC) is reviewing its regulations to reduce regulatory burdens and costs. Pursuant to this review, CPSC has identified several obsolete or unnecessary provisions that are being removed or amended in this direct final rul…",
+      "url": "https://www.federalregister.gov/documents/2026/07/23/2026-14934/removal-of-obsolete-or-unnecessary-requirements",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Certain Glow Fish Tape Systems, Safety Helmet Systems, and Components Thereof; Notice of Request for Submissions on the Public Interest",
+      "date": "2026-07-15",
+      "agency": "International Trade Commission",
+      "summary": "Notice is hereby given that on June 5, 2026, the presiding chief administrative law judge (\"CALJ\") issued an Initial Determination on Violation of Section 337 and Recommendation on Remedy and Bond, should a violation be found in the above-captioned investigation. The Commission i…",
+      "url": "https://www.federalregister.gov/documents/2026/07/15/2026-14234/certain-glow-fish-tape-systems-safety-helmet-systems-and-components-thereof-notice-of-request-for",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Counter-UAS Authority for State, Local, Tribal, and Territorial Law Enforcement and Correctional Agencies",
+      "date": "2026-07-06",
+      "agency": "Homeland Security Department",
+      "summary": "In this interim final rule (\"IFR\"), the Department of Justice (\"DOJ\") and the Department of Homeland Security (\"DHS\") (collectively, \"the Departments\") codify the framework for implementing the SAFER SKIES Act, which authorizes State, local, Tribal, and territorial law enforcemen…",
+      "url": "https://www.federalregister.gov/documents/2026/07/06/2026-13609/counter-uas-authority-for-state-local-tribal-and-territorial-law-enforcement-and-correctional",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Standard for Lithium-Ion Batteries Used in Micromobility Products and Electrical Systems of Micromobility Products Containing Such Batteries",
+      "date": "2026-06-24",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "The U.S. Consumer Product Safety Commission (CPSC) issues this notice of proposed rulemaking (NPR) to address the unreasonable risk of death and injury associated with lithium-ion batteries used in micromobility products due to hazards such as thermal runaway of lithium cells, wh…",
+      "url": "https://www.federalregister.gov/documents/2026/06/24/2026-12749/safety-standard-for-lithium-ion-batteries-used-in-micromobility-products-and-electrical-systems-of",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Zone; Lake Michigan, Chicago, IL",
+      "date": "2026-06-01",
+      "agency": "Homeland Security Department",
+      "summary": "The Coast Guard is establishing a temporary safety zone for certain navigable waters of Lake Michigan. The safety zone is needed to protect personnel, vessels, and the marine environment from potential hazards surrounding a tandem bicycle race on a floating course. This safety zo…",
+      "url": "https://www.federalregister.gov/documents/2026/06/01/2026-10870/safety-zone-lake-michigan-chicago-il",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "National Physical Fitness and Sports Month, 2026",
+      "date": "2026-05-08",
+      "agency": "Executive Office of the President",
+      "summary": "",
+      "url": "https://www.federalregister.gov/documents/2026/05/08/2026-09277/national-physical-fitness-and-sports-month-2026",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Restoring Integrity to the Issuance of Non-Domiciled Commercial Drivers Licenses (CDL)",
+      "date": "2026-02-13",
+      "agency": "Transportation Department",
+      "summary": "FMCSA amends the Federal regulations for State Driver's Licensing Agencies (SDLAs) issuing commercial driving credentials to non-domiciled individuals. This final rule reaffirms, with minor changes, the provisions of the interim final rule (IFR) published on September 29, 2025. S…",
+      "url": "https://www.federalregister.gov/documents/2026/02/13/2026-02965/restoring-integrity-to-the-issuance-of-non-domiciled-commercial-drivers-licenses-cdl",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ],
+  "alerts": [
+    {
+      "level": "medium",
+      "title": "对华 Section 301 附加关税覆盖运动器材税则",
+      "market": "美国",
+      "platform": "USTR / CBP",
+      "detail": "HTS 9506(运动器材)/8712(自行车) 等受 Section 301 约束；2026 强迫劳动提案对部分经济体加征附加税。精确税率须用 USTR 检索或 CBP 裁定确认。",
+      "date": "2026-08-12",
+      "source": "USTR Section 301",
+      "url": "https://ustr.gov/node/9608",
+      "as_of": "2026-08-12",
+      "live": false
+    },
+    {
+      "level": "medium",
+      "title": "Removal of Obsolete or Unnecessary Requirements",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "The U.S. Consumer Product Safety Commission (Commission or CPSC) is reviewing its regulations to reduce regulatory burdens and costs. Pursuant to this review, CPSC has identified several obsolete or u…",
+      "date": "2026-07-23",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/07/23/2026-14934/removal-of-obsolete-or-unnecessary-requirements",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Certain Glow Fish Tape Systems, Safety Helmet Systems, and Components Thereof; Notice of Request for Submissions on the Public Interest",
+      "market": "美国",
+      "platform": "International Trade Commission",
+      "detail": "Notice is hereby given that on June 5, 2026, the presiding chief administrative law judge (\"CALJ\") issued an Initial Determination on Violation of Section 337 and Recommendation on Remedy and Bond, sh…",
+      "date": "2026-07-15",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/07/15/2026-14234/certain-glow-fish-tape-systems-safety-helmet-systems-and-components-thereof-notice-of-request-for",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Safety Standard for Lithium-Ion Batteries Used in Micromobility Products and Electrical Systems of Micromobility Products Containing Such Batteries",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "The U.S. Consumer Product Safety Commission (CPSC) issues this notice of proposed rulemaking (NPR) to address the unreasonable risk of death and injury associated with lithium-ion batteries used in mi…",
+      "date": "2026-06-24",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/06/24/2026-12749/safety-standard-for-lithium-ion-batteries-used-in-micromobility-products-and-electrical-systems-of",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Safety Zone; Lake Michigan, Chicago, IL",
+      "market": "美国",
+      "platform": "Homeland Security Department",
+      "detail": "The Coast Guard is establishing a temporary safety zone for certain navigable waters of Lake Michigan. The safety zone is needed to protect personnel, vessels, and the marine environment from potentia…",
+      "date": "2026-06-01",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/06/01/2026-10870/safety-zone-lake-michigan-chicago-il",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Restoring Integrity to the Issuance of Non-Domiciled Commercial Drivers Licenses (CDL)",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "FMCSA amends the Federal regulations for State Driver's Licensing Agencies (SDLAs) issuing commercial driving credentials to non-domiciled individuals. This final rule reaffirms, with minor changes, t…",
+      "date": "2026-02-13",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/02/13/2026-02965/restoring-integrity-to-the-issuance-of-non-domiciled-commercial-drivers-licenses-cdl",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ]
+}

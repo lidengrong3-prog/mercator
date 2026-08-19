@@ -1,0 +1,102 @@
+{
+  "generated_at": "2026-08-12T15:08:47.541043+00:00",
+  "as_of": "2026-08-12",
+  "categories": [
+    {
+      "key": "electronics",
+      "name": "消费电子",
+      "name_en": "Consumer Electronics",
+      "icon": "📱",
+      "file": "electronics.json",
+      "market_size": "US$ 2,616 亿 (2026E)",
+      "cagr": "CAGR 4.8% (2026-2031)",
+      "policy_count": 23,
+      "alert_count": 11,
+      "report": "reports/us_market/electronics_report.pdf"
+    },
+    {
+      "key": "apparel",
+      "name": "服饰鞋包",
+      "name_en": "Apparel & Footwear",
+      "icon": "👕",
+      "file": "apparel.json",
+      "market_size": "US$ 3,730 亿 (2026E，服饰)",
+      "cagr": "CAGR 1.83% (2026-2031)",
+      "policy_count": 8,
+      "alert_count": 5,
+      "report": "reports/us_market/apparel_report.pdf"
+    },
+    {
+      "key": "home",
+      "name": "家居厨具",
+      "name_en": "Home & Kitchen",
+      "icon": "🍳",
+      "file": "home.json",
+      "market_size": "厨具 US$ 60.8 亿 (2026E)；家居耐用品 ≈ $418 亿",
+      "cagr": "厨具 CAGR 2.26% (2026-2031)",
+      "policy_count": 13,
+      "alert_count": 9,
+      "report": "reports/us_market/home_report.pdf"
+    },
+    {
+      "key": "beauty",
+      "name": "美妆个护",
+      "name_en": "Beauty & Personal Care",
+      "icon": "💄",
+      "file": "beauty.json",
+      "market_size": "US$ 1,067.6 亿 (2026E)",
+      "cagr": "CAGR 2.44% (2026-2031)",
+      "policy_count": 24,
+      "alert_count": 7,
+      "report": "reports/us_market/beauty_report.pdf"
+    },
+    {
+      "key": "toys",
+      "name": "玩具乐器",
+      "name_en": "Toys & Games",
+      "icon": "🧸",
+      "file": "toys.json",
+      "market_size": "玩具 US$ 387 亿 (2026E)；玩具游戏合计 ≈ $820.9 亿",
+      "cagr": "玩具 CAGR 3.8% (2026-2031)",
+      "policy_count": 23,
+      "alert_count": 19,
+      "report": "reports/us_market/toys_report.pdf"
+    },
+    {
+      "key": "sports",
+      "name": "运动户外",
+      "name_en": "Sports & Outdoor",
+      "icon": "⛺",
+      "file": "sports.json",
+      "market_size": "运动用品 US$ 339 亿 (2026E)；户外装备全球 ≈ $652.8 亿",
+      "cagr": "运动用品 CAGR 6% (2026-2031)",
+      "policy_count": 9,
+      "alert_count": 6,
+      "report": "reports/us_market/sports_report.pdf"
+    },
+    {
+      "key": "auto",
+      "name": "汽车配件",
+      "name_en": "Automotive Aftermarket",
+      "icon": "🔧",
+      "file": "auto.json",
+      "market_size": "US$ 2,387.5 亿 (2026E)",
+      "cagr": "CAGR 4.12% (2026-2031)",
+      "policy_count": 24,
+      "alert_count": 16,
+      "report": "reports/us_market/auto_report.pdf"
+    },
+    {
+      "key": "supplements",
+      "name": "保健品",
+      "name_en": "Dietary Supplements",
+      "icon": "💊",
+      "file": "supplements.json",
+      "market_size": "US$ 773.7 亿 (2026E)",
+      "cagr": "CAGR 7.9% (2026-2031)",
+      "policy_count": 17,
+      "alert_count": 3,
+      "report": "reports/us_market/supplements_report.pdf"
+    }
+  ]
+}

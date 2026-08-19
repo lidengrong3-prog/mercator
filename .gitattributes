@@ -1,0 +1,23 @@
+# 保护二进制文件：禁止 CRLF 转换（避免 PDF/图片损坏）
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.ico binary
+*.zip binary
+*.xlsx binary
+*.docx binary
+*.pptx binary
+*.mp4 binary
+*.json text eol=lf
+*.py text eol=lf
+*.html text eol=lf
+*.js text eol=lf
+*.css text eol=lf

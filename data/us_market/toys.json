@@ -1,0 +1,824 @@
+{
+  "meta": {
+    "market": "美国玩具乐器 (US Toys & Games)",
+    "cat_key": "toys",
+    "generated_at": "2026-08-12T15:09:51.123031+00:00",
+    "as_of": "2026-08-12",
+    "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
+    "sections": [
+      "country",
+      "platforms",
+      "rules",
+      "policies",
+      "alerts"
+    ],
+    "counts": {
+      "country": 1,
+      "platforms": 7,
+      "rules": 4,
+      "policies": 23,
+      "alerts": 19
+    }
+  },
+  "country": {
+    "market": "美国玩具乐器",
+    "cat_key": "toys",
+    "name_en": "Toys & Games",
+    "icon": "🧸",
+    "flag": "🇺🇸",
+    "subtitle": "United States · 强季节 + 严安全合规",
+    "macro": [
+      [
+        "玩具乐器市场规模(2026E)",
+        "玩具 US$ 387 亿 (2026E)；玩具游戏合计 ≈ $820.9 亿",
+        "玩具 CAGR 3.8% (2026-2031)",
+        "Morgan Reed / Grand View, 2026"
+      ],
+      [
+        "玩具乐器市场说明",
+        "Q4  holiday 占全年约 1/3；安全合规门槛全品类最高之一",
+        "—",
+        "Morgan Reed / Grand View, 2026"
+      ],
+      [
+        "美国零售电商规模(2026E)",
+        "≈ US$ 1.6 万亿",
+        "同比 +10.4%（2025 为 $1.23 万亿）",
+        "eMarketer / US Census, 2026"
+      ],
+      [
+        "电商渗透率(Q1 2026)",
+        "16.9%（季调）",
+        "剔除汽车/汽油/餐饮后约 23.8%，历史第二高",
+        "US Census Bureau, 2026-05"
+      ],
+      [
+        "线上购物人口",
+        "≈ 2.95 亿（约 80% 成年人）",
+        "增长来自存量用户钱包份额提升",
+        "eMarketer, 2026"
+      ],
+      [
+        "Amazon 市占",
+        "≈ 36%–40% 美国电商",
+        "最大流量入口，品牌信任背书强",
+        "Marketplace Pulse, 2025-2026"
+      ],
+      [
+        "对华关税环境",
+        "收紧 + 复审",
+        "Section 301 附加税覆盖多品类；强迫劳动禁令提案推进",
+        "USTR Section 301, 2026"
+      ],
+      [
+        "内容电商增量",
+        "TikTok Shop 高速扩张",
+        "年轻客群 + 直播/短视频转化，跨境店可入驻",
+        "TikTok Shop 美国, 2026"
+      ]
+    ],
+    "segments": [
+      {
+        "name": "益智教育",
+        "note": "STEM/积木，家长偏好高"
+      },
+      {
+        "name": "娃娃玩偶",
+        "note": "IP 授权集中，TikTok 爆款"
+      },
+      {
+        "name": "户外/运动玩具",
+        "note": "季节性+庭院场景"
+      },
+      {
+        "name": "婴幼儿玩具",
+        "note": "CPSIA 合规最严，安全门槛高"
+      }
+    ],
+    "opportunity": "玩具市场强季节（Q4 占全年约 1/3）、复购+礼品属性强；STEM/益智与家长偏好品类溢价高。合规完备即可进入 Amazon 高信任渠道。",
+    "risks": [
+      "⚠️ ASTM F963 全项安全 + CPSIA 铅/邻苯 + 第三方 CPC 为强制",
+      "⚠️ 婴幼儿玩具安全门槛全品类最高",
+      "⚠️ IP 玩偶须授权，侵权风险高",
+      "⚠️ 对华 Section 301 覆盖玩具（HTS 9503），须确认税率"
+    ],
+    "advice": [
+      "新手：STEM/益智 Amazon 试水",
+      "工厂：Amazon + 海外仓，重 CPC 合规",
+      "品牌：DTC + IP 合规授权"
+    ],
+    "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
+    "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
+    "as_of": "2026-08-12"
+  },
+  "findings": [
+    "玩具市场强季节（Q4 占全年约 1/3）、礼品属性强，STEM/益智溢价高。",
+    "ASTM F963 + CPSIA 铅/邻苯 + 第三方 CPC 证书为强制，安全门槛全品类最高之一。",
+    "IP 玩偶须授权，侵权风险高，建议走自有设计。",
+    "对华 Section 301 覆盖玩具（HTS 9503），税率须逐票确认。",
+    "工厂路径：STEM 试水 → Amazon+海外仓 → DTC 自有设计。"
+  ],
+  "platforms": [
+    {
+      "name": "Amazon（美国）",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "多数品类佣金 8%–20%（如消费电子 8%、服饰 17%、家居 15%、美妆 8%–15%、玩具 15%、运动 15%、汽配 12%–15%、保健品 15%）；专业计划 $39.99/月 + FBA 仓储配送费",
+      "feeDesc": "最大流量与信任背书；FBA 本土履约；Brand Registry 防跟卖",
+      "entry": "跨境可入驻；部分类目需审核/资质（如保健品、美妆、汽配）",
+      "strength": "最大流量与信任背书，高客单承接力强",
+      "risk": "佣金高、价格战、账号合规风险",
+      "source": "Amazon Seller Central 销售费用(2026)",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "益智STEM",
+        "娃娃",
+        "户外玩具",
+        "婴幼儿"
+      ]
+    },
+    {
+      "name": "TikTok Shop（美国）",
+      "type": "内容电商",
+      "market": "美国",
+      "commission": "平台佣金约 6%–8%（按类目）+ 支付手续费；卖家中心 2026 更新内容合规红线",
+      "feeDesc": "内容种草+直播转化；跨境店需本地主体/合规资质",
+      "entry": "跨境店可入驻；需本地主体/合规资质",
+      "strength": "内容种草+直播转化，年轻客群增量大",
+      "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
+      "source": "TikTok Shop 美国卖家中心(2026)",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "爆款玩具",
+        "解压",
+        "IP 周边",
+        "节日礼"
+      ]
+    },
+    {
+      "name": "Walmart Marketplace",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "佣金 6%–15%（按品类），WFS 仓储费 $0.75/立方英尺/月，无月费/入驻费",
+      "feeDesc": "WFS 本土仓 + 跨境；47 个履约中心，88% 美国人口两日达",
+      "entry": "跨境店可入驻，审核较严",
+      "strength": "高信任、低佣金、本土履约",
+      "risk": "流量弱于 Amazon、品类受限",
+      "source": "Walmart Marketplace 费用说明",
+      "source_url": "https://marketplace.walmart.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "家庭玩具",
+        "基础款",
+        "学前教育"
+      ]
+    },
+    {
+      "name": "eBay",
+      "type": "货架/拍卖",
+      "market": "美国",
+      "commission": "成交费约 13%（按品类），店铺订阅另计；无月费基础店",
+      "feeDesc": "开放入驻门槛低；二手/长尾天然场",
+      "entry": "开放入驻，门槛低",
+      "strength": "二手/收藏/长尾流量，国际站点可触达",
+      "risk": "假货争议、价格透明压利润",
+      "source": "eBay 费用说明（参考）",
+      "source_url": "https://www.ebay.com/sellercenter",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "收藏玩具",
+        "二手",
+        "长尾"
+      ]
+    },
+    {
+      "name": "Etsy",
+      "type": "手作/设计师",
+      "market": "美国",
+      "commission": "上架费 $0.20/件 + 交易费 6.5% + 支付处理费 6.5%（按国别）",
+      "feeDesc": "无月费；手作/复古/定制定位",
+      "entry": "开放入驻",
+      "strength": "设计师/手工溢价高、客群精准",
+      "risk": "流量小于综合平台、仿品管控",
+      "source": "Etsy Seller Handbook（参考）",
+      "source_url": "https://www.etsy.com/seller-handbook",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "手工玩具",
+        "定制",
+        "木制"
+      ]
+    },
+    {
+      "name": "Shopify（独立站 DTC）",
+      "type": "独立站",
+      "market": "美国",
+      "commission": "无平台佣金；订阅 $39–$399/月 + 支付费率 ~2.9%+$0.30",
+      "feeDesc": "品牌自主、数据自有；需自引流量",
+      "entry": "自助建站",
+      "strength": "品牌资产沉淀、毛利高",
+      "risk": "获客成本高、运营重",
+      "source": "Shopify 定价（参考）",
+      "source_url": "https://www.shopify.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "品牌官网",
+        "订阅盒",
+        "定制"
+      ]
+    },
+    {
+      "name": "Temu / SHEIN",
+      "type": "低价全托管",
+      "market": "美国",
+      "commission": "全托管/半托管模式，平台定价，卖家挣供货价",
+      "feeDesc": "极致低价流量，卖家利润薄；关税敏感",
+      "entry": "供货商入驻（全托管）",
+      "strength": "海量低价流量",
+      "risk": "利润极低、品牌稀释、关税敏感",
+      "source": "平台公开模式（参考）",
+      "source_url": "https://www.temu.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "低价玩具",
+        "合金/塑料"
+      ]
+    }
+  ],
+  "matrix": [
+    [
+      "Amazon（美国）",
+      "工厂 / 品牌出海",
+      "中（类目审核）",
+      "中",
+      "FBA + CPC 合规"
+    ],
+    [
+      "TikTok Shop（美国）",
+      "工厂爆款试水",
+      "中（本地主体）",
+      "高（内容红线）",
+      "爆款种草"
+    ],
+    [
+      "Walmart",
+      "本土履约卖家",
+      "中高",
+      "低",
+      "高信任家庭款"
+    ],
+    [
+      "eBay",
+      "二手 / 收藏",
+      "低",
+      "中",
+      "收藏+长尾"
+    ],
+    [
+      "Etsy",
+      "手工/木制",
+      "低",
+      "低",
+      "手工溢价"
+    ],
+    [
+      "Shopify",
+      "品牌 DTC",
+      "自助",
+      "中（获客）",
+      "订阅盒沉淀"
+    ],
+    [
+      "Temu / SHEIN",
+      "低价供货商",
+      "低（全托管）",
+      "高（利润薄）",
+      "走量谨慎"
+    ]
+  ],
+  "rules": [
+    {
+      "platform": "CPSC",
+      "title": "玩具安全委员会标准 (ASTM F963)",
+      "detail": "玩具须符合 ASTM F963 机械/物理/燃烧/化学要求；CPSC 强制执行，违规可召回。",
+      "severity": "high",
+      "source": "CPSC",
+      "source_url": "https://www.cpsc.gov/",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "CPSIA",
+      "title": "铅/邻苯 + 第三方检测 + CPC",
+      "detail": "儿童玩具铅 ≤100ppm、邻苯二甲酸盐受限；须第三方检测并出具儿童产品证书 (CPC)，随货提供。",
+      "severity": "high",
+      "source": "CPSC CPSIA",
+      "source_url": "https://www.cpsc.gov/Business--Manufacturing/Business-Education/CPSA-Compliance-Guide-for-Manufacturers-Importers",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "Amazon",
+      "title": "玩具类目资质",
+      "detail": "玩具为受限类目，需 CPC + 检测报告；部分 IP 玩偶需授权。",
+      "severity": "medium",
+      "source": "Amazon Seller Central",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "TikTok Shop（美国）",
+      "title": "内容合规红线（2026 更新）",
+      "detail": "90 天内累计违规可撤销权限；禁虚假安全宣称；须真实演示。",
+      "severity": "high",
+      "source": "TikTok Shop 卖家中心",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12"
+    }
+  ],
+  "policies": [
+    {
+      "title": "Reducing Federal Burden for Head Start Programs",
+      "date": "2026-08-07",
+      "agency": "Health and Human Services Department",
+      "summary": "This NPRM proposes to rescind and replace the Head Start Program Performance Standards (Performance Standards), last revised in 2024. The proposed Performance Standards would significantly reduce Federal bureaucratic burden on programs; defer to State policies wherever possible; …",
+      "url": "https://www.federalregister.gov/documents/2026/08/07/2026-16134/reducing-federal-burden-for-head-start-programs",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Proposed Information Collection Activity; Formative Data Collections for ACF Research and Evaluation",
+      "date": "2026-08-05",
+      "agency": "Health and Human Services Department",
+      "summary": "The Administration for Children and Families (ACF) proposes to extend data collection under the existing overarching generic clearance for Formative Data Collections for ACF Research and Evaluation (Office of Management and Budget (OMB)#: 0970-0356). There are no changes proposed…",
+      "url": "https://www.federalregister.gov/documents/2026/08/05/2026-15851/proposed-information-collection-activity-formative-data-collections-for-acf-research-and-evaluation",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Revocation of Obsolete Rules Regarding Infant Bouncer Seats and Stationary Activity Centers",
+      "date": "2026-07-22",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "The U.S. Consumer Product Safety Commission (Commission or CPSC) is reviewing its regulations to reduce regulatory burdens and costs. Pursuant to this review, CPSC has identified two rules concerning infant bouncer seats and stationary activity centers that are now obsolete becau…",
+      "url": "https://www.federalregister.gov/documents/2026/07/22/2026-14822/revocation-of-obsolete-rules-regarding-infant-bouncer-seats-and-stationary-activity-centers",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Standard for Lithium-Ion Batteries Used in Micromobility Products and Electrical Systems of Micromobility Products Containing Such Batteries",
+      "date": "2026-06-24",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "The U.S. Consumer Product Safety Commission (CPSC) issues this notice of proposed rulemaking (NPR) to address the unreasonable risk of death and injury associated with lithium-ion batteries used in micromobility products due to hazards such as thermal runaway of lithium cells, wh…",
+      "url": "https://www.federalregister.gov/documents/2026/06/24/2026-12749/safety-standard-for-lithium-ion-batteries-used-in-micromobility-products-and-electrical-systems-of",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Notice of Commission Determination Regarding Technological Feasibility of Lead Content Reduction",
+      "date": "2026-06-24",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "As required by the Consumer Product Safety Improvement Act, the Consumer Product Safety Commission (Commission or CPSC) has evaluated whether to revise lead limits for children's products and paints or similar surface-coating materials, including toys and other articles intended …",
+      "url": "https://www.federalregister.gov/documents/2026/06/24/2026-12695/notice-of-commission-determination-regarding-technological-feasibility-of-lead-content-reduction",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Extension of the Date by Which Neck Floats Must Be Tested and Certified Subject to the Submission of Samples",
+      "date": "2026-05-19",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "The U.S. Consumer Product Safety Commission (Commission or CPSC) is announcing that the Commission is extending, by 60 days, the date by which manufacturers (including importers) of neck floats must comply with the third party testing and certification requirements for children's…",
+      "url": "https://www.federalregister.gov/documents/2026/05/19/2026-09977/extension-of-the-date-by-which-neck-floats-must-be-tested-and-certified-subject-to-the-submission-of",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Standard for Toddler Beds",
+      "date": "2026-05-14",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "In October 2019, the U.S. Consumer Product Safety Commission (CPSC or Commission) published an update to the consumer product safety standard for toddler beds under the Consumer Product Safety Improvement Act of 2008 (CPSIA). The standard incorporated by reference ASTM F1821- 19[…",
+      "url": "https://www.federalregister.gov/documents/2026/05/14/2026-09640/safety-standard-for-toddler-beds",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Standard for Infant and Cradle Swings",
+      "date": "2026-04-20",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "In May 2024, the U.S. Consumer Product Safety Commission (CPSC or Commission) published an update to the consumer product safety standard for infant and cradle swings under the Consumer Product Safety Improvement Act of 2008 (CPSIA). The standard incorporated by reference ASTM F2…",
+      "url": "https://www.federalregister.gov/documents/2026/04/20/2026-07638/safety-standard-for-infant-and-cradle-swings",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Eliminating Obsolete Marking Requirements for Toy, Look-Alike, and Imitation Firearms",
+      "date": "2026-02-19",
+      "agency": "Commerce Department",
+      "summary": "By this rule, NIST removes its regulation setting forth marking requirements for toy, look-alike, and imitation firearms. Pursuant to statutory amendments made by the CHIPS and Science Act of 2022, the subject regulation now lacks an underlying statutory authorization and has bee…",
+      "url": "https://www.federalregister.gov/documents/2026/02/19/2026-03307/eliminating-obsolete-marking-requirements-for-toy-look-alike-and-imitation-firearms",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Mandatory Toy Safety Standards: Requirements for Neck Floats; Correction",
+      "date": "2026-01-16",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "This document corrects the preamble to a final rule published in the Federal Register on December 15, 2025, regarding requirements for neck floats under CPSC's mandatory toy safety standard. This correction addresses errors and revises text to provide clear instructions to the pu…",
+      "url": "https://www.federalregister.gov/documents/2026/01/16/2026-00895/mandatory-toy-safety-standards-requirements-for-neck-floats-correction",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Mandatory Toy Safety Standards: Requirements for Neck Floats",
+      "date": "2025-12-15",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "Section 106(a) of the Consumer Product Safety Improvement Act of 2008 (CPSIA) mandates that ASTM F963 shall be a mandatory toy safety standard. ASTM F963-23, however, does not establish specific performance requirements for aquatic toys, such as neck floats. The U.S. Consumer Pro…",
+      "url": "https://www.federalregister.gov/documents/2025/12/15/2025-22827/mandatory-toy-safety-standards-requirements-for-neck-floats",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Standard for Toys: Requirements for Water Beads",
+      "date": "2025-12-12",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "Section 106(a) of the Consumer Product Safety Improvement Act of 2008 (CPSIA) mandates that ASTM F963 shall be a mandatory toy safety standard. This safety standard sets forth requirements for water bead toys and toys that contain water beads. Under this statutory authority, the …",
+      "url": "https://www.federalregister.gov/documents/2025/12/12/2025-22643/safety-standard-for-toys-requirements-for-water-beads",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Extension of Collection; Third Party Testing of Children's Products",
+      "date": "2025-09-26",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "As required by the Paperwork Reduction Act of 1995 (PRA), the Consumer Product Safety Commission (CPSC or Commission) announces that the Commission has submitted to the Office of Management and Budget (OMB) a request for extension of approval of information collection for Third P…",
+      "url": "https://www.federalregister.gov/documents/2025/09/26/2025-18739/agency-information-collection-activities-extension-of-collection-third-party-testing-of-childrens",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Extension of Approval of Information Collection; Requirements Pertaining to Third Party Conformity Assessment Bodies",
+      "date": "2025-09-12",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "As required by the Paperwork Reduction Act of 1995, the Consumer Product Safety Commission (CPSC or Commission) announces that the Commission has submitted to the Office of Management and Budget (OMB) a request for extension of approval of information collection requirements pert…",
+      "url": "https://www.federalregister.gov/documents/2025/09/12/2025-17666/agency-information-collection-activities-extension-of-approval-of-information-collection",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Proposed Collection; Comment Request; Third Party Testing of Children's Products",
+      "date": "2025-07-11",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "As required by the Paperwork Reduction Act of 1995 (PRA), the Consumer Product Safety Commission (CPSC or Commission) requests comments on a proposed extension of approval of a collection of information for Third Party Testing of Children's Products. The Office of Management and …",
+      "url": "https://www.federalregister.gov/documents/2025/07/11/2025-12979/agency-information-collection-activities-proposed-collection-comment-request-third-party-testing-of",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Extension of Collection; Comment Request; Requirements Pertaining to Third Party Conformity Assessment Bodies",
+      "date": "2025-06-10",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "As required by the Paperwork Reduction Act of 1995, the Consumer Product Safety Commission (CPSC or Commission) requests comments on a proposed extension of approval of information collection requirements pertaining to third party conformity assessment bodies. The Office of Manag…",
+      "url": "https://www.federalregister.gov/documents/2025/06/10/2025-10508/agency-information-collection-activities-extension-of-collection-comment-request-requirements",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Standard for Stationary Activity Centers",
+      "date": "2025-03-27",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "In June 2019, the U.S. Consumer Product Safety Commission (CPSC or Commission) published a consumer product safety standard for stationary activity centers pursuant to section 104 of the Consumer Product Safety Improvement Act of 2008 (CPSIA). The Commission's mandatory standard …",
+      "url": "https://www.federalregister.gov/documents/2025/03/27/2025-05239/safety-standard-for-stationary-activity-centers",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Mandatory Toy Safety Standards: Requirements for Neck Floats",
+      "date": "2024-11-20",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "The Consumer Product Safety Improvement Act of 2008 (CPSIA) mandates that ASTM F963 shall be a mandatory toy safety standard. This toy safety standard sets forth only minimal labeling requirements for aquatic toys such as neck floats. The U.S. Consumer Product Safety Commission (…",
+      "url": "https://www.federalregister.gov/documents/2024/11/20/2024-25446/mandatory-toy-safety-standards-requirements-for-neck-floats",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Standard for Toys: Requirements for Water Beads",
+      "date": "2024-09-09",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "The Consumer Product Safety Improvement Act of 2008 (CPSIA) mandates that ASTM F963 shall be a mandatory toy safety standard. This safety standard sets forth requirements for water bead toys and toys that contain water beads. The U.S. Consumer Product Safety Commission (CPSC) pro…",
+      "url": "https://www.federalregister.gov/documents/2024/09/09/2024-19286/safety-standard-for-toys-requirements-for-water-beads",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Standard for Toys: Requirements for Toys Containing Button Cell or Coin Cell Batteries",
+      "date": "2024-08-13",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "The U.S. Consumer Product Safety Commission (Commission or CPSC) proposes to address the risk of injury and death associated with children ingesting button cell or coin cell batteries obtained from toys by adding performance and labeling requirements for battery- operated toys co…",
+      "url": "https://www.federalregister.gov/documents/2024/08/13/2024-17472/safety-standard-for-toys-requirements-for-toys-containing-button-cell-or-coin-cell-batteries",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Standard for Button Cell or Coin Batteries and Consumer Products Containing Such Batteries",
+      "date": "2023-09-21",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "In February 2023, as required by Reese's Law, the U.S. Consumer Product Safety Commission (CPSC or Commission) issued a notice of proposed rulemaking (NPR) to eliminate or adequately reduce the risk of injury from ingestion of button cell or coin batteries by children six years o…",
+      "url": "https://www.federalregister.gov/documents/2023/09/21/2023-20333/safety-standard-for-button-cell-or-coin-batteries-and-consumer-products-containing-such-batteries",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Standard and Notification Requirements for Button Cell or Coin Batteries and Consumer Products Containing Such Batteries",
+      "date": "2023-02-09",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "As required by Reese's Law, to eliminate or adequately reduce the risk of injury from ingestion of button cell or coin batteries by children 6 years old and younger, the U.S. Consumer Product Safety Commission (CPSC or Commission) proposes a rule to establish performance requirem…",
+      "url": "https://www.federalregister.gov/documents/2023/02/09/2023-02356/safety-standard-and-notification-requirements-for-button-cell-or-coin-batteries-and-consumer",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Safety Standard for Magnets",
+      "date": "2022-09-21",
+      "agency": "Consumer Product Safety Commission",
+      "summary": "The U.S. Consumer Product Safety Commission (Commission or CPSC) is issuing a rule to address the hazard associated with ingestion of one or more high-powered magnets. The CPSC has determined that unreasonable risks of injury are associated with small, powerful magnets that, when…",
+      "url": "https://www.federalregister.gov/documents/2022/09/21/2022-20200/safety-standard-for-magnets",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ],
+  "alerts": [
+    {
+      "level": "medium",
+      "title": "对华 Section 301 附加关税覆盖玩具税则（HTS 9503）",
+      "market": "美国",
+      "platform": "USTR / CBP",
+      "detail": "HTS 9503(玩具/游戏/模型) 受 Section 301 约束；2026 强迫劳动提案对部分经济体加征附加税。精确税率须用 USTR 检索或 CBP 裁定确认。",
+      "date": "2026-08-12",
+      "source": "USTR Section 301",
+      "url": "https://ustr.gov/node/9608",
+      "as_of": "2026-08-12",
+      "live": false
+    },
+    {
+      "level": "medium",
+      "title": "Revocation of Obsolete Rules Regarding Infant Bouncer Seats and Stationary Activity Centers",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "The U.S. Consumer Product Safety Commission (Commission or CPSC) is reviewing its regulations to reduce regulatory burdens and costs. Pursuant to this review, CPSC has identified two rules concerning …",
+      "date": "2026-07-22",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/07/22/2026-14822/revocation-of-obsolete-rules-regarding-infant-bouncer-seats-and-stationary-activity-centers",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Safety Standard for Lithium-Ion Batteries Used in Micromobility Products and Electrical Systems of Micromobility Products Containing Such Batteries",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "The U.S. Consumer Product Safety Commission (CPSC) issues this notice of proposed rulemaking (NPR) to address the unreasonable risk of death and injury associated with lithium-ion batteries used in mi…",
+      "date": "2026-06-24",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/06/24/2026-12749/safety-standard-for-lithium-ion-batteries-used-in-micromobility-products-and-electrical-systems-of",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Notice of Commission Determination Regarding Technological Feasibility of Lead Content Reduction",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "As required by the Consumer Product Safety Improvement Act, the Consumer Product Safety Commission (Commission or CPSC) has evaluated whether to revise lead limits for children's products and paints o…",
+      "date": "2026-06-24",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/06/24/2026-12695/notice-of-commission-determination-regarding-technological-feasibility-of-lead-content-reduction",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Extension of the Date by Which Neck Floats Must Be Tested and Certified Subject to the Submission of Samples",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "The U.S. Consumer Product Safety Commission (Commission or CPSC) is announcing that the Commission is extending, by 60 days, the date by which manufacturers (including importers) of neck floats must c…",
+      "date": "2026-05-19",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/05/19/2026-09977/extension-of-the-date-by-which-neck-floats-must-be-tested-and-certified-subject-to-the-submission-of",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Safety Standard for Toddler Beds",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "In October 2019, the U.S. Consumer Product Safety Commission (CPSC or Commission) published an update to the consumer product safety standard for toddler beds under the Consumer Product Safety Improve…",
+      "date": "2026-05-14",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/05/14/2026-09640/safety-standard-for-toddler-beds",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Safety Standard for Infant and Cradle Swings",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "In May 2024, the U.S. Consumer Product Safety Commission (CPSC or Commission) published an update to the consumer product safety standard for infant and cradle swings under the Consumer Product Safety…",
+      "date": "2026-04-20",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/04/20/2026-07638/safety-standard-for-infant-and-cradle-swings",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Eliminating Obsolete Marking Requirements for Toy, Look-Alike, and Imitation Firearms",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "By this rule, NIST removes its regulation setting forth marking requirements for toy, look-alike, and imitation firearms. Pursuant to statutory amendments made by the CHIPS and Science Act of 2022, th…",
+      "date": "2026-02-19",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/02/19/2026-03307/eliminating-obsolete-marking-requirements-for-toy-look-alike-and-imitation-firearms",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Mandatory Toy Safety Standards: Requirements for Neck Floats; Correction",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "This document corrects the preamble to a final rule published in the Federal Register on December 15, 2025, regarding requirements for neck floats under CPSC's mandatory toy safety standard. This corr…",
+      "date": "2026-01-16",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/01/16/2026-00895/mandatory-toy-safety-standards-requirements-for-neck-floats-correction",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Mandatory Toy Safety Standards: Requirements for Neck Floats",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "Section 106(a) of the Consumer Product Safety Improvement Act of 2008 (CPSIA) mandates that ASTM F963 shall be a mandatory toy safety standard. ASTM F963-23, however, does not establish specific perfo…",
+      "date": "2025-12-15",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2025/12/15/2025-22827/mandatory-toy-safety-standards-requirements-for-neck-floats",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Safety Standard for Toys: Requirements for Water Beads",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "Section 106(a) of the Consumer Product Safety Improvement Act of 2008 (CPSIA) mandates that ASTM F963 shall be a mandatory toy safety standard. This safety standard sets forth requirements for water b…",
+      "date": "2025-12-12",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2025/12/12/2025-22643/safety-standard-for-toys-requirements-for-water-beads",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Agency Information Collection Activities; Extension of Collection; Third Party Testing of Children's Products",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "As required by the Paperwork Reduction Act of 1995 (PRA), the Consumer Product Safety Commission (CPSC or Commission) announces that the Commission has submitted to the Office of Management and Budget…",
+      "date": "2025-09-26",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2025/09/26/2025-18739/agency-information-collection-activities-extension-of-collection-third-party-testing-of-childrens",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Agency Information Collection Activities; Extension of Approval of Information Collection; Requirements Pertaining to Third Party Conformity Assessment Bodies",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "As required by the Paperwork Reduction Act of 1995, the Consumer Product Safety Commission (CPSC or Commission) announces that the Commission has submitted to the Office of Management and Budget (OMB)…",
+      "date": "2025-09-12",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2025/09/12/2025-17666/agency-information-collection-activities-extension-of-approval-of-information-collection",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Agency Information Collection Activities; Proposed Collection; Comment Request; Third Party Testing of Children's Products",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "As required by the Paperwork Reduction Act of 1995 (PRA), the Consumer Product Safety Commission (CPSC or Commission) requests comments on a proposed extension of approval of a collection of informati…",
+      "date": "2025-07-11",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2025/07/11/2025-12979/agency-information-collection-activities-proposed-collection-comment-request-third-party-testing-of",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Agency Information Collection Activities; Extension of Collection; Comment Request; Requirements Pertaining to Third Party Conformity Assessment Bodies",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "As required by the Paperwork Reduction Act of 1995, the Consumer Product Safety Commission (CPSC or Commission) requests comments on a proposed extension of approval of information collection requirem…",
+      "date": "2025-06-10",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2025/06/10/2025-10508/agency-information-collection-activities-extension-of-collection-comment-request-requirements",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Safety Standard for Stationary Activity Centers",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "In June 2019, the U.S. Consumer Product Safety Commission (CPSC or Commission) published a consumer product safety standard for stationary activity centers pursuant to section 104 of the Consumer Prod…",
+      "date": "2025-03-27",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2025/03/27/2025-05239/safety-standard-for-stationary-activity-centers",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Mandatory Toy Safety Standards: Requirements for Neck Floats",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "The Consumer Product Safety Improvement Act of 2008 (CPSIA) mandates that ASTM F963 shall be a mandatory toy safety standard. This toy safety standard sets forth only minimal labeling requirements for…",
+      "date": "2024-11-20",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2024/11/20/2024-25446/mandatory-toy-safety-standards-requirements-for-neck-floats",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Safety Standard for Toys: Requirements for Water Beads",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "The Consumer Product Safety Improvement Act of 2008 (CPSIA) mandates that ASTM F963 shall be a mandatory toy safety standard. This safety standard sets forth requirements for water bead toys and toys …",
+      "date": "2024-09-09",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2024/09/09/2024-19286/safety-standard-for-toys-requirements-for-water-beads",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Safety Standard for Toys: Requirements for Toys Containing Button Cell or Coin Cell Batteries",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "The U.S. Consumer Product Safety Commission (Commission or CPSC) proposes to address the risk of injury and death associated with children ingesting button cell or coin cell batteries obtained from to…",
+      "date": "2024-08-13",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2024/08/13/2024-17472/safety-standard-for-toys-requirements-for-toys-containing-button-cell-or-coin-cell-batteries",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ]
+}

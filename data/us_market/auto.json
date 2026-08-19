@@ -1,0 +1,796 @@
+{
+  "meta": {
+    "market": "美国汽车配件 (US Automotive Aftermarket)",
+    "cat_key": "auto",
+    "generated_at": "2026-08-12T15:10:16.235908+00:00",
+    "as_of": "2026-08-12",
+    "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
+    "sections": [
+      "country",
+      "platforms",
+      "rules",
+      "policies",
+      "alerts"
+    ],
+    "counts": {
+      "country": 1,
+      "platforms": 7,
+      "rules": 4,
+      "policies": 24,
+      "alerts": 16
+    }
+  },
+  "country": {
+    "market": "美国汽车配件",
+    "cat_key": "auto",
+    "name_en": "Automotive Aftermarket",
+    "icon": "🔧",
+    "flag": "🇺🇸",
+    "subtitle": "United States · 庞大保有量驱动的刚需后市场",
+    "macro": [
+      [
+        "汽车配件市场规模(2026E)",
+        "US$ 2,387.5 亿 (2026E)",
+        "CAGR 4.12% (2026-2031)",
+        "Mordor / Precedence, 2026"
+      ],
+      [
+        "汽车配件市场说明",
+        "另口径 ≈ $2,495.5 亿 (Precedence)；含替换件/养护/电子",
+        "—",
+        "Mordor / Precedence, 2026"
+      ],
+      [
+        "美国零售电商规模(2026E)",
+        "≈ US$ 1.6 万亿",
+        "同比 +10.4%（2025 为 $1.23 万亿）",
+        "eMarketer / US Census, 2026"
+      ],
+      [
+        "电商渗透率(Q1 2026)",
+        "16.9%（季调）",
+        "剔除汽车/汽油/餐饮后约 23.8%，历史第二高",
+        "US Census Bureau, 2026-05"
+      ],
+      [
+        "线上购物人口",
+        "≈ 2.95 亿（约 80% 成年人）",
+        "增长来自存量用户钱包份额提升",
+        "eMarketer, 2026"
+      ],
+      [
+        "Amazon 市占",
+        "≈ 36%–40% 美国电商",
+        "最大流量入口，品牌信任背书强",
+        "Marketplace Pulse, 2025-2026"
+      ],
+      [
+        "对华关税环境",
+        "收紧 + 复审",
+        "Section 301 附加税覆盖多品类；强迫劳动禁令提案推进",
+        "USTR Section 301, 2026"
+      ],
+      [
+        "内容电商增量",
+        "TikTok Shop 高速扩张",
+        "年轻客群 + 直播/短视频转化，跨境店可入驻",
+        "TikTok Shop 美国, 2026"
+      ]
+    ],
+    "segments": [
+      {
+        "name": "替换件",
+        "note": "滤清/刹车/电池，高频刚需"
+      },
+      {
+        "name": "养护品",
+        "note": "机油/添加剂，复购强"
+      },
+      {
+        "name": "电子改装",
+        "note": "车灯/雷达，FCC/合规严"
+      },
+      {
+        "name": "轮胎轮毂",
+        "note": "DOT 认证，重货履约"
+      }
+    ],
+    "opportunity": "美国汽车保有量全球前列，后市场为刚需高频；替换件/养护品复购强，eBay 汽配天然场。Fitment 数据+合规完备是核心壁垒。",
+    "risks": [
+      "⚠️ 安全件须 FMVSS，轮胎须 DOT/UTQG 认证",
+      "⚠️ 排气/ECU 改装受 EPA/CARB 排放约束",
+      "⚠️ 车载电子含射频须 FCC 认证",
+      "⚠️ 重货履约成本高；对华 Section 301 覆盖汽配（HTS 8708），须确认税率"
+    ],
+    "advice": [
+      "新手：eBay 汽配长尾试水",
+      "工厂：Amazon + 海外仓，重 fitment 数据",
+      "品牌：DTC + 车型适配工具"
+    ],
+    "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
+    "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
+    "as_of": "2026-08-12"
+  },
+  "findings": [
+    "美国汽车后市场庞大刚需（2026E ≈ $2,387 亿），替换件/养护品高频复购。",
+    "安全件须 FMVSS，轮胎须 DOT/UTQG，排放改装受 EPA/CARB 约束。",
+    "车载电子含射频须 FCC 认证；eBay 汽配为天然场。",
+    "重货履约成本高，fitment 适配数据+合规是核心壁垒。",
+    "工厂路径：eBay 长尾 → Amazon+海外仓 → DTC 车型适配。"
+  ],
+  "platforms": [
+    {
+      "name": "Amazon（美国）",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "多数品类佣金 8%–20%（如消费电子 8%、服饰 17%、家居 15%、美妆 8%–15%、玩具 15%、运动 15%、汽配 12%–15%、保健品 15%）；专业计划 $39.99/月 + FBA 仓储配送费",
+      "feeDesc": "最大流量与信任背书；FBA 本土履约；Brand Registry 防跟卖",
+      "entry": "跨境可入驻；部分类目需审核/资质（如保健品、美妆、汽配）",
+      "strength": "最大流量与信任背书，高客单承接力强",
+      "risk": "佣金高、价格战、账号合规风险",
+      "source": "Amazon Seller Central 销售费用(2026)",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "替换件",
+        "养护品",
+        "电子改装",
+        "轮胎轮毂"
+      ]
+    },
+    {
+      "name": "TikTok Shop（美国）",
+      "type": "内容电商",
+      "market": "美国",
+      "commission": "平台佣金约 6%–8%（按类目）+ 支付手续费；卖家中心 2026 更新内容合规红线",
+      "feeDesc": "内容种草+直播转化；跨境店需本地主体/合规资质",
+      "entry": "跨境店可入驻；需本地主体/合规资质",
+      "strength": "内容种草+直播转化，年轻客群增量大",
+      "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
+      "source": "TikTok Shop 美国卖家中心(2026)",
+      "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "车载好物",
+        "清洁护理",
+        "小配件"
+      ]
+    },
+    {
+      "name": "Walmart Marketplace",
+      "type": "货架电商",
+      "market": "美国",
+      "commission": "佣金 6%–15%（按品类），WFS 仓储费 $0.75/立方英尺/月，无月费/入驻费",
+      "feeDesc": "WFS 本土仓 + 跨境；47 个履约中心，88% 美国人口两日达",
+      "entry": "跨境店可入驻，审核较严",
+      "strength": "高信任、低佣金、本土履约",
+      "risk": "流量弱于 Amazon、品类受限",
+      "source": "Walmart Marketplace 费用说明",
+      "source_url": "https://marketplace.walmart.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "基础养护",
+        "替换件"
+      ]
+    },
+    {
+      "name": "eBay",
+      "type": "货架/拍卖",
+      "market": "美国",
+      "commission": "成交费约 13%（按品类），店铺订阅另计；无月费基础店",
+      "feeDesc": "开放入驻门槛低；二手/长尾天然场",
+      "entry": "开放入驻，门槛低",
+      "strength": "二手/收藏/长尾流量，国际站点可触达",
+      "risk": "假货争议、价格透明压利润",
+      "source": "eBay 费用说明（参考）",
+      "source_url": "https://www.ebay.com/sellercenter",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "汽配长尾",
+        "二手件",
+        "收藏"
+      ]
+    },
+    {
+      "name": "Etsy",
+      "type": "手作/设计师",
+      "market": "美国",
+      "commission": "上架费 $0.20/件 + 交易费 6.5% + 支付处理费 6.5%（按国别）",
+      "feeDesc": "无月费；手作/复古/定制定位",
+      "entry": "开放入驻",
+      "strength": "设计师/手工溢价高、客群精准",
+      "risk": "流量小于综合平台、仿品管控",
+      "source": "Etsy Seller Handbook（参考）",
+      "source_url": "https://www.etsy.com/seller-handbook",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "手工车饰",
+        "定制"
+      ]
+    },
+    {
+      "name": "Shopify（独立站 DTC）",
+      "type": "独立站",
+      "market": "美国",
+      "commission": "无平台佣金；订阅 $39–$399/月 + 支付费率 ~2.9%+$0.30",
+      "feeDesc": "品牌自主、数据自有；需自引流量",
+      "entry": "自助建站",
+      "strength": "品牌资产沉淀、毛利高",
+      "risk": "获客成本高、运营重",
+      "source": "Shopify 定价（参考）",
+      "source_url": "https://www.shopify.com/pricing",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "品牌官网",
+        "车型适配",
+        "定制"
+      ]
+    },
+    {
+      "name": "Temu / SHEIN",
+      "type": "低价全托管",
+      "market": "美国",
+      "commission": "全托管/半托管模式，平台定价，卖家挣供货价",
+      "feeDesc": "极致低价流量，卖家利润薄；关税敏感",
+      "entry": "供货商入驻（全托管）",
+      "strength": "海量低价流量",
+      "risk": "利润极低、品牌稀释、关税敏感",
+      "source": "平台公开模式（参考）",
+      "source_url": "https://www.temu.com/",
+      "as_of": "2026-08-12",
+      "hotCats": [
+        "低价小配件",
+        "合金/塑料"
+      ]
+    }
+  ],
+  "matrix": [
+    [
+      "Amazon（美国）",
+      "工厂 / 品牌出海",
+      "中",
+      "中",
+      "FBA + fitment 数据，重认证"
+    ],
+    [
+      "TikTok Shop（美国）",
+      "工厂爆款试水",
+      "中（本地主体）",
+      "高（内容红线）",
+      "车载好物种草"
+    ],
+    [
+      "Walmart",
+      "本土履约卖家",
+      "中高",
+      "低",
+      "高信任基础养护"
+    ],
+    [
+      "eBay",
+      "汽配长尾",
+      "低",
+      "中",
+      "天然汽配场+车型适配"
+    ],
+    [
+      "Etsy",
+      "手工/定制",
+      "低",
+      "低",
+      "手工车饰溢价"
+    ],
+    [
+      "Shopify",
+      "品牌 DTC",
+      "自助",
+      "中（获客）",
+      "车型适配工具沉淀"
+    ],
+    [
+      "Temu / SHEIN",
+      "低价供货商",
+      "低（全托管）",
+      "高（利润薄）",
+      "走量谨慎"
+    ]
+  ],
+  "rules": [
+    {
+      "platform": "NHTSA / DOT",
+      "title": "安全件与轮胎标准 (FMVSS)",
+      "detail": "刹车/车灯/轮胎等安全件须符合联邦机动车安全标准 (FMVSS)；轮胎须 DOT 认证与统一轮胎质量分级 (UTQG)。",
+      "severity": "high",
+      "source": "NHTSA",
+      "source_url": "https://www.nhtsa.gov/",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "EPA / CARB",
+      "title": "排放与改装合规",
+      "detail": "影响排放的改装件（排气/ECU）须 EPA/CARB 豁免；加州 CARB 标准更严，违规可重罚。",
+      "severity": "high",
+      "source": "EPA / CARB",
+      "source_url": "https://ww2.arb.ca.gov/",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "FCC",
+      "title": "车载电子射频认证",
+      "detail": "车灯/雷达/蓝牙配件含射频须 FCC 认证；改装件须避免干扰。",
+      "severity": "medium",
+      "source": "FCC",
+      "source_url": "https://www.fcc.gov/",
+      "as_of": "2026-08-12"
+    },
+    {
+      "platform": "Amazon / eBay",
+      "title": "汽配类目资质",
+      "detail": "汽配为专业类目，需 fitment 数据（适配车型）与合规声明；eBay 汽配天然场。",
+      "severity": "medium",
+      "source": "Amazon / eBay",
+      "source_url": "https://sell.amazon.com/pricing",
+      "as_of": "2026-08-12"
+    }
+  ],
+  "policies": [
+    {
+      "title": "Powered Micromobility Devices",
+      "date": "2026-08-12",
+      "agency": "Interior Department",
+      "summary": "The National Park Service finalizes a management framework for the use of powered micromobility devices within the National Park System. The final rule defines powered micromobility devices separately from motor vehicles, traditional bicycles, electric bicycles, and human powered…",
+      "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16388/powered-micromobility-devices",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Response to Clean Air Act Section 176A Petition From New Hampshire",
+      "date": "2026-08-11",
+      "agency": "Environmental Protection Agency",
+      "summary": "The Environmental Protection Agency (EPA) is proposing to grant a Clean Air Act (CAA or Act) petition submitted by the state of New Hampshire on December 24, 2025. The petition requests that the EPA remove the State of New Hampshire from the Ozone Transport Region (OTR) based on …",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16331/response-to-clean-air-act-section-176a-petition-from-new-hampshire",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Air Plan Approval; New Hampshire; Repeal of Motor Vehicle Inspection and Maintenance Program",
+      "date": "2026-08-11",
+      "agency": "Environmental Protection Agency",
+      "summary": "The U.S. Environmental Protection Agency (EPA) is proposing to conditionally approve a State Implementation Plan (SIP) revision submitted by the State of New Hampshire on December 24, 2025, through the New Hampshire Department of Environmental Services (NHDES). The proposed revis…",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16330/air-plan-approval-new-hampshire-repeal-of-motor-vehicle-inspection-and-maintenance-program",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Aluminum Extrusions From the People's Republic of China: Final Results of Countervailing Duty Administrative Review; 2024",
+      "date": "2026-08-11",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) determines that producers and exporters of aluminum extrusions from the People's Republic of China (China) received countervailable subsidies during the period or review (POR) January 1, 2024, through December 31, 2024.",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16362/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-countervailing-duty",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "English Language Proficiency; Out of Service Criteria",
+      "date": "2026-08-10",
+      "agency": "Transportation Department",
+      "summary": "FMCSA proposes to codify the English language proficiency (ELP) driver qualification requirement as an out-of-service (OOS) violation. The rulemaking would ensure uniform enforcement by aligning the Federal Motor Carrier Safety Regulations (FMCSR) with the current enforcement tol…",
+      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16288/english-language-proficiency-out-of-service-criteria",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "o-Dichlorobenzene and p-Dichlorobenzene; Draft Risk Evaluations Under the Toxic Substances Control Act (TSCA); Notice of Availability and Request for Comment",
+      "date": "2026-08-10",
+      "agency": "Environmental Protection Agency",
+      "summary": "The Environmental Protection Agency (EPA or Agency) is announcing the availability of and seeking public comment on the draft risk evaluations under the Toxic Substances Control Act (TSCA) for o- dichlorobenzene (CASRN 95-50-1) and p-dichlorobenzene (CASRN 106-46-7). The purpose …",
+      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16263/o-dichlorobenzene-and-p-dichlorobenzene-draft-risk-evaluations-under-the-toxic-substances-control",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Reducing Federal Burden for Head Start Programs",
+      "date": "2026-08-07",
+      "agency": "Health and Human Services Department",
+      "summary": "This NPRM proposes to rescind and replace the Head Start Program Performance Standards (Performance Standards), last revised in 2024. The proposed Performance Standards would significantly reduce Federal bureaucratic burden on programs; defer to State policies wherever possible; …",
+      "url": "https://www.federalregister.gov/documents/2026/08/07/2026-16134/reducing-federal-burden-for-head-start-programs",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Notice and Request for Comment; Best Practices for Integrating Crash and Injury Surveillance Data Systems",
+      "date": "2026-08-07",
+      "agency": "Transportation Department",
+      "summary": "NHTSA invites public comments about our intention to request approval from the Office of Management and Budget (OMB) for a new information collection. Before a Federal agency can collect certain information from the public, it must receive approval from OMB. Under procedures esta…",
+      "url": "https://www.federalregister.gov/documents/2026/08/07/2026-16116/agency-information-collection-activities-notice-and-request-for-comment-best-practices-for",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Partial Approval and Partial Disapproval of Air Quality State Implementation Plans; Arizona; Prevention of Significant Deterioration Infrastructure Requirements for the 2012 Fine Particulate Matter National Ambient Air Quality Standard",
+      "date": "2026-08-06",
+      "agency": "Environmental Protection Agency",
+      "summary": "The Environmental Protection Agency (EPA) is proposing to partially approve and partially disapprove a revision to the Arizona State implementation plan (SIP) as meeting the requirements of the Clean Air Act (CAA) for the implementation, maintenance, and enforcement of the 2012 f…",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16083/partial-approval-and-partial-disapproval-of-air-quality-state-implementation-plans-arizona",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Denial of Motor Vehicle Defect Petition",
+      "date": "2026-08-06",
+      "agency": "Transportation Department",
+      "summary": "This notice sets forth the reasons for the denial of a petition, DP26-001, submitted by Mr. Christopher Mammarella (the Petitioner) to the Administrator of NHTSA (the \"Agency\") by a letter dated January 9, 2026, under 49 U.S.C. 30162 and 49 CFR part 552. The Petitioner requests t…",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16019/denial-of-motor-vehicle-defect-petition",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Hazardous Materials: Notice of Actions on Special Permits",
+      "date": "2026-08-06",
+      "agency": "Transportation Department",
+      "summary": "In accordance with the procedures governing the application for, and the processing of, special permits from the Department of Transportation's Hazardous Material Regulations, notice is hereby given that the Office of Hazardous Materials Safety has granted or denied the applicati…",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15973/hazardous-materials-notice-of-actions-on-special-permits",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Hazardous Materials: Notice of Applications for Modification to Special Permits",
+      "date": "2026-08-06",
+      "agency": "Transportation Department",
+      "summary": "In accordance with the procedures governing the application for, and the processing of, special permits from the Department of Transportation's Hazardous Material Regulations, notice is hereby given that the Office of Hazardous Materials Safety has received the application descri…",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15972/hazardous-materials-notice-of-applications-for-modification-to-special-permits",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Hazardous Materials: Notice of Applications for New Special Permits",
+      "date": "2026-08-06",
+      "agency": "Transportation Department",
+      "summary": "In accordance with the procedures governing the application for, and the processing of, special permits from the Department of Transportation's Hazardous Material Regulations, notice is hereby given that the Office of Hazardous Materials Safety has received the application descri…",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15971/hazardous-materials-notice-of-applications-for-new-special-permits",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Oil and Gas and Sulfur Operations on the Outer Continental Shelf-Revisions to the Requirements for Exploratory Drilling on the Arctic Outer Continental Shelf",
+      "date": "2026-08-06",
+      "agency": "Interior Department",
+      "summary": "The Department of the Interior (DOI or Department), acting through BSEE and BOEM (collectively, \"the Bureaus\"), is proposing to revise its existing regulations for exploratory drilling and related operations on the Arctic Outer Continental Shelf (OCS), to reduce unnecessary burde…",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15953/oil-and-gas-and-sulfur-operations-on-the-outer-continental-shelf-revisions-to-the-requirements-for",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Organic Soybean Meal From India: Preliminary Results and Partial Rescission of Countervailing Duty Administrative Review; 2024",
+      "date": "2026-08-06",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies are being provided to certain producers/exporters of organic soybean meal from India. The period of review (POR) is January 1, 2024, through December 31, 2024. Interested parties ar…",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16018/organic-soybean-meal-from-india-preliminary-results-and-partial-rescission-of-countervailing-duty",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Certain Carbon and Alloy Steel Cut-to-Length Plate From the Republic of Korea: Preliminary Results and Rescission, in Part of Countervailing Duty Administrative Review; 2024",
+      "date": "2026-08-06",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies were provided to certain producers and exporters of certain carbon and alloy steel cut-to-length plate (CTL plate) from the Republic of Korea (Korea) during the period of review (PO…",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16017/certain-carbon-and-alloy-steel-cut-to-length-plate-from-the-republic-of-korea-preliminary-results",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Third-Party Servicing of Indirect Vehicle Loans",
+      "date": "2026-08-06",
+      "agency": "National Credit Union Administration",
+      "summary": "The NCUA Board (Board) is issuing a final rule removing NCUA's unnecessarily prescriptive regulation regarding third-party servicing of indirect vehicle loans. This action will reduce regulatory burden and provide federally insured credit unions (FICUs) with greater operational f…",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16029/third-party-servicing-of-indirect-vehicle-loans",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "United States Department of Energy and United States Department of Defense v. Baltimore & Ohio Railroad Company, et al.; United States Department of Energy and United States Department of Defense v. Aberdeen & Rockfish Railroad Company, et al.",
+      "date": "2026-08-05",
+      "agency": "Surface Transportation Board",
+      "summary": "",
+      "url": "https://www.federalregister.gov/documents/2026/08/05/2026-15897/united-states-department-of-energy-and-united-states-department-of-defense-v-baltimore-and-ohio",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Federal Motor Vehicle Safety Standards; Child Restraint Anchorage Systems; Child Restraint Systems",
+      "date": "2026-08-04",
+      "agency": "Transportation Department",
+      "summary": "This NPRM responds to petitions for reconsideration of the January 7, 2025 final rule amending Federal Motor Vehicle Safety Standard (FMVSS) No. 225. NHTSA proposes granting the requests to extend the 3-year phase-in period to a 4-year phase-in period to comply with updated requi…",
+      "url": "https://www.federalregister.gov/documents/2026/08/04/2026-15743/federal-motor-vehicle-safety-standards-child-restraint-anchorage-systems-child-restraint-systems",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Truck Bed Covers From China: Preliminary Affirmative Countervailing Duty Determination",
+      "date": "2026-07-31",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies are being provided to producers and exporters of truck bed covers from the People's Republic of China (China). The period of investigation (POI) is January 1, 2025, through December…",
+      "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15559/truck-bed-covers-from-china-preliminary-affirmative-countervailing-duty-determination",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Air Plan Approval; Rhode Island; Update to Materials Incorporated by Reference",
+      "date": "2026-07-31",
+      "agency": "Environmental Protection Agency",
+      "summary": "The Environmental Protection Agency (EPA) is updating the materials that are incorporated by reference (IBR) into the Rhode Island State Implementation Plan (SIP). The regulations affected by this update have been previously submitted by the State of Rhode Island and approved by …",
+      "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15493/air-plan-approval-rhode-island-update-to-materials-incorporated-by-reference",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Zoox-Grant of Temporary Exemption From Portions of Various Requirements of the Federal Motor Vehicle Safety Standards for an Automated Driving System-Equipped Vehicle",
+      "date": "2026-07-31",
+      "agency": "Transportation Department",
+      "summary": "NHTSA is granting an exemption to Zoox, Inc. (Zoox) to allow it to manufacture and deploy commercially a passenger car, which is equipped with an Automated Driving System (ADS), that does not comply with certain requirements in the Federal Motor Vehicle Safety Standards (FMVSS). …",
+      "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15485/zoox-grant-of-temporary-exemption-from-portions-of-various-requirements-of-the-federal-motor-vehicle",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Procedures To Administer Import Adjustment Offset Amounts for Certain Imports of Automobile and Medium- and Heavy-Duty Vehicle Parts for Automobile and Medium- and Heavy-Duty Vehicle Engine Manufacturers",
+      "date": "2026-07-29",
+      "agency": "Commerce Department",
+      "summary": "On May 15, 2026, the International Trade Administration published a Notice titled \"Amending the Procedures To Administer Import Adjustment Offset Amounts for Certain Imports of Automobile Parts Under Proclamation 10908 to Include Medium- and Heavy-Duty Vehicle Parts\" (May 15 Noti…",
+      "url": "https://www.federalregister.gov/documents/2026/07/29/2026-15280/procedures-to-administer-import-adjustment-offset-amounts-for-certain-imports-of-automobile-and",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "title": "Perchloroethylene (PCE) and Carbon Tetrachloride (CTC); Regulation under the Toxic Substances Control Act (TSCA); Compliance Date Extensions",
+      "date": "2026-07-28",
+      "agency": "Environmental Protection Agency",
+      "summary": "The U.S. Environmental Protection Agency (EPA or Agency) is finalizing an extension of certain compliance dates applicable to certain entities subject to the risk-management rules for perchloroethylene (PCE) and carbon tetrachloride (CTC) under the Toxic Substances Control Act (T…",
+      "url": "https://www.federalregister.gov/documents/2026/07/28/2026-15192/perchloroethylene-pce-and-carbon-tetrachloride-ctc-regulation-under-the-toxic-substances-control-act",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ],
+  "alerts": [
+    {
+      "level": "medium",
+      "title": "对华 Section 301 附加关税覆盖汽车配件税则（HTS 8708）",
+      "market": "美国",
+      "platform": "USTR / CBP",
+      "detail": "HTS 8708(机动车辆零件/附件) 广泛受 Section 301 约束；2026 强迫劳动提案对部分经济体加征附加税。精确税率须用 USTR 检索或 CBP 裁定确认。",
+      "date": "2026-08-12",
+      "source": "USTR Section 301",
+      "url": "https://ustr.gov/node/9608",
+      "as_of": "2026-08-12",
+      "live": false
+    },
+    {
+      "level": "high",
+      "title": "Aluminum Extrusions From the People's Republic of China: Final Results of Countervailing Duty Administrative Review; 2024",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) determines that producers and exporters of aluminum extrusions from the People's Republic of China (China) received countervailable subsidies during the peri…",
+      "date": "2026-08-11",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16362/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-countervailing-duty",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "English Language Proficiency; Out of Service Criteria",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "FMCSA proposes to codify the English language proficiency (ELP) driver qualification requirement as an out-of-service (OOS) violation. The rulemaking would ensure uniform enforcement by aligning the F…",
+      "date": "2026-08-10",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16288/english-language-proficiency-out-of-service-criteria",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Denial of Motor Vehicle Defect Petition",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "This notice sets forth the reasons for the denial of a petition, DP26-001, submitted by Mr. Christopher Mammarella (the Petitioner) to the Administrator of NHTSA (the \"Agency\") by a letter dated Janua…",
+      "date": "2026-08-06",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16019/denial-of-motor-vehicle-defect-petition",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Hazardous Materials: Notice of Actions on Special Permits",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "In accordance with the procedures governing the application for, and the processing of, special permits from the Department of Transportation's Hazardous Material Regulations, notice is hereby given t…",
+      "date": "2026-08-06",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15973/hazardous-materials-notice-of-actions-on-special-permits",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Hazardous Materials: Notice of Applications for Modification to Special Permits",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "In accordance with the procedures governing the application for, and the processing of, special permits from the Department of Transportation's Hazardous Material Regulations, notice is hereby given t…",
+      "date": "2026-08-06",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15972/hazardous-materials-notice-of-applications-for-modification-to-special-permits",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Hazardous Materials: Notice of Applications for New Special Permits",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "In accordance with the procedures governing the application for, and the processing of, special permits from the Department of Transportation's Hazardous Material Regulations, notice is hereby given t…",
+      "date": "2026-08-06",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15971/hazardous-materials-notice-of-applications-for-new-special-permits",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Oil and Gas and Sulfur Operations on the Outer Continental Shelf-Revisions to the Requirements for Exploratory Drilling on the Arctic Outer Continental Shelf",
+      "market": "美国",
+      "platform": "Interior Department",
+      "detail": "The Department of the Interior (DOI or Department), acting through BSEE and BOEM (collectively, \"the Bureaus\"), is proposing to revise its existing regulations for exploratory drilling and related ope…",
+      "date": "2026-08-06",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15953/oil-and-gas-and-sulfur-operations-on-the-outer-continental-shelf-revisions-to-the-requirements-for",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Organic Soybean Meal From India: Preliminary Results and Partial Rescission of Countervailing Duty Administrative Review; 2024",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies are being provided to certain producers/exporters of organic soybean meal from India. The period of r…",
+      "date": "2026-08-06",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16018/organic-soybean-meal-from-india-preliminary-results-and-partial-rescission-of-countervailing-duty",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Certain Carbon and Alloy Steel Cut-to-Length Plate From the Republic of Korea: Preliminary Results and Rescission, in Part of Countervailing Duty Administrative Review; 2024",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies were provided to certain producers and exporters of certain carbon and alloy steel cut-to-length plat…",
+      "date": "2026-08-06",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16017/certain-carbon-and-alloy-steel-cut-to-length-plate-from-the-republic-of-korea-preliminary-results",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Federal Motor Vehicle Safety Standards; Child Restraint Anchorage Systems; Child Restraint Systems",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "This NPRM responds to petitions for reconsideration of the January 7, 2025 final rule amending Federal Motor Vehicle Safety Standard (FMVSS) No. 225. NHTSA proposes granting the requests to extend the…",
+      "date": "2026-08-04",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/04/2026-15743/federal-motor-vehicle-safety-standards-child-restraint-anchorage-systems-child-restraint-systems",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Truck Bed Covers From China: Preliminary Affirmative Countervailing Duty Determination",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies are being provided to producers and exporters of truck bed covers from the People's Republic of China…",
+      "date": "2026-07-31",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15559/truck-bed-covers-from-china-preliminary-affirmative-countervailing-duty-determination",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Zoox-Grant of Temporary Exemption From Portions of Various Requirements of the Federal Motor Vehicle Safety Standards for an Automated Driving System-Equipped Vehicle",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "NHTSA is granting an exemption to Zoox, Inc. (Zoox) to allow it to manufacture and deploy commercially a passenger car, which is equipped with an Automated Driving System (ADS), that does not comply w…",
+      "date": "2026-07-31",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15485/zoox-grant-of-temporary-exemption-from-portions-of-various-requirements-of-the-federal-motor-vehicle",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Procedures To Administer Import Adjustment Offset Amounts for Certain Imports of Automobile and Medium- and Heavy-Duty Vehicle Parts for Automobile and Medium- and Heavy-Duty Vehicle Engine Manufacturers",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "On May 15, 2026, the International Trade Administration published a Notice titled \"Amending the Procedures To Administer Import Adjustment Offset Amounts for Certain Imports of Automobile Parts Under …",
+      "date": "2026-07-29",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/07/29/2026-15280/procedures-to-administer-import-adjustment-offset-amounts-for-certain-imports-of-automobile-and",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Agency Information Collection Activities; Notice and Request for Comment; Distraction: Modern Voice Command Interfaces",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "In compliance with the Paperwork Reduction Act of 1995 (PRA), this notice announces that the Information Collection Request (ICR) summarized below will be submitted to the Office of Management and Bud…",
+      "date": "2026-07-23",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/07/23/2026-14904/agency-information-collection-activities-notice-and-request-for-comment-distraction-modern-voice",
+      "as_of": "2026-08-12",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Foreign-Trade Zone (FTZ) 210; Authorization of Limited Production Activity; P.J. Wallbank Springs, Inc.; (Spring Pack Assemblies Used in Automotive Transmissions); Port Huron, Michigan",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "",
+      "date": "2026-07-23",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/07/23/2026-14830/foreign-trade-zone-ftz-210-authorization-of-limited-production-activity-pj-wallbank-springs-inc",
+      "as_of": "2026-08-12",
+      "live": true
+    }
+  ]
+}
