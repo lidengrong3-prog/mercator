@@ -1,7 +1,91 @@
 {
-  "updated_at": "2026-08-19T12:51:58.651633+08:00",
+  "updated_at": "2026-08-19T15:05:51.059767+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260819-105295b7",
+      "title": "Lower Saranac Hydro Partners, LLC; Notice of Revised Procedural Schedule",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/19/2026-16928/lower-saranac-hydro-partners-llc-notice-of-revised-procedural-schedule",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-19",
+      "collected_at": "2026-08-19T15:05:51.059767+08:00"
+    },
+    {
+      "id": "p20260819-f709824b",
+      "title": "Air Plan Partial Approval and Partial Conditional Approval; South Carolina; Control of Oxides of Nitrogen and Source Testing Requirements",
+      "summary": "The U.S. Environmental Protection Agency (EPA or Agency) is proposing to partially approve and partially conditionally approve changes to South Carolina's State Implementation Plan (SIP) to revise source testing requirements and regulations prescribing control requirements for certain stationary sou",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/19/2026-16932/air-plan-partial-approval-and-partial-conditional-approval-south-carolina-control-of-oxides-of",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-19",
+      "collected_at": "2026-08-19T15:05:51.059767+08:00"
+    },
+    {
+      "id": "p20260819-51a65f7e",
+      "title": "Air Plan Approval; South Carolina; Minor Source Permit Program Revisions",
+      "summary": "The U.S. Environmental Protection Agency (EPA or Agency) is proposing to approve changes to South Carolina's State Implementation Plan (SIP) to revise regulations prescribing minor source permit program requirements, including minor new source review (NSR) requirements, in SIP revisions submitted by",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/19/2026-16937/air-plan-approval-south-carolina-minor-source-permit-program-revisions",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-19",
+      "collected_at": "2026-08-19T15:05:51.059767+08:00"
+    },
+    {
+      "id": "p20260819-056e9b8b",
+      "title": "GNT USA, LLC.; Filing of Color Additive Petition",
+      "summary": "The Food and Drug Administration (FDA or we) is announcing that we have filed a petition, submitted by GNT USA, LLC., c/o Exponent, Inc., proposing that we amend our color additive regulations to provide for the safe use of safflower (Carthamus tinctorius L.) extract as a color additive in various f",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/19/2026-16939/gnt-usa-llc-filing-of-color-additive-petition",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-19",
+      "collected_at": "2026-08-19T15:05:51.059767+08:00"
+    },
+    {
+      "id": "p20260819-a811f337",
+      "title": "Food Additives Permitted in Feed and Drinking Water of Animals; Chromium DL-methionine Chelate",
+      "summary": "The Food and Drug Administration (FDA, we, or the Agency) is amending the regulations for food additives permitted in feed and drinking water of animals to provide for the safe use of chromium DL- methionine chelate as a nutritional source of chromium in cattle feed. This action is in response to a ",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/19/2026-16942/food-additives-permitted-in-feed-and-drinking-water-of-animals-chromium-dl-methionine-chelate",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-19",
+      "collected_at": "2026-08-19T15:05:51.059767+08:00"
+    },
+    {
+      "id": "p20260819-7148e4e0",
+      "title": "International Association of Color Manufacturers; Filing of Color Additive Petition",
+      "summary": "The Food and Drug Administration (FDA or we) is announcing that we have filed a petition, submitted by the International Association of Color Manufacturers, proposing that we amend our color additive regulations to provide for the safe use of acetone as a solvent in the manufacture of carrot oil. Th",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/19/2026-16943/international-association-of-color-manufacturers-filing-of-color-additive-petition",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-19",
+      "collected_at": "2026-08-19T15:05:51.059767+08:00"
+    },
+    {
+      "id": "p20260819-fefc1249",
+      "title": "Gardenia Blue Interest Group; Filing of Color Additive Petition",
+      "summary": "The Food and Drug Administration (FDA or we) is announcing that we have filed a petition, submitted by Gardenia Blue Interest Group (GBIG or petitioner), c/o Exponent, Inc., proposing that we amend our color additive regulations to expand the safe use of gardenia (genipin) blue in various foods at l",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/19/2026-16944/gardenia-blue-interest-group-filing-of-color-additive-petition",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-19",
+      "collected_at": "2026-08-19T15:05:51.059767+08:00"
+    },
     {
       "id": "p20260819-78f94877",
       "title": "重要通知：2026黑五大促核心规则发布，FBE 入仓截止时间10月25日",
