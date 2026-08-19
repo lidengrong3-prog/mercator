@@ -357,8 +357,8 @@
         "https://fred.stlouisfed.org/series/RSAFS"
       ],
       [
-        "10Y国债收益率(2026-08-17)",
-        "4.7200000000 %",
+        "10Y国债收益率(2026-08-18)",
+        "4.7100000000 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/DGS10"
       ],
@@ -652,7 +652,7 @@
         ]
       ]
     },
-    "macro_updated": "2026-08-19 16:50 UTC"
+    "macro_updated": "2026-08-19 20:48 UTC"
   },
   "jp": {
     "flag": "🇯🇵",
