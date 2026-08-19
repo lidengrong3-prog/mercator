@@ -327,6 +327,54 @@
     },
     "macro": [
       [
+        "失业率(2026-07-01)",
+        "4.1 %",
+        "来源: FRED",
+        "https://fred.stlouisfed.org/series/UNRATE"
+      ],
+      [
+        "联邦基金利率(2026-07-01)",
+        "3.6300000000 %",
+        "来源: FRED",
+        "https://fred.stlouisfed.org/series/FEDFUNDS"
+      ],
+      [
+        "CPI(2026-07-01)",
+        "332.813 指数(1982-84=100)",
+        "来源: FRED",
+        "https://fred.stlouisfed.org/series/CPIAUCSL"
+      ],
+      [
+        "消费者信心指数(2026-06-01)",
+        "49.5 指数",
+        "来源: FRED",
+        "https://fred.stlouisfed.org/series/UMCSENT"
+      ],
+      [
+        "零售销售(2026-07-01)",
+        "763602.0 百万美元",
+        "来源: FRED",
+        "https://fred.stlouisfed.org/series/RSAFS"
+      ],
+      [
+        "10Y国债收益率(2026-08-17)",
+        "4.7200000000 %",
+        "来源: FRED",
+        "https://fred.stlouisfed.org/series/DGS10"
+      ],
+      [
+        "新屋开工(2026-07-01)",
+        "1239.0 千套",
+        "来源: FRED",
+        "https://fred.stlouisfed.org/series/HOUST"
+      ],
+      [
+        "30Y抵押贷款利率(2026-08-13)",
+        "6.67 %",
+        "来源: FRED",
+        "https://fred.stlouisfed.org/series/MORTGAGE30US"
+      ],
+      [
         "总人口",
         "3.41亿",
         "+0.5%",
@@ -603,7 +651,8 @@
           "美国诉讼风险高，建议购买保险"
         ]
       ]
-    }
+    },
+    "macro_updated": "2026-08-19 09:23 UTC"
   },
   "jp": {
     "flag": "🇯🇵",
