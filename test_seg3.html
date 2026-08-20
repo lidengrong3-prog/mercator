@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>Seg3 Test (chars 17945-26919)</title>
+<style>
+:root{
+  --primary:#2d5a8e;--primary-light:#3a6fa8;--primary-dark:#1a3a6b;
+  --bg:#f0f2f5;--card:#ffffff;--text:#1f2a37;--text-secondary:#6b7280;
+  --border:#e5e7eb;--shadow:0 2px 8px rgba(0,0,0,0.08);--radius:12px;
+  --red:#ef4444;--orange:#f59e0b;--green:#10b981;
+  --amazon:#ff9900;--aliexpress:#e43225;--tiktok:#010101;--ebay:#0064d2;--shopee:#ee4d2d;
+  --ink:#1f2a37;--muted:#6b7280;--paper:#f0f2f5;--line:#e5e7eb;
+  --sea:#2d5a8e;--sea-deep:#1a3a6b;--sea-soft:#eef2ff;--wave:#dbeafe;
+  --sage:#eef2ff;--orange-accent:#2d5a8e;--orange-light:#eef2ff;
+}
+
+.chat-msg.bot{background:#f3f4f6;color:var(--text);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg.user{background:var(--primary);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.ai-chat-input{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center}
+.ai-chat-input input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:20px;outline:none;font-size:14px}
+.ai-chat-input input:focus{border-color:var(--primary)}
+.ai-chat-input button{width:36px;height:36px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+
+/* Tool Cards */
+.tool-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:28px;text-align:center;transition:all .25s;cursor:pointer}
+.tool-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(0,0,0,.12)}
+.tool-card .tool-icon{font-size:42px;margin-bottom:16px}
+.tool-card .tool-title{font-size:17px;font-weight:700;margin-bottom:8px}
+.tool-card .tool-desc{font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6}
+
+/* Resource Cards */
+.resource-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:28px;transition:all .25s;cursor:pointer}
+.resource-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.resource-card .r-icon{font-size:36px;margin-bottom:14px}
+.resource-card .r-title{font-size:16px;font-weight:700;margin-bottom:6px}
+.resource-card .r-desc{font-size:13px;color:var(--text-secondary);line-height:1.6}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:2px solid var(--border);padding-bottom:0}
+.tab-item{padding:10px 20px;font-size:14px;font-weight:500;color:var(--text-secondary);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+.tab-item:hover{color:var(--text)}
+.tab-item.active{color:var(--primary);border-color:var(--primary);font-weight:600}
+
+/* Status */
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.status-dot.active{background:var(--green)}
+.status-dot.inactive{background:#9ca3af}
+
+/* Tags */
+.tag{display:inline-block;border-radius:12px;padding:3px 7px;font-size:10px;font-weight:500}
+.tag.hot{background:#eff6ff;color:var(--primary)}
+.tag.watch{background:#f0fdf4;color:var(--green)}
+
+/* AI Assistant Card (Dashboard) */
+.ai-assistant-card{background:linear-gradient(135deg,#eef2ff,#dbeafe);border:1px solid #bfdbfe;border-radius:16px;padding:28px;margin-bottom:24px;position:relative;overflow:hidden}
+.ai-assistant-card::after{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(45,90,142,.08),transparent);border-radius:50%}
+.ai-assistant-card .ai-title{font-size:18px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.ai-assistant-card .ai-subtitle{font-size:14px;color:var(--text-secondary);margin-bottom:20px}
+.ai-search-row{display:flex;gap:10px;margin-bottom:16px}
+.ai-search-row input{flex:1;padding:14px 18px;border:1px solid #bfdbfe;border-radius:12px;font-size:15px;outline:none;background:#fff}
+.ai-search-row input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(45,90,142,.1)}
+.ai-search-row button{padding:14px 28px;background:linear-gradient(135deg,#2d5a8e,#3a7cc0);color:#fff;border-radius:12px;font-size:15px;font-weight:600;white-space:nowrap}
+.quick-tags{display:flex;gap:8px;flex-wrap:wrap}
+.quick-tag{padding:6px 14px;background:#fff;border:1px solid #bfdbfe;border-radius:20px;font-size:13px;color:var(--primary);cursor:pointer;transition:all .2s;font-weight:500}
+.quick-tag:hover{background:var(--primary);color:#fff}
+
+/* Heatmap */
+.heatmap-grid{display:grid;gap:4px}
+.heatmap-cell{border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:600}
+
+/* Stats Row */
+.stats-row{display:flex;gap:16px;margin-bottom:24px}
+.stat-pill{display:flex;align-items:center;gap:8px;padding:8px 16px;background:#fff;border-radius:10px;box-shadow:var(--shadow);font-size:14px;font-weight:500}
+.stat-pill .stat-dot{width:10px;height:10px;border-radius:50%}
+
+/* Emergency Float */
+.emergency-float{position:absolute;top:24px;right:24px;width:320px;z-index:50}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#9ca3af}
+
+/* Demo Banner */
+#demo-banner{background:linear-gradient(90deg,#eff6ff,#eef2ff);border-bottom:1px solid #bfdbfe;padding:8px 28px;font-size:12px;color:var(--primary);display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:11}
+#demo-banner button{background:none;border:none;color:var(--primary);font-size:16px;cursor:pointer;margin-left:auto;opacity:.6}
+#demo-banner button:hover{opacity:1}
+
+/* Ocean wave decoration */
+.ocean-top{display:none}
+
+/* Hamburger - hidden on desktop */
+.jay-hamburger{display:none}
+.jay-overlay{display:none}
+
+/* Search results */
+.search-results{display:none;position:fixed;right:145px;top:77px;width:360px;background:#fff;border:1px solid var(--border);border-radius:12px;z-index:10;box-shadow:0 12px 34px rgba(0,0,0,.1);padding:8px}
+.search-results.show{display:block}
+.result{padding:10px;border-radius:6px;cursor:pointer}
+.result:hover{background:#f3f4f6}
+.result b{font-size:12px}
+.result small{display:block;color:var(--muted);margin-top:2px;font-size:10px}
+
+/* Toast */
+.toast{position:fixed;right:30px;bottom:25px;background:var(--primary-dark);color:white;padding:12px 17px;border-radius:8px;transform:translateY(80px);opacity:0;transition:.25s;font-size:12px;z-index:5}
+.toast.show{transform:none;opacity:1}
+
+/* Watch grid */
+.watch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.watch-card{background:#fff;border:1px solid var(--border);padding:21px;border-radius:var(--radius)}
+.watch-card .watch-top{display:flex;justify-content:space-between;align-items:center}
+.watch-card h3{margin:18px 0 3px;font-size:17px}
+.watch-card p{margin:0;color:var(--muted);font-size:11px}
+.watch-card b{display:block;font:25px 'DM Mono';margin:17px 0 4px}
+.watch-card button{border:0;background:none;color:var(--primary);font-size:11px;cursor:pointer;padding:0}
+
+/* === OV Hero AI (PRESERVED EXACTLY) === */
+.ov-hero-ai{text-align:center;padding:42px 28px 28px;background:linear-gradient(180deg,#eaf5fe 0%,#ffffff 100%);border-radius:12px;margin-bottom:22px;border:1px solid #cfe8fb;min-height:50vh;display:flex;flex-direction:column;justify-content:center}
+.ov-hero-title{font-size:22px;font-weight:700;color:#1a2332;margin:0 0 22px;display:flex;align-items:center;justify-content:center;gap:8px}
+.ov-hero-title .ai-bolt{color:var(--primary)}
+.ov-hero-input-wrap{max-width:760px;margin:0 auto 18px;position:relative}
+.ov-hero-input-box{background:#fff;border:1px solid #d4e4f7;border-radius:16px;padding:8px 8px 8px 18px;box-shadow:0 8px 32px rgba(59,125,216,.12);display:flex;align-items:center;gap:12px;transition:.2s}
+.ov-hero-input-box:focus-within{border-color:var(--primary);box-shadow:0 8px 36px rgba(59,125,216,.2)}
+.ov-hero-input-wrap.busy .ov-hero-input-box{opacity:.6;pointer-events:none}
+.ov-hero-input-wrap.busy .ov-hero-send{opacity:.5;cursor:not-allowed}
+.ov-hero-input-icon{font-size:20px;color:#98a5b5}
+.ov-hero-input-box input{flex:1;min-width:0;border:0;background:transparent;font-size:14px;color:var(--text);outline:none;padding:14px 0;font-family:inherit}
+.ov-hero-input-box input::placeholder{color:#98a5b5}
+.ov-hero-send{width:42px;height:42px;border-radius:12px;border:0;background:linear-gradient(135deg,#3b7dd8,#2c5f8a);color:#fff;font-size:16px;cursor:pointer;transition:.2s;display:grid;place-items:center}
+.ov-hero-send:hover{transform:scale(1.05);box-shadow:0 4px 14px rgba(59,125,216,.35)}
+.ov-hero-score{position:absolute;right:8px;top:-14px;background:#fff;border:1px solid #e2ecf7;border-radius:20px;padding:5px 10px;font-size:11px;color:#6b7b73;box-shadow:0 4px 14px rgba(0,0,0,.06);display:flex;align-items:center;gap:6px}
+.ov-hero-score b{color:var(--green);font-weight:700}
+.ov-hero-score small{color:var(--green)}
+.ov-hero-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.ov-hero-chips button{border:1px solid #e2ecf7;background:#fff;border-radius:20px;padding:7px 15px;font-size:12px;color:#52605b;cursor:pointer;transition:.2s;font-family:inherit}
+.ov-hero-chips button:hover{border-color:var(--primary);color:var(--primary);background:#f5f9ff}
+.ov-hero-result{width:100%;max-height:320px;overflow-y:auto;background:#fff;border:1px solid #d4e4f7;border-top:0;border-radius:0 0 16px 16px;box-shadow:0 8px 32px rgba(59,125,216,.12);text-align:left;animation:ovHeroFadeIn .35s ease}
+@keyframes ovHeroFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style></head>
+<body style="background:#f0f2f5;padding:30px;">
+<h1 style="color: var(--primary);">Seg3 - chars 17945-26919</h1>
+<div style="background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin: 20px 0;">
+  <p style="color: var(--text);">卡片内容</p>
+  <p style="color: var(--text-secondary);">辅助文字</p>
+</div>
+<div class="chat-msg bot" style="margin:10px 0;">聊天消息</div>
+<p style="color: var(--primary); font-size:20px; font-weight:bold;">这段应该是蓝色 → 如果黑色说明此段有错</p>
+</body></html>
