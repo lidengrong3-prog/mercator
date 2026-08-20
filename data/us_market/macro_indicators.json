@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-20T09:01:59.186245+00:00",
+    "generated_at": "2026-08-20T13:14:50.694894+00:00",
     "source": "FRED / BLS / US Census",
     "total_indicators": 22,
     "fetched": 22,
@@ -42,9 +42,9 @@
     },
     "ICSA": {
       "name": "初次申请失业金人数",
-      "value": "209000",
+      "value": "206000",
       "unit": "人",
-      "date": "2026-08-08",
+      "date": "2026-08-15",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/ICSA"
     },
