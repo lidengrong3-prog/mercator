@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国保健品 (US Dietary Supplements)",
     "cat_key": "supplements",
-    "generated_at": "2026-08-20T04:55:47.318516+00:00",
+    "generated_at": "2026-08-20T09:01:01.785192+00:00",
     "as_of": "2026-08-20",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -17,7 +17,7 @@
       "platforms": 7,
       "rules": 4,
       "policies": 22,
-      "alerts": 6
+      "alerts": 5
     }
   },
   "country": {
@@ -337,6 +337,17 @@
   ],
   "policies": [
     {
+      "title": "Potency Assessment of Active Immunotherapy Products; Draft Guidance for Industry; Availability",
+      "date": "2026-08-20",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or Agency) is announcing the availability of a draft document titled \"Potency Assessment of Active Immunotherapy Products.\" The draft guidance document provides recommendations for developing assays to assess potency as a part of a potency as…",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16960/potency-assessment-of-active-immunotherapy-products-draft-guidance-for-industry-availability",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-20",
+      "live": true
+    },
+    {
       "title": "Gardenia Blue Interest Group; Filing of Color Additive Petition",
       "date": "2026-08-19",
       "agency": "Health and Human Services Department",
@@ -452,17 +463,6 @@
       "agency": "Health and Human Services Department",
       "summary": "The Food and Drug Administration (FDA or Agency) is announcing the availability of a final guidance for industry titled \"Formal Meetings Between the FDA and Sponsors or Applicants of PDUFA Products.\" This guidance outlines the recommendations to industry on formal meetings betwee…",
       "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16452/formal-meetings-between-the-food-and-drug-administration-and-sponsors-or-applicants-of-prescription",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-20",
-      "live": true
-    },
-    {
-      "title": "Schedules of Controlled Substances: Temporary Placement of O-Desmethyltramadol in Schedule I",
-      "date": "2026-08-12",
-      "agency": "Justice Department",
-      "summary": "The Drug Enforcement Administration issues this temporary order to schedule O-desmethyltramadol (other names: O-DSMT; desmetramadol; 3-[(1R,2R)-2-[(dimethylamino)methyl]-1- hydroxycyclohexyl]phenol), including its isomers, esters, ethers, salts, and salts of isomers, esters and e…",
-      "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16413/schedules-of-controlled-substances-temporary-placement-of-o-desmethyltramadol-in-schedule-i",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-20",
@@ -637,18 +637,6 @@
       "date": "2026-08-13",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16536/kremers-urban-pharmaceuticals-inc-grant-of-hearing-request-regarding-a-proposal-to-withdraw-approval",
-      "as_of": "2026-08-20",
-      "live": true
-    },
-    {
-      "level": "medium",
-      "title": "Schedules of Controlled Substances: Temporary Placement of O-Desmethyltramadol in Schedule I",
-      "market": "美国",
-      "platform": "Justice Department",
-      "detail": "The Drug Enforcement Administration issues this temporary order to schedule O-desmethyltramadol (other names: O-DSMT; desmetramadol; 3-[(1R,2R)-2-[(dimethylamino)methyl]-1- hydroxycyclohexyl]phenol), …",
-      "date": "2026-08-12",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16413/schedules-of-controlled-substances-temporary-placement-of-o-desmethyltramadol-in-schedule-i",
       "as_of": "2026-08-20",
       "live": true
     }

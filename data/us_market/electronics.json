@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国消费电子 (US Consumer Electronics)",
     "cat_key": "electronics",
-    "generated_at": "2026-08-20T04:55:35.663470+00:00",
+    "generated_at": "2026-08-20T09:00:50.793451+00:00",
     "as_of": "2026-08-20",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -16,7 +16,7 @@
       "country": 1,
       "platforms": 7,
       "rules": 5,
-      "policies": 17,
+      "policies": 19,
       "alerts": 10
     }
   },
@@ -344,6 +344,28 @@
     }
   ],
   "policies": [
+    {
+      "title": "Notice of Receipt of Complaint; Solicitation of Comments Relating to the Public Interest",
+      "date": "2026-08-20",
+      "agency": "International Trade Commission",
+      "summary": "Notice is hereby given that the U.S. International Trade Commission has received a complaint entitled Certain Electronic Devices with Certain Audio Technologies, DN 3931; the Commission is soliciting comments on any public interest issues raised by the complaint or complainant's …",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-17011/notice-of-receipt-of-complaint-solicitation-of-comments-relating-to-the-public-interest",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-20",
+      "live": true
+    },
+    {
+      "title": "Certain Wireless Communications Devices and Components Thereof; Notice of Request for Submissions on the Public Interest",
+      "date": "2026-08-20",
+      "agency": "International Trade Commission",
+      "summary": "Notice is hereby given that on August 14, 2026, the presiding administrative law judge (\"ALJ\") issued an Initial Determination on Violation of Section 337. The ALJ also issued a Recommended Determination on remedy and bonding should a violation be found in the above-captioned inv…",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-17046/certain-wireless-communications-devices-and-components-thereof-notice-of-request-for-submissions-on",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-20",
+      "live": true
+    },
     {
       "title": "Empowering Broadband Consumers Through Transparency",
       "date": "2026-08-13",

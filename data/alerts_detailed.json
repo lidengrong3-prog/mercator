@@ -1,12 +1,49 @@
 {
   "meta": {
-    "generated_at": "2026-08-20T12:55:53.659066+08:00",
-    "total": 89,
+    "generated_at": "2026-08-20T17:01:59.238337+08:00",
+    "total": 92,
     "sources": {
       "cpsc": 0,
       "policies": 14,
-      "us_market": 64
+      "us_market": 65
     }
   },
-  "alerts": []
+  "alerts": [
+    {
+      "id": "usm-20260820-075cf2de",
+      "type": "policy",
+      "level": "medium",
+      "title": "Allwin Powersports Corp., Receipt of Petition for Decision o",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "Allwin Powersports Corp. (Allwin) has determined that certain LS2 Rapid II Helmets do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 218, Motorcycle Helmets. Allwin filed a no…",
+      "date": "2026-08-20",
+      "read": false,
+      "source": "Federal Register"
+    },
+    {
+      "id": "usm-20260820-46e5eab4",
+      "type": "policy",
+      "level": "medium",
+      "title": "Application for Relief From Disabilities Imposed by Federal ",
+      "market": "美国",
+      "platform": "Justice Department",
+      "detail": "The Department of Justice (\"the Department\") is implementing criteria to guide determinations for granting relief from disabilities imposed by federal laws with respect to the acquisition, receipt, tr…",
+      "date": "2026-08-20",
+      "read": false,
+      "source": "Federal Register"
+    },
+    {
+      "id": "usm-20260820-c1f04510",
+      "type": "policy",
+      "level": "high",
+      "title": "Stainless Steel Flanges From India: Final Results of Antidum",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) finds that producers/exporters of stainless steel flanges (flanges) from India made sales of subject merchandise in the United States at prices below normal …",
+      "date": "2026-08-20",
+      "read": false,
+      "source": "Federal Register"
+    }
+  ]
 }

@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国汽车配件 (US Automotive Aftermarket)",
     "cat_key": "auto",
-    "generated_at": "2026-08-20T04:55:44.821209+00:00",
+    "generated_at": "2026-08-20T09:00:58.745288+00:00",
     "as_of": "2026-08-20",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -17,7 +17,7 @@
       "platforms": 7,
       "rules": 4,
       "policies": 24,
-      "alerts": 12
+      "alerts": 13
     }
   },
   "country": {
@@ -335,6 +335,50 @@
   ],
   "policies": [
     {
+      "title": "Air Plan Approval; Wisconsin; Moderate Attainment Plan Elements for Wisconsin's 2015 Ozone Standard Areas",
+      "date": "2026-08-20",
+      "agency": "Environmental Protection Agency",
+      "summary": "The U.S. Environmental Protection Agency (EPA) is approving portions of Wisconsin's 2015 ozone National Ambient Air Quality Standard (NAAQS or standard) Moderate nonattainment area State Implementation Plan (SIP) submission for the Wisconsin portion of the Chicago, Illinois-India…",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16986/air-plan-approval-wisconsin-moderate-attainment-plan-elements-for-wisconsins-2015-ozone-standard",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-20",
+      "live": true
+    },
+    {
+      "title": "Allwin Powersports Corp., Receipt of Petition for Decision of Inconsequential Noncompliance",
+      "date": "2026-08-20",
+      "agency": "Transportation Department",
+      "summary": "Allwin Powersports Corp. (Allwin) has determined that certain LS2 Rapid II Helmets do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 218, Motorcycle Helmets. Allwin filed a noncompliance report dated November 10, 2025, and subsequently petitioned NHTSA (t…",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16983/allwin-powersports-corp-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-20",
+      "live": true
+    },
+    {
+      "title": "Application for Relief From Disabilities Imposed by Federal Laws With Respect to the Acquisition, Receipt, Transfer, Shipment, Transportation, or Possession of Firearms",
+      "date": "2026-08-20",
+      "agency": "Justice Department",
+      "summary": "The Department of Justice (\"the Department\") is implementing criteria to guide determinations for granting relief from disabilities imposed by federal laws with respect to the acquisition, receipt, transfer, shipment, transportation, or possession of firearms. The criteria are de…",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16981/application-for-relief-from-disabilities-imposed-by-federal-laws-with-respect-to-the-acquisition",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-20",
+      "live": true
+    },
+    {
+      "title": "Stainless Steel Flanges From India: Final Results of Antidumping Duty Administrative Review; 2023-2024",
+      "date": "2026-08-20",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) finds that producers/exporters of stainless steel flanges (flanges) from India made sales of subject merchandise in the United States at prices below normal value during the period of review (POR) October 1, 2023, through September 30, 2…",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-17032/stainless-steel-flanges-from-india-final-results-of-antidumping-duty-administrative-review-2023-2024",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-20",
+      "live": true
+    },
+    {
       "title": "Air Plan Approval; South Carolina; Minor Source Permit Program Revisions",
       "date": "2026-08-19",
       "agency": "Environmental Protection Agency",
@@ -489,11 +533,11 @@
       "live": true
     },
     {
-      "title": "Response to Clean Air Act Section 176A Petition From New Hampshire",
+      "title": "Aluminum Extrusions From the People's Republic of China: Final Results of Countervailing Duty Administrative Review; 2024",
       "date": "2026-08-11",
-      "agency": "Environmental Protection Agency",
-      "summary": "The Environmental Protection Agency (EPA) is proposing to grant a Clean Air Act (CAA or Act) petition submitted by the state of New Hampshire on December 24, 2025. The petition requests that the EPA remove the State of New Hampshire from the Ozone Transport Region (OTR) based on …",
-      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16331/response-to-clean-air-act-section-176a-petition-from-new-hampshire",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) determines that producers and exporters of aluminum extrusions from the People's Republic of China (China) received countervailable subsidies during the period or review (POR) January 1, 2024, through December 31, 2024.",
+      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16362/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-countervailing-duty",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-20",
@@ -505,17 +549,6 @@
       "agency": "Environmental Protection Agency",
       "summary": "The U.S. Environmental Protection Agency (EPA) is proposing to conditionally approve a State Implementation Plan (SIP) revision submitted by the State of New Hampshire on December 24, 2025, through the New Hampshire Department of Environmental Services (NHDES). The proposed revis…",
       "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16330/air-plan-approval-new-hampshire-repeal-of-motor-vehicle-inspection-and-maintenance-program",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-20",
-      "live": true
-    },
-    {
-      "title": "Aluminum Extrusions From the People's Republic of China: Final Results of Countervailing Duty Administrative Review; 2024",
-      "date": "2026-08-11",
-      "agency": "Commerce Department",
-      "summary": "The U.S. Department of Commerce (Commerce) determines that producers and exporters of aluminum extrusions from the People's Republic of China (China) received countervailable subsidies during the period or review (POR) January 1, 2024, through December 31, 2024.",
-      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16362/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-countervailing-duty",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-20",
@@ -564,39 +597,6 @@
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-20",
       "live": true
-    },
-    {
-      "title": "Third-Party Servicing of Indirect Vehicle Loans",
-      "date": "2026-08-06",
-      "agency": "National Credit Union Administration",
-      "summary": "The NCUA Board (Board) is issuing a final rule removing NCUA's unnecessarily prescriptive regulation regarding third-party servicing of indirect vehicle loans. This action will reduce regulatory burden and provide federally insured credit unions (FICUs) with greater operational f…",
-      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16029/third-party-servicing-of-indirect-vehicle-loans",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-20",
-      "live": true
-    },
-    {
-      "title": "Federal Motor Vehicle Safety Standards; Child Restraint Anchorage Systems; Child Restraint Systems",
-      "date": "2026-08-04",
-      "agency": "Transportation Department",
-      "summary": "This NPRM responds to petitions for reconsideration of the January 7, 2025 final rule amending Federal Motor Vehicle Safety Standard (FMVSS) No. 225. NHTSA proposes granting the requests to extend the 3-year phase-in period to a 4-year phase-in period to comply with updated requi…",
-      "url": "https://www.federalregister.gov/documents/2026/08/04/2026-15743/federal-motor-vehicle-safety-standards-child-restraint-anchorage-systems-child-restraint-systems",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-20",
-      "live": true
-    },
-    {
-      "title": "Procedures To Administer Import Adjustment Offset Amounts for Certain Imports of Automobile and Medium- and Heavy-Duty Vehicle Parts for Automobile and Medium- and Heavy-Duty Vehicle Engine Manufacturers",
-      "date": "2026-07-29",
-      "agency": "Commerce Department",
-      "summary": "On May 15, 2026, the International Trade Administration published a Notice titled \"Amending the Procedures To Administer Import Adjustment Offset Amounts for Certain Imports of Automobile Parts Under Proclamation 10908 to Include Medium- and Heavy-Duty Vehicle Parts\" (May 15 Noti…",
-      "url": "https://www.federalregister.gov/documents/2026/07/29/2026-15280/procedures-to-administer-import-adjustment-offset-amounts-for-certain-imports-of-automobile-and",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-20",
-      "live": true
     }
   ],
   "alerts": [
@@ -611,6 +611,42 @@
       "url": "https://ustr.gov/node/9608",
       "as_of": "2026-08-20",
       "live": false
+    },
+    {
+      "level": "medium",
+      "title": "Allwin Powersports Corp., Receipt of Petition for Decision of Inconsequential Noncompliance",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "Allwin Powersports Corp. (Allwin) has determined that certain LS2 Rapid II Helmets do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 218, Motorcycle Helmets. Allwin filed a no…",
+      "date": "2026-08-20",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16983/allwin-powersports-corp-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
+      "as_of": "2026-08-20",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Application for Relief From Disabilities Imposed by Federal Laws With Respect to the Acquisition, Receipt, Transfer, Shipment, Transportation, or Possession of Firearms",
+      "market": "美国",
+      "platform": "Justice Department",
+      "detail": "The Department of Justice (\"the Department\") is implementing criteria to guide determinations for granting relief from disabilities imposed by federal laws with respect to the acquisition, receipt, tr…",
+      "date": "2026-08-20",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16981/application-for-relief-from-disabilities-imposed-by-federal-laws-with-respect-to-the-acquisition",
+      "as_of": "2026-08-20",
+      "live": true
+    },
+    {
+      "level": "high",
+      "title": "Stainless Steel Flanges From India: Final Results of Antidumping Duty Administrative Review; 2023-2024",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) finds that producers/exporters of stainless steel flanges (flanges) from India made sales of subject merchandise in the United States at prices below normal …",
+      "date": "2026-08-20",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-17032/stainless-steel-flanges-from-india-final-results-of-antidumping-duty-administrative-review-2023-2024",
+      "as_of": "2026-08-20",
+      "live": true
     },
     {
       "level": "high",
@@ -717,30 +753,6 @@
       "date": "2026-08-06",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16017/certain-carbon-and-alloy-steel-cut-to-length-plate-from-the-republic-of-korea-preliminary-results",
-      "as_of": "2026-08-20",
-      "live": true
-    },
-    {
-      "level": "medium",
-      "title": "Federal Motor Vehicle Safety Standards; Child Restraint Anchorage Systems; Child Restraint Systems",
-      "market": "美国",
-      "platform": "Transportation Department",
-      "detail": "This NPRM responds to petitions for reconsideration of the January 7, 2025 final rule amending Federal Motor Vehicle Safety Standard (FMVSS) No. 225. NHTSA proposes granting the requests to extend the…",
-      "date": "2026-08-04",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/04/2026-15743/federal-motor-vehicle-safety-standards-child-restraint-anchorage-systems-child-restraint-systems",
-      "as_of": "2026-08-20",
-      "live": true
-    },
-    {
-      "level": "high",
-      "title": "Procedures To Administer Import Adjustment Offset Amounts for Certain Imports of Automobile and Medium- and Heavy-Duty Vehicle Parts for Automobile and Medium- and Heavy-Duty Vehicle Engine Manufacturers",
-      "market": "美国",
-      "platform": "Commerce Department",
-      "detail": "On May 15, 2026, the International Trade Administration published a Notice titled \"Amending the Procedures To Administer Import Adjustment Offset Amounts for Certain Imports of Automobile Parts Under …",
-      "date": "2026-07-29",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/07/29/2026-15280/procedures-to-administer-import-adjustment-offset-amounts-for-certain-imports-of-automobile-and",
       "as_of": "2026-08-20",
       "live": true
     }

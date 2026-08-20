@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国运动户外 (US Sports & Outdoor)",
     "cat_key": "sports",
-    "generated_at": "2026-08-20T04:55:43.621825+00:00",
+    "generated_at": "2026-08-20T09:00:57.696524+00:00",
     "as_of": "2026-08-20",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -16,8 +16,8 @@
       "country": 1,
       "platforms": 7,
       "rules": 4,
-      "policies": 7,
-      "alerts": 4
+      "policies": 8,
+      "alerts": 5
     }
   },
   "country": {
@@ -337,6 +337,17 @@
   ],
   "policies": [
     {
+      "title": "Allwin Powersports Corp., Receipt of Petition for Decision of Inconsequential Noncompliance",
+      "date": "2026-08-20",
+      "agency": "Transportation Department",
+      "summary": "Allwin Powersports Corp. (Allwin) has determined that certain LS2 Rapid II Helmets do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 218, Motorcycle Helmets. Allwin filed a noncompliance report dated November 10, 2025, and subsequently petitioned NHTSA (t…",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16983/allwin-powersports-corp-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-20",
+      "live": true
+    },
+    {
       "title": "Powered Micromobility Devices",
       "date": "2026-08-12",
       "agency": "Interior Department",
@@ -426,6 +437,18 @@
       "url": "https://ustr.gov/node/9608",
       "as_of": "2026-08-20",
       "live": false
+    },
+    {
+      "level": "medium",
+      "title": "Allwin Powersports Corp., Receipt of Petition for Decision of Inconsequential Noncompliance",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "Allwin Powersports Corp. (Allwin) has determined that certain LS2 Rapid II Helmets do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 218, Motorcycle Helmets. Allwin filed a no…",
+      "date": "2026-08-20",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16983/allwin-powersports-corp-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
+      "as_of": "2026-08-20",
+      "live": true
     },
     {
       "level": "medium",
