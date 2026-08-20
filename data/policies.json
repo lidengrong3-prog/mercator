@@ -1,7 +1,79 @@
 {
-  "updated_at": "2026-08-20T12:52:55.778152+08:00",
+  "updated_at": "2026-08-20T16:56:28.920692+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260820-bffe68bf",
+      "title": "从法国出发，看清整个欧盟税务变革：一场“电子发票+实时申报”正在重塑跨境电商合规逻辑",
+      "summary": "如果您是正在做或计划布局欧洲跨境电商的卖家，那么请注意： 2026年不是一个普通的时间点，而是欧盟税务规则发生根本性变化的分水岭。 这场以“电子发票+实时申报”为核心的改革浪潮，正从法国率先启航，并将席卷整个欧盟，彻底重构跨境电商的合规底层逻辑。 一、法国改革: 为什么它是“整个欧盟的样板” 法国电子发票改革由法国公共财政总局（DGFiP）主导，被公认为欧洲最复杂、最具代表性的税务数字化体系之一。它不再仅仅是要求你“交税”，而是要求你“透明”。 1、核心制度：两大强制性义务 ✅ E-invoicing（电子发票） 适用范围：法国境内所有B2B交易； 硬性要求：必须使用结构化格式（如Factur-X、UBL、CII），且必须通过认证平台（PDP/PA）进行传输； 关键警示：传统的PDF、Excel甚至纸质发票将被视为不合规，面临拒收和罚款风险。 ✅ E-reporting（电子申报） 适用范围：所有有法国VAT义务的企业（包括中国跨境卖家）； 覆盖场景：跨境B2B、B2C、服务交易； 改革本质：所有交易数据必须实时进入税局系统，不再给“事后修饰”留空间。 2、技术架构：彻底改变传输路径 ...",
+      "source": "雨果网",
+      "source_url": "https://www.cifnews.com/article/188391",
+      "region": "Global",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-20",
+      "collected_at": "2026-08-20T16:56:28.920692+08:00"
+    },
+    {
+      "id": "p20260820-4b7f9a3e",
+      "title": "Proposed Data Collection Submitted for Public Comment and Recommendations",
+      "summary": "The Centers for Disease Control and Prevention (CDC), as part of its continuing effort to reduce public burden and maximize the utility of government information, invites the general public and other Federal agencies to take this opportunity to comment on a continuing information collection, as requ",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/20/2026-17040/proposed-data-collection-submitted-for-public-comment-and-recommendations",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-20",
+      "collected_at": "2026-08-20T16:56:28.920692+08:00"
+    },
+    {
+      "id": "p20260820-cba554c4",
+      "title": "Small Business Size Standards",
+      "summary": "The U.S. Small Business Administration (SBA or the Agency) is proposing new size standards for 338 industry groups and industries. The new size standards are designed to better reflect the nature of the markets in which small businesses compete. SBA seeks comments on its proposed changes to size sta",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/20/2026-17042/small-business-size-standards",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-20",
+      "collected_at": "2026-08-20T16:56:28.920692+08:00"
+    },
+    {
+      "id": "p20260820-f6bcc3fb",
+      "title": "Agency Forms Undergoing Paperwork Reduction Act Review",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/20/2026-17043/agency-forms-undergoing-paperwork-reduction-act-review",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-20",
+      "collected_at": "2026-08-20T16:56:28.920692+08:00"
+    },
+    {
+      "id": "p20260820-18243369",
+      "title": "Codex Alimentarius Commission: Meeting of the Codex Committee on Milk and Milk Products",
+      "summary": "The U.S Codex Office is sponsoring a public meeting on September 17, 2026. The objective of the public meeting is to provide information and receive public comments on agenda items and draft U.S. positions to be discussed at the 11th Session of the Codex Committee on Milk and Milk Products (CCMMP11)",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/20/2026-17044/codex-alimentarius-commission-meeting-of-the-codex-committee-on-milk-and-milk-products",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-20",
+      "collected_at": "2026-08-20T16:56:28.920692+08:00"
+    },
+    {
+      "id": "p20260820-32fe4301",
+      "title": "Certain Wireless Communications Devices and Components Thereof; Notice of Request for Submissions on the Public Interest",
+      "summary": "Notice is hereby given that on August 14, 2026, the presiding administrative law judge (\"ALJ\") issued an Initial Determination on Violation of Section 337. The ALJ also issued a Recommended Determination on remedy and bonding should a violation be found in the above-captioned investigation. The Comm",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/20/2026-17046/certain-wireless-communications-devices-and-components-thereof-notice-of-request-for-submissions-on",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-20",
+      "collected_at": "2026-08-20T16:56:28.920692+08:00"
+    },
     {
       "id": "p20260819-105295b7",
       "title": "Lower Saranac Hydro Partners, LLC; Notice of Revised Procedural Schedule",
