@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>Seg2 Test (chars 8971-17945)</title>
+<style>
+:root{
+  --primary:#2d5a8e;--primary-light:#3a6fa8;--primary-dark:#1a3a6b;
+  --bg:#f0f2f5;--card:#ffffff;--text:#1f2a37;--text-secondary:#6b7280;
+  --border:#e5e7eb;--shadow:0 2px 8px rgba(0,0,0,0.08);--radius:12px;
+  --red:#ef4444;--orange:#f59e0b;--green:#10b981;
+  --amazon:#ff9900;--aliexpress:#e43225;--tiktok:#010101;--ebay:#0064d2;--shopee:#ee4d2d;
+  --ink:#1f2a37;--muted:#6b7280;--paper:#f0f2f5;--line:#e5e7eb;
+  --sea:#2d5a8e;--sea-deep:#1a3a6b;--sea-soft:#eef2ff;--wave:#dbeafe;
+  --sage:#eef2ff;--orange-accent:#2d5a8e;--orange-light:#eef2ff;
+}
+
+.main-content>header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px 12px;position:sticky;top:0;background:var(--bg);z-index:10}
+.main-content>header .header-tools{display:flex;gap:10px;align-items:center}
+.header-tools .search{width:260px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px}
+.header-tools .search span{font-size:18px;color:#aaa}
+.header-tools .search input{border:0;outline:0;width:100%;font-size:13px;background:transparent}
+.header-tools .search kbd{font-size:10px;color:#aaa;border:1px solid #ddd;padding:2px 5px;border-radius:3px}
+.icon-btn,.export,.filter-button,.outline{border:0;background:#fff;font-family:inherit;cursor:pointer;border-radius:8px}
+.icon-btn{position:relative;width:36px;height:36px;font-size:18px;display:flex;align-items:center;justify-content:center}
+.icon-btn i{position:absolute;right:6px;top:6px;width:5px;height:5px;background:var(--red);border-radius:50%}
+.export{background:var(--primary);color:#fff;padding:8px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;border-radius:8px}
+.export:hover{background:var(--primary-dark)}
+
+/* Page Sections */
+.page{display:none;padding:0 28px 28px;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Common Components */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;transition:all .25s}
+.card:hover{box-shadow:0 4px 16px rgba(0,0,0,.12);transform:translateY(-2px)}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.badge-tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:500}
+.badge-red{background:#fef2f2;color:var(--red)}
+.badge-orange{background:#fffbeb;color:#d97706}
+.badge-green{background:#f0fdf4;color:var(--green)}
+.badge-gray{background:#f3f4f6;color:#6b7280}
+.badge-blue{background:#eff6ff;color:var(--primary)}
+.btn{padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:linear-gradient(135deg,#2d5a8e,#3a7cc0);color:#fff;box-shadow:0 4px 12px rgba(45,90,142,.25)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(45,90,142,.35)}
+.btn-outline{background:#fff;color:var(--primary);border:1px solid var(--primary)}
+.btn-outline:hover{background:#eef2ff}
+.btn-sm{padding:6px 14px;font-size:13px;border-radius:8px}
+.ai-block{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:16px;margin-top:12px}
+.ai-block .ai-label{font-size:12px;font-weight:600;color:var(--primary);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.ai-block p{font-size:13px;color:#1e40af;line-height:1.7}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;text-align:left}
+th{font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;padding:10px 8px;border-bottom:2px solid var(--border);background:#fafbfc}
+td{padding:12px 8px;border-bottom:1px solid #f3f4f6;font-size:13px}
+td strong{font-size:13px}
+td small{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+tr:hover td{background:#fafbfc}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;padding:10px 12px;font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border);background:#fafbfc}
+.data-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid #f3f4f6;vertical-align:middle}
+.data-table tr:hover td{background:#fafbfc}
+.rank-num{width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.rank-1{background:#fef3c7;color:#d97706}
+.rank-2{background:#e5e7eb;color:#6b7280}
+.rank-3{background:#fed7aa;color:#c2410c}
+.rank-other{background:#f3f4f6;color:#9ca3af}
+.trend-up{color:var(--green);font-weight:600}
+.trend-down{color:var(--red);font-weight:600}
+.product-img{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#e0e7ff,#c7d2fe);display:flex;align-items:center;justify-content:center;font-size:16px}
+.product-cell{display:flex;gap:10px;align-items:center}
+.product-thumb{width:32px;height:32px;border-radius:6px;background:linear-gradient(135deg,#e0e7ff,#c7d2fe);display:grid;place-items:center;font-size:17px}
+
+/* KPI Cards */
+.kpi-card{padding:20px;text-align:left}
+.kpi-card .kpi-label{font-size:13px;color:var(--text-secondary);margin-bottom:8px;font-weight:500}
+.kpi-card .kpi-value{font-size:28px;font-weight:800;color:var(--text);margin-bottom:4px}
+.kpi-card .kpi-change{font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px}
+
+/* Alert Cards */
+.alert-card{border-left:4px solid;border-radius:var(--radius);padding:20px;margin-bottom:16px;background:#fff;box-shadow:var(--shadow)}
+.alert-card.critical{border-color:var(--red)}
+.alert-card.warning{border-color:var(--orange)}
+.alert-card .alert-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.alert-card .alert-tag{padding:3px 10px;border-radius:6px;font-size:12px;font-weight:600}
+.alert-card .alert-title{font-size:15px;font-weight:600}
+.alert-card .alert-body{font-size:13px;color:var(--text-secondary);line-height:1.7}
+
+/* Platform Cards */
+.platform-card{border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);overflow:hidden;transition:all .25s}
+.platform-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.platform-card .top-bar{height:4px}
+.platform-card .p-content{padding:24px}
+.platform-card .p-name{font-size:20px;font-weight:700;margin-bottom:4px}
+.platform-card .p-desc{font-size:13px;color:var(--text-secondary);margin-bottom:16px}
+.platform-card .p-stats{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.platform-card .p-stat{font-size:13px}
+.platform-card .p-stat span{font-weight:600;color:var(--text)}
+.platform-card .p-stat label{color:var(--text-secondary);margin-left:4px}
+.platform-card .progress-bar{height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden}
+.platform-card .progress-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.platform-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+/* Report Page */
+.report-layout{display:flex;gap:24px;height:calc(100vh - 140px)}
+.report-left{flex:0 0 40%;overflow-y:auto}
+.report-right{flex:0 0 60%;overflow-y:auto}
+.template-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;cursor:pointer;transition:all .2s;margin-bottom:4px;font-size:14px;border:1px solid transparent}
+.template-item:hover{background:#f3f4f6}
+.template-item.selected{background:#eef2ff;border-color:var(--primary);color:var(--primary);font-weight:600}
+.template-item .t-icon{font-size:22px;width:28px;text-align:center}
+
+/* Bar Chart */
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:200px;padding:0 8px}
+.bar-chart .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.bar-chart .bar{width:100%;background:linear-gradient(180deg,#3a7cc0,#2d5a8e);border-radius:6px 6px 0 0;transition:height .6s ease;position:relative;min-width:20px}
+.bar-chart .bar:hover{opacity:.85}
+.bar-chart .bar-label{font-size:11px;color:var(--text-secondary);font-weight:500}
+.bar-chart .bar-value{font-size:10px;color:var(--primary);font-weight:600;position:absolute;top:-18px;left:50%;transform:translateX(-50%);white-space:nowrap}
+
+/* Floating AI Assistant */
+.ai-fab{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#2d5a8e,#3a7cc0);display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;box-shadow:0 4px 20px rgba(45,90,142,.4);transition:all .3s;z-index:1000}
+.ai-fab:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(45,90,142,.5)}
+.ai-chat{position:fixed;bottom:92px;right:24px;width:380px;height:520px;background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);display:none;flex-direction:column;z-index:1000;overflow:hidden}
+.ai-chat.open{display:flex}
+.ai-chat-header{padding:16px 20px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:space-between}
+.ai-chat-header h4{font-size:16px;font-weight:600}
+.ai-chat-header .close-chat{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;opacity:.8}
+.ai-chat-body{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.chat-msg{max-width:85%;padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.6}
+</style></head>
+<body style="background:#f0f2f5;padding:30px;">
+<h1 style="color: var(--primary);">Seg2 - chars 8971-17945</h1>
+<div style="background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin: 20px 0;">
+  <p style="color: var(--text);">卡片内容</p>
+  <p style="color: var(--text-secondary);">辅助文字</p>
+</div>
+<div class="chat-msg bot" style="margin:10px 0;">聊天消息</div>
+<p style="color: var(--primary); font-size:20px; font-weight:bold;">这段应该是蓝色 → 如果黑色说明此段有错</p>
+</body></html>
