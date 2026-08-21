@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-21T17:02:25.984566+08:00",
+    "generated_at": "2026-08-21T21:13:50.295015+08:00",
     "total": 93,
     "sources": {
       "cpsc": 0,
@@ -8,18 +8,5 @@
       "us_market": 65
     }
   },
-  "alerts": [
-    {
-      "id": "usm-20260821-087db6eb",
-      "type": "policy",
-      "level": "medium",
-      "title": "Regulation Crypto Assets",
-      "market": "美国",
-      "platform": "Securities and Exchange Commission",
-      "detail": "The Securities and Exchange Commission (\"Commission\") is proposing new rules to create a tailored offering regime for certain investment contracts involving crypto assets. The proposed offering regime…",
-      "date": "2026-08-21",
-      "read": false,
-      "source": "Federal Register"
-    }
-  ]
+  "alerts": []
 }
