@@ -2261,57 +2261,1120 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
 .ov-pager .ov-page-btn.active{background:#1e3a5f;color:#fff;border-color:#1e3a5f}
 .ov-pager .ov-page-btn:hover:not(.active){border-color:#1e3a5f;color:#1e3a5f}
 .ov-pager .ov-page-btn.disabled{opacity:.4;cursor:not-allowed}
+
+
+/* ===== EchoTik 参考版样式（2026-08-21 美国版） ===== */
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f0f2f5;
+    color: #1f2937;
+    font-size: 14px;
+  }
+  a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
+
+  /* ==================== 登录页 ==================== */
+  .login-page {
+    display: flex;
+    min-height: 100vh;
+  }
+  .login-left {
+    flex: 1.2;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8e 50%, #3b7ab8 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 70px;
+    position: relative;
+    overflow: hidden;
+  }
+  .login-left::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    top: -150px; right: -150px;
+  }
+  .login-left::after {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+    bottom: -100px; left: -80px;
+  }
+  .login-logo {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 50px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 1px;
+  }
+  .login-logo span { color: #60a5fa; }
+  .login-title {
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .login-subtitle {
+    font-size: 18px;
+    opacity: 0.85;
+    margin-bottom: 40px;
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+  }
+  .login-features {
+    position: relative;
+    z-index: 1;
+  }
+  .login-features li {
+    font-size: 15px;
+    opacity: 0.9;
+    margin-bottom: 14px;
+    padding-left: 28px;
+    position: relative;
+  }
+  .login-features li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    width: 20px; height: 20px;
+    background: rgba(96,165,250,0.3);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 20px;
+    font-size: 12px;
+    color: #93c5fd;
+  }
+  .login-illustration {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    font-size: 120px;
+    opacity: 0.15;
+    z-index: 0;
+  }
+  .login-right {
+    flex: 1;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 70px;
+  }
+  .login-right-header {
+    display: flex;
+    justify-content: flex-end;
+    gap: 24px;
+    margin-bottom: 60px;
+    font-size: 14px;
+    color: #6b7280;
+  }
+  .login-right-header a:hover { color: #1e3a5f; }
+  .login-form-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #1e3a5f;
+  }
+  .login-form-desc {
+    font-size: 14px;
+    color: #9ca3af;
+    margin-bottom: 32px;
+  }
+  .social-login {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+  }
+  .social-btn:hover { border-color: #1e3a5f; background: #f8fafc; }
+  .divider {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 13px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 42%;
+    height: 1px;
+    background: #e5e7eb;
+  }
+  .divider::before { left: 0; }
+  .divider::after { right: 0; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 6px;
+  }
+  .form-group label .required { color: #ef4444; }
+  .form-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-input:focus { border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,0.1); }
+  .phone-row { display: flex; gap: 8px; }
+  .phone-row .code { width: 80px; }
+  .code-input {
+    display: flex;
+    gap: 8px;
+  }
+  .code-input .form-input { flex: 1; }
+  .get-code-btn {
+    padding: 0 16px;
+    background: #1e3a5f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .login-submit {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #1e3a5f, #2d5a8e);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: opacity 0.2s;
+  }
+  .login-submit:hover { opacity: 0.9; }
+  .login-footer-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #6b7280;
+  }
+  .login-footer-link a { color: #1e3a5f; }
+
+  /* ==================== 主界面 ==================== */
+  .main-app { display: none; min-height: 100vh; }
+  .main-app.active { display: flex; }
+
+  /* 左侧栏 */
+  .sidebar {
+    width: 230px;
+    background: #fff;
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    transition: width 0.2s;
+  }
+  .sidebar-logo {
+    padding: 18px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sidebar-logo .logo-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, #1e3a5f, #3b7ab8);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: 16px;
+  }
+  .sidebar-logo .logo-text {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1e3a5f;
+  }
+  .sidebar-logo .logo-tag {
+    font-size: 10px;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: auto;
+  }
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 10px;
+  }
+  .nav-group { margin-bottom: 4px; }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #4b5563;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .nav-item:hover { background: #f3f4f6; color: #1e3a5f; }
+  .nav-item.active {
+    background: #eff6ff;
+    color: #1e3a5f;
+    font-weight: 600;
+  }
+  .nav-item .nav-icon {
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
+  }
+  .nav-item .nav-arrow {
+    margin-left: auto;
+    font-size: 11px;
+    transition: transform 0.2s;
+    color: #9ca3af;
+  }
+  .nav-item.expanded .nav-arrow { transform: rotate(90deg); }
+  .nav-badge {
+    margin-left: auto;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .nav-submenu {
+    display: none;
+    padding-left: 30px;
+    margin-top: 2px;
+  }
+  .nav-group.expanded .nav-submenu { display: block; }
+  .nav-subitem {
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #6b7280;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-subitem:hover { background: #f3f4f6; color: #1e3a5f; }
+  .nav-subitem.active { color: #1e3a5f; font-weight: 600; background: #f0f7ff; }
+  .nav-subitem .sub-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #d1d5db;
+  }
+  .nav-subitem.active .sub-dot { background: #1e3a5f; }
+  .nav-submenu .nav-submenu { padding-left: 20px; }
+
+  .sidebar-footer {
+    padding: 14px 16px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .user-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .user-info { flex: 1; }
+  .user-name { font-size: 13px; font-weight: 600; color: #1f2937; }
+  .user-role { font-size: 11px; color: #9ca3af; }
+
+  /* 顶部栏 */
+  .topbar {
+    height: 56px;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    position: fixed;
+    top: 0; left: 230px; right: 0;
+    z-index: 90;
+  }
+  .topbar-nav {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .topbar-item {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #4b5563;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+  }
+  .topbar-item:hover { background: #f3f4f6; color: #1e3a5f; }
+  .topbar-item.active { color: #1e3a5f; font-weight: 600; background: #eff6ff; }
+  .topbar-item.report-btn {
+    background: linear-gradient(135deg, #1e3a5f, #2d5a8e);
+    color: #fff;
+    padding: 8px 18px;
+    font-weight: 600;
+  }
+  .topbar-item.report-btn:hover { opacity: 0.9; background: linear-gradient(135deg, #1e3a5f, #2d5a8e); }
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .topbar-search {
+    display: flex;
+    align-items: center;
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 7px 14px;
+    width: 240px;
+  }
+  .topbar-search input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 13px;
+    flex: 1;
+    margin-left: 8px;
+  }
+  .topbar-icon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #6b7280;
+    font-size: 17px;
+    position: relative;
+  }
+  .topbar-icon:hover { background: #f3f4f6; }
+  .topbar-icon .dot {
+    position: absolute;
+    top: 6px; right: 7px;
+    width: 7px; height: 7px;
+    background: #ef4444;
+    border-radius: 50%;
+  }
+  .lang-switch {
+    font-size: 13px;
+    color: #6b7280;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* 面包屑 */
+  .breadcrumb {
+    padding: 14px 24px;
+    font-size: 13px;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .breadcrumb a { color: #6b7280; cursor: pointer; }
+  .breadcrumb a:hover { color: #1e3a5f; }
+  .breadcrumb .sep { color: #d1d5db; }
+  .breadcrumb .current { color: #1e3a5f; font-weight: 600; }
+
+  /* 内容区 */
+  .content {
+    margin-left: 230px;
+    margin-top: 56px;
+    padding: 0 24px 40px;
+    min-height: calc(100vh - 56px);
+  }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ===== 市场机会页 ===== */
+  .welcome-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .welcome-text h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 4px;
+  }
+  .welcome-text p {
+    font-size: 14px;
+    color: #6b7280;
+  }
+  .country-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e3a5f;
+  }
+  .country-selector .flag { font-size: 18px; }
+
+  /* AI Agent 对话框 */
+  .ai-agent-section {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    text-align: center;
+  }
+  .ai-agent-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 8px;
+  }
+  .ai-agent-title .ai-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .ai-agent-desc {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 24px;
+  }
+  .ai-input-box {
+    max-width: 720px;
+    margin: 0 auto;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 16px 20px;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .ai-input-box:focus-within { border-color: #1e3a5f; }
+  .ai-input-box textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    resize: none;
+    min-height: 50px;
+    font-family: inherit;
+  }
+  .ai-input-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  .ai-input-tags {
+    display: flex;
+    gap: 8px;
+  }
+  .ai-input-tag {
+    font-size: 12px;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 4px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .ai-input-tag:hover { background: #e5e7eb; }
+  .ai-send-btn {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #1e3a5f, #2d5a8e);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ai-quick-entries {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .ai-quick-entry {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ai-quick-entry:hover { border-color: #1e3a5f; color: #1e3a5f; background: #eff6ff; }
+
+  /* 快捷入口卡片 */
+  .quick-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .quick-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid #f0f0f0;
+  }
+  .quick-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    border-color: #1e3a5f;
+  }
+  .quick-card .qc-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .quick-card .qc-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 4px;
+  }
+  .quick-card .qc-desc {
+    font-size: 12px;
+    color: #9ca3af;
+    line-height: 1.5;
+  }
+  .qc-icon.blue { background: #dbeafe; }
+  .qc-icon.green { background: #dcfce7; }
+  .qc-icon.orange { background: #fed7aa; }
+  .qc-icon.purple { background: #e9d5ff; }
+
+  /* 数据榜单 */
+  .data-boards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .board-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #f0f0f0;
+  }
+  .board-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .board-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .board-date { font-size: 12px; color: #9ca3af; font-weight: 400; }
+  .board-more {
+    font-size: 13px;
+    color: #1e3a5f;
+    cursor: pointer;
+  }
+  .board-table { width: 100%; }
+  .board-table th {
+    text-align: left;
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 500;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .board-table td {
+    padding: 10px 0;
+    font-size: 13px;
+    border-bottom: 1px solid #f9fafb;
+  }
+  .board-table tr:last-child td { border-bottom: none; }
+  .rank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .rank.top1 { background: #fef3c7; color: #d97706; }
+  .rank.top2 { background: #e5e7eb; color: #6b7280; }
+  .rank.top3 { background: #fed7aa; color: #c2410c; }
+  .rank.normal { background: #f3f4f6; color: #9ca3af; }
+  .product-name {
+    font-weight: 500;
+    color: #1f2937;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sales-up { color: #10b981; font-weight: 600; }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+  .tag.us { background: #dbeafe; color: #1d4ed8; }
+  .tag.amazon { background: #fef3c7; color: #92400e; }
+  .tag.tiktok { background: #fce7f3; color: #be185d; }
+
+  /* ===== 国家市场页 ===== */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .page-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e3a5f;
+  }
+  .page-tabs {
+    display: flex;
+    gap: 4px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 20px;
+    border: 1px solid #f0f0f0;
+  }
+  .page-tab {
+    padding: 10px 20px;
+    border-radius: 7px;
+    font-size: 14px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .page-tab:hover { color: #1e3a5f; }
+  .page-tab.active {
+    background: #1e3a5f;
+    color: #fff;
+    font-weight: 600;
+  }
+  .metric-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .metric-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #f0f0f0;
+  }
+  .metric-label {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 8px;
+  }
+  .metric-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 6px;
+  }
+  .metric-change {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .metric-change.up { color: #10b981; }
+  .metric-change.down { color: #ef4444; }
+  .chart-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #f0f0f0;
+    margin-bottom: 20px;
+  }
+  .chart-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 20px;
+  }
+  .chart-placeholder {
+    height: 280px;
+    background: linear-gradient(180deg, #f0f7ff 0%, #fff 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding: 20px;
+  }
+  .chart-bar {
+    width: 40px;
+    background: linear-gradient(180deg, #3b7ab8, #1e3a5f);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+  }
+  .chart-bar::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #9ca3af;
+    white-space: nowrap;
+  }
+  .alert-sidebar {
+    position: fixed;
+    right: 24px;
+    top: 140px;
+    width: 280px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .alert-sidebar-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .alert-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .alert-item:last-child { border-bottom: none; }
+  .alert-item-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 4px;
+  }
+  .alert-item-meta {
+    font-size: 11px;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .alert-countdown {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  /* ===== 平台档案页 ===== */
+  .platform-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .platform-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .platform-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .platform-card.amazon::before { background: linear-gradient(90deg, #ff9900, #ff6600); }
+  .platform-card.ae::before { background: linear-gradient(90deg, #ff4747, #cc0000); }
+  .platform-card.tiktok::before { background: linear-gradient(90deg, #000, #25f4ee); }
+  .platform-card.ebay::before { background: linear-gradient(90deg, #e53238, #0064d2); }
+  .platform-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+  .platform-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .platform-logo {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+  }
+  .platform-logo.amazon { background: #ff9900; }
+  .platform-logo.ae { background: #ff4747; }
+  .platform-logo.tiktok { background: #000; }
+  .platform-logo.ebay { background: #e53238; }
+  .platform-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+  .platform-region {
+    font-size: 11px;
+    color: #9ca3af;
+  }
+  .platform-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .platform-stat-label {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-bottom: 2px;
+  }
+  .platform-stat-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+  }
+  .platform-bar {
+    height: 4px;
+    background: #f0f0f0;
+    border-radius: 2px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  .platform-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+  .other-platforms {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 20px;
+    border: 1px solid #f0f0f0;
+    margin-bottom: 20px;
+  }
+  .other-platforms-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 12px;
+  }
+  .other-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .other-chip {
+    padding: 6px 14px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .other-chip:hover { border-color: #1e3a5f; color: #1e3a5f; }
+  .other-chip .new-tag {
+    background: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+
+  /* ===== 预警中心页 ===== */
+  .alert-level-section {
+    margin-bottom: 24px;
+  }
+  .alert-level-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .alert-level-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+  .alert-level-count {
+    background: #ef4444;
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .alert-level-count.medium { background: #f59e0b; }
+  .alert-level-count.low { background: #9ca3af; }
+  .alert-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    border-left: 4px solid #ef4444;
+    border: 1px solid #f0f0f0;
+    border-left: 4px solid #ef4444;
+  }
+  .alert-card.medium { border-left-color: #f59e0b; }
+  .alert-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .alert-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1f2937;
+  }
+  .alert-countdown-badge {
+    background: #fef2f2;
+    color: #dc2626;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+  .alert-tags {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .alert-desc {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+  .ai-suggestion-box {
+    background: #f0f7ff;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #1e3a5f;
+    line-height: 1.8;
+  }
+  .ai-suggestion-box .ai-label {
+    font-weight: 700;
+    margin-right: 6px;
+  }
+
+  /* 响应式 */
+  @media (max-width: 1200px) {
+    .quick-cards { grid-template-columns: repeat(2, 1fr); }
+    .platform-grid { grid-template-columns: repeat(2, 1fr); }
+    .metric-cards { grid-template-columns: repeat(2, 1fr); }
+    .data-boards { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .login-left { display: none; }
+    .sidebar { width: 60px; }
+    .sidebar .nav-text, .sidebar-logo .logo-text, .user-info { display: none; }
+    .topbar { left: 60px; }
+    .content { margin-left: 60px; }
+    .quick-cards { grid-template-columns: 1fr; }
+    .platform-grid { grid-template-columns: 1fr; }
+  }
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="login-screen" id="login-screen" style="display:none">
-  <div class="login-brand">
-    <span class="brand-mark">J</span>
-    <strong>JAY观海</strong>
-    <small>GLOBAL MARKET INTELLIGENCE</small>
-    <div style="margin-top:28px;font-size:13px;color:#c7d6e6;line-height:2.1;position:relative;z-index:1">
-      <div>✓ 39国市场全景数据库</div>
-      <div>✓ <span id="login-platforms">41</span>个电商平台实时监控</div>
-      <div>✓ 爆款商品趋势追踪</div>
-      <div>✓ 政策风险智能预警</div>
-    </div>
-  </div>
-  <div class="login-card">
-    <p class="eyebrow">SECURE ACCESS</p>
-    <h1 id="auth-title">进入全球市场情报台</h1>
-    <div class="auth-tabs">
-      <button class="active" onclick="switchAuthTab('login')">登录</button>
-      <button onclick="switchAuthTab('register')">免费注册</button>
-    </div>
-    <form class="auth-form" id="auth-form" onsubmit="handleAuthSubmit(event)">
-      <div class="auth-field show" id="field-email">
-        <label>邮箱地址<input type="email" id="auth-email" placeholder="your@email.com" required></label>
-      </div>
-      <div class="auth-field show" id="field-password">
-        <label>密码<input type="password" id="auth-password" placeholder="至少6个字符" required minlength="6"></label>
-      </div>
-      <div class="auth-field" id="field-name">
-        <label>你的称呼<input type="text" id="auth-display-name" placeholder="显示在个人中心的名称"></label>
-      </div>
-      <div class="auth-field" id="field-company">
-        <label>公司/团队名称<input type="text" id="auth-company" placeholder="选填"></label>
-      </div>
-      <div class="auth-error" id="auth-error"></div>
-      <button class="login-button" type="submit" id="auth-submit-btn">登录 →</button>
-      <div class="auth-divider">或</div>
-      <div id="auth-reset-link" style="text-align:center;font-size:11px">
-        <a href="#" onclick="handlePasswordReset(event)" style="color:#3b7ab8;text-decoration:none">忘记密码？</a>
-      </div>
-    </form>
-    <small style="display:block;color:#89948f;font-size:10px;margin-top:13px;text-align:center">
-      注册即同意服务条款 · 免费版可浏览全部数据，专业版解锁批量与企业协同
-    </small>
-    <small style="display:block;color:#9aa7b2;font-size:10px;margin-top:6px;text-align:center">
-      ⚠ 演示账户体系：资料仅在本地浏览器保存，接入 Supabase Auth 后将切换为真实账号
-    </small>
-  </div>
-</div>
+
+
   <aside class="sidebar">
   <div class="brand" title="JAY = 际安云（JAY Cloud）；观海 = 监测全球数据海洋。JAY观海意为「监测全球跨境市场的云端情报系统」，帮助中国产业带工厂低门槛洞察出海机会与风险。"><span class="brand-mark">J</span><div><strong>JAY观海</strong><small>全球电商情报</small></div></div>
   <nav class="sidebar-nav">
@@ -2402,152 +3465,170 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
 </div>
 
     <section id="overview" class="page active">
-      <!-- Block 1: AI Hero (Kalodata-style) -->
-      <div class="ov-hero-ai">
-        <h1 class="ov-hero-title"><span class="ai-bolt">⚡</span>观海帮你判断出海机会与风险</h1>
-        <div class="ov-hero-input-wrap">
-          <div class="ov-hero-input-box">
-            <span class="ov-hero-input-icon">💬</span>
-            <input type="text" id="ov-hero-input" placeholder="我这个品类在越南卖得动吗？输入品类或目标市场，AI 帮你判断出海机会与风险" />
-            <button class="ov-hero-send" id="ov-hero-send">➤</button>
-          </div>
-          <div class="ov-hero-result" id="ov-hero-result" style="display:none;"></div>
-          <div class="ov-hero-score" title="AI 就绪指数（0–100）：衡量目标市场/品类是否适合用 AI 做选品、投放与客服。计算方式＝市场体量(25%)＋电商渗透率(25%)＋内容生态成熟度(20%)＋合规友好度(15%)＋物流履约成熟度(15%) 五项加权。参考标准：≥80 高度适合、60–79 较适合、40–59 中等、<40 暂不推荐。当前 58.78 为中等水平。"><span>AI 就绪</span><b>58.78</b><small>↑</small></div>
+
+    <div class="page-content" data-ref-page="page-market">
+      <div class="welcome-bar">
+        <div class="welcome-text">
+          <h1>Hi, 体验用户 👋</h1>
+          <p>今天想探索哪个跨境市场机会？AI 帮你一键分析</p>
         </div>
-        <div class="ov-hero-chips" id="ov-hero-chips">
-          <button data-q="我这个品类在越南卖得动吗？" class="ov-hero-chip-reco">🎯 我这个品类在越南卖得动吗？</button>
-          <button data-q="我的品类适合进入哪些国家市场？">🌍 我的品类适合哪个国家</button>
-          <button data-q="中国产业带如何抓住出海机会？">🏭 产业带出海机会</button>
-          <button data-q="Shopee、TikTok Shop、Amazon 哪个平台更适合入驻？">🏪 平台入驻对比</button>
-          <button data-q="美国/欧盟最新关税与合规政策对跨境电商的影响">⚖️ 关税与合规政策</button>
-          <button data-q="如何追踪竞品店铺和爆款动态？">🔥 竞品店铺追踪</button>
-          <button data-q="我的目标市场容量和增长趋势如何？">📊 市场容量分析</button>
+        <div class="country-selector">
+          <span class="flag">🇺🇸</span> 美国市场
+          <span style="color:#9ca3af;font-size:12px;">▾</span>
         </div>
       </div>
 
-      <div class="wave-divider" aria-hidden="true"><svg viewBox="0 0 1200 24" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,12 C150,24 300,0 450,12 C600,24 750,0 900,12 C1050,24 1200,0 1200,12" fill="none" stroke="#9cc8ee" stroke-width="2" stroke-linecap="round"/></svg></div>
-
-      <!-- Block 3: 左右分栏 - 政策动态摘要(左) + 服务推荐(右) -->
-      <div class="ov-2col">
-        <!-- 左栏：政策动态摘要（参考通知公告的 list 风格） -->
-        <div class="ov-col-left">
-          <div class="ov-panel">
-            <div class="ov-panel-head">
-              <h2>📋 政策动态摘要</h2>
-              <div class="ov-panel-tabs">
-                <span class="ov-tab active">最新政策</span>
-                <span class="ov-tab" onclick="switchPage('rules')">平台规则</span>
-                <span class="ov-tab" onclick="switchPage('alerts')">风险预警</span>
-              </div>
-              <button class="filter-button" onclick="switchPage('policies')">进入政策动态 →</button>
+      <!-- AI Agent -->
+      <div class="ai-agent-section">
+        <div class="ai-agent-title">
+          JAY观海 AI 智能助手
+          <span class="ai-badge">AI Agent</span>
+        </div>
+        <div class="ai-agent-desc">直接输入你的需求，剩下的交给 AI 来做：找爆品、分析市场、查政策风险、出营销方案，一键搞定。</div>
+        <div class="ai-input-box">
+          <textarea placeholder="例如：纸尿裤在美国市场的竞争格局和利润空间怎么样？"></textarea>
+          <div class="ai-input-actions">
+            <div class="ai-input-tags">
+              <span class="ai-input-tag">💡 技能</span>
+              <span class="ai-input-tag">📝 提示词</span>
+              <span class="ai-input-tag">🧠 深度思考</span>
             </div>
-            <ul class="ov-notice-list">
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#c0392b"></span><span class="ov-notice-title">对华 301 关税大幅提升</span><span class="ov-notice-tag" style="color:#c0392b">重大</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#c0392b"></span><span class="ov-notice-title">印尼进口商品免税门槛取消</span><span class="ov-notice-tag" style="color:#c0392b">重大</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#c0392b"></span><span class="ov-notice-title">SNI 强制认证扩展至 35 类产品</span><span class="ov-notice-tag" style="color:#c0392b">重大</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#f59e0b"></span><span class="ov-notice-title">欧盟数字服务法 DSA 全面执行</span><span class="ov-notice-tag" style="color:#f59e0b">中等</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#f59e0b"></span><span class="ov-notice-title">沙特 SABER 认证强制实施</span><span class="ov-notice-tag" style="color:#f59e0b">中等</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#f59e0b"></span><span class="ov-notice-title">巴西 Remessa Conforme 进口税计划</span><span class="ov-notice-tag" style="color:#f59e0b">中等</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#f59e0b"></span><span class="ov-notice-title">印度 FDI 外资限制加强</span><span class="ov-notice-tag" style="color:#f59e0b">中等</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#10b981"></span><span class="ov-notice-title">法国 GPSR 通用产品安全法规</span><span class="ov-notice-tag" style="color:#10b981">常规</span><span class="ov-notice-date">2026-07-13</span></li>
-            </ul>
-            <div class="ov-panel-foot"><span class="ov-data-note">⚠ 示意性数据，未经过权威源独立核实</span></div>
+            <button class="ai-send-btn">↑</button>
           </div>
         </div>
-
-        <!-- 右栏：服务推荐（参考服务推荐卡片风格） -->
-        <div class="ov-col-right">
-          <div class="ov-panel">
-            <div class="ov-panel-head"><h2>✦ 服务推荐</h2></div>
-            <div class="ov-service-grid">
-              <div class="ov-service-card" onclick="switchPage('countries')">
-                <div class="ov-service-title">国家市场</div>
-                <div class="ov-service-desc">26 国宏观数据 · GDP / 关税 / 政策</div>
-              </div>
-              <div class="ov-service-card" onclick="switchPage('platforms')">
-                <div class="ov-service-title">平台档案</div>
-                <div class="ov-service-desc">41 个全球平台 · 规则 / 费用 / 入驻</div>
-              </div>
-              <div class="ov-service-card" onclick="switchPage('rules')">
-                <div class="ov-service-title">平台规则</div>
-                <div class="ov-service-desc">135 条规则变动，处罚 / 类目 / 物流实时提醒</div>
-              </div>
-              <div class="ov-service-card" onclick="switchPage('report')">
-                <div class="ov-service-title">报告生成中心</div>
-                <div class="ov-service-desc">基于素材一键生成市场情报报告，支持 HTML/CSV/PDF 导出</div>
-              </div>
-            </div>
-          </div>
+        <div class="ai-quick-entries">
+          <div class="ai-quick-entry">🔥 爆款趋势洞察</div>
+          <div class="ai-quick-entry">🎯 AI 驱动智能选品</div>
+          <div class="ai-quick-entry">📦 低 MOQ 柔性供应</div>
+          <div class="ai-quick-entry">⚖️ 合规风险筛查</div>
         </div>
       </div>
 
-      <!-- Block 4: AI 短期机会洞察（7日） -->
-      <div class="ov-insights-dark">
-        <div class="ov-insights-head">
-          <span>✦</span>
-          <h3>AI 短期机会洞察（7日）</h3>
+      <!-- 快捷入口 -->
+      <div class="quick-cards">
+        <div class="quick-card" onclick="switchPage('country', document.querySelectorAll('.nav-item')[1])">
+          <div class="qc-icon blue">📊</div>
+          <div class="qc-title">美国市场概览</div>
+          <div class="qc-desc">宏观经济、电商规模、消费者画像</div>
         </div>
-        <div class="ov-insight-tabs" id="ov-insight-tabs">
-          <button class="ov-insight-tab active" data-level="all" onclick="ovInsightFilter('all')">全部</button>
-          <button class="ov-insight-tab" data-level="immediate" onclick="ovInsightFilter('immediate')">立即布局</button>
-          <button class="ov-insight-tab" data-level="blueocean" onclick="ovInsightFilter('blueocean')">蓝海机会</button>
-          <button class="ov-insight-tab" data-level="window" onclick="ovInsightFilter('window')">窗口期有限</button>
+        <div class="quick-card" onclick="switchPage('platform', document.querySelectorAll('.nav-item')[2])">
+          <div class="qc-icon green">🛒</div>
+          <div class="qc-title">平台对比分析</div>
+          <div class="qc-desc">Amazon/TikTok/速卖通佣金入驻对比</div>
         </div>
-        <div class="ov-insights-grid" id="ov-insights-grid">
-          <div class="ov-insight-card" data-level="immediate">
-            <div class="ov-insight-title">美妆个护在 TikTok Shop 近7日爆发</div>
-            <div class="ov-insight-body">胶原蛋白面膜增速 +45.2%，建议立即布局该赛道。美妆品类在欧美 TikTok 转化率高于平台均值。</div>
-            <div class="ov-insight-pill">推荐立即布局</div>
-          </div>
-          <div class="ov-insight-card" data-level="prep">
-            <div class="ov-insight-title">东南亚防晒品类进入旺季</div>
-            <div class="ov-insight-body">冰丝袖套、防晒喷雾均超 +20% 增速。Q3 为东南亚防晒高峰期，建议提前 45 天备货。</div>
-            <div class="ov-insight-pill">建议提前备货</div>
-          </div>
-          <div class="ov-insight-card" data-level="blueocean">
-            <div class="ov-insight-title">宠物用品赛道全球多市场同步爆发</div>
-            <div class="ov-insight-body">宠物冰垫 +65%、自动喂食器 +42%，蓝海机会明确。竞品密度低，中国供应链优势明显。</div>
-            <div class="ov-insight-pill">蓝海机会</div>
-          </div>
-          <div class="ov-insight-card" data-level="window">
-            <div class="ov-insight-title">中东市场汽车配件突然起量</div>
-            <div class="ov-insight-body">遮阳帘 +55%、智能手表 +38%，季节性窗口期。斋月后消费反弹，Q3 为传统旺季。</div>
-            <div class="ov-insight-pill warning">窗口期有限</div>
-          </div>
+        <div class="quick-card" onclick="switchPage('alert', document.querySelectorAll('.nav-item')[3])">
+          <div class="qc-icon orange">⚠️</div>
+          <div class="qc-title">政策风险预警</div>
+          <div class="qc-desc">关税、认证、平台规则实时变动</div>
+        </div>
+        <div class="quick-card" onclick="topbarSwitch('tools', document.querySelectorAll('.topbar-item')[0])">
+          <div class="qc-icon purple">🧮</div>
+          <div class="qc-title">利润计算器</div>
+          <div class="qc-desc">单品/整柜利润、汇率一键测算</div>
         </div>
       </div>
+
+      <!-- 数据榜单 -->
+      <div class="data-boards">
+        <div class="board-card">
+          <div class="board-header">
+            <div class="board-title">🏆 热卖商品 <span class="board-date">2026-08-19</span></div>
+            <div class="board-more">更多 ›</div>
+          </div>
+          <table class="board-table">
+            <thead>
+              <tr><th style="width:40px;">排名</th><th>商品</th><th style="width:80px;">销量</th><th style="width:90px;">销售额</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="rank top1">1</span></td>
+                <td><div class="product-name">便携式储能电源 200W</div></td>
+                <td class="sales-up">8,608</td>
+                <td>$153.58万</td>
+              </tr>
+              <tr>
+                <td><span class="rank top2">2</span></td>
+                <td><div class="product-name">有机棉婴儿服饰套装</div></td>
+                <td class="sales-up">5,234</td>
+                <td>$117万</td>
+              </tr>
+              <tr>
+                <td><span class="rank top3">3</span></td>
+                <td><div class="product-name">可调节哑铃套装 20kg</div></td>
+                <td class="sales-up">5,059</td>
+                <td>$90.26万</td>
+              </tr>
+              <tr>
+                <td><span class="rank normal">4</span></td>
+                <td><div class="product-name">14K金叠戴项链</div></td>
+                <td class="sales-up">4,851</td>
+                <td>$437.68万</td>
+              </tr>
+              <tr>
+                <td><span class="rank normal">5</span></td>
+                <td><div class="product-name">智能宠物喂食器</div></td>
+                <td class="sales-up">4,819</td>
+                <td>$85.98万</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="board-card">
+          <div class="board-header">
+            <div class="board-title">🏪 热门店铺 <span class="board-date">2026-08-19</span></div>
+            <div class="board-more">更多 ›</div>
+          </div>
+          <table class="board-table">
+            <thead>
+              <tr><th style="width:40px;">排名</th><th>店铺</th><th style="width:80px;">销量</th><th style="width:90px;">销售额</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="rank top1">1</span></td>
+                <td>
+                  <div class="product-name">HomeGadgets US</div>
+                  <div style="font-size:11px;color:#9ca3af;margin-top:2px;"><span class="tag us">美国</span><span class="tag amazon">Amazon</span></div>
+                </td>
+                <td class="sales-up">2.42万</td>
+                <td>$84.06亿</td>
+              </tr>
+              <tr>
+                <td><span class="rank top2">2</span></td>
+                <td>
+                  <div class="product-name">NPure Official</div>
+                  <div style="font-size:11px;color:#9ca3af;margin-top:2px;"><span class="tag us">美国</span><span class="tag tiktok">TikTok</span></div>
+                </td>
+                <td class="sales-up">1.21万</td>
+                <td>$30.94亿</td>
+              </tr>
+              <tr>
+                <td><span class="rank top3">3</span></td>
+                <td>
+                  <div class="product-name">MOELL OFFICIAL</div>
+                  <div style="font-size:11px;color:#9ca3af;margin-top:2px;"><span class="tag us">美国</span><span class="tag amazon">Amazon</span></div>
+                </td>
+                <td class="sales-up">8,068</td>
+                <td>$30.39亿</td>
+              </tr>
+              <tr>
+                <td><span class="rank normal">4</span></td>
+                <td><div class="product-name">KomEE Mall</div></td>
+                <td class="sales-up">2,454</td>
+                <td>$26.96亿</td>
+              </tr>
+              <tr>
+                <td><span class="rank normal">5</span></td>
+                <td><div class="product-name">Xiaomi Indonesia</div></td>
+                <td class="sales-up">626</td>
+                <td>$18.57亿</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     
-      <!-- Block 5: 跨平台爆发爆款榜（40条分页） -->
-      <div class="ov-table-block">
-        <div class="ov-table-head">
-          <h2>🚀 跨平台爆发爆款榜</h2>
-          <span class="ov-table-note">40 条示例数据 · 每页 8 条</span>
-          <button class="filter-button ov-table-more" onclick="switchPage('products')">进入产品雷达 →</button>
-        </div>
-        <div class="ov-table-wrap">
-          <table class="ov-burst-table">
-            <thead><tr><th>#</th><th>商品</th><th>市场 / 平台</th><th>售价（双币种）</th><th>三级类目</th><th>竞品店铺</th><th>销量</th><th>增速</th><th>信号</th><th>上架天数</th><th>更新时间</th></tr></thead>
-            <tbody id="ov-burst-tbody"></tbody>
-          </table>
-        </div>
-        <div class="ov-pager" id="ov-burst-pager"></div>
-      </div>
-
-      <!-- Block 6: 标杆 / 竞店对标（32条分页） -->
-      <div class="ov-table-block">
-        <div class="ov-table-head">
-          <h2>🏪 标杆 / 竞店对标</h2>
-          <span class="ov-table-note">32 条示例数据 · 每页 8 条</span>
-          <button class="filter-button ov-table-more" onclick="switchPage('shops')">进入店铺追踪 →</button>
-        </div>
-        <div class="ov-table-wrap">
-          <table class="ov-burst-table">
-            <thead><tr><th>店铺</th><th>平台</th><th>市场</th><th>主营类目</th><th>月GMV</th><th>30天波动</th><th>在售商品</th><th>增速</th><th>粉丝数</th><th>标签</th><th>状态</th><th>更新时间</th></tr></thead>
-            <tbody id="ov-shop-tbody"></tbody>
-          </table>
-        </div>
-        <div class="ov-pager" id="ov-shop-pager"></div>
-      </div>
     </section>
 
 
@@ -2684,39 +3765,99 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
 </section>
 
     <section id="countries" class="page">
-<!-- Top Bar: Search + Quick Tags + AI Summary -->
-<div class="cn2-top-bar">
-  <div class="cn2-search-wrap">
-    <input id="cn2-search" placeholder="搜索国家/地区..." autocomplete="off">
-    <div class="cn2-search-dd" id="cn2-search-dd"></div>
-  </div>
-  <div class="cn2-quick-tags" id="cn2-quick-tags"></div>
-  <div class="cn2-actions">
-    <button onclick="cn2AddMaterial()">📎 加入素材</button>
-    <button onclick="cn2ExportPDF()">📄 导出PDF</button>
-    <button onclick="cn2ExportExcel()">📊 导出Excel</button>
-  </div>
-  <div class="cn2-ai-oneliner" id="cn2-ai-oneliner"></div>
-</div>
 
-<!-- Time Filter -->
-<div class="cn2-time-filter">
-  <label>📅 数据周期</label>
-  <button class="cn2-tf-btn" data-tf="3m">近3个月</button>
-  <button class="cn2-tf-btn active" data-tf="6m">近半年</button>
-  <button class="cn2-tf-btn" data-tf="1y">近1年</button>
-  <button class="cn2-tf-btn" data-tf="3y">近3年</button>
-  <button class="cn2-tf-btn" data-tf="5y">近5年</button>
-  <span style="flex:1"></span>
-  <span style="font-size:10px;color:var(--muted)" id="cn2-update-time"></span>
-</div>
+      <div class="page-header">
+        <h2>🇺🇸 美国市场档案</h2>
+        <div class="country-selector">
+          <span class="flag">🇺🇸</span> 美国
+          <span style="color:#9ca3af;font-size:12px;">▾</span>
+        </div>
+      </div>
+      <div class="page-tabs">
+        <div class="page-tab active" onclick="switchCountryTab(this, 'overview')">📊 市场概览</div>
+        <div class="page-tab" onclick="switchCountryTab(this, 'category')">📈 类目机会</div>
+        <div class="page-tab" onclick="switchCountryTab(this, 'platform')">🛒 平台分布</div>
+        <div class="page-tab" onclick="switchCountryTab(this, 'policy')">📜 政策法规</div>
+      </div>
+      <div style="padding-right:310px;">
+        <div class="metric-cards">
+          <div class="metric-card">
+            <div class="metric-label">GDP 总量</div>
+            <div class="metric-value">$27.4万亿</div>
+            <div class="metric-change up">↑ 2.5% YoY</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">人均 GDP</div>
+            <div class="metric-value">$81,690</div>
+            <div class="metric-change up">↑ 1.8%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">电商市场规模</div>
+            <div class="metric-value">$1.12万亿</div>
+            <div class="metric-change up">↑ 9.2%</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">电商渗透率</div>
+            <div class="metric-value">16.3%</div>
+            <div class="metric-change up">↑ 0.8pp</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">CPI 通胀率</div>
+            <div class="metric-value">3.2%</div>
+            <div class="metric-change down">↓ 0.9pp</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">USD/CNY 汇率</div>
+            <div class="metric-value">7.24</div>
+            <div class="metric-change down">↓ 0.12</div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">📈 美国电商市场规模趋势（2019-2026E）</div>
+          <div class="chart-placeholder">
+            <div class="chart-bar" style="height:35%;" data-label="2019"></div>
+            <div class="chart-bar" style="height:42%;" data-label="2020"></div>
+            <div class="chart-bar" style="height:48%;" data-label="2021"></div>
+            <div class="chart-bar" style="height:55%;" data-label="2022"></div>
+            <div class="chart-bar" style="height:63%;" data-label="2023"></div>
+            <div class="chart-bar" style="height:72%;" data-label="2024"></div>
+            <div class="chart-bar" style="height:82%;" data-label="2025E"></div>
+            <div class="chart-bar" style="height:92%;" data-label="2026E"></div>
+          </div>
+        </div>
+      </div>
+      <!-- 右侧预警悬浮栏 -->
+      <div class="alert-sidebar">
+        <div class="alert-sidebar-title">⚡ 影响美国市场的紧急预警</div>
+        <div class="alert-item">
+          <div class="alert-item-title">De Minimis 免税额度拟取消</div>
+          <div class="alert-item-meta">
+            <span class="alert-countdown">14天后</span>
+            <span>高影响</span>
+          </div>
+        </div>
+        <div class="alert-item">
+          <div class="alert-item-title">CPSC 锂电池产品安全新规</div>
+          <div class="alert-item-meta">
+            <span class="alert-countdown">45天后</span>
+            <span>高影响</span>
+          </div>
+        </div>
+        <div class="alert-item">
+          <div class="alert-item-title">Amazon FBA 仓储费大幅上调</div>
+          <div class="alert-item-meta">
+            <span class="alert-countdown">7天后</span>
+            <span>成本影响</span>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:12px;">
+          <a style="font-size:13px;color:#1e3a5f;cursor:pointer;" onclick="switchPage('alert', document.querySelectorAll('.nav-item')[3])">查看全部预警 →</a>
+        </div>
+      </div>
+    </div>
 
-<!-- Main Layout -->
-<div class="cn2-layout">
-  <div class="cn2-main" id="cn2-main"></div>
-  <aside class="cn2-aside" id="cn2-aside"></aside>
-</div>
-</section>
+    <!-- ====== 平台档案页 ====== -->
+    </section>
 
 <section id="shops" class="page">
 
@@ -2856,94 +3997,238 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
 
 </section>
     <section id="alerts" class="page">
-      <div class="al-header">
-        <div class="al-title-group">
-          <h2>预警中心</h2>
-          <span class="al-badge" id="al-unread-badge">14</span>
+
+      <div class="page-header">
+        <h2>⚠️ 预警中心</h2>
+      </div>
+      <p style="color:#6b7280;margin-bottom:20px;">按紧急程度分层展示影响你业务的关键预警信息</p>
+
+      <div class="alert-level-section">
+        <div class="alert-level-header">
+          <span style="color:#ef4444;">🔴</span>
+          <span class="alert-level-title">紧急处理</span>
+          <span class="alert-level-count">3条</span>
         </div>
-        <div class="al-search">
-          <span>🔍</span>
-          <input type="text" id="al-search-input" placeholder="搜索预警内容..." oninput="jayDeb('alSearch')()">
+        <div class="alert-card">
+          <div class="alert-card-header">
+            <div class="alert-card-title">De Minimis 免税额度拟取消</div>
+            <span class="alert-countdown-badge">⏰ 14天后生效</span>
+          </div>
+          <div class="alert-tags">
+            <span class="tag us">🇺🇸 美国</span>
+            <span class="tag amazon">全平台</span>
+            <span style="background:#fef2f2;color:#dc2626;" class="tag">高影响</span>
+          </div>
+          <div class="alert-desc">美国国会正在推进取消$800以下进口包裹免税额度的立法。若通过，所有依赖小包直邮的卖家将面临额外关税成本，低客单价商品利润结构将被根本性改变。</div>
+          <div class="ai-suggestion-box">
+            <span class="ai-label">🤖 AI 建议：</span>
+            ① 评估SKU中低于$50产品的利润影响；② 提前规划海外仓备货方案；③ 考虑调整定价策略，将关税成本纳入定价模型；④ 关注立法进度，准备应急预案。
+          </div>
+        </div>
+        <div class="alert-card">
+          <div class="alert-card-header">
+            <div class="alert-card-title">CPSC 锂电池产品安全新规</div>
+            <span class="alert-countdown-badge">⏰ 45天后强制执行</span>
+          </div>
+          <div class="alert-tags">
+            <span class="tag us">🇺🇸 美国</span>
+            <span class="tag amazon">Amazon</span>
+            <span style="background:#fef2f2;color:#dc2626;" class="tag">高影响</span>
+          </div>
+          <div class="alert-desc">美国消费品安全委员会（CPSC）发布含锂电池产品新安全标准，要求所有在售产品提供UN38.3测试报告及UL2056认证，不符合要求的产品将面临强制下架。</div>
+          <div class="ai-suggestion-box">
+            <span class="ai-label">🤖 AI 建议：</span>
+            ① 立即盘点含锂电池SKU清单；② 联系供应商获取UN38.3认证文件；③ 对无认证产品启动补认证流程；④ 准备替换包装和说明书以符合新标签要求。
+          </div>
+        </div>
+        <div class="alert-card">
+          <div class="alert-card-header">
+            <div class="alert-card-title">Amazon FBA 仓储费大幅上调</div>
+            <span class="alert-countdown-badge">⏰ 7天后生效</span>
+          </div>
+          <div class="alert-tags">
+            <span class="tag us">🇺🇸 美国</span>
+            <span class="tag amazon">Amazon</span>
+            <span style="background:#fff7ed;color:#c2410c;" class="tag">成本影响</span>
+          </div>
+          <div class="alert-desc">Amazon宣布Q3旺季FBA仓储费上调20%-30%，同时收紧库容限制。超龄库存附加费将从$0.50/cubic ft提升至$0.85/cubic ft。</div>
+          <div class="ai-suggestion-box">
+            <span class="ai-label">🤖 AI 建议：</span>
+            ① 立即清理滞销库存，避免超龄附加费；② 重新核算利润率，评估是否需要调价；③ 考虑3PL作为补充仓储方案；④ 优化补货节奏，控制库存在健康水位。
+          </div>
         </div>
       </div>
-      <div class="al-toolbar">
-        <select class="al-filter-select" id="al-filter-type" onchange="alFilterChange()">
-          <option value="all">全部类型</option>
-          <option value="shop">店铺异动</option>
-          <option value="cat">类目爆款</option>
-          <option value="policy">政策合规</option>
-          <option value="macro">宏观经济</option>
-          <option value="platform">平台规则</option>
-        </select>
-        <select class="al-filter-select" id="al-filter-level" onchange="alFilterChange()">
-          <option value="all">全部等级</option>
-          <option value="high">高风险</option>
-          <option value="mid">中风险</option>
-          <option value="low">普通资讯</option>
-        </select>
-        <select class="al-filter-select" id="al-filter-time" onchange="alFilterChange()">
-          <option value="all">全部时间</option>
-          <option value="today">今日</option>
-          <option value="3d">近 3 天</option>
-          <option value="7d">近 7 天</option>
-        </select>
-        <button class="al-btn" onclick="openAlertSettings()">⚙ 告警设置</button>
-        <button class="al-btn" onclick="alExport()">导出报告</button>
-        <button class="al-btn" onclick="alMarkAllRead()">全部标为已读</button>
+
+      <div class="alert-level-section">
+        <div class="alert-level-header">
+          <span style="color:#f59e0b;">🟡</span>
+          <span class="alert-level-title">关注跟进</span>
+          <span class="alert-level-count medium">4条</span>
+        </div>
+        <div class="alert-card medium">
+          <div class="alert-card-header">
+            <div class="alert-card-title">加州 Prop 65 新增物质清单更新</div>
+            <span class="alert-countdown-badge" style="background:#fffbeb;color:#92400e;">⏰ 60天后</span>
+          </div>
+          <div class="alert-tags">
+            <span class="tag us">🇺🇸 美国</span>
+            <span style="background:#fffbeb;color:#92400e;" class="tag">中等影响</span>
+          </div>
+          <div class="alert-desc">加州环境健康危害评估办公室（OEHHA）更新Prop 65已知致癌物质清单，新增3种化学物质，相关产品需更新警告标签。</div>
+        </div>
+        <div class="alert-card medium">
+          <div class="alert-card-header">
+            <div class="alert-card-title">FDA 化妆品 MoCRA 合规过渡期即将结束</div>
+            <span class="alert-countdown-badge" style="background:#fffbeb;color:#92400e;">⏰ 90天后</span>
+          </div>
+          <div class="alert-tags">
+            <span class="tag us">🇺🇸 美国</span>
+            <span style="background:#fffbeb;color:#92400e;" class="tag">中等影响</span>
+          </div>
+          <div class="alert-desc">FDA化妆品现代化监管法案（MoCRA）过渡期即将结束，所有在美销售化妆品需完成设施注册和产品列名。</div>
+        </div>
       </div>
-      <div class="al-summary" id="al-summary"></div>
-      <div class="al-tabs" id="al-tabs"></div>
-      <div class="al-batch" id="al-batch" style="display:none">
-        <input type="checkbox" id="al-select-all" onchange="alToggleSelectAll(this.checked)">
-        <label for="al-select-all" style="font-size:12px;color:var(--ink);cursor:pointer">全选</label>
-        <button class="al-btn" onclick="alBatchArchive()" style="margin-left:8px">批量归档</button>
-        <button class="al-btn" onclick="alBatchWatch()">加入看板</button>
-        <span class="al-batch-info" id="al-batch-info">已选 0 项</span>
-      </div>
-      <div class="al-list" id="al-list"></div>
-      <div class="al-pagination" id="al-pagination"></div>
+    </div>
+
+    <!-- ====== 顶部栏切换的占位页 ====== -->
     </section>
 
     <section id="platforms" class="page">
-      <div class="pf-top-bar">
-        <div><p class="eyebrow">PLATFORM ARCHIVE</p><h2>全球电商平台档案</h2></div>
-        <div class="pf-search-box">
-          <input type="text" id="pf-search" placeholder="搜索平台名称...">
-          <button class="filter-button" onclick="pfSearch()">搜索</button>
-          <button class="filter-button" onclick="pfExportReport()" style="background:var(--green)">导出报告</button>
+
+      <div class="page-header">
+        <h2>🛒 美国市场 · 平台档案</h2>
+      </div>
+      <p style="color:#6b7280;margin-bottom:20px;">深度了解各平台规则、费用与运营要点</p>
+      <div class="platform-grid">
+        <div class="platform-card amazon">
+          <div class="platform-header">
+            <div class="platform-logo amazon">A</div>
+            <div>
+              <div class="platform-name">Amazon</div>
+              <div class="platform-region">美国站</div>
+            </div>
+          </div>
+          <div class="platform-stats">
+            <div>
+              <div class="platform-stat-label">市场份额</div>
+              <div class="platform-stat-value">38.2%</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">佣金范围</div>
+              <div class="platform-stat-value">8%-15%</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">入驻门槛</div>
+              <div class="platform-stat-value">中等</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">物流模式</div>
+              <div class="platform-stat-value">FBA/FBM</div>
+            </div>
+          </div>
+          <div class="platform-bar"><div class="platform-bar-fill" style="width:38.2%;background:#ff9900;"></div></div>
+        </div>
+        <div class="platform-card ae">
+          <div class="platform-header">
+            <div class="platform-logo ae">AE</div>
+            <div>
+              <div class="platform-name">AliExpress</div>
+              <div class="platform-region">美国站</div>
+            </div>
+          </div>
+          <div class="platform-stats">
+            <div>
+              <div class="platform-stat-label">市场份额</div>
+              <div class="platform-stat-value">2.1%</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">佣金范围</div>
+              <div class="platform-stat-value">5%-8%</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">入驻门槛</div>
+              <div class="platform-stat-value">较低</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">物流模式</div>
+              <div class="platform-stat-value">自发/海外仓</div>
+            </div>
+          </div>
+          <div class="platform-bar"><div class="platform-bar-fill" style="width:2.1%;background:#ff4747;"></div></div>
+        </div>
+        <div class="platform-card tiktok">
+          <div class="platform-header">
+            <div class="platform-logo tiktok">T</div>
+            <div>
+              <div class="platform-name">TikTok Shop</div>
+              <div class="platform-region">美国站</div>
+            </div>
+          </div>
+          <div class="platform-stats">
+            <div>
+              <div class="platform-stat-label">市场份额</div>
+              <div class="platform-stat-value">5.6%</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">佣金范围</div>
+              <div class="platform-stat-value">5%-8%</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">入驻门槛</div>
+              <div class="platform-stat-value">中等</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">物流模式</div>
+              <div class="platform-stat-value">平台物流</div>
+            </div>
+          </div>
+          <div class="platform-bar"><div class="platform-bar-fill" style="width:5.6%;background:#000;"></div></div>
+        </div>
+        <div class="platform-card ebay">
+          <div class="platform-header">
+            <div class="platform-logo ebay">e</div>
+            <div>
+              <div class="platform-name">eBay</div>
+              <div class="platform-region">美国站</div>
+            </div>
+          </div>
+          <div class="platform-stats">
+            <div>
+              <div class="platform-stat-label">市场份额</div>
+              <div class="platform-stat-value">12.1%</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">佣金范围</div>
+              <div class="platform-stat-value">10%-15%</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">入驻门槛</div>
+              <div class="platform-stat-value">较低</div>
+            </div>
+            <div>
+              <div class="platform-stat-label">物流模式</div>
+              <div class="platform-stat-value">自发为主</div>
+            </div>
+          </div>
+          <div class="platform-bar"><div class="platform-bar-fill" style="width:12.1%;background:#e53238;"></div></div>
         </div>
       </div>
-      <div class="pf-ai-panel" id="pf-ai-panel">
-        <div class="pf-ai-tabs" id="pf-ai-tabs"></div>
-        <div class="pf-ai-content" id="pf-ai-content"></div>
+      <div class="other-platforms">
+        <div class="other-platforms-title">其他平台（点击查看详情）</div>
+        <div class="other-chips">
+          <span class="other-chip">Walmart Marketplace</span>
+          <span class="other-chip">Temu</span>
+          <span class="other-chip">Wayfair</span>
+          <span class="other-chip">Etsy</span>
+          <span class="other-chip">Newegg</span>
+          <span class="other-chip">Overstock</span>
+          <span class="other-chip">Best Buy Marketplace</span>
+          <span class="other-chip">Shopee <span class="new-tag">新入驻</span></span>
+        </div>
       </div>
-      <div class="pf-stats-row" id="pf-stats-row"></div>
-      <div class="pf-filter-bar" id="pf-filter-bar">
-        <span class="pf-filter-label">区域</span>
-        <select id="pf-f-region"><option value="all">全部区域</option></select>
-        <span class="pf-filter-label">类型</span>
-        <select id="pf-f-type"><option value="all">全部类型</option></select>
-        <span class="pf-filter-label">电商模式</span>
-        <select id="pf-f-model"><option value="all">全部模式</option><option value="content">内容电商</option><option value="shelf">货架电商</option><option value="independent">独立站</option></select>
-        <span class="pf-filter-label">佣金</span>
-        <select id="pf-f-fee"><option value="all">全部</option><option value="0-5">0-5%</option><option value="5-10">5-10%</option><option value="10+">10%+</option></select>
-        <span class="pf-filter-label">风险</span>
-        <select id="pf-f-risk"><option value="all">全部</option><option value="high">高风险</option><option value="mid">中风险</option><option value="low">低风险</option></select>
-        <button class="filter-button" onclick="pfFilterChange()">筛选</button>
-        <button class="filter-button" onclick="pfClearFilters()" style="background:#eee;color:#666">重置</button>
-        <span id="pf-filter-count" style="font-size:.78rem;color:#888;margin-left:auto"></span>
-      </div>
-      <div class="pf-batch-bar" id="pf-batch-bar">
-        <button onclick="pfBatchWatch()">加入看板监控</button>
-        <button onclick="pfBatchAlert()">开启预警</button>
-        <span class="pf-selected-count" id="pf-selected-count"></span>
-      </div>
-      <div class="pf-grid" id="pf-grid"></div>
-      <div class="pf-pagination" id="pf-pagination"></div>
-      <div class="pf-empty" id="pf-empty" style="display:none">
-        <p>当前筛选条件下暂无匹配平台</p>
-        <button onclick="pfClearFilters()">清除筛选条件</button>
-      </div>
+    </div>
+
+    <!-- ====== 预警中心页 ====== -->
     </section>
     <div class="pf-detail-overlay" id="pf-detail-overlay" onclick="if(event.target===this)closePfDetail()">
       <div class="pf-detail-modal" id="pf-detail-modal"></div>
@@ -3038,403 +4323,92 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
 
     <section id="content" class="page">
 
-<!-- AI Insights -->
-<div id="ai-content"></div>
-<div class="ct-ai-panel" style="margin:0 0 18px">
-  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
-    <button class="ct-ai-tab active" data-aitab="convert" onclick="ctSwitchAI('convert')">内容转化机会</button>
-    <button class="ct-ai-tab" data-aitab="trend" onclick="ctSwitchAI('trend')">内容创作风向</button>
-    <button class="ct-ai-tab" data-aitab="risk" onclick="ctSwitchAI('risk')">风险限流提醒</button>
-  </div>
-  <div id="ct-ai-content"></div>
-</div>
-
-<!-- 4 Main Tabs -->
-<div class="ct-main-tabs" id="ct-main-tabs">
-  <button class="ct-main-tab active" data-mtab="all" onclick="ctSwitchMain('all')">全域热门内容</button>
-  <button class="ct-main-tab" data-mtab="creator" onclick="ctSwitchMain('creator')">达人榜单库</button>
-  <button class="ct-main-tab" data-mtab="live" onclick="ctSwitchMain('live')">直播专场追踪</button>
-  <button class="ct-main-tab" data-mtab="similar" onclick="ctSwitchMain('similar')">同款内容素材库</button>
-</div>
-
-<!-- Filter Bar -->
-<div class="ct-filter-bar" id="ct-filter-bar">
-  <select id="ct-f-platform"><option value="">全部平台</option></select>
-  <select id="ct-f-market"><option value="">全部市场</option></select>
-  <select id="ct-f-type"><option value="">全部类型</option></select>
-  <select id="ct-f-cat"><option value="">全部带货类目</option></select>
-  <select id="ct-f-tier"><option value="">全部达人层级</option><option value="头部KOL">头部KOL</option><option value="中腰部达人">中腰部达人</option><option value="素人铺量">素人铺量</option></select>
-  <select id="ct-f-signal"><option value="">全部信号</option><option value="爆发">爆发</option><option value="平稳">平稳</option><option value="衰退">衰退</option></select>
-  <select id="ct-f-period"><option value="">全部周期</option><option value="today">今日热榜</option><option value="7d">7日爆款</option><option value="30d">30日长效</option></select>
-  <input type="text" id="ct-f-keyword" placeholder="搜索标题/达人/商品..." style="min-width:160px">
-  <select id="ct-f-sort">
-    <option value="plays_desc">播放量 降序</option>
-    <option value="plays_asc">播放量 升序</option>
-    <option value="likes_desc">点赞 降序</option>
-    <option value="conv_desc">转化率 降序</option>
-  </select>
-  <button onclick="ctSaveTpl()" title="保存筛选模板">💾 保存</button>
-  <select id="ct-tpl-select" onchange="ctLoadTpl(this.value)"><option value="">加载模板...</option></select>
-</div>
-
-<!-- Action Bar -->
-<div class="ct-action-bar">
-  <div style="display:flex;align-items:center;gap:10px">
-    <p class="eyebrow" style="margin:0">TRENDING CONTENT</p>
-    <h2 style="margin:0" id="ct-main-title">全域热门内容 <span id="ct-count" style="font-size:14px;color:var(--muted)"></span></h2>
-  </div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <button class="ct-fav-btn" onclick="ctToggleFavPanel()">📁 收藏夹</button>
-    <button class="export" onclick="ctExportExcel()">📊 Excel</button>
-    <button class="export" onclick="ctExportPDF()">📄 PDF</button>
-  </div>
-</div>
-
-<!-- Favorites Panel -->
-<div class="ct-fav-panel" id="ct-fav-panel" style="display:none">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-    <strong style="font-size:14px">我的素材收藏夹</strong>
-    <button onclick="ctNewFavFolder()" style="font-size:11px;padding:4px 10px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer">+ 新建文件夹</button>
-  </div>
-  <div class="ct-fav-folders" id="ct-fav-folders"></div>
-  <div class="ct-fav-items" id="ct-fav-items"></div>
-</div>
-
-<!-- Batch Bar -->
-<div class="ct-batch-bar" id="ct-batch-bar" style="display:none">
-  <span id="ct-batch-count">已选 0 条</span>
-  <button onclick="ctBatchAddReport()">加入报告素材</button>
-  <button onclick="ctBatchAddFav()">加入收藏夹</button>
-  <button onclick="ctClearSelection()">取消选择</button>
-</div>
-
-<!-- Main Content Area -->
-<div id="ct-content-area">
-  <!-- Tab 1: Content Cards Grid -->
-  <div id="ct-tab-all">
-    <div class="ct-card-grid" id="ct-card-grid"></div>
-  </div>
-
-  <!-- Tab 2: Creator Leaderboard -->
-  <div id="ct-tab-creator" style="display:none">
-    <div class="ct-creator-filters" style="display:flex;gap:8px;margin-bottom:14px">
-      <select id="ct-cr-platform" onchange="ctRenderCreator()"><option value="">全部平台</option></select>
-      <select id="ct-cr-market" onchange="ctRenderCreator()"><option value="">全部市场</option></select>
-      <select id="ct-cr-cat" onchange="ctRenderCreator()"><option value="">全部品类</option></select>
+      <div class="page-header"><h2>📚 资源中心</h2></div>
+      <p style="color:#6b7280;margin-bottom:20px;">跨境电商运营干货、政策解读、行业报告</p>
+      <div class="quick-cards">
+        <div class="quick-card"><div class="qc-icon blue">📖</div><div class="qc-title">运营指南</div><div class="qc-desc">平台入驻、选品、广告投放教程</div></div>
+        <div class="quick-card"><div class="qc-icon green">📑</div><div class="qc-title">政策解读</div><div class="qc-desc">各国海关、认证、税务政策详解</div></div>
+        <div class="quick-card"><div class="qc-icon orange">📈</div><div class="qc-title">行业报告</div><div class="qc-desc">季度/年度跨境电商行业报告</div></div>
+        <div class="quick-card"><div class="qc-icon purple">🎓</div><div class="qc-title">课程培训</div><div class="qc-desc">从0到1跨境电商操盘课程</div></div>
+      </div>
     </div>
-    <article class="panel table-panel">
-    <table><thead><tr>
-      <th>排名</th><th>达人账号</th><th>平台</th><th>市场</th><th>粉丝量</th><th>平均播放</th><th>带货品类</th><th>平均转化率</th><th>内容数</th><th>操作</th>
-    </tr></thead><tbody id="ct-creator-table"></tbody></table>
-    </article>
-  </div>
-
-  <!-- Tab 3: Live Tracking -->
-  <div id="ct-tab-live" style="display:none">
-    <div class="ct-live-grid" id="ct-live-grid"></div>
-  </div>
-
-  <!-- Tab 4: Similar Content Library -->
-  <div id="ct-tab-similar" style="display:none">
-    <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
-      <input type="text" id="ct-similar-input" placeholder="输入商品名称，搜索全网同款内容..." style="flex:1;padding:10px 14px;border:1px solid #ddd;border-radius:6px;font-size:13px">
-      <button onclick="ctSearchSimilar()" style="padding:10px 20px;background:var(--green);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">🔍 搜索同款内容</button>
-    </div>
-    <div id="ct-similar-results"></div>
-  </div>
-</div>
-
-<!-- Content Detail Modal -->
-<div class="ct-modal-overlay" id="ct-modal-overlay" onclick="if(event.target===this)ctCloseModal()">
-  <div class="ct-modal" id="ct-modal">
-    <div class="ct-modal-head">
-      <h3 id="ct-modal-title"></h3>
-      <button onclick="ctCloseModal()">✕</button>
-    </div>
-    <div class="ct-modal-body" id="ct-modal-body"></div>
-  </div>
-</div>
-
-</section>
+    </section>
 
     <section id="report" class="page">
-      <!-- Header (Hero) -->
-      <div class="rp-v2-header rp-hero">
-        <div class="rp-v2-header-left">
-          <div class="rp-hero-top">
-            <h2>报告生成中心</h2>
-            <span class="rp-hero-date" id="rp-hero-date">--.--</span>
+
+      <div class="page-header"><h2>📄 生成报告</h2></div>
+      <p style="color:#6b7280;margin-bottom:20px;">选择报告类型，一键生成专业市场调研报告</p>
+      <div style="margin-bottom:20px;">
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:14px;color:#374151;">第一步：选择报告类型</h3>
+        <div class="quick-cards">
+          <div class="quick-card" style="border-color:#1e3a5f;background:#f0f7ff;">
+            <div class="qc-icon blue">📊</div>
+            <div class="qc-title">选品调研报告</div>
+            <div class="qc-desc">工厂/卖家拓品使用</div>
           </div>
-          <p class="rp-v2-sub">整合全系统素材 · AI 智能生成可交付的市场调研报告</p>
-          <div class="rp-hero-meta">数据底座：覆盖 26 国 / 41 平台（定位口径）· 全部数据为演示数据，仅用于功能演示</div>
-        </div>
-        <div class="rp-v2-header-right">
-          <button class="rp-v2-action-btn rp-outline" onclick="rpV2SaveDraft()">💾 保存草稿</button>
-          <button class="rp-v2-action-btn rp-primary" onclick="rpV2Export('md')">📄 导出 Markdown</button>
-          <button class="rp-v2-action-btn rp-orange" onclick="rpV2Export('pdf')">📊 导出 PDF</button>
-          <button class="rp-v2-action-btn rp-danger" onclick="rpV2ClearPool()">🗑 清空素材</button>
+          <div class="quick-card"><div class="qc-icon green">🆚</div><div class="qc-title">竞品对标分析报告</div><div class="qc-desc">对标同行头部店铺</div></div>
+          <div class="quick-card"><div class="qc-icon orange">🌍</div><div class="qc-title">单国出海可行性报告</div><div class="qc-desc">宏观+电商赛道综合评估</div></div>
+          <div class="quick-card"><div class="qc-icon purple">📱</div><div class="qc-title">内容营销投放报告</div><div class="qc-desc">短视频/直播达人投放策略</div></div>
         </div>
       </div>
-      <!-- Stats Row -->
-      <div class="rp-v2-stats">
-        <div class="rp-v2-stat"><div class="rp-v2-stat-icon green">✦</div><div class="rp-v2-stat-info"><p class="rp-v2-stat-num" id="rp-stat-total">0</p><p class="rp-v2-stat-label">素材池总量</p></div></div>
-        <div class="rp-v2-stat"><div class="rp-v2-stat-icon orange">✓</div><div class="rp-v2-stat-info"><p class="rp-v2-stat-num" id="rp-stat-selected">0</p><p class="rp-v2-stat-label">已选素材</p></div></div>
-        <div class="rp-v2-stat"><div class="rp-v2-stat-icon blue">◈</div><div class="rp-v2-stat-info"><p class="rp-v2-stat-num" id="rp-stat-reports">0</p><p class="rp-v2-stat-label">已生成报告</p></div></div>
-        <div class="rp-v2-stat"><div class="rp-v2-stat-icon purple">▤</div><div class="rp-v2-stat-info"><p class="rp-v2-stat-num">5</p><p class="rp-v2-stat-label">报告模板</p></div></div>
-        <div class="rp-v2-stat"><div class="rp-v2-stat-icon red">⚡</div><div class="rp-v2-stat-info"><p class="rp-v2-stat-num">4</p><p class="rp-v2-stat-label">AI 辅助工具</p></div></div>
-      </div>
-      <!-- 3-Column Workspace -->
-      <div class="rp-v2-workspace">
-        <!-- LEFT: Material Pool -->
-        <div class="rp-v2-pool">
-          <div class="rp-v2-pool-header">
-            <h3>素材库 <span id="rp-pool-count">(0)</span></h3>
-            <div class="rp-v2-pool-actions">
-              <button onclick="rpV2SelectAll()" title="全选">☑</button>
-              <button onclick="rpV2DeselectAll()" title="取消全选">☐</button>
+      <div class="chart-card">
+        <div class="chart-title">第二步：配置与预览</div>
+        <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:24px;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:10px;">报告素材清单</div>
+            <div style="space-y:8px;">
+              <div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px;"><input type="checkbox" checked> 美国市场概览数据</div>
+              <div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px;"><input type="checkbox" checked> 便携式储能市场分析</div>
+              <div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px;color:#9ca3af;"><input type="checkbox"> Amazon 平台费用明细</div>
+              <div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px;color:#9ca3af;"><input type="checkbox"> 利润测算结果</div>
+              <div style="padding:8px 0;font-size:13px;color:#9ca3af;"><input type="checkbox"> 合规风险清单</div>
             </div>
+            <div style="margin-top:16px;">
+              <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">报告配置</div>
+              <div style="margin-bottom:10px;"><label style="font-size:12px;color:#6b7280;">目标市场</label><br><input type="text" class="form-input" value="🇺🇸 美国" style="margin-top:4px;"></div>
+              <div><label style="font-size:12px;color:#6b7280;">输出格式</label><br><input type="text" class="form-input" value="PDF" style="margin-top:4px;"></div>
+            </div>
+            <button class="login-submit" style="margin-top:16px;">🚀 生成报告</button>
           </div>
-          <div class="rp-v2-pool-filter" id="rp-v2-pool-filter">
-            <span class="rp-v2-pool-tag active" data-filter="all">全部</span>
-            <span class="rp-v2-pool-tag" data-filter="product">商品</span>
-            <span class="rp-v2-pool-tag" data-filter="shop">店铺</span>
-            <span class="rp-v2-pool-tag" data-filter="content">内容</span>
-            <span class="rp-v2-pool-tag" data-filter="country">国家</span>
-            <span class="rp-v2-pool-tag" data-filter="platform">平台</span>
-            <span class="rp-v2-pool-tag" data-filter="policy">政策</span>
-          </div>
-          <div class="rp-v2-pool-body" id="rp-v2-pool-body"></div>
-        </div>
-        <!-- CENTER: Generation Wizard -->
-        <div class="rp-v2-center">
-          <!-- Step Bar -->
-          <div class="rp-v2-step-bar">
-            <div class="rp-v2-step active" id="rp-step-1">
-              <div class="rp-v2-step-num">1</div>
-              <div class="rp-v2-step-text">选择模板</div>
-            </div>
-            <div class="rp-v2-step-arrow">→</div>
-            <div class="rp-v2-step" id="rp-step-2">
-              <div class="rp-v2-step-num">2</div>
-              <div class="rp-v2-step-text">AI 配置</div>
-            </div>
-            <div class="rp-v2-step-arrow">→</div>
-            <div class="rp-v2-step" id="rp-step-3">
-              <div class="rp-v2-step-num">3</div>
-              <div class="rp-v2-step-text">生成预览</div>
-            </div>
-          </div>
-          <!-- Step 1: Template Selection -->
-          <div class="rp-v2-panel" id="rp-panel-step1">
-            <h3 class="rp-v2-panel-title">📋 选择报告模板</h3>
-            <p class="rp-v2-panel-desc">预设 4 套商用模板，AI 根据模板框架定向生成专业报告内容</p>
-            <div class="rp-v2-tpl-grid" id="rp-v2-tpl-grid">
-              <div class="rp-v2-tpl-card" data-tpl="product-research" onclick="rpV2SelectTpl(this)">
-                <div class="rp-v2-tpl-icon">◎</div>
-                <h4 class="rp-v2-tpl-name">单品赛道选品调研报告</h4>
-                <p class="rp-v2-tpl-desc">工厂/卖家拓品使用。分析目标品类的市场容量、竞争格局、价格带分布、头部竞品打法，输出选品建议与供应链策略。</p>
-                <div class="rp-v2-tpl-tags"><span class="rp-v2-tpl-tag">爆款数据</span><span class="rp-v2-tpl-tag">竞品对标</span><span class="rp-v2-tpl-tag">价格分析</span></div>
-              </div>
-              <div class="rp-v2-tpl-card" data-tpl="competitor-analysis" onclick="rpV2SelectTpl(this)">
-                <div class="rp-v2-tpl-icon">◇</div>
-                <h4 class="rp-v2-tpl-name">竞品对标分析报告</h4>
-                <p class="rp-v2-tpl-desc">对标同行头部店铺打法。拆解竞品GMV、品类布局、营销策略、流量结构，输出差异化竞争建议。</p>
-                <div class="rp-v2-tpl-tags"><span class="rp-v2-tpl-tag">店铺追踪</span><span class="rp-v2-tpl-tag">GMV拆解</span><span class="rp-v2-tpl-tag">策略对标</span></div>
-              </div>
-              <div class="rp-v2-tpl-card" data-tpl="market-entry" onclick="rpV2SelectTpl(this)">
-                <div class="rp-v2-tpl-icon">◆</div>
-                <h4 class="rp-v2-tpl-name">单国出海市场可行性报告</h4>
-                <p class="rp-v2-tpl-desc">宏观经济+电商赛道综合评估。覆盖GDP、人口红利、平台格局、合规要求、物流基建，给出市场进入优先级。</p>
-                <div class="rp-v2-tpl-tags"><span class="rp-v2-tpl-tag">宏观经济</span><span class="rp-v2-tpl-tag">政策合规</span><span class="rp-v2-tpl-tag">平台选型</span></div>
-              </div>
-              <div class="rp-v2-tpl-card" data-tpl="content-marketing" onclick="rpV2SelectTpl(this)">
-                <div class="rp-v2-tpl-icon">◈</div>
-                <h4 class="rp-v2-tpl-name">内容营销投放分析报告</h4>
-                <p class="rp-v2-tpl-desc">短视频/直播达人投放策略。分析热门内容类型、达人报价、转化率、ROI，输出投放组合建议。</p>
-                <div class="rp-v2-tpl-tags"><span class="rp-v2-tpl-tag">达人投放</span><span class="rp-v2-tpl-tag">转化分析</span><span class="rp-v2-tpl-tag">ROI测算</span></div>
-              </div>
-              <div class="rp-v2-tpl-card rp-v2-tpl-custom" data-tpl="custom" onclick="rpV2SelectTpl(this)">
-                <div class="rp-v2-tpl-icon">✎</div>
-                <h4 class="rp-v2-tpl-name">自定义模板</h4>
-                <p class="rp-v2-tpl-desc">手动定义报告结构，AI 根据您保存的框架和素材自由生成。可保存为常用模板复用。</p>
-                <div class="rp-v2-tpl-tags"><span class="rp-v2-tpl-tag">自由结构</span><span class="rp-v2-tpl-tag">可复用</span></div>
-              </div>
-            </div>
-            <div class="rp-v2-generate-bar">
-              <div class="rp-v2-generate-info">已选模板：<b id="rp-v2-tpl-name">未选择</b></div>
-              <button class="rp-v2-gen-btn" id="rp-v2-next-btn" disabled onclick="rpV2GoStep(2)">下一步 →</button>
-            </div>
-          </div>
-          <!-- Step 2: AI Config -->
-          <div class="rp-v2-panel" id="rp-panel-step2" style="display:none">
-            <h3 class="rp-v2-panel-title">⚙ AI 生成配置</h3>
-            <p class="rp-v2-panel-desc">调整参数控制 AI 输出逻辑，也可补充自定义指令</p>
-            <div class="rp-v2-config-group" style="margin-bottom:16px">
-              <label>行业 / 产品（必填其一）</label>
-              <input id="rp-v2-topic" style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg-soft);color:var(--ink);font-size:13px" placeholder="例如：宠物用品 北美 / 3C配件 东南亚 / 瑜伽服 欧洲">
-              <small>输入要调研的行业或具体产品，AI 将据此生成结构化市场调研报告</small>
-            </div>
-            <div class="rp-v2-config-grid">
-              <div class="rp-v2-config-group">
-                <label>报告周期</label>
-                <div class="rp-v2-toggle-row">
-                  <span class="rp-v2-toggle active" data-cfg="period" data-val="7d" onclick="rpV2Toggle(this)">近7天机会</span>
-                  <span class="rp-v2-toggle" data-cfg="period" data-val="1m" onclick="rpV2Toggle(this)">近1个月</span>
-                  <span class="rp-v2-toggle" data-cfg="period" data-val="3m" onclick="rpV2Toggle(this)">近3个月</span>
-                  <span class="rp-v2-toggle" data-cfg="period" data-val="6m" onclick="rpV2Toggle(this)">中长期研判</span>
-                </div>
-                <small>决定数据取样的时间窗口</small>
-              </div>
-              <div class="rp-v2-config-group">
-                <label>输出侧重</label>
-                <div class="rp-v2-toggle-row">
-                  <span class="rp-v2-toggle active" data-cfg="focus" data-val="data" onclick="rpV2Toggle(this)">偏数据量化</span>
-                  <span class="rp-v2-toggle" data-cfg="focus" data-val="strategy" onclick="rpV2Toggle(this)">偏运营策略</span>
-                  <span class="rp-v2-toggle" data-cfg="focus" data-val="balance" onclick="rpV2Toggle(this)">均衡</span>
-                </div>
-                <small>影响报告的论述风格和深度</small>
-              </div>
-              <div class="rp-v2-config-group">
-                <label>受众适配</label>
-                <div class="rp-v2-toggle-row">
-                  <span class="rp-v2-toggle active" data-cfg="audience" data-val="boss" onclick="rpV2Toggle(this)">老板/决策层</span>
-                  <span class="rp-v2-toggle" data-cfg="audience" data-val="ops" onclick="rpV2Toggle(this)">运营执行团队</span>
-                  <span class="rp-v2-toggle" data-cfg="audience" data-val="client" onclick="rpV2Toggle(this)">外部客户</span>
-                </div>
-                <small>调整专业术语密度和结论导向</small>
-              </div>
-              <div class="rp-v2-config-group">
-                <label>输出格式</label>
-                <div class="rp-v2-toggle-row">
-                  <span class="rp-v2-toggle active" data-cfg="format" data-val="full" onclick="rpV2Toggle(this)">完整报告</span>
-                  <span class="rp-v2-toggle" data-cfg="format" data-val="exec" onclick="rpV2Toggle(this)">执行摘要</span>
-                  <span class="rp-v2-toggle" data-cfg="format" data-val="slides" onclick="rpV2Toggle(this)">演示文稿大纲</span>
-                </div>
-                <small>完整报告含全部章节；摘要只保留核心结论</small>
-              </div>
-            </div>
-            <div class="rp-v2-config-group" style="margin-bottom:16px">
-              <label>补充自定义 Prompt</label>
-              <textarea id="rp-v2-custom-prompt" placeholder="例如：重点分析印尼市场关税风险，给出3个潜力新品类推荐，对比Shopee和TikTok Shop的流量成本差异..."></textarea>
-              <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
-                <select id="rp-v2-tpl-sel" class="rp-v2-tpl-sel" onchange="rpV2ApplyTpl()">
-                  <option value="">— 选择已保存模板 —</option>
-                </select>
-                <button type="button" class="rp-v2-tpl-btn" onclick="rpV2SaveTpl()">保存当前为模板</button>
-              </div>
-              <small>把上方内容保存为可复用模板；选择模板会自动填入。</small>
-            </div>
-            <div class="rp-v2-generate-bar">
-              <div class="rp-v2-generate-info">已选素材：<b id="rp-v2-cfg-count">0</b> 条 | 模板：<b id="rp-v2-cfg-tpl">-</b></div>
-              <div style="display:flex;gap:8px">
-                <button class="rp-v2-gen-btn" style="background:var(--line);color:var(--ink)" onclick="rpV2GoStep(1)">← 上一步</button>
-                <button class="rp-v2-gen-btn go" onclick="rpV2Questionnaire()">✦ 一键生成报告</button>
-              </div>
-            </div>
-          </div>
-          <!-- Step 3: Preview -->
-          <div class="rp-v2-panel" id="rp-panel-step3" style="display:none">
-            <h3 class="rp-v2-panel-title">📝 报告预览与编辑</h3>
-            <p class="rp-v2-panel-desc">AI 已根据素材和配置生成报告，可直接编辑修改</p>
-            <div class="rp-v2-preview-panel">
-              <div class="rp-v2-preview-toolbar">
-                <div class="rp-v2-preview-toolbar-left">
-                  <h4 id="rp-v2-preview-title">-</h4>
-                </div>
-                <div class="rp-v2-preview-toolbar-right">
-                  <button onclick="rpV2CopyReport()">📋 复制全文</button>
-                  <button onclick="rpV2GeneratePlan()" style="padding:6px 12px;border:1px solid var(--green);color:var(--green);border-radius:6px;background:transparent;cursor:pointer;font-size:12px">🚀 生成执行计划</button>
-                  <button onclick="rpV2Export('md')">📄 导出 MD</button>
-                  <button onclick="rpV2Export('pdf')">📊 导出 PDF</button>
-                  <button onclick="rpV2ExportPdfWithLogo()">🏢 带 Logo 导出</button>
-                </div>
-              </div>
-              <div class="rp-v2-preview-body" id="rp-v2-preview-body">
-                <div class="rp-empty-preview">
-                  <span class="rp-empty-icon">□</span>
-                  <p>报告预览区</p>
-                  <small>完成模板选择和AI配置后，点击生成即可在此预览</small>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- RIGHT: AI Tools -->
-        <div class="rp-v2-right">
-          <!-- AI Tool: Smart Summary -->
-          <div class="rp-v2-ai-tool">
-            <div class="rp-v2-ai-tool-header">
-              <div class="rp-v2-ai-tool-icon" style="background:rgba(99,102,241,.1);color:#6366f1">✧</div>
-              <div><h4>素材智能总结</h4><p>快速提炼核心结论</p></div>
-            </div>
-            <div class="rp-v2-ai-tool-body">选中素材后，AI 自动提炼关键发现和数据洞察，无需生成完整报告。</div>
-            <button class="rp-v2-ai-tool-btn" onclick="rpV2AiTool('summary')">✦ 生成智能总结</button>
-            <div id="rp-ai-summary-result"></div>
-          </div>
-          <!-- AI Tool: Risk Scan -->
-          <div class="rp-v2-ai-tool">
-            <div class="rp-v2-ai-tool-header">
-              <div class="rp-v2-ai-tool-icon" style="background:rgba(239,68,68,.1);color:#ef4444">⚠</div>
-              <div><h4>风险自动筛查</h4><p>扫描政策/赛道/违规风险</p></div>
-            </div>
-            <div class="rp-v2-ai-tool-body">AI 扫描全部素材，自动识别政策变动风险、赛道内卷风险、平台违规风险并汇总。</div>
-            <button class="rp-v2-ai-tool-btn" onclick="rpV2AiTool('risk')">✦ 扫描风险</button>
-            <div id="rp-ai-risk-result"></div>
-          </div>
-          <!-- AI Tool: Product Suggestions -->
-          <div class="rp-v2-ai-tool">
-            <div class="rp-v2-ai-tool-header">
-              <div class="rp-v2-ai-tool-icon" style="background:rgba(44,95,138,.1);color:var(--green)">◈</div>
-              <div><h4>选品建议速出</h4><p>快速输出潜力品类推荐</p></div>
-            </div>
-            <div class="rp-v2-ai-tool-body">仅勾选商品/国家素材，AI 快速输出 3-5 个潜力品类推荐及入选理由。</div>
-            <button class="rp-v2-ai-tool-btn" onclick="rpV2AiTool('suggest')">✦ 生成选品建议</button>
-            <div id="rp-ai-suggest-result"></div>
-          </div>
-          <!-- Recent Reports -->
-          <div class="rp-v2-recent" id="rp-v2-recent">
-            <h4>📁 历史报告</h4>
-            <div id="rp-v2-recent-list">
-              <div style="text-align:center;padding:16px;color:var(--muted);font:12px 'Noto Sans SC'">暂无历史报告</div>
+          <div style="background:#fafafa;border-radius:8px;padding:20px;min-height:300px;">
+            <div style="text-align:center;font-size:16px;font-weight:700;color:#1e3a5f;margin-bottom:16px;">选品调研报告 — 便携式储能电源</div>
+            <div style="font-size:13px;color:#6b7280;line-height:2.2;">
+              <div style="font-weight:600;color:#374151;">一、执行摘要</div>
+              <div style="height:8px;background:#e5e7eb;border-radius:4px;margin:4px 0;width:90%;"></div>
+              <div style="height:8px;background:#e5e7eb;border-radius:4px;margin:4px 0;width:70%;"></div>
+              <div style="font-weight:600;color:#374151;margin-top:12px;">二、市场环境分析</div>
+              <div style="height:8px;background:#e5e7eb;border-radius:4px;margin:4px 0;width:85%;"></div>
+              <div style="height:8px;background:#e5e7eb;border-radius:4px;margin:4px 0;width:75%;"></div>
+              <div style="font-weight:600;color:#374151;margin-top:12px;">三、竞争格局</div>
+              <div style="height:8px;background:#e5e7eb;border-radius:4px;margin:4px 0;width:80%;"></div>
+              <div style="font-weight:600;color:#374151;margin-top:12px;">四、产品定位建议</div>
+              <div style="height:8px;background:#e5e7eb;border-radius:4px;margin:4px 0;width:70%;"></div>
+              <div style="font-weight:600;color:#374151;margin-top:12px;">五、利润模型</div>
+              <div style="height:8px;background:#e5e7eb;border-radius:4px;margin:4px 0;width:65%;"></div>
+              <div style="font-weight:600;color:#374151;margin-top:12px;">六、合规与风险</div>
+              <div style="height:8px;background:#e5e7eb;border-radius:4px;margin:4px 0;width:75%;"></div>
+              <div style="font-weight:600;color:#374151;margin-top:12px;">七、行动建议</div>
+              <div style="height:8px;background:#e5e7eb;border-radius:4px;margin:4px 0;width:60%;"></div>
             </div>
           </div>
         </div>
       </div>
+    </div>
     </section>
 
     
 
     <section id="myfit" class="page">
-      <div class="mf-wrap">
-        <div class="mf-intro">
-          <div class="mf-intro-icon">🎯</div>
-          <div>
-            <h3>我的产品适配分析 · 现场回答「我这个品类在越南卖得动吗」</h3>
-            <p>录入你的产品信息，系统基于平台覆盖、政策友好度、风险信号与内容热度，为你排出最适配的出海市场并给出风险提示。数据均为演示数据，结果仅供方法演示。</p>
-          </div>
-        </div>
-        <div class="mf-form">
-          <h4>📦 录入你的产品</h4>
-          <div class="mf-grid">
-            <div class="mf-field"><label>产品品类 / 名称</label><input id="mf-category" placeholder="例如：保温杯 / 便携小风扇 / 宠物用品" /></div>
-            <div class="mf-field"><label>单件出厂成本（¥）</label><input id="mf-cost" type="number" placeholder="例如：35" /></div>
-            <div class="mf-field"><label>目标零售价带</label><select id="mf-priceband"><option value="low">低价走量（&lt;$15）</option><option value="mid" selected>中端（$15–50）</option><option value="high">高端（&gt;$50）</option></select></div>
-            <div class="mf-field"><label>核心卖点 / 差异化</label><input id="mf-selling" placeholder="例如：轻量化、自带充电、IP 联名" /></div>
-            <div class="mf-field"><label>首选目标市场（可选）</label><select id="mf-market"><option value="">由系统智能推荐</option></select></div>
-            <div class="mf-field"><label>出海经验</label><select id="mf-exp"><option value="new">新手（首次出海）</option><option value="some">有经验（1–2 年）</option><option value="pro">成熟（3 年+）</option></select></div>
-          </div>
-          <div class="mf-submit">
-            <button class="mf-btn-primary" onclick="mfAnalyze()">🔍 分析适配市场</button>
-            <button class="mf-btn-ghost" onclick="mfResetForm()">重置</button>
-            <span class="mf-field hint" style="margin:0">提示：留空市场将由系统从 40 国中自动排出 Top 适配。</span>
-          </div>
-        </div>
-        <div class="mf-result" id="mf-result">
-          <div class="mf-rank-head"><h4>🏆 最适配出海市场排名</h4><small id="mf-result-sub"></small></div>
-          <div id="mf-cards"></div>
-          <div class="mf-ai-box" id="mf-ai-box"></div>
-        </div>
+
+      <div class="page-header"><h2>🤖 AI工具</h2></div>
+      <p style="color:#6b7280;margin-bottom:20px;">AI驱动的智能选品、文案生成、数据分析工具</p>
+      <div class="quick-cards">
+        <div class="quick-card"><div class="qc-icon purple">🎯</div><div class="qc-title">AI智能选品</div><div class="qc-desc">基于多维度数据推荐潜力品类</div></div>
+        <div class="quick-card"><div class="qc-icon blue">✍️</div><div class="qc-title">AI文案生成</div><div class="qc-desc">Listing标题、五点描述、广告文案</div></div>
+        <div class="quick-card"><div class="qc-icon green">📊</div><div class="qc-title">AI数据分析</div><div class="qc-desc">自然语言查询市场数据</div></div>
+        <div class="quick-card"><div class="qc-icon orange">⚖️</div><div class="qc-title">AI合规筛查</div><div class="qc-desc">自动识别产品合规风险</div></div>
       </div>
+    </div>
     </section>
 
     <section id="pricing" class="page">
@@ -3514,90 +4488,51 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
     </section>
 
     <section id="tools" class="page">
-      <div class="tools-wrap">
-        <div class="tools-hero">
-          <h2>🧮 操盘手工具箱</h2>
-          <p>把「能不能卖」变成「怎么卖才赚钱」——利润、选品、备货一键测算（演示计算，参数请按实际填写）</p>
+
+      <div class="page-header"><h2>🧰 操盘手工具</h2></div>
+      <p style="color:#6b7280;margin-bottom:20px;">利润测算、选品评分、备货计算、报告生成 —— 一站式操盘支持</p>
+      <div class="quick-cards">
+        <div class="quick-card">
+          <div class="qc-icon blue">💰</div>
+          <div class="qc-title">利润测算</div>
+          <div class="qc-desc">单品利润、整柜利润、汇率换算</div>
         </div>
-        <div class="tools-grid">
-          <div class="tools-card">
-            <h3>💰 利润计算器</h3>
-            <p class="t-sub">成本 + 物流 + 关税 + 佣金 → 净利与盈亏平衡</p>
-            <div class="tools-field"><label>采购成本（¥/件）</label><input id="pf-cost" type="number" value="35" oninput="toolsCalcProfit()"></div>
-            <div class="tools-field"><label>国际物流（¥/件）</label><input id="pf-ship" type="number" value="12" oninput="toolsCalcProfit()"></div>
-            <div class="tools-field"><label>目标售价（¥/件）</label><input id="pf-price" type="number" value="99" oninput="toolsCalcProfit()"></div>
-            <div class="tools-field"><label>平台佣金率（%）</label><input id="pf-comm" type="number" value="15" oninput="toolsCalcProfit()"></div>
-            <div class="tools-field"><label>目标国关税税率（%）</label><input id="pf-tariff" type="number" value="7.5" oninput="toolsCalcProfit()"></div>
-            <div class="tools-res" id="pf-res"></div>
-          </div>
-          <div class="tools-card">
-            <h3>📊 选品评分卡</h3>
-            <p class="t-sub">市场 / 竞争 / 毛利 / 物流 / 政策 五维打分</p>
-            <div class="tools-field"><label>目标市场</label><select id="sc-market" onchange="toolsCalcScore()">
-              <option value="东南亚">东南亚（物流友好）</option>
-              <option value="北美">北美（容量大 / 竞争强）</option>
-              <option value="欧洲">欧洲（合规严）</option>
-              <option value="中东">中东（溢价高）</option>
-              <option value="拉美">拉美（物流慢）</option>
-            </select></div>
-            <div class="tools-field"><label>预估毛利率（%）</label><input id="sc-margin" type="number" value="55" oninput="toolsCalcScore()"></div>
-            <div class="tools-field"><label>单件重量（kg）</label><input id="sc-weight" type="number" value="0.5" step="0.1" oninput="toolsCalcScore()"></div>
-            <div class="tools-field"><label>是否敏感 / 合规严品类</label><select id="sc-sensitive" onchange="toolsCalcScore()">
-              <option value="0">否</option><option value="1">是（食品 / 电子 / 儿童等）</option>
-            </select></div>
-            <div class="tools-res" id="sc-res"></div>
-          </div>
-          <div class="tools-card">
-            <h3>📦 备货计算器</h3>
-            <p class="t-sub">销量 ×（在库 + 物流周期）× 安全系数</p>
-            <div class="tools-field"><label>日均销量（件）</label><input id="st-daily" type="number" value="60" oninput="toolsCalcStock()"></div>
-            <div class="tools-field"><label>计划备货天数（在库）</label><input id="st-keep" type="number" value="30" oninput="toolsCalcStock()"></div>
-            <div class="tools-field"><label>物流周期（天）</label><input id="st-logi" type="number" value="18" oninput="toolsCalcStock()"></div>
-            <div class="tools-field"><label>安全库存系数</label><input id="st-safe" type="number" value="1.3" step="0.1" oninput="toolsCalcStock()"></div>
-            <div class="tools-field"><label>单件成本（¥）</label><input id="st-cost" type="number" value="47" oninput="toolsCalcStock()"></div>
-            <div class="tools-res" id="st-res"></div>
-          </div>
+        <div class="quick-card">
+          <div class="qc-icon green">⭐</div>
+          <div class="qc-title">选品评分</div>
+          <div class="qc-desc">五维评估选品可行性</div>
         </div>
-        <!-- D-79 自主对比中心 -->
-        <div class="cmp-center">
-          <div class="cmp-head">
-            <h3>🌐 自主对比中心</h3>
-            <p class="t-sub">自选 2–4 个「国家 / 平台 / 商品」，横向比规模、增速与风险，辅助出海决策（演示数据，截至 2026-07）</p>
-          </div>
-          <div class="cmp-tabs">
-            <button type="button" class="cmp-tab active" data-cmp="country" onclick="cmpSwitch('country')">🏳 国家对比</button>
-            <button type="button" class="cmp-tab" data-cmp="platform" onclick="cmpSwitch('platform')">🛒 平台对比</button>
-            <button type="button" class="cmp-tab" data-cmp="product" onclick="cmpSwitch('product')">📦 商品对比</button>
-          </div>
-          <div id="cmp-picker"></div>
-          <div class="cmp-selected" id="cmp-selected"></div>
-          <div class="cmp-actions">
-            <button type="button" class="cmp-go" onclick="cmpRun()">开始对比</button>
-            <button type="button" class="cmp-clear" onclick="cmpClear()">清空选择</button>
-            <button type="button" class="cmp-save" onclick="cmpSaveScheme()">💾 保存方案</button>
-          </div>
-          <div class="cmp-result" id="cmp-result"></div>
-          <div class="cmp-schemes">
-            <div class="cmp-schemes-head">📁 我的对比方案</div>
-            <div class="cmp-schemes-list" id="cmp-schemes-list"></div>
-          </div>
+        <div class="quick-card">
+          <div class="qc-icon orange">📦</div>
+          <div class="qc-title">备货计算</div>
+          <div class="qc-desc">安全库存、最优备货方案</div>
+        </div>
+        <div class="quick-card">
+          <div class="qc-icon purple">📄</div>
+          <div class="qc-title">生成报告</div>
+          <div class="qc-desc">一键生成专业市场调研报告</div>
         </div>
       </div>
+    </div>
     </section>
 
     <section id="data" class="page">
-      <div class="ds-wrap">
-        <div class="ds-banner">
-          <span class="ic">🗄️</span>
-          <p><b>数据底座</b>：当前为<b>演示环境</b>，全部数据为示意性参考（数据截至 2026-07），仅用于功能演示与 B2B2G 路演。下方为每个数据域的来源与状态；配置真实数据源后，状态将自动由「演示数据」切换为「真实来源（已配置）」，无需改动业务代码。<br>注：当前「接入真实源」为配置骨架演示；真实外部数据（官方关税/政策公开源等）的抓取与校验需后端服务支撑，属上线后第一优先迭代项。</p>
-        </div>
-        <div class="ds-grid" id="ds-grid"></div>
-        <div class="ds-foot">
-          <button class="ds-btn" onclick="dsResetAll()">↺ 全部恢复为演示数据</button>
-          <button class="ds-btn" onclick="jayRefreshAll()">🤖 AI 联网刷新实时数据</button>
-          <p style="font-size:11px;color:#7d93ab;margin-top:10px">接入真实源（官方 API / 第三方 / CSV 导入）的详细监控配置见「设置 → 数据源配置」；AI 刷新需先在「设置 → AI 引擎」配置 DeepSeek Key（演示）。</p>
-        </div>
+
+      <div class="page-header"><h2>🔌 API接口</h2></div>
+      <p style="color:#6b7280;margin-bottom:20px;">将JAY观海数据能力接入你的业务系统</p>
+      <div class="chart-card">
+        <div class="chart-title">API 接口列表</div>
+        <table class="board-table">
+          <thead><tr><th>接口名称</th><th>说明</th><th>调用方式</th><th>状态</th></tr></thead>
+          <tbody>
+            <tr><td>市场数据API</td><td>获取国家宏观经济、电商规模数据</td><td>RESTful</td><td style="color:#10b981;">✅ 可用</td></tr>
+            <tr><td>商品榜单API</td><td>获取热卖商品、店铺排行数据</td><td>RESTful</td><td style="color:#10b981;">✅ 可用</td></tr>
+            <tr><td>政策预警API</td><td>获取最新政策变动和预警信息</td><td>RESTful + Webhook</td><td style="color:#f59e0b;">🔧 开发中</td></tr>
+            <tr><td>AI分析API</td><td>调用AI选品、文案生成能力</td><td>RESTful</td><td style="color:#f59e0b;">🔧 开发中</td></tr>
+          </tbody>
+        </table>
       </div>
+    </div>
     </section>
     <section id="settings" class="page">
 <div class="st-wrap">
@@ -5901,6 +6836,7 @@ function cn2GetExt(key){ return cn2CountryExt[key] || cn2CountryExt['id']; }
 function cn2GetTrendClass(t){ if(!t) return 'stable'; if(t.indexOf('+')>=0||t==='↑'||t==='利好') return 'up'; if(t.indexOf('-')>=0||t==='↓'||t==='收紧') return 'down'; return 'stable'; }
 
 function cn2Render(key){
+  return; // disabled v4 2026-08-21 (countries 重做为参考版)
   cn2CurrentKey = key;
   try{ localStorage.setItem('jay_last_country', key); }catch(e){}
   var d = countryFullData[key];
@@ -6292,6 +7228,8 @@ document.querySelectorAll('.cn2-tf-btn').forEach(function(btn){
 
 // Export functions
 function cn2ExportPDF(){
+  return; // disabled v4
+
   var key=cn2CurrentKey;
   var d=countryFullData[key];
   var ext=cn2GetExt(key);
@@ -6340,7 +7278,9 @@ function cn2ExportPDF(){
     toast(d.name+'市场报告已导出');
   },1200);
 }
-function cn2ExportExcel(){ toast('正在导出'+countryFullData[cn2CurrentKey].name+'市场数据Excel...'); setTimeout(function(){ toast('Excel已导出'); }, 1000); }
+function cn2ExportExcel(){
+  return; // disabled v4
+ toast('正在导出'+countryFullData[cn2CurrentKey].name+'市场数据Excel...'); setTimeout(function(){ toast('Excel已导出'); }, 1000); }
 function cn2ExportMacro(){
   var key=cn2CurrentKey;
   var ext=cn2GetExt(key);
@@ -6386,7 +7326,9 @@ function cn2ExportPlats(){
   a.click();URL.revokeObjectURL(url);
   toast(d.name+' 平台数据已导出CSV');
 }
-function cn2AddMaterial(){ rpAddMaterial('country', cn2CurrentKey, countryFullData[cn2CurrentKey].name+' 完整市场档案', '宏观+电商+政策+人口全量数据'); toast('已加入报告素材'); }
+function cn2AddMaterial(){
+  return; // disabled v4
+ rpAddMaterial('country', cn2CurrentKey, countryFullData[cn2CurrentKey].name+' 完整市场档案', '宏观+电商+政策+人口全量数据'); toast('已加入报告素材'); }
 
 // Initial render
 // Generate market brief analysis and add to report pool
@@ -6710,6 +7652,8 @@ function pfAiDiagnosisDetail(name){
 }
 
 function renderPlatforms(){
+    return; // disabled v4 2026-08-21
+
   renderPfStats();
   renderPfAi();
   renderPfGrid();
@@ -7582,7 +8526,9 @@ function getFilteredActs(){
 }
 
 // Main render
-function renderRulesPage(){renderRlStats();renderRlAi();renderRlRules();renderRlActs();}
+function renderRulesPage(){
+    return; // disabled v4 2026-08-21
+renderRlStats();renderRlAi();renderRlRules();renderRlActs();}
 
 // Checkboxes
 function rlToggleCheck(idx){if(rlChecked.has(idx))rlChecked.delete(idx);else rlChecked.add(idx);updateRlSelectedCount()}
@@ -7790,6 +8736,8 @@ function ctRenderAI() {
 
 // ========== FILTERS ==========
 function ctInitFilters() {
+    return; // disabled v4 2026-08-21
+
   var plats=[], markets=[], types=[], cats=[];
   contentData.forEach(function(c) {
     if(plats.indexOf(c[1])<0) plats.push(c[1]);
@@ -7797,7 +8745,7 @@ function ctInitFilters() {
     if(types.indexOf(c[3])<0) types.push(c[3]);
     if(cats.indexOf(c[10])<0) cats.push(c[10]);
   });
-  function fillOpts(sel, arr) { arr.forEach(function(v){ var o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); }); }
+  function fillOpts(sel, arr) { if(!sel) return; arr.forEach(function(v){ var o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); }); }
   fillOpts(document.getElementById('ct-f-platform'), plats);
   fillOpts(document.getElementById('ct-f-market'), markets);
   fillOpts(document.getElementById('ct-f-type'), types);
@@ -9067,6 +10015,8 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 function rpV2RefreshPoolUI(){
+    return; // disabled v4 2026-08-21
+
   var pool=rpGetPool();
   var body=document.getElementById('rp-v2-pool-body');
   if(!body)return;
@@ -9483,6 +10433,8 @@ function rpV2SaveReport(name,materialCount){
 }
 function rpV2GetReports(){try{return JSON.parse(localStorage.getItem(RP_REPORTS_KEY)||'[]')}catch(e){return[]}}
 function rpV2LoadRecent(){
+    return; // disabled v4 2026-08-21
+
   var list=document.getElementById('rp-v2-recent-list');
   if(!list)return;
   var reports=rpV2GetReports();
@@ -9523,6 +10475,8 @@ function rpV2AiTool(type){
 
 // --- Export ---
 function rpV2Export(format){
+    return; // disabled v4 2026-08-21
+
   var body=document.getElementById('rp-v2-preview-body');
   if(!body||body.classList.contains('rp-empty-preview')){toast('请先生成报告');return}
   toast('正在导出 '+format.toUpperCase()+' ...');
@@ -9608,6 +10562,8 @@ var DS_DOMAINS=[
 ];
 function dsIsReal(key){ try{ return localStorage.getItem('jay_ds_real_'+key)==='1'; }catch(e){ return false; } }
 function dsRender(){
+    return; // disabled v4 2026-08-21
+
   var grid=document.getElementById('ds-grid'); if(!grid)return;
   grid.innerHTML=DS_DOMAINS.map(function(d){
     var real=dsIsReal(d.key);
@@ -9953,6 +10909,8 @@ function aiSetKeyStatus(saved){
   if(clr) clr.style.display = saved ? '' : 'none';
 }
 function aiInitKeyUI(){
+    return; // disabled v4 2026-08-21
+
   var inp = document.getElementById('ai-deepseek-key'); if(inp) inp.value = AI_ENGINE.getKey();
   aiSetKeyStatus(AI_ENGINE.hasKey());
 }
@@ -10238,6 +11196,8 @@ function closeProModal(){var m=document.getElementById('pro-modal-overlay');if(m
 
 // ========== F 操盘手工具箱 ==========
 function toolsCalcProfit(){
+    return; // disabled v4 2026-08-21
+
   var g=function(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;};
   var cost=g('pf-cost'),ship=g('pf-ship'),price=g('pf-price'),comm=g('pf-comm'),tar=g('pf-tariff');
   var cif=cost+ship;
@@ -10259,6 +11219,8 @@ function toolsCalcProfit(){
     '<span class="tools-badge '+(ok?'good':'bad')+'">'+(ok?'✓ 盈利':'✗ 亏损，建议提价或降本')+'</span>';
 }
 function toolsCalcScore(){
+    return; // disabled v4 2026-08-21
+
   var market=document.getElementById('sc-market').value;
   var margin=parseFloat(document.getElementById('sc-margin').value)||0;
   var weight=parseFloat(document.getElementById('sc-weight').value)||0;
@@ -10283,6 +11245,8 @@ function toolsCalcScore(){
     '<span class="tools-badge '+grade+'">'+glabel+'</span>';
 }
 function toolsCalcStock(){
+    return; // disabled v4 2026-08-21
+
   var g=function(id){var v=parseFloat(document.getElementById(id).value);return isNaN(v)?0:v;};
   var daily=g('st-daily'),keep=g('st-keep'),logi=g('st-logi'),safe=g('st-safe'),cost=g('st-cost');
   var qty=Math.ceil(daily*(keep+logi)*safe);
@@ -10462,6 +11426,8 @@ try{ if(document.getElementById('cmp-picker')) cmpSwitch('country'); }catch(e){}
 
 // ========== C1 我的产品适配分析 ==========
 function mfInitMarketSelect(){
+    return; // disabled v4 2026-08-21
+
   var sel=document.getElementById('mf-market'); if(!sel)return;
   if(sel.options.length>1)return;
   try{
@@ -11472,6 +12438,8 @@ var alTypeTargets={shop:'products',cat:'products',policy:'policies',macro:'count
 // Initial alerts render will be triggered by switchPage
 
 function renderAlerts(){
+    return; // disabled v4 2026-08-21
+
   var filtered=getFilteredAlerts();
   renderAlSummary();
   renderAlTabs();
@@ -11765,6 +12733,8 @@ var stRecycle = [
 ];
 
 function stInit(){
+    return; // disabled v4 2026-08-21
+
   stRenderMembers();
   stRenderLogs();
   stRenderRecycle();
@@ -12235,138 +13205,13 @@ function stToast(msg){
     var rl=document.getElementById('nav-rl-count'); if(rl){ try{ if(typeof rulesJsonData!=='undefined'&&rulesJsonData&&rulesJsonData.items&&(rulesJsonData.source_count||0)>6){ rl.textContent=rulesJsonData.items.length; } }catch(e){} }
   }
   window.updateNavBadges=updateNavBadges;
-  // ===== 印尼 ⑨⑩ 补齐（2026-08-21） =====
-  function cn2InjectExtras() {
-    var main = document.getElementById('cn2-main');
-    if (!main) return;
-    if (main.querySelector('.cn2-extra-block')) return;
-    var html = ''
-      + '<div class="cn2-extra-block">'
-      + '  <div class="cn2-extra-head"><span class="cn2-extra-num">8</span><h3>宗教文化禁忌与机会</h3></div>'
-      + '  <div class="cn2-religion-grid">'
-      + '    <div class="cn2-religion-card">'
-      + '      <h4>🕌 宗教信仰（伊斯兰教 87%）</h4>'
-      + '      <p><span class="tag">禁忌</span>酒精/猪相关食品；<span class="tag">禁忌</span>左手接触食物；<span class="tag">禁忌</span>女性暴露着装；<br><span class="tag-g">机会</span>清真(Halal)认证产品溢价 20-30%；斋月(Ramadan)大促 GMV 翻 3 倍；开斋节(Hari Raya)礼品消费旺季。</p>'
-      + '    </div>'
-      + '    <div class="cn2-religion-card">'
-      + '      <h4>🙏 文化习惯</h4>'
-      + '      <p><span class="tag">注意</span>头部被视为神圣，不随意触摸；<span class="tag">注意</span>用右手接/递物品；<br><span class="tag-g">机会</span>家庭聚会型大包装产品受青睐；多人共享场景消费；线下+线上结合的直播带货转化率高。</p>'
-      + '    </div>'
-      + '    <div class="cn2-religion-card">'
-      + '      <h4>🌐 语言与沟通</h4>'
-      + '      <p>官方语言 Bahasa Indonesia；年轻群体英语普及；<br><span class="tag-g">机会</span>本地化 Listing（印尼语）转化率比英文高 2.5 倍；客服 WhatsApp/Tokopedia 内置聊天需双语。</p>'
-      + '    </div>'
-      + '    <div class="cn2-religion-card">'
-      + '      <h4>🎉 节庆日历</h4>'
-      + '      <p>斋月（3月）+ 开斋节（4月）：大促黄金期，备货需提前 60 天；<br>独立日 8/17；圣诞节非主流；<span class="tag-g">机会</span>节庆营销 ROI 较平日高 180%。</p>'
-      + '    </div>'
-      + '  </div>'
-      + '</div>'
-      + '<div class="cn2-ai-strategy">'
-      + '  <h3><span style="background:rgba(255,255,255,.18);padding:2px 8px;border-radius:6px;font-size:11px;margin-right:4px">9</span>AI 入场策略建议</h3>'
-      + '  <div style="font-size:13px;color:#cbd5e1;line-height:1.7;margin-top:4px">基于宏观 + 平台 + 类目 + 合规 + 文化 9 大块分析，AI 综合给出三阶段入场路径：</div>'
-      + '  <div class="cn2-ai-strategy-grid">'
-      + '    <div class="cn2-ai-strategy-item"><b>阶段 1：试水（0-3 月）</b><p>① 选 Shopee/Lazada/TikTok Shop 印尼站，开通跨境店；② 优先 3-5 款清真认证美妆/家居/服饰 SKU，单价 5-20 美金；③ 内容侧用 Bahasa Indonesia 短视频，重点打斋月+开斋节场景。</p></div>'
-      + '    <div class="cn2-ai-strategy-item"><b>阶段 2：扩张（3-9 月）</b><p>① 复制爆款到 Tokopedia + Blibli 抢占货架电商；② 建立本地海外仓（雅加达/泗水）缩短时效；③ 申请 BPOM/SNI 认证拓展食品个护类目；④ 培养 5-10 位印尼本土达人，月投放预算 $2-5K。</p></div>'
-      + '    <div class="cn2-ai-strategy-item"><b>阶段 3：壁垒（9-18 月）</b><p>① 申请 Halal Indonesia 认证，进军穆斯林主流市场；② 自建品牌站 + 私域 WhatsApp 社群运营；③ 从印尼辐射马来/文莱/新加坡，回款周期控制在 30 天内。</p></div>'
-      + '  </div>'
-      + '</div>';
-    main.insertAdjacentHTML('beforeend', html);
-  }
-  function cn2CloseOnboarding() {
-    document.querySelectorAll('#demo-banner, .jay-fb, .jay-fb-float, .jay-fb-fab').forEach(function(e){ e.style.display='none'; });
-    document.querySelectorAll('button').forEach(function(b){
-      var t = (b.textContent || '').trim();
-      if (t === '开始使用' || t === '跳过' || t === '知道了' || t === '关闭') { try { b.click(); } catch (e) {} }
-    });
-  }
-  window.cn2HookInject = function() {
-    var main = document.getElementById('cn2-main');
-    if (!main || main._cn2Observed) return;
-    main._cn2Observed = true;
-    var tryInject = function() { cn2InjectExtras(); cn2CloseOnboarding(); };
-    tryInject();
-    new MutationObserver(function() { tryInject(); }).observe(main, { childList: true, subtree: true });
-  };
   window._ovSwitchPage = window.switchPage;
   window.switchPage = function(name, opts) {
     var r = window._ovSwitchPage ? window._ovSwitchPage.apply(this, arguments) : null;
-    if (name === 'countries') { setTimeout(function() { cn2HookInject(); }, 200); setTimeout(cn2InjectExtras, 800); setTimeout(cn2InjectExtras, 1800); }
+    // countries 已重做为参考版（无需 cn2 注入）
     return r;
   };
 
-  // ===== 总览页聚合表格（2026-08-21） =====
-  window.ovBurstData = [["1", "🏠Ninja CREAMi XL Deluxe 11合1冰淇淋机", "欧美 · TikTok Shop", "1699-1899RMB≈ ¥1699-1899 RMB", "冰淇淋机/制冷小家电", "HomeGadgets US", "2,920", "+173.6%", "爆发", "45天成熟", "2h前"], ["2", "⚽Poolhacker泳池双头喷泉支架", "欧美 · TikTok Shop", "$35-40≈ ¥252-288 RMB", "泳池配件/户外装备", "PoolFun Store", "140", "+88.0%", "爆发", "22天新品", "2h前"], ["3", "💄Tarte睫毛膏(Manaster Mascara)", "欧美 · Amazon", "$27-29≈ ¥194-209 RMB", "眼部化妆品/睫毛膏", "Tarte Cosmetics", "5,200", "+71.0%", "爆发", "90天成熟", "4h前"], ["4", "📦宠物冰垫", "欧美 · Amazon", "59-129RMB≈ ¥59-129 RMB", "宠物用品/夏季降温", "PetCool Life", "7,000", "+65.0%", "爆发", "18天新品", "2h前"], ["5", "📦汽车遮阳帘", "中东 · Noon", "39-109RMB≈ ¥39-109 RMB", "车载配件/遮阳防晒", "AutoShield ME", "6,000", "+55.0%", "爆发", "35天成熟", "6h前"], ["6", "💄Native椰子香草洗发护发套装", "欧美 · Amazon", "$10-15≈ ¥72-108 RMB", "洗发护发/沐浴护体", "Native Organics", "6,500", "+55.0%", "爆发", "120天成熟", "4h前"], ["7", "👗防晒冰丝袖套(UPF50+)", "东南亚 · Shopee", "9-22RMB≈ ¥9-22 RMB", "防晒用品/户外配饰", "SunGuard ID", "3,200", "+50.0%", "爆发", "28天新品", "2h前"], ["8", "💄Medicule胶原蛋白眼膜", "欧美 · TikTok Shop", "$25-37≈ ¥180-266 RMB", "面部护理/眼部护理", "Medicule Official", "8,500", "+45.2%", "爆发", "60天成熟", "2h前"], ["9", "📱太阳能充电板", "非洲 · AliExpress", "79-219RMB≈ ¥79-219 RMB", "充电设备/户外电源", "SolarTech CN", "2,000", "+45.0%", "爆发", "50天成熟", "8h前"], ["10", "📦宠物自动喂食器", "东南亚 · TikTok Shop", "109-219RMB≈ ¥109-219 RMB", "宠物智能设备/喂食器", "PetSmart Asia", "3,000", "+42.0%", "爆发", "40天成熟", "2h前"], ["11", "📱智能手表", "中东 · TikTok Shop", "109-289RMB≈ ¥109-289 RMB", "智能穿戴/手表", "WatchTech ME", "4,000", "+38.0%", "爆发", "75天成熟", "4h前"], ["12", "💄美白身体乳", "东南亚 · TikTok Shop", "45-89RMB≈ ¥45-89 RMB", "身体护理/美白产品", "GlowWhite TH", "12,000", "+35.0%", "爆发", "55天成熟", "2h前"], ["13", "🏠空气炸锅配件", "日韩 · Amazon", "39-89RMB≈ ¥39-89 RMB", "厨房用品/小家电配件", "KitchenPro KR", "4,500", "+35.0%", "爆发", "30天新品", "6h前"], ["14", "💄Sol de Janeiro Cheirosa 62香水", "欧美 · Amazon", "$32-68≈ ¥230-490 RMB", "香水香体/身体喷雾", "Sol de Janeiro", "3,800", "+35.0%", "上升", "200天衰退", "4h前"], ["15", "💄Mighty Patch 痘痘贴(36片装)", "欧美 · Amazon", "89-149RMB≈ ¥89-149 RMB", "面部护理/痘痘护理", "Mighty Patch US", "4,500", "+35.0%", "爆发", "150天成熟", "4h前"], ["16", "💄男士理发器", "欧美 · TikTok Shop", "79-179RMB≈ ¥79-179 RMB", "个人护理/电动理发", "BARBERX Official", "5,500", "+32.0%", "爆发", "85天成熟", "2h前"], ["17", "💄香水套装礼盒", "中东 · Noon", "149-369RMB≈ ¥149-369 RMB", "香水香体/礼盒套装", "Fragrance ME", "3,500", "+30.0%", "爆发", "95天成熟", "6h前"], ["18", "👗夏季冰丝T恤", "东南亚 · Shopee", "15-39RMB≈ ¥15-39 RMB", "男装/夏季T恤", "CoolWear ID", "15,000", "+28.0%", "爆发", "25天新品", "2h前"], ["19", "📱便携式投影仪", "欧美 · Amazon", "369-879RMB≈ ¥369-879 RMB", "影音设备/便携投影", "ProjectorPlus", "2,500", "+28.0%", "上升", "110天成熟", "4h前"], ["20", "💄COSRX Snail 96 Essence", "欧美 · Amazon", "89-149RMB≈ ¥89-149 RMB", "面部护理/精华液", "COSRX Global", "6,800", "+28.0%", "上升", "180天成熟", "4h前"], ["21", "👗阿拉伯风格连衣裙", "中东 · Noon", "109-259RMB≈ ¥109-259 RMB", "女装/连衣裙/民族风", "Arabesque AE", "2,800", "+25.0%", "上升", "65天成熟", "6h前"], ["22", "💄美白面膜", "日韩 · TikTok Shop", "59-109RMB≈ ¥59-109 RMB", "面部护理/面膜", "K-Beauty Lab", "8,000", "+25.0%", "上升", "100天成熟", "4h前"], ["23", "💄防晒喷雾SPF50", "东南亚 · Shopee", "29-69RMB≈ ¥29-69 RMB", "防晒用品/防晒喷雾", "SunShield TH", "8,500", "+22.0%", "上升", "45天成熟", "2h前"], ["24", "💄假睫毛套装", "拉美 · Shopee", "25-59RMB≈ ¥25-59 RMB", "眼部化妆品/假睫毛", "LashPro BR", "9,000", "+22.0%", "上升", "70天成熟", "4h前"], ["25", "💄ANLAN 8合1面部EMS美容仪", "东南亚 · Shopee", "$20-30≈ ¥144-216 RMB", "美容仪器/面部护理", "ANLAN Beauty", "175", "+22.0%", "上升", "20天新品", "2h前"], ["26", "🏠Stanley Quencher保温吸管杯40oz", "欧美 · Amazon", "189-329RMB≈ ¥189-329 RMB", "水壶杯具/保温杯", "Stanley US", "5,200", "+22.0%", "上升", "250天衰退", "4h前"], ["27", "💄medicule PDRN Pink Collagen Multi Balm", "欧美 · TikTok Shop", "119-149RMB≈ ¥119-149 RMB", "面部护理/多功能膏", "Medicule Official", "9,380", "+21.1%", "爆发", "35天成熟", "2h前"], ["28", "🍜即食燕窝", "东南亚 · Tokopedia", "59-149RMB≈ ¥59-149 RMB", "滋补品/燕窝", "BirdNest ID", "5,000", "+20.0%", "上升", "130天成熟", "8h前"], ["29", "🏠LED智能灯带", "欧美 · Amazon", "59-149RMB≈ ¥59-149 RMB", "照明装饰/智能灯带", "Govee US", "8,000", "+20.0%", "上升", "200天衰退", "4h前"], ["30", "👗韩系发饰套装", "日韩 · TikTok Shop", "25-59RMB≈ ¥25-59 RMB", "配饰头饰/发饰", "K-Hair KR", "6,000", "+20.0%", "上升", "55天成熟", "4h前"], ["31", "💄假发套装", "非洲 · AliExpress", "109-369RMB≈ ¥109-369 RMB", "假发接发/发品", "HairQueen CN", "3,500", "+20.0%", "上升", "90天成熟", "8h前"], ["32", "📱无线蓝牙耳机", "东南亚 · TikTok Shop", "59-109RMB≈ ¥59-109 RMB", "音频设备/蓝牙耳机", "SoundBase VN", "6,000", "+18.0%", "上升", "60天成熟", "2h前"], ["33", "⚽露营折叠椅", "欧美 · Temu", "109-219RMB≈ ¥109-219 RMB", "户外家具/折叠椅", "CampingPro", "4,000", "+18.0%", "上升", "140天成熟", "4h前"], ["34", "📱手机快充头", "南亚 · Amazon", "39-109RMB≈ ¥39-109 RMB", "充电配件/快充器", "FastCharge IN", "7,500", "+18.0%", "上升", "180天成熟", "6h前"], ["35", "📱蓝牙音箱", "拉美 · MercadoLibre", "79-179RMB≈ ¥79-179 RMB", "音频设备/蓝牙音箱", "AudioLat MX", "3,500", "+16.0%", "上升", "100天成熟", "8h前"], ["36", "🏠便携榨汁杯", "东南亚 · Lazada", "39-89RMB≈ ¥39-89 RMB", "厨房小电器/榨汁机", "BlendGo PH", "4,500", "+15.0%", "上升", "75天成熟", "6h前"], ["37", "⚽瑜伽裤套装", "欧美 · SHEIN", "79-189RMB≈ ¥79-189 RMB", "运动服饰/瑜伽服", "YogaFlex", "10,000", "+15.0%", "上升", "160天成熟", "4h前"], ["38", "💄Dazzle Me定妆喷雾", "东南亚 · Shopee", "$3-8≈ ¥22-58 RMB", "化妆品/定妆喷雾", "DazzleBeauty VN", "12,000", "+15.0%", "上升", "200天衰退", "2h前"], ["39", "🏠陶瓷花盆Bat Trang装饰套装", "东南亚 · Shopee", "$5-10≈ ¥36-72 RMB", "家居装饰/花盆花架", "Ceramic VN", "44,000", "+12.5%", "上升", "220天衰退", "2h前"], ["40", "🏠SEESE Cordless Pressure Washer", "欧美 · TikTok Shop", "189-259RMB≈ ¥189-259 RMB", "清洁工具/高压水枪", "SEESE US", "3,480", "+5.3%", "爆发", "42天成熟", "2h前"]];
-  window.ovShopData = [["Medicube Official", "TikTok Shop", "欧美", "美妆个护", "US$ 1,630万", "+35.6%", "95", "+52.0%", "58万", "对标头部", "关注", "1h"], ["Govee US", "Amazon", "欧美", "家居家装", "US$ 580万", "+7.6%", "340", "+18.0%", "21万", "对标头部", "正常", "1h"], ["DealsForYouDays(SEESE品牌店)", "TikTok Shop", "欧美", "家居日用", "US$ 507万", "+52.3%", "210", "+100.0%", "19.5万", "对标头部", "正常", "2h"], ["Xiaomi Official", "Lazada", "东南亚", "3C数码", "US$ 420万", "+5.8%", "520", "+12.0%", "32万", "头部对标", "正常", "3h"], ["EcoFlow", "Amazon", "欧美", "3C数码", "US$ 420万", "+11.2%", "86", "+22.0%", "14.5万", "对标头部", "正常", "2h"], ["MS Glow", "TikTok Shop", "东南亚", "美妆个护", "US$ 350万", "+12.1%", "189", "+22.0%", "15.6万", "对标头部", "正常", "1h"], ["CIDER", "SHEIN", "欧美", "时尚服饰", "US$ 320万", "+6.1%", "680", "+12.0%", "18.5万", "低价竞品", "正常", "4h"], ["Toplux Nutrition Official", "TikTok Shop", "欧美", "保健品", "US$ 291万", "-3.2%", "78", "-7.5%", "8.5万", "潜在对手", "正常", "4h"], ["Somethingspeaking", "TikTok Shop", "东南亚", "美妆个护", "US$ 280万", "+8.2%", "156", "+15.0%", "4.3万", "对标头部", "正常", "2h"], ["Bissell", "Amazon", "欧美", "家居家电", "US$ 280万", "+2.1%", "195", "+8.0%", "12万", "头部对标", "正常", "6h"], ["COSME Kitchen", "TikTok Shop", "日韩", "美妆个护", "US$ 220万", "+10.5%", "175", "+20.0%", "9.8万", "对标头部", "正常", "2h"], ["Carrefour UAE", "Noon", "中东", "日用百货", "US$ 200万", "+4.2%", "1200", "+10.0%", "9.5万", "头部对标", "正常", "8h"], ["Eiger Official", "Shopee", "东南亚", "户外运动", "US$ 180万", "+3.5%", "230", "+8.0%", "8.8万", "头部对标", "正常", "4h"], ["TechZone MX", "MercadoLibre", "拉美", "3C数码", "US$ 180万", "+5.2%", "340", "+10.0%", "6.5万", "潜在对手", "正常", "7h"], ["BARBERX", "TikTok Shop", "欧美", "美妆个护", "US$ 150万", "+22.0%", "67", "+35.0%", "5.6万", "潜在对手", "关注", "3h"], ["Kopi Kenangan", "Tokopedia", "东南亚", "食品饮料", "US$ 120万", "+9.0%", "45", "+18.0%", "7.2万", "潜在对手", "正常", "5h"], ["Kitchen Korea", "TikTok Shop", "日韩", "家居厨房", "US$ 120万", "+18.3%", "230", "+30.0%", "5.2万", "潜在对手", "关注", "3h"], ["Dazzle Me Official", "Shopee", "东南亚", "美妆个护", "US$ 120万", "+11.2%", "145", "+18.5%", "6.8万", "低价竞品", "关注", "2h"], ["Mamaway", "Shopee", "东南亚", "母婴用品", "US$ 95万", "-2.3%", "98", "+6.0%", "3.5万", "潜在对手", "关注", "6h"], ["Beauty Store BR", "Shopee", "拉美", "美妆个护", "US$ 95万", "+8.7%", "210", "+15.0%", "4.2万", "低价竞品", "正常", "5h"], ["FastCharge Tech", "Amazon", "南亚", "3C数码", "US$ 95万", "+9.6%", "150", "+15.0%", "3.5万", "低价竞品", "关注", "6h"], ["GlamAR Beauty", "Noon", "中东", "美妆个护", "US$ 85万", "+15.3%", "112", "+25.0%", "2.8万", "低价竞品", "正常", "3h"], ["Hair Pin Studio", "TikTok Shop", "日韩", "饰品配件", "US$ 85万", "+7.8%", "320", "+15.0%", "3.8万", "低价竞品", "正常", "5h"], ["Rejuran Official MY", "Shopee", "东南亚", "美妆个护", "US$ 85万", "+45.2%", "38", "+600.0%", "4.2万", "对标头部", "关注", "1h"], ["Moda Latina", "Shopee", "拉美", "时尚服饰", "US$ 75万", "-1.8%", "450", "+8.0%", "2.8万", "低价竞品", "关注", "4h"], ["AutoPro Accessories", "TikTok Shop", "中东", "汽车配件", "US$ 65万", "+28.5%", "78", "+45.0%", "1.8万", "潜在对手", "关注", "2h"], ["MensStyle India", "Amazon", "南亚", "时尚服饰", "US$ 65万", "+3.2%", "280", "+8.0%", "2.2万", "潜在对手", "正常", "8h"], ["AfroHair Queen", "AliExpress", "非洲", "美妆个护", "US$ 55万", "+10.2%", "190", "+18.0%", "2.8万", "潜在对手", "正常", "4h"], ["Pet Paradise", "TikTok Shop", "东南亚", "宠物用品", "US$ 48万", "+32.1%", "120", "+55.0%", "2.5万", "潜在对手", "关注", "1h"], ["SolarTech Africa", "AliExpress", "非洲", "家居家电", "US$ 40万", "+25.8%", "65", "+42.0%", "1.2万", "潜在对手", "关注", "3h"], ["BIBIGO(菲律宾)", "Shopee", "东南亚", "食品饮料", "US$ 35万", "+38.0%", "56", "+454.0%", "1.8万", "潜在对手", "关注", "3h"], ["Poolhacker", "TikTok Shop", "欧美", "户外运动", "US$ 14万", "+88.5%", "22", "+120.0%", "8500", "潜在对手", "关注", "2h"]];
-  var ovBurstPage = 1, ovShopPage = 1;
-  function ovPageBtns(cur, total, fn) {
-    var html = '';
-    var start = Math.max(1, cur - 2), end = Math.min(total, cur + 2);
-    if (cur > 1) html += '<button class="ov-page-btn" data-p="' + (cur - 1) + '">‹</button>';
-    for (var i = start; i <= end; i++) html += '<button class="ov-page-btn' + (i === cur ? ' active' : '') + '" data-p="' + i + '">' + i + '</button>';
-    if (cur < total) html += '<button class="ov-page-btn" data-p="' + (cur + 1) + '">›</button>';
-    return html;
-  }
-  function ovRenderBurst() {
-    var tb = document.getElementById('ov-burst-tbody'), pg = document.getElementById('ov-burst-pager');
-    if (!tb || !window.ovBurstData) return;
-    var data = window.ovBurstData, size = 8, total = Math.ceil(data.length / size);
-    if (ovBurstPage > total) ovBurstPage = total;
-    var s = (ovBurstPage - 1) * size, e = Math.min(s + size, data.length), html = '';
-    for (var i = s; i < e; i++) {
-      var r = data[i];
-      var sigCls = r[8] === '爆发' ? 'sig-burst' : (r[8] === '上升' ? 'sig-rise' : 'sig-stable');
-      var upCls = (r[7] || '').indexOf('+') === 0 ? ' up' : '';
-      html += '<tr>'
-        + '<td class="num">' + (i + 1) + '</td>'
-        + '<td>' + r[1] + '</td>'
-        + '<td>' + r[2] + '</td>'
-        + '<td>' + r[3] + '</td>'
-        + '<td>' + r[4] + '</td>'
-        + '<td>' + r[5] + '</td>'
-        + '<td class="num">' + r[6] + '</td>'
-        + '<td class="num' + upCls + '">' + r[7] + '</td>'
-        + '<td><span class="sig ' + sigCls + '">' + r[8] + '</span></td>'
-        + '<td>' + r[9] + '</td>'
-        + '<td>' + r[10] + '</td>'
-        + '</tr>';
-    }
-    tb.innerHTML = html;
-    pg.innerHTML = '<span>共 ' + data.length + ' 条 · 第 ' + ovBurstPage + '/' + total + ' 页</span><div class="ov-page-btns">' + ovPageBtns(ovBurstPage, total, 'burst') + '</div>';
-    pg.querySelectorAll('.ov-page-btn').forEach(function(b) { b.onclick = function() { ovBurstPage = parseInt(b.dataset.p); ovRenderBurst(); }; });
-  }
-  function ovRenderShop() {
-    var tb = document.getElementById('ov-shop-tbody'), pg = document.getElementById('ov-shop-pager');
-    if (!tb || !window.ovShopData) return;
-    var data = window.ovShopData, size = 8, total = Math.ceil(data.length / size);
-    if (ovShopPage > total) ovShopPage = total;
-    var s = (ovShopPage - 1) * size, e = Math.min(s + size, data.length), html = '';
-    for (var i = s; i < e; i++) {
-      var r = data[i];
-      var wCls = (r[5] || '').indexOf('+') === 0 ? ' up' : ((r[5] || '').indexOf('-') === 0 ? ' down' : '');
-      var gCls = (r[7] || '').indexOf('+') === 0 ? ' up' : '';
-      var stCls = r[10] === '关注' ? 'st-follow' : 'st-normal';
-      html += '<tr>'
-        + '<td><b>' + r[0] + '</b></td>'
-        + '<td>' + r[1] + '</td>'
-        + '<td>' + r[2] + '</td>'
-        + '<td>' + r[3] + '</td>'
-        + '<td class="num">' + r[4] + '</td>'
-        + '<td class="num' + wCls + '">' + r[5] + '</td>'
-        + '<td class="num">' + r[6] + '</td>'
-        + '<td class="num' + gCls + '">' + r[7] + '</td>'
-        + '<td class="num">' + r[8] + '</td>'
-        + '<td>' + r[9] + '</td>'
-        + '<td><span class="' + stCls + '">' + r[10] + '</span></td>'
-        + '<td>' + r[11] + '</td>'
-        + '</tr>';
-    }
-    tb.innerHTML = html;
-    pg.innerHTML = '<span>共 ' + data.length + ' 条 · 第 ' + ovShopPage + '/' + total + ' 页</span><div class="ov-page-btns">' + ovPageBtns(ovShopPage, total, 'shop') + '</div>';
-    pg.querySelectorAll('.ov-page-btn').forEach(function(b) { b.onclick = function() { ovShopPage = parseInt(b.dataset.p); ovRenderShop(); }; });
-  }
-  function ovTablesInit() { ovRenderBurst(); ovRenderShop(); }
-  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', ovTablesInit); } else { ovTablesInit(); }
 
   // ===== EchoTik 导航增强（2026-08-21） =====
   window.navGo = function(ev, page, el) {
