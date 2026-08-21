@@ -3442,7 +3442,7 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
         <label>邀请码（非必填）</label>
         <input type="text" class="form-input" placeholder="请输入邀请码">
       </div>
-      <button class="login-submit" onclick="doLogin()">登录 / 注册</button>
+      <button class="login-submit" onclick="initDemoAuth()">登录 / 注册</button>
       <p class="login-footer-link">
         <a href="#">邮箱密码登录</a> · 登录即同意 <a href="#">服务条款</a>
       </p>
@@ -12020,7 +12020,7 @@ async function checkJaySession() {
     jayUser = r.data.session.user;
     await loadJayProfile();
     onAuthSuccess();
-  } else { showLoginScreen(); }
+  } else { initDemoAuth(); }
 }
 
 async function loadJayProfile() {
