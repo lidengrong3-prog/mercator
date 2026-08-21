@@ -1809,7 +1809,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .bp-item .bp-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle}
 .bp-empty{padding:24px;text-align:center;color:var(--muted);font-size:12px}
 /* 新手引导浮层 */
-#jay-onboard{position:fixed;inset:0;background:rgba(15,28,52,.55);z-index:2000;display:flex;align-items:center;justify-content:center}
+#jay-onboard{display:none !important} /* removed */ #jay-onboard{position:fixed;inset:0;background:rgba(15,28,52,.55);z-index:2000;display:flex;align-items:center;justify-content:center}
 .jo-card{width:min(560px,92vw);max-height:86vh;overflow:auto;background:#fff;border-radius:16px;padding:26px 28px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .jo-card h2{margin:0 0 4px;font-size:22px}
 .jo-card .jo-sub{color:var(--muted);font-size:13px;margin-bottom:16px}
@@ -1863,7 +1863,7 @@ nav .nav-group-label+.nav-item{margin-top:0}
 .pr-signal .hot{color:#e53935}
 
 /* === Phase0: 演示数据横幅 + 报告问卷弹窗 + 首页推荐 chip === */
-#demo-banner{display:flex;align-items:center;justify-content:center;gap:14px;background:#fff7e6;border-bottom:1px solid #f3d9a6;color:#8a6d3b;font-size:12.5px;padding:7px 40px 7px 16px;position:relative}
+#demo-banner{display:none !important} /* removed v4 */
 #demo-banner b{color:#a8761b}
 #demo-banner-close{position:absolute;right:12px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#b8924a;font-size:18px;cursor:pointer;line-height:1}
 #demo-banner-close:hover{color:#8a6d3b}
@@ -3369,6 +3369,26 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
     .platform-grid { grid-template-columns: 1fr; }
   }
 
+
+
+/* ===== 美国平台档案增强（2026-08-21） ===== */
+.platform-linkage{display:inline-flex;align-items:center;gap:8px;background:#eff6ff;border:1px solid #dbe7f5;border-radius:20px;padding:6px 14px;font-size:12px;color:#1e3a5f;font-weight:600;margin-left:12px;vertical-align:middle}
+.platform-linkage .flag{font-size:14px}
+.platform-desc{font-size:12px;color:#4b5563;line-height:1.7;margin:10px 0 0}
+.platform-cats{font-size:11.5px;color:#1e3a5f;background:#eff6ff;padding:6px 10px;border-radius:8px;margin:8px 0;line-height:1.6}
+.platform-cats b{font-weight:600}
+.platform-cats span{color:#6b7280}
+.platform-meta{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 0;font-size:11.5px}
+.platform-meta-item{background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:6px 12px}
+.platform-meta-item b{display:block;color:#1e3a5f;font-size:13px;margin-top:2px}
+.platform-meta-item span{color:#6b7280;font-size:11px}
+.platform-tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0}
+.platform-tag{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
+.platform-tag.pro{background:#f0fdf4;color:#16a34a}
+.platform-tag.con{background:#fef2f2;color:#dc2626}
+.platform-advice{font-size:11.5px;color:#1e3a5f;background:#eff6ff;border:1px solid #dbe7f5;border-radius:8px;padding:8px 12px;margin-top:12px;line-height:1.7}
+.platform-advice b{color:#1e3a5f}
+.platform-card{display:flex;flex-direction:column}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -3442,74 +3462,81 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
     <nav class="sidebar-nav">
       <!-- 市场机会 -->
       <div class="nav-group">
-        <div class="nav-item active" onclick="switchPage('market', this)">
+        <div class="nav-item active" data-page="overview" onclick="switchPage('overview')">
           <span class="nav-icon">🔍</span>
           <span class="nav-text">市场机会</span>
         </div>
       </div>
       <!-- 国家市场 -->
       <div class="nav-group expanded">
-        <div class="nav-item" onclick="toggleSubmenu(this, 'country')">
+        <div class="nav-item" data-page="countries" onclick="switchPage('countries')">
           <span class="nav-icon">🇺🇸</span>
           <span class="nav-text">国家市场</span>
           <span class="nav-arrow">▸</span>
         </div>
         <div class="nav-submenu">
-          <div class="nav-subitem active" onclick="switchSubPage('country-overview', this)">
-            <span class="sub-dot"></span> 市场概览
-          </div>
-          <div class="nav-subitem" onclick="switchSubPage('country-category', this)">
-            <span class="sub-dot"></span> 类目机会
-          </div>
-          <div class="nav-subitem" onclick="switchSubPage('country-platform', this)">
-            <span class="sub-dot"></span> 平台分布
-          </div>
-          <div class="nav-subitem" onclick="switchSubPage('country-policy', this)">
-            <span class="sub-dot"></span> 政策法规
-          </div>
+          <div class="nav-subitem active" data-sub="countries" onclick="switchSubPage('countries',this)"><span class="sub-dot"></span> 市场概览</div>
+          <div class="nav-subitem" data-sub="products" onclick="switchSubPage('products',this)"><span class="sub-dot"></span> 类目机会</div>
+          <div class="nav-subitem" data-sub="platforms" onclick="switchSubPage('platforms',this)"><span class="sub-dot"></span> 平台分布</div>
+          <div class="nav-subitem" data-sub="policies" onclick="switchSubPage('policies',this)"><span class="sub-dot"></span> 政策法规</div>
         </div>
       </div>
       <!-- 平台档案 -->
       <div class="nav-group">
-        <div class="nav-item" onclick="toggleSubmenu(this, 'platform')">
+        <div class="nav-item" data-page="platforms" onclick="switchPage('platforms')">
           <span class="nav-icon">🛒</span>
           <span class="nav-text">平台档案</span>
           <span class="nav-arrow">▸</span>
         </div>
         <div class="nav-submenu">
-          <div class="nav-subitem" onclick="switchSubPage('pf-amazon', this)">
-            <span class="sub-dot"></span> Amazon
+          <div class="nav-subitem" data-sub="platforms" onclick="switchSubPage('platforms',this)"><span class="sub-dot"></span> Amazon
             <div class="nav-submenu">
-              <div class="nav-subitem" onclick="switchSubPage('pf-amazon-overview', this)"><span class="sub-dot"></span> 平台概览</div>
-              <div class="nav-subitem" onclick="switchSubPage('pf-amazon-rules', this)"><span class="sub-dot"></span> 平台规则</div>
-              <div class="nav-subitem" onclick="switchSubPage('pf-amazon-hot', this)"><span class="sub-dot"></span> 爆款店铺</div>
+              <div class="nav-subitem" data-sub="platforms" onclick="switchSubPage('platforms',this)"><span class="sub-dot"></span> 平台概览</div>
+              <div class="nav-subitem" data-sub="rules" onclick="switchSubPage('rules',this)"><span class="sub-dot"></span> 平台规则</div>
+              <div class="nav-subitem" data-sub="shops" onclick="switchSubPage('shops',this)"><span class="sub-dot"></span> 爆款店铺</div>
             </div>
           </div>
-          <div class="nav-subitem" onclick="switchSubPage('pf-tiktok', this)"><span class="sub-dot"></span> TikTok Shop</div>
-          <div class="nav-subitem" onclick="switchSubPage('pf-ae', this)"><span class="sub-dot"></span> 速卖通</div>
-          <div class="nav-subitem" onclick="switchSubPage('pf-ebay', this)"><span class="sub-dot"></span> eBay</div>
-          <div class="nav-subitem" onclick="switchSubPage('pf-more', this)"><span class="sub-dot"></span> 更多平台</div>
+          <div class="nav-subitem" data-sub="platforms" onclick="switchSubPage('platforms',this)"><span class="sub-dot"></span> TikTok Shop</div>
+          <div class="nav-subitem" data-sub="platforms" onclick="switchSubPage('platforms',this)"><span class="sub-dot"></span> 速卖通</div>
+          <div class="nav-subitem" data-sub="platforms" onclick="switchSubPage('platforms',this)"><span class="sub-dot"></span> eBay</div>
+          <div class="nav-subitem" data-sub="platforms" onclick="switchSubPage('platforms',this)"><span class="sub-dot"></span> 更多平台</div>
         </div>
       </div>
       <!-- 预警中心 -->
       <div class="nav-group">
-        <div class="nav-item" onclick="toggleSubmenu(this, 'alert')">
+        <div class="nav-item" data-page="alerts" onclick="switchPage('alerts')">
           <span class="nav-icon">⚠️</span>
           <span class="nav-text">预警中心</span>
           <span class="nav-badge">3</span>
         </div>
         <div class="nav-submenu">
-          <div class="nav-subitem" onclick="switchSubPage('alert-urgent', this)"><span class="sub-dot"></span> 紧急处理</div>
-          <div class="nav-subitem" onclick="switchSubPage('alert-follow', this)"><span class="sub-dot"></span> 关注跟进</div>
-          <div class="nav-subitem" onclick="switchSubPage('alert-archived', this)"><span class="sub-dot"></span> 已归档</div>
+          <div class="nav-subitem" data-sub="alerts" onclick="switchSubPage('alerts',this)"><span class="sub-dot"></span> 紧急处理</div>
+          <div class="nav-subitem" data-sub="alerts" onclick="switchSubPage('alerts',this)"><span class="sub-dot"></span> 关注跟进</div>
+          <div class="nav-subitem" data-sub="alerts" onclick="switchSubPage('alerts',this)"><span class="sub-dot"></span> 已归档</div>
         </div>
       </div>
+      <!-- 更多入口（保留原应用功能） -->
+      <div class="nav-group">
+        <div class="nav-item" data-page="watchlist" onclick="switchPage('watchlist')"><span class="nav-icon">⭐</span><span class="nav-text">我的看板</span></div>
+        <div class="nav-item" data-page="pricing" onclick="switchPage('pricing')"><span class="nav-icon">💎</span><span class="nav-text">定价方案</span></div>
+        <div class="nav-item" data-page="settings" onclick="switchPage('settings')"><span class="nav-icon">⚙</span><span class="nav-text">设置与权限</span></div>
+      </div>
     </nav>
-    <div class="sidebar-footer">
+    <div class="sidebar-footer workspace" style="position:relative;cursor:pointer;" onclick="toggleUserMenu()">
       <div class="user-avatar">J</div>
-      <div class="user-info">
+      <div class="user-info" style="flex:1;">
         <div class="user-name">体验用户</div>
         <div class="user-role">免费版</div>
+      </div>
+      <div id="user-dropdown" style="display:none;position:absolute;bottom:70px;left:9px;right:9px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:6px 0;z-index:10;box-shadow:0 8px 24px rgba(26,35,50,.12)">
+        <div style="padding:10px 14px;border-bottom:1px solid #f0f0f0">
+          <div style="font-size:12px;color:#1f2937" class="dropdown-email">—</div>
+          <div style="font:10px 'DM Mono';color:#6b7280;margin-top:2px" class="dropdown-tier">免费版</div>
+        </div>
+        <div style="padding:6px 0">
+          <a href="#settings" onclick="switchPage('settings');return false" style="display:block;padding:8px 14px;color:#4b5563;text-decoration:none;font-size:12px;cursor:pointer">⚙ 账户设置</a>
+          <a onclick="jayLogout();return false" style="display:block;padding:8px 14px;color:#e07050;font-size:12px;cursor:pointer;text-decoration:none">↩ 退出登录</a>
+        </div>
       </div>
     </div>
   </aside>
@@ -3517,120 +3544,25 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
   <!-- 顶部栏 -->
   <header class="topbar">
     <nav class="topbar-nav">
-      <div class="topbar-item" onclick="topbarSwitch('tools', this)">
-        🧰 操盘手工具
-      </div>
-      <div class="topbar-item" onclick="topbarSwitch('ai', this)">
-        🤖 AI工具
-      </div>
-      <div class="topbar-item" onclick="topbarSwitch('api', this)">
-        🔌 API接口
-      </div>
-      <div class="topbar-item" onclick="topbarSwitch('resource', this)">
-        📚 资源中心
-      </div>
-      <div class="topbar-item report-btn" onclick="topbarSwitch('report', this)">
-        📄 生成报告
-      </div>
+      <div class="topbar-item" onclick="topbarSwitch('tools', this)">🧰 操盘手工具</div>
+      <div class="topbar-item" onclick="topbarSwitch('ai', this)">🤖 AI工具</div>
+      <div class="topbar-item" onclick="topbarSwitch('api', this)">🔌 API接口</div>
+      <div class="topbar-item" onclick="topbarSwitch('resource', this)">📚 资源中心</div>
+      <div class="topbar-item report-btn" onclick="topbarSwitch('report', this)">📄 生成报告</div>
     </nav>
     <div class="topbar-right">
-      <div class="topbar-search">
-        🔍 <input type="text" placeholder="搜索产品、类目、平台...">
-      </div>
+      <div class="topbar-search">🔍 <input type="text" placeholder="搜索产品、类目、平台..."></div>
       <div class="topbar-icon" title="我的收藏">📋</div>
-      <div class="topbar-icon" title="消息通知">
-        🔔 <span class="dot"></span>
-      </div>
+      <div class="topbar-icon" title="消息通知" onclick="jayToggleBell()">🔔 <span class="dot"></span></div>
       <div class="lang-switch">🌐 中文 ▾</div>
     </div>
   </header>
 
   <!-- 内容区 -->
-
-  <aside class="sidebar">
-  <div class="brand" title="JAY = 际安云（JAY Cloud）；观海 = 监测全球数据海洋。JAY观海意为「监测全球跨境市场的云端情报系统」，帮助中国产业带工厂低门槛洞察出海机会与风险。"><span class="brand-mark">J</span><div><strong>JAY观海</strong><small>全球电商情报</small></div></div>
-  <nav class="sidebar-nav">
-    <div class="nav-group">
-      <a class="nav-item active" href="#overview" data-page="overview" onclick="return navGo(event,'overview',this)"><span class="nav-icon">🔍</span><span class="nav-text">市场机会</span></a>
-      <a class="nav-item" href="#watchlist" data-page="watchlist" onclick="return navGo(event,'watchlist',this)"><span class="nav-icon">⭐</span><span class="nav-text">我的看板</span></a>
-    </div>
-    <div class="nav-group expanded" id="grp-country">
-      <div class="nav-item" data-page="countries" onclick="toggleSubmenu(this,'country')"><span class="nav-icon">🌍</span><span class="nav-text">国家市场</span><span class="nav-arrow">▸</span></div>
-      <div class="nav-submenu">
-        <div class="nav-subitem" data-sub="countries" onclick="switchSubPage('country-overview',this)"><span class="sub-dot"></span>市场概览</div>
-        <div class="nav-subitem" data-sub="products" onclick="switchSubPage('country-category',this)"><span class="sub-dot"></span>类目机会<b class="nav-badge-mini" id="nav-pr-count">40</b></div>
-        <div class="nav-subitem" data-sub="platforms" onclick="switchSubPage('country-platform',this)"><span class="sub-dot"></span>平台分布</div>
-        <div class="nav-subitem" data-sub="policies" onclick="switchSubPage('country-policy',this)"><span class="sub-dot"></span>政策法规<b class="nav-badge-mini" id="nav-pl-count">24</b></div>
-      </div>
-    </div>
-    <div class="nav-group" id="grp-platform">
-      <div class="nav-item" data-page="platforms" onclick="toggleSubmenu(this,'platform')"><span class="nav-icon">🛒</span><span class="nav-text">平台档案</span><span class="nav-arrow">▸</span></div>
-      <div class="nav-submenu">
-        <div class="nav-subitem has-third"><span class="sub-dot"></span>Amazon<span class="nav-arrow sub">▸</span>
-          <div class="nav-submenu third">
-            <div class="nav-subitem" data-sub="platforms" data-pf="Amazon" onclick="switchSubPage('pf-amazon-overview',this)"><span class="sub-dot"></span>平台概览</div>
-            <div class="nav-subitem" data-sub="rules" data-rl="Amazon" onclick="switchSubPage('pf-amazon-rules',this)"><span class="sub-dot"></span>平台规则<b class="nav-badge-mini" id="nav-rl-count">135</b></div>
-            <div class="nav-subitem" data-sub="shops" data-sh="Amazon" onclick="switchSubPage('pf-amazon-hot',this)"><span class="sub-dot"></span>爆款店铺</div>
-          </div>
-        </div>
-        <div class="nav-subitem" data-sub="platforms" data-pf="TikTok Shop" onclick="switchSubPage('pf-tiktok',this)"><span class="sub-dot"></span>TikTok Shop</div>
-        <div class="nav-subitem" data-sub="platforms" data-pf="AliExpress" onclick="switchSubPage('pf-ae',this)"><span class="sub-dot"></span>速卖通</div>
-        <div class="nav-subitem" data-sub="platforms" data-pf="eBay" onclick="switchSubPage('pf-ebay',this)"><span class="sub-dot"></span>eBay</div>
-        <div class="nav-subitem" data-sub="platforms" data-pf="" onclick="switchSubPage('pf-more',this)"><span class="sub-dot"></span>更多平台</div>
-      </div>
-    </div>
-    <div class="nav-group" id="grp-alert">
-      <div class="nav-item" data-page="alerts" onclick="toggleSubmenu(this,'alert')"><span class="nav-icon">⚠️</span><span class="nav-text">预警中心</span><b class="danger" id="nav-al-count">14</b><span class="nav-arrow">▸</span></div>
-      <div class="nav-submenu">
-        <div class="nav-subitem" data-sub="alerts" data-al="high" onclick="switchSubPage('alert-urgent',this)"><span class="sub-dot"></span>紧急处理</div>
-        <div class="nav-subitem" data-sub="alerts" data-al="mid" onclick="switchSubPage('alert-follow',this)"><span class="sub-dot"></span>关注跟进</div>
-        <div class="nav-subitem" data-sub="alerts" data-al="all" onclick="switchSubPage('alert-archived',this)"><span class="sub-dot"></span>已归档</div>
-      </div>
-    </div>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="sidebar-links">
-      <a class="nav-item" href="#pricing" data-page="pricing" onclick="return navGo(event,'pricing',this)"><span class="nav-icon">💎</span><span class="nav-text">定价方案</span></a>
-      <a class="nav-item" href="#settings" data-page="settings" onclick="return navGo(event,'settings',this)"><span class="nav-icon">⚙</span><span class="nav-text">设置与权限</span></a>
-    </div>
-    <div class="workspace" style="position:relative;cursor:pointer" onclick="toggleUserMenu()">
-      <span class="avatar">U</span>
-      <div style="flex:1;min-width:0">
-        <strong class="ws-name" style="font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">未登录</strong>
-        <small class="ws-tier" style="font:9px 'DM Mono';color:#1e3a5f;background:#eff6ff;padding:1px 5px;border-radius:4px;display:none"></small>
-      </div>
-      <span style="color:#9ca3af">⌄</span>
-    </div>
-    <div id="user-dropdown" style="display:none;position:absolute;bottom:70px;left:9px;right:9px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:6px 0;z-index:10;box-shadow:0 8px 24px rgba(26,35,50,.12)">
-      <div style="padding:10px 14px;border-bottom:1px solid #f0f0f0">
-        <div style="font-size:12px;color:#1f2937" class="dropdown-email">—</div>
-        <div style="font:10px 'DM Mono';color:#6b7280;margin-top:2px" class="dropdown-tier">免费版</div>
-      </div>
-      <div style="padding:6px 0">
-        <a href="#settings" onclick="switchPage('settings');toggleUserMenu()" style="display:block;padding:8px 14px;color:#4b5563;text-decoration:none;font-size:12px;cursor:pointer">⚙ 账户设置</a>
-        <a onclick="jayLogout()" style="display:block;padding:8px 14px;color:#e07050;font-size:12px;cursor:pointer;text-decoration:none">↩ 退出登录</a>
-      </div>
-    </div>
-  </div>
-</aside>
   <main>
     <button id="jay-hamburger" class="jay-hamburger" aria-label="打开菜单" onclick="toggleSidebar()">☰</button>
     <div id="jay-overlay" class="jay-overlay" onclick="closeSidebar()"></div>
-    <div id="demo-banner" role="note">
-      <span>⚠ 演示环境：本系统全部数据为<b>示意性参考</b>，非真实业务数据，仅用于功能演示（数据截至 2026-07）。</span>
-      <button id="demo-banner-close" aria-label="关闭" onclick="jayCloseDemoBanner()">×</button>
-    </div>
-    <div class="ocean-top" aria-hidden="true"><svg viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,64 C240,120 480,8 720,64 C960,120 1200,8 1440,64 L1440,120 L0,120 Z" fill="#d6e4f5" opacity="0.55"/><path d="M0,86 C240,132 480,36 720,86 C960,132 1200,36 1440,86 L1440,120 L0,120 Z" fill="#bcd3ef" opacity="0.45"/></svg></div>
-    <header>
-  <nav class="topbar-nav">
-    <div class="topbar-item" data-page="tools" onclick="topbarSwitch('tools',this)">🧰 操盘手工具</div>
-    <div class="topbar-item" data-page="myfit" onclick="topbarSwitch('myfit',this)">🤖 AI工具</div>
-    <div class="topbar-item" data-page="data" onclick="topbarSwitch('data',this)">🔌 API接口</div>
-    <div class="topbar-item" data-page="content" onclick="topbarSwitch('content',this)">📚 资源中心</div>
-    <div class="topbar-item report-btn" data-page="report" onclick="topbarSwitch('report',this)">📄 生成报告</div>
-  </nav>
-  <div class="header-tools"><div class="search"><span>⌕</span><input id="global-search" placeholder="搜索品类、国家、平台、政策…" /><kbd>⌘ K</kbd><button class="add-to-report-btn" id="add-to-report-btn" onclick="rpAddCurrentToPool()">✦ 加入报告素材</button><div id="search-history"></div></div><button class="icon-btn" id="bell" onclick="jayToggleBell()">🔔<i></i></button><div id="bell-panel"></div><button class="export" id="export">导出报告 <span>↓</span></button></div>
-</header>
+    <button id="bell" style="display:none">🔔</button><div id="bell-panel"></div><button id="export" style="display:none">导出报告 <span>↓</span></button>
 <div class="page-head">
   <p class="eyebrow" id="breadcrumb">GLOBAL / OVERVIEW</p>
   <h1 id="page-title">早上好，陆安然</h1>
@@ -3678,17 +3610,17 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
 
       <!-- 快捷入口 -->
       <div class="quick-cards">
-        <div class="quick-card" onclick="switchPage('country', document.querySelectorAll('.nav-item')[1])">
+        <div class="quick-card" onclick="switchPage('countries')">
           <div class="qc-icon blue">📊</div>
           <div class="qc-title">美国市场概览</div>
           <div class="qc-desc">宏观经济、电商规模、消费者画像</div>
         </div>
-        <div class="quick-card" onclick="switchPage('platform', document.querySelectorAll('.nav-item')[2])">
+        <div class="quick-card" onclick="switchPage('platforms')">
           <div class="qc-icon green">🛒</div>
           <div class="qc-title">平台对比分析</div>
           <div class="qc-desc">Amazon/TikTok/速卖通佣金入驻对比</div>
         </div>
-        <div class="quick-card" onclick="switchPage('alert', document.querySelectorAll('.nav-item')[3])">
+        <div class="quick-card" onclick="switchPage('alerts')">
           <div class="qc-icon orange">⚠️</div>
           <div class="qc-title">政策风险预警</div>
           <div class="qc-desc">关税、认证、平台规则实时变动</div>
@@ -4023,7 +3955,7 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
           </div>
         </div>
         <div style="text-align:center;margin-top:12px;">
-          <a style="font-size:13px;color:#1e3a5f;cursor:pointer;" onclick="switchPage('alert', document.querySelectorAll('.nav-item')[3])">查看全部预警 →</a>
+          <a style="font-size:13px;color:#1e3a5f;cursor:pointer;" onclick="switchPage('alerts')">查看全部预警 →</a>
         </div>
       </div>
     </div>
@@ -4268,7 +4200,7 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
     <section id="platforms" class="page">
 
       <div class="page-header">
-        <h2>🛒 美国市场 · 平台档案</h2>
+        <h2>🛒 美国市场 · 平台档案 <span class="platform-linkage"><span class="flag">🇺🇸</span>当前市场：美国（平台已联动）</span></h2>
       </div>
       <p style="color:#6b7280;margin-bottom:20px;">深度了解各平台规则、费用与运营要点</p>
       <div class="platform-grid">
@@ -4299,6 +4231,23 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
             </div>
           </div>
           <div class="platform-bar"><div class="platform-bar-fill" style="width:38.2%;background:#ff9900;"></div></div>
+          <div class="platform-desc">美国电商绝对霸主：流量最大、Prime 会员生态最强，货架+广告双驱动。适合有供应链优势、愿意深耕品牌化的工厂/卖家。</div>
+          <div class="platform-cats"><b>主营品类：</b><span>3C数码 · 家居家电 · 服饰鞋包 · 图书 · 美妆个护</span></div>
+          <div class="platform-meta">
+            <div class="platform-meta-item"><span>美国 GMV</span><b>$7,000亿+</b></div>
+            <div class="platform-meta-item"><span>月活用户</span><b>2.5亿</b></div>
+            <div class="platform-meta-item"><span>Prime 会员</span><b>2亿+</b></div>
+            <div class="platform-meta-item"><span>费用结构</span><b>佣金8-15%+FBA+广告</b></div>
+          </div>
+          <div class="platform-tags">
+            <span class="platform-tag pro">✓ 流量绝对第一</span>
+            <span class="platform-tag pro">✓ Prime 转化率高</span>
+            <span class="platform-tag pro">✓ FBA 履约强</span>
+            <span class="platform-tag con">✗ 竞争白热化</span>
+            <span class="platform-tag con">✗ 费用高企</span>
+            <span class="platform-tag con">✗ 品牌化要求高</span>
+          </div>
+          <div class="platform-advice"><b>🎯 入驻建议：</b>新品选细分长尾品类避开红海大词；备货前置 60 天；广告预算建议首月 $1-3K 测款，聚焦 3-5 个核心 SKU 冲排名。</div>
         </div>
         <div class="platform-card ae">
           <div class="platform-header">
@@ -4327,6 +4276,23 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
             </div>
           </div>
           <div class="platform-bar"><div class="platform-bar-fill" style="width:2.1%;background:#ff4747;"></div></div>
+          <div class="platform-desc">中国跨境电商老牌平台，全托管/半托管模式省运营；美国市场份额不高，但适合低价小件试水。</div>
+          <div class="platform-cats"><b>主营品类：</b><span>3C配件 · 服饰 · 家居日用 · 美妆 · 汽配小件</span></div>
+          <div class="platform-meta">
+            <div class="platform-meta-item"><span>全球 GMV</span><b>$2,000亿</b></div>
+            <div class="platform-meta-item"><span>美国月活</span><b>1.2亿</b></div>
+            <div class="platform-meta-item"><span>美国份额</span><b>2.1%</b></div>
+            <div class="platform-meta-item"><span>费用结构</span><b>佣金5-8%+交易服务费</b></div>
+          </div>
+          <div class="platform-tags">
+            <span class="platform-tag pro">✓ 中国卖家友好</span>
+            <span class="platform-tag pro">✓ 全托管省心</span>
+            <span class="platform-tag pro">✓ 低价带起量快</span>
+            <span class="platform-tag con">✗ 美国份额低</span>
+            <span class="platform-tag con">✗ 物流时效长</span>
+            <span class="platform-tag con">✗ 品牌溢价弱</span>
+          </div>
+          <div class="platform-advice"><b>🎯 入驻建议：</b>适合单价 $5-25 小件（3C配件/家居小件）试水；优先半托管自运营提毛利；做全托管可一次性铺量测爆款。</div>
         </div>
         <div class="platform-card tiktok">
           <div class="platform-header">
@@ -4355,6 +4321,23 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
             </div>
           </div>
           <div class="platform-bar"><div class="platform-bar-fill" style="width:5.6%;background:#000;"></div></div>
+          <div class="platform-desc">美国增速最快的电商平台：内容电商（短视频+直播）驱动，2025 美区 GMV 破 $200 亿，年轻用户爆发。</div>
+          <div class="platform-cats"><b>主营品类：</b><span>美妆个护 · 服饰 · 家居日用 · 食品饮料 · 3C</span></div>
+          <div class="platform-meta">
+            <div class="platform-meta-item"><span>美区 GMV</span><b>$200亿+</b></div>
+            <div class="platform-meta-item"><span>美国日活</span><b>1.7亿</b></div>
+            <div class="platform-meta-item"><span>增速</span><b>+65%/年</b></div>
+            <div class="platform-meta-item"><span>费用结构</span><b>佣金5-8%+服务费2%+达人佣金</b></div>
+          </div>
+          <div class="platform-tags">
+            <span class="platform-tag pro">✓ 内容电商爆发</span>
+            <span class="platform-tag pro">✓ 年轻用户占比高</span>
+            <span class="platform-tag pro">✓ 直播带货转化强</span>
+            <span class="platform-tag con">✗ 政策合规风险</span>
+            <span class="platform-tag con">✗ 内容门槛高</span>
+            <span class="platform-tag con">✗ 依赖达人分销</span>
+          </div>
+          <div class="platform-advice"><b>🎯 入驻建议：</b>适合内容型团队；短视频+直播双轮驱动；重视联盟达人分销（佣金 10-30% 自定义）；备足内容素材与本土化话术。</div>
         </div>
         <div class="platform-card ebay">
           <div class="platform-header">
@@ -4383,6 +4366,23 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
             </div>
           </div>
           <div class="platform-bar"><div class="platform-bar-fill" style="width:12.1%;background:#e53238;"></div></div>
+          <div class="platform-desc">美国老牌 C2C/B2C 平台：汽配、翻新电子、收藏品类目强势，账号稳定适合长期经营。</div>
+          <div class="platform-cats"><b>主营品类：</b><span>汽配 · 翻新电子 · 收藏品 · 二手 · 服饰</span></div>
+          <div class="platform-meta">
+            <div class="platform-meta-item"><span>美国 GMV</span><b>$1,000亿</b></div>
+            <div class="platform-meta-item"><span>月活用户</span><b>1.3亿</b></div>
+            <div class="platform-meta-item"><span>美国份额</span><b>12.1%</b></div>
+            <div class="platform-meta-item"><span>费用结构</span><b>佣金10-15%+刊登费</b></div>
+          </div>
+          <div class="platform-tags">
+            <span class="platform-tag pro">✓ 汽配/翻新强势</span>
+            <span class="platform-tag pro">✓ 二手市场大</span>
+            <span class="platform-tag pro">✓ 账号稳定</span>
+            <span class="platform-tag con">✗ 流量增长乏力</span>
+            <span class="platform-tag con">✗ 年轻用户流失</span>
+            <span class="platform-tag con">✗ 类目局限</span>
+          </div>
+          <div class="platform-advice"><b>🎯 入驻建议：</b>汽配、翻新电子、收藏品类目利润高；多 SKU 刊登策略（月 40 条免费）；重点做 listing 质量与账号信誉分。</div>
         </div>
       </div>
       <div class="other-platforms">
@@ -5085,6 +5085,48 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
           <div class="wl-bar-row"><span class="wl-bar-label">北美</span><div class="wl-bar-track"><div class="wl-bar-fill" style="width:36%;background:#4a90d9"></div></div><span class="wl-bar-val">+18%</span></div>
           <div class="wl-bar-row"><span class="wl-bar-label">拉美</span><div class="wl-bar-track"><div class="wl-bar-fill" style="width:70%;background:var(--orange)"></div></div><span class="wl-bar-val">+35%</span></div>
         </div>
+      </div>
+    </section>
+
+    <!-- ===== AI工具 ===== -->
+    <section id="ai" class="page">
+      <div class="page-header"><h2>🤖 AI工具</h2></div>
+      <p style="color:#6b7280;margin-bottom:20px;">AI驱动的智能选品、文案生成、数据分析工具</p>
+      <div class="quick-cards">
+        <div class="quick-card"><div class="qc-icon purple">🎯</div><div class="qc-title">AI智能选品</div><div class="qc-desc">基于多维度数据推荐潜力品类</div></div>
+        <div class="quick-card"><div class="qc-icon blue">✍️</div><div class="qc-title">AI文案生成</div><div class="qc-desc">Listing标题、五点描述、广告文案</div></div>
+        <div class="quick-card"><div class="qc-icon green">📊</div><div class="qc-title">AI数据分析</div><div class="qc-desc">自然语言查询市场数据</div></div>
+        <div class="quick-card"><div class="qc-icon orange">⚖️</div><div class="qc-title">AI合规筛查</div><div class="qc-desc">自动识别产品合规风险</div></div>
+      </div>
+    </section>
+
+    <!-- ===== API接口 ===== -->
+    <section id="api" class="page">
+      <div class="page-header"><h2>🔌 API接口</h2></div>
+      <p style="color:#6b7280;margin-bottom:20px;">将JAY观海数据能力接入你的业务系统</p>
+      <div class="chart-card">
+        <div class="chart-title">API 接口列表</div>
+        <table class="board-table">
+          <thead><tr><th>接口名称</th><th>说明</th><th>调用方式</th><th>状态</th></tr></thead>
+          <tbody>
+            <tr><td>市场数据API</td><td>获取国家宏观经济、电商规模数据</td><td>RESTful</td><td style="color:#10b981;">✅ 可用</td></tr>
+            <tr><td>商品榜单API</td><td>获取热卖商品、店铺排行数据</td><td>RESTful</td><td style="color:#10b981;">✅ 可用</td></tr>
+            <tr><td>政策预警API</td><td>获取最新政策变动和预警信息</td><td>RESTful + Webhook</td><td style="color:#f59e0b;">🔧 开发中</td></tr>
+            <tr><td>AI分析API</td><td>调用AI选品、文案生成能力</td><td>RESTful</td><td style="color:#f59e0b;">🔧 开发中</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== 资源中心 ===== -->
+    <section id="resource" class="page">
+      <div class="page-header"><h2>📚 资源中心</h2></div>
+      <p style="color:#6b7280;margin-bottom:20px;">跨境电商运营干货、政策解读、行业报告</p>
+      <div class="quick-cards">
+        <div class="quick-card"><div class="qc-icon blue">📖</div><div class="qc-title">运营指南</div><div class="qc-desc">平台入驻、选品、广告投放教程</div></div>
+        <div class="quick-card"><div class="qc-icon green">📑</div><div class="qc-title">政策解读</div><div class="qc-desc">各国海关、认证、税务政策详解</div></div>
+        <div class="quick-card"><div class="qc-icon orange">📈</div><div class="qc-title">行业报告</div><div class="qc-desc">季度/年度跨境电商行业报告</div></div>
+        <div class="quick-card"><div class="qc-icon purple">🎓</div><div class="qc-title">课程培训</div><div class="qc-desc">从0到1跨境电商操盘课程</div></div>
       </div>
     </section>
   </main>
@@ -11670,8 +11712,7 @@ function mfResetForm(){
   ['mf-category','mf-cost','mf-selling'].forEach(function(id){ var el=document.getElementById(id); if(el)el.value=''; });
   var box=document.getElementById('mf-result'); if(box)box.classList.remove('show');
 }
-function jayCloseDemoBanner(){ try{ localStorage.setItem('jay_demo_banner_closed','1'); }catch(e){} var b=document.getElementById('demo-banner'); if(b)b.style.display='none'; }
-function jayInitDemoBanner(){ try{ if(localStorage.getItem('jay_demo_banner_closed')==='1'){ var b=document.getElementById('demo-banner'); if(b)b.style.display='none'; } }catch(e){} }
+function jayCloseDemoBanner(){} /* removed */function jayInitDemoBanner(){ try{ if(localStorage.getItem('jay_demo_banner_closed')==='1'){ var b=document.getElementById('demo-banner'); if(b)b.style.display='none'; } }catch(e){} }
 function toggleSidebar(){ var s=document.querySelector('aside.sidebar'); if(s)s.classList.toggle('open'); var o=document.getElementById('jay-overlay'); if(o)o.classList.toggle('show'); }
 function closeSidebar(){ var s=document.querySelector('aside.sidebar'); if(s)s.classList.remove('open'); var o=document.getElementById('jay-overlay'); if(o)o.classList.remove('show'); }
 jayInitDemoBanner();
@@ -12123,8 +12164,10 @@ function translateAuthErr(m) {
 }
 
 function onAuthSuccess() {
-  var ls = document.getElementById('login-screen');
+  var ls = document.getElementById('login-screen') || document.getElementById('loginPage');
   if (ls) ls.style.display = 'none';
+  var app = document.getElementById('mainApp');
+  if (app) app.classList.add('active');
   updateSidebarUserInfo();
   var name = jayProfile ? (jayProfile.display_name || jayProfile.email.split('@')[0]) : '用户';
   if (!localStorage.getItem('jay_welcomed_' + (jayUser ? jayUser.id : ''))) {
@@ -12310,8 +12353,10 @@ async function addTemplateToWatchlist(btn) {
 }
 
 function showLoginScreen() {
-  var ls = document.getElementById('login-screen');
+  var ls = document.getElementById('login-screen') || document.getElementById('loginPage');
   if (ls) ls.style.display = 'flex';
+  var app = document.getElementById('mainApp');
+  if (app) app.classList.remove('active');
 }
 
 function updateSidebarUserInfo() {
@@ -13437,6 +13482,7 @@ function stToast(msg){
   };
 
 
+
   // ===== EchoTik 导航增强（2026-08-21） =====
   window.navGo = function(ev, page, el) {
     if (ev && ev.preventDefault) ev.preventDefault();
@@ -13815,7 +13861,7 @@ function jayOpenOnboard(){
   var ov = document.getElementById('jay-onboard');
   if(ov) ov.style.display='flex';
 }
-function jayCloseOnboard(){
+function jayCloseOnboard(){} /* removed */ function jayCloseOnboard(){
   var ov = document.getElementById('jay-onboard');
   if(ov) ov.style.display='none';
   try{ localStorage.setItem('jay_onboard_done','1'); }catch(e){}
@@ -13975,20 +14021,7 @@ function jayRunHistorySearch(q){ var gs=document.getElementById('global-search')
 </div>
 
 <!-- 新手引导浮层 -->
-<div id="jay-onboard" style="display:none">
-  <div class="jo-card">
-    <h2>👋 欢迎使用 JAY观海</h2>
-    <p class="jo-sub">跨境市场情报系统 · 帮工厂老板看清"货卖到哪国能赚钱"</p>
-    <div class="jo-step"><div class="jo-num">1</div><div><h4>看全局机会</h4><p>总览页的"今日市场机会"与"AI 短期机会洞察"告诉你今天哪些品类、哪些国家在起量。</p></div></div>
-    <div class="jo-step"><div class="jo-num">2</div><div><h4>查国家与平台</h4><p>进入"国家市场"看目标国合规、消费与平台格局；进入"电商平台档案"对比 41 个平台的入驻门槛与增速。</p></div></div>
-    <div class="jo-step"><div class="jo-num">3</div><div><h4>盯规则与风险</h4><p>"平台规则"和"政策动态"实时更新各国新政；"预警中心"集中推送高风险事件。</p></div></div>
-    <div class="jo-step"><div class="jo-num">4</div><div><h4>生成报告</h4><p>在各页面点"加入报告素材"，到"报告生成中心"一键生成并导出你的市场情报报告。</p></div></div>
-    <div class="jo-actions">
-      <button class="filter-button" onclick="jayOpenFAQ()">查看常见问题</button>
-      <button class="pr-primary-btn" onclick="jayCloseOnboard()">开始使用</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- FAQ / 帮助弹窗 -->
 <div id="jay-faq" style="display:none;position:fixed;inset:0;background:rgba(15,28,52,.5);z-index:2000;align-items:center;justify-content:center">
