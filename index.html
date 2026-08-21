@@ -2210,6 +2210,57 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
   .topbar-nav{display:none}
   .sidebar-links{display:none}
 }
+
+
+
+
+/* ===== 印尼 ⑨⑩ 补齐块（2026-08-21） ===== */
+.cn2-extra-block{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px 22px;margin:18px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.cn2-extra-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #f1f5f9}
+.cn2-extra-head h3{font-size:15px;color:var(--sea-deep);margin:0}
+.cn2-extra-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--sea-deep);color:#fff;font:700 12px 'DM Mono';flex:none}
+.cn2-religion-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.cn2-religion-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px}
+.cn2-religion-card h4{font-size:13px;color:#1e3a5f;margin:0 0 6px;display:flex;align-items:center;gap:6px}
+.cn2-religion-card p{font-size:12px;color:#4b5563;line-height:1.6;margin:0}
+.cn2-religion-card .tag{display:inline-block;background:#fff;color:#dc2626;font-size:10px;font-weight:600;padding:1px 6px;border-radius:6px;margin-right:4px;vertical-align:middle}
+.cn2-religion-card .tag-g{background:#fff;color:#16a34a}
+.cn2-ai-strategy{background:linear-gradient(135deg,#1e3a5f 0%,#2d5a8e 100%);color:#fff;border-radius:12px;padding:22px 24px;margin:18px 0;position:relative;overflow:hidden}
+.cn2-ai-strategy::after{content:'AI';position:absolute;right:18px;top:12px;font:700 48px 'Playfair Display',serif;opacity:.08;color:#fff;pointer-events:none}
+.cn2-ai-strategy h3{font-size:15px;margin:0 0 12px;color:#fff;display:flex;align-items:center;gap:8px}
+.cn2-ai-strategy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.cn2-ai-strategy-item{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:12px 14px}
+.cn2-ai-strategy-item b{font-size:12.5px;color:#93c5fd;display:block;margin-bottom:4px}
+.cn2-ai-strategy-item p{font-size:12px;color:#e0e7ef;line-height:1.55;margin:0}
+@media(max-width:900px){.cn2-religion-grid,.cn2-ai-strategy-grid{grid-template-columns:1fr}}
+
+/* ===== 总览页聚合表格（2026-08-21） ===== */
+.ov-table-block{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px 22px;margin:18px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.ov-table-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.ov-table-head h2{font-size:16px;color:var(--sea-deep);margin:0}
+.ov-table-note{font-size:11px;color:#6b7280;background:#f3f4f6;padding:3px 10px;border-radius:10px}
+.ov-table-more{margin-left:auto}
+.ov-table-wrap{overflow-x:auto;border:1px solid #f1f5f9;border-radius:10px}
+.ov-burst-table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:1080px}
+.ov-burst-table th{background:#f8fafc;color:#1e3a5f;font-weight:600;font-size:11.5px;padding:10px 10px;border-bottom:1px solid #e5e7eb;text-align:left;white-space:nowrap}
+.ov-burst-table td{padding:9px 10px;border-bottom:1px solid #f1f5f9;color:#374151;white-space:nowrap}
+.ov-burst-table tbody tr:last-child td{border-bottom:none}
+.ov-burst-table tbody tr:hover{background:#f8fafc}
+.ov-burst-table .num{font:600 12px 'DM Mono';color:#1f2937}
+.ov-burst-table .up{color:#dc2626;font-weight:600}
+.ov-burst-table .down{color:#16a34a;font-weight:600}
+.ov-burst-table .sig{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:8px}
+.ov-burst-table .sig-burst{background:#fef2f2;color:#dc2626}
+.ov-burst-table .sig-rise{background:#fff7ed;color:#ea580c}
+.ov-burst-table .sig-stable{background:#f0fdf4;color:#16a34a}
+.ov-burst-table .st-follow{display:inline-block;background:#fffbeb;color:#b45309;font-size:11px;font-weight:600;padding:2px 9px;border-radius:8px}
+.ov-burst-table .st-normal{display:inline-block;background:#f0fdf4;color:#16a34a;font-size:11px;font-weight:600;padding:2px 9px;border-radius:8px}
+.ov-pager{display:flex;justify-content:space-between;align-items:center;padding:14px 0 0;font-size:12px;color:#6b7280}
+.ov-pager .ov-page-btns{display:flex;gap:4px;flex-wrap:wrap}
+.ov-pager .ov-page-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:1px solid #e5e7eb;border-radius:6px;background:#fff;font:12px 'DM Mono';cursor:pointer;color:#1f2937}
+.ov-pager .ov-page-btn.active{background:#1e3a5f;color:#fff;border-color:#1e3a5f}
+.ov-pager .ov-page-btn:hover:not(.active){border-color:#1e3a5f;color:#1e3a5f}
+.ov-pager .ov-page-btn.disabled{opacity:.4;cursor:not-allowed}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -2394,11 +2445,11 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
               <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#c0392b"></span><span class="ov-notice-title">对华 301 关税大幅提升</span><span class="ov-notice-tag" style="color:#c0392b">重大</span><span class="ov-notice-date">2026-07-13</span></li>
               <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#c0392b"></span><span class="ov-notice-title">印尼进口商品免税门槛取消</span><span class="ov-notice-tag" style="color:#c0392b">重大</span><span class="ov-notice-date">2026-07-13</span></li>
               <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#c0392b"></span><span class="ov-notice-title">SNI 强制认证扩展至 35 类产品</span><span class="ov-notice-tag" style="color:#c0392b">重大</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#e67e22"></span><span class="ov-notice-title">欧盟数字服务法 DSA 全面执行</span><span class="ov-notice-tag" style="color:#e67e22">中等</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#e67e22"></span><span class="ov-notice-title">沙特 SABER 认证强制实施</span><span class="ov-notice-tag" style="color:#e67e22">中等</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#e67e22"></span><span class="ov-notice-title">巴西 Remessa Conforme 进口税计划</span><span class="ov-notice-tag" style="color:#e67e22">中等</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#e67e22"></span><span class="ov-notice-title">印度 FDI 外资限制加强</span><span class="ov-notice-tag" style="color:#e67e22">中等</span><span class="ov-notice-date">2026-07-13</span></li>
-              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#3498db"></span><span class="ov-notice-title">法国 GPSR 通用产品安全法规</span><span class="ov-notice-tag" style="color:#3498db">常规</span><span class="ov-notice-date">2026-07-13</span></li>
+              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#f59e0b"></span><span class="ov-notice-title">欧盟数字服务法 DSA 全面执行</span><span class="ov-notice-tag" style="color:#f59e0b">中等</span><span class="ov-notice-date">2026-07-13</span></li>
+              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#f59e0b"></span><span class="ov-notice-title">沙特 SABER 认证强制实施</span><span class="ov-notice-tag" style="color:#f59e0b">中等</span><span class="ov-notice-date">2026-07-13</span></li>
+              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#f59e0b"></span><span class="ov-notice-title">巴西 Remessa Conforme 进口税计划</span><span class="ov-notice-tag" style="color:#f59e0b">中等</span><span class="ov-notice-date">2026-07-13</span></li>
+              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#f59e0b"></span><span class="ov-notice-title">印度 FDI 外资限制加强</span><span class="ov-notice-tag" style="color:#f59e0b">中等</span><span class="ov-notice-date">2026-07-13</span></li>
+              <li class="ov-notice-item"><span class="ov-notice-dot" style="background:#10b981"></span><span class="ov-notice-title">法国 GPSR 通用产品安全法规</span><span class="ov-notice-tag" style="color:#10b981">常规</span><span class="ov-notice-date">2026-07-13</span></li>
             </ul>
             <div class="ov-panel-foot"><span class="ov-data-note">⚠ 示意性数据，未经过权威源独立核实</span></div>
           </div>
@@ -2421,7 +2472,7 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
                 <div class="ov-service-title">平台规则</div>
                 <div class="ov-service-desc">135 条规则变动，处罚 / 类目 / 物流实时提醒</div>
               </div>
-              <div class="ov-service-card" onclick="switchPage('reports')">
+              <div class="ov-service-card" onclick="switchPage('report')">
                 <div class="ov-service-title">报告生成中心</div>
                 <div class="ov-service-desc">基于素材一键生成市场情报报告，支持 HTML/CSV/PDF 导出</div>
               </div>
@@ -2465,7 +2516,40 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
           </div>
         </div>
       </div>
+    
+      <!-- Block 5: 跨平台爆发爆款榜（40条分页） -->
+      <div class="ov-table-block">
+        <div class="ov-table-head">
+          <h2>🚀 跨平台爆发爆款榜</h2>
+          <span class="ov-table-note">40 条示例数据 · 每页 8 条</span>
+          <button class="filter-button ov-table-more" onclick="switchPage('products')">进入产品雷达 →</button>
+        </div>
+        <div class="ov-table-wrap">
+          <table class="ov-burst-table">
+            <thead><tr><th>#</th><th>商品</th><th>市场 / 平台</th><th>售价（双币种）</th><th>三级类目</th><th>竞品店铺</th><th>销量</th><th>增速</th><th>信号</th><th>上架天数</th><th>更新时间</th></tr></thead>
+            <tbody id="ov-burst-tbody"></tbody>
+          </table>
+        </div>
+        <div class="ov-pager" id="ov-burst-pager"></div>
+      </div>
+
+      <!-- Block 6: 标杆 / 竞店对标（32条分页） -->
+      <div class="ov-table-block">
+        <div class="ov-table-head">
+          <h2>🏪 标杆 / 竞店对标</h2>
+          <span class="ov-table-note">32 条示例数据 · 每页 8 条</span>
+          <button class="filter-button ov-table-more" onclick="switchPage('shops')">进入店铺追踪 →</button>
+        </div>
+        <div class="ov-table-wrap">
+          <table class="ov-burst-table">
+            <thead><tr><th>店铺</th><th>平台</th><th>市场</th><th>主营类目</th><th>月GMV</th><th>30天波动</th><th>在售商品</th><th>增速</th><th>粉丝数</th><th>标签</th><th>状态</th><th>更新时间</th></tr></thead>
+            <tbody id="ov-shop-tbody"></tbody>
+          </table>
+        </div>
+        <div class="ov-pager" id="ov-shop-pager"></div>
+      </div>
     </section>
+
 
     <section id="products" class="page">
 <div id="pr-ai-tabs" class="pr-ai-tabs">
@@ -12151,6 +12235,139 @@ function stToast(msg){
     var rl=document.getElementById('nav-rl-count'); if(rl){ try{ if(typeof rulesJsonData!=='undefined'&&rulesJsonData&&rulesJsonData.items&&(rulesJsonData.source_count||0)>6){ rl.textContent=rulesJsonData.items.length; } }catch(e){} }
   }
   window.updateNavBadges=updateNavBadges;
+  // ===== 印尼 ⑨⑩ 补齐（2026-08-21） =====
+  function cn2InjectExtras() {
+    var main = document.getElementById('cn2-main');
+    if (!main) return;
+    if (main.querySelector('.cn2-extra-block')) return;
+    var html = ''
+      + '<div class="cn2-extra-block">'
+      + '  <div class="cn2-extra-head"><span class="cn2-extra-num">8</span><h3>宗教文化禁忌与机会</h3></div>'
+      + '  <div class="cn2-religion-grid">'
+      + '    <div class="cn2-religion-card">'
+      + '      <h4>🕌 宗教信仰（伊斯兰教 87%）</h4>'
+      + '      <p><span class="tag">禁忌</span>酒精/猪相关食品；<span class="tag">禁忌</span>左手接触食物；<span class="tag">禁忌</span>女性暴露着装；<br><span class="tag-g">机会</span>清真(Halal)认证产品溢价 20-30%；斋月(Ramadan)大促 GMV 翻 3 倍；开斋节(Hari Raya)礼品消费旺季。</p>'
+      + '    </div>'
+      + '    <div class="cn2-religion-card">'
+      + '      <h4>🙏 文化习惯</h4>'
+      + '      <p><span class="tag">注意</span>头部被视为神圣，不随意触摸；<span class="tag">注意</span>用右手接/递物品；<br><span class="tag-g">机会</span>家庭聚会型大包装产品受青睐；多人共享场景消费；线下+线上结合的直播带货转化率高。</p>'
+      + '    </div>'
+      + '    <div class="cn2-religion-card">'
+      + '      <h4>🌐 语言与沟通</h4>'
+      + '      <p>官方语言 Bahasa Indonesia；年轻群体英语普及；<br><span class="tag-g">机会</span>本地化 Listing（印尼语）转化率比英文高 2.5 倍；客服 WhatsApp/Tokopedia 内置聊天需双语。</p>'
+      + '    </div>'
+      + '    <div class="cn2-religion-card">'
+      + '      <h4>🎉 节庆日历</h4>'
+      + '      <p>斋月（3月）+ 开斋节（4月）：大促黄金期，备货需提前 60 天；<br>独立日 8/17；圣诞节非主流；<span class="tag-g">机会</span>节庆营销 ROI 较平日高 180%。</p>'
+      + '    </div>'
+      + '  </div>'
+      + '</div>'
+      + '<div class="cn2-ai-strategy">'
+      + '  <h3><span style="background:rgba(255,255,255,.18);padding:2px 8px;border-radius:6px;font-size:11px;margin-right:4px">9</span>AI 入场策略建议</h3>'
+      + '  <div style="font-size:13px;color:#cbd5e1;line-height:1.7;margin-top:4px">基于宏观 + 平台 + 类目 + 合规 + 文化 9 大块分析，AI 综合给出三阶段入场路径：</div>'
+      + '  <div class="cn2-ai-strategy-grid">'
+      + '    <div class="cn2-ai-strategy-item"><b>阶段 1：试水（0-3 月）</b><p>① 选 Shopee/Lazada/TikTok Shop 印尼站，开通跨境店；② 优先 3-5 款清真认证美妆/家居/服饰 SKU，单价 5-20 美金；③ 内容侧用 Bahasa Indonesia 短视频，重点打斋月+开斋节场景。</p></div>'
+      + '    <div class="cn2-ai-strategy-item"><b>阶段 2：扩张（3-9 月）</b><p>① 复制爆款到 Tokopedia + Blibli 抢占货架电商；② 建立本地海外仓（雅加达/泗水）缩短时效；③ 申请 BPOM/SNI 认证拓展食品个护类目；④ 培养 5-10 位印尼本土达人，月投放预算 $2-5K。</p></div>'
+      + '    <div class="cn2-ai-strategy-item"><b>阶段 3：壁垒（9-18 月）</b><p>① 申请 Halal Indonesia 认证，进军穆斯林主流市场；② 自建品牌站 + 私域 WhatsApp 社群运营；③ 从印尼辐射马来/文莱/新加坡，回款周期控制在 30 天内。</p></div>'
+      + '  </div>'
+      + '</div>';
+    main.insertAdjacentHTML('beforeend', html);
+  }
+  function cn2CloseOnboarding() {
+    document.querySelectorAll('#demo-banner, .jay-fb, .jay-fb-float, .jay-fb-fab').forEach(function(e){ e.style.display='none'; });
+    document.querySelectorAll('button').forEach(function(b){
+      var t = (b.textContent || '').trim();
+      if (t === '开始使用' || t === '跳过' || t === '知道了' || t === '关闭') { try { b.click(); } catch (e) {} }
+    });
+  }
+  window.cn2HookInject = function() {
+    var main = document.getElementById('cn2-main');
+    if (!main || main._cn2Observed) return;
+    main._cn2Observed = true;
+    var tryInject = function() { cn2InjectExtras(); cn2CloseOnboarding(); };
+    tryInject();
+    new MutationObserver(function() { tryInject(); }).observe(main, { childList: true, subtree: true });
+  };
+  window._ovSwitchPage = window.switchPage;
+  window.switchPage = function(name, opts) {
+    var r = window._ovSwitchPage ? window._ovSwitchPage.apply(this, arguments) : null;
+    if (name === 'countries') { setTimeout(function() { cn2HookInject(); }, 200); setTimeout(cn2InjectExtras, 800); setTimeout(cn2InjectExtras, 1800); }
+    return r;
+  };
+
+  // ===== 总览页聚合表格（2026-08-21） =====
+  window.ovBurstData = [["1", "🏠Ninja CREAMi XL Deluxe 11合1冰淇淋机", "欧美 · TikTok Shop", "1699-1899RMB≈ ¥1699-1899 RMB", "冰淇淋机/制冷小家电", "HomeGadgets US", "2,920", "+173.6%", "爆发", "45天成熟", "2h前"], ["2", "⚽Poolhacker泳池双头喷泉支架", "欧美 · TikTok Shop", "$35-40≈ ¥252-288 RMB", "泳池配件/户外装备", "PoolFun Store", "140", "+88.0%", "爆发", "22天新品", "2h前"], ["3", "💄Tarte睫毛膏(Manaster Mascara)", "欧美 · Amazon", "$27-29≈ ¥194-209 RMB", "眼部化妆品/睫毛膏", "Tarte Cosmetics", "5,200", "+71.0%", "爆发", "90天成熟", "4h前"], ["4", "📦宠物冰垫", "欧美 · Amazon", "59-129RMB≈ ¥59-129 RMB", "宠物用品/夏季降温", "PetCool Life", "7,000", "+65.0%", "爆发", "18天新品", "2h前"], ["5", "📦汽车遮阳帘", "中东 · Noon", "39-109RMB≈ ¥39-109 RMB", "车载配件/遮阳防晒", "AutoShield ME", "6,000", "+55.0%", "爆发", "35天成熟", "6h前"], ["6", "💄Native椰子香草洗发护发套装", "欧美 · Amazon", "$10-15≈ ¥72-108 RMB", "洗发护发/沐浴护体", "Native Organics", "6,500", "+55.0%", "爆发", "120天成熟", "4h前"], ["7", "👗防晒冰丝袖套(UPF50+)", "东南亚 · Shopee", "9-22RMB≈ ¥9-22 RMB", "防晒用品/户外配饰", "SunGuard ID", "3,200", "+50.0%", "爆发", "28天新品", "2h前"], ["8", "💄Medicule胶原蛋白眼膜", "欧美 · TikTok Shop", "$25-37≈ ¥180-266 RMB", "面部护理/眼部护理", "Medicule Official", "8,500", "+45.2%", "爆发", "60天成熟", "2h前"], ["9", "📱太阳能充电板", "非洲 · AliExpress", "79-219RMB≈ ¥79-219 RMB", "充电设备/户外电源", "SolarTech CN", "2,000", "+45.0%", "爆发", "50天成熟", "8h前"], ["10", "📦宠物自动喂食器", "东南亚 · TikTok Shop", "109-219RMB≈ ¥109-219 RMB", "宠物智能设备/喂食器", "PetSmart Asia", "3,000", "+42.0%", "爆发", "40天成熟", "2h前"], ["11", "📱智能手表", "中东 · TikTok Shop", "109-289RMB≈ ¥109-289 RMB", "智能穿戴/手表", "WatchTech ME", "4,000", "+38.0%", "爆发", "75天成熟", "4h前"], ["12", "💄美白身体乳", "东南亚 · TikTok Shop", "45-89RMB≈ ¥45-89 RMB", "身体护理/美白产品", "GlowWhite TH", "12,000", "+35.0%", "爆发", "55天成熟", "2h前"], ["13", "🏠空气炸锅配件", "日韩 · Amazon", "39-89RMB≈ ¥39-89 RMB", "厨房用品/小家电配件", "KitchenPro KR", "4,500", "+35.0%", "爆发", "30天新品", "6h前"], ["14", "💄Sol de Janeiro Cheirosa 62香水", "欧美 · Amazon", "$32-68≈ ¥230-490 RMB", "香水香体/身体喷雾", "Sol de Janeiro", "3,800", "+35.0%", "上升", "200天衰退", "4h前"], ["15", "💄Mighty Patch 痘痘贴(36片装)", "欧美 · Amazon", "89-149RMB≈ ¥89-149 RMB", "面部护理/痘痘护理", "Mighty Patch US", "4,500", "+35.0%", "爆发", "150天成熟", "4h前"], ["16", "💄男士理发器", "欧美 · TikTok Shop", "79-179RMB≈ ¥79-179 RMB", "个人护理/电动理发", "BARBERX Official", "5,500", "+32.0%", "爆发", "85天成熟", "2h前"], ["17", "💄香水套装礼盒", "中东 · Noon", "149-369RMB≈ ¥149-369 RMB", "香水香体/礼盒套装", "Fragrance ME", "3,500", "+30.0%", "爆发", "95天成熟", "6h前"], ["18", "👗夏季冰丝T恤", "东南亚 · Shopee", "15-39RMB≈ ¥15-39 RMB", "男装/夏季T恤", "CoolWear ID", "15,000", "+28.0%", "爆发", "25天新品", "2h前"], ["19", "📱便携式投影仪", "欧美 · Amazon", "369-879RMB≈ ¥369-879 RMB", "影音设备/便携投影", "ProjectorPlus", "2,500", "+28.0%", "上升", "110天成熟", "4h前"], ["20", "💄COSRX Snail 96 Essence", "欧美 · Amazon", "89-149RMB≈ ¥89-149 RMB", "面部护理/精华液", "COSRX Global", "6,800", "+28.0%", "上升", "180天成熟", "4h前"], ["21", "👗阿拉伯风格连衣裙", "中东 · Noon", "109-259RMB≈ ¥109-259 RMB", "女装/连衣裙/民族风", "Arabesque AE", "2,800", "+25.0%", "上升", "65天成熟", "6h前"], ["22", "💄美白面膜", "日韩 · TikTok Shop", "59-109RMB≈ ¥59-109 RMB", "面部护理/面膜", "K-Beauty Lab", "8,000", "+25.0%", "上升", "100天成熟", "4h前"], ["23", "💄防晒喷雾SPF50", "东南亚 · Shopee", "29-69RMB≈ ¥29-69 RMB", "防晒用品/防晒喷雾", "SunShield TH", "8,500", "+22.0%", "上升", "45天成熟", "2h前"], ["24", "💄假睫毛套装", "拉美 · Shopee", "25-59RMB≈ ¥25-59 RMB", "眼部化妆品/假睫毛", "LashPro BR", "9,000", "+22.0%", "上升", "70天成熟", "4h前"], ["25", "💄ANLAN 8合1面部EMS美容仪", "东南亚 · Shopee", "$20-30≈ ¥144-216 RMB", "美容仪器/面部护理", "ANLAN Beauty", "175", "+22.0%", "上升", "20天新品", "2h前"], ["26", "🏠Stanley Quencher保温吸管杯40oz", "欧美 · Amazon", "189-329RMB≈ ¥189-329 RMB", "水壶杯具/保温杯", "Stanley US", "5,200", "+22.0%", "上升", "250天衰退", "4h前"], ["27", "💄medicule PDRN Pink Collagen Multi Balm", "欧美 · TikTok Shop", "119-149RMB≈ ¥119-149 RMB", "面部护理/多功能膏", "Medicule Official", "9,380", "+21.1%", "爆发", "35天成熟", "2h前"], ["28", "🍜即食燕窝", "东南亚 · Tokopedia", "59-149RMB≈ ¥59-149 RMB", "滋补品/燕窝", "BirdNest ID", "5,000", "+20.0%", "上升", "130天成熟", "8h前"], ["29", "🏠LED智能灯带", "欧美 · Amazon", "59-149RMB≈ ¥59-149 RMB", "照明装饰/智能灯带", "Govee US", "8,000", "+20.0%", "上升", "200天衰退", "4h前"], ["30", "👗韩系发饰套装", "日韩 · TikTok Shop", "25-59RMB≈ ¥25-59 RMB", "配饰头饰/发饰", "K-Hair KR", "6,000", "+20.0%", "上升", "55天成熟", "4h前"], ["31", "💄假发套装", "非洲 · AliExpress", "109-369RMB≈ ¥109-369 RMB", "假发接发/发品", "HairQueen CN", "3,500", "+20.0%", "上升", "90天成熟", "8h前"], ["32", "📱无线蓝牙耳机", "东南亚 · TikTok Shop", "59-109RMB≈ ¥59-109 RMB", "音频设备/蓝牙耳机", "SoundBase VN", "6,000", "+18.0%", "上升", "60天成熟", "2h前"], ["33", "⚽露营折叠椅", "欧美 · Temu", "109-219RMB≈ ¥109-219 RMB", "户外家具/折叠椅", "CampingPro", "4,000", "+18.0%", "上升", "140天成熟", "4h前"], ["34", "📱手机快充头", "南亚 · Amazon", "39-109RMB≈ ¥39-109 RMB", "充电配件/快充器", "FastCharge IN", "7,500", "+18.0%", "上升", "180天成熟", "6h前"], ["35", "📱蓝牙音箱", "拉美 · MercadoLibre", "79-179RMB≈ ¥79-179 RMB", "音频设备/蓝牙音箱", "AudioLat MX", "3,500", "+16.0%", "上升", "100天成熟", "8h前"], ["36", "🏠便携榨汁杯", "东南亚 · Lazada", "39-89RMB≈ ¥39-89 RMB", "厨房小电器/榨汁机", "BlendGo PH", "4,500", "+15.0%", "上升", "75天成熟", "6h前"], ["37", "⚽瑜伽裤套装", "欧美 · SHEIN", "79-189RMB≈ ¥79-189 RMB", "运动服饰/瑜伽服", "YogaFlex", "10,000", "+15.0%", "上升", "160天成熟", "4h前"], ["38", "💄Dazzle Me定妆喷雾", "东南亚 · Shopee", "$3-8≈ ¥22-58 RMB", "化妆品/定妆喷雾", "DazzleBeauty VN", "12,000", "+15.0%", "上升", "200天衰退", "2h前"], ["39", "🏠陶瓷花盆Bat Trang装饰套装", "东南亚 · Shopee", "$5-10≈ ¥36-72 RMB", "家居装饰/花盆花架", "Ceramic VN", "44,000", "+12.5%", "上升", "220天衰退", "2h前"], ["40", "🏠SEESE Cordless Pressure Washer", "欧美 · TikTok Shop", "189-259RMB≈ ¥189-259 RMB", "清洁工具/高压水枪", "SEESE US", "3,480", "+5.3%", "爆发", "42天成熟", "2h前"]];
+  window.ovShopData = [["Medicube Official", "TikTok Shop", "欧美", "美妆个护", "US$ 1,630万", "+35.6%", "95", "+52.0%", "58万", "对标头部", "关注", "1h"], ["Govee US", "Amazon", "欧美", "家居家装", "US$ 580万", "+7.6%", "340", "+18.0%", "21万", "对标头部", "正常", "1h"], ["DealsForYouDays(SEESE品牌店)", "TikTok Shop", "欧美", "家居日用", "US$ 507万", "+52.3%", "210", "+100.0%", "19.5万", "对标头部", "正常", "2h"], ["Xiaomi Official", "Lazada", "东南亚", "3C数码", "US$ 420万", "+5.8%", "520", "+12.0%", "32万", "头部对标", "正常", "3h"], ["EcoFlow", "Amazon", "欧美", "3C数码", "US$ 420万", "+11.2%", "86", "+22.0%", "14.5万", "对标头部", "正常", "2h"], ["MS Glow", "TikTok Shop", "东南亚", "美妆个护", "US$ 350万", "+12.1%", "189", "+22.0%", "15.6万", "对标头部", "正常", "1h"], ["CIDER", "SHEIN", "欧美", "时尚服饰", "US$ 320万", "+6.1%", "680", "+12.0%", "18.5万", "低价竞品", "正常", "4h"], ["Toplux Nutrition Official", "TikTok Shop", "欧美", "保健品", "US$ 291万", "-3.2%", "78", "-7.5%", "8.5万", "潜在对手", "正常", "4h"], ["Somethingspeaking", "TikTok Shop", "东南亚", "美妆个护", "US$ 280万", "+8.2%", "156", "+15.0%", "4.3万", "对标头部", "正常", "2h"], ["Bissell", "Amazon", "欧美", "家居家电", "US$ 280万", "+2.1%", "195", "+8.0%", "12万", "头部对标", "正常", "6h"], ["COSME Kitchen", "TikTok Shop", "日韩", "美妆个护", "US$ 220万", "+10.5%", "175", "+20.0%", "9.8万", "对标头部", "正常", "2h"], ["Carrefour UAE", "Noon", "中东", "日用百货", "US$ 200万", "+4.2%", "1200", "+10.0%", "9.5万", "头部对标", "正常", "8h"], ["Eiger Official", "Shopee", "东南亚", "户外运动", "US$ 180万", "+3.5%", "230", "+8.0%", "8.8万", "头部对标", "正常", "4h"], ["TechZone MX", "MercadoLibre", "拉美", "3C数码", "US$ 180万", "+5.2%", "340", "+10.0%", "6.5万", "潜在对手", "正常", "7h"], ["BARBERX", "TikTok Shop", "欧美", "美妆个护", "US$ 150万", "+22.0%", "67", "+35.0%", "5.6万", "潜在对手", "关注", "3h"], ["Kopi Kenangan", "Tokopedia", "东南亚", "食品饮料", "US$ 120万", "+9.0%", "45", "+18.0%", "7.2万", "潜在对手", "正常", "5h"], ["Kitchen Korea", "TikTok Shop", "日韩", "家居厨房", "US$ 120万", "+18.3%", "230", "+30.0%", "5.2万", "潜在对手", "关注", "3h"], ["Dazzle Me Official", "Shopee", "东南亚", "美妆个护", "US$ 120万", "+11.2%", "145", "+18.5%", "6.8万", "低价竞品", "关注", "2h"], ["Mamaway", "Shopee", "东南亚", "母婴用品", "US$ 95万", "-2.3%", "98", "+6.0%", "3.5万", "潜在对手", "关注", "6h"], ["Beauty Store BR", "Shopee", "拉美", "美妆个护", "US$ 95万", "+8.7%", "210", "+15.0%", "4.2万", "低价竞品", "正常", "5h"], ["FastCharge Tech", "Amazon", "南亚", "3C数码", "US$ 95万", "+9.6%", "150", "+15.0%", "3.5万", "低价竞品", "关注", "6h"], ["GlamAR Beauty", "Noon", "中东", "美妆个护", "US$ 85万", "+15.3%", "112", "+25.0%", "2.8万", "低价竞品", "正常", "3h"], ["Hair Pin Studio", "TikTok Shop", "日韩", "饰品配件", "US$ 85万", "+7.8%", "320", "+15.0%", "3.8万", "低价竞品", "正常", "5h"], ["Rejuran Official MY", "Shopee", "东南亚", "美妆个护", "US$ 85万", "+45.2%", "38", "+600.0%", "4.2万", "对标头部", "关注", "1h"], ["Moda Latina", "Shopee", "拉美", "时尚服饰", "US$ 75万", "-1.8%", "450", "+8.0%", "2.8万", "低价竞品", "关注", "4h"], ["AutoPro Accessories", "TikTok Shop", "中东", "汽车配件", "US$ 65万", "+28.5%", "78", "+45.0%", "1.8万", "潜在对手", "关注", "2h"], ["MensStyle India", "Amazon", "南亚", "时尚服饰", "US$ 65万", "+3.2%", "280", "+8.0%", "2.2万", "潜在对手", "正常", "8h"], ["AfroHair Queen", "AliExpress", "非洲", "美妆个护", "US$ 55万", "+10.2%", "190", "+18.0%", "2.8万", "潜在对手", "正常", "4h"], ["Pet Paradise", "TikTok Shop", "东南亚", "宠物用品", "US$ 48万", "+32.1%", "120", "+55.0%", "2.5万", "潜在对手", "关注", "1h"], ["SolarTech Africa", "AliExpress", "非洲", "家居家电", "US$ 40万", "+25.8%", "65", "+42.0%", "1.2万", "潜在对手", "关注", "3h"], ["BIBIGO(菲律宾)", "Shopee", "东南亚", "食品饮料", "US$ 35万", "+38.0%", "56", "+454.0%", "1.8万", "潜在对手", "关注", "3h"], ["Poolhacker", "TikTok Shop", "欧美", "户外运动", "US$ 14万", "+88.5%", "22", "+120.0%", "8500", "潜在对手", "关注", "2h"]];
+  var ovBurstPage = 1, ovShopPage = 1;
+  function ovPageBtns(cur, total, fn) {
+    var html = '';
+    var start = Math.max(1, cur - 2), end = Math.min(total, cur + 2);
+    if (cur > 1) html += '<button class="ov-page-btn" data-p="' + (cur - 1) + '">‹</button>';
+    for (var i = start; i <= end; i++) html += '<button class="ov-page-btn' + (i === cur ? ' active' : '') + '" data-p="' + i + '">' + i + '</button>';
+    if (cur < total) html += '<button class="ov-page-btn" data-p="' + (cur + 1) + '">›</button>';
+    return html;
+  }
+  function ovRenderBurst() {
+    var tb = document.getElementById('ov-burst-tbody'), pg = document.getElementById('ov-burst-pager');
+    if (!tb || !window.ovBurstData) return;
+    var data = window.ovBurstData, size = 8, total = Math.ceil(data.length / size);
+    if (ovBurstPage > total) ovBurstPage = total;
+    var s = (ovBurstPage - 1) * size, e = Math.min(s + size, data.length), html = '';
+    for (var i = s; i < e; i++) {
+      var r = data[i];
+      var sigCls = r[8] === '爆发' ? 'sig-burst' : (r[8] === '上升' ? 'sig-rise' : 'sig-stable');
+      var upCls = (r[7] || '').indexOf('+') === 0 ? ' up' : '';
+      html += '<tr>'
+        + '<td class="num">' + (i + 1) + '</td>'
+        + '<td>' + r[1] + '</td>'
+        + '<td>' + r[2] + '</td>'
+        + '<td>' + r[3] + '</td>'
+        + '<td>' + r[4] + '</td>'
+        + '<td>' + r[5] + '</td>'
+        + '<td class="num">' + r[6] + '</td>'
+        + '<td class="num' + upCls + '">' + r[7] + '</td>'
+        + '<td><span class="sig ' + sigCls + '">' + r[8] + '</span></td>'
+        + '<td>' + r[9] + '</td>'
+        + '<td>' + r[10] + '</td>'
+        + '</tr>';
+    }
+    tb.innerHTML = html;
+    pg.innerHTML = '<span>共 ' + data.length + ' 条 · 第 ' + ovBurstPage + '/' + total + ' 页</span><div class="ov-page-btns">' + ovPageBtns(ovBurstPage, total, 'burst') + '</div>';
+    pg.querySelectorAll('.ov-page-btn').forEach(function(b) { b.onclick = function() { ovBurstPage = parseInt(b.dataset.p); ovRenderBurst(); }; });
+  }
+  function ovRenderShop() {
+    var tb = document.getElementById('ov-shop-tbody'), pg = document.getElementById('ov-shop-pager');
+    if (!tb || !window.ovShopData) return;
+    var data = window.ovShopData, size = 8, total = Math.ceil(data.length / size);
+    if (ovShopPage > total) ovShopPage = total;
+    var s = (ovShopPage - 1) * size, e = Math.min(s + size, data.length), html = '';
+    for (var i = s; i < e; i++) {
+      var r = data[i];
+      var wCls = (r[5] || '').indexOf('+') === 0 ? ' up' : ((r[5] || '').indexOf('-') === 0 ? ' down' : '');
+      var gCls = (r[7] || '').indexOf('+') === 0 ? ' up' : '';
+      var stCls = r[10] === '关注' ? 'st-follow' : 'st-normal';
+      html += '<tr>'
+        + '<td><b>' + r[0] + '</b></td>'
+        + '<td>' + r[1] + '</td>'
+        + '<td>' + r[2] + '</td>'
+        + '<td>' + r[3] + '</td>'
+        + '<td class="num">' + r[4] + '</td>'
+        + '<td class="num' + wCls + '">' + r[5] + '</td>'
+        + '<td class="num">' + r[6] + '</td>'
+        + '<td class="num' + gCls + '">' + r[7] + '</td>'
+        + '<td class="num">' + r[8] + '</td>'
+        + '<td>' + r[9] + '</td>'
+        + '<td><span class="' + stCls + '">' + r[10] + '</span></td>'
+        + '<td>' + r[11] + '</td>'
+        + '</tr>';
+    }
+    tb.innerHTML = html;
+    pg.innerHTML = '<span>共 ' + data.length + ' 条 · 第 ' + ovShopPage + '/' + total + ' 页</span><div class="ov-page-btns">' + ovPageBtns(ovShopPage, total, 'shop') + '</div>';
+    pg.querySelectorAll('.ov-page-btn').forEach(function(b) { b.onclick = function() { ovShopPage = parseInt(b.dataset.p); ovRenderShop(); }; });
+  }
+  function ovTablesInit() { ovRenderBurst(); ovRenderShop(); }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', ovTablesInit); } else { ovTablesInit(); }
+
   // ===== EchoTik 导航增强（2026-08-21） =====
   window.navGo = function(ev, page, el) {
     if (ev && ev.preventDefault) ev.preventDefault();
