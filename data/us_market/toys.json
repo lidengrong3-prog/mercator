@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国玩具乐器 (US Toys & Games)",
     "cat_key": "toys",
-    "generated_at": "2026-08-21T04:57:58.063393+00:00",
+    "generated_at": "2026-08-21T09:02:01.307032+00:00",
     "as_of": "2026-08-21",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -16,7 +16,7 @@
       "country": 1,
       "platforms": 7,
       "rules": 4,
-      "policies": 23,
+      "policies": 22,
       "alerts": 19
     }
   },
@@ -354,17 +354,6 @@
       "agency": "Federal Communications Commission",
       "summary": "In this document, the Federal Communications Commission (Commission) seeks comment on measures the Commission can take to better protect children when using E-Rate-funded networks, the Commission's progress in ensuring affordable access to high-speed broadband to and within schoo…",
       "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16590/fcc-to-review-e-rate-program-to-ensure-congresss-vision",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-21",
-      "live": true
-    },
-    {
-      "title": "Medicaid Program; Prohibition on Federal Medicaid and Children's Health Insurance Program Funding for Sex-Rejecting Procedures Furnished to Children",
-      "date": "2026-08-13",
-      "agency": "Health and Human Services Department",
-      "summary": "This final rule requires that a State Medicaid plan must provide that the Medicaid agency will not make payment under the plan for sex-rejecting procedures for children under 18, and prohibits the use of Federal Medicaid dollars to fund sex-rejecting procedures for individuals un…",
-      "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16508/medicaid-program-prohibition-on-federal-medicaid-and-childrens-health-insurance-program-funding-for",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-21",

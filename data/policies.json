@@ -1,7 +1,67 @@
 {
-  "updated_at": "2026-08-21T12:54:22.395885+08:00",
+  "updated_at": "2026-08-21T16:58:27.649218+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260821-79f46aee",
+      "title": "Radio Broadcasting Services; AM or FM Proposals To Change the Community of License",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/21/2026-17160/radio-broadcasting-services-am-or-fm-proposals-to-change-the-community-of-license",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-21",
+      "collected_at": "2026-08-21T16:58:27.649218+08:00"
+    },
+    {
+      "id": "p20260821-bc0d255a",
+      "title": "Advisory Committee on the Medical Uses of Isotopes: Meeting Notice",
+      "summary": "The U.S. Nuclear Regulatory Commission (NRC) will convene a meeting of the Advisory Committee on the Medical Uses of Isotopes (ACMUI) on September 9, 2026, to discuss and provide recommendations from the subcommittee on reducing barriers to medical use licensing rulemaking. Topic is tentative based ",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/21/2026-17161/advisory-committee-on-the-medical-uses-of-isotopes-meeting-notice",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-21",
+      "collected_at": "2026-08-21T16:58:27.649218+08:00"
+    },
+    {
+      "id": "p20260821-e39d0cfd",
+      "title": "Request for Comment on the Listing of Compute Derivatives Contracts",
+      "summary": "The Commodity Futures Trading Commission (\"CFTC\" or \"Commission\") is seeking public responses to this Request for Comment to better inform its understanding and oversight of derivatives markets in compute.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/21/2026-17163/request-for-comment-on-the-listing-of-compute-derivatives-contracts",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-21",
+      "collected_at": "2026-08-21T16:58:27.649218+08:00"
+    },
+    {
+      "id": "p20260821-9840e527",
+      "title": "Notice of Inventory Completion: California State University, Chico, CA",
+      "summary": "In accordance with the Native American Graves Protection and Repatriation Act (NAGPRA), the California State University, Chico has completed an inventory of human remains and has determined that there is a cultural affiliation between the human remains and Indian Tribes or Native Hawaiian organizati",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/21/2026-17167/notice-of-inventory-completion-california-state-university-chico-ca",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-21",
+      "collected_at": "2026-08-21T16:58:27.649218+08:00"
+    },
+    {
+      "id": "p20260821-42598efa",
+      "title": "Regulation Crypto Assets",
+      "summary": "The Securities and Exchange Commission (\"Commission\") is proposing new rules to create a tailored offering regime for certain investment contracts involving crypto assets. The proposed offering regime is intended to facilitate capital formation and accommodate innovation within the crypto asset mark",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/21/2026-17183/regulation-crypto-assets",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-21",
+      "collected_at": "2026-08-21T16:58:27.649218+08:00"
+    },
     {
       "id": "p20260820-bffe68bf",
       "title": "从法国出发，看清整个欧盟税务变革：一场“电子发票+实时申报”正在重塑跨境电商合规逻辑",

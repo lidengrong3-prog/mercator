@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国汽车配件 (US Automotive Aftermarket)",
     "cat_key": "auto",
-    "generated_at": "2026-08-21T04:58:03.138486+00:00",
+    "generated_at": "2026-08-21T09:02:07.066418+00:00",
     "as_of": "2026-08-21",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -335,6 +335,28 @@
   ],
   "policies": [
     {
+      "title": "Rescission of Executive Order 11246 Implementing Regulations",
+      "date": "2026-08-21",
+      "agency": "Labor Department",
+      "summary": "On January 21, 2025, President Trump issued Executive Order 14173, \"Ending Illegal Discrimination and Restoring Merit-Based Opportunity,\" which revoked Executive Order 11246. Accordingly, the U.S. Department of Labor publishes this final rule to rescind the implementing regulatio…",
+      "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17114/rescission-of-executive-order-11246-implementing-regulations",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-21",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Submission to the Office of Management and Budget for Review and Approval; Request for Comment; Distraction: Personal Electronic Device",
+      "date": "2026-08-21",
+      "agency": "Transportation Department",
+      "summary": "In compliance with the Paperwork Reduction Act of 1995 (PRA), this notice announces that the Information Collection Request (ICR) summarized below will be submitted to the Office of Management and Budget (OMB) for review and approval. The ICR describes the nature of the informati…",
+      "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17095/agency-information-collection-activities-submission-to-the-office-of-management-and-budget-for",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-21",
+      "live": true
+    },
+    {
       "title": "Air Plan Approval; Wisconsin; Moderate Attainment Plan Elements for Wisconsin's 2015 Ozone Standard Areas",
       "date": "2026-08-20",
       "agency": "Environmental Protection Agency",
@@ -456,17 +478,6 @@
       "live": true
     },
     {
-      "title": "Air Plan Approval; Missouri; Moderate Attainment Plan Elements for the 2015 8-Hour Ozone Standard for the Missouri Portion of the St. Louis Nonattainment Area",
-      "date": "2026-08-14",
-      "agency": "Environmental Protection Agency",
-      "summary": "The Environmental Protection Agency (EPA) is proposing to approve portions of a state implementation plan (SIP) revision submitted by the State of Missouri on September 6, 2023, as meeting Clean Air Act (CAA) requirements for the 2015 8-hour ozone national ambient air quality sta…",
-      "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16571/air-plan-approval-missouri-moderate-attainment-plan-elements-for-the-2015-8-hour-ozone-standard-for",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-21",
-      "live": true
-    },
-    {
       "title": "Regulatory Agenda",
       "date": "2026-08-14",
       "agency": "Federal Trade Commission",
@@ -489,11 +500,11 @@
       "live": true
     },
     {
-      "title": "Toyota Motor North America, Inc., Grant of Petition for Decision of Inconsequential Noncompliance",
+      "title": "Organic Soybean Meal From India: Preliminary Results and Rescission, in Part of Antidumping Duty Administrative Review; 2024-2025",
       "date": "2026-08-13",
-      "agency": "Transportation Department",
-      "summary": "Toyota Motor North America, Inc. (TMNA) on behalf of Toyota Motor Corporation (TMC) (collectively referred to as \"Toyota\"), has determined that certain model year (MY) 2020-2021 Toyota C-HR motor vehicles do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. …",
-      "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16540/toyota-motor-north-america-inc-grant-of-petition-for-decision-of-inconsequential-noncompliance",
+      "agency": "Commerce Department",
+      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that producers/exporters subject to this review did not make sales of subject merchandise at less than normal value (NV) during the period of review (POR) May 1, 2024, through April 30, 2025. In addition, we are …",
+      "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16549/organic-soybean-meal-from-india-preliminary-results-and-rescission-in-part-of-antidumping-duty",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-21",
@@ -505,17 +516,6 @@
       "agency": "Health and Human Services Department",
       "summary": "This final rule requires that a State Medicaid plan must provide that the Medicaid agency will not make payment under the plan for sex-rejecting procedures for children under 18, and prohibits the use of Federal Medicaid dollars to fund sex-rejecting procedures for individuals un…",
       "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16508/medicaid-program-prohibition-on-federal-medicaid-and-childrens-health-insurance-program-funding-for",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-21",
-      "live": true
-    },
-    {
-      "title": "Organic Soybean Meal From India: Preliminary Results and Rescission, in Part of Antidumping Duty Administrative Review; 2024-2025",
-      "date": "2026-08-13",
-      "agency": "Commerce Department",
-      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that producers/exporters subject to this review did not make sales of subject merchandise at less than normal value (NV) during the period of review (POR) May 1, 2024, through April 30, 2025. In addition, we are …",
-      "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16549/organic-soybean-meal-from-india-preliminary-results-and-rescission-in-part-of-antidumping-duty",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-21",
@@ -614,6 +614,18 @@
     },
     {
       "level": "medium",
+      "title": "Agency Information Collection Activities; Submission to the Office of Management and Budget for Review and Approval; Request for Comment; Distraction: Personal Electronic Device",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "In compliance with the Paperwork Reduction Act of 1995 (PRA), this notice announces that the Information Collection Request (ICR) summarized below will be submitted to the Office of Management and Bud…",
+      "date": "2026-08-21",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17095/agency-information-collection-activities-submission-to-the-office-of-management-and-budget-for",
+      "as_of": "2026-08-21",
+      "live": true
+    },
+    {
+      "level": "medium",
       "title": "Allwin Powersports Corp., Receipt of Petition for Decision of Inconsequential Noncompliance",
       "market": "美国",
       "platform": "Transportation Department",
@@ -693,18 +705,6 @@
       "date": "2026-08-17",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16753/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
-      "as_of": "2026-08-21",
-      "live": true
-    },
-    {
-      "level": "medium",
-      "title": "Toyota Motor North America, Inc., Grant of Petition for Decision of Inconsequential Noncompliance",
-      "market": "美国",
-      "platform": "Transportation Department",
-      "detail": "Toyota Motor North America, Inc. (TMNA) on behalf of Toyota Motor Corporation (TMC) (collectively referred to as \"Toyota\"), has determined that certain model year (MY) 2020-2021 Toyota C-HR motor vehi…",
-      "date": "2026-08-13",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16540/toyota-motor-north-america-inc-grant-of-petition-for-decision-of-inconsequential-noncompliance",
       "as_of": "2026-08-21",
       "live": true
     },

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T04:57:47.210990+00:00",
+  "generated_at": "2026-08-21T09:01:52.283475+00:00",
   "as_of": "2026-08-21",
   "categories": [
     {
@@ -11,7 +11,7 @@
       "market_size": "US$ 2,616 亿 (2026E)",
       "cagr": "CAGR 4.8% (2026-2031)",
       "policy_count": 19,
-      "alert_count": 10,
+      "alert_count": 11,
       "report": "reports/us_market/electronics_report.pdf"
     },
     {
@@ -47,7 +47,7 @@
       "market_size": "US$ 1,067.6 亿 (2026E)",
       "cagr": "CAGR 2.44% (2026-2031)",
       "policy_count": 24,
-      "alert_count": 7,
+      "alert_count": 6,
       "report": "reports/us_market/beauty_report.pdf"
     },
     {
@@ -58,7 +58,7 @@
       "file": "toys.json",
       "market_size": "玩具 US$ 387 亿 (2026E)；玩具游戏合计 ≈ $820.9 亿",
       "cagr": "玩具 CAGR 3.8% (2026-2031)",
-      "policy_count": 23,
+      "policy_count": 22,
       "alert_count": 19,
       "report": "reports/us_market/toys_report.pdf"
     },

@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国保健品 (US Dietary Supplements)",
     "cat_key": "supplements",
-    "generated_at": "2026-08-21T04:58:05.827342+00:00",
+    "generated_at": "2026-08-21T09:02:14.979259+00:00",
     "as_of": "2026-08-21",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -337,6 +337,17 @@
   ],
   "policies": [
     {
+      "title": "Advisory Committee; Oncologic Drugs Advisory Committee; Renewal",
+      "date": "2026-08-21",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is announcing the renewal of the Oncologic Drugs Advisory Committee by the Commissioner of Food and Drugs (the Commissioner). The Commissioner has determined that it is in the public interest to renew the Oncologic Drugs Advisory Committee f…",
+      "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17084/advisory-committee-oncologic-drugs-advisory-committee-renewal",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-21",
+      "live": true
+    },
+    {
       "title": "Potency Assessment of Active Immunotherapy Products; Draft Guidance for Industry; Availability",
       "date": "2026-08-20",
       "agency": "Health and Human Services Department",
@@ -452,17 +463,6 @@
       "agency": "Health and Human Services Department",
       "summary": "The Food and Drug Administration (FDA or the Agency) is announcing a formal evidentiary public hearing on the proposal to withdraw approval of the abbreviated new drug application (ANDA) 091695, submitted by Kremers Urban Pharmaceuticals, Inc. (Kremers) for methylphenidate hydroc…",
       "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16536/kremers-urban-pharmaceuticals-inc-grant-of-hearing-request-regarding-a-proposal-to-withdraw-approval",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-21",
-      "live": true
-    },
-    {
-      "title": "Formal Meetings Between the Food and Drug Administration and Sponsors or Applicants of Prescription Drug User Fee Act Products; Guidance for Industry; Availability",
-      "date": "2026-08-13",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA or Agency) is announcing the availability of a final guidance for industry titled \"Formal Meetings Between the FDA and Sponsors or Applicants of PDUFA Products.\" This guidance outlines the recommendations to industry on formal meetings betwee…",
-      "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16452/formal-meetings-between-the-food-and-drug-administration-and-sponsors-or-applicants-of-prescription",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-21",

@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国美妆个护 (US Beauty & Personal Care)",
     "cat_key": "beauty",
-    "generated_at": "2026-08-21T04:57:56.399584+00:00",
+    "generated_at": "2026-08-21T09:01:59.692989+00:00",
     "as_of": "2026-08-21",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -17,7 +17,7 @@
       "platforms": 7,
       "rules": 4,
       "policies": 24,
-      "alerts": 7
+      "alerts": 6
     }
   },
   "country": {
@@ -337,6 +337,28 @@
   ],
   "policies": [
     {
+      "title": "Carboxin; Pesticide Tolerances",
+      "date": "2026-08-21",
+      "agency": "Environmental Protection Agency",
+      "summary": "This regulation establishes tolerances for residues of carboxin in or on multiple crops that are discussed later in this document. Under the Federal Food, Drug, and Cosmetic Act (FFDCA), UPL Delaware Inc. submitted a petition to EPA requesting that EPA establish a maximum permiss…",
+      "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17088/carboxin-pesticide-tolerances",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-21",
+      "live": true
+    },
+    {
+      "title": "Advisory Committee; Oncologic Drugs Advisory Committee; Renewal",
+      "date": "2026-08-21",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is announcing the renewal of the Oncologic Drugs Advisory Committee by the Commissioner of Food and Drugs (the Commissioner). The Commissioner has determined that it is in the public interest to renew the Oncologic Drugs Advisory Committee f…",
+      "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17084/advisory-committee-oncologic-drugs-advisory-committee-renewal",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-21",
+      "live": true
+    },
+    {
       "title": "Advisory Committee; Cardiovascular and Renal Drugs Advisory Committee; Renewal",
       "date": "2026-08-20",
       "agency": "Health and Human Services Department",
@@ -452,28 +474,6 @@
       "agency": "Health and Human Services Department",
       "summary": "The Food and Drug Administration (FDA) is proposing to reclassify diagnostic endoscopic light source systems (product code OAY), which are postamendments class III devices, from class III (premarket approval) into class II (special controls), subject to premarket notification. FD…",
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16728/gastroenterology-urology-devices-reclassification-of-diagnostic-endoscopic-light-source-systems-to",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-21",
-      "live": true
-    },
-    {
-      "title": "Hematology and Pathology Devices; Reclassification of In Situ Hybridization Test Systems for Use With a Corresponding Approved Oncology Therapeutic Product",
-      "date": "2026-08-17",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is issuing a final order reclassifying in situ hybridization (ISH) test systems indicated for use with a corresponding approved oncology therapeutic product (product codes NYQ, MVD, OWE, and PNK), all postamendments class …",
-      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16727/hematology-and-pathology-devices-reclassification-of-in-situ-hybridization-test-systems-for-use-with",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-21",
-      "live": true
-    },
-    {
-      "title": "Receipt of Pesticide Petitions Filed for Residues of Pesticide Chemicals in or on Various Commodities-May 2026",
-      "date": "2026-08-17",
-      "agency": "Environmental Protection Agency",
-      "summary": "This document announces the Agency's receipt of and solicits public comment on initial filings of pesticide petitions requesting the establishment or modification of regulations for residues of pesticide chemicals in or on various commodities. The Agency is providing this notice …",
-      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16724/receipt-of-pesticide-petitions-filed-for-residues-of-pesticide-chemicals-in-or-on-various",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-21",
@@ -635,18 +635,6 @@
       "date": "2026-08-17",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16728/gastroenterology-urology-devices-reclassification-of-diagnostic-endoscopic-light-source-systems-to",
-      "as_of": "2026-08-21",
-      "live": true
-    },
-    {
-      "level": "medium",
-      "title": "Hematology and Pathology Devices; Reclassification of In Situ Hybridization Test Systems for Use With a Corresponding Approved Oncology Therapeutic Product",
-      "market": "美国",
-      "platform": "Health and Human Services Department",
-      "detail": "The Food and Drug Administration (FDA, the Agency, or we) is issuing a final order reclassifying in situ hybridization (ISH) test systems indicated for use with a corresponding approved oncology thera…",
-      "date": "2026-08-17",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16727/hematology-and-pathology-devices-reclassification-of-in-situ-hybridization-test-systems-for-use-with",
       "as_of": "2026-08-21",
       "live": true
     },
