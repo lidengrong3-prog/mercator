@@ -3373,7 +3373,179 @@ mark.jay-hl{background:#fff3a0;color:#1f2d3d;border-radius:3px;padding:0 2px;fon
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+<div class="login-page" id="loginPage">
+  <div class="login-left">
+    <div class="login-logo">JAY<span>观海</span></div>
+    <h1 class="login-title">又全又准的<br>跨境市场情报平台</h1>
+    <p class="login-subtitle">大数据 & AI 助你更早洞察跨境先机<br>帮工厂老板低成本判断"货卖到哪国能赚钱"</p>
+    <ul class="login-features">
+      <li>覆盖美国市场宏观数据、5+主流平台实时监控</li>
+      <li>AI 驱动选品洞察、政策风险智能预警</li>
+      <li>利润测算、选品评分、备货计算一站式操盘工具</li>
+      <li>一键生成专业市场调研报告，支持 PDF/Word 导出</li>
+    </ul>
+    <div class="login-illustration">🌊</div>
+  </div>
+  <div class="login-right">
+    <div class="login-right-header">
+      <a href="#">首页</a>
+      <a href="#">注册</a>
+      <a href="#" style="display:flex;align-items:center;gap:4px;">🌐 中文 ▾</a>
+    </div>
+    <div style="max-width:380px;width:100%;margin:0 auto;">
+      <h2 class="login-form-title">欢迎来到 JAY观海</h2>
+      <p class="login-form-desc">登录后开启你的跨境市场情报之旅</p>
+      <div class="social-login">
+        <button class="social-btn">
+          <span style="color:#4285f4;font-size:18px;">G</span> 使用 Google 登录
+        </button>
+        <button class="social-btn">
+          <span style="color:#07c160;font-size:18px;">💬</span> 使用微信登录
+        </button>
+      </div>
+      <div class="divider">或</div>
+      <div class="form-group">
+        <label><span class="required">*</span> 手机号</label>
+        <div class="phone-row">
+          <input type="text" class="form-input code" value="+86" readonly>
+          <input type="text" class="form-input" placeholder="请输入手机号">
+        </div>
+      </div>
+      <div class="form-group">
+        <label><span class="required">*</span> 验证码</label>
+        <div class="code-input">
+          <input type="text" class="form-input" placeholder="请输入验证码">
+          <button class="get-code-btn">获取验证码</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>邀请码（非必填）</label>
+        <input type="text" class="form-input" placeholder="请输入邀请码">
+      </div>
+      <button class="login-submit" onclick="doLogin()">登录 / 注册</button>
+      <p class="login-footer-link">
+        <a href="#">邮箱密码登录</a> · 登录即同意 <a href="#">服务条款</a>
+      </p>
+    </div>
+  </div>
+</div>
 
+<!-- ==================== 主应用 ==================== -->
+<div class="main-app" id="mainApp">
+  <!-- 左侧栏 -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">J</div>
+      <span class="logo-text">JAY观海</span>
+      <span class="logo-tag">DEMO</span>
+    </div>
+    <nav class="sidebar-nav">
+      <!-- 市场机会 -->
+      <div class="nav-group">
+        <div class="nav-item active" onclick="switchPage('market', this)">
+          <span class="nav-icon">🔍</span>
+          <span class="nav-text">市场机会</span>
+        </div>
+      </div>
+      <!-- 国家市场 -->
+      <div class="nav-group expanded">
+        <div class="nav-item" onclick="toggleSubmenu(this, 'country')">
+          <span class="nav-icon">🇺🇸</span>
+          <span class="nav-text">国家市场</span>
+          <span class="nav-arrow">▸</span>
+        </div>
+        <div class="nav-submenu">
+          <div class="nav-subitem active" onclick="switchSubPage('country-overview', this)">
+            <span class="sub-dot"></span> 市场概览
+          </div>
+          <div class="nav-subitem" onclick="switchSubPage('country-category', this)">
+            <span class="sub-dot"></span> 类目机会
+          </div>
+          <div class="nav-subitem" onclick="switchSubPage('country-platform', this)">
+            <span class="sub-dot"></span> 平台分布
+          </div>
+          <div class="nav-subitem" onclick="switchSubPage('country-policy', this)">
+            <span class="sub-dot"></span> 政策法规
+          </div>
+        </div>
+      </div>
+      <!-- 平台档案 -->
+      <div class="nav-group">
+        <div class="nav-item" onclick="toggleSubmenu(this, 'platform')">
+          <span class="nav-icon">🛒</span>
+          <span class="nav-text">平台档案</span>
+          <span class="nav-arrow">▸</span>
+        </div>
+        <div class="nav-submenu">
+          <div class="nav-subitem" onclick="switchSubPage('pf-amazon', this)">
+            <span class="sub-dot"></span> Amazon
+            <div class="nav-submenu">
+              <div class="nav-subitem" onclick="switchSubPage('pf-amazon-overview', this)"><span class="sub-dot"></span> 平台概览</div>
+              <div class="nav-subitem" onclick="switchSubPage('pf-amazon-rules', this)"><span class="sub-dot"></span> 平台规则</div>
+              <div class="nav-subitem" onclick="switchSubPage('pf-amazon-hot', this)"><span class="sub-dot"></span> 爆款店铺</div>
+            </div>
+          </div>
+          <div class="nav-subitem" onclick="switchSubPage('pf-tiktok', this)"><span class="sub-dot"></span> TikTok Shop</div>
+          <div class="nav-subitem" onclick="switchSubPage('pf-ae', this)"><span class="sub-dot"></span> 速卖通</div>
+          <div class="nav-subitem" onclick="switchSubPage('pf-ebay', this)"><span class="sub-dot"></span> eBay</div>
+          <div class="nav-subitem" onclick="switchSubPage('pf-more', this)"><span class="sub-dot"></span> 更多平台</div>
+        </div>
+      </div>
+      <!-- 预警中心 -->
+      <div class="nav-group">
+        <div class="nav-item" onclick="toggleSubmenu(this, 'alert')">
+          <span class="nav-icon">⚠️</span>
+          <span class="nav-text">预警中心</span>
+          <span class="nav-badge">3</span>
+        </div>
+        <div class="nav-submenu">
+          <div class="nav-subitem" onclick="switchSubPage('alert-urgent', this)"><span class="sub-dot"></span> 紧急处理</div>
+          <div class="nav-subitem" onclick="switchSubPage('alert-follow', this)"><span class="sub-dot"></span> 关注跟进</div>
+          <div class="nav-subitem" onclick="switchSubPage('alert-archived', this)"><span class="sub-dot"></span> 已归档</div>
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-avatar">J</div>
+      <div class="user-info">
+        <div class="user-name">体验用户</div>
+        <div class="user-role">免费版</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 顶部栏 -->
+  <header class="topbar">
+    <nav class="topbar-nav">
+      <div class="topbar-item" onclick="topbarSwitch('tools', this)">
+        🧰 操盘手工具
+      </div>
+      <div class="topbar-item" onclick="topbarSwitch('ai', this)">
+        🤖 AI工具
+      </div>
+      <div class="topbar-item" onclick="topbarSwitch('api', this)">
+        🔌 API接口
+      </div>
+      <div class="topbar-item" onclick="topbarSwitch('resource', this)">
+        📚 资源中心
+      </div>
+      <div class="topbar-item report-btn" onclick="topbarSwitch('report', this)">
+        📄 生成报告
+      </div>
+    </nav>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        🔍 <input type="text" placeholder="搜索产品、类目、平台...">
+      </div>
+      <div class="topbar-icon" title="我的收藏">📋</div>
+      <div class="topbar-icon" title="消息通知">
+        🔔 <span class="dot"></span>
+      </div>
+      <div class="lang-switch">🌐 中文 ▾</div>
+    </div>
+  </header>
+
+  <!-- 内容区 -->
 
   <aside class="sidebar">
   <div class="brand" title="JAY = 际安云（JAY Cloud）；观海 = 监测全球数据海洋。JAY观海意为「监测全球跨境市场的云端情报系统」，帮助中国产业带工厂低门槛洞察出海机会与风险。"><span class="brand-mark">J</span><div><strong>JAY观海</strong><small>全球电商情报</small></div></div>
@@ -6836,7 +7008,8 @@ function cn2GetExt(key){ return cn2CountryExt[key] || cn2CountryExt['id']; }
 function cn2GetTrendClass(t){ if(!t) return 'stable'; if(t.indexOf('+')>=0||t==='↑'||t==='利好') return 'up'; if(t.indexOf('-')>=0||t==='↓'||t==='收紧') return 'down'; return 'stable'; }
 
 function cn2Render(key){
-  return; // disabled v4 2026-08-21 (countries 重做为参考版)
+    return; // disabled v4 2026-08-21
+
   cn2CurrentKey = key;
   try{ localStorage.setItem('jay_last_country', key); }catch(e){}
   var d = countryFullData[key];
@@ -7228,7 +7401,7 @@ document.querySelectorAll('.cn2-tf-btn').forEach(function(btn){
 
 // Export functions
 function cn2ExportPDF(){
-  return; // disabled v4
+    return; // disabled v4 2026-08-21
 
   var key=cn2CurrentKey;
   var d=countryFullData[key];
@@ -7279,7 +7452,7 @@ function cn2ExportPDF(){
   },1200);
 }
 function cn2ExportExcel(){
-  return; // disabled v4
+    return; // disabled v4 2026-08-21
  toast('正在导出'+countryFullData[cn2CurrentKey].name+'市场数据Excel...'); setTimeout(function(){ toast('Excel已导出'); }, 1000); }
 function cn2ExportMacro(){
   var key=cn2CurrentKey;
@@ -7327,7 +7500,7 @@ function cn2ExportPlats(){
   toast(d.name+' 平台数据已导出CSV');
 }
 function cn2AddMaterial(){
-  return; // disabled v4
+    return; // disabled v4 2026-08-21
  rpAddMaterial('country', cn2CurrentKey, countryFullData[cn2CurrentKey].name+' 完整市场档案', '宏观+电商+政策+人口全量数据'); toast('已加入报告素材'); }
 
 // Initial render
@@ -10475,8 +10648,6 @@ function rpV2AiTool(type){
 
 // --- Export ---
 function rpV2Export(format){
-    return; // disabled v4 2026-08-21
-
   var body=document.getElementById('rp-v2-preview-body');
   if(!body||body.classList.contains('rp-empty-preview')){toast('请先生成报告');return}
   toast('正在导出 '+format.toUpperCase()+' ...');
@@ -13205,10 +13376,63 @@ function stToast(msg){
     var rl=document.getElementById('nav-rl-count'); if(rl){ try{ if(typeof rulesJsonData!=='undefined'&&rulesJsonData&&rulesJsonData.items&&(rulesJsonData.source_count||0)>6){ rl.textContent=rulesJsonData.items.length; } }catch(e){} }
   }
   window.updateNavBadges=updateNavBadges;
+  // ===== 印尼 ⑨⑩ 补齐（2026-08-21） =====
+  function cn2InjectExtras() {
+    var main = document.getElementById('cn2-main');
+    if (!main) return;
+    if (main.querySelector('.cn2-extra-block')) return;
+    var html = ''
+      + '<div class="cn2-extra-block">'
+      + '  <div class="cn2-extra-head"><span class="cn2-extra-num">8</span><h3>宗教文化禁忌与机会</h3></div>'
+      + '  <div class="cn2-religion-grid">'
+      + '    <div class="cn2-religion-card">'
+      + '      <h4>🕌 宗教信仰（伊斯兰教 87%）</h4>'
+      + '      <p><span class="tag">禁忌</span>酒精/猪相关食品；<span class="tag">禁忌</span>左手接触食物；<span class="tag">禁忌</span>女性暴露着装；<br><span class="tag-g">机会</span>清真(Halal)认证产品溢价 20-30%；斋月(Ramadan)大促 GMV 翻 3 倍；开斋节(Hari Raya)礼品消费旺季。</p>'
+      + '    </div>'
+      + '    <div class="cn2-religion-card">'
+      + '      <h4>🙏 文化习惯</h4>'
+      + '      <p><span class="tag">注意</span>头部被视为神圣，不随意触摸；<span class="tag">注意</span>用右手接/递物品；<br><span class="tag-g">机会</span>家庭聚会型大包装产品受青睐；多人共享场景消费；线下+线上结合的直播带货转化率高。</p>'
+      + '    </div>'
+      + '    <div class="cn2-religion-card">'
+      + '      <h4>🌐 语言与沟通</h4>'
+      + '      <p>官方语言 Bahasa Indonesia；年轻群体英语普及；<br><span class="tag-g">机会</span>本地化 Listing（印尼语）转化率比英文高 2.5 倍；客服 WhatsApp/Tokopedia 内置聊天需双语。</p>'
+      + '    </div>'
+      + '    <div class="cn2-religion-card">'
+      + '      <h4>🎉 节庆日历</h4>'
+      + '      <p>斋月（3月）+ 开斋节（4月）：大促黄金期，备货需提前 60 天；<br>独立日 8/17；圣诞节非主流；<span class="tag-g">机会</span>节庆营销 ROI 较平日高 180%。</p>'
+      + '    </div>'
+      + '  </div>'
+      + '</div>'
+      + '<div class="cn2-ai-strategy">'
+      + '  <h3><span style="background:rgba(255,255,255,.18);padding:2px 8px;border-radius:6px;font-size:11px;margin-right:4px">9</span>AI 入场策略建议</h3>'
+      + '  <div style="font-size:13px;color:#cbd5e1;line-height:1.7;margin-top:4px">基于宏观 + 平台 + 类目 + 合规 + 文化 9 大块分析，AI 综合给出三阶段入场路径：</div>'
+      + '  <div class="cn2-ai-strategy-grid">'
+      + '    <div class="cn2-ai-strategy-item"><b>阶段 1：试水（0-3 月）</b><p>① 选 Shopee/Lazada/TikTok Shop 印尼站，开通跨境店；② 优先 3-5 款清真认证美妆/家居/服饰 SKU，单价 5-20 美金；③ 内容侧用 Bahasa Indonesia 短视频，重点打斋月+开斋节场景。</p></div>'
+      + '    <div class="cn2-ai-strategy-item"><b>阶段 2：扩张（3-9 月）</b><p>① 复制爆款到 Tokopedia + Blibli 抢占货架电商；② 建立本地海外仓（雅加达/泗水）缩短时效；③ 申请 BPOM/SNI 认证拓展食品个护类目；④ 培养 5-10 位印尼本土达人，月投放预算 $2-5K。</p></div>'
+      + '    <div class="cn2-ai-strategy-item"><b>阶段 3：壁垒（9-18 月）</b><p>① 申请 Halal Indonesia 认证，进军穆斯林主流市场；② 自建品牌站 + 私域 WhatsApp 社群运营；③ 从印尼辐射马来/文莱/新加坡，回款周期控制在 30 天内。</p></div>'
+      + '  </div>'
+      + '</div>';
+    main.insertAdjacentHTML('beforeend', html);
+  }
+  function cn2CloseOnboarding() {
+    document.querySelectorAll('#demo-banner, .jay-fb, .jay-fb-float, .jay-fb-fab').forEach(function(e){ e.style.display='none'; });
+    document.querySelectorAll('button').forEach(function(b){
+      var t = (b.textContent || '').trim();
+      if (t === '开始使用' || t === '跳过' || t === '知道了' || t === '关闭') { try { b.click(); } catch (e) {} }
+    });
+  }
+  window.cn2HookInject = function() {
+    var main = document.getElementById('cn2-main');
+    if (!main || main._cn2Observed) return;
+    main._cn2Observed = true;
+    var tryInject = function() { cn2InjectExtras(); cn2CloseOnboarding(); };
+    tryInject();
+    new MutationObserver(function() { tryInject(); }).observe(main, { childList: true, subtree: true });
+  };
   window._ovSwitchPage = window.switchPage;
   window.switchPage = function(name, opts) {
     var r = window._ovSwitchPage ? window._ovSwitchPage.apply(this, arguments) : null;
-    // countries 已重做为参考版（无需 cn2 注入）
+    if (name === 'countries') { setTimeout(function() { cn2HookInject(); }, 200); setTimeout(cn2InjectExtras, 800); setTimeout(cn2InjectExtras, 1800); }
     return r;
   };
 
