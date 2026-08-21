@@ -652,7 +652,7 @@
         ]
       ]
     },
-    "macro_updated": "2026-08-21 04:58 UTC"
+    "macro_updated": "2026-08-21 09:02 UTC"
   },
   "jp": {
     "flag": "🇯🇵",
@@ -2172,6 +2172,7 @@
         "小家电 +25% 生活品质提升需求旺盛"
       ],
       "risks": [
+        "⚠️ Modifications to the Regulations Implementing the Vietnam Er（Federal Register 2026-08-21）",
         "⚠️ 本土电商保护政策趋严",
         "⚠️ 物流最后一公里仍是挑战",
         "⚠️ 价格敏感度高，利润空间有限"
@@ -11841,16 +11842,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-08-18T16:53:25.046236+08:00",
+    "last_updated": "2026-08-21T16:58:27.649218+08:00",
     "updated_countries": [
-      "pl",
-      "se",
-      "be",
-      "sa",
-      "ae",
-      "eg",
-      "tr",
-      "il"
+      "ua",
+      "kz",
+      "id",
+      "th",
+      "my",
+      "vn",
+      "ph",
+      "sg"
     ]
   }
 }
