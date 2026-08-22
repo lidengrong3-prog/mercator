@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国消费电子 (US Consumer Electronics)",
     "cat_key": "electronics",
-    "generated_at": "2026-08-22T04:52:09.822353+00:00",
+    "generated_at": "2026-08-22T08:50:36.343971+00:00",
     "as_of": "2026-08-22",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -16,7 +16,7 @@
       "country": 1,
       "platforms": 7,
       "rules": 5,
-      "policies": 19,
+      "policies": 21,
       "alerts": 11
     }
   },
@@ -344,6 +344,28 @@
     }
   ],
   "policies": [
+    {
+      "title": "Foreign-Trade Zone (FTZ) 183, Notification of Proposed Production Activity; Ichor Systems, Inc.; (Semiconductor Equipment); Austin, Texas",
+      "date": "2026-08-24",
+      "agency": "Commerce Department",
+      "summary": "",
+      "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17241/foreign-trade-zone-ftz-183-notification-of-proposed-production-activity-ichor-systems-inc",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-22",
+      "live": true
+    },
+    {
+      "title": "Education Department General Administrative Regulations",
+      "date": "2026-08-24",
+      "agency": "Education Department",
+      "summary": "The Secretary of Education proposes to amend the Education Department General Administrative Regulations (EDGAR) and other provisions in 2 CFR parts 3474 and 3485 to update the regulations and better align them with other U.S. Department of Education (Department) regulations and …",
+      "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17239/education-department-general-administrative-regulations",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-22",
+      "live": true
+    },
     {
       "title": "Regulation Crypto Assets",
       "date": "2026-08-21",

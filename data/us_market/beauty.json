@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国美妆个护 (US Beauty & Personal Care)",
     "cat_key": "beauty",
-    "generated_at": "2026-08-22T04:52:14.181851+00:00",
+    "generated_at": "2026-08-22T08:50:39.271595+00:00",
     "as_of": "2026-08-22",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -17,7 +17,7 @@
       "platforms": 7,
       "rules": 4,
       "policies": 24,
-      "alerts": 6
+      "alerts": 4
     }
   },
   "country": {
@@ -337,6 +337,28 @@
   ],
   "policies": [
     {
+      "title": "Food and Drug Administration Modernization Act of 1997: Modifications to the List of Recognized Standards, Recognition List Number: 066",
+      "date": "2026-08-24",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or the Agency) is announcing a publication containing modifications the Agency is making to the list of standards FDA recognizes for use in premarket reviews (FDA Recognized Consensus Standards). This publication, entitled \"Modifications to t…",
+      "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17229/food-and-drug-administration-modernization-act-of-1997-modifications-to-the-list-of-recognized",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-22",
+      "live": true
+    },
+    {
+      "title": "Evaluation of Therapeutic Equivalence; Guidance for Industry; Availability",
+      "date": "2026-08-24",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or Agency) is announcing the availability of a final guidance for industry titled \"Evaluation of Therapeutic Equivalence.\" This guidance explains FDA's thinking on therapeutic equivalence evaluations and therapeutic equivalence codes (TE code…",
+      "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17215/evaluation-of-therapeutic-equivalence-guidance-for-industry-availability",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-22",
+      "live": true
+    },
+    {
       "title": "Carboxin; Pesticide Tolerances",
       "date": "2026-08-21",
       "agency": "Environmental Protection Agency",
@@ -452,28 +474,6 @@
       "agency": "Health and Human Services Department",
       "summary": "The Food and Drug Administration (FDA or Agency) is announcing the availability of a draft guidance for industry titled \"Determining Whether to Submit an ANDA or a 505(b)(2) Application.\" This draft guidance is intended to serve as a foundational guidance to assist applicants in …",
       "url": "https://www.federalregister.gov/documents/2026/08/18/2026-16837/determining-whether-to-submit-an-anda-or-a-505b2-application-draft-guidance-for-industry",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-22",
-      "live": true
-    },
-    {
-      "title": "Medical Devices; Classification of Accessories Distinct From Other Devices; Proposed List of Accessories Suitable for Class I; Request for Comments",
-      "date": "2026-08-17",
-      "agency": "Health and Human Services Department",
-      "summary": "As required by the FDA Reauthorization Act of 2017 (FDARA), the Food and Drug Administration (FDA or Agency) has identified a list of accessories for which the Agency believes general controls alone are sufficient to provide reasonable assurance of safety and effectiveness, makin…",
-      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16729/medical-devices-classification-of-accessories-distinct-from-other-devices-proposed-list-of",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-22",
-      "live": true
-    },
-    {
-      "title": "Gastroenterology-Urology Devices; Reclassification of Diagnostic Endoscopic Light Source Systems To Be Renamed Cystoscopic Systems Intended as an Aid for Detection of Bladder Cancer",
-      "date": "2026-08-17",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA) is proposing to reclassify diagnostic endoscopic light source systems (product code OAY), which are postamendments class III devices, from class III (premarket approval) into class II (special controls), subject to premarket notification. FD…",
-      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16728/gastroenterology-urology-devices-reclassification-of-diagnostic-endoscopic-light-source-systems-to",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-22",
@@ -613,30 +613,6 @@
       "url": "https://ustr.gov/node/9608",
       "as_of": "2026-08-22",
       "live": false
-    },
-    {
-      "level": "medium",
-      "title": "Medical Devices; Classification of Accessories Distinct From Other Devices; Proposed List of Accessories Suitable for Class I; Request for Comments",
-      "market": "美国",
-      "platform": "Health and Human Services Department",
-      "detail": "As required by the FDA Reauthorization Act of 2017 (FDARA), the Food and Drug Administration (FDA or Agency) has identified a list of accessories for which the Agency believes general controls alone a…",
-      "date": "2026-08-17",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16729/medical-devices-classification-of-accessories-distinct-from-other-devices-proposed-list-of",
-      "as_of": "2026-08-22",
-      "live": true
-    },
-    {
-      "level": "medium",
-      "title": "Gastroenterology-Urology Devices; Reclassification of Diagnostic Endoscopic Light Source Systems To Be Renamed Cystoscopic Systems Intended as an Aid for Detection of Bladder Cancer",
-      "market": "美国",
-      "platform": "Health and Human Services Department",
-      "detail": "The Food and Drug Administration (FDA) is proposing to reclassify diagnostic endoscopic light source systems (product code OAY), which are postamendments class III devices, from class III (premarket a…",
-      "date": "2026-08-17",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16728/gastroenterology-urology-devices-reclassification-of-diagnostic-endoscopic-light-source-systems-to",
-      "as_of": "2026-08-22",
-      "live": true
     },
     {
       "level": "high",

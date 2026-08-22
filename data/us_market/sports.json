@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国运动户外 (US Sports & Outdoor)",
     "cat_key": "sports",
-    "generated_at": "2026-08-22T04:52:18.297885+00:00",
+    "generated_at": "2026-08-22T08:50:41.908412+00:00",
     "as_of": "2026-08-22",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -16,8 +16,8 @@
       "country": 1,
       "platforms": 7,
       "rules": 4,
-      "policies": 8,
-      "alerts": 5
+      "policies": 9,
+      "alerts": 6
     }
   },
   "country": {
@@ -337,6 +337,17 @@
   ],
   "policies": [
     {
+      "title": "Travel Management; National Forest System Lands",
+      "date": "2026-08-24",
+      "agency": "Agriculture Department",
+      "summary": "The U.S. Department of Agriculture (USDA) is initiating an environmental impact statement and rulemaking to revise the Forest Service's travel management regulations, 36 CFR part 212. The proposed action would establish a uniform national policy favoring increased access while si…",
+      "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17211/travel-management-national-forest-system-lands",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-22",
+      "live": true
+    },
+    {
       "title": "Allwin Powersports Corp., Receipt of Petition for Decision of Inconsequential Noncompliance",
       "date": "2026-08-20",
       "agency": "Transportation Department",
@@ -437,6 +448,18 @@
       "url": "https://ustr.gov/node/9608",
       "as_of": "2026-08-22",
       "live": false
+    },
+    {
+      "level": "medium",
+      "title": "Travel Management; National Forest System Lands",
+      "market": "美国",
+      "platform": "Agriculture Department",
+      "detail": "The U.S. Department of Agriculture (USDA) is initiating an environmental impact statement and rulemaking to revise the Forest Service's travel management regulations, 36 CFR part 212. The proposed act…",
+      "date": "2026-08-24",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17211/travel-management-national-forest-system-lands",
+      "as_of": "2026-08-22",
+      "live": true
     },
     {
       "level": "medium",

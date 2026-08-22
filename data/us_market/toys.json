@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国玩具乐器 (US Toys & Games)",
     "cat_key": "toys",
-    "generated_at": "2026-08-22T04:52:15.680288+00:00",
+    "generated_at": "2026-08-22T08:50:40.126770+00:00",
     "as_of": "2026-08-22",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -338,22 +338,22 @@
   ],
   "policies": [
     {
-      "title": "Introduction to the Unified Agenda of Federal Regulatory and Deregulatory Actions-2026",
-      "date": "2026-08-14",
-      "agency": "Regulatory Information Service Center",
-      "summary": "Publication of the 2026 Unified Agenda of Federal Regulatory and Deregulatory Actions represents a key component of the regulatory planning mechanism prescribed in Executive Order (\"E.O.\") 12866, \"Regulatory Planning and Review,\" (58 FR 51735, as amended) and reaffirmed in E.O. 1…",
-      "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16603/introduction-to-the-unified-agenda-of-federal-regulatory-and-deregulatory-actions-2026",
+      "title": "Education Department General Administrative Regulations",
+      "date": "2026-08-24",
+      "agency": "Education Department",
+      "summary": "The Secretary of Education proposes to amend the Education Department General Administrative Regulations (EDGAR) and other provisions in 2 CFR parts 3474 and 3485 to update the regulations and better align them with other U.S. Department of Education (Department) regulations and …",
+      "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17239/education-department-general-administrative-regulations",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-22",
       "live": true
     },
     {
-      "title": "FCC To Review E-Rate Program To Ensure Congress's Vision",
+      "title": "Introduction to the Unified Agenda of Federal Regulatory and Deregulatory Actions-2026",
       "date": "2026-08-14",
-      "agency": "Federal Communications Commission",
-      "summary": "In this document, the Federal Communications Commission (Commission) seeks comment on measures the Commission can take to better protect children when using E-Rate-funded networks, the Commission's progress in ensuring affordable access to high-speed broadband to and within schoo…",
-      "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16590/fcc-to-review-e-rate-program-to-ensure-congresss-vision",
+      "agency": "Regulatory Information Service Center",
+      "summary": "Publication of the 2026 Unified Agenda of Federal Regulatory and Deregulatory Actions represents a key component of the regulatory planning mechanism prescribed in Executive Order (\"E.O.\") 12866, \"Regulatory Planning and Review,\" (58 FR 51735, as amended) and reaffirmed in E.O. 1…",
+      "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16603/introduction-to-the-unified-agenda-of-federal-regulatory-and-deregulatory-actions-2026",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-22",
@@ -594,18 +594,6 @@
       "live": false
     },
     {
-      "level": "high",
-      "title": "FCC To Review E-Rate Program To Ensure Congress's Vision",
-      "market": "美国",
-      "platform": "Federal Communications Commission",
-      "detail": "In this document, the Federal Communications Commission (Commission) seeks comment on measures the Commission can take to better protect children when using E-Rate-funded networks, the Commission's pr…",
-      "date": "2026-08-14",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16590/fcc-to-review-e-rate-program-to-ensure-congresss-vision",
-      "as_of": "2026-08-22",
-      "live": true
-    },
-    {
       "level": "medium",
       "title": "Revocation of Obsolete Rules Regarding Infant Bouncer Seats and Stationary Activity Centers",
       "market": "美国",
@@ -806,6 +794,18 @@
       "date": "2023-09-21",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2023/09/21/2023-20333/safety-standard-for-button-cell-or-coin-batteries-and-consumer-products-containing-such-batteries",
+      "as_of": "2026-08-22",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Safety Standard and Notification Requirements for Button Cell or Coin Batteries and Consumer Products Containing Such Batteries",
+      "market": "美国",
+      "platform": "Consumer Product Safety Commission",
+      "detail": "As required by Reese's Law, to eliminate or adequately reduce the risk of injury from ingestion of button cell or coin batteries by children 6 years old and younger, the U.S. Consumer Product Safety C…",
+      "date": "2023-02-09",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2023/02/09/2023-02356/safety-standard-and-notification-requirements-for-button-cell-or-coin-batteries-and-consumer",
       "as_of": "2026-08-22",
       "live": true
     }
