@@ -333,6 +333,12 @@
         "https://fred.stlouisfed.org/series/UNRATE"
       ],
       [
+        "联邦基金利率(2026-07-01)",
+        "3.6300000000 %",
+        "来源: FRED",
+        "https://fred.stlouisfed.org/series/FEDFUNDS"
+      ],
+      [
         "CPI(2026-07-01)",
         "332.813 指数(1982-84=100)",
         "来源: FRED",
@@ -351,8 +357,8 @@
         "https://fred.stlouisfed.org/series/RSAFS"
       ],
       [
-        "10Y国债收益率(2026-08-20)",
-        "4.6900000000 %",
+        "10Y国债收益率(2026-08-21)",
+        "4.7400000000 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/DGS10"
       ],
@@ -646,7 +652,7 @@
         ]
       ]
     },
-    "macro_updated": "2026-08-24 17:01 UTC"
+    "macro_updated": "2026-08-24 20:51 UTC"
   },
   "jp": {
     "flag": "🇯🇵",
