@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国汽车配件 (US Automotive Aftermarket)",
     "cat_key": "auto",
-    "generated_at": "2026-08-25T04:57:13.336996+00:00",
+    "generated_at": "2026-08-25T09:12:58.707998+00:00",
     "as_of": "2026-08-25",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -335,6 +335,17 @@
   ],
   "policies": [
     {
+      "title": "Agency Information Collection Activities; Renewal of an Approved Information Collection: Non-Insulin-Treated Diabetes Mellitus Assessment Form, MCSA-5872",
+      "date": "2026-08-25",
+      "agency": "Transportation Department",
+      "summary": "In accordance with the Paperwork Reduction Act of 1995, FMCSA announces its plan to submit the Information Collection Request (ICR) described below to the Office of Management and Budget (OMB) for review and approval and invites public comment. FMCSA requests approval to renew an…",
+      "url": "https://www.federalregister.gov/documents/2026/08/25/2026-17340/agency-information-collection-activities-renewal-of-an-approved-information-collection",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-25",
+      "live": true
+    },
+    {
       "title": "Temporary Suspension of Additional Duties To Offset Canadian Discrimination Against the Commerce of the United States With Respect to Alcoholic Beverages, Dairy, and Motor Vehicles",
       "date": "2026-08-24",
       "agency": "Executive Office of the President",
@@ -582,17 +593,6 @@
       "agency": "Commerce Department",
       "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies are being provided to certain producers/exporters of organic soybean meal from India. The period of review (POR) is January 1, 2024, through December 31, 2024. Interested parties ar…",
       "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16018/organic-soybean-meal-from-india-preliminary-results-and-partial-rescission-of-countervailing-duty",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
-      "live": true
-    },
-    {
-      "title": "Certain Carbon and Alloy Steel Cut-to-Length Plate From the Republic of Korea: Preliminary Results and Rescission, in Part of Countervailing Duty Administrative Review; 2024",
-      "date": "2026-08-06",
-      "agency": "Commerce Department",
-      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies were provided to certain producers and exporters of certain carbon and alloy steel cut-to-length plate (CTL plate) from the Republic of Korea (Korea) during the period of review (PO…",
-      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16017/certain-carbon-and-alloy-steel-cut-to-length-plate-from-the-republic-of-korea-preliminary-results",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-25",

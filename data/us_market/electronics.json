@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国消费电子 (US Consumer Electronics)",
     "cat_key": "electronics",
-    "generated_at": "2026-08-25T04:57:06.354926+00:00",
+    "generated_at": "2026-08-25T09:12:54.554996+00:00",
     "as_of": "2026-08-25",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -16,8 +16,8 @@
       "country": 1,
       "platforms": 7,
       "rules": 5,
-      "policies": 21,
-      "alerts": 11
+      "policies": 20,
+      "alerts": 10
     }
   },
   "country": {
@@ -367,17 +367,6 @@
       "live": true
     },
     {
-      "title": "Regulation Crypto Assets",
-      "date": "2026-08-21",
-      "agency": "Securities and Exchange Commission",
-      "summary": "The Securities and Exchange Commission (\"Commission\") is proposing new rules to create a tailored offering regime for certain investment contracts involving crypto assets. The proposed offering regime is intended to facilitate capital formation and accommodate innovation within t…",
-      "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17183/regulation-crypto-assets",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
-      "live": true
-    },
-    {
       "title": "Notice of Receipt of Complaint; Solicitation of Comments Relating to the Public Interest",
       "date": "2026-08-20",
       "agency": "International Trade Commission",
@@ -588,18 +577,6 @@
       "url": "https://ustr.gov/node/9608",
       "as_of": "2026-08-25",
       "live": false
-    },
-    {
-      "level": "medium",
-      "title": "Regulation Crypto Assets",
-      "market": "美国",
-      "platform": "Securities and Exchange Commission",
-      "detail": "The Securities and Exchange Commission (\"Commission\") is proposing new rules to create a tailored offering regime for certain investment contracts involving crypto assets. The proposed offering regime…",
-      "date": "2026-08-21",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17183/regulation-crypto-assets",
-      "as_of": "2026-08-25",
-      "live": true
     },
     {
       "level": "high",

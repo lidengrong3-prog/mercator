@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T04:57:05.089732+00:00",
+  "generated_at": "2026-08-25T09:12:53.589093+00:00",
   "as_of": "2026-08-25",
   "categories": [
     {
@@ -10,8 +10,8 @@
       "file": "electronics.json",
       "market_size": "US$ 2,616 亿 (2026E)",
       "cagr": "CAGR 4.8% (2026-2031)",
-      "policy_count": 21,
-      "alert_count": 11,
+      "policy_count": 20,
+      "alert_count": 10,
       "report": "reports/us_market/electronics_report.pdf"
     },
     {

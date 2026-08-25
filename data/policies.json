@@ -1,7 +1,79 @@
 {
-  "updated_at": "2026-08-25T12:53:38.426929+08:00",
+  "updated_at": "2026-08-25T17:00:04.713778+08:00",
   "source_count": 6,
   "items": [
+    {
+      "id": "p20260825-b69ee4ab",
+      "title": "Reduction in Force Appeals; Correction",
+      "summary": "The Office of Personnel Management (OPM) published a final rule in the Federal Register on August 3, 2026, concerning reduction in force appeals. That document contained typographical and citation errors in the regulatory text. This document corrects the final rule.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/25/2026-17338/reduction-in-force-appeals-correction",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-25",
+      "collected_at": "2026-08-25T17:00:04.713778+08:00"
+    },
+    {
+      "id": "p20260825-78f3243e",
+      "title": "Amendment of Restricted Areas R-2505, R-2524, R-2508, and R-2515 in California",
+      "summary": "This action amends multiple coordinates used to describe restricted areas R-2505, R-2524, R-2508, and R-2515 in California. The amendments are administrative in nature and do not expand any outer boundaries, altitudes, times of designation, or activities conducted within the restricted areas.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/25/2026-17339/amendment-of-restricted-areas-r-2505-r-2524-r-2508-and-r-2515-in-california",
+      "region": "US",
+      "category": "sanction",
+      "impact_level": "medium",
+      "published_at": "2026-08-25",
+      "collected_at": "2026-08-25T17:00:04.713778+08:00"
+    },
+    {
+      "id": "p20260825-8a63f372",
+      "title": "Beautifying Transportation Infrastructure Council; Public Meeting",
+      "summary": "The Office of the Secretary of Transportation (OST) announces the next public meeting of the Beautifying Transportation Infrastructure Council (Council) on September 30, 2026. This notice announces the date, time, and location of the virtual meeting, which will be open to the public. The purpose of ",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/25/2026-17342/beautifying-transportation-infrastructure-council-public-meeting",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-25",
+      "collected_at": "2026-08-25T17:00:04.713778+08:00"
+    },
+    {
+      "id": "p20260825-2b326239",
+      "title": "Final Waiver and Extension of the Project Period With Funding-Elementary and Secondary Education Act of 1965, as Amended, Title VI, Part B, Native Hawaiian Education",
+      "summary": "The Secretary waives the requirements in the Education Department General Administrative Regulations (EDGAR) that generally prohibit project period extensions involving the obligation of additional Federal funds. The final waiver and extension would allow 21 projects under Assistance Listing Number ",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/25/2026-17353/final-waiver-and-extension-of-the-project-period-with-funding-elementary-and-secondary-education-act",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-25",
+      "collected_at": "2026-08-25T17:00:04.713778+08:00"
+    },
+    {
+      "id": "p20260825-ffeb810f",
+      "title": "Establishment of Four Customs-Enforcement Areas",
+      "summary": "This document sets forth the Commissioner of U.S. Customs and Border Protection's (CBP) declaration establishing four Customs- Enforcement Areas (CEA) in the near shore waters of South Florida, Central/Southern California, Puerto Rico, and the Gulf Coast of Texas. This action will further CBP effort",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/25/2026-17354/establishment-of-four-customs-enforcement-areas",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-25",
+      "collected_at": "2026-08-25T17:00:04.713778+08:00"
+    },
+    {
+      "id": "p20260825-78834f98",
+      "title": "The National Space Transportation Policy",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/25/2026-17372/the-national-space-transportation-policy",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-25",
+      "collected_at": "2026-08-25T17:00:04.713778+08:00"
+    },
     {
       "id": "p20260824-738b72da",
       "title": "用第三方收款直接回国=合法免税？揭秘美国跨境电商利润回国的合规之路",
