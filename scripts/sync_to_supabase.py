@@ -35,6 +35,8 @@ import ssl
 import hashlib
 from datetime import datetime, timezone
 
+from validate_data import DEFAULT_REPORT, validate_all, write_report
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DATA_DIR = os.path.join(ROOT, "data")
@@ -245,6 +247,49 @@ def load_json(path):
         return None
 
 
+def build_market_data_rows(quality_report, only="all"):
+    """Build the public KV rows consumed by the browser data layer."""
+    specs = {
+        "policies": "policies.json",
+        "rules": "rules.json",
+        "alerts": "alerts.json",
+        "platforms": "platforms.json",
+        "countries": "countries.json",
+    }
+    selected = set(specs) if only == "all" else {only}
+    rows = []
+    for key, filename in specs.items():
+        if key not in selected:
+            continue
+        data = load_json(os.path.join(DATA_DIR, filename))
+        if data is None:
+            continue
+        if key == "countries" and isinstance(data, dict):
+            data = {name: value for name, value in data.items() if not name.startswith("_")}
+        quality = quality_report.get("datasets", {}).get(key, {})
+        rows.append({
+            "key": key,
+            "data": data,
+            "meta": {
+                "source": filename,
+                "updated_at": quality.get("updated_at"),
+                "quality_status": quality.get("status", "unknown"),
+                "record_count": quality.get("records", 0),
+            },
+        })
+    if only == "all":
+        rows.append({
+            "key": "quality_report",
+            "data": quality_report,
+            "meta": {
+                "source": "quality_report.json",
+                "updated_at": quality_report.get("generated_at"),
+                "quality_status": quality_report.get("status", "unknown"),
+            },
+        })
+    return rows
+
+
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="Sync data to Supabase")
@@ -252,24 +297,22 @@ def main():
     parser.add_argument("--only", choices=["policies", "rules", "alerts", "platforms", "us_market", "all"],
                         default="all", help="Only sync specific data type")
     args = parser.parse_args()
+
+    # Re-run the gate here so a manual sync cannot bypass the workflow check.
+    quality_report = validate_all()
+    write_report(quality_report, DEFAULT_REPORT)
+    if not quality_report.get("publishable"):
+        print(f"[SYNC] ERROR: data quality gate is {quality_report.get('status')}; refusing to publish")
+        return 3
     
     supa_url, supa_key = get_config()
     
     if not supa_url or not supa_key:
-        print("[SYNC] ⚠️  SUPABASE_URL or SUPABASE_SERVICE_KEY not set")
-        print("[SYNC] Set environment variables and try again.")
-        print("[SYNC] Data will be saved as local backup instead.")
-        
-        # Save as local backup
-        backup_dir = os.path.join(DATA_DIR, "_supabase_backup")
-        os.makedirs(backup_dir, exist_ok=True)
-        backup_file = os.path.join(backup_dir, f"sync_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json")
-        
-        summary = {"generated_at": datetime.now(timezone.utc).isoformat(), "status": "no_supabase_config"}
-        with open(backup_file, "w", encoding="utf-8") as f:
-            json.dump(summary, f, ensure_ascii=False, indent=2)
-        print(f"[SYNC] Local backup: {backup_file}")
-        return
+        if args.dry_run:
+            supa_url, supa_key = "https://dry-run.invalid", "dry-run"
+        else:
+            print("[SYNC] ERROR: SUPABASE_URL or SUPABASE_SERVICE_KEY not set")
+            return 2
     
     if args.dry_run:
         print("[SYNC] DRY RUN MODE - no data will be written\n")
@@ -279,6 +322,7 @@ def main():
         "dry_run": args.dry_run,
         "results": {},
     }
+    failures = []
     
     # Policies
     if args.only in ("policies", "all"):
@@ -291,6 +335,8 @@ def main():
                 n = supabase_upsert(supa_url, supa_key, "policies", rows)
                 summary["results"]["policies"] = n
                 print(f"  ✅ Synced {n} rows")
+                if n != len(rows):
+                    failures.append(f"policies: expected {len(rows)}, synced {n}")
     
     # Rules
     if args.only in ("rules", "all"):
@@ -303,6 +349,8 @@ def main():
                 n = supabase_upsert(supa_url, supa_key, "rules", rows)
                 summary["results"]["rules"] = n
                 print(f"  ✅ Synced {n} rows")
+                if n != len(rows):
+                    failures.append(f"rules: expected {len(rows)}, synced {n}")
     
     # Alerts
     if args.only in ("alerts", "all"):
@@ -315,6 +363,8 @@ def main():
                 n = supabase_upsert(supa_url, supa_key, "alerts", rows)
                 summary["results"]["alerts"] = n
                 print(f"  ✅ Synced {n} rows")
+                if n != len(rows):
+                    failures.append(f"alerts: expected {len(rows)}, synced {n}")
     
     # Platforms
     if args.only in ("platforms", "all"):
@@ -327,20 +377,37 @@ def main():
                 n = supabase_upsert(supa_url, supa_key, "platforms", rows)
                 summary["results"]["platforms"] = n
                 print(f"  ✅ Synced {n} rows")
+                if n != len(rows):
+                    failures.append(f"platforms: expected {len(rows)}, synced {n}")
     
     # US Market data
     if args.only in ("us_market", "all"):
         print("[SYNC] Processing US market data...")
         if os.path.exists(US_MARKET_DIR):
             total = 0
+            expected_total = 0
             for fname in sorted(os.listdir(US_MARKET_DIR)):
                 if fname.endswith(".json") and fname != "index.json":
                     rows = transform_us_market(os.path.join(US_MARKET_DIR, fname))
+                    expected_total += len(rows)
                     if not args.dry_run and rows:
                         n = supabase_upsert(supa_url, supa_key, "us_market_data", rows)
                         total += n
             summary["results"]["us_market_data"] = total
             print(f"  ✅ Synced {total} category rows")
+            if not args.dry_run and total != expected_total:
+                failures.append(f"us_market_data: expected {expected_total}, synced {total}")
+
+    # Public KV bundle used by the static frontend (Supabase-first, JSON fallback).
+    print("[SYNC] Processing public market_data bundle...")
+    market_rows = build_market_data_rows(quality_report, args.only)
+    print(f"  {len(market_rows)} rows ready")
+    if not args.dry_run and market_rows:
+        n = supabase_upsert(supa_url, supa_key, "market_data", market_rows, conflict_key="key")
+        summary["results"]["market_data"] = n
+        print(f"  ✅ Synced {n} rows")
+        if n != len(market_rows):
+            failures.append(f"market_data: expected {len(market_rows)}, synced {n}")
     
     # Summary
     print(f"\n[SYNC] {'='*50}")
@@ -355,7 +422,13 @@ def main():
     with open(log_file, "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
     print(f"[SYNC] Log: {log_file}")
+    if failures:
+        print("[SYNC] ERROR: incomplete Supabase sync")
+        for failure in failures:
+            print(f"  - {failure}")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
