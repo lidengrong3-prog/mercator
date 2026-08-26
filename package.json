@@ -1,0 +1,17 @@
+{
+  "name": "jay-guanhai-market-intelligence",
+  "version": "1.0.0",
+  "private": true,
+  "description": "JAY观海 cross-border market decision intelligence workspace",
+  "scripts": {
+    "dev": "python -m http.server 4173 --bind 127.0.0.1",
+    "test": "npm run test:syntax && npm run test:data && node --test tests/static.test.cjs",
+    "test:syntax": "node scripts/js_syntax_check.js",
+    "test:data": "python -m unittest discover -s tests -p \"test_*.py\"",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "jsdom": "^26.1.0"
+  }
+}

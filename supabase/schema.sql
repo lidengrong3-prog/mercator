@@ -144,12 +144,11 @@ CREATE TRIGGER profiles_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
 
 -- ============================================================
--- 6. 用户监控店铺（device 维度，供「店铺追踪」页面落库）
---    说明：当前产品无登录体系，用 device_id（前端随机串）做弱隔离。
---    接入登录后改为 user_id 维度（见 supabase/monitored_shops.sql 注释）。
+-- 6. 用户监控店铺（Supabase Auth 用户维度）
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.monitored_shops (
   id          TEXT PRIMARY KEY,
+  user_id     UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   device_id   TEXT NOT NULL,
   shop_name   TEXT NOT NULL,
   platform    TEXT,
@@ -164,15 +163,33 @@ CREATE TABLE IF NOT EXISTS public.monitored_shops (
   updated_at  TIMESTAMPTZ DEFAULT NOW()
 );
 
+ALTER TABLE public.monitored_shops
+  ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
+
 CREATE INDEX IF NOT EXISTS idx_monitored_shops_device
   ON public.monitored_shops(device_id);
+CREATE INDEX IF NOT EXISTS idx_monitored_shops_user
+  ON public.monitored_shops(user_id);
 
 ALTER TABLE public.monitored_shops ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "ms_anon_all" ON public.monitored_shops;
-CREATE POLICY "ms_anon_all" ON public.monitored_shops
-  FOR ALL TO anon
-  USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "ms_user_select" ON public.monitored_shops;
+DROP POLICY IF EXISTS "ms_user_insert" ON public.monitored_shops;
+DROP POLICY IF EXISTS "ms_user_update" ON public.monitored_shops;
+DROP POLICY IF EXISTS "ms_user_delete" ON public.monitored_shops;
+
+CREATE POLICY "ms_user_select" ON public.monitored_shops
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "ms_user_insert" ON public.monitored_shops
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "ms_user_update" ON public.monitored_shops
+  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "ms_user_delete" ON public.monitored_shops
+  FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+REVOKE ALL ON public.monitored_shops FROM anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.monitored_shops TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.update_monitored_shops_updated_at()
 RETURNS TRIGGER AS $$

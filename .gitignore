@@ -1,5 +1,7 @@
 # ============ Dependencies ============
 node_modules/
+test-results/
+playwright-report/
 __pycache__/
 *.pyc
 *.egg-info/
@@ -7,6 +9,7 @@ __pycache__/
 # ============ Secrets / local config ============
 .env
 .env.*
+!.env.example
 *.local
 credentials.json
 service_key*.json
