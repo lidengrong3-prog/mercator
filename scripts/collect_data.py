@@ -746,8 +746,15 @@ def merge_data(existing_file, new_items, key_fields=['title'], baseline_kind=Non
             (protected if (t in baseline_titles or t[:20] in baseline_titles) else ordinary).append(it)
         room = max(cap - len(protected), 0)
         existing['items'] = ordinary[:room] + protected
-    existing['updated_at'] = NOW_ISO
-    existing['source_count'] = 6  # We have 6 source groups
+    # Only a successful source response may advance freshness. Re-merging the
+    # baseline or surviving a total network outage must not look like new data.
+    if new_items:
+        existing['updated_at'] = NOW_ISO
+        existing['source_count'] = len({
+            item.get('source') or item.get('platform')
+            for item in new_items
+            if item.get('source') or item.get('platform')
+        })
     if baseline_added:
         print(f"  [BASELINE] {baseline_kind}: 并入人工基线 {baseline_added} 条（受裁剪保护）")
 
@@ -1600,14 +1607,9 @@ def main():
         print(f"  [ERROR] Country updates: {e}")
         traceback.print_exc()
     
-    # Sync data to Supabase
-    try:
-        sync_to_supabase(policies_data, rules_data)
-    except Exception as e:
-        print(f"  [ERROR] Supabase sync: {e}")
-        traceback.print_exc()
-    
     print(f"\n=== Collection complete ===")
+    print("Publish is deferred until scripts/validate_data.py passes.")
+    return 0
 
 if __name__ == '__main__':
     import argparse
@@ -1667,13 +1669,9 @@ if __name__ == '__main__':
         sys.exit(rc)
 
     if args.sync_only:
-        pf = os.path.join(DATA_DIR, 'policies.json')
-        rf = os.path.join(DATA_DIR, 'rules.json')
-        pol = json.load(open(pf, encoding='utf-8')) if os.path.exists(pf) else {'items': []}
-        rul = json.load(open(rf, encoding='utf-8')) if os.path.exists(rf) else {'items': []}
-        # sync_to_supabase 会从本地文件读取 countries/platforms/alerts，
-        # 这里只把已合并的 policies/rules 传入即可完成全部 5 个 key 的上传
-        sync_to_supabase(pol, rul)
-        sys.exit(0)
+        import subprocess
+        sync_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sync_to_supabase.py')
+        print('[DEPRECATED] --sync-only now delegates to the gated centralized sync.')
+        sys.exit(subprocess.call([sys.executable, sync_script]))
 
-    main()
+    sys.exit(main())

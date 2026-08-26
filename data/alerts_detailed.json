@@ -1,9 +1,9 @@
 {
   "meta": {
-    "generated_at": "2026-08-25T12:57:22.611332+08:00",
-    "total": 94,
+    "generated_at": "2026-08-25T17:30:28.883047+08:00",
+    "total": 100,
     "sources": {
-      "cpsc": 0,
+      "cpsc": 34,
       "policies": 11,
       "us_market": 65
     }

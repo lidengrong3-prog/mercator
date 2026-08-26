@@ -5,8 +5,8 @@ collect_cpsc.py — CPSC 产品召回数据采集器
 从美国消费品安全委员会 (CPSC) 获取产品召回数据，
 筛选中国 origin 产品，输出到 data/us_market/cpsc_recalls.json。
 
-数据源: CPSC Recall Reports API
-  https://www.cpsc.gov/cpscrecall/reportapi
+数据源: CPSC / SaferProducts Recall API
+  https://www.saferproducts.gov/RestWebServices/Recall
 
 用法:
   python scripts/collect_cpsc.py                    # 采集最近召回
@@ -29,13 +29,13 @@ ROOT = os.path.dirname(HERE)
 DATA_DIR = os.path.join(ROOT, "data", "us_market")
 DEFAULT_OUTPUT = os.path.join(DATA_DIR, "cpsc_recalls.json")
 
-# CPSC 公开 API
-CPSC_API = "https://www.cpsc.gov/cpscrecall/reportapi"
+# CPSC 官方公开 API。旧的 cpsc.gov/cpscrecall/reportapi 已返回 404。
+CPSC_API = "https://www.saferproducts.gov/RestWebServices/Recall"
 UA = "Mozilla/5.0 (Mercator Bot; +https://github.com/lidengrong3-prog/mercator)"
 
 # 中国相关关键词（筛选中国 origin 产品召回）
 CHINA_KEYWORDS = [
-    "china", "chinese", "cn", "prc", "made in china",
+    "china", "chinese", "prc", "made in china",
     "shenzhen", "guangdong", "zhejiang", "jiangsu", "fujian",
     "shanghai", "beijing", "dongguan", "yiwu", "ningbo",
 ]
@@ -72,16 +72,30 @@ except Exception:
 
 def http_get_json(url, timeout=30):
     """HTTP GET returning parsed JSON, or None on failure."""
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
-    try:
-        kwargs = {"timeout": timeout}
-        if SSL_CTX:
-            kwargs["context"] = SSL_CTX
-        with urllib.request.urlopen(req, **kwargs) as resp:
-            return json.loads(resp.read().decode("utf-8"))
-    except Exception as e:
-        print(f"  [WARN] HTTP GET failed: {url} -> {e}")
-        return None
+    req = urllib.request.Request(url, headers={
+        "User-Agent": UA,
+        "Accept": "application/json",
+        "Accept-Encoding": "identity",
+        "Connection": "close",
+    })
+    for attempt in range(1, 3):
+        try:
+            kwargs = {"timeout": timeout}
+            if SSL_CTX:
+                kwargs["context"] = SSL_CTX
+            with urllib.request.urlopen(req, **kwargs) as resp:
+                # SaferProducts occasionally advertises an incorrect content
+                # length. Sized reads avoid urllib's all-at-once IncompleteRead.
+                chunks = []
+                while True:
+                    chunk = resp.read(64 * 1024)
+                    if not chunk:
+                        break
+                    chunks.append(chunk)
+                return json.loads(b"".join(chunks).decode("utf-8"))
+        except Exception as e:
+            print(f"  [WARN] HTTP GET attempt {attempt}/2 failed: {url} -> {e}")
+    return None
 
 
 def is_china_related(text):
@@ -90,6 +104,18 @@ def is_china_related(text):
         return False
     text_lower = text.lower()
     return any(kw in text_lower for kw in CHINA_KEYWORDS)
+
+
+def normalize_url(value):
+    """Repair the single-slash URL occasionally returned by the API."""
+    if not isinstance(value, str):
+        return ""
+    value = value.strip()
+    if value.startswith("https:/") and not value.startswith("https://"):
+        return "https://" + value[len("https:/"):].lstrip("/")
+    if value.startswith("http:/") and not value.startswith("http://"):
+        return "http://" + value[len("http:/"):].lstrip("/")
+    return value
 
 
 def categorize_recall(title, description=""):
@@ -107,17 +133,23 @@ def categorize_recall(title, description=""):
 
 def gen_recall_id(recall):
     """Generate a stable ID for a recall."""
-    key = recall.get("recall_number", "") or recall.get("title", "")
+    key = (
+        recall.get("RecallNumber", "")
+        or recall.get("recall_number", "")
+        or str(recall.get("RecallID", ""))
+        or recall.get("Title", "")
+        or recall.get("title", "")
+    )
     h = hashlib.md5(key.encode()).hexdigest()[:8]
     return f"cpsc-{h}"
 
 
-def fetch_cpsc_recalls():
+def fetch_cpsc_recalls(days=120):
     """
     Fetch recent recalls from CPSC.
     
-    CPSC Recall Reports API endpoint:
-    GET https://www.cpsc.gov/cpscrecall/reportapi
+    CPSC Recall API endpoint:
+    GET https://www.saferproducts.gov/RestWebServices/Recall
     Returns JSON array of recall objects.
     
     Each recall typically has:
@@ -129,17 +161,11 @@ def fetch_cpsc_recalls():
     - products: list of affected products
     """
     print("[CPSC] Fetching recall data from CPSC API...")
-    
-    data = http_get_json(CPSC_API, timeout=60)
-    
+    start_date = (datetime.now(timezone.utc) - timedelta(days=max(days, 1))).strftime("%Y-%m-%d")
+    query = urllib.parse.urlencode({"format": "json", "RecallDateStart": start_date})
+    data = http_get_json(f"{CPSC_API}?{query}", timeout=60)
     if data is None:
-        print("[CPSC] API fetch failed, trying alternate endpoint...")
-        # Alternate: try the RSS feed or search endpoint
-        alt_url = CPSC_API + "?format=json"
-        data = http_get_json(alt_url, timeout=60)
-    
-    if data is None:
-        print("[CPSC] All API attempts failed.")
+        print("[CPSC] Official API request failed.")
         return []
     
     # Normalize: API might return dict with 'results' key or direct array
@@ -160,13 +186,14 @@ def fetch_cpsc_recalls():
     return recalls
 
 
-def process_recalls(recalls):
+def process_recalls(recalls, days=120):
     """Process raw recalls into structured format."""
     results = {
         "meta": {
-            "source": "CPSC Recall Reports API",
-            "source_url": "https://www.cpsc.gov/cpscrecall/reportapi",
+            "source": "CPSC / SaferProducts Recall API",
+            "source_url": CPSC_API,
             "generated_at": datetime.now(timezone.utc).isoformat(),
+            "query_start": (datetime.now(timezone.utc) - timedelta(days=max(days, 1))).strftime("%Y-%m-%d"),
             "total_recalls": len(recalls),
         },
         "recalls": [],
@@ -178,11 +205,11 @@ def process_recalls(recalls):
         if not isinstance(recall, dict):
             continue
         
-        title = recall.get("title", "") or recall.get("recall_title", "")
-        desc = recall.get("description", "") or recall.get("recall_description", "") or recall.get("summary", "")
-        date_str = recall.get("date", "") or recall.get("recall_date", "") or recall.get("published_date", "")
-        url = recall.get("url", "") or recall.get("recall_url", "") or recall.get("link", "")
-        recall_number = recall.get("recall_number", "") or recall.get("id", "")
+        title = recall.get("Title", "") or recall.get("title", "") or recall.get("recall_title", "")
+        desc = recall.get("Description", "") or recall.get("description", "") or recall.get("recall_description", "") or recall.get("summary", "")
+        date_str = recall.get("RecallDate", "") or recall.get("date", "") or recall.get("recall_date", "") or recall.get("published_date", "")
+        url = normalize_url(recall.get("URL", "") or recall.get("url", "") or recall.get("recall_url", "") or recall.get("link", ""))
+        recall_number = recall.get("RecallNumber", "") or recall.get("recall_number", "") or recall.get("id", "")
         
         if not title:
             continue
@@ -190,8 +217,24 @@ def process_recalls(recalls):
         # Parse date
         parsed_date = date_str[:10] if date_str else ""
         
-        # Categorize
-        category = categorize_recall(title, desc)
+        products = [
+            product.get("Name", "")
+            for product in recall.get("Products", [])
+            if isinstance(product, dict) and product.get("Name")
+        ]
+        countries = [
+            country.get("Country", "")
+            for country in recall.get("ManufacturerCountries", [])
+            if isinstance(country, dict) and country.get("Country")
+        ]
+        hazards = [
+            hazard.get("Name", "")
+            for hazard in recall.get("Hazards", [])
+            if isinstance(hazard, dict) and hazard.get("Name")
+        ]
+        searchable = " ".join([title, desc] + products + countries + hazards)
+        category = categorize_recall(title, " ".join([desc] + products + hazards))
+        china_related = any("china" in country.lower() for country in countries) or is_china_related(searchable)
         
         # Build recall entry
         entry = {
@@ -202,8 +245,11 @@ def process_recalls(recalls):
             "date": parsed_date,
             "url": url,
             "category": category,
-            "china_related": is_china_related(title + " " + desc),
+            "china_related": china_related,
             "source": "CPSC",
+            "manufacturer_countries": countries,
+            "products": products,
+            "hazards": hazards,
         }
         
         results["recalls"].append(entry)
@@ -250,7 +296,7 @@ def merge_recalls(old_data, new_data):
             old_data["by_category"][cat].append(recall)
             added += 1
     
-    old_data["meta"]["generated_at"] = new_data["meta"]["generated_at"]
+    old_data["meta"].update(new_data["meta"])
     old_data["meta"]["total_recalls"] = len(old_data["recalls"])
     old_data["meta"]["china_related_count"] = len(old_data["china_related"])
     
@@ -263,21 +309,23 @@ def main():
     parser = argparse.ArgumentParser(description="CPSC Recall Data Collector")
     parser.add_argument("--output", default=DEFAULT_OUTPUT, help="Output JSON path")
     parser.add_argument("--no-merge", action="store_true", help="Don't merge with existing data")
+    parser.add_argument("--days", type=int, default=120, help="Recall lookback window in days")
     args = parser.parse_args()
     
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
     
     # Fetch
-    raw_recalls = fetch_cpsc_recalls()
+    raw_recalls = fetch_cpsc_recalls(args.days)
     if not raw_recalls:
         print("[CPSC] No recalls fetched. Keeping existing data if available.")
         existing = load_existing(args.output)
         if existing:
             print(f"[CPSC] Existing data has {len(existing.get('recalls', []))} recalls.")
-        return
+            return 0
+        return 1
     
     # Process
-    results = process_recalls(raw_recalls)
+    results = process_recalls(raw_recalls, args.days)
     
     # Merge with existing
     if not args.no_merge:
@@ -295,7 +343,8 @@ def main():
     cats = len(results["by_category"])
     print(f"\n[CPSC] ✅ Done! Total: {total} recalls, China-related: {china}, Categories: {cats}")
     print(f"[CPSC] Output: {args.output}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

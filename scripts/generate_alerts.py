@@ -61,36 +61,45 @@ def generate_from_cpsc():
     # Recent China-related recalls (last 90 days)
     cutoff = (NOW - timedelta(days=90)).strftime("%Y-%m-%d")
     
-    for recall in cpsc_data.get("china_related", []):
+    recent_china = [
+        recall for recall in cpsc_data.get("china_related", [])
+        if recall.get("date", "") >= cutoff or not recall.get("date")
+    ]
+    recent_china.sort(key=lambda recall: recall.get("date", ""), reverse=True)
+
+    # Keep the alert center multi-source instead of allowing one large recall
+    # feed to displace all policy and market alerts.
+    for recall in recent_china[:30]:
         date = recall.get("date", "")
-        if date >= cutoff or not date:
-            cat = recall.get("category", "other")
-            category_names = {
-                "electronics": "消费电子", "apparel": "服饰鞋包",
-                "home": "家居厨具", "beauty": "美妆个护",
-                "toys": "玩具", "sports": "运动户外",
-                "auto": "汽配", "health": "保健品", "other": "其他",
-            }
-            cat_cn = category_names.get(cat, cat)
-            
-            alerts.append({
-                "id": recall.get("id", gen_id("cpsc", recall.get("title", ""))),
-                "type": "policy",
-                "level": "high",
-                "title": f"CPSC 召回: {recall.get('title', '中国产品')[:60]}",
-                "market": "美国",
-                "platform": "CPSC",
-                "detail": f"美国 CPSC 发布产品召回，涉及中国产品。品类: {cat_cn}。{recall.get('description', '')[:200]}",
-                "date": date or TODAY,
-                "read": False,
-                "source": "CPSC Recall API",
-                "url": recall.get("url", "https://www.cpsc.gov/cpscrecall/reportapi"),
-            })
+        cat = recall.get("category", "other")
+        category_names = {
+            "electronics": "消费电子", "apparel": "服饰鞋包",
+            "home": "家居厨具", "beauty": "美妆个护",
+            "toys": "玩具", "sports": "运动户外",
+            "auto": "汽配", "health": "保健品", "other": "其他",
+        }
+        cat_cn = category_names.get(cat, cat)
+
+        alerts.append({
+            "id": recall.get("id", gen_id("cpsc", recall.get("title", ""))),
+            "type": "policy",
+            "level": "high",
+            "title": f"CPSC 召回: {recall.get('title', '中国产品')[:60]}",
+            "market": "美国",
+            "platform": "CPSC",
+            "detail": f"美国 CPSC 发布产品召回，涉及中国产品。品类: {cat_cn}。{recall.get('description', '')[:200]}",
+            "date": date or TODAY,
+            "read": False,
+            "source": "CPSC Recall API",
+            "url": recall.get("url", "https://www.saferproducts.gov/RestWebServices/Recall"),
+        })
     
     # Category summary alerts
-    by_cat = cpsc_data.get("by_category", {})
-    for cat, recalls in by_cat.items():
-        china_count = sum(1 for r in recalls if r.get("china_related"))
+    recent_by_cat = {}
+    for recall in recent_china:
+        recent_by_cat.setdefault(recall.get("category", "other"), []).append(recall)
+    for cat, recalls in recent_by_cat.items():
+        china_count = len(recalls)
         if china_count >= 3:
             category_names = {
                 "electronics": "消费电子", "apparel": "服饰鞋包",

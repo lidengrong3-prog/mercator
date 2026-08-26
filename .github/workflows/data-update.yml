@@ -48,19 +48,31 @@ jobs:
       - name: Generate dynamic alerts from collected data
         run: python scripts/generate_alerts.py
 
-      # ---- Step 6: Supabase 数据同步 (新增) ----
+      # ---- Step 6: 发布前统一数据质量闸门 ----
+      - name: Validate data quality before publishing
+        run: python scripts/validate_data.py
+
+      - name: Upload data quality report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mercator-data-quality-${{ github.run_id }}
+          path: data/quality_report.json
+          if-no-files-found: error
+          retention-days: 30
+
+      # ---- Step 7: Supabase 数据同步 ----
       - name: Sync data to Supabase
         run: python scripts/sync_to_supabase.py
-        continue-on-error: true
 
-      # ---- Step 7: 生成 PDF 报告 (原有) ----
+      # ---- Step 8: 生成 PDF 报告 ----
       - name: Install report deps
         run: pip install --quiet reportlab pypdf
 
       - name: Generate US market reports (PDF)
         run: python scripts/gen_us_market_report.py
 
-      # ---- Step 8: 提交变更 ----
+      # ---- Step 9: 提交已通过校验的数据与质量报告 ----
       - id: git-check
         run: git diff --quiet data/ reports/ || echo "changed=true" >> $GITHUB_OUTPUT
 
