@@ -2,8 +2,8 @@
   "meta": {
     "market": "美国汽车配件 (US Automotive Aftermarket)",
     "cat_key": "auto",
-    "generated_at": "2026-08-25T20:48:22.909320+00:00",
-    "as_of": "2026-08-25",
+    "generated_at": "2026-08-26T02:06:50.934232+00:00",
+    "as_of": "2026-08-26",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
       "country",
@@ -109,7 +109,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-08-25"
+    "as_of": "2026-08-26"
   },
   "findings": [
     "美国汽车后市场庞大刚需（2026E ≈ $2,387 亿），替换件/养护品高频复购。",
@@ -130,7 +130,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "hotCats": [
         "替换件",
         "养护品",
@@ -149,7 +149,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "hotCats": [
         "车载好物",
         "清洁护理",
@@ -167,7 +167,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "hotCats": [
         "基础养护",
         "替换件"
@@ -184,7 +184,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "hotCats": [
         "汽配长尾",
         "二手件",
@@ -202,7 +202,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "hotCats": [
         "手工车饰",
         "定制"
@@ -219,7 +219,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "hotCats": [
         "品牌官网",
         "车型适配",
@@ -237,7 +237,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "hotCats": [
         "低价小配件",
         "合金/塑料"
@@ -303,7 +303,7 @@
       "severity": "high",
       "source": "NHTSA",
       "source_url": "https://www.nhtsa.gov/",
-      "as_of": "2026-08-25"
+      "as_of": "2026-08-26"
     },
     {
       "platform": "EPA / CARB",
@@ -312,7 +312,7 @@
       "severity": "high",
       "source": "EPA / CARB",
       "source_url": "https://ww2.arb.ca.gov/",
-      "as_of": "2026-08-25"
+      "as_of": "2026-08-26"
     },
     {
       "platform": "FCC",
@@ -321,7 +321,7 @@
       "severity": "medium",
       "source": "FCC",
       "source_url": "https://www.fcc.gov/",
-      "as_of": "2026-08-25"
+      "as_of": "2026-08-26"
     },
     {
       "platform": "Amazon / eBay",
@@ -330,7 +330,7 @@
       "severity": "medium",
       "source": "Amazon / eBay",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-25"
+      "as_of": "2026-08-26"
     }
   ],
   "policies": [
@@ -342,7 +342,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/25/2026-17340/agency-information-collection-activities-renewal-of-an-approved-information-collection",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -353,7 +353,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17294/temporary-suspension-of-additional-duties-to-offset-canadian-discrimination-against-the-commerce-of",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -364,7 +364,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17211/travel-management-national-forest-system-lands",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -375,7 +375,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17114/rescission-of-executive-order-11246-implementing-regulations",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -386,7 +386,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17095/agency-information-collection-activities-submission-to-the-office-of-management-and-budget-for",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -397,7 +397,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16986/air-plan-approval-wisconsin-moderate-attainment-plan-elements-for-wisconsins-2015-ozone-standard",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -408,7 +408,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16983/allwin-powersports-corp-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -419,7 +419,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16981/application-for-relief-from-disabilities-imposed-by-federal-laws-with-respect-to-the-acquisition",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -430,7 +430,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-17032/stainless-steel-flanges-from-india-final-results-of-antidumping-duty-administrative-review-2023-2024",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -441,7 +441,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16937/air-plan-approval-south-carolina-minor-source-permit-program-revisions",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -452,7 +452,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16859/amending-procedures-for-submissions-by-importers-of-automobiles-qualifying-for-preferential-tariff",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -463,7 +463,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16749/denial-of-motor-vehicle-defect-petition-dp26002",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -474,7 +474,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16735/new-car-assessment-program-ncap-removal-of-dynamic-rollover-resistance-test-and-side-air-bag",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -485,7 +485,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16753/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -496,7 +496,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16607/department-regulatory-and-deregulatory-agenda-summary",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -507,7 +507,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16617/regulatory-agenda",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -518,7 +518,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16615/unified-agenda-of-federal-regulatory-and-deregulatory-actions-2026",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -529,7 +529,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16549/organic-soybean-meal-from-india-preliminary-results-and-rescission-in-part-of-antidumping-duty",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -540,7 +540,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16508/medicaid-program-prohibition-on-federal-medicaid-and-childrens-health-insurance-program-funding-for",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -551,7 +551,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16388/powered-micromobility-devices",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -562,7 +562,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16362/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-countervailing-duty",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -573,7 +573,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16330/air-plan-approval-new-hampshire-repeal-of-motor-vehicle-inspection-and-maintenance-program",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -584,7 +584,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16263/o-dichlorobenzene-and-p-dichlorobenzene-draft-risk-evaluations-under-the-toxic-substances-control",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -595,7 +595,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16018/organic-soybean-meal-from-india-preliminary-results-and-partial-rescission-of-countervailing-duty",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     }
   ],
@@ -606,10 +606,10 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 8708(机动车辆零件/附件) 广泛受 Section 301 约束；2026 强迫劳动提案对部分经济体加征附加税。精确税率须用 USTR 检索或 CBP 裁定确认。",
-      "date": "2026-08-25",
+      "date": "2026-08-26",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": false
     },
     {
@@ -621,7 +621,7 @@
       "date": "2026-08-24",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17211/travel-management-national-forest-system-lands",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -633,7 +633,7 @@
       "date": "2026-08-21",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17095/agency-information-collection-activities-submission-to-the-office-of-management-and-budget-for",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -645,7 +645,7 @@
       "date": "2026-08-20",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16983/allwin-powersports-corp-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -657,7 +657,7 @@
       "date": "2026-08-20",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16981/application-for-relief-from-disabilities-imposed-by-federal-laws-with-respect-to-the-acquisition",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -669,7 +669,7 @@
       "date": "2026-08-20",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-17032/stainless-steel-flanges-from-india-final-results-of-antidumping-duty-administrative-review-2023-2024",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -681,7 +681,7 @@
       "date": "2026-08-19",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16859/amending-procedures-for-submissions-by-importers-of-automobiles-qualifying-for-preferential-tariff",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -693,7 +693,7 @@
       "date": "2026-08-17",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16749/denial-of-motor-vehicle-defect-petition-dp26002",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -705,7 +705,7 @@
       "date": "2026-08-17",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16735/new-car-assessment-program-ncap-removal-of-dynamic-rollover-resistance-test-and-side-air-bag",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -717,7 +717,7 @@
       "date": "2026-08-17",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16753/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -729,7 +729,7 @@
       "date": "2026-08-13",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16549/organic-soybean-meal-from-india-preliminary-results-and-rescission-in-part-of-antidumping-duty",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -741,7 +741,7 @@
       "date": "2026-08-11",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16362/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-countervailing-duty",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -753,7 +753,7 @@
       "date": "2026-08-06",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16018/organic-soybean-meal-from-india-preliminary-results-and-partial-rescission-of-countervailing-duty",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     },
     {
@@ -765,7 +765,7 @@
       "date": "2026-08-06",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16017/certain-carbon-and-alloy-steel-cut-to-length-plate-from-the-republic-of-korea-preliminary-results",
-      "as_of": "2026-08-25",
+      "as_of": "2026-08-26",
       "live": true
     }
   ]
