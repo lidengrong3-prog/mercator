@@ -1,0 +1,43 @@
+name: Product Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install test dependencies
+        run: npm ci
+
+      - name: Validate JavaScript, DOM contracts, security, and workflow guards
+        run: npm test
+
+      - name: Validate Python syntax
+        run: python -m compileall -q scripts data supabase
+
+      - name: Validate publishable data and quality report
+        run: python scripts/validate_data.py
+
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run desktop and mobile smoke tests
+        run: npm run test:browser

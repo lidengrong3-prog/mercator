@@ -1,0 +1,11 @@
+[functions.ai-proxy]
+verify_jwt = true
+
+[functions.report-export]
+verify_jwt = true
+
+[functions.billing-checkout]
+verify_jwt = true
+
+[functions.admin-summary]
+verify_jwt = true

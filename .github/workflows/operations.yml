@@ -1,0 +1,68 @@
+name: Operations and recovery
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      run_encrypted_backup:
+        description: Create an encrypted logical Supabase backup artifact
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: npm ci
+      - run: npm test
+      - run: python scripts/validate_data.py
+      - name: Verify production site
+        run: curl --fail --silent --show-error --location --retry 3 --max-time 30 https://lidengrong3-prog.github.io/mercator/ > /dev/null
+
+  encrypted-backup:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_encrypted_backup == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Validate backup secrets
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: |
+          test -n "$SUPABASE_DB_URL"
+          test -n "$BACKUP_ENCRYPTION_KEY"
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Create and encrypt backup
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: |
+          pg_dump "$SUPABASE_DB_URL" --format=custom --no-owner --no-privileges --file=jay-guanhai.dump
+          openssl enc -aes-256-cbc -pbkdf2 -salt -in jay-guanhai.dump -out jay-guanhai.dump.enc -pass env:BACKUP_ENCRYPTION_KEY
+          sha256sum jay-guanhai.dump.enc > jay-guanhai.dump.enc.sha256
+          rm jay-guanhai.dump
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jay-guanhai-supabase-backup-${{ github.run_id }}
+          path: |
+            jay-guanhai.dump.enc
+            jay-guanhai.dump.enc.sha256
+          retention-days: 7
+          if-no-files-found: error
