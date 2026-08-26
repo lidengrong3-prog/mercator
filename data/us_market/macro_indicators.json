@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-25T20:48:34.776962+00:00",
+    "generated_at": "2026-08-26T02:07:09.144077+00:00",
     "source": "FRED / BLS / US Census",
     "total_indicators": 22,
     "fetched": 22,
@@ -98,9 +98,9 @@
     },
     "T10Y2Y": {
       "name": "10Y-2Y 利差",
-      "value": "0.46",
+      "value": "0.47",
       "unit": "%",
-      "date": "2026-08-24",
+      "date": "2026-08-25",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
     },
