@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-25T04:57:22.550523+00:00",
+    "generated_at": "2026-08-26T05:01:45.591726+00:00",
     "source": "FRED / BLS / US Census",
     "total_indicators": 22,
     "fetched": 22,
@@ -82,25 +82,25 @@
     },
     "DGS10": {
       "name": "10年期国债收益率",
-      "value": "4.7400000000",
+      "value": "4.7",
       "unit": "%",
-      "date": "2026-08-21",
+      "date": "2026-08-24",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/DGS10"
     },
     "DGS2": {
       "name": "2年期国债收益率",
-      "value": "4.2400000000",
+      "value": "4.24",
       "unit": "%",
-      "date": "2026-08-21",
+      "date": "2026-08-24",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/DGS2"
     },
     "T10Y2Y": {
       "name": "10Y-2Y 利差",
-      "value": "0.46",
+      "value": "0.47",
       "unit": "%",
-      "date": "2026-08-24",
+      "date": "2026-08-25",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
     },
