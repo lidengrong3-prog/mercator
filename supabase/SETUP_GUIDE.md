@@ -9,10 +9,11 @@
 1. `supabase/schema.sql`
 2. `supabase/phase2_schema.sql`
 3. `supabase/monitored_shops.sql`
-4. `supabase/migrations/20260825_unify_user_data.sql`
-5. `supabase/migrations/20260826_workspaces.sql`
-6. `supabase/migrations/20260826_notifications.sql`
-7. `supabase/migrations/20260826_report_exports.sql`
+4. `supabase/migrations/20260825000000_unify_user_data.sql`
+5. `supabase/migrations/20260826010000_workspaces.sql`
+6. `supabase/migrations/20260826020000_notifications.sql`
+7. `supabase/migrations/20260826030000_report_exports.sql`
+8. `supabase/migrations/20260826040000_billing_admin.sql`
 
 已有项目只需执行尚未应用的脚本。上述迁移均可重复执行；统一迁移会保留旧表并迁移已有收藏、报告和偏好，不会删除兼容数据。工作区迁移会为现有 profile 补齐默认工作区。
 
@@ -81,7 +82,7 @@ FRED_API_KEY
 CENSUS_API_KEY
 ```
 
-`SUPABASE_SERVICE_KEY` 只用于服务端数据发布任务。数据工作流会先执行质量校验，失败或关键数据过期时不会写入 Supabase。
+`SUPABASE_SERVICE_KEY` 只用于服务端数据发布任务。数据工作流会先执行质量校验，失败或关键数据过期时不会写入 Supabase。同步默认只写前端读取的 `market_data` KV 表；旧版分类表 fan-out 只有在显式设置 `SUPABASE_SYNC_LEGACY_TABLES=1` 且对应 schema 已准备好时才启用。
 
 ## 6. 上线验收
 

@@ -2,7 +2,7 @@
 
 第三阶段新增迁移文件：
 
-`supabase/migrations/20260826_workspaces.sql`
+`supabase/migrations/20260826010000_workspaces.sql`
 
 ## 已实现
 
@@ -17,14 +17,14 @@
 
 ## 部署顺序
 
-1. 在 Supabase SQL Editor 中按顺序执行 `20260825_unify_user_data.sql` 和 `20260826_workspaces.sql`。
+1. 在 Supabase SQL Editor 中按顺序执行 `20260825000000_unify_user_data.sql` 和 `20260826010000_workspaces.sql`。
 2. 用一个已注册账号进入“设置与权限 → 团队与权限”，确认自动生成默认工作区。
 3. 创建一条邀请记录。当前仓库没有邮件投递服务，因此页面会明确显示“邀请记录已创建；邮件尚未发送”。
 4. 配置邮件服务或 Edge Function 后，再把 `workspace_invites` 的待处理记录转换成带签名的邀请链接。
 
-通知基础设施位于 `supabase/migrations/20260826_notifications.sql`：`notification_events` 记录站内事件，`notification_deliveries` 为邮件、Webhook、企业微信和飞书投递预留队列。当前前端只创建站内事件，明确不会伪报外部渠道发送成功。
+通知基础设施位于 `supabase/migrations/20260826020000_notifications.sql`：`notification_events` 记录站内事件，`notification_deliveries` 为邮件、Webhook、企业微信和飞书投递预留队列。当前前端只创建站内事件，明确不会伪报外部渠道发送成功。
 
-报告导出基础设施位于 `supabase/migrations/20260826_report_exports.sql` 和 `supabase/functions/report-export`。函数使用用户 JWT 验证身份，以服务端密钥写入私有 `reports` Storage bucket，并返回 1 小时有效的签名 URL；服务端不可用时前端才会明确降级为本地打印。
+报告导出基础设施位于 `supabase/migrations/20260826030000_report_exports.sql` 和 `supabase/functions/report-export`。函数使用用户 JWT 验证身份，以服务端密钥写入私有 `reports` Storage bucket，并返回 1 小时有效的签名 URL；服务端不可用时前端才会明确降级为本地打印。
 
 ## 尚未做的事情
 

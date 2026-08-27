@@ -58,10 +58,10 @@ A failed or stale critical dataset returns a non-zero exit code and blocks autom
 ## Deployment checklist
 
 1. For a fresh project, apply `supabase/schema.sql`, `supabase/phase2_schema.sql`, and `supabase/monitored_shops.sql` once.
-2. Apply `supabase/migrations/20260825_unify_user_data.sql`, `supabase/migrations/20260826_workspaces.sql`, `supabase/migrations/20260826_notifications.sql`, `supabase/migrations/20260826_report_exports.sql`, and `supabase/migrations/20260826_billing_admin.sql`. They are idempotent; the workspace migration creates a default workspace for existing profiles.
+2. Apply `supabase/migrations/20260825000000_unify_user_data.sql`, `supabase/migrations/20260826010000_workspaces.sql`, `supabase/migrations/20260826020000_notifications.sql`, `supabase/migrations/20260826030000_report_exports.sql`, and `supabase/migrations/20260826040000_billing_admin.sql`. They are idempotent; the workspace migration creates a default workspace for existing profiles.
 3. Configure `DEEPSEEK_API_KEY`, `DEEPSEEK_MODEL`, and `ALLOWED_ORIGINS` as Supabase secrets.
 4. Deploy `supabase/functions/ai-proxy`, `supabase/functions/report-export`, and `supabase/functions/admin-summary`; JWT verification is enabled in `supabase/config.toml`. Configure `SUPABASE_SERVICE_ROLE_KEY` only as an Edge Function secret.
-5. Confirm GitHub secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `FRED_API_KEY`, and `CENSUS_API_KEY`.
+5. Confirm GitHub secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `FRED_API_KEY`, and `CENSUS_API_KEY`. The sync workflow publishes the frontend's `market_data` bundle by default; only set `SUPABASE_SYNC_LEGACY_TABLES=1` for a separately provisioned legacy fan-out schema.
 6. Run both quality workflows successfully before merging to `main`.
 
 Team invite records are intentionally not reported as emailed until a mail provider or invitation Edge Function is configured. See [docs/WORKSPACES.md](docs/WORKSPACES.md).
