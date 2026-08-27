@@ -13,6 +13,7 @@ __pycache__/
 *.local
 credentials.json
 service_key*.json
+supabase/.temp/
 
 # ============ Build / deploy copies ============
 dist/

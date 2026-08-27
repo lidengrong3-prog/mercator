@@ -104,7 +104,7 @@ test('database policy is authenticated-user scoped', () => {
 
 test('authenticated workspace data uses the canonical Supabase layer', () => {
   const migration = fs.readFileSync(
-    path.join(root, 'supabase', 'migrations', '20260825_unify_user_data.sql'),
+    path.join(root, 'supabase', 'migrations', '20260825000000_unify_user_data.sql'),
     'utf8',
   );
 
@@ -159,7 +159,7 @@ test('authenticated workspace data uses the canonical Supabase layer', () => {
 
 test('team workspace foundation is real and protected by RLS', () => {
   const migration = fs.readFileSync(
-    path.join(root, 'supabase', 'migrations', '20260826_workspaces.sql'),
+    path.join(root, 'supabase', 'migrations', '20260826010000_workspaces.sql'),
     'utf8',
   );
   for (const table of ['workspaces', 'workspace_members', 'workspace_invites']) {
@@ -179,7 +179,7 @@ test('team workspace foundation is real and protected by RLS', () => {
 
 test('notification events are persisted without claiming external delivery', () => {
   const migration = fs.readFileSync(
-    path.join(root, 'supabase', 'migrations', '20260826_notifications.sql'),
+    path.join(root, 'supabase', 'migrations', '20260826020000_notifications.sql'),
     'utf8',
   );
   assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.notification_events/);
@@ -193,7 +193,7 @@ test('notification events are persisted without claiming external delivery', () 
 
 test('report PDF export has a server-side job ledger and honest fallback', () => {
   const migration = fs.readFileSync(
-    path.join(root, 'supabase', 'migrations', '20260826_report_exports.sql'),
+    path.join(root, 'supabase', 'migrations', '20260826030000_report_exports.sql'),
     'utf8',
   );
   const edge = fs.readFileSync(
@@ -211,7 +211,7 @@ test('report PDF export has a server-side job ledger and honest fallback', () =>
 
 test('billing is server-controlled and never upgrades a browser tier directly', () => {
   const migration = fs.readFileSync(
-    path.join(root, 'supabase', 'migrations', '20260826_billing_admin.sql'),
+    path.join(root, 'supabase', 'migrations', '20260826040000_billing_admin.sql'),
     'utf8',
   );
   const edge = fs.readFileSync(
@@ -261,6 +261,8 @@ test('data publication is gated and exposes its quality report', () => {
   const syncScript = fs.readFileSync(path.join(root, 'scripts', 'sync_to_supabase.py'), 'utf8');
   assert.match(syncScript, /refusing to publish/);
   assert.match(syncScript, /"key": "quality_report"/);
+  assert.match(syncScript, /Legacy table fan-out disabled/);
+  assert.match(syncScript, /SUPABASE_SYNC_LEGACY_TABLES/);
 
   const report = JSON.parse(fs.readFileSync(path.join(root, 'data', 'quality_report.json'), 'utf8'));
   assert.equal(report.schema_version, 1);

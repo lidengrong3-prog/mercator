@@ -9,15 +9,19 @@ sync_to_supabase.py — 数据同步到 Supabase
 
 数据源:
   - data/countries.json → countries 表
-  - data/policies.json → policies 表
-  - data/rules.json → rules 表
-  - data/alerts.json → alerts 表
-  - data/platforms.json → platforms 表
-  - data/us_market/*.json → us_market_data 表
+  - data/policies.json → market_data(key='policies')
+  - data/rules.json → market_data(key='rules')
+  - data/alerts.json → market_data(key='alerts')
+  - data/platforms.json → market_data(key='platforms')
+  - data/countries.json → market_data(key='countries')
+  - data/us_market/*.json remains a local/PDF dataset; it is not sent to a
+    table that is absent from the production schema.
 
 环境变量:
   SUPABASE_URL: Supabase 项目 URL
   SUPABASE_SERVICE_KEY: Supabase service_role key (需要写入权限)
+  SUPABASE_SYNC_LEGACY_TABLES: set to 1 only for an explicitly provisioned
+    legacy schema; defaults to the public market_data bundle only.
 
 用法:
   python scripts/sync_to_supabase.py
@@ -54,6 +58,13 @@ def get_config():
     if not url or not key:
         return None, None
     return url, key
+
+
+def legacy_tables_enabled():
+    """Return whether the optional legacy table fan-out was explicitly enabled."""
+    return os.environ.get("SUPABASE_SYNC_LEGACY_TABLES", "").strip().lower() in {
+        "1", "true", "yes", "on"
+    }
 
 
 def supabase_request(url, key, method="GET", data=None, timeout=30):
@@ -324,8 +335,17 @@ def main():
     }
     failures = []
     
+    # The production frontend reads the public market_data KV bundle. Legacy
+    # fan-out is opt-in because older projects use different column names and
+    # do not necessarily provision every category table.
+    legacy_sync = legacy_tables_enabled()
+    if legacy_sync:
+        print("[SYNC] Legacy table fan-out enabled by SUPABASE_SYNC_LEGACY_TABLES")
+    else:
+        print("[SYNC] Legacy table fan-out disabled; publishing market_data bundle only")
+
     # Policies
-    if args.only in ("policies", "all"):
+    if legacy_sync and args.only in ("policies", "all"):
         print("[SYNC] Processing policies...")
         data = load_json(os.path.join(DATA_DIR, "policies.json"))
         if data:
@@ -339,7 +359,7 @@ def main():
                     failures.append(f"policies: expected {len(rows)}, synced {n}")
     
     # Rules
-    if args.only in ("rules", "all"):
+    if legacy_sync and args.only in ("rules", "all"):
         print("[SYNC] Processing rules...")
         data = load_json(os.path.join(DATA_DIR, "rules.json"))
         if data:
@@ -353,7 +373,7 @@ def main():
                     failures.append(f"rules: expected {len(rows)}, synced {n}")
     
     # Alerts
-    if args.only in ("alerts", "all"):
+    if legacy_sync and args.only in ("alerts", "all"):
         print("[SYNC] Processing alerts...")
         data = load_json(os.path.join(DATA_DIR, "alerts.json"))
         if data:
@@ -367,7 +387,7 @@ def main():
                     failures.append(f"alerts: expected {len(rows)}, synced {n}")
     
     # Platforms
-    if args.only in ("platforms", "all"):
+    if legacy_sync and args.only in ("platforms", "all"):
         print("[SYNC] Processing platforms...")
         data = load_json(os.path.join(DATA_DIR, "platforms.json"))
         if data:
@@ -381,7 +401,7 @@ def main():
                     failures.append(f"platforms: expected {len(rows)}, synced {n}")
     
     # US Market data
-    if args.only in ("us_market", "all"):
+    if legacy_sync and args.only in ("us_market", "all"):
         print("[SYNC] Processing US market data...")
         if os.path.exists(US_MARKET_DIR):
             total = 0

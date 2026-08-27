@@ -1,5 +1,5 @@
 -- JAY观海 workspace and team permission foundation.
--- Idempotent: safe to apply after 20260825_unify_user_data.sql.
+-- Idempotent: safe to apply after 20260825000000_unify_user_data.sql.
 
 BEGIN;
 
