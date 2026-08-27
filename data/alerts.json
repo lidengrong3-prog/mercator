@@ -1,5 +1,38 @@
 [
   [
+    "cpsc-cat-20260827-b95104ba",
+    "policy",
+    "high",
+    "⚠️ 消费电子品类: 近90天83起中国产品召回",
+    "美国",
+    "CPSC",
+    "过去90天内，消费电子品类有83起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
+    "2026-08-27",
+    false
+  ],
+  [
+    "cpsc-cat-20260827-69adb137",
+    "policy",
+    "high",
+    "⚠️ 服饰鞋包品类: 近90天20起中国产品召回",
+    "美国",
+    "CPSC",
+    "过去90天内，服饰鞋包品类有20起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
+    "2026-08-27",
+    false
+  ],
+  [
+    "usm-20260827-b7c73987",
+    "policy",
+    "medium",
+    "Determination That CABAZITAXEL (Cabazitaxel) Solution (Injec",
+    "美国",
+    "Health and Human Services Department",
+    "The Food and Drug Administration (FDA, Agency, or we) has determined that CABAZITAXEL (cabazitaxel) solution (injection), 60 milligrams (mg)/6 milliliters (mL) (10 mg/mL), was not withdrawn from sale …",
+    "2026-08-26",
+    false
+  ],
+  [
     "cpsc-cat-20260825-c9d5c344",
     "policy",
     "high",
@@ -1063,39 +1096,6 @@
     "巴西",
     "Shopee",
     "世界杯季节效应，男士泳裤增速领先",
-    "2026-07-14",
-    false
-  ],
-  [
-    "a15",
-    "policy",
-    "high",
-    "越南跨境电商须缴纳与本土企业相同税率",
-    "越南",
-    "-",
-    "新税法要求外资电商企业税率从 5% 提升至 10%",
-    "2026-07-14",
-    false
-  ],
-  [
-    "a18",
-    "policy",
-    "mid",
-    "德国数字服务法 DSA 全面执行",
-    "德国",
-    "-",
-    "平台需加强商品安全审核，违规商品 48h 内下架",
-    "2026-07-14",
-    false
-  ],
-  [
-    "a23",
-    "macro",
-    "mid",
-    "越南盾 6 个月内累计贬值 3.2%",
-    "越南",
-    "-",
-    "利润空间压缩，建议调整定价策略",
     "2026-07-14",
     false
   ]

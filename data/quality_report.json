@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-27T01:49:34.095134+00:00",
+  "generated_at": "2026-08-27T01:58:18.713118+00:00",
   "status": "healthy",
   "publishable": true,
   "summary": {
@@ -18,9 +18,9 @@
       "label": "政策动态",
       "status": "healthy",
       "path": "data/policies.json",
-      "records": 239,
-      "updated_at": "2026-08-26T04:55:59.333001+00:00",
-      "freshness_hours": 20.9,
+      "records": 245,
+      "updated_at": "2026-08-27T01:53:36.908633+00:00",
+      "freshness_hours": 0.1,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -41,8 +41,8 @@
       "status": "healthy",
       "path": "data/rules.json",
       "records": 48,
-      "updated_at": "2026-08-26T04:55:59.333001+00:00",
-      "freshness_hours": 20.9,
+      "updated_at": "2026-08-27T01:53:36.908633+00:00",
+      "freshness_hours": 0.1,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -63,8 +63,8 @@
       "status": "healthy",
       "path": "data/alerts.json",
       "records": 100,
-      "updated_at": "2026-08-26T05:01:45.652295+00:00",
-      "freshness_hours": 20.8,
+      "updated_at": "2026-08-27T01:58:17.793584+00:00",
+      "freshness_hours": 0.0,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -82,7 +82,7 @@
       "path": "data/countries.json",
       "records": 39,
       "updated_at": "2026-08-21T08:58:27.649218+00:00",
-      "freshness_hours": 136.9,
+      "freshness_hours": 137.0,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -114,8 +114,8 @@
       "status": "healthy",
       "path": "data/us_market/index.json",
       "records": 8,
-      "updated_at": "2026-08-26T05:01:23.856307+00:00",
-      "freshness_hours": 20.8,
+      "updated_at": "2026-08-27T01:58:07.152088+00:00",
+      "freshness_hours": 0.0,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -130,8 +130,8 @@
       "status": "healthy",
       "path": "data/us_market/macro_indicators.json",
       "records": 22,
-      "updated_at": "2026-08-26T05:01:45.591726+00:00",
-      "freshness_hours": 20.8,
+      "updated_at": "2026-08-27T01:58:17.729261+00:00",
+      "freshness_hours": 0.0,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -148,7 +148,7 @@
       "status": "healthy",
       "path": "data/us_market/cpsc_recalls.json",
       "records": 197,
-      "updated_at": "2026-08-27T01:49:27.185558+00:00",
+      "updated_at": "2026-08-27T01:58:11.840180+00:00",
       "freshness_hours": 0.0,
       "errors": [],
       "warnings": [],

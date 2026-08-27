@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-26T05:01:45.591726+00:00",
+    "generated_at": "2026-08-27T01:58:17.729261+00:00",
     "source": "FRED / BLS / US Census",
     "total_indicators": 22,
     "fetched": 22,
@@ -66,9 +66,9 @@
     },
     "PCEPI": {
       "name": "PCE 价格指数",
-      "value": "131.392",
+      "value": "131.659",
       "unit": "指数",
-      "date": "2026-06-01",
+      "date": "2026-07-01",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/PCEPI"
     },
@@ -82,17 +82,17 @@
     },
     "DGS10": {
       "name": "10年期国债收益率",
-      "value": "4.7",
+      "value": "4.64",
       "unit": "%",
-      "date": "2026-08-24",
+      "date": "2026-08-25",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/DGS10"
     },
     "DGS2": {
       "name": "2年期国债收益率",
-      "value": "4.24",
+      "value": "4.17",
       "unit": "%",
-      "date": "2026-08-24",
+      "date": "2026-08-25",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/DGS2"
     },
@@ -100,7 +100,7 @@
       "name": "10Y-2Y 利差",
       "value": "0.47",
       "unit": "%",
-      "date": "2026-08-25",
+      "date": "2026-08-26",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
     },
@@ -130,7 +130,7 @@
     },
     "GDP": {
       "name": "GDP (季度)",
-      "value": "32475.21",
+      "value": "32486.066",
       "unit": "十亿美元",
       "date": "2026-04-01",
       "source": "FRED",
