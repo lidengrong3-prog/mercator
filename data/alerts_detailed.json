@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-27T17:52:10.157712+08:00",
+    "generated_at": "2026-08-28T06:18:34.148574+08:00",
     "total": 100,
     "sources": {
       "cpsc": 34,
@@ -8,30 +8,5 @@
       "us_market": 58
     }
   },
-  "alerts": [
-    {
-      "id": "usm-20260827-aca160d9",
-      "type": "policy",
-      "level": "medium",
-      "title": "Michelin North America, Inc., Grant of Petition for Decision",
-      "market": "美国",
-      "platform": "Transportation Department",
-      "detail": "Michelin North America, Inc. (MNA) has determined that certain Uniroyal Laredo AT and Laredo HT replacement tires do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 139, New Pn…",
-      "date": "2026-08-27",
-      "read": false,
-      "source": "Federal Register"
-    },
-    {
-      "id": "usm-20260827-ad38b47f",
-      "type": "policy",
-      "level": "medium",
-      "title": "Spartan Fire, LLC, Receipt of Petition for Decision of Incon",
-      "market": "美国",
-      "platform": "Transportation Department",
-      "detail": "Spartan Fire, LLC (Spartan) has determined that certain model year (MY) 2015-2023 Spartan Fire Gladiator and Spartan Fire Metro Star emergency vehicles do not fully comply with Federal Motor Vehicle S…",
-      "date": "2026-08-27",
-      "read": false,
-      "source": "Federal Register"
-    }
-  ]
+  "alerts": []
 }
