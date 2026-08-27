@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国美妆个护 (US Beauty & Personal Care)",
     "cat_key": "beauty",
-    "generated_at": "2026-08-27T01:58:09.489023+00:00",
+    "generated_at": "2026-08-27T09:51:57.200256+00:00",
     "as_of": "2026-08-27",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -337,6 +337,17 @@
   ],
   "policies": [
     {
+      "title": "Schedules of Controlled Substances: Placement of Cipepofol in Schedule IV",
+      "date": "2026-08-27",
+      "agency": "Justice Department",
+      "summary": "On May 29, 2026, the United States Food and Drug Administration (FDA) approved a new drug application for Cypsedo (cipepofol) for induction of general anesthesia in adults undergoing surgery. The Department of Health and Human Services provided the Drug Enforcement Administration…",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17536/schedules-of-controlled-substances-placement-of-cipepofol-in-schedule-iv",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-27",
+      "live": true
+    },
+    {
       "title": "Determination That CABAZITAXEL (Cabazitaxel) Solution (Injection), 60 Milligrams/6 Milliliters (10 Milligrams/Milliliter), Was Not Withdrawn From Sale for Reasons of Safety or Effectiveness",
       "date": "2026-08-26",
       "agency": "Health and Human Services Department",
@@ -441,28 +452,6 @@
       "agency": "Health and Human Services Department",
       "summary": "The Food and Drug Administration (FDA or we) is announcing that we have filed a petition, submitted by Gardenia Blue Interest Group (GBIG or petitioner), c/o Exponent, Inc., proposing that we amend our color additive regulations to expand the safe use of gardenia (genipin) blue i…",
       "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16944/gardenia-blue-interest-group-filing-of-color-additive-petition",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "International Association of Color Manufacturers; Filing of Color Additive Petition",
-      "date": "2026-08-19",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA or we) is announcing that we have filed a petition, submitted by the International Association of Color Manufacturers, proposing that we amend our color additive regulations to provide for the safe use of acetone as a solvent in the manufactu…",
-      "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16943/international-association-of-color-manufacturers-filing-of-color-additive-petition",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Food Additives Permitted in Feed and Drinking Water of Animals; Chromium DL-methionine Chelate",
-      "date": "2026-08-19",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA, we, or the Agency) is amending the regulations for food additives permitted in feed and drinking water of animals to provide for the safe use of chromium DL- methionine chelate as a nutritional source of chromium in cattle feed. This action …",
-      "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16942/food-additives-permitted-in-feed-and-drinking-water-of-animals-chromium-dl-methionine-chelate",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-27",
@@ -595,6 +584,17 @@
       "agency": "Health and Human Services Department",
       "summary": "The Office of Cosmetics and Colors (OCAC) and the Office of the Chief Scientist (OCS) in the Food and Drug Administration (FDA, Agency, or we) are soliciting applications from members of the cosmetic product industry interested in participating in a voluntary pilot program to con…",
       "url": "https://www.federalregister.gov/documents/2023/08/08/2023-16772/pilot-program-for-cosmetic-product-facility-registration-and-listing-electronic-submissions-user",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-27",
+      "live": true
+    },
+    {
+      "title": "Registration and Listing of Cosmetic Product Facilities and Products; Draft Guidance for Industry; Availability",
+      "date": "2023-08-08",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is announcing the availability of a draft guidance for industry entitled \"Registration and Listing of Cosmetic Product Facilities and Products.\" This draft guidance, when finalized, will assist persons submitting cosmetic …",
+      "url": "https://www.federalregister.gov/documents/2023/08/08/2023-16771/registration-and-listing-of-cosmetic-product-facilities-and-products-draft-guidance-for-industry",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-27",

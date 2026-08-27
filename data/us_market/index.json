@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T01:58:07.152088+00:00",
+  "generated_at": "2026-08-27T09:51:52.432461+00:00",
   "as_of": "2026-08-27",
   "categories": [
     {
@@ -10,8 +10,8 @@
       "file": "electronics.json",
       "market_size": "US$ 2,616 亿 (2026E)",
       "cagr": "CAGR 4.8% (2026-2031)",
-      "policy_count": 22,
-      "alert_count": 10,
+      "policy_count": 17,
+      "alert_count": 8,
       "report": "reports/us_market/electronics_report.pdf"
     },
     {
@@ -34,7 +34,7 @@
       "file": "home.json",
       "market_size": "厨具 US$ 60.8 亿 (2026E)；家居耐用品 ≈ $418 亿",
       "cagr": "厨具 CAGR 2.26% (2026-2031)",
-      "policy_count": 10,
+      "policy_count": 11,
       "alert_count": 8,
       "report": "reports/us_market/home_report.pdf"
     },
@@ -94,7 +94,7 @@
       "file": "supplements.json",
       "market_size": "US$ 773.7 亿 (2026E)",
       "cagr": "CAGR 7.9% (2026-2031)",
-      "policy_count": 22,
+      "policy_count": 23,
       "alert_count": 4,
       "report": "reports/us_market/supplements_report.pdf"
     }

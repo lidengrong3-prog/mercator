@@ -1,47 +1,35 @@
 {
   "meta": {
-    "generated_at": "2026-08-27T09:58:17.793584+08:00",
+    "generated_at": "2026-08-27T17:52:10.157712+08:00",
     "total": 100,
     "sources": {
       "cpsc": 34,
       "policies": 11,
-      "us_market": 60
+      "us_market": 58
     }
   },
   "alerts": [
     {
-      "id": "cpsc-cat-20260827-b95104ba",
-      "type": "policy",
-      "level": "high",
-      "title": "⚠️ 消费电子品类: 近90天83起中国产品召回",
-      "market": "美国",
-      "platform": "CPSC",
-      "detail": "过去90天内，消费电子品类有83起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
-      "date": "2026-08-27",
-      "read": false,
-      "source": "CPSC 数据分析"
-    },
-    {
-      "id": "cpsc-cat-20260827-69adb137",
-      "type": "policy",
-      "level": "high",
-      "title": "⚠️ 服饰鞋包品类: 近90天20起中国产品召回",
-      "market": "美国",
-      "platform": "CPSC",
-      "detail": "过去90天内，服饰鞋包品类有20起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
-      "date": "2026-08-27",
-      "read": false,
-      "source": "CPSC 数据分析"
-    },
-    {
-      "id": "usm-20260827-b7c73987",
+      "id": "usm-20260827-aca160d9",
       "type": "policy",
       "level": "medium",
-      "title": "Determination That CABAZITAXEL (Cabazitaxel) Solution (Injec",
+      "title": "Michelin North America, Inc., Grant of Petition for Decision",
       "market": "美国",
-      "platform": "Health and Human Services Department",
-      "detail": "The Food and Drug Administration (FDA, Agency, or we) has determined that CABAZITAXEL (cabazitaxel) solution (injection), 60 milligrams (mg)/6 milliliters (mL) (10 mg/mL), was not withdrawn from sale …",
-      "date": "2026-08-26",
+      "platform": "Transportation Department",
+      "detail": "Michelin North America, Inc. (MNA) has determined that certain Uniroyal Laredo AT and Laredo HT replacement tires do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 139, New Pn…",
+      "date": "2026-08-27",
+      "read": false,
+      "source": "Federal Register"
+    },
+    {
+      "id": "usm-20260827-ad38b47f",
+      "type": "policy",
+      "level": "medium",
+      "title": "Spartan Fire, LLC, Receipt of Petition for Decision of Incon",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "Spartan Fire, LLC (Spartan) has determined that certain model year (MY) 2015-2023 Spartan Fire Gladiator and Spartan Fire Metro Star emergency vehicles do not fully comply with Federal Motor Vehicle S…",
+      "date": "2026-08-27",
       "read": false,
       "source": "Federal Register"
     }

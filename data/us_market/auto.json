@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国汽车配件 (US Automotive Aftermarket)",
     "cat_key": "auto",
-    "generated_at": "2026-08-27T01:58:11.012147+00:00",
+    "generated_at": "2026-08-27T09:52:00.680811+00:00",
     "as_of": "2026-08-27",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -335,6 +335,83 @@
   ],
   "policies": [
     {
+      "title": "Agency Information Collection Activities; Submission to the Office of Management and Budget for Review and Approval; Request for Comment; Novel Human-Machine Interface Designs",
+      "date": "2026-08-27",
+      "agency": "Transportation Department",
+      "summary": "In compliance with the Paperwork Reduction Act of 1995 (PRA), this notice announces that the Information Collection Request (ICR) summarized below will be submitted to the Office of Management and Budget (OMB) for review and approval. The ICR describes the nature of the informati…",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17515/agency-information-collection-activities-submission-to-the-office-of-management-and-budget-for",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-27",
+      "live": true
+    },
+    {
+      "title": "Air Plan Approval; Kentucky; Cincinnati-Hamilton Area Limited Maintenance Plan for the 1997 8-Hour Ozone NAAQS",
+      "date": "2026-08-27",
+      "agency": "Environmental Protection Agency",
+      "summary": "The U.S. Environmental Protection Agency (EPA or Agency) is proposing to approve a State Implementation Plan (SIP) revision submitted by the Commonwealth of Kentucky through the Energy and Environment Cabinet (Cabinet), Division of Air Quality (Division), on July 23, 2024. The SI…",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17502/air-plan-approval-kentucky-cincinnati-hamilton-area-limited-maintenance-plan-for-the-1997-8-hour",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-27",
+      "live": true
+    },
+    {
+      "title": "Air Plan Approval; Kentucky; Louisville Area Limited Maintenance Plan for the 1997 8-Hour Ozone NAAQS",
+      "date": "2026-08-27",
+      "agency": "Environmental Protection Agency",
+      "summary": "The U.S. Environmental Protection Agency (EPA or Agency) is proposing to approve a State Implementation Plan (SIP) revision submitted by the Commonwealth of Kentucky through the Energy and Environment Cabinet (Cabinet) on behalf of the Louisville Metro Air Pollution Control Distr…",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17501/air-plan-approval-kentucky-louisville-area-limited-maintenance-plan-for-the-1997-8-hour-ozone-naaqs",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-27",
+      "live": true
+    },
+    {
+      "title": "Air Plan Approval; Arkansas; Regional Haze State Implementation Plan for the Second Implementation Period",
+      "date": "2026-08-27",
+      "agency": "Environmental Protection Agency",
+      "summary": "Pursuant to the Clean Air Act (CAA or the Act), the U.S. Environmental Protection Agency (EPA) is finalizing approval of a State Implementation Plan (SIP) revision submitted by the State of Arkansas through the Division of Environmental Quality (DEQ) on August 8, 2022, clarified …",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17494/air-plan-approval-arkansas-regional-haze-state-implementation-plan-for-the-second-implementation",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-27",
+      "live": true
+    },
+    {
+      "title": "Air Plan Approval; Michigan; 2015 Ozone Moderate Reasonably Available Control Technology",
+      "date": "2026-08-27",
+      "agency": "Environmental Protection Agency",
+      "summary": "The U.S. Environmental Protection Agency (EPA) is approving revisions and additions to Michigan Air Pollution Control Rules (MAPCR) Parts 6 and 8 for inclusion in the Michigan State Implementation Plan (SIP). Michigan submitted these SIP revisions to meet the Moderate Volatile Or…",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17486/air-plan-approval-michigan-2015-ozone-moderate-reasonably-available-control-technology",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-27",
+      "live": true
+    },
+    {
+      "title": "Michelin North America, Inc., Grant of Petition for Decision of Inconsequential Noncompliance",
+      "date": "2026-08-27",
+      "agency": "Transportation Department",
+      "summary": "Michelin North America, Inc. (MNA) has determined that certain Uniroyal Laredo AT and Laredo HT replacement tires do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 139, New Pneumatic Radial Tires for Light Vehicles. MNA filed a noncompliance report dated …",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17472/michelin-north-america-inc-grant-of-petition-for-decision-of-inconsequential-noncompliance",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-27",
+      "live": true
+    },
+    {
+      "title": "Spartan Fire, LLC, Receipt of Petition for Decision of Inconsequential Noncompliance",
+      "date": "2026-08-27",
+      "agency": "Transportation Department",
+      "summary": "Spartan Fire, LLC (Spartan) has determined that certain model year (MY) 2015-2023 Spartan Fire Gladiator and Spartan Fire Metro Star emergency vehicles do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 108, Lamps, Reflective Devices, and Associated Equipm…",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17469/spartan-fire-llc-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-27",
+      "live": true
+    },
+    {
       "title": "Agency Information Collection Activities; Notice and Request for Comment; Title of Collection: Driver Monitoring System (DMS)-Applied Research To Develop Test Procedure for Drowsiness",
       "date": "2026-08-26",
       "agency": "Transportation Department",
@@ -406,28 +483,6 @@
       "agency": "Transportation Department",
       "summary": "In compliance with the Paperwork Reduction Act of 1995 (PRA), this notice announces that the Information Collection Request (ICR) summarized below will be submitted to the Office of Management and Budget (OMB) for review and approval. The ICR describes the nature of the informati…",
       "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17095/agency-information-collection-activities-submission-to-the-office-of-management-and-budget-for",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Air Plan Approval; Wisconsin; Moderate Attainment Plan Elements for Wisconsin's 2015 Ozone Standard Areas",
-      "date": "2026-08-20",
-      "agency": "Environmental Protection Agency",
-      "summary": "The U.S. Environmental Protection Agency (EPA) is approving portions of Wisconsin's 2015 ozone National Ambient Air Quality Standard (NAAQS or standard) Moderate nonattainment area State Implementation Plan (SIP) submission for the Wisconsin portion of the Chicago, Illinois-India…",
-      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16986/air-plan-approval-wisconsin-moderate-attainment-plan-elements-for-wisconsins-2015-ozone-standard",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Allwin Powersports Corp., Receipt of Petition for Decision of Inconsequential Noncompliance",
-      "date": "2026-08-20",
-      "agency": "Transportation Department",
-      "summary": "Allwin Powersports Corp. (Allwin) has determined that certain LS2 Rapid II Helmets do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 218, Motorcycle Helmets. Allwin filed a noncompliance report dated November 10, 2025, and subsequently petitioned NHTSA (t…",
-      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16983/allwin-powersports-corp-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-27",
@@ -542,61 +597,6 @@
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-27",
       "live": true
-    },
-    {
-      "title": "Aluminum Extrusions From the People's Republic of China: Final Results of Countervailing Duty Administrative Review; 2024",
-      "date": "2026-08-11",
-      "agency": "Commerce Department",
-      "summary": "The U.S. Department of Commerce (Commerce) determines that producers and exporters of aluminum extrusions from the People's Republic of China (China) received countervailable subsidies during the period or review (POR) January 1, 2024, through December 31, 2024.",
-      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16362/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-countervailing-duty",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Air Plan Approval; New Hampshire; Repeal of Motor Vehicle Inspection and Maintenance Program",
-      "date": "2026-08-11",
-      "agency": "Environmental Protection Agency",
-      "summary": "The U.S. Environmental Protection Agency (EPA) is proposing to conditionally approve a State Implementation Plan (SIP) revision submitted by the State of New Hampshire on December 24, 2025, through the New Hampshire Department of Environmental Services (NHDES). The proposed revis…",
-      "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16330/air-plan-approval-new-hampshire-repeal-of-motor-vehicle-inspection-and-maintenance-program",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "o-Dichlorobenzene and p-Dichlorobenzene; Draft Risk Evaluations Under the Toxic Substances Control Act (TSCA); Notice of Availability and Request for Comment",
-      "date": "2026-08-10",
-      "agency": "Environmental Protection Agency",
-      "summary": "The Environmental Protection Agency (EPA or Agency) is announcing the availability of and seeking public comment on the draft risk evaluations under the Toxic Substances Control Act (TSCA) for o- dichlorobenzene (CASRN 95-50-1) and p-dichlorobenzene (CASRN 106-46-7). The purpose …",
-      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16263/o-dichlorobenzene-and-p-dichlorobenzene-draft-risk-evaluations-under-the-toxic-substances-control",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Organic Soybean Meal From India: Preliminary Results and Partial Rescission of Countervailing Duty Administrative Review; 2024",
-      "date": "2026-08-06",
-      "agency": "Commerce Department",
-      "summary": "The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies are being provided to certain producers/exporters of organic soybean meal from India. The period of review (POR) is January 1, 2024, through December 31, 2024. Interested parties ar…",
-      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16018/organic-soybean-meal-from-india-preliminary-results-and-partial-rescission-of-countervailing-duty",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Partial Approval and Partial Disapproval of Air Quality State Implementation Plans; Arizona; Prevention of Significant Deterioration Infrastructure Requirements for the 2012 Fine Particulate Matter National Ambient Air Quality Standard",
-      "date": "2026-08-06",
-      "agency": "Environmental Protection Agency",
-      "summary": "The Environmental Protection Agency (EPA) is proposing to partially approve and partially disapprove a revision to the Arizona State implementation plan (SIP) as meeting the requirements of the Clean Air Act (CAA) for the implementation, maintenance, and enforcement of the 2012 f…",
-      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16083/partial-approval-and-partial-disapproval-of-air-quality-state-implementation-plans-arizona",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
     }
   ],
   "alerts": [
@@ -611,6 +611,30 @@
       "url": "https://ustr.gov/node/9608",
       "as_of": "2026-08-27",
       "live": false
+    },
+    {
+      "level": "medium",
+      "title": "Michelin North America, Inc., Grant of Petition for Decision of Inconsequential Noncompliance",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "Michelin North America, Inc. (MNA) has determined that certain Uniroyal Laredo AT and Laredo HT replacement tires do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 139, New Pn…",
+      "date": "2026-08-27",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17472/michelin-north-america-inc-grant-of-petition-for-decision-of-inconsequential-noncompliance",
+      "as_of": "2026-08-27",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Spartan Fire, LLC, Receipt of Petition for Decision of Inconsequential Noncompliance",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "Spartan Fire, LLC (Spartan) has determined that certain model year (MY) 2015-2023 Spartan Fire Gladiator and Spartan Fire Metro Star emergency vehicles do not fully comply with Federal Motor Vehicle S…",
+      "date": "2026-08-27",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17469/spartan-fire-llc-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
+      "as_of": "2026-08-27",
+      "live": true
     },
     {
       "level": "medium",
@@ -633,18 +657,6 @@
       "date": "2026-08-21",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17095/agency-information-collection-activities-submission-to-the-office-of-management-and-budget-for",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "level": "medium",
-      "title": "Allwin Powersports Corp., Receipt of Petition for Decision of Inconsequential Noncompliance",
-      "market": "美国",
-      "platform": "Transportation Department",
-      "detail": "Allwin Powersports Corp. (Allwin) has determined that certain LS2 Rapid II Helmets do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 218, Motorcycle Helmets. Allwin filed a no…",
-      "date": "2026-08-20",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16983/allwin-powersports-corp-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
       "as_of": "2026-08-27",
       "live": true
     },
@@ -717,18 +729,6 @@
       "date": "2026-08-11",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16362/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-countervailing-duty",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "level": "high",
-      "title": "Organic Soybean Meal From India: Preliminary Results and Partial Rescission of Countervailing Duty Administrative Review; 2024",
-      "market": "美国",
-      "platform": "Commerce Department",
-      "detail": "The U.S. Department of Commerce (Commerce) preliminarily determines that countervailable subsidies are being provided to certain producers/exporters of organic soybean meal from India. The period of r…",
-      "date": "2026-08-06",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16018/organic-soybean-meal-from-india-preliminary-results-and-partial-rescission-of-countervailing-duty",
       "as_of": "2026-08-27",
       "live": true
     }

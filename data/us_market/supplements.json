@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国保健品 (US Dietary Supplements)",
     "cat_key": "supplements",
-    "generated_at": "2026-08-27T01:58:11.627645+00:00",
+    "generated_at": "2026-08-27T09:52:02.217277+00:00",
     "as_of": "2026-08-27",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -16,7 +16,7 @@
       "country": 1,
       "platforms": 7,
       "rules": 4,
-      "policies": 22,
+      "policies": 23,
       "alerts": 4
     }
   },
@@ -336,6 +336,17 @@
     }
   ],
   "policies": [
+    {
+      "title": "Schedules of Controlled Substances: Placement of Cipepofol in Schedule IV",
+      "date": "2026-08-27",
+      "agency": "Justice Department",
+      "summary": "On May 29, 2026, the United States Food and Drug Administration (FDA) approved a new drug application for Cypsedo (cipepofol) for induction of general anesthesia in adults undergoing surgery. The Department of Health and Human Services provided the Drug Enforcement Administration…",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17536/schedules-of-controlled-substances-placement-of-cipepofol-in-schedule-iv",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-27",
+      "live": true
+    },
     {
       "title": "International Drug Scheduling; Single Convention on Narcotic Drugs; Convention on Psychotropic Substances; Clobromazolam (Phenazolam); Cychlorphine (N-Propionitrile Chlorphine); Desalkylgidazepam (Bromonordiazepam); Ethylbromazolam; Etomethazene (5-Methyl Etodesnitazene); Spirochlorphine (R6980); Etomidate; Medetomidine; Request for Comments",
       "date": "2026-08-26",

@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国家居厨具 (US Home & Kitchen)",
     "cat_key": "home",
-    "generated_at": "2026-08-27T01:58:09.125874+00:00",
+    "generated_at": "2026-08-27T09:51:56.454832+00:00",
     "as_of": "2026-08-27",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -16,7 +16,7 @@
       "country": 1,
       "platforms": 7,
       "rules": 5,
-      "policies": 10,
+      "policies": 11,
       "alerts": 8
     }
   },
@@ -346,6 +346,17 @@
     }
   ],
   "policies": [
+    {
+      "title": "Air Plan Approval; Michigan; 2015 Ozone Moderate Reasonably Available Control Technology",
+      "date": "2026-08-27",
+      "agency": "Environmental Protection Agency",
+      "summary": "The U.S. Environmental Protection Agency (EPA) is approving revisions and additions to Michigan Air Pollution Control Rules (MAPCR) Parts 6 and 8 for inclusion in the Michigan State Implementation Plan (SIP). Michigan submitted these SIP revisions to meet the Moderate Volatile Or…",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17486/air-plan-approval-michigan-2015-ozone-moderate-reasonably-available-control-technology",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-27",
+      "live": true
+    },
     {
       "title": "Wooden Bedroom Furniture From the People's Republic of China: Final Results of Antidumping Duty Administrative Review; 2024",
       "date": "2026-08-12",

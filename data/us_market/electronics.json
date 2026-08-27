@@ -2,7 +2,7 @@
   "meta": {
     "market": "美国消费电子 (US Consumer Electronics)",
     "cat_key": "electronics",
-    "generated_at": "2026-08-27T01:58:07.949346+00:00",
+    "generated_at": "2026-08-27T09:51:53.848281+00:00",
     "as_of": "2026-08-27",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
@@ -16,8 +16,8 @@
       "country": 1,
       "platforms": 7,
       "rules": 5,
-      "policies": 22,
-      "alerts": 10
+      "policies": 17,
+      "alerts": 8
     }
   },
   "country": {
@@ -345,22 +345,11 @@
   ],
   "policies": [
     {
-      "title": "Automated Commercial Environment (ACE) Electronic Export Manifest for Rail Cargo",
-      "date": "2026-08-26",
-      "agency": "Homeland Security Department",
-      "summary": "U.S. Customs and Border Protection (CBP) is revising its regulations pursuant to the Trade Act of 2002 requiring the transmission of export manifest data electronically in the Automated Commercial Environment (ACE) for cargo transported by rail for any train departing the United …",
-      "url": "https://www.federalregister.gov/documents/2026/08/26/2026-17390/automated-commercial-environment-ace-electronic-export-manifest-for-rail-cargo",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Agency Information Collection Activities; Proposed Collection; Comment Request; Allegations of Regulatory Misconduct Voluntarily Submitted to the Center for Devices and Radiological Health",
-      "date": "2026-08-26",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA or Agency) is announcing an opportunity for public comment on the proposed collection of certain information by the Agency. Under the Paperwork Reduction Act of 1995 (PRA), Federal Agencies are required to publish notice in the Federal Regist…",
-      "url": "https://www.federalregister.gov/documents/2026/08/26/2026-17377/agency-information-collection-activities-proposed-collection-comment-request-allegations-of",
+      "title": "Information Collection Being Reviewed by the Federal Communications Commission",
+      "date": "2026-08-27",
+      "agency": "Federal Communications Commission",
+      "summary": "As part of its continuing effort to reduce paperwork burdens, and as required by the Paperwork Reduction Act (PRA) of 1995, the Federal Communications Commission (FCC or the Commission) invites the general public and other Federal agencies to take this opportunity to comment on t…",
+      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17516/information-collection-being-reviewed-by-the-federal-communications-commission",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-27",
@@ -427,28 +416,6 @@
       "agency": "Federal Communications Commission",
       "summary": "The Federal Communications Commission (Commission or FCC) issues a Third Further Notice of Proposed Rulemaking seeking comment on a broad set of additional measures to strengthen the security and integrity of its equipment authorization program. The measures include bifurcating t…",
       "url": "https://www.federalregister.gov/documents/2026/08/07/2026-16197/protecting-against-national-security-threats-to-the-communications-supply-chain-through-the",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Foreign-Trade Zone (FTZ) 45, Notification of Proposed Production Activity; Ascentec Engineering, LLC; (Semiconductor Equipment Precision Parts, Assemblies, and Production Kits); Tualatin and Dallas, Oregon",
-      "date": "2026-08-06",
-      "agency": "Commerce Department",
-      "summary": "",
-      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-16000/foreign-trade-zone-ftz-45-notification-of-proposed-production-activity-ascentec-engineering-llc",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Foreign-Trade Zone (FTZ) 18, Notification of Proposed Production Activity; Western Digital Technologies, Inc.; (Semiconductor Die); San Jose and Fremont California",
-      "date": "2026-08-06",
-      "agency": "Commerce Department",
-      "summary": "",
-      "url": "https://www.federalregister.gov/documents/2026/08/06/2026-15937/foreign-trade-zone-ftz-18-notification-of-proposed-production-activity-western-digital-technologies",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-27",
@@ -532,33 +499,11 @@
       "live": true
     },
     {
-      "title": "Certain Anode Materials for Use in Battery Cells and Batteries; Notice of Institution of Investigation",
-      "date": "2026-07-24",
-      "agency": "International Trade Commission",
-      "summary": "Notice is hereby given that a complaint was filed with the U.S. International Trade Commission on June 18, 2026, under section 337 of the Tariff Act of 1930, as amended, on behalf of Sila Nanotechnologies, Inc. of Alameda, California, and Georgia Tech Research Corporation of Atla…",
-      "url": "https://www.federalregister.gov/documents/2026/07/24/2026-14970/certain-anode-materials-for-use-in-battery-cells-and-batteries-notice-of-institution-of",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
       "title": "Sunshine Act Meeting; Open Commission Meeting Wednesday, July 22, 2026",
       "date": "2026-07-21",
       "agency": "Federal Communications Commission",
       "summary": "To maintain U.S. spectrum leadership, create a robust spectrum pipeline, and fulfill Congress' direction in the One Big Beautiful Bill Act, the Commission will consider a Report and Order, Order of Proposed Modification, and Order on Reconsideration that makes 160 megahertz of th…",
       "url": "https://www.federalregister.gov/documents/2026/07/21/2026-14674/sunshine-act-meeting-open-commission-meeting-wednesday-july-22-2026",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Modernizing Reactor Licensing, Safety Oversight, and Siting Practices",
-      "date": "2026-07-16",
-      "agency": "Nuclear Regulatory Commission",
-      "summary": "Consistent with Executive Order 14300, \"Ordering the Reform of the Nuclear Regulatory Commission,\" the U.S. Nuclear Regulatory Commission (NRC) is conducting a review and wholesale revision of its regulations. This proposed rule aims to modernize reactor licensing, safety oversig…",
-      "url": "https://www.federalregister.gov/documents/2026/07/16/2026-14341/modernizing-reactor-licensing-safety-oversight-and-siting-practices",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
       "as_of": "2026-08-27",
@@ -674,18 +619,6 @@
     },
     {
       "level": "high",
-      "title": "Certain Anode Materials for Use in Battery Cells and Batteries; Notice of Institution of Investigation",
-      "market": "美国",
-      "platform": "International Trade Commission",
-      "detail": "Notice is hereby given that a complaint was filed with the U.S. International Trade Commission on June 18, 2026, under section 337 of the Tariff Act of 1930, as amended, on behalf of Sila Nanotechnolo…",
-      "date": "2026-07-24",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/07/24/2026-14970/certain-anode-materials-for-use-in-battery-cells-and-batteries-notice-of-institution-of",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "level": "high",
       "title": "Sunshine Act Meeting; Open Commission Meeting Wednesday, July 22, 2026",
       "market": "美国",
       "platform": "Federal Communications Commission",
@@ -693,18 +626,6 @@
       "date": "2026-07-21",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/07/21/2026-14674/sunshine-act-meeting-open-commission-meeting-wednesday-july-22-2026",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "level": "medium",
-      "title": "Modernizing Reactor Licensing, Safety Oversight, and Siting Practices",
-      "market": "美国",
-      "platform": "Nuclear Regulatory Commission",
-      "detail": "Consistent with Executive Order 14300, \"Ordering the Reform of the Nuclear Regulatory Commission,\" the U.S. Nuclear Regulatory Commission (NRC) is conducting a review and wholesale revision of its reg…",
-      "date": "2026-07-16",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/07/16/2026-14341/modernizing-reactor-licensing-safety-oversight-and-siting-practices",
       "as_of": "2026-08-27",
       "live": true
     }
