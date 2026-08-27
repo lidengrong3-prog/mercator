@@ -107,22 +107,22 @@ $$;
 DO $$
 DECLARE
   profile_row RECORD;
-  workspace_id UUID;
+  v_workspace_id UUID;
 BEGIN
   FOR profile_row IN SELECT id, COALESCE(NULLIF(trim(company), ''), '我的工作区') AS workspace_name FROM public.profiles LOOP
-    SELECT wm.workspace_id INTO workspace_id
+    SELECT wm.workspace_id INTO v_workspace_id
     FROM public.workspace_members wm
     WHERE wm.user_id = profile_row.id AND wm.status = 'active'
     ORDER BY wm.joined_at
     LIMIT 1;
 
-    IF workspace_id IS NULL THEN
+    IF v_workspace_id IS NULL THEN
       INSERT INTO public.workspaces (name, owner_id)
       VALUES (profile_row.workspace_name, profile_row.id)
-      RETURNING id INTO workspace_id;
+      RETURNING id INTO v_workspace_id;
 
       INSERT INTO public.workspace_members (workspace_id, user_id, role, status)
-      VALUES (workspace_id, profile_row.id, 'owner', 'active')
+      VALUES (v_workspace_id, profile_row.id, 'owner', 'active')
       ON CONFLICT (workspace_id, user_id) DO UPDATE SET role = 'owner', status = 'active';
     END IF;
   END LOOP;
@@ -136,21 +136,21 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  workspace_id UUID;
+  v_workspace_id UUID;
 BEGIN
-  SELECT wm.workspace_id INTO workspace_id
+  SELECT wm.workspace_id INTO v_workspace_id
   FROM public.workspace_members wm
   WHERE wm.user_id = NEW.id AND wm.status = 'active'
   ORDER BY wm.joined_at
   LIMIT 1;
 
-  IF workspace_id IS NULL THEN
+  IF v_workspace_id IS NULL THEN
     INSERT INTO public.workspaces (name, owner_id)
     VALUES (COALESCE(NULLIF(trim(NEW.company), ''), '我的工作区'), NEW.id)
-    RETURNING id INTO workspace_id;
+    RETURNING id INTO v_workspace_id;
 
     INSERT INTO public.workspace_members (workspace_id, user_id, role, status)
-    VALUES (workspace_id, NEW.id, 'owner', 'active')
+    VALUES (v_workspace_id, NEW.id, 'owner', 'active')
     ON CONFLICT (workspace_id, user_id) DO NOTHING;
   END IF;
   RETURN NEW;
