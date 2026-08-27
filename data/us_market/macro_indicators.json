@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-27T09:52:10.101559+00:00",
+    "generated_at": "2026-08-27T22:18:34.091092+00:00",
     "source": "FRED / BLS / US Census",
     "total_indicators": 22,
     "fetched": 22,
@@ -42,9 +42,9 @@
     },
     "ICSA": {
       "name": "初次申请失业金人数",
-      "value": "206000",
+      "value": "203000",
       "unit": "人",
-      "date": "2026-08-15",
+      "date": "2026-08-22",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/ICSA"
     },
@@ -82,17 +82,17 @@
     },
     "DGS10": {
       "name": "10年期国债收益率",
-      "value": "4.64",
+      "value": "4.66",
       "unit": "%",
-      "date": "2026-08-25",
+      "date": "2026-08-26",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/DGS10"
     },
     "DGS2": {
       "name": "2年期国债收益率",
-      "value": "4.17",
+      "value": "4.19",
       "unit": "%",
-      "date": "2026-08-25",
+      "date": "2026-08-26",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/DGS2"
     },
@@ -100,7 +100,7 @@
       "name": "10Y-2Y 利差",
       "value": "0.47",
       "unit": "%",
-      "date": "2026-08-26",
+      "date": "2026-08-27",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
     },
@@ -114,17 +114,17 @@
     },
     "CSUSHPINSA": {
       "name": "S&P/Case-Shiller 房价指数",
-      "value": "335.1040000000",
+      "value": "336.663",
       "unit": "指数",
-      "date": "2026-05-01",
+      "date": "2026-06-01",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/CSUSHPINSA"
     },
     "MORTGAGE30US": {
       "name": "30年期固定抵押贷款利率",
-      "value": "6.65",
+      "value": "6.66",
       "unit": "%",
-      "date": "2026-08-20",
+      "date": "2026-08-27",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/MORTGAGE30US"
     },
