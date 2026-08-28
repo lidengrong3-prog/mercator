@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-08-28T11:28:42.189764+00:00",
+    "generated_at": "2026-08-28T22:23:18.470257+00:00",
     "source": "FRED / BLS / US Census",
     "total_indicators": 22,
     "fetched": 22,
@@ -18,9 +18,9 @@
     },
     "UMCSENT": {
       "name": "密歇根消费者信心指数",
-      "value": "49.5",
+      "value": "55.2",
       "unit": "指数",
-      "date": "2026-06-01",
+      "date": "2026-07-01",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/UMCSENT"
     },
@@ -82,25 +82,25 @@
     },
     "DGS10": {
       "name": "10年期国债收益率",
-      "value": "4.66",
+      "value": "4.67",
       "unit": "%",
-      "date": "2026-08-26",
+      "date": "2026-08-27",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/DGS10"
     },
     "DGS2": {
       "name": "2年期国债收益率",
-      "value": "4.19",
+      "value": "4.2",
       "unit": "%",
-      "date": "2026-08-26",
+      "date": "2026-08-27",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/DGS2"
     },
     "T10Y2Y": {
       "name": "10Y-2Y 利差",
-      "value": "0.47",
+      "value": "0.39",
       "unit": "%",
-      "date": "2026-08-27",
+      "date": "2026-08-28",
       "source": "FRED",
       "source_url": "https://fred.stlouisfed.org/series/T10Y2Y"
     },
