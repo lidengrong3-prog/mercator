@@ -2,8 +2,8 @@
   "meta": {
     "market": "美国美妆个护 (US Beauty & Personal Care)",
     "cat_key": "beauty",
-    "generated_at": "2026-08-27T22:18:21.802841+00:00",
-    "as_of": "2026-08-27",
+    "generated_at": "2026-08-28T11:28:34.159730+00:00",
+    "as_of": "2026-08-28",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
       "country",
@@ -109,7 +109,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-08-27"
+    "as_of": "2026-08-28"
   },
   "findings": [
     "美妆个护高毛利、强内容驱动（线上 ≈ 60%，TikTok 占比最高品类之一）。",
@@ -129,7 +129,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "hotCats": [
         "护肤",
         "彩妆",
@@ -148,7 +148,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "hotCats": [
         "护肤爆款",
         "彩妆",
@@ -167,7 +167,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "hotCats": [
         "家庭个护",
         "基础护肤",
@@ -185,7 +185,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "hotCats": [
         "收藏香水",
         "二手",
@@ -203,7 +203,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "hotCats": [
         "手工皂",
         "天然护肤",
@@ -221,7 +221,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "hotCats": [
         "品牌官网",
         "订阅制",
@@ -239,7 +239,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "hotCats": [
         "低价彩妆",
         "合金/塑料包装"
@@ -305,7 +305,7 @@
       "severity": "high",
       "source": "FDA MoCRA",
       "source_url": "https://www.fda.gov/cosmetics/cosmetics-laws-regulations/modernization-cosmetics-regulation-act-2022-mocra",
-      "as_of": "2026-08-27"
+      "as_of": "2026-08-28"
     },
     {
       "platform": "FTC",
@@ -314,7 +314,7 @@
       "severity": "high",
       "source": "FTC",
       "source_url": "https://www.ftc.gov/business-guidance/industry/cosmetics",
-      "as_of": "2026-08-27"
+      "as_of": "2026-08-28"
     },
     {
       "platform": "Amazon",
@@ -323,7 +323,7 @@
       "severity": "medium",
       "source": "Amazon Seller Central",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-27"
+      "as_of": "2026-08-28"
     },
     {
       "platform": "TikTok Shop（美国）",
@@ -332,10 +332,54 @@
       "severity": "high",
       "source": "TikTok Shop 卖家中心",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-27"
+      "as_of": "2026-08-28"
     }
   ],
   "policies": [
+    {
+      "title": "Agency Information Collection Activities; Submission for Office of Management and Budget Review; Comment Request; Importation of Prescription Drugs",
+      "date": "2026-08-28",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is announcing that a proposed collection of information has been submitted to the Office of Management and Budget (OMB) for review and clearance under the Paperwork Reduction Act of 1995.",
+      "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17603/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-28",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Submission for Office of Management and Budget Review; Comment Request; Reporting Associated With Animal Drug and Animal Generic Drug User Fees",
+      "date": "2026-08-28",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is announcing that a proposed collection of information has been submitted to the Office of Management and Budget (OMB) for review and clearance under the Paperwork Reduction Act of 1995.",
+      "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17601/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-28",
+      "live": true
+    },
+    {
+      "title": "Agency Information Collection Activities; Proposed Collection; Comment Request; Food Canning Establishment Registration, Process Filing, and Recordkeeping for Acidified Foods and Thermally Processed Low-Acid Foods in Hermetically Sealed Containers",
+      "date": "2026-08-28",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA or Agency) is announcing an opportunity for public comment on the proposed collection of certain information by the Agency. Under the Paperwork Reduction Act of 1995 (PRA), Federal Agencies are required to publish notice in the Federal Regist…",
+      "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17599/agency-information-collection-activities-proposed-collection-comment-request-food-canning",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-28",
+      "live": true
+    },
+    {
+      "title": "Alpha-d-Glucopyranoside, Beta-d-Fructofuranosyl, Mixed Palmitates and Stearates in Pesticide Formulations; Exemption From the Requirement of a Tolerance",
+      "date": "2026-08-28",
+      "agency": "Environmental Protection Agency",
+      "summary": "This regulation establishes an exemption from the requirement of a tolerance for residues of alpha-d-glucopyranoside, beta-d- fructofuranosyl, mixed palmitates and stearates (CAS Reg. No. 84066-95- 5) when used as an inert ingredient (surfactant) on growing crops pre- harvest at …",
+      "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17579/alpha-d-glucopyranoside-beta-d-fructofuranosyl-mixed-palmitates-and-stearates-in-pesticide",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-08-28",
+      "live": true
+    },
     {
       "title": "Schedules of Controlled Substances: Placement of Cipepofol in Schedule IV",
       "date": "2026-08-27",
@@ -344,7 +388,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17536/schedules-of-controlled-substances-placement-of-cipepofol-in-schedule-iv",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -355,7 +399,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/26/2026-17401/determination-that-cabazitaxel-cabazitaxel-solution-injection-60-milligrams6-milliliters-10",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -366,7 +410,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17229/food-and-drug-administration-modernization-act-of-1997-modifications-to-the-list-of-recognized",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -377,7 +421,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17215/evaluation-of-therapeutic-equivalence-guidance-for-industry-availability",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -388,7 +432,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17088/carboxin-pesticide-tolerances",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -399,7 +443,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17084/advisory-committee-oncologic-drugs-advisory-committee-renewal",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -410,7 +454,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16999/advisory-committee-cardiovascular-and-renal-drugs-advisory-committee-renewal",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -421,40 +465,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16998/advisory-committee-endocrinologic-and-metabolic-drugs-advisory-committee-renewal",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Receipt of Pesticide Petitions Filed for Residues of Pesticide Chemicals in or on Various Commodities-June 2026",
-      "date": "2026-08-20",
-      "agency": "Environmental Protection Agency",
-      "summary": "This document announces the Agency's receipt of and solicits public comment on initial filings of pesticide petitions requesting the establishment or modification of regulations for residues of pesticide chemicals in or on various commodities. The Agency is providing this notice …",
-      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16976/receipt-of-pesticide-petitions-filed-for-residues-of-pesticide-chemicals-in-or-on-various",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Cypermethrin; Pesticide Tolerance(s)",
-      "date": "2026-08-20",
-      "agency": "Environmental Protection Agency",
-      "summary": "This regulation establishes a tolerance action for residues of cypermethrin (CASRN 52315-07-8) in or on the food and feed commodity of cacao, dried bean. Under the Federal Food, Drug, and Cosmetic Act (FFDCA), the National Confectioners Association submitted a petition to EPA req…",
-      "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16973/cypermethrin-pesticide-tolerances",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Gardenia Blue Interest Group; Filing of Color Additive Petition",
-      "date": "2026-08-19",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA or we) is announcing that we have filed a petition, submitted by Gardenia Blue Interest Group (GBIG or petitioner), c/o Exponent, Inc., proposing that we amend our color additive regulations to expand the safe use of gardenia (genipin) blue i…",
-      "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16944/gardenia-blue-interest-group-filing-of-color-additive-petition",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -465,7 +476,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/17/2026-14434/agency-information-collection-activities-proposed-collection-comment-request-requirements-for",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -476,7 +487,7 @@
       "url": "https://www.federalregister.gov/documents/2026/01/22/2026-01159/fda-records-access-authority-for-cosmetics-draft-guidance-for-industry-availability",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -487,7 +498,7 @@
       "url": "https://www.federalregister.gov/documents/2025/12/18/2025-23249/questions-and-answers-regarding-mandatory-cosmetics-recalls-draft-guidance-for-industry-availability",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -498,7 +509,7 @@
       "url": "https://www.federalregister.gov/documents/2025/11/28/2025-21407/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -509,7 +520,7 @@
       "url": "https://www.federalregister.gov/documents/2025/06/25/2025-11605/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -520,7 +531,7 @@
       "url": "https://www.federalregister.gov/documents/2024/12/27/2024-30544/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -531,7 +542,7 @@
       "url": "https://www.federalregister.gov/documents/2024/12/12/2024-29237/registration-and-listing-of-cosmetic-product-facilities-and-products-guidance-for-industry",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -542,7 +553,7 @@
       "url": "https://www.federalregister.gov/documents/2024/06/03/2024-11893/statement-of-organization-functions-and-delegations-of-authority",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -553,7 +564,7 @@
       "url": "https://www.federalregister.gov/documents/2023/12/19/2023-27649/registration-and-listing-of-cosmetic-product-facilities-and-products-guidance-for-industry",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -564,7 +575,7 @@
       "url": "https://www.federalregister.gov/documents/2023/11/09/2023-24731/compliance-policy-for-cosmetic-product-facility-registration-and-cosmetic-product-listing-guidance",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -575,7 +586,7 @@
       "url": "https://www.federalregister.gov/documents/2023/09/18/2023-20139/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -586,18 +597,7 @@
       "url": "https://www.federalregister.gov/documents/2023/08/08/2023-16772/pilot-program-for-cosmetic-product-facility-registration-and-listing-electronic-submissions-user",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
-      "live": true
-    },
-    {
-      "title": "Registration and Listing of Cosmetic Product Facilities and Products; Draft Guidance for Industry; Availability",
-      "date": "2023-08-08",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA, the Agency, or we) is announcing the availability of a draft guidance for industry entitled \"Registration and Listing of Cosmetic Product Facilities and Products.\" This draft guidance, when finalized, will assist persons submitting cosmetic …",
-      "url": "https://www.federalregister.gov/documents/2023/08/08/2023-16771/registration-and-listing-of-cosmetic-product-facilities-and-products-draft-guidance-for-industry",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     }
   ],
@@ -608,10 +608,10 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 3304(化妆品)/3401(洗护) 多数基础关税为零，但灌装/生产设备及部分包材受 Section 301 附加税约束。出口须以 USTR 检索确认具体编码税率。",
-      "date": "2026-08-27",
+      "date": "2026-08-28",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": false
     },
     {
@@ -623,7 +623,7 @@
       "date": "2026-08-26",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/26/2026-17401/determination-that-cabazitaxel-cabazitaxel-solution-injection-60-milligrams6-milliliters-10",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -635,7 +635,7 @@
       "date": "2025-12-18",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2025/12/18/2025-23249/questions-and-answers-regarding-mandatory-cosmetics-recalls-draft-guidance-for-industry-availability",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -647,7 +647,7 @@
       "date": "2025-11-28",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2025/11/28/2025-21407/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     },
     {
@@ -659,7 +659,7 @@
       "date": "2024-12-27",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2024/12/27/2024-30544/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
-      "as_of": "2026-08-27",
+      "as_of": "2026-08-28",
       "live": true
     }
   ]

@@ -1,12 +1,25 @@
 {
   "meta": {
-    "generated_at": "2026-08-28T06:18:34.148574+08:00",
+    "generated_at": "2026-08-28T19:28:42.247043+08:00",
     "total": 100,
     "sources": {
       "cpsc": 34,
       "policies": 11,
-      "us_market": 58
+      "us_market": 59
     }
   },
-  "alerts": []
+  "alerts": [
+    {
+      "id": "usm-20260828-46ab734b",
+      "type": "policy",
+      "level": "medium",
+      "title": "Mercedes-Benz USA, LLC, Grant of Petition for Decision of In",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "Mercedes-Benz AG (MBAG) and Mercedes-Benz USA, LLC (MBUSA), (collectively, \"Mercedes-Benz\"), have determined that certain model year (MY) 2020-2021 Mercedes-Benz GLE and GLS Class motor vehicles do no…",
+      "date": "2026-08-28",
+      "read": false,
+      "source": "Federal Register"
+    }
+  ]
 }

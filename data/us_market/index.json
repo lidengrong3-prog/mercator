@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-27T22:18:17.006552+00:00",
-  "as_of": "2026-08-27",
+  "generated_at": "2026-08-28T11:28:32.289347+00:00",
+  "as_of": "2026-08-28",
   "categories": [
     {
       "key": "electronics",
@@ -83,7 +83,7 @@
       "market_size": "US$ 2,387.5 亿 (2026E)",
       "cagr": "CAGR 4.12% (2026-2031)",
       "policy_count": 24,
-      "alert_count": 11,
+      "alert_count": 12,
       "report": "reports/us_market/auto_report.pdf"
     },
     {
