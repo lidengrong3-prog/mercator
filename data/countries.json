@@ -652,7 +652,7 @@
         ]
       ]
     },
-    "macro_updated": "2026-08-27 22:18 UTC"
+    "macro_updated": "2026-08-28 11:28 UTC"
   },
   "jp": {
     "flag": "🇯🇵",
@@ -5193,11 +5193,11 @@
         "家居用品 +16% 远程办公持续"
       ],
       "risks": [
+        "⚠️ Automated Commercial Environment (ACE) Electronic Export Man（Federal Register 2026-08-26）",
         "⚠️ Implementation of EAR Export Controls on Silencers, Mufflers（Federal Register 2026-07-23）",
         "⚠️ Endangered and Threatened Wildlife and Plants; Revised Desig（Federal Register 2026-07-16）",
         "⚠️ Airworthiness Directives; Bell Textron Canada Limited Helico（Federal Register 2026-07-17）",
-        "⚠️ 英法双语listing必要",
-        "⚠️ 美国关税政策联动"
+        "⚠️ 英法双语listing必要"
       ],
       "advice": [
         "新手：Amazon加拿大站",
@@ -11842,16 +11842,16 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-08-21T16:58:27.649218+08:00",
+    "last_updated": "2026-08-28T19:23:40.653817+08:00",
     "updated_countries": [
-      "ua",
-      "kz",
-      "id",
       "th",
       "my",
       "vn",
       "ph",
-      "sg"
+      "sg",
+      "us",
+      "br",
+      "ca"
     ]
   }
 }
