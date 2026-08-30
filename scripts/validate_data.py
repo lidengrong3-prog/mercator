@@ -22,6 +22,9 @@ SCOPE_COUNTRY_CODE = "US"
 SCOPE_COUNTRY_KEY = "us"
 SCOPE_COUNTRY_NAMES = {"US", "美国"}
 SCOPE_PLATFORMS = {"Amazon", "TikTok Shop", "AliExpress", "eBay"}
+# CPSC publishes on business days and its public API is commonly unavailable
+# over weekends. Keep a strict three-day ceiling without fabricating freshness.
+CPSC_MAX_AGE_HOURS = 72
 
 
 DATASET_LABELS = {
@@ -508,7 +511,12 @@ def validate_cpsc(now: datetime) -> DatasetResult:
         return result
     result.records = len(recalls)
     result.scoped_records = result.records
-    set_freshness(result, data.get("meta", {}).get("generated_at"), now, 36)
+    set_freshness(
+        result,
+        data.get("meta", {}).get("generated_at"),
+        now,
+        CPSC_MAX_AGE_HOURS,
+    )
     if len(recalls) < 1:
         result.errors.append("CPSC 召回缓存为空")
     rows = [row for row in recalls if isinstance(row, dict)]
