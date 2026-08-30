@@ -34,6 +34,8 @@ function jayRenderQualityReport(){
   var setText = function(id, value){ var node=document.getElementById(id); if(node) node.textContent=String(value); };
   setText('dq-datasets', summary.datasets == null ? keys.length : summary.datasets);
   setText('dq-healthy', publishableCount);
+  setText('dq-raw-records', summary.raw_records == null ? '--' : summary.raw_records);
+  setText('dq-scoped-records', summary.scoped_records == null ? '--' : summary.scoped_records);
   setText('dq-errors', summary.errors || 0);
   setText('dq-warnings', summary.warnings || 0);
   setText('data-quality-generated', '最近校验：' + jayQualityDate(report.generated_at) + ' · 发布闸门：' + (report.publishable ? '已通过' : '已阻断'));
@@ -45,7 +47,7 @@ function jayRenderQualityReport(){
   }
   var rows = document.getElementById('data-quality-rows');
   if(rows){
-    if(!keys.length){ rows.innerHTML='<tr><td colspan="5" class="data-quality-empty">质量报告中没有数据集。</td></tr>'; }
+    if(!keys.length){ rows.innerHTML='<tr><td colspan="6" class="data-quality-empty">质量报告中没有数据集。</td></tr>'; }
     else rows.innerHTML = keys.map(function(key){
       var item=datasets[key]||{};
       var state=item.status||'failed';
@@ -53,7 +55,8 @@ function jayRenderQualityReport(){
       var stamp=item.updated_at ? jayQualityDate(item.updated_at) : ((item.metrics||{}).catalog_type==='reference' ? '静态参考库' : '暂无时间');
       return '<tr><td><span class="data-quality-name">'+escapeHtml(item.label||key)+'</span></td>'+
         '<td><span class="data-quality-state '+escapeHtml(state)+'">'+escapeHtml(JAY_QUALITY_LABELS[state]||state)+'</span></td>'+
-        '<td>'+escapeHtml(String(item.records==null?'--':item.records))+'</td>'+
+        '<td>'+escapeHtml(String(item.raw_records==null?(item.records==null?'--':item.records):item.raw_records))+'</td>'+
+        '<td>'+escapeHtml(String(item.scoped_records==null?'--':item.scoped_records))+'</td>'+
         '<td>'+escapeHtml(stamp)+'</td>'+
         '<td>'+escapeHtml(notes[0]||'结构、来源与时效校验通过')+'</td></tr>';
     }).join('');
@@ -108,8 +111,8 @@ function jayFreshestStamp(){
 async function jayRefreshViaAI(key, label){
   if(!AI_ENGINE.hasKey()){ toast('请先登录后使用 AI 简报服务'); return null; }
   var catLabel = label || key;
-  var sys = '你是全球跨境电商情报分析师，基于联网检索整理最新动态。输出简体中文 Markdown：每条用 "## 国家/平台｜要点" 开头，正文含「影响」与「来源」（如可知网址）。最多 12 条，聚焦 2026 年最新政策、规则、平台变动与风险预警。';
-  var user = '【当前日期】' + jayNowHuman() + '。请联网检索并整理「' + catLabel + '」截至今日的最新全球动态，优先 2026 年 7 月以来的信息。';
+  var sys = '你是美国市场跨境电商情报分析师，基于联网检索整理最新动态。输出简体中文 Markdown：每条用 "## 美国/平台｜要点" 开头，正文含「影响」与「来源」（如可知网址）。最多 12 条，只分析美国市场及 Amazon、TikTok Shop、AliExpress、eBay，聚焦 2026 年最新政策、规则、平台变动与风险预警。禁止输出其他国家、区域或平台。';
+  var user = '【当前日期】' + jayNowHuman() + '。请联网检索并整理「' + catLabel + '」截至今日的最新美国市场动态，优先 2026 年 7 月以来的信息；平台仅限 Amazon、TikTok Shop、AliExpress、eBay。';
   toast('正在联网检索最新' + catLabel + '数据...');
   try {
     var brief = await callAI(sys, user, { temperature: 0.4, max_tokens: 2600, search: true });
@@ -175,7 +178,7 @@ function jayRenderBriefCard(){
   });
   var body = document.getElementById('ov-brief-body');
   if(!body) return;
-  if(!best){ body.innerHTML = '<p style="color:var(--muted);font-size:12px">暂无实时简报。点击「刷新实时数据」，AI 将联网检索并生成最新全球动态。</p>'; return; }
+  if(!best){ body.innerHTML = '<p style="color:var(--muted);font-size:12px">暂无实时简报。点击「刷新实时数据」，AI 将联网检索并生成最新美国市场动态。</p>'; return; }
   var d = new Date(best.ts);
   var label = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
   body.innerHTML = '<div class="rp-v2-rpt" style="box-shadow:none;padding:0">' + renderMarkdownSafe(best.text) + '</div><div style="font-size:11px;color:var(--muted);margin-top:8px">生成时间：'+label+'</div>';
@@ -332,7 +335,7 @@ function switchAuthTab(mode) {
   tabs.forEach(function(t,i){ t.classList.toggle('active', (i===0 && mode==='login') || (i===1 && mode==='register')); });
   document.getElementById('field-name').classList.toggle('show', mode==='register');
   document.getElementById('field-company').classList.toggle('show', mode==='register');
-  document.getElementById('auth-title').textContent = mode==='login' ? '进入全球市场情报台' : '创建免费账号';
+  document.getElementById('auth-title').textContent = mode==='login' ? '进入美国市场情报台' : '创建免费账号';
   document.getElementById('auth-submit-btn').textContent = mode==='login' ? '登录 →' : '注册 →';
   document.getElementById('auth-reset-link').style.display = mode==='login' ? '' : 'none';
   document.getElementById('auth-error').classList.remove('show');
@@ -869,6 +872,7 @@ function jayReportFromRow(row) {
     name: row.title,
     materials: content.material_count || (content.materials || []).length || 0,
     date: row.created_at,
+    market: content.market || '',
     tpl: content.template || row.report_type,
     text: content.text || '',
     items: content.materials || []
@@ -885,7 +889,8 @@ function jayReportToRow(report) {
       text: report.text || '',
       materials: report.items || [],
       material_count: report.materials || (report.items || []).length || 0,
-      template: report.tpl || 'custom'
+      template: report.tpl || 'custom',
+      market: report.market || 'US'
     },
     status: 'completed',
     created_at: report.date || new Date().toISOString()
@@ -907,11 +912,6 @@ function jayApplyPreferencesToUi() {
     });
   }
   var workspace = jayPreferenceCache.workspace_prefs || {};
-  var cnEnabled = workspace.cn_view === true;
-  var markets = document.getElementById('cn-markets');
-  if (markets) markets.style.display = cnEnabled ? 'flex' : 'none';
-  var cnButton = document.querySelector('#jay-cn-banner button');
-  if (cnButton) cnButton.textContent = cnEnabled ? '收起' : '展开';
   var role = workspace.role || 'factory';
   var roleSeg = document.getElementById('jay-role-seg');
   if (roleSeg) roleSeg.querySelectorAll('button').forEach(function(button){
@@ -969,14 +969,12 @@ async function jayLoadUserPreferences() {
   var prefs = rows[0] || { user_id: jayUser.id, notification_prefs: {}, ui_prefs: {}, workspace_prefs: {} };
   var legacySubs = jayReadLegacyJson('jay_sub_pref', null);
   var legacyRole = localStorage.getItem('jay_role');
-  var legacyCn = localStorage.getItem('jay_cn_view');
   var changed = !rows.length;
   prefs.notification_prefs = prefs.notification_prefs || {};
   prefs.ui_prefs = prefs.ui_prefs || {};
   prefs.workspace_prefs = prefs.workspace_prefs || {};
   if (Array.isArray(legacySubs)) { prefs.notification_prefs.subscriptions = legacySubs; changed = true; }
   if (legacyRole) { prefs.workspace_prefs.role = legacyRole; changed = true; }
-  if (legacyCn !== null) { prefs.workspace_prefs.cn_view = legacyCn === '1'; changed = true; }
   if (changed) {
     var saved = await jayDbUpsert('user_preferences', {
       user_id: jayUser.id,
@@ -1211,6 +1209,12 @@ async function loadUserWatchlist() {
 
 async function addToWatchlist(itemType, itemId, itemName, note) {
   if (!jayCanUseUserDb()) { toast('登录后可同步到个人看板'); return false; }
+  if (typeof wlIsConfiguredScopeRow === 'function' && !wlIsConfiguredScopeRow({
+    item_type: itemType, item_id: itemId, item_name: itemName, note: note
+  })) {
+    toast('只能添加美国市场及当前 4 个平台范围内的记录');
+    return false;
+  }
   try {
     await jayDbInsert('user_watchlist', {
       user_id: jayUser.id,
@@ -1292,7 +1296,7 @@ async function addFromSearch(btn, name, type) {
   var typeMap = { track: 'country', shop: 'product', product: 'product' };
   var dbType = typeMap[type] || 'country';
   var itemId = name.replace(/[\u{1F1EE}\u{1F1E9}\u{1F1FA}\u{1F1F8}\u{1F1E7}\u{1F1F7}\u{1F1F9}\u{1F1ED}\u{1F1FB}\u{1F1F3}\u{1F1F2}\u{1F1FD}\u{1F1F5}\u{1F1ED}\u{1F1F2}\u{1F1FE}\u{1F1F8}\u{1F1EC}\u{1F1EF}\u{1F1F5}\u{1F1F0}\u{1F1F7}\u{1F1EC}\u{1F1E7}\u{1F1E9}\u{1F1EA}\u{1F1EB}\u{1F1F7}\u{1F1EE}\u{1F1F3}\u{1F1F8}\u{1F1E6}\u{1F1E6}\u{1F1EA}\u{1F1EA}\u{1F1EC}\u{1F3EA}\u{1F4E6}]/g, '').trim();
-  var ok = await addToWatchlist(dbType, itemId, name, '');
+  var ok = await addToWatchlist(dbType, itemId, name, '美国市场 · '+(typeof jayConfiguredPlatformsText==='function'?jayConfiguredPlatformsText():'Amazon、TikTok Shop、AliExpress、eBay'));
   if (ok) {
     btn.textContent = '\u2705 \u5df2\u6dfb\u52a0';
     btn.disabled = true;
@@ -1364,7 +1368,7 @@ function showUpgradePrompt(feature) {
   card.style.cssText = 'background:#fff;border-radius:8px;padding:32px;max-width:400px;text-align:center';
   card.innerHTML = '<div style="font-size:32px;margin-bottom:16px">★</div>'
     + '<h3 style="margin:0 0 8px;font-size:18px">升级到 Pro 版</h3>'
-    + '<p style="color:#6b7b8d;font-size:13px;line-height:1.6;margin:0 0 20px">' + (names[feature]||'该功能') + ' 为 Pro 版专属功能。<br>解锁全部高级功能，深度洞察全球市场。</p>'
+    + '<p style="color:#6b7b8d;font-size:13px;line-height:1.6;margin:0 0 20px">' + (names[feature]||'该功能') + ' 为 Pro 版专属功能。<br>解锁全部高级功能，深度洞察美国市场。</p>'
     + '<button id="upgrade-ok" style="border:0;background:#3b7ab8;color:#fff;padding:10px 24px;border-radius:4px;cursor:pointer;font-size:13px">了解 Pro 版 →</button>'
     + '<br><button id="upgrade-cancel" style="border:0;background:none;color:#6b7b8d;padding:8px;cursor:pointer;font-size:12px;margin-top:8px">稍后再说</button>';
   overlay.appendChild(card);

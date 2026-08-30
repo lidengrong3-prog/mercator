@@ -18,6 +18,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(ROOT, "data")
 DEFAULT_REPORT = os.path.join(DATA_DIR, "quality_report.json")
 UTC = timezone.utc
+SCOPE_COUNTRY_CODE = "US"
+SCOPE_COUNTRY_KEY = "us"
+SCOPE_COUNTRY_NAMES = {"US", "美国"}
+SCOPE_PLATFORMS = {"Amazon", "TikTok Shop", "AliExpress", "eBay"}
 
 
 DATASET_LABELS = {
@@ -37,6 +41,7 @@ class DatasetResult:
     key: str
     path: str
     records: int = 0
+    scoped_records: int = 0
     updated_at: str | None = None
     freshness_hours: float | None = None
     errors: list[str] = field(default_factory=list)
@@ -62,6 +67,8 @@ class DatasetResult:
             "status": self.status,
             "path": self.path.replace("\\", "/"),
             "records": self.records,
+            "raw_records": self.records,
+            "scoped_records": self.scoped_records,
             "updated_at": self.updated_at,
             "freshness_hours": self.freshness_hours,
             "errors": self.errors,
@@ -104,6 +111,71 @@ def valid_http_url(value: Any) -> bool:
         return False
     parsed = urlparse(value.strip())
     return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+
+
+def normalize_platform(value: Any) -> str:
+    raw = str(value or "").strip()
+    lower = raw.casefold()
+    if "tiktok" in lower and "shop" in lower:
+        return "TikTok Shop"
+    if "aliexpress" in lower or "速卖通" in raw:
+        return "AliExpress"
+    if "ebay" in lower:
+        return "eBay"
+    if lower == "amazon" or "amazon（美国" in lower or "amazon (us" in lower:
+        return "Amazon"
+    return raw
+
+
+def source_record_key(value: Any) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    parsed = urlparse(text)
+    path = parsed.path.rstrip("/")
+    return f"{parsed.scheme.casefold()}://{parsed.netloc.casefold()}{path}" if parsed.netloc else text.casefold()
+
+
+def policy_has_verified_official_record(item: dict[str, Any]) -> bool:
+    if not str(item.get("title") or "").strip():
+        return False
+    url = str(item.get("source_url") or "").strip()
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").casefold()
+    official = host.endswith(".gov") or host == "gov" or host.endswith(".mil") or host == "mil"
+    specific_record = bool(parsed.path.rstrip("/"))
+    return (
+        valid_http_url(url)
+        and official
+        and specific_record
+        and parse_datetime(item.get("collected_at")) is not None
+        and parse_datetime(item.get("published_at")) is not None
+    )
+
+
+def count_scoped_items(key: str, rows: list[dict[str, Any]]) -> int:
+    if key == "rules":
+        return sum(
+            str(item.get("market") or "").upper() == SCOPE_COUNTRY_CODE
+            and normalize_platform(item.get("platform")) in SCOPE_PLATFORMS
+            for item in rows
+        )
+    if key == "policies":
+        us_rows = [
+            item for item in rows
+            if str(item.get("region") or "").upper() == SCOPE_COUNTRY_CODE
+        ]
+        source_counts: dict[str, int] = {}
+        for item in us_rows:
+            source_key = source_record_key(item.get("source_url"))
+            if source_key:
+                source_counts[source_key] = source_counts.get(source_key, 0) + 1
+        return sum(
+            policy_has_verified_official_record(item)
+            and source_counts.get(source_record_key(item.get("source_url")), 0) == 1
+            for item in us_rows
+        )
+    return 0
 
 
 def normalized_title(value: Any) -> str:
@@ -169,6 +241,7 @@ def validate_items_dataset(
 
     malformed = sum(not isinstance(item, dict) for item in items)
     rows = [item for item in items if isinstance(item, dict)]
+    result.scoped_records = count_scoped_items(key, rows)
     missing_ids = sum(not str(item.get("id", "")).strip() for item in rows)
     missing_titles = sum(not str(item.get("title", "")).strip() for item in rows)
     duplicate_ids = duplicate_count(item.get("id") for item in rows)
@@ -234,6 +307,7 @@ def validate_alerts(now: datetime) -> DatasetResult:
         result.errors.append(f"记录数不足：{len(data)} < 10")
     malformed = sum(not isinstance(row, list) or len(row) < 8 for row in data)
     valid_rows = [row for row in data if isinstance(row, list) and len(row) >= 8]
+    result.scoped_records = sum(str(row[4]).strip() in SCOPE_COUNTRY_NAMES for row in valid_rows)
     missing_ids = sum(not str(row[0]).strip() for row in valid_rows)
     missing_titles = sum(not str(row[3]).strip() for row in valid_rows)
     duplicate_ids = duplicate_count(row[0] for row in valid_rows)
@@ -277,6 +351,7 @@ def validate_countries(now: datetime) -> DatasetResult:
         return result
     rows = {key: value for key, value in data.items() if not key.startswith("_")}
     result.records = len(rows)
+    result.scoped_records = int(SCOPE_COUNTRY_KEY in rows and isinstance(rows[SCOPE_COUNTRY_KEY], dict))
     if len(rows) < 35:
         result.errors.append(f"国家档案数不足：{len(rows)} < 35")
     malformed = sum(not isinstance(value, dict) for value in rows.values())
@@ -316,6 +391,11 @@ def validate_platforms() -> DatasetResult:
         result.errors.append(f"平台档案数不足：{len(data)} < 20")
     malformed = sum(not isinstance(row, dict) for row in data)
     rows = [row for row in data if isinstance(row, dict)]
+    result.scoped_records = len({
+        normalize_platform(row.get("name"))
+        for row in rows
+        if normalize_platform(row.get("name")) in SCOPE_PLATFORMS
+    })
     missing_names = sum(not str(row.get("name", "")).strip() for row in rows)
     duplicate_names = duplicate_count(row.get("name") for row in rows)
     result.metrics.update({
@@ -344,6 +424,7 @@ def validate_us_market(now: datetime) -> DatasetResult:
         result.errors.append("索引必须包含 categories 数组")
         return result
     result.records = len(categories)
+    result.scoped_records = result.records
     set_freshness(result, data.get("generated_at"), now, 36)
     if len(categories) < 8:
         result.errors.append(f"品类数不足：{len(categories)} < 8")
@@ -389,6 +470,7 @@ def validate_macro(now: datetime) -> DatasetResult:
         result.errors.append("根结构必须包含 indicators 对象")
         return result
     result.records = len(indicators)
+    result.scoped_records = result.records
     set_freshness(result, data.get("meta", {}).get("generated_at"), now, 72)
     if len(indicators) < 10:
         result.errors.append(f"宏观指标数不足：{len(indicators)} < 10")
@@ -425,6 +507,7 @@ def validate_cpsc(now: datetime) -> DatasetResult:
         result.errors.append("根结构必须包含 recalls 数组")
         return result
     result.records = len(recalls)
+    result.scoped_records = result.records
     set_freshness(result, data.get("meta", {}).get("generated_at"), now, 36)
     if len(recalls) < 1:
         result.errors.append("CPSC 召回缓存为空")
@@ -504,6 +587,8 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
         "publishable": errors == 0,
         "summary": {
             "datasets": len(results),
+            "raw_records": sum(result.records for result in results),
+            "scoped_records": sum(result.scoped_records for result in results),
             "healthy": statuses.count("healthy"),
             "degraded": statuses.count("degraded"),
             "stale": statuses.count("stale"),
