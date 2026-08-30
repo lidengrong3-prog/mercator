@@ -1,72 +1,8 @@
-// === AI 智能洞察卡片 ===
-const aiInsights={
-  products:[
-    '美妆个护品类在TikTok Shop持续爆发，建议加大该品类选品投入，重点关注Medicube等高增速品牌',
-    '欧美市场家居品类增长强劲（Ninja CREAMi +173.6%），建议关注季节性产品窗口',
-    '宠物用品在多个市场呈现爆发态势，建议作为新拓品方向重点布局',
-    '东南亚防晒品类进入旺季周期，Shopee数据显示增速22%+，建议提前备货'
-  ],
-  countries:[
-    '东南亚市场整体增速领先（印尼+15%、越南+18%、菲律宾+20%），建议优先分配资源',
-    '中东市场（沙特+18%、阿联酋+15%）客单价高且竞争相对缓和，适合品牌化打法',
-    '非洲和拉美市场增速快但基础设施薄弱，建议采用轻资产模式试水',
-    '欧美成熟市场竞争激烈，需差异化选品+内容营销组合拳'
-  ],
-  shops:[
-    'Medicube Official月GMV达$1,630万，增速52%，建议研究其TikTok Shop运营策略作为标杆',
-    '高增速店铺（BIBIDO +454%、Rejuran +600%）均来自美妆个护品类，验证了该赛道的爆发力',
-    '多个"关注"状态店铺增速异常，建议密切监控是否可持续'
-  ],
-  platforms:[
-    'TikTok Shop在欧美市场GMV突破200亿美元，2026年欧洲扩站至14国，建议优先布局',
-    'Ozon（俄罗斯）GMV增长45%且跨境销售目标翻倍，是进入俄语市场的核心渠道',
-    'Shopee在东南亚仍保持30%增长，佣金率较低（1-5.5%），利润率优势明显'
-  ],
-  macro:[
-    '印度GDP增速6.8%领跑全球，但CPI 4.8%通胀偏高，建议关注消费升级机会同时注意成本波动',
-    '越南GDP 6.5%且通胀温和（3.8%），电商环境健康度在东南亚市场中最优',
-    '尼日利亚通胀33.7%极高，汇率风险大，建议谨慎控制库存和应收账款周期'
-  ],
-  policies:[
-    '美国对华关税升至145%，直接影响全品类成本结构，建议评估FBM/海外仓替代方案',
-    '印尼取消150美元免税门槛+SNI认证扩展至35类，合规成本显著上升，建议提前办理认证',
-    '欧盟GPSR和DSA同步执行，所有出口欧洲产品需配备欧盟境内负责人，建议尽快注册'
-  ],
-  rules:[
-    'TikTok Shop东南亚佣金从1%上调至2.5%+0.5%交易费，建议重新核算该渠道利润模型',
-    'Amazon北美大件FBA费用上调$2-5/件，大件商品卖家应评估FBM或第三方仓替代方案',
-    '多平台加强扣分/下架处罚力度，建议建立内部合规SOP，重点管控虚假发货和宣传话术'
-  ],
-  content:[
-    '短视频仍是转化率最高的内容形式，TikTok短视频平均转化率6-12%，建议加大短视频素材投入',
-    '商品测评类内容播放量虽低于短视频但转化率稳定（5-8%），适合高客单产品种草',
-    '欧美市场"使用前后对比"类内容爆发力强（BriteWite美白粉3200万播放），适合功效型产品',
-    '中东市场奢侈开箱视频转化率达9.2%，高客单品牌可利用KOL开箱策略'
-  ]
-};
-
-function renderAIInsight(pageId){
-  const container=$('#ai-'+pageId);
-  if(!container||!aiInsights[pageId])return;
-  const items=aiInsights[pageId];
-  container.innerHTML=`<div class="ai-insight">
-    <div class="ai-insight-head">
-      <span class="ai-icon">✨</span>
-      <h4>AI 智能洞察</h4>
-      <small>基于当前数据生成的行动建议</small>
-    </div>
-    <ul>${items.map(item=>`<li>${item}</li>`).join('')}</ul>
-  </div>`;
-}
-
-// 渲染所有页面的AI洞察
-['products','countries','shops','platforms','policies','rules','content','report'].forEach(renderAIInsight);
-
 // === Round 2: AI Diagnosis Card ===
 (function(){
   var el=$('#ov-ai-diagnosis');
   if(!el)return;
-  el.innerHTML='<h4>✨ AI 全球市场综合诊断 <span class="pro-badge">PRO</span></h4><ul><li>🌍 <b>推荐拓国：</b>越南（GDP 6.5%，电商增速 34.8%）</li><li>🔥 <b>潜力赛道：</b>美妆个护（TikTok Shop GMV 增速 52%）</li><li>⚠️ <b>市场风险：</b>美国对华关税 145%，全品类成本承压</li></ul>';
+  el.innerHTML='<h4>✨ 美国市场综合诊断 <span class="pro-badge">PRO</span></h4><ul><li>🇺🇸 <b>当前范围：</b>美国市场，接入 Amazon、TikTok Shop、AliExpress、eBay</li><li>🔥 <b>重点方向：</b>先用已核验政策、平台规则和用户导入商品数据做判断</li><li>⚠️ <b>数据边界：</b>未接入实时经营数据的商品、店铺和类目不生成虚构结论</li></ul>';
 })();
 
 
@@ -78,7 +14,11 @@ var dynamicAlertsLoaded = false;
 function generateDynamicAlerts(){
   dynamicAlerts = [];
   // --- from policies: impact_level === 'high' ---
-  var pItems = policiesJsonData ? policiesJsonData.items : defaultPoliciesData.items;
+  // Keep alerts on the policy page's formal data boundary: verified official
+  // US records whose subjects are relevant to cross-border operations.
+  var pItems = typeof plGetVerifiedUsPolicies === 'function'
+    ? plGetVerifiedUsPolicies(true)
+    : [];
   var regionLabelMap = {US:'美国',EU:'欧盟',SEA:'东南亚',CN:'中国',UK:'英国',JP:'日本',KR:'韩国',Global:'全球',JP:'日本',IN:'印度',BR:'巴西',MX:'墨西哥'};
   pItems.forEach(function(p, idx){
     if(p.impact_level !== 'high') return;
@@ -93,16 +33,18 @@ function generateDynamicAlerts(){
       country: region,
       platform: '-',
       detail: summary,
-      date: p.published_at || p.effective_date || '2026-07-13',
+      date: p.published_at || p.effective_date || '',
       read: false,
-      source: 'JAY观海 AI 自动生成',
+      source: p.source || '美国官方政策源',
       refId: p.id,
       category: p.category || 'regulation'
     });
   });
 
   // --- from rules: impact_level === 'high' ---
-  var rItems = rulesJsonData ? rulesJsonData.items : defaultRulesData.items;
+  // rlGetJsonItems already limits rules to explicit US records on the four
+  // configured platforms; Global and unsupported-platform rules stay out.
+  var rItems = typeof rlGetJsonItems === 'function' ? rlGetJsonItems() : [];
   rItems.forEach(function(r, idx){
     if(r.impact_level !== 'high') return;
     var platform = r.platform || '多平台';
@@ -117,40 +59,13 @@ function generateDynamicAlerts(){
       country: market,
       platform: platform,
       detail: summary,
-      date: r.effective_date || r.published_at || '2026-07-13',
+      date: r.effective_date || r.published_at || '',
       read: false,
-      source: 'JAY观海 AI 自动生成',
+      source: r.source || (r.platform ? r.platform + ' 官方公告' : '平台官方公告'),
       refId: r.id,
       category: r.category || 'regulation'
     });
   });
-
-  // --- from countryFullData: high impact policies ---
-  if(typeof countryFullData !== 'undefined'){
-    var cKeys = Object.keys(countryFullData);
-    cKeys.forEach(function(ck){
-      var cd = countryFullData[ck];
-      if(!cd || !cd.comp || !cd.comp.policies) return;
-      cd.comp.policies.forEach(function(cp, ci){
-        if(cp[0] !== 'high') return;
-        var title = '['+cd.name+'] '+cp[1];
-        dynamicAlerts.push({
-          id: 'country-p-' + ck + '-' + ci,
-          type: 'country',
-          level: 'high',
-          title: title,
-          country: cd.name,
-          platform: cp[4] || '全平台',
-          detail: cp[5] || '',
-          date: (cp[2]||'').replace(/[^0-9\-\/]/g,'').trim() || '2026-01-01',
-          read: false,
-          source: 'country_data',
-          refId: 'country-' + ck + '-policy-' + ci,
-          category: 'regulation'
-        });
-      });
-    });
-  }
 
   // Sort by date desc
   dynamicAlerts.sort(function(a,b){
@@ -160,26 +75,62 @@ function generateDynamicAlerts(){
 }
 
 var alDynReadMap = {};
+var alertsDataLoaded = false;
+var alertsDataLoading = false;
 
-// Merge hardcoded alertsFull + dynamic alerts into combined list for rendering
+function alertIsInConfiguredScope(item){
+  return window.JAY_MARKET_SCOPE_API && typeof window.JAY_MARKET_SCOPE_API.isUsAlert === 'function'
+    ? window.JAY_MARKET_SCOPE_API.isUsAlert(item)
+    : (Array.isArray(item) ? item[4] : item && (item.country || item.region || item.market)) === '美国';
+}
+
+function replaceScopedAlertData(rows){
+  alertsFull.length = 0;
+  (Array.isArray(rows) ? rows : []).filter(alertIsInConfiguredScope).forEach(function(row){
+    if(!Array.isArray(row)) return;
+    var normalized = row.slice();
+    if(normalized[2] === 'medium') normalized[2] = 'mid';
+    alertsFull.push(normalized);
+  });
+}
+
+async function loadAlertsData(){
+  if(alertsDataLoading || alertsDataLoaded || typeof jayFetchMarketData !== 'function') return;
+  alertsDataLoading = true;
+  var url = (document.querySelector('base') ? document.querySelector('base').href : location.pathname.replace(/[^/]*$/,'')) + 'data/alerts.json';
+  try {
+    var data = await jayFetchMarketData('alerts', url);
+    var rows = Array.isArray(data) ? data : (data && Array.isArray(data.items) ? data.items : []);
+    replaceScopedAlertData(rows);
+    alertsDataLoaded = true;
+    if(typeof refreshDynamicAlerts === 'function') refreshDynamicAlerts();
+    if(typeof renderAlerts === 'function') renderAlerts();
+  } catch(e) {
+    console.warn('[JAY观海] Alerts data unavailable; keeping the configured empty state:', e);
+  } finally {
+    alertsDataLoading = false;
+  }
+}
+
+// Merge scoped source records and generated records for rendering.
 function getCombinedAlerts(){
-  // Convert array-format alertsFull entries to objects for unified handling
-  var base = alertsFull.map(function(a){
+  // Convert array-format alertsFull entries to objects for unified handling.
+  var base = alertsFull.filter(alertIsInConfiguredScope).map(function(a){
     return {
       id: a[0], type: a[1], level: a[2], title: a[3],
       country: a[4], platform: a[5], detail: a[6],
       date: a[7], read: a[8],
-      source: '系统内置'
+      source: '公开数据源'
     };
   });
   // Apply read-state map to dynamic alerts
-  var dyn = dynamicAlerts.map(function(a){
+  var dyn = dynamicAlerts.filter(alertIsInConfiguredScope).map(function(a){
     return {
       id: a.id, type: a.type, level: a.level, title: a.title,
       country: a.country, platform: a.platform, detail: a.detail,
       date: a.date,
       read: !!alDynReadMap[a.id],
-      source: a.source || 'JAY观海 AI 自动生成'
+      source: a.source || '来源待补充'
     };
   });
   // Filter out dynamic alerts that duplicate base ones (by title similarity)
@@ -213,9 +164,9 @@ var alTypeTargets={shop:'products',cat:'products',policy:'policies',macro:'count
 // Initial alerts render will be triggered by switchPage
 
 function renderAlerts(){
-    return; // disabled v4 2026-08-21
-
   var filtered=getFilteredAlerts();
+  var pages=Math.max(1,Math.ceil(filtered.length/alPerPage));
+  if(alCurrentPage>pages) alCurrentPage=pages;
   renderAlSummary();
   renderAlTabs();
   renderAlBatch();
@@ -230,42 +181,68 @@ function getFilteredAlerts(){
   var timeF=document.getElementById('al-filter-time').value;
   var searchQ=(document.getElementById('al-search-input').value||'').toLowerCase();
   var tabType=alCurrentTab;
-  var now=new Date('2026-07-15');
   var all = getCombinedAlerts();
   return all.filter(function(a){
     if(tabType!=='all'&&a.type!==tabType)return false;
     if(typeF!=='all'&&a.type!==typeF)return false;
     if(levelF!=='all'&&a.level!==levelF)return false;
     if(searchQ&&a.title.toLowerCase().indexOf(searchQ)<0&&(a.platform||'').toLowerCase().indexOf(searchQ)<0&&a.detail.toLowerCase().indexOf(searchQ)<0)return false;
-    if(timeF!=='all'){
-      var d=new Date(a.date);
-      var diff=Math.floor((now-d)/(86400000));
-      if(timeF==='today'&&diff>0)return false;
-      if(timeF==='3d'&&diff>3)return false;
-      if(timeF==='7d'&&diff>7)return false;
-    }
+    if(!alMatchesTimeFilter(a.date,timeF))return false;
     return true;
   });
+}
+
+function alLocalDay(value){
+  if(value instanceof Date){
+    if(isNaN(value.getTime())) return null;
+    return new Date(value.getFullYear(),value.getMonth(),value.getDate());
+  }
+  var raw=String(value||'').trim();
+  var dateOnly=raw.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/);
+  var parsed=dateOnly
+    ? new Date(Number(dateOnly[1]),Number(dateOnly[2])-1,Number(dateOnly[3]))
+    : new Date(raw);
+  if(isNaN(parsed.getTime())) return null;
+  return new Date(parsed.getFullYear(),parsed.getMonth(),parsed.getDate());
+}
+
+function alCalendarDayDiff(value,nowValue){
+  var alertDay=alLocalDay(value);
+  var currentDay=alLocalDay(nowValue instanceof Date ? nowValue : new Date());
+  if(!alertDay||!currentDay) return null;
+  var alertUtc=Date.UTC(alertDay.getFullYear(),alertDay.getMonth(),alertDay.getDate());
+  var currentUtc=Date.UTC(currentDay.getFullYear(),currentDay.getMonth(),currentDay.getDate());
+  return Math.round((currentUtc-alertUtc)/86400000);
+}
+
+function alMatchesTimeFilter(value,timeFilter,nowValue){
+  if(timeFilter==='all') return true;
+  var maxAge={today:0,'3d':2,'7d':6}[timeFilter];
+  if(maxAge===undefined) return true;
+  var diff=alCalendarDayDiff(value,nowValue);
+  return diff!==null&&diff>=0&&diff<=maxAge;
 }
 
 function renderAlSummary(){
   var all = getCombinedAlerts();
   var total=all.filter(function(a){return!a.read}).length;
   var high=all.filter(function(a){return a.level==='high'&&!a.read}).length;
-  var today=all.filter(function(a){return a.date==='2026-07-15'}).length;
+  var latestDate=all.reduce(function(max,a){return a.date&&a.date>max?a.date:max;},'');
+  var today=latestDate?all.filter(function(a){return a.date===latestDate}).length:0;
   var done=all.filter(function(a){return a.read}).length;
-  var dynCount = dynamicAlerts.length;
+  var scopedDynamic = dynamicAlerts.filter(alertIsInConfiguredScope);
+  var dynCount = scopedDynamic.length;
   var el=document.getElementById('al-summary');
-  el.innerHTML='<div class="al-summary-card sc-total"><div class="al-sc-label">未读预警</div><div class="al-sc-val">'+total+'</div><div class="al-sc-sub">较昨日 +3</div></div>'
+  el.innerHTML='<div class="al-summary-card sc-total"><div class="al-sc-label">未读预警</div><div class="al-sc-val">'+total+'</div><div class="al-sc-sub">当前范围</div></div>'
     +'<div class="al-summary-card sc-high"><div class="al-sc-label">高风险紧急</div><div class="al-sc-val">'+high+'</div><div class="al-sc-sub">需立即处理</div></div>'
-    +'<div class="al-summary-card sc-today"><div class="al-sc-label">今日新增</div><div class="al-sc-val">'+today+'</div><div class="al-sc-sub">实时更新</div></div>'
+    +'<div class="al-summary-card sc-today"><div class="al-sc-label">最新批次</div><div class="al-sc-val">'+today+'</div><div class="al-sc-sub">'+(latestDate||'暂无数据')+'</div></div>'
     +'<div class="al-summary-card sc-done"><div class="al-sc-label">已处理归档</div><div class="al-sc-val">'+done+'</div><div class="al-sc-sub">累计已处理</div></div>';
   // Add dynamic alert count banner
   var bannerHtml = '<div class="al-dyn-banner">'
-    + '<span class="al-dyn-icon">🤖</span>'
+    + '<span class="al-dyn-icon">↗</span>'
     + '<div class="al-dyn-text">'
-    + '<b>JAY观海 AI 自动预警</b>：基于政策与规则数据自动生成 <span class="al-dyn-count">' + dynCount + '</span> 条预警'
-    + '（政策变动 ' + dynamicAlerts.filter(function(a){return a.type==='policy'}).length + ' 条 · 平台规则 ' + dynamicAlerts.filter(function(a){return a.type==='platform'}).length + ' 条）'
+    + '<b>范围联动预警</b>：基于当前美国政策与平台规则自动生成 <span class="al-dyn-count">' + dynCount + '</span> 条预警'
+    + '（政策变动 ' + scopedDynamic.filter(function(a){return a.type==='policy'}).length + ' 条 · 平台规则 ' + scopedDynamic.filter(function(a){return a.type==='platform'}).length + ' 条）'
     + '</div></div>';
   el.innerHTML = bannerHtml + el.innerHTML;
 }
@@ -309,17 +286,17 @@ function renderAlList(filtered){
     var levelLabel=alLevelLabels[level]||level;
     var checked=alSelected.has(id)?'checked':'';
     var readCls=read?'read':'unread';
-    var srcTag = a.source === 'JAY观海 AI 自动生成' ? '<span class="al-src-tag ai">🤖 JAY观海 AI 自动生成</span>' : '';
     html+='<div class="al-card '+readCls+'" id="al-card-'+id+'">';
     html+='<div class="al-card-check"><input type="checkbox" '+checked+' onchange="alToggleSelect(\''+id+'\',this.checked)"></div>';
     html+='<div class="al-card-icon type-'+type+'">'+icon+'</div>';
     html+='<div class="al-card-body">';
-    html+='<div class="al-card-title">'+title+' '+srcTag+'</div>';
+    html+='<div class="al-card-title">'+title+'</div>';
     html+='<div class="al-card-meta">';
     html+='<span class="meta-tag '+level+'">'+levelLabel+'</span>';
     html+='<span>'+typeLabel+'</span>';
     if(country&&country!=='-')html+='<span>📍 '+country+'</span>';
     if(platform&&platform!=='-')html+='<span>🛒 '+platform+'</span>';
+    if(a.source)html+='<span>来源：'+escapeHtml(a.source)+'</span>';
     html+='<span>📅 '+jayFmtTime(date)+'</span>';
     html+='</div>';
     html+='<div class="al-card-detail">'+parseDetail(detail)+'</div>';
@@ -422,26 +399,17 @@ function alAiAnalysis(id){
   var all = getCombinedAlerts();
   var a = all.find(function(x){return x.id===id});
   if(!a)return;
-  var analyses={
-    shop:'AI 风险诊断：该店铺异动主要由运营指标下滑引起。建议：① 立即排查核心 SKU 的库存和评价状态；② 对比同期竞品数据确认是否为行业趋势；③ 调整广告投放策略，优先保 ROI。',
-    cat:'AI 趋势分析：该类目出现显著增长信号。建议：① 评估自身供应链能否承接增量；② 锁定 Top10 爆品的核心卖点做差异化选品；③ 关注增速是否可持续，排除季节性脉冲。',
-    policy:'AI 合规解读：该政策变动将直接影响跨境卖家的成本和合规要求。建议：① 立即评估受影响 SKU 清单；② 联系当地合规代理确认执行细节；③ 调整定价模型以覆盖新增成本。',
-    macro:'AI 宏观研判：该经济指标变化可能影响跨境利润。建议：① 评估汇率波动对毛利的影响幅度；② 考虑调整结算货币或增加对冲工具；③ 监控趋势是否持续恶化。',
-    platform:'AI 规则影响：平台规则调整将改变运营环境。建议：① 仔细阅读完整规则文本；② 评估对现有商品和店铺的具体影响；③ 在生效日期前完成合规调整。'
-  };
-  toast(analyses[a.type]||'AI 分析功能需升级专业版');
+  var prompt='请基于这条美国市场预警的原始记录，给出不超过 120 字的影响、核验动作和下一步建议，并明确引用记录中的来源；禁止补造未提供的数字。\n标题：'+(a.title||'')+'\n类型：'+(a.type||'')+'\n平台：'+(a.platform||'')+'\n详情：'+(a.detail||'')+'\n来源：'+(a.source||'');
+  if(typeof AI_ENGINE==='undefined'||!AI_ENGINE.hasKey()){ toast('当前没有可用的服务端 AI，暂不生成解读'); return; }
+  toast('正在生成基于来源的 AI 解读…');
+  callAI('你是美国跨境电商合规分析师。只根据给定预警记录作答，不得编造数字或来源。',prompt,{max_tokens:500,search:false})
+    .then(function(text){ toast(text||'暂无可生成的解读'); })
+    .catch(function(error){ toast(error&&error.message==='AUTH_REQUIRED'?'请登录后使用 AI 解读':'AI 解读暂不可用'); });
 }
 
 function alExport(){toast('预警报告导出功能需升级专业版');}
 
 function updateAlBadge(){
-  if(typeof jayIsDemo!=='undefined' && jayIsDemo){
-    var demoBadge=document.querySelector('.nav-item[data-page="alerts"] .nav-badge');
-    if(demoBadge){demoBadge.textContent='';demoBadge.style.display='none';}
-    var demoPanel=document.getElementById('al-unread-badge');
-    if(demoPanel){demoPanel.textContent='';demoPanel.style.display='none';}
-    return;
-  }
   var all = getCombinedAlerts();
   var unread = all.filter(function(a){return!a.read}).length;
   var badge=document.getElementById('al-unread-badge');
@@ -449,6 +417,10 @@ function updateAlBadge(){
   var navBadge=document.querySelector('.nav-item[data-page="alerts"] .nav-badge');
   if(navBadge){navBadge.textContent=unread;navBadge.style.display=unread>0?'inline-block':'none';}
 }
+
+// Hydrate the alert center from the scoped source as soon as the data layer is ready.
+generateDynamicAlerts();
+loadAlertsData();
 
 function openAlertSettings(){
   var overlay=document.createElement('div');
@@ -563,10 +535,6 @@ async function stUnit(u){
   document.getElementById('st-unit-m').className='st-btn st-btn-sm '+(u==='m'?'st-btn-primary':'st-btn-outline');
   stToast('数值单位: '+(u==='wan'?'万':'百万'));
 }
-async function stToggleCnViewSetting(el){
-  var enabled=!el.classList.contains('on');
-  if(await stSaveWorkspacePref('cn_view',enabled)){el.classList.toggle('on',enabled);jayApplyPreferencesToUi();stToast('中国出海视角已'+(enabled?'启用':'关闭'))}
-}
 function stApplySettingsPrefs(){
   var workspace=jayPreferenceCache.workspace_prefs||{};
   var currency=workspace.currency||'cny';var unit=workspace.unit||'wan';
@@ -576,7 +544,6 @@ function stApplySettingsPrefs(){
   var wan=document.getElementById('st-unit-wan');var mil=document.getElementById('st-unit-m');
   if(wan)wan.className='st-btn st-btn-sm '+(unit==='wan'?'st-btn-primary':'st-btn-outline');
   if(mil)mil.className='st-btn st-btn-sm '+(unit==='m'?'st-btn-primary':'st-btn-outline');
-  var cn=document.getElementById('st-cn-view-toggle');if(cn)cn.classList.toggle('on',workspace.cn_view===true);
 }
 function stInitSystemStatus(){
   var auth=document.getElementById('st-system-auth');if(auth)auth.textContent=jayIsDemo?'只读演示':(jayUser?'已连接':'未登录');
@@ -715,7 +682,7 @@ function stToast(msg){
 
   // 五大板块独立配置
   var JAY_BOARD_DEFS = [
-    { key:'countries', label:'国家市场',    stampId:'cn2-update-time' },
+    { key:'countries', label:'国家市场',    stampId:null },
     { key:'platforms', label:'电商平台档案', stampId:'pf-data-info' },
     { key:'rules',     label:'平台规则',    stampId:'rl-data-info' },
     { key:'policies',  label:'政策动态',    stampId:'pl-data-info' },
@@ -740,14 +707,15 @@ function stToast(msg){
   // ---- 生产路径：用抓取到的数据替换内存并重渲染 ----
   function jayApplyBoard(key, data){
     try {
-      if(key==='countries'){ countryFullData = data; if(typeof cn2CurrentKey!=='undefined' && countryFullData[cn2CurrentKey]) cn2Render(cn2CurrentKey); }
+      if(key==='countries'){
+        countryFullData = data && data.us ? { us: data.us } : {};
+      }
       else if(key==='platforms'){
-        if(Array.isArray(data)){ platformsData=data.map(function(d){return [d.name||'',d.region||'',d.categories||'',d.gmv||'',d.fee||'',d.feeDesc||'',d.type||'',d.mau||'',d.updates||''];}); var _staticPfExt=pfExtData; pfExtData={}; Object.keys(_staticPfExt||{}).forEach(function(k){ pfExtData[k]=_staticPfExt[k]; }); data.forEach(function(d){ if(d.ext&&Object.keys(d.ext).length){ pfExtData[d.name]=Object.assign({}, pfExtData[d.name]||{}, d.ext); } }); fillSelect('#pf-f-region',[...new Set(platformsData.map(function(p){return p[1];}))].sort()); fillSelect('#pf-f-type',[...new Set(platformsData.map(function(p){return p[6];}))].sort()); }
-        if(typeof renderPlatforms==='function') renderPlatforms();
+        if(Array.isArray(data)){ var scopedPlatformRecords=(window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.filterPlatforms)?window.JAY_MARKET_SCOPE_API.filterPlatforms(data,function(d){return d&&d.name;}):data; platformsData=scopedPlatformRecords.map(function(d){var name=(window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.normalizePlatform)?window.JAY_MARKET_SCOPE_API.normalizePlatform(d.name):d.name;return [name||'',d.region||'',d.categories||'',d.gmv||'',d.fee||'',d.feeDesc||'',d.type||'',d.mau||'',d.updates||''];}); var _staticPfExt=pfExtData; pfExtData={}; Object.keys(_staticPfExt||{}).forEach(function(k){ pfExtData[k]=_staticPfExt[k]; }); scopedPlatformRecords.forEach(function(d){ if(d.ext&&Object.keys(d.ext).length){ var key=(window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.normalizePlatform)?window.JAY_MARKET_SCOPE_API.normalizePlatform(d.name):d.name; pfExtData[key]=Object.assign({}, pfExtData[key]||{}, d.ext); } }); fillSelect('#pf-f-region',[...new Set(platformsData.map(function(p){return p[1];}))].sort()); fillSelect('#pf-f-type',[...new Set(platformsData.map(function(p){return p[6];}))].sort()); }
       }
       else if(key==='rules'){ rulesJsonData=data; if(typeof rlInitFromJson==='function') rlInitFromJson(); }
       else if(key==='policies'){ policiesJsonData=data; if(typeof plInitFromJson==='function') plInitFromJson(); }
-      else if(key==='alerts'){ if(Array.isArray(data)){ alertsFull.length=0; data.forEach(function(x){ alertsFull.push(x); }); } if(typeof refreshDynamicAlerts==='function') refreshDynamicAlerts(); if(typeof renderAlerts==='function') renderAlerts(); }
+      else if(key==='alerts'){ replaceScopedAlertData(data); alertsDataLoaded=true; if(typeof refreshDynamicAlerts==='function') refreshDynamicAlerts(); if(typeof renderAlerts==='function') renderAlerts(); }
     } catch(e){ console.warn('[JAY观海] apply board failed for '+key+':', e); }
   }
 
@@ -762,7 +730,7 @@ function stToast(msg){
     } catch(e){} return 0;
   }
 
-  function jaySetStamp(def, txt){ var el=document.getElementById(def.stampId); if(el) el.innerHTML=txt; }
+  function jaySetStamp(def, txt){ if(!def.stampId)return; var el=document.getElementById(def.stampId); if(el) el.innerHTML=txt; }
   function jayLog(entry){ entry.ts=jayNowStr(); JAY_REFRESH_LOG.push(entry); if(JAY_REFRESH_LOG.length>120) JAY_REFRESH_LOG=JAY_REFRESH_LOG.slice(-120); jaySaveRefreshLog(); jayRenderRefreshLog(); }
 
   // ---- 单次刷新（含重试） ----

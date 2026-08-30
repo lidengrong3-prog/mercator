@@ -2,8 +2,8 @@
 (function(){
   'use strict';
 
-  // ---- 平台总数（单一数据源：以 platformsData 实际收录数为准，避免 41/66 矛盾 S-01）----
-  var JAY_PLATFORM_COUNT = (typeof platformsData!=='undefined'&&platformsData&&platformsData.length)?platformsData.length:41;
+  // ---- 平台总数：由唯一市场范围配置提供 ----
+  var JAY_PLATFORM_COUNT = window.JAY_MARKET_SCOPE ? window.JAY_MARKET_SCOPE.platformCount : 4;
   window.JAY_PLATFORM_COUNT = JAY_PLATFORM_COUNT;
 
   // ---- 动态问候 ----
@@ -26,68 +26,6 @@
     var rl=document.getElementById('nav-rl-count'); if(rl){ try{ if(typeof rulesJsonData!=='undefined'&&rulesJsonData&&rulesJsonData.items&&(rulesJsonData.source_count||0)>6){ rl.textContent=rulesJsonData.items.length; } }catch(e){} }
   }
   window.updateNavBadges=updateNavBadges;
-  // ===== 印尼 ⑨⑩ 补齐（2026-08-21） =====
-  function cn2InjectExtras() {
-    var main = document.getElementById('cn2-main');
-    if (!main) return;
-    if (main.querySelector('.cn2-extra-block')) return;
-    var html = ''
-      + '<div class="cn2-extra-block">'
-      + '  <div class="cn2-extra-head"><span class="cn2-extra-num">8</span><h3>宗教文化禁忌与机会</h3></div>'
-      + '  <div class="cn2-religion-grid">'
-      + '    <div class="cn2-religion-card">'
-      + '      <h4>🕌 宗教信仰（伊斯兰教 87%）</h4>'
-      + '      <p><span class="tag">禁忌</span>酒精/猪相关食品；<span class="tag">禁忌</span>左手接触食物；<span class="tag">禁忌</span>女性暴露着装；<br><span class="tag-g">机会</span>清真(Halal)认证产品溢价 20-30%；斋月(Ramadan)大促 GMV 翻 3 倍；开斋节(Hari Raya)礼品消费旺季。</p>'
-      + '    </div>'
-      + '    <div class="cn2-religion-card">'
-      + '      <h4>🙏 文化习惯</h4>'
-      + '      <p><span class="tag">注意</span>头部被视为神圣，不随意触摸；<span class="tag">注意</span>用右手接/递物品；<br><span class="tag-g">机会</span>家庭聚会型大包装产品受青睐；多人共享场景消费；线下+线上结合的直播带货转化率高。</p>'
-      + '    </div>'
-      + '    <div class="cn2-religion-card">'
-      + '      <h4>🌐 语言与沟通</h4>'
-      + '      <p>官方语言 Bahasa Indonesia；年轻群体英语普及；<br><span class="tag-g">机会</span>本地化 Listing（印尼语）转化率比英文高 2.5 倍；客服 WhatsApp/Tokopedia 内置聊天需双语。</p>'
-      + '    </div>'
-      + '    <div class="cn2-religion-card">'
-      + '      <h4>🎉 节庆日历</h4>'
-      + '      <p>斋月（3月）+ 开斋节（4月）：大促黄金期，备货需提前 60 天；<br>独立日 8/17；圣诞节非主流；<span class="tag-g">机会</span>节庆营销 ROI 较平日高 180%。</p>'
-      + '    </div>'
-      + '  </div>'
-      + '</div>'
-      + '<div class="cn2-ai-strategy">'
-      + '  <h3><span style="background:rgba(255,255,255,.18);padding:2px 8px;border-radius:6px;font-size:11px;margin-right:4px">9</span>AI 入场策略建议</h3>'
-      + '  <div style="font-size:13px;color:#cbd5e1;line-height:1.7;margin-top:4px">基于宏观 + 平台 + 类目 + 合规 + 文化 9 大块分析，AI 综合给出三阶段入场路径：</div>'
-      + '  <div class="cn2-ai-strategy-grid">'
-      + '    <div class="cn2-ai-strategy-item"><b>阶段 1：试水（0-3 月）</b><p>① 选 Shopee/Lazada/TikTok Shop 印尼站，开通跨境店；② 优先 3-5 款清真认证美妆/家居/服饰 SKU，单价 5-20 美金；③ 内容侧用 Bahasa Indonesia 短视频，重点打斋月+开斋节场景。</p></div>'
-      + '    <div class="cn2-ai-strategy-item"><b>阶段 2：扩张（3-9 月）</b><p>① 复制爆款到 Tokopedia + Blibli 抢占货架电商；② 建立本地海外仓（雅加达/泗水）缩短时效；③ 申请 BPOM/SNI 认证拓展食品个护类目；④ 培养 5-10 位印尼本土达人，月投放预算 $2-5K。</p></div>'
-      + '    <div class="cn2-ai-strategy-item"><b>阶段 3：壁垒（9-18 月）</b><p>① 申请 Halal Indonesia 认证，进军穆斯林主流市场；② 自建品牌站 + 私域 WhatsApp 社群运营；③ 从印尼辐射马来/文莱/新加坡，回款周期控制在 30 天内。</p></div>'
-      + '  </div>'
-      + '</div>';
-    main.insertAdjacentHTML('beforeend', html);
-  }
-  function cn2CloseOnboarding() {
-    document.querySelectorAll('#demo-banner, .jay-fb, .jay-fb-float, .jay-fb-fab').forEach(function(e){ e.style.display='none'; });
-    document.querySelectorAll('button').forEach(function(b){
-      var t = (b.textContent || '').trim();
-      if (t === '开始使用' || t === '跳过' || t === '知道了' || t === '关闭') { try { b.click(); } catch (e) {} }
-    });
-  }
-  window.cn2HookInject = function() {
-    var main = document.getElementById('cn2-main');
-    if (!main || main._cn2Observed) return;
-    main._cn2Observed = true;
-    var tryInject = function() { cn2InjectExtras(); cn2CloseOnboarding(); };
-    tryInject();
-    new MutationObserver(function() { tryInject(); }).observe(main, { childList: true, subtree: true });
-  };
-  window._ovSwitchPage = window.switchPage;
-  window.switchPage = function(name, opts) {
-    var r = window._ovSwitchPage ? window._ovSwitchPage.apply(this, arguments) : null;
-    if (name === 'countries') { setTimeout(function() { cn2HookInject(); }, 200); setTimeout(cn2InjectExtras, 800); setTimeout(cn2InjectExtras, 1800); }
-    return r;
-  };
-
-
-
   // ===== EchoTik 导航增强（2026-08-21） =====
   window.navGo = function(ev, page, el) {
     if (ev && ev.preventDefault) ev.preventDefault();
@@ -164,15 +102,6 @@
         if(signal&&signal.indexOf('上升')>=0) p[10]='下降';
       }
     });
-  }
-
-  // ---- S-08 国家市场「查看相关规则变动」数量闭环 ----
-  function jayFixRuleCount(){
-    try{
-      var cards=document.querySelectorAll('.cn2-link-card');
-      var cnt=0; try{ cnt=getFilteredRules?getFilteredRules().length:0; }catch(e){}
-      cards.forEach(function(c){ if(c.textContent.indexOf('规则变动')>=0){ var el=c.querySelector('.lc-count'); if(el)el.textContent=(cnt||0); } });
-    }catch(e){}
   }
 
   // ================= S-13 术语表系统 =================
@@ -330,9 +259,9 @@
     window.addEventListener('unhandledrejection', function(e){ jayErrGuard('异步异常: '+((e&&e.reason&&e.reason.message)||e)); });
   })();
 
-  // 包装 switchPage：路由后自动术语化 + 规则数闭环
+  // 包装 switchPage：路由后自动术语化并同步当前范围统计
   var _switchPage=switchPage;
-  switchPage=function(name,opts){ _switchPage(name,opts); try{jayGlossifyActive();jayFixRuleCount();jaySyncPlatformCount();jayNormalizeProducts();}catch(e){} };
+  switchPage=function(name,opts){ _switchPage(name,opts); try{jayGlossifyActive();jaySyncPlatformCount();jayNormalizeProducts();}catch(e){} };
 
   // ================= N-01 回到顶部 =================
   var totop=document.getElementById('jay-totop');
@@ -353,17 +282,16 @@
     jaySyncUser();
     updateNavBadges();
     jayGlossifyActive();
-    jayFixRuleCount();
     // 数据异步加载完成后再次同步（平台数 / 商品归一化）
     setTimeout(function(){ try{jaySyncPlatformCount();jayNormalizeProducts();updateNavBadges();}catch(e){} }, 1800);
     if(!location.hash){ try{history.replaceState(null,'','#overview');}catch(e){} }
     else { jayRouteFromHash(); }
   }
-  // ============ 前端优化批次：反馈闭环 / 中国出海视角 / 用户分层 ============
+  // ============ 前端优化批次：反馈闭环 / 用户分层 ============
   var JAY_FB_CTX='overview';
   function jayInitFrontendOnce(){
     if(window._jayExtrasDone)return; window._jayExtrasDone=true;
-    try{ window.jayInitOverviewExtras(); window.jayInitRoleCard(); window.jayInitFeedback(); }catch(e){ if(typeof console!=='undefined')console.warn(e); }
+    try{ window.jayInitRoleCard(); window.jayInitFeedback(); }catch(e){ if(typeof console!=='undefined')console.warn(e); }
   }
   window.jayInitFeedback=function(){
     var box=document.getElementById('jay-fb-float'); if(!box)return;
@@ -399,30 +327,6 @@
     render();
   };
   window.jaySetFbCtx=function(ctx){ JAY_FB_CTX=ctx||'overview'; if(document.getElementById('jay-fb-float')){ try{window.jayInitFeedback();}catch(e){} } };
-  function cnMarketChips(){
-    var ms=[['印尼','东南亚·制造业转移首选'],['越南','东南亚·劳动密集型'],['泰国','东南亚·家电家居'],['美国','北美·高客单'],['德国','欧洲·合规门槛'],['巴西','拉美·增长快']];
-    return ms.map(function(m){return '<span class="jay-badge" title="'+m[1]+'">🇨🇳 '+m[0]+'</span>';}).join('');
-  }
-  window.jayInitOverviewExtras=function(){
-    if(document.getElementById('jay-cn-banner'))return;
-    var hero=document.querySelector('#overview .ov-hero-input-wrap'); if(!hero)return;
-    var on=(jayPreferenceCache.workspace_prefs||{}).cn_view===true;
-    var html='<div class="jay-cn-banner" id="jay-cn-banner"><span style="font-size:20px">🌏</span>'
-      +'<div style="flex:1"><b>中国产业带出海视角</b> · 一键聚焦中国工厂最该关注的市场与机会'
-      +'<div id="cn-markets" style="margin-top:8px;display:'+(on?'flex':'none')+';flex-wrap:wrap;gap:8px">'+cnMarketChips()+'</div></div>'
-      +'<button type="button" onclick="jayToggleCnView()" style="border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px"> '+(on?'收起':'展开')+'</button></div>';
-    hero.insertAdjacentHTML('afterend', html);
-  };
-  window.jayToggleCnView=async function(){
-    if(!jayCanUseUserDb()){toast('只读演示不保存视图设置，请登录后使用');return}
-    var previous=Object.assign({},jayPreferenceCache.workspace_prefs||{});
-    var on=previous.cn_view!==true;
-    jayPreferenceCache.workspace_prefs=Object.assign({},previous,{cn_view:on});
-    var box=document.getElementById('cn-markets'); if(box)box.style.display=on?'flex':'none';
-    var btn=document.querySelector('#jay-cn-banner button'); if(btn)btn.textContent=on?'收起':'展开';
-    var ok=await saveUserPreferences({workspace_prefs:jayPreferenceCache.workspace_prefs});
-    if(!ok){jayPreferenceCache.workspace_prefs=previous;jayApplyPreferencesToUi();toast('视图设置同步失败，请重试')}
-  };
   window.jayInitRoleCard=function(){
     if(document.getElementById('jay-role-card'))return;
     var sec=document.getElementById('settings'); if(!sec)return;
@@ -564,7 +468,7 @@ function jayBuildSettingsPage(){
     +'<hr class="st-divider"><div class="st-section"><h3 class="st-section-title">通知渠道</h3><div class="st-api-grid"><div class="st-api-row"><label>站内通知</label><div class="st-service-status"><span class="health-dot"></span><b>已启用</b><small>预警中心与顶部消息</small></div><button type="button" class="st-btn st-btn-outline st-btn-sm" onclick="stSendTestPush()">发送站内测试</button></div><div class="st-api-row"><label>邮件与企业通知</label><div class="st-service-status"><span class="health-dot" style="background:#94a3b8"></span><b>尚未接入</b><small>不会产生虚假投递记录</small></div></div></div></div></section>'
     +'<section class="st-tab" id="st-tab-prefs"><h2 style="margin:0 0 4px;font-size:20px">工作区偏好</h2><p class="st-section-desc">偏好设置随账号同步</p><div id="st-role-host"></div>'
     +'<div class="st-section"><h3 class="st-section-title">显示单位</h3><div class="st-form-row"><div class="st-form-group"><label>货币</label><div style="display:flex;gap:8px"><button type="button" id="st-currency-cny" class="st-btn st-btn-sm st-btn-primary" onclick="stCurrency(\'cny\')">人民币</button><button type="button" id="st-currency-usd" class="st-btn st-btn-sm st-btn-outline" onclick="stCurrency(\'usd\')">美元</button></div></div><div class="st-form-group"><label>数值单位</label><div style="display:flex;gap:8px"><button type="button" id="st-unit-wan" class="st-btn st-btn-sm st-btn-primary" onclick="stUnit(\'wan\')">万</button><button type="button" id="st-unit-m" class="st-btn st-btn-sm st-btn-outline" onclick="stUnit(\'m\')">百万</button></div></div></div>'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-top:1px solid var(--line);margin-top:12px"><div><b style="font-size:13px">中国出海视角</b><div style="font-size:11px;color:var(--muted);margin-top:3px">优先呈现适合中国产业带的市场信号</div></div><button type="button" class="st-toggle" id="st-cn-view-toggle" onclick="stToggleCnViewSetting(this)" aria-label="切换中国出海视角"></button></div></div></section>'
+    +'</div></section>'
     +'<section class="st-tab" id="st-tab-team"><h2 style="margin:0 0 4px;font-size:20px">团队与权限</h2><p class="st-section-desc">工作区成员共享权限边界；数据仍按登录身份和工作区策略隔离</p>'
     +'<div id="st-workspace-unavailable" class="st-inline-notice" style="display:none"></div>'
     +'<div id="st-workspace-content">'

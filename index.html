@@ -4,15 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'self' https://ftlzofrnosgvdvwajhuz.supabase.co wss://ftlzofrnosgvdvwajhuz.supabase.co; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<title>JAY观海 - 跨境市场监控</title>
+<title>JAY观海 - 美国市场监控</title>
 <link rel="stylesheet" href="assets/styles/legacy-foundation.css">
 <link rel="stylesheet" href="assets/styles/workspaces.css">
 <link rel="stylesheet" href="assets/styles/legacy-theme.css">
 <link rel="stylesheet" href="assets/app-shell.css">
+<link rel="stylesheet" href="assets/styles/market-scope.css">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 <script src="assets/app-shell.js" defer></script>
+<script src="assets/js/market-scope.js" defer></script>
 <script src="assets/js/catalog.js" defer></script>
 <script src="assets/js/products-shops.js" defer></script>
 <script src="assets/js/markets-policies.js" defer></script>
@@ -31,11 +33,11 @@
     </a>
     <div class="login-product-copy">
       <p class="login-kicker">DECISION INTELLIGENCE</p>
-      <h1>从市场信号到经营动作，<br>把跨境决策做得更有依据。</h1>
-      <p>国家、平台、政策、类目与店铺数据统一进入一个工作台，帮助团队更快完成市场判断、风险筛查和方案输出。</p>
+      <h1>从美国市场信号到经营动作，<br>把跨境决策做得更有依据。</h1>
+      <p>美国市场、四个已接入平台、政策与预警数据统一进入一个工作台，帮助团队更快完成市场判断、风险筛查和方案输出。</p>
       <div class="login-proof-grid">
-        <div><strong>26</strong><span>重点国家市场</span></div>
-        <div><strong>41</strong><span>电商平台档案</span></div>
+        <div><strong>1</strong><span>美国市场</span></div>
+        <div><strong>4</strong><span>已接入平台</span></div>
         <div><strong>4h</strong><span>自动数据更新</span></div>
       </div>
     </div>
@@ -45,7 +47,7 @@
     <div class="auth-card">
       <div class="auth-card-head">
         <p>JAY观海工作台</p>
-        <h2 id="auth-title">进入全球市场情报台</h2>
+        <h2 id="auth-title">进入美国市场情报台</h2>
         <span>登录后同步看板、预警和团队报告。</span>
       </div>
       <div class="auth-tabs" role="tablist" aria-label="账号操作">
@@ -240,7 +242,7 @@
       <section class="dashboard-panel market-browser">
         <div class="panel-heading">
           <div><span class="section-label">国家市场</span><h3>重点市场快照</h3></div>
-          <button class="text-command" type="button" data-page="countries">查看全部国家 <i data-lucide="arrow-right"></i></button>
+          <button class="text-command" type="button" data-page="countries">查看美国市场 <i data-lucide="arrow-right"></i></button>
         </div>
         <div id="ov-country-filters" class="ov-country-filters"></div>
         <div id="ov-tag-filters" class="ov-tag-filters"></div>
@@ -248,173 +250,24 @@
       </section>
     </div>
 
-    <div class="page-content legacy-overview" data-ref-page="page-market" aria-hidden="true">
-      <div class="welcome-bar">
-        <div class="welcome-text">
-          <h1>Hi, 体验用户 👋</h1>
-          <p>今天想探索哪个跨境市场机会？AI 帮你一键分析</p>
-        </div>
-        <div class="country-selector">
-          <span class="flag">🇺🇸</span> 美国市场
-          <span style="color:#9ca3af;font-size:12px;">▾</span>
-        </div>
-      </div>
-
-      <!-- AI Agent -->
-      <div class="ai-agent-section">
-        <div class="ai-agent-title">
-          JAY观海 AI 智能助手
-          <span class="ai-badge">AI Agent</span>
-        </div>
-        <div class="ai-agent-desc">直接输入你的需求，剩下的交给 AI 来做：找爆品、分析市场、查政策风险、出营销方案，一键搞定。</div>
-        <div class="ai-input-box">
-          <textarea placeholder="例如：纸尿裤在美国市场的竞争格局和利润空间怎么样？"></textarea>
-          <div class="ai-input-actions">
-            <div class="ai-input-tags">
-              <span class="ai-input-tag">💡 技能</span>
-              <span class="ai-input-tag">📝 提示词</span>
-              <span class="ai-input-tag">🧠 深度思考</span>
-            </div>
-            <button class="ai-send-btn">↑</button>
-          </div>
-        </div>
-        <div class="ai-quick-entries">
-          <div class="ai-quick-entry">🔥 爆款趋势洞察</div>
-          <div class="ai-quick-entry">🎯 AI 驱动智能选品</div>
-          <div class="ai-quick-entry">📦 低 MOQ 柔性供应</div>
-          <div class="ai-quick-entry">⚖️ 合规风险筛查</div>
-        </div>
-      </div>
-
-      <!-- 快捷入口 -->
-      <div class="quick-cards">
-        <div class="quick-card" onclick="switchPage('countries')">
-          <div class="qc-icon blue">📊</div>
-          <div class="qc-title">美国市场概览</div>
-          <div class="qc-desc">宏观经济、电商规模、消费者画像</div>
-        </div>
-        <div class="quick-card" onclick="switchPage('platforms')">
-          <div class="qc-icon green">🛒</div>
-          <div class="qc-title">平台对比分析</div>
-          <div class="qc-desc">Amazon/TikTok/速卖通佣金入驻对比</div>
-        </div>
-        <div class="quick-card" onclick="switchPage('alerts')">
-          <div class="qc-icon orange">⚠️</div>
-          <div class="qc-title">政策风险预警</div>
-          <div class="qc-desc">关税、认证、平台规则实时变动</div>
-        </div>
-        <div class="quick-card" onclick="topbarSwitch('tools', document.querySelectorAll('.topbar-item')[0])">
-          <div class="qc-icon purple">🧮</div>
-          <div class="qc-title">利润计算器</div>
-          <div class="qc-desc">单品/整柜利润、汇率一键测算</div>
-        </div>
-      </div>
-
-      <!-- 数据榜单 -->
-      <div class="data-boards">
-        <div class="board-card">
-          <div class="board-header">
-            <div class="board-title">🏆 热卖商品 <span class="board-date">2026-08-19</span></div>
-            <div class="board-more">更多 ›</div>
-          </div>
-          <table class="board-table">
-            <thead>
-              <tr><th style="width:40px;">排名</th><th>商品</th><th style="width:80px;">销量</th><th style="width:90px;">销售额</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><span class="rank top1">1</span></td>
-                <td><div class="product-name">便携式储能电源 200W</div></td>
-                <td class="sales-up">8,608</td>
-                <td>$153.58万</td>
-              </tr>
-              <tr>
-                <td><span class="rank top2">2</span></td>
-                <td><div class="product-name">有机棉婴儿服饰套装</div></td>
-                <td class="sales-up">5,234</td>
-                <td>$117万</td>
-              </tr>
-              <tr>
-                <td><span class="rank top3">3</span></td>
-                <td><div class="product-name">可调节哑铃套装 20kg</div></td>
-                <td class="sales-up">5,059</td>
-                <td>$90.26万</td>
-              </tr>
-              <tr>
-                <td><span class="rank normal">4</span></td>
-                <td><div class="product-name">14K金叠戴项链</div></td>
-                <td class="sales-up">4,851</td>
-                <td>$437.68万</td>
-              </tr>
-              <tr>
-                <td><span class="rank normal">5</span></td>
-                <td><div class="product-name">智能宠物喂食器</div></td>
-                <td class="sales-up">4,819</td>
-                <td>$85.98万</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="board-card">
-          <div class="board-header">
-            <div class="board-title">🏪 热门店铺 <span class="board-date">2026-08-19</span></div>
-            <div class="board-more">更多 ›</div>
-          </div>
-          <table class="board-table">
-            <thead>
-              <tr><th style="width:40px;">排名</th><th>店铺</th><th style="width:80px;">销量</th><th style="width:90px;">销售额</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><span class="rank top1">1</span></td>
-                <td>
-                  <div class="product-name">HomeGadgets US</div>
-                  <div style="font-size:11px;color:#9ca3af;margin-top:2px;"><span class="tag us">美国</span><span class="tag amazon">Amazon</span></div>
-                </td>
-                <td class="sales-up">2.42万</td>
-                <td>$84.06亿</td>
-              </tr>
-              <tr>
-                <td><span class="rank top2">2</span></td>
-                <td>
-                  <div class="product-name">NPure Official</div>
-                  <div style="font-size:11px;color:#9ca3af;margin-top:2px;"><span class="tag us">美国</span><span class="tag tiktok">TikTok</span></div>
-                </td>
-                <td class="sales-up">1.21万</td>
-                <td>$30.94亿</td>
-              </tr>
-              <tr>
-                <td><span class="rank top3">3</span></td>
-                <td>
-                  <div class="product-name">MOELL OFFICIAL</div>
-                  <div style="font-size:11px;color:#9ca3af;margin-top:2px;"><span class="tag us">美国</span><span class="tag amazon">Amazon</span></div>
-                </td>
-                <td class="sales-up">8,068</td>
-                <td>$30.39亿</td>
-              </tr>
-              <tr>
-                <td><span class="rank normal">4</span></td>
-                <td><div class="product-name">KomEE Mall</div></td>
-                <td class="sales-up">2,454</td>
-                <td>$26.96亿</td>
-              </tr>
-              <tr>
-                <td><span class="rank normal">5</span></td>
-                <td><div class="product-name">Xiaomi Indonesia</div></td>
-                <td class="sales-up">626</td>
-                <td>$18.57亿</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    
     </section>
 
 
-    <section id="products" class="page">
+<section id="products" class="page">
+<div class="pr-data-import" id="pr-data-import">
+  <div class="pr-data-import-copy">
+    <p class="eyebrow">CATEGORY OPPORTUNITY DATA</p>
+    <h2>类目机会数据</h2>
+    <p>当前仅分析用户导入的商品或店铺文件，不展示未经接入验证的示例数据。</p>
+    <span id="pr-data-status" class="pr-data-status">暂无已导入的类目数据</span>
+  </div>
+  <div class="pr-data-import-actions">
+    <label class="pr-upload-btn" for="pr-file-input">上传 CSV / JSON</label>
+    <input id="pr-file-input" type="file" accept=".csv,.json,text/csv,application/json" hidden>
+    <button class="pr-clear-data" id="pr-clear-data" type="button" disabled>清空导入数据</button>
+  </div>
+  <p class="pr-data-import-note" id="pr-data-import-note">支持商品字段：商品名、国家/市场、平台、类目、三级类目、售价、销量、增速、信号、店铺、上架天数、更新时间。超出当前美国市场或 4 个平台范围的行会被跳过。</p>
+</div>
 <div id="pr-ai-tabs" class="pr-ai-tabs">
   <button class="pr-ai-tab active" data-aitab="short">短期机会（7日）</button>
   <button class="pr-ai-tab" data-aitab="long">长期赛道（3月）</button>
@@ -512,10 +365,10 @@
 <article class="panel table-panel pr-table-wrap">
   <div class="panel-head">
     <div>
-      <p class="eyebrow">PRODUCT RADAR · GLOBALPULSE DATA</p>
+      <p class="eyebrow">PRODUCT RADAR · USER IMPORTED DATA</p>
       <h2 id="pr-table-title">跨平台爆发爆款</h2>
     </div>
-    <span class="source-ok" id="pr-count">● 44 条实时数据</span>
+    <span class="source-warn" id="pr-count">○ 暂无已导入数据</span>
   </div>
   <table>
     <thead>
@@ -547,94 +400,27 @@
 </section>
 
     <section id="countries" class="page">
-
       <div class="page-header">
-        <h2>🇺🇸 美国市场档案</h2>
-        <div class="country-selector">
-          <span class="flag">🇺🇸</span> 美国
-          <span style="color:#9ca3af;font-size:12px;">▾</span>
+        <div>
+          <p class="eyebrow">MARKET PROFILE</p>
+          <h2>美国市场档案</h2>
         </div>
+        <span class="platform-linkage"><span class="flag">🇺🇸</span>当前市场：美国</span>
       </div>
-      <div class="page-tabs">
-        <div class="page-tab active" onclick="switchCountryTab(this, 'overview')">📊 市场概览</div>
-        <div class="page-tab" onclick="switchCountryTab(this, 'category')">📈 类目机会</div>
-        <div class="page-tab" onclick="switchCountryTab(this, 'platform')">🛒 平台分布</div>
-        <div class="page-tab" onclick="switchCountryTab(this, 'policy')">📜 政策法规</div>
+      <div class="country-scope-summary">
+        <div><span>覆盖国家</span><b>1</b><small>美国</small></div>
+        <div><span>接入平台</span><b>4</b><small>当前范围</small></div>
+        <div><span>市场口径</span><b>US</b><small>全站统一</small></div>
       </div>
-      <div style="padding-right:310px;">
-        <div class="metric-cards">
-          <div class="metric-card">
-            <div class="metric-label">GDP 总量</div>
-            <div class="metric-value">$27.4万亿</div>
-            <div class="metric-change up">↑ 2.5% YoY</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">人均 GDP</div>
-            <div class="metric-value">$81,690</div>
-            <div class="metric-change up">↑ 1.8%</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">电商市场规模</div>
-            <div class="metric-value">$1.12万亿</div>
-            <div class="metric-change up">↑ 9.2%</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">电商渗透率</div>
-            <div class="metric-value">16.3%</div>
-            <div class="metric-change up">↑ 0.8pp</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">CPI 通胀率</div>
-            <div class="metric-value">3.2%</div>
-            <div class="metric-change down">↓ 0.9pp</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">USD/CNY 汇率</div>
-            <div class="metric-value">7.24</div>
-            <div class="metric-change down">↓ 0.12</div>
-          </div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title">📈 美国电商市场规模趋势（2019-2026E）</div>
-          <div class="chart-placeholder">
-            <div class="chart-bar" style="height:35%;" data-label="2019"></div>
-            <div class="chart-bar" style="height:42%;" data-label="2020"></div>
-            <div class="chart-bar" style="height:48%;" data-label="2021"></div>
-            <div class="chart-bar" style="height:55%;" data-label="2022"></div>
-            <div class="chart-bar" style="height:63%;" data-label="2023"></div>
-            <div class="chart-bar" style="height:72%;" data-label="2024"></div>
-            <div class="chart-bar" style="height:82%;" data-label="2025E"></div>
-            <div class="chart-bar" style="height:92%;" data-label="2026E"></div>
-          </div>
-        </div>
+      <div class="country-data-empty" id="country-macro-status">
+        <i data-lucide="database-zap"></i>
+        <h3>美国官方宏观指标尚未接入</h3>
+        <p>当前没有通过来源和更新时间校验的 GDP、电商规模、渗透率、CPI 或汇率数据，因此不展示估算值和预测图。</p>
       </div>
-      <!-- 右侧预警栏 -->
-      <div class="alert-sidebar">
-        <div class="alert-sidebar-title">⚡ 影响美国市场的紧急预警</div>
-        <div class="alert-item">
-          <div class="alert-item-title">De Minimis 免税额度拟取消</div>
-          <div class="alert-item-meta">
-            <span class="alert-countdown">14天后</span>
-            <span>高影响</span>
-          </div>
-        </div>
-        <div class="alert-item">
-          <div class="alert-item-title">CPSC 锂电池产品安全新规</div>
-          <div class="alert-item-meta">
-            <span class="alert-countdown">45天后</span>
-            <span>高影响</span>
-          </div>
-        </div>
-        <div class="alert-item">
-          <div class="alert-item-title">Amazon FBA 仓储费大幅上调</div>
-          <div class="alert-item-meta">
-            <span class="alert-countdown">7天后</span>
-            <span>成本影响</span>
-          </div>
-        </div>
-        <div style="text-align:center;margin-top:12px;">
-          <a style="font-size:13px;color:#1e3a5f;cursor:pointer;" onclick="switchPage('alerts')">查看全部预警 →</a>
-        </div>
+      <div class="country-linked-actions">
+        <button type="button" onclick="jayOpenPolicyFilter({region:'US',category:'all',impact:'all',scope:'cross-border'})"><i data-lucide="landmark"></i>查看美国政策</button>
+        <button type="button" onclick="switchPage('alerts')"><i data-lucide="triangle-alert"></i>查看美国预警</button>
+        <button type="button" onclick="switchPage('platforms')"><i data-lucide="store"></i>查看四个平台</button>
       </div>
     </section>
 
@@ -755,16 +541,16 @@
       </div>
       <div id="sh-add-single">
         <label>店铺名称</label><input type="text" id="sh-add-name" placeholder="例: GLOW LAB Official" style="width:100%;margin-bottom:8px">
-        <label>平台</label><input type="text" id="sh-add-platform" placeholder="例: TikTok Shop" style="width:100%;margin-bottom:8px">
-        <label>市场</label><input type="text" id="sh-add-market" placeholder="例: 东南亚" style="width:100%;margin-bottom:8px">
+        <label>平台</label><select id="sh-add-platform" style="width:100%;margin-bottom:8px"><option value="">请选择平台</option><option>Amazon</option><option>TikTok Shop</option><option>AliExpress</option><option>eBay</option></select>
+        <label>市场</label><input type="text" id="sh-add-market" value="美国" readonly style="width:100%;margin-bottom:8px">
         <label>主营类目</label><input type="text" id="sh-add-cat" placeholder="例: 美妆个护" style="width:100%;margin-bottom:8px">
         <label>标签（逗号分隔）</label><input type="text" id="sh-add-tags" placeholder="例: 对标头部,美妆" style="width:100%;margin-bottom:12px">
         <button class="export" onclick="shDoAddSingle()" style="width:100%">确认添加</button>
       </div>
       <div id="sh-add-batch" style="display:none">
-        <label>批量粘贴店铺链接/名称（每行一个）</label>
-        <textarea id="sh-add-batch-text" rows="8" style="width:100%;margin-bottom:12px" placeholder="每行一个店铺名或链接..."></textarea>
-        <button class="export" onclick="shDoAddBatch()" style="width:100%">批量导入</button>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:12px">批量店铺数据需通过类目机会页上传 CSV 或 JSON，并提供店铺名、美国市场和平台字段。</p>
+        <textarea id="sh-add-batch-text" rows="4" style="display:none"></textarea>
+        <button class="export" onclick="shCloseAddModal();switchPage('products')" style="width:100%">前往上传数据</button>
       </div>
       <div id="sh-add-link" style="display:none">
         <p style="color:var(--muted);font-size:13px;margin-bottom:10px">在「产品全域雷达」中点击商品所属店铺名即可自动添加到监控列表。</p>
@@ -776,107 +562,65 @@
 
 </section>
     <section id="alerts" class="page">
-
-      <div class="page-header">
-        <h2>⚠️ 预警中心</h2>
+      <div class="al-header">
+        <div class="al-title-group">
+          <h2>⚠️ 预警中心</h2>
+          <span class="al-badge" id="al-unread-badge" style="display:none"></span>
+        </div>
+        <label class="al-search" for="al-search-input">
+          <span aria-hidden="true">⌕</span>
+          <input id="al-search-input" type="search" placeholder="搜索预警标题、平台或详情" oninput="alSearch()">
+        </label>
       </div>
-      <p style="color:#6b7280;margin-bottom:20px;">按紧急程度分层展示影响你业务的关键预警信息</p>
-
-      <div class="alert-level-section">
-        <div class="alert-level-header">
-          <span style="color:#ef4444;">🔴</span>
-          <span class="alert-level-title">紧急处理</span>
-          <span class="alert-level-count">3条</span>
-        </div>
-        <div class="alert-card">
-          <div class="alert-card-header">
-            <div class="alert-card-title">De Minimis 免税额度拟取消</div>
-            <span class="alert-countdown-badge">⏰ 14天后生效</span>
-          </div>
-          <div class="alert-tags">
-            <span class="tag us">🇺🇸 美国</span>
-            <span class="tag amazon">全平台</span>
-            <span style="background:#fef2f2;color:#dc2626;" class="tag">高影响</span>
-          </div>
-          <div class="alert-desc">美国国会正在推进取消$800以下进口包裹免税额度的立法。若通过，所有依赖小包直邮的卖家将面临额外关税成本，低客单价商品利润结构将被根本性改变。</div>
-          <div class="ai-suggestion-box">
-            <span class="ai-label">🤖 AI 建议：</span>
-            ① 评估SKU中低于$50产品的利润影响；② 提前规划海外仓备货方案；③ 考虑调整定价策略，将关税成本纳入定价模型；④ 关注立法进度，准备应急预案。
-          </div>
-        </div>
-        <div class="alert-card">
-          <div class="alert-card-header">
-            <div class="alert-card-title">CPSC 锂电池产品安全新规</div>
-            <span class="alert-countdown-badge">⏰ 45天后强制执行</span>
-          </div>
-          <div class="alert-tags">
-            <span class="tag us">🇺🇸 美国</span>
-            <span class="tag amazon">Amazon</span>
-            <span style="background:#fef2f2;color:#dc2626;" class="tag">高影响</span>
-          </div>
-          <div class="alert-desc">美国消费品安全委员会（CPSC）发布含锂电池产品新安全标准，要求所有在售产品提供UN38.3测试报告及UL2056认证，不符合要求的产品将面临强制下架。</div>
-          <div class="ai-suggestion-box">
-            <span class="ai-label">🤖 AI 建议：</span>
-            ① 立即盘点含锂电池SKU清单；② 联系供应商获取UN38.3认证文件；③ 对无认证产品启动补认证流程；④ 准备替换包装和说明书以符合新标签要求。
-          </div>
-        </div>
-        <div class="alert-card">
-          <div class="alert-card-header">
-            <div class="alert-card-title">Amazon FBA 仓储费大幅上调</div>
-            <span class="alert-countdown-badge">⏰ 7天后生效</span>
-          </div>
-          <div class="alert-tags">
-            <span class="tag us">🇺🇸 美国</span>
-            <span class="tag amazon">Amazon</span>
-            <span style="background:#fff7ed;color:#c2410c;" class="tag">成本影响</span>
-          </div>
-          <div class="alert-desc">Amazon宣布Q3旺季FBA仓储费上调20%-30%，同时收紧库容限制。超龄库存附加费将从$0.50/cubic ft提升至$0.85/cubic ft。</div>
-          <div class="ai-suggestion-box">
-            <span class="ai-label">🤖 AI 建议：</span>
-            ① 立即清理滞销库存，避免超龄附加费；② 重新核算利润率，评估是否需要调价；③ 考虑3PL作为补充仓储方案；④ 优化补货节奏，控制库存在健康水位。
-          </div>
-        </div>
+      <p style="color:#6b7280;margin-bottom:20px;">当前范围：美国市场 · 仅展示已接入数据源的预警</p>
+      <div class="al-toolbar">
+        <select id="al-filter-type" class="al-filter-select" onchange="alFilterChange()">
+          <option value="all">全部类型</option>
+          <option value="shop">店铺异动</option>
+          <option value="cat">类目爆款</option>
+          <option value="policy">政策合规</option>
+          <option value="macro">宏观数据</option>
+          <option value="platform">平台规则</option>
+        </select>
+        <select id="al-filter-level" class="al-filter-select" onchange="alFilterChange()">
+          <option value="all">全部风险</option>
+          <option value="high">高风险</option>
+          <option value="mid">中风险</option>
+          <option value="low">普通</option>
+        </select>
+        <select id="al-filter-time" class="al-filter-select" onchange="alFilterChange()">
+          <option value="all">全部时间</option>
+          <option value="today">今日</option>
+          <option value="3d">近 3 天</option>
+          <option value="7d">近 7 天</option>
+        </select>
+        <button class="al-btn" id="al-mark-all" type="button" onclick="alMarkAllRead()">全部标为已读</button>
+        <button class="al-btn" type="button" onclick="alExport()">导出</button>
+        <span id="al-data-info" style="font-size:.78rem;color:#888;padding:4px 0 8px"></span>
       </div>
-
-      <div class="alert-level-section">
-        <div class="alert-level-header">
-          <span style="color:#f59e0b;">🟡</span>
-          <span class="alert-level-title">关注跟进</span>
-          <span class="alert-level-count medium">4条</span>
-        </div>
-        <div class="alert-card medium">
-          <div class="alert-card-header">
-            <div class="alert-card-title">加州 Prop 65 新增物质清单更新</div>
-            <span class="alert-countdown-badge" style="background:#fffbeb;color:#92400e;">⏰ 60天后</span>
-          </div>
-          <div class="alert-tags">
-            <span class="tag us">🇺🇸 美国</span>
-            <span style="background:#fffbeb;color:#92400e;" class="tag">中等影响</span>
-          </div>
-          <div class="alert-desc">加州环境健康危害评估办公室（OEHHA）更新Prop 65已知致癌物质清单，新增3种化学物质，相关产品需更新警告标签。</div>
-        </div>
-        <div class="alert-card medium">
-          <div class="alert-card-header">
-            <div class="alert-card-title">FDA 化妆品 MoCRA 合规过渡期即将结束</div>
-            <span class="alert-countdown-badge" style="background:#fffbeb;color:#92400e;">⏰ 90天后</span>
-          </div>
-          <div class="alert-tags">
-            <span class="tag us">🇺🇸 美国</span>
-            <span style="background:#fffbeb;color:#92400e;" class="tag">中等影响</span>
-          </div>
-          <div class="alert-desc">FDA化妆品现代化监管法案（MoCRA）过渡期即将结束，所有在美销售化妆品需完成设施注册和产品列名。</div>
-        </div>
+      <div id="al-summary" class="al-summary"></div>
+      <div id="al-tabs" class="al-tabs" role="tablist" aria-label="预警类型"></div>
+      <div id="al-batch" class="al-batch" style="display:none">
+        <label><input type="checkbox" onchange="alToggleSelectAll(this.checked)"> 全选本页</label>
+        <span id="al-batch-info" class="al-batch-info"></span>
+        <button class="al-btn" type="button" onclick="alBatchWatch()">加入看板</button>
+        <button class="al-btn" type="button" onclick="alBatchArchive()">批量归档</button>
       </div>
+      <div id="al-list" class="al-list"></div>
+      <div id="al-pagination" class="al-pagination"></div>
     </section>
 
     <section id="platforms" class="page">
-
       <div class="page-header">
-        <h2>🛒 美国市场 · 平台档案 <span class="platform-linkage"><span class="flag">🇺🇸</span>当前市场：美国（平台已联动）</span></h2>
+        <div>
+          <p class="eyebrow">PLATFORM PROFILES</p>
+          <h2>美国市场 · 平台档案</h2>
+        </div>
+        <span class="platform-linkage"><span class="flag">🇺🇸</span>当前市场：美国</span>
       </div>
-      <p style="color:#6b7280;margin-bottom:20px;">深度了解各平台规则、费用与运营要点</p>
+      <p class="platform-source-note">平台范围来自统一市场配置；规则数量由美国已验证规则记录实时计算。</p>
       <div class="platform-grid">
-        <div class="platform-card amazon">
+        <article class="platform-card amazon" data-platform="Amazon" role="button" tabindex="0" aria-label="查看 Amazon 平台规则">
           <div class="platform-header">
             <div class="platform-logo amazon">A</div>
             <div>
@@ -884,44 +628,14 @@
               <div class="platform-region">美国站</div>
             </div>
           </div>
-          <div class="platform-stats">
-            <div>
-              <div class="platform-stat-label">市场份额</div>
-              <div class="platform-stat-value">38.2%</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">佣金范围</div>
-              <div class="platform-stat-value">8%-15%</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">入驻门槛</div>
-              <div class="platform-stat-value">中等</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">物流模式</div>
-              <div class="platform-stat-value">FBA/FBM</div>
-            </div>
+          <div class="platform-rule-status" data-platform-status="Amazon">
+            <span>已验证规则</span>
+            <b>正在读取...</b>
           </div>
-          <div class="platform-bar"><div class="platform-bar-fill" style="width:38.2%;background:#ff9900;"></div></div>
-          <div class="platform-desc">美国电商绝对霸主：流量最大、Prime 会员生态最强，货架+广告双驱动。适合有供应链优势、愿意深耕品牌化的工厂/卖家。</div>
-          <div class="platform-cats"><b>主营品类：</b><span>3C数码 · 家居家电 · 服饰鞋包 · 图书 · 美妆个护</span></div>
-          <div class="platform-meta">
-            <div class="platform-meta-item"><span>美国 GMV</span><b>$7,000亿+</b></div>
-            <div class="platform-meta-item"><span>月活用户</span><b>2.5亿</b></div>
-            <div class="platform-meta-item"><span>Prime 会员</span><b>2亿+</b></div>
-            <div class="platform-meta-item"><span>费用结构</span><b>佣金8-15%+FBA+广告</b></div>
-          </div>
-          <div class="platform-tags">
-            <span class="platform-tag pro">✓ 流量绝对第一</span>
-            <span class="platform-tag pro">✓ Prime 转化率高</span>
-            <span class="platform-tag pro">✓ FBA 履约强</span>
-            <span class="platform-tag con">✗ 竞争白热化</span>
-            <span class="platform-tag con">✗ 费用高企</span>
-            <span class="platform-tag con">✗ 品牌化要求高</span>
-          </div>
-          <div class="platform-advice"><b>🎯 入驻建议：</b>新品选细分长尾品类避开红海大词；备货前置 60 天；广告预算建议首月 $1-3K 测款，聚焦 3-5 个核心 SKU 冲排名。</div>
-        </div>
-        <div class="platform-card ae">
+          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的美国规则记录。</p>
+          <span class="platform-open-rules">查看平台规则 <i data-lucide="arrow-right"></i></span>
+        </article>
+        <article class="platform-card ae" data-platform="AliExpress" role="button" tabindex="0" aria-label="查看 AliExpress 平台规则">
           <div class="platform-header">
             <div class="platform-logo ae">AE</div>
             <div>
@@ -929,44 +643,14 @@
               <div class="platform-region">美国站</div>
             </div>
           </div>
-          <div class="platform-stats">
-            <div>
-              <div class="platform-stat-label">市场份额</div>
-              <div class="platform-stat-value">2.1%</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">佣金范围</div>
-              <div class="platform-stat-value">5%-8%</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">入驻门槛</div>
-              <div class="platform-stat-value">较低</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">物流模式</div>
-              <div class="platform-stat-value">自发/海外仓</div>
-            </div>
+          <div class="platform-rule-status" data-platform-status="AliExpress">
+            <span>已验证规则</span>
+            <b>正在读取...</b>
           </div>
-          <div class="platform-bar"><div class="platform-bar-fill" style="width:2.1%;background:#ff4747;"></div></div>
-          <div class="platform-desc">中国跨境电商老牌平台，全托管/半托管模式省运营；美国市场份额不高，但适合低价小件试水。</div>
-          <div class="platform-cats"><b>主营品类：</b><span>3C配件 · 服饰 · 家居日用 · 美妆 · 汽配小件</span></div>
-          <div class="platform-meta">
-            <div class="platform-meta-item"><span>全球 GMV</span><b>$2,000亿</b></div>
-            <div class="platform-meta-item"><span>美国月活</span><b>1.2亿</b></div>
-            <div class="platform-meta-item"><span>美国份额</span><b>2.1%</b></div>
-            <div class="platform-meta-item"><span>费用结构</span><b>佣金5-8%+交易服务费</b></div>
-          </div>
-          <div class="platform-tags">
-            <span class="platform-tag pro">✓ 中国卖家友好</span>
-            <span class="platform-tag pro">✓ 全托管省心</span>
-            <span class="platform-tag pro">✓ 低价带起量快</span>
-            <span class="platform-tag con">✗ 美国份额低</span>
-            <span class="platform-tag con">✗ 物流时效长</span>
-            <span class="platform-tag con">✗ 品牌溢价弱</span>
-          </div>
-          <div class="platform-advice"><b>🎯 入驻建议：</b>适合单价 $5-25 小件（3C配件/家居小件）试水；优先半托管自运营提毛利；做全托管可一次性铺量测爆款。</div>
-        </div>
-        <div class="platform-card tiktok">
+          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的美国规则记录。</p>
+          <span class="platform-open-rules">查看平台规则 <i data-lucide="arrow-right"></i></span>
+        </article>
+        <article class="platform-card tiktok" data-platform="TikTok Shop" role="button" tabindex="0" aria-label="查看 TikTok Shop 平台规则">
           <div class="platform-header">
             <div class="platform-logo tiktok">T</div>
             <div>
@@ -974,44 +658,14 @@
               <div class="platform-region">美国站</div>
             </div>
           </div>
-          <div class="platform-stats">
-            <div>
-              <div class="platform-stat-label">市场份额</div>
-              <div class="platform-stat-value">5.6%</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">佣金范围</div>
-              <div class="platform-stat-value">5%-8%</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">入驻门槛</div>
-              <div class="platform-stat-value">中等</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">物流模式</div>
-              <div class="platform-stat-value">平台物流</div>
-            </div>
+          <div class="platform-rule-status" data-platform-status="TikTok Shop">
+            <span>已验证规则</span>
+            <b>正在读取...</b>
           </div>
-          <div class="platform-bar"><div class="platform-bar-fill" style="width:5.6%;background:#000;"></div></div>
-          <div class="platform-desc">美国增速最快的电商平台：内容电商（短视频+直播）驱动，2025 美区 GMV 破 $200 亿，年轻用户爆发。</div>
-          <div class="platform-cats"><b>主营品类：</b><span>美妆个护 · 服饰 · 家居日用 · 食品饮料 · 3C</span></div>
-          <div class="platform-meta">
-            <div class="platform-meta-item"><span>美区 GMV</span><b>$200亿+</b></div>
-            <div class="platform-meta-item"><span>美国日活</span><b>1.7亿</b></div>
-            <div class="platform-meta-item"><span>增速</span><b>+65%/年</b></div>
-            <div class="platform-meta-item"><span>费用结构</span><b>佣金5-8%+服务费2%+达人佣金</b></div>
-          </div>
-          <div class="platform-tags">
-            <span class="platform-tag pro">✓ 内容电商爆发</span>
-            <span class="platform-tag pro">✓ 年轻用户占比高</span>
-            <span class="platform-tag pro">✓ 直播带货转化强</span>
-            <span class="platform-tag con">✗ 政策合规风险</span>
-            <span class="platform-tag con">✗ 内容门槛高</span>
-            <span class="platform-tag con">✗ 依赖达人分销</span>
-          </div>
-          <div class="platform-advice"><b>🎯 入驻建议：</b>适合内容型团队；短视频+直播双轮驱动；重视联盟达人分销（佣金 10-30% 自定义）；备足内容素材与本土化话术。</div>
-        </div>
-        <div class="platform-card ebay">
+          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的美国规则记录。</p>
+          <span class="platform-open-rules">查看平台规则 <i data-lucide="arrow-right"></i></span>
+        </article>
+        <article class="platform-card ebay" data-platform="eBay" role="button" tabindex="0" aria-label="查看 eBay 平台规则">
           <div class="platform-header">
             <div class="platform-logo ebay">e</div>
             <div>
@@ -1019,64 +673,15 @@
               <div class="platform-region">美国站</div>
             </div>
           </div>
-          <div class="platform-stats">
-            <div>
-              <div class="platform-stat-label">市场份额</div>
-              <div class="platform-stat-value">12.1%</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">佣金范围</div>
-              <div class="platform-stat-value">10%-15%</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">入驻门槛</div>
-              <div class="platform-stat-value">较低</div>
-            </div>
-            <div>
-              <div class="platform-stat-label">物流模式</div>
-              <div class="platform-stat-value">自发为主</div>
-            </div>
+          <div class="platform-rule-status" data-platform-status="eBay">
+            <span>已验证规则</span>
+            <b>正在读取...</b>
           </div>
-          <div class="platform-bar"><div class="platform-bar-fill" style="width:12.1%;background:#e53238;"></div></div>
-          <div class="platform-desc">美国老牌 C2C/B2C 平台：汽配、翻新电子、收藏品类目强势，账号稳定适合长期经营。</div>
-          <div class="platform-cats"><b>主营品类：</b><span>汽配 · 翻新电子 · 收藏品 · 二手 · 服饰</span></div>
-          <div class="platform-meta">
-            <div class="platform-meta-item"><span>美国 GMV</span><b>$1,000亿</b></div>
-            <div class="platform-meta-item"><span>月活用户</span><b>1.3亿</b></div>
-            <div class="platform-meta-item"><span>美国份额</span><b>12.1%</b></div>
-            <div class="platform-meta-item"><span>费用结构</span><b>佣金10-15%+刊登费</b></div>
-          </div>
-          <div class="platform-tags">
-            <span class="platform-tag pro">✓ 汽配/翻新强势</span>
-            <span class="platform-tag pro">✓ 二手市场大</span>
-            <span class="platform-tag pro">✓ 账号稳定</span>
-            <span class="platform-tag con">✗ 流量增长乏力</span>
-            <span class="platform-tag con">✗ 年轻用户流失</span>
-            <span class="platform-tag con">✗ 类目局限</span>
-          </div>
-          <div class="platform-advice"><b>🎯 入驻建议：</b>汽配、翻新电子、收藏品类目利润高；多 SKU 刊登策略（月 40 条免费）；重点做 listing 质量与账号信誉分。</div>
-        </div>
-      </div>
-      <div class="other-platforms">
-        <div class="other-platforms-title">其他平台（点击查看详情）</div>
-        <div class="other-chips">
-          <span class="other-chip">Walmart Marketplace</span>
-          <span class="other-chip">Temu</span>
-          <span class="other-chip">Wayfair</span>
-          <span class="other-chip">Etsy</span>
-          <span class="other-chip">Newegg</span>
-          <span class="other-chip">Overstock</span>
-          <span class="other-chip">Best Buy Marketplace</span>
-          <span class="other-chip">Shopee <span class="new-tag">新入驻</span></span>
-        </div>
+          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的美国规则记录。</p>
+          <span class="platform-open-rules">查看平台规则 <i data-lucide="arrow-right"></i></span>
+        </article>
       </div>
     </section>
-    <div class="pf-detail-overlay" id="pf-detail-overlay" onclick="if(event.target===this)closePfDetail()">
-      <div class="pf-detail-modal" id="pf-detail-modal"></div>
-    </div>
-
-    
-
     <section id="policies" class="page">
       <div class="pl-top-bar">
         <div><p class="eyebrow">POLICY TRACKER</p><h2>政策动态</h2></div>
@@ -1093,11 +698,9 @@
       </div>
       <div class="pl-stats-row" id="pl-stats-row"></div>
       <div id="pl-verify-bar"></div>
-      <div id="pl-demo-banner" style="background:linear-gradient(90deg,#c0392b,#e74c3c);color:#fff;padding:14px 18px;border-radius:8px;margin-bottom:14px;font-size:13.5px;line-height:1.6;box-shadow:0 2px 8px rgba(192,57,43,0.25)">
-        <div style="font-weight:700;font-size:15px;margin-bottom:4px">⚠ 数据真实性声明</div>
-        <div>本模块展示的政策数据为<strong>示意性参考</strong>，未经过权威源独立核实。来源机构名称为参考指引，<strong>具体数字、生效日期、税率</strong>等关键字段仅用于格式演示，<strong>不构成合规或投资依据</strong>。实际业务请以各国官方公告（USTR、欧盟 OJ、各国政府公报等）为准。如需真实可核验的政策数据，需接入后端抓取服务（超出本 demo 范围）。</div>
-      </div>
       <div class="pl-filter-bar" id="pl-filter-bar">
+        <span class="pl-filter-label">内容范围</span>
+        <select id="pl-f-scope" onchange="plScopeChange(this.value)"><option value="cross-border">跨境经营相关</option><option value="all-us">全部美国已核验政策</option></select>
         <span class="pl-filter-label">地区</span>
         <select id="pl-f-region"><option value="all">全部地区</option></select>
         <span class="pl-filter-label">类别</span>
@@ -1163,14 +766,11 @@
     </section>
 
     <section id="content" class="page">
-
       <div class="page-header"><h2>📚 资源中心</h2></div>
-      <p style="color:#6b7280;margin-bottom:20px;">跨境电商运营干货、政策解读、行业报告</p>
-      <div class="quick-cards">
-        <div class="quick-card"><div class="qc-icon blue">📖</div><div class="qc-title">运营指南</div><div class="qc-desc">平台入驻、选品、广告投放教程</div></div>
-        <div class="quick-card"><div class="qc-icon green">📑</div><div class="qc-title">政策解读</div><div class="qc-desc">各国海关、认证、税务政策详解</div></div>
-        <div class="quick-card"><div class="qc-icon orange">📈</div><div class="qc-title">行业报告</div><div class="qc-desc">季度/年度跨境电商行业报告</div></div>
-        <div class="quick-card"><div class="qc-icon purple">🎓</div><div class="qc-title">课程培训</div><div class="qc-desc">从0到1跨境电商操盘课程</div></div>
+      <div class="resource-empty-state" id="content-resource-empty">
+        <i data-lucide="folder-open"></i>
+        <h3>暂无已接入资源</h3>
+        <p>运营指南、政策解读和行业报告将在通过来源校验后显示。</p>
       </div>
     </section>
 
@@ -1228,7 +828,7 @@
             <h3 class="rp-v2-panel-title">配置报告范围</h3>
             <p class="rp-v2-panel-desc">模板：<b id="rp-v2-cfg-tpl">-</b></p>
             <div class="rp-v2-config-grid">
-              <div class="rp-v2-config-group" style="grid-column:1/-1"><label for="rp-v2-topic">行业或产品</label><input id="rp-v2-topic" type="text" placeholder="例如：便携式储能电源 / 印尼美妆"></div>
+              <div class="rp-v2-config-group" style="grid-column:1/-1"><label for="rp-v2-topic">行业或产品</label><input id="rp-v2-topic" type="text" placeholder="例如：便携式储能电源 / 美国宠物用品"></div>
               <div class="rp-v2-config-group"><label>数据周期</label><div class="rp-v2-toggle-row"><button type="button" class="rp-v2-toggle active" data-cfg="period" data-val="7d" onclick="rpV2Toggle(this)">近 7 天</button><button type="button" class="rp-v2-toggle" data-cfg="period" data-val="1m" onclick="rpV2Toggle(this)">近 1 月</button><button type="button" class="rp-v2-toggle" data-cfg="period" data-val="3m" onclick="rpV2Toggle(this)">近 3 月</button></div></div>
               <div class="rp-v2-config-group"><label>输出侧重</label><div class="rp-v2-toggle-row"><button type="button" class="rp-v2-toggle active" data-cfg="focus" data-val="data" onclick="rpV2Toggle(this)">数据</button><button type="button" class="rp-v2-toggle" data-cfg="focus" data-val="strategy" onclick="rpV2Toggle(this)">策略</button><button type="button" class="rp-v2-toggle" data-cfg="focus" data-val="balance" onclick="rpV2Toggle(this)">均衡</button></div></div>
               <div class="rp-v2-config-group"><label>报告受众</label><div class="rp-v2-toggle-row"><button type="button" class="rp-v2-toggle active" data-cfg="audience" data-val="boss" onclick="rpV2Toggle(this)">决策层</button><button type="button" class="rp-v2-toggle" data-cfg="audience" data-val="ops" onclick="rpV2Toggle(this)">运营</button><button type="button" class="rp-v2-toggle" data-cfg="audience" data-val="client" onclick="rpV2Toggle(this)">客户</button></div></div>
@@ -1279,7 +879,7 @@
             <div class="prc-price">¥0<small> / 永久免费</small></div>
             <div class="prc-desc">适合初次了解出海机会的产业带工厂</div>
             <ul class="prc-feat">
-              <li><span class="ck">✓</span>浏览全部 40 国 / 66 平台 / 政策 / 预警数据</li>
+              <li><span class="ck">✓</span>浏览美国市场 / 4 个平台 / 政策 / 预警数据</li>
               <li><span class="ck">✓</span>AI 搜索与「我的产品适配」分析</li>
               <li><span class="ck">✓</span>生成并导出市场调研报告（Markdown）</li>
               <li class="off"><span class="ck">—</span>批量操作 / 团队协作 / 企服对接</li>
@@ -1332,7 +932,7 @@
           <div class="ent-field"><label>公司 / 工厂名称</label><input id="ent-company" placeholder="如：XX 产业带有限公司"></div>
           <div class="ent-field"><label>联系人</label><input id="ent-name" placeholder="您的称呼"></div>
           <div class="ent-field"><label>联系方式（手机 / 微信 / 邮箱）</label><input id="ent-contact" placeholder="便于顾问回访"></div>
-          <div class="ent-field"><label>核心需求</label><textarea id="ent-need" rows="3" placeholder="如：想进入东南亚美妆市场，需要选品 + 合规 + 物流一站式方案"></textarea></div>
+          <div class="ent-field"><label>核心需求</label><textarea id="ent-need" rows="3" placeholder="如：想进入美国美妆市场，需要选品 + 合规 + 物流一站式方案"></textarea></div>
           <div class="ent-btns">
             <button class="ent-submit" onclick="submitEntLead()">提交需求</button>
             <button class="ent-cancel" onclick="closeEntModal()">暂不需要</button>
@@ -1367,7 +967,7 @@
         <article class="tools-card">
           <div class="tools-card-head"><span class="tools-card-icon blue"><i data-lucide="radar"></i></span><div><h3>选品可行性评分</h3><p class="t-sub">从市场、毛利、物流与政策五维评估</p></div></div>
           <div class="tools-form-grid">
-            <div class="tools-field"><label for="sc-market">目标市场</label><select id="sc-market" onchange="toolsCalcScore()"><option>东南亚</option><option selected>北美</option><option>欧洲</option><option>中东</option><option>拉美</option></select></div>
+            <div class="tools-field"><label for="sc-market">目标市场</label><select id="sc-market" onchange="toolsCalcScore()"><option value="US" selected>美国</option></select></div>
             <div class="tools-field"><label for="sc-margin">预估毛利率（%）</label><input id="sc-margin" type="number" min="0" max="100" value="38" oninput="toolsCalcScore()"></div>
             <div class="tools-field"><label for="sc-weight">单件重量（kg）</label><input id="sc-weight" type="number" min="0" step="0.1" value="0.8" oninput="toolsCalcScore()"></div>
             <div class="tools-field"><label for="sc-sensitive">敏感或强认证品类</label><select id="sc-sensitive" onchange="toolsCalcScore()"><option value="0" selected>否</option><option value="1">是</option></select></div>
@@ -1403,6 +1003,8 @@
         <div class="data-summary-grid" aria-label="数据质量摘要">
           <div><span>监控数据集</span><strong id="dq-datasets">--</strong><small>核心与专项来源</small></div>
           <div><span>可发布数据集</span><strong id="dq-healthy">--</strong><small>通过结构与时效校验</small></div>
+          <div><span>原始记录</span><strong id="dq-raw-records">--</strong><small>源文件全部记录</small></div>
+          <div><span>当前范围记录</span><strong id="dq-scoped-records">--</strong><small>美国与当前 4 个平台</small></div>
           <div><span>校验错误</span><strong id="dq-errors">--</strong><small>错误会阻断同步</small></div>
           <div><span>质量提醒</span><strong id="dq-warnings">--</strong><small>缺失来源或降级项</small></div>
         </div>
@@ -1419,8 +1021,8 @@
 
         <div class="data-quality-table-wrap">
           <table class="data-quality-table">
-            <thead><tr><th>数据集</th><th>状态</th><th>记录数</th><th>数据时间</th><th>质量说明</th></tr></thead>
-            <tbody id="data-quality-rows"><tr><td colspan="5" class="data-quality-empty">正在读取质量报告...</td></tr></tbody>
+            <thead><tr><th>数据集</th><th>状态</th><th>原始记录</th><th>当前范围记录</th><th>数据时间</th><th>质量说明</th></tr></thead>
+            <tbody id="data-quality-rows"><tr><td colspan="6" class="data-quality-empty">正在读取质量报告...</td></tr></tbody>
           </table>
         </div>
 
@@ -1460,9 +1062,7 @@
           <h2 class="wl-title">当前关注组</h2>
           <div class="wl-group-select">
             <select id="wl-group-sel">
-              <option value="sea-beauty">东南亚美妆组</option>
-              <option value="na-3c">北美3C组</option>
-              <option value="benchmark">对标竞店组</option>
+              <option value="us-market" selected>美国市场（当前范围）</option>
             </select>
             <button class="wl-btn-sm" id="wl-new-group">+ 新建分组</button>
           </div>
@@ -1485,15 +1085,15 @@
         </div>
       </div>
 
-      <!-- AI综合看板诊断 -->
+      <!-- AI综合看板诊断：仅基于已保存的关注项生成 -->
       <div class="wl-ai-diagnosis">
         <div class="wl-ai-diag-head"><span>✨</span><b>AI 综合看板分析</b><span class="wl-pro-tag">PRO</span></div>
-        <p class="wl-ai-diag-text">你监控的印尼美妆、巴西个护电器双赛道持续高增长；印尼本土店政策利好，巴西Remessa Conforme新规需关注成本变化。建议加大东南亚备货，巴西市场先小批量测试。</p>
+        <p class="wl-ai-diag-text">当前没有已保存的关注项。添加市场、平台或商品后，这里才会基于你的实际关注范围生成分析。</p>
         <button class="wl-ai-diag-btn" onclick="showProModal()">PRO 查看完整周报 →</button>
       </div>
 
       <!-- 免费版限制提示 -->
-      <div class="wl-free-hint">免费版最多5个监控项 · 升级专业版解锁50个监控 + AI诊断 + 分组看板 <a href="javascript:void(0)" onclick="showProModal()">→</a></div>
+      <div class="wl-free-hint">只显示已保存到当前工作区的关注项；演示模式不会填充示例数据。</div>
 
       <!-- 分区2：今日监控异动提醒区 -->
       <div class="wl-alert-banner" id="wl-alert-banner"></div>
@@ -1507,69 +1107,26 @@
       </div>
       <div class="watch-grid" id="watch-grid"></div>
 
-      <!-- 推荐添加 -->
+      <!-- 推荐添加：暂无已验证推荐数据时保持空状态 -->
       <div class="wl-recommend">
-        <h4>🔥 行业热门监控赛道 - 一键添加</h4>
+        <h4>已验证的推荐关注项</h4>
         <div class="wl-rec-cards" id="wl-rec-cards"></div>
       </div>
 
       <!-- 分区4：底部数据汇总 -->
       <div class="wl-summary">
         <div class="wl-summary-metrics">
-          <div class="wl-sum-card"><span class="wl-sum-num">3</span><span class="wl-sum-label">监控国家数</span></div>
-          <div class="wl-sum-card"><span class="wl-sum-num">5</span><span class="wl-sum-label">监控赛道数</span></div>
-          <div class="wl-sum-card"><span class="wl-sum-num">2</span><span class="wl-sum-label">跟踪竞店数</span></div>
-          <div class="wl-sum-card"><span class="wl-sum-num wl-sum-green">+28.3%</span><span class="wl-sum-label">近7日平均GMV涨幅</span></div>
+          <div class="wl-sum-card"><span class="wl-sum-num">0</span><span class="wl-sum-label">监控市场数</span></div>
+          <div class="wl-sum-card"><span class="wl-sum-num">0</span><span class="wl-sum-label">监控赛道数</span></div>
+          <div class="wl-sum-card"><span class="wl-sum-num">0</span><span class="wl-sum-label">跟踪竞店数</span></div>
+          <div class="wl-sum-card"><span class="wl-sum-num">—</span><span class="wl-sum-label">近7日平均 GMV 涨幅</span></div>
         </div>
         <div class="wl-bar-chart">
-          <div class="wl-bar-row"><span class="wl-bar-label">东南亚</span><div class="wl-bar-track"><div class="wl-bar-fill" style="width:84%;background:var(--green)"></div></div><span class="wl-bar-val">+42%</span></div>
-          <div class="wl-bar-row"><span class="wl-bar-label">北美</span><div class="wl-bar-track"><div class="wl-bar-fill" style="width:36%;background:#4a90d9"></div></div><span class="wl-bar-val">+18%</span></div>
-          <div class="wl-bar-row"><span class="wl-bar-label">拉美</span><div class="wl-bar-track"><div class="wl-bar-fill" style="width:70%;background:var(--orange)"></div></div><span class="wl-bar-val">+35%</span></div>
+          <div class="wl-empty-summary">暂无已验证的关注项指标</div>
         </div>
       </div>
     </section>
 
-    <!-- ===== AI工具 ===== -->
-    <section id="ai" class="page">
-      <div class="page-header"><h2>🤖 AI工具</h2></div>
-      <p style="color:#6b7280;margin-bottom:20px;">AI驱动的智能选品、文案生成、数据分析工具</p>
-      <div class="quick-cards">
-        <div class="quick-card"><div class="qc-icon purple">🎯</div><div class="qc-title">AI智能选品</div><div class="qc-desc">基于多维度数据推荐潜力品类</div></div>
-        <div class="quick-card"><div class="qc-icon blue">✍️</div><div class="qc-title">AI文案生成</div><div class="qc-desc">Listing标题、五点描述、广告文案</div></div>
-        <div class="quick-card"><div class="qc-icon green">📊</div><div class="qc-title">AI数据分析</div><div class="qc-desc">自然语言查询市场数据</div></div>
-        <div class="quick-card"><div class="qc-icon orange">⚖️</div><div class="qc-title">AI合规筛查</div><div class="qc-desc">自动识别产品合规风险</div></div>
-      </div>
-    </section>
-
-    <!-- ===== API接口 ===== -->
-    <section id="api" class="page">
-      <div class="page-header"><h2>🔌 API接口</h2></div>
-      <p style="color:#6b7280;margin-bottom:20px;">将JAY观海数据能力接入你的业务系统</p>
-      <div class="chart-card">
-        <div class="chart-title">API 接口列表</div>
-        <table class="board-table">
-          <thead><tr><th>接口名称</th><th>说明</th><th>调用方式</th><th>状态</th></tr></thead>
-          <tbody>
-            <tr><td>市场数据API</td><td>获取国家宏观经济、电商规模数据</td><td>RESTful</td><td style="color:#10b981;">✅ 可用</td></tr>
-            <tr><td>商品榜单API</td><td>获取热卖商品、店铺排行数据</td><td>RESTful</td><td style="color:#10b981;">✅ 可用</td></tr>
-            <tr><td>政策预警API</td><td>获取最新政策变动和预警信息</td><td>RESTful + Webhook</td><td style="color:#f59e0b;">🔧 开发中</td></tr>
-            <tr><td>AI分析API</td><td>调用AI选品、文案生成能力</td><td>RESTful</td><td style="color:#f59e0b;">🔧 开发中</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ===== 资源中心 ===== -->
-    <section id="resource" class="page">
-      <div class="page-header"><h2>📚 资源中心</h2></div>
-      <p style="color:#6b7280;margin-bottom:20px;">跨境电商运营干货、政策解读、行业报告</p>
-      <div class="quick-cards">
-        <div class="quick-card"><div class="qc-icon blue">📖</div><div class="qc-title">运营指南</div><div class="qc-desc">平台入驻、选品、广告投放教程</div></div>
-        <div class="quick-card"><div class="qc-icon green">📑</div><div class="qc-title">政策解读</div><div class="qc-desc">各国海关、认证、税务政策详解</div></div>
-        <div class="quick-card"><div class="qc-icon orange">📈</div><div class="qc-title">行业报告</div><div class="qc-desc">季度/年度跨境电商行业报告</div></div>
-        <div class="quick-card"><div class="qc-icon purple">🎓</div><div class="qc-title">课程培训</div><div class="qc-desc">从0到1跨境电商操盘课程</div></div>
-      </div>
-    </section>
   </main>
   <div class="export-modal-overlay" id="export-modal-overlay">
     <div class="export-modal">
@@ -1587,7 +1144,7 @@
 <button id="jay-totop" title="回到顶部">↑</button>
 <footer class="jay-footer">
   <span>JAY观海 · 跨境市场情报系统 <b id="jay-ver">v1.0.0</b></span>
-  <span>数据来源：官方公开数据、平台公告、Supabase 实时库与仓库 JSON；部分经营模块含演示样本，以模块来源与更新时间为准</span>
+  <span>数据来源：官方公开数据、平台公告、Supabase 实时库与仓库 JSON；未接入或未通过校验的数据保持空状态</span>
   <span class="jay-f-sep"></span>
   <a href="javascript:void(0)" onclick="jayOpenGlossary()">术语表</a>
   <a href="javascript:void(0)" onclick="jayOpenOnboard()">新手引导</a>
@@ -1609,7 +1166,7 @@
     </div>
     <div class="rp-q-body">
       <div class="rp-q-row"><label>你的品类 / 产品</label><input type="text" id="rp-q-category" placeholder="如：保温杯 / 宠物用品 / 瑜伽服"></div>
-      <div class="rp-q-row"><label>目标市场</label><select id="rp-q-market"><option>未定</option><option>东南亚</option><option>北美</option><option>欧洲</option><option>中东</option><option>拉美</option><option>日韩</option></select></div>
+      <div class="rp-q-row"><label>目标市场</label><select id="rp-q-market"><option value="US" selected>美国</option></select></div>
       <div class="rp-q-row"><label>单件成本区间</label><select id="rp-q-cost"><option>未定</option><option>&lt;¥20</option><option>¥20-50</option><option>¥50-100</option><option>¥100-300</option><option>&gt;¥300</option></select></div>
       <div class="rp-q-row"><label>月出海预算</label><select id="rp-q-budget"><option>未定</option><option>&lt;¥1万</option><option>¥1-5万</option><option>¥5-20万</option><option>&gt;¥20万</option></select></div>
       <div class="rp-q-row"><label>出海经验</label><select id="rp-q-exp"><option>纯新手</option><option>1年内</option><option>1-3年</option><option>3年以上</option></select></div>
@@ -1633,10 +1190,10 @@
     <h2>❓ 常见问题（FAQ）</h2>
     <p class="jo-sub">关于 JAY观海 的使用与数据说明</p>
     <ul class="jf-list">
-      <li><b>JAY观海 是什么？</b><span>JAY观海 是轻工业协会专属数字化产业服务工具，面向全国轻工制造企业免费提供全球市场大盘分析、海外爆款选品、跨境合规风险筛查、国别出海规划等一体化数据支撑，是协会落实企业出海扶持、产业数字化升级的标准化服务载体。</span></li>
+      <li><b>JAY观海 是什么？</b><span>JAY观海 是轻工业协会专属数字化产业服务工具，面向全国轻工制造企业免费提供美国市场分析、海外爆款选品、跨境合规风险筛查、美国市场出海规划等一体化数据支撑，是协会落实企业出海扶持、产业数字化升级的标准化服务载体。</span></li>
       <li><b>数据是实时的吗？</b><span>系统提供"数据定时刷新"（默认每 2 小时），侧边栏底部可查看刷新状态与更新日志。部分指标为行业估算，仅供决策参考。</span></li>
-      <li><b>AI 搜索需要配置密钥吗？</b><span>不需要。未登录时使用本地规则引擎给出机会与风险提示；登录后由服务端安全代理提供更强的语义分析，密钥不会进入浏览器。</span></li>
-      <li><b>免费版能用什么？</b><span>免费版可浏览全部市场/平台/政策数据、使用 AI 搜索与定时刷新、生成并导出报告。部分批量操作与高级企业协同功能需升级专业版（PRO）。</span></li>
+      <li><b>AI 搜索需要配置密钥吗？</b><span>需要登录并由服务端安全代理调用 AI。未登录或 AI 服务不可用时，系统不会用内置规则编造机会与风险结论。</span></li>
+      <li><b>免费版能用什么？</b><span>免费版可浏览美国市场、4 个平台、政策和预警数据，使用 AI 搜索与定时刷新、生成并导出报告。部分批量操作与高级企业协同功能需升级专业版（PRO）。</span></li>
       <li><b>为什么有些平台显示"N/A"？</b><span>个别平台因公开数据缺失，增速/客单价暂以 N/A 显示。我们正持续补全，不影响其余维度的参考。</span></li>
       <li><b>报告怎么导出？</b><span>在"报告生成中心"点"生成报告"后，点"导出报告"即可下载 HTML 格式报告；政策与产品雷达也支持 CSV/Excel/PDF 导出。</span></li>
     </ul>

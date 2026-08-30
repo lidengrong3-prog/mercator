@@ -320,7 +320,9 @@
 .ov-ccard-cats{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}
 .ov-ccard-cats span{background:#f4f2ed;color:#6b7b73;font:9px 'DM Mono';padding:2px 6px;border-radius:3px}
 .ov-ccard-policy{font:10px 'DM Mono';color:#9aa29e;margin:6px 0 10px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ov-ccard-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .ov-ccard-btn{border:0;background:none;color:var(--green);font:11px 'Noto Sans SC';cursor:pointer;padding:0;font-weight:600}
+.ov-ccard-btn.secondary{color:#3366cc}
 .ov-ccard-btn:hover{color:#2c5249}
 
 /* === Overview Rework: Block 5 - Trust Footer === */
@@ -869,7 +871,15 @@
 .al-toggle.on::after{left:18px}
 .al-threshold-input{width:80px;padding:4px 8px;border:1px solid var(--line);border-radius:4px;font:12px 'DM Mono';text-align:center}
 @media(max-width:1000px){.al-summary{grid-template-columns:repeat(2,1fr)}.al-card{flex-wrap:wrap}.al-card-actions{width:100%;justify-content:flex-end}}
-@media(max-width:700px){.al-summary{grid-template-columns:1fr 1fr}.al-header{flex-direction:column;align-items:flex-start}.al-toolbar{flex-direction:column}.al-tabs{overflow-x:auto}}
+@media(max-width:700px){
+.al-summary{grid-template-columns:1fr 1fr}
+.al-header{flex-direction:column;align-items:flex-start}
+.al-toolbar{flex-direction:column;align-items:stretch}
+.al-search{width:100%;min-width:0;box-sizing:border-box}
+.al-tabs{overflow-x:auto;max-width:100%}
+.al-pagination{flex-wrap:wrap;gap:8px;align-items:flex-start}
+.al-pagination .al-page-btns{flex-wrap:wrap;max-width:100%}
+}
 
 
 /* === Platforms Center === */

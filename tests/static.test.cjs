@@ -27,6 +27,8 @@ test('production shell exposes the primary decision workflow', () => {
   assert.ok(document.querySelector('#shell-data-status'));
   assert.ok(document.querySelector('#data #data-quality-badge'));
   assert.ok(document.querySelector('#data #data-quality-rows'));
+  assert.ok(document.querySelector('#data #dq-raw-records'));
+  assert.ok(document.querySelector('#data #dq-scoped-records'));
 
   const navLabels = [...document.querySelectorAll('.sidebar-nav .nav-text')]
     .map((node) => node.textContent.trim());
@@ -61,8 +63,10 @@ test('frontend assets are externalized and loaded in dependency order', () => {
     'assets/styles/workspaces.css',
     'assets/styles/legacy-theme.css',
     'assets/app-shell.css',
+    'assets/styles/market-scope.css',
   ];
   const expectedModules = [
+    'assets/js/market-scope.js',
     'assets/js/catalog.js',
     'assets/js/products-shops.js',
     'assets/js/markets-policies.js',
@@ -79,6 +83,121 @@ test('frontend assets are externalized and loaded in dependency order', () => {
   for (const source of expectedStyles.concat(expectedModules)) {
     assert.equal(fs.existsSync(path.join(root, source)), true, `missing ${source}`);
   }
+});
+
+test('market scope is centralized before data modules load', () => {
+  const scope = fs.readFileSync(path.join(root, 'assets/js/market-scope.js'), 'utf8');
+  assert.match(scope, /code:\s*'US'/);
+  assert.match(scope, /name:\s*'美国'/);
+  assert.match(scope, /name:\s*'Amazon'/);
+  assert.match(scope, /name:\s*'TikTok Shop'/);
+  assert.match(scope, /name:\s*'AliExpress'/);
+  assert.match(scope, /name:\s*'eBay'/);
+  assert.match(scope, /platformCount:\s*platformNames\.length/);
+  assert.match(scope, /market === country\.code \|\| market === 'GLOBAL'/);
+  assert.match(scope, /global\.JAY_MARKET_SCOPE/);
+});
+
+test('platform rules consume the configured US scope', () => {
+  assert.match(browserSource, /当前仅展示已匹配的 4 个平台/);
+  assert.match(browserSource, /fillSelect\('#rl-market', \['US'\]/);
+  assert.match(browserSource, /return market==='US';/);
+  assert.match(browserSource, /window\.JAY_MARKET_SCOPE\.platformNames/);
+  assert.match(browserSource, /if\(name==='rules'\)[\s\S]*ruleMarket\.value='US'/);
+});
+
+test('rules and formal pages do not seed retired global AI insights', () => {
+  const alertsSource = fs.readFileSync(path.join(root, 'assets/js/alerts-settings.js'), 'utf8');
+  assert.equal(alertsSource.includes('const aiInsights'), false);
+  assert.equal(alertsSource.includes('function renderAIInsight'), false);
+  assert.equal(browserSource.includes('ovTrendData'), false);
+  assert.equal(browserSource.includes('ovOppData'), false);
+  assert.equal(browserSource.includes('pfAiDiagnosis'), false);
+  assert.equal(browserSource.includes('enrichPolicySummary'), false);
+  assert.equal(browserSource.includes('enrichRuleSummary'), false);
+  assert.equal(browserSource.includes('cn2InjectExtras'), false);
+  assert.equal(browserSource.includes('爆款A'), false);
+  assert.equal(browserSource.includes('JAY观海 AI 自动生成'), false);
+  assert.match(browserSource, /if\(name==='rules'\)[\s\S]*renderRulesPage\(\)/);
+});
+
+test('policy dynamics consume only verified records from the configured US scope', () => {
+  assert.match(browserSource, /function plGetJsonItems\(\)[\s\S]*items\.filter\(isUs\)/);
+  assert.match(browserSource, /fillSelect\('#pl-f-region', \['US'\]/);
+  assert.match(browserSource, /美国市场政策更新时间/);
+  assert.match(browserSource, /const plAiTabs=\['美国最新政策','美国准入与认证','美国关税与税务','美国合规风险'\]/);
+  assert.match(browserSource, /function plAssessEvidence\(p\)/);
+  assert.match(browserSource, /specificRecordUrl=validUrl/);
+  assert.match(browserSource, /var official=\/\(\^\|\\\.\)gov\$\|\(\^\|\\\.\)mil\$/);
+  assert.match(browserSource, /function plAssessEvidenceForSet\(p, items\)/);
+  assert.match(browserSource, /function plAssessPolicyRelevance\(p\)/);
+  assert.match(browserSource, /var plIndustryOnlyKeywords/);
+  assert.match(browserSource, /var plBusinessCrossBorderContextKeywords/);
+  assert.match(browserSource, /plComplianceKeywords\.test\(title\) && plProductOrTradeContextKeywords\.test\(title\)/);
+  assert.match(browserSource, /class="pl-relevance-tag"/);
+  assert.match(browserSource, /verified \? 100/);
+  assert.match(browserSource, /var plCrossBorderOnly = true/);
+  assert.match(browserSource, /function plIsCrossBorderPolicy\(p\)/);
+  assert.match(browserSource, /function plGetVerifiedUsPolicies\(crossBorderOnly\)/);
+  assert.match(browserSource, /plAssessEvidenceForSet\(p, (?:items|allUsItems)\)\.flag!=='pass'/);
+  assert.match(html, /<select id="pl-f-scope"[\s\S]*跨境经营相关/);
+  assert.equal(browserSource.includes('示意性数据'), false);
+  assert.equal(browserSource.includes('固定核验时间'), false);
+  assert.match(browserSource, /if\(name==='policies'\)[\s\S]*plf\.value='US'/);
+});
+
+test('dynamic alerts share the verified US scope and use the current local date', () => {
+  const alertSource = fs.readFileSync(path.join(root, 'assets/js/alerts-settings.js'), 'utf8');
+  assert.match(alertSource, /plGetVerifiedUsPolicies\(true\)/);
+  assert.match(alertSource, /typeof rlGetJsonItems === 'function' \? rlGetJsonItems\(\) : \[\]/);
+  assert.match(alertSource, /function alCalendarDayDiff\(value,nowValue\)/);
+  assert.match(alertSource, /function alMatchesTimeFilter\(value,timeFilter,nowValue\)/);
+  assert.match(alertSource, /var scopedDynamic = dynamicAlerts\.filter\(alertIsInConfiguredScope\)/);
+  assert.equal(alertSource.includes("new Date('2026-07-15')"), false);
+  assert.equal(alertSource.includes('from countryFullData'), false);
+});
+
+test('cross-page navigation shares one market and platform filter context', () => {
+  const platformCards = [...document.querySelectorAll('#platforms .platform-card[data-platform]')];
+  assert.deepEqual(platformCards.map((card) => card.dataset.platform), [
+    'Amazon', 'AliExpress', 'TikTok Shop', 'eBay',
+  ]);
+  assert.ok(document.querySelector('#ov-metrics'));
+  assert.match(browserSource, /function renderOverviewMetrics\(\)/);
+  assert.match(browserSource, /policyFilter:\s*\{\s*region:\s*'US'/);
+  assert.match(browserSource, /ruleFilter:\s*\{\s*platform:\s*'all',\s*market:\s*'US'/);
+  assert.match(browserSource, /function jayOpenPolicyFilter\(filters\)/);
+  assert.match(browserSource, /function jayOpenRulesFilter\(filters\)/);
+  assert.match(browserSource, /function installCrossPageSwitch\(\)/);
+  assert.match(browserSource, /wrapped\.__jayCrossPageSwitch=true/);
+  assert.match(browserSource, /data-page="policies">查看美国政策/);
+  assert.match(browserSource, /function plClearFilters\(\)[\s\S]*jayPolicyContext\(filter\)/);
+});
+
+test('reports, watchlist, and tools expose only the configured US scope', () => {
+  const reportsSource = fs.readFileSync(path.join(root, 'assets/js/reports-decisions.js'), 'utf8');
+  const authSource = fs.readFileSync(path.join(root, 'assets/js/auth-data.js'), 'utf8');
+  const retiredLabels = /东南亚|北美|欧洲|中东|拉美|日韩|印尼|越南|泰国|巴西/;
+
+  for (const pageId of ['report', 'watchlist', 'tools']) {
+    assert.doesNotMatch(document.querySelector(`#${pageId}`).textContent, retiredLabels);
+  }
+  assert.deepEqual([...document.querySelectorAll('#rp-q-market option')].map((option) => [option.value, option.textContent]), [['US', '美国']]);
+  assert.deepEqual([...document.querySelectorAll('#sc-market option')].map((option) => [option.value, option.textContent]), [['US', '美国']]);
+  assert.deepEqual([...document.querySelectorAll('#wl-group-sel option')].map((option) => [option.value, option.textContent]), [['us-market', '美国市场（当前范围）']]);
+  assert.match(document.querySelector('#rp-v2-topic').placeholder, /美国/);
+
+  assert.match(reportsSource, /【范围强制】只能分析美国市场/);
+  assert.match(reportsSource, /平台只能包含 Amazon、TikTok Shop、AliExpress、eBay/);
+  assert.match(reportsSource, /items\.filter\(wlIsConfiguredScopeRow\)/);
+  assert.match(reportsSource, /function wlIsConfiguredScopeRow\(row\)/);
+  assert.match(reportsSource, /var capMap=\{US:20\}/);
+  assert.match(reportsSource, /var compMap=\{US:11\}/);
+  assert.match(reportsSource, /var riskMap=\{US:13\}/);
+  assert.doesNotMatch(reportsSource, /'market-research':'全球市场调研报告'/);
+  assert.match(authSource, /content\.market \|\| ''/);
+  assert.match(authSource, /market: report\.market \|\| 'US'/);
+  assert.match(authSource, /只能添加美国市场及当前 4 个平台范围内的记录/);
 });
 
 test('settings source cannot fall back to the retired fictional workspace', () => {
@@ -136,7 +255,6 @@ test('authenticated workspace data uses the canonical Supabase layer', () => {
     'jay_sub_pref',
     'jay_feedback',
     'jay_role',
-    'jay_cn_view',
     'jay_cmp_schemes',
     'jay_filter_tpl',
     'jay_shop_groups',
@@ -271,8 +389,79 @@ test('data publication is gated and exposes its quality report', () => {
   assert.ok(report.datasets.macro);
   assert.equal(report.status, 'healthy');
   assert.equal(report.datasets.cpsc.status, 'healthy');
+  assert.ok(report.summary.raw_records > report.summary.scoped_records);
+  assert.equal(report.summary.raw_records, Object.values(report.datasets).reduce((sum, item) => sum + item.raw_records, 0));
+  assert.equal(report.summary.scoped_records, Object.values(report.datasets).reduce((sum, item) => sum + item.scoped_records, 0));
+  assert.equal(report.datasets.countries.scoped_records, 1);
+  assert.equal(report.datasets.platforms.scoped_records, 4);
+  for (const dataset of Object.values(report.datasets)) {
+    assert.equal(dataset.records, dataset.raw_records);
+    assert.ok(dataset.scoped_records <= dataset.raw_records);
+  }
 
   const cpscScript = fs.readFileSync(path.join(root, 'scripts', 'collect_cpsc.py'), 'utf8');
   assert.match(cpscScript, /saferproducts\.gov\/RestWebServices\/Recall/);
   assert.equal(cpscScript.includes('cpsc.gov/cpscrecall/reportapi"'), false);
+});
+
+test('category and shop pages do not ship retired static rankings or insights', () => {
+  assert.equal(document.querySelector('.legacy-overview .data-boards'), null);
+  assert.equal(browserSource.includes('var shAiBenchmark'), false);
+  assert.equal(browserSource.includes('var shAiRisk'), false);
+  assert.equal(browserSource.includes('Medicube Official — 美区TikTok美妆标杆'), false);
+  assert.match(browserSource, /const products=\[\];/);
+  assert.match(browserSource, /const shops=\[\];/);
+  assert.match(browserSource, /演示模式不会填充示例数据/);
+});
+
+test('formal pages do not retain retired mock render paths', () => {
+  assert.equal(document.querySelector('#alerts .alert-card'), null);
+  assert.equal(document.querySelector('#alerts .alert-level-section'), null);
+  assert.equal(document.querySelector('.legacy-overview'), null);
+  assert.equal(document.querySelector('#countries .chart-placeholder'), null);
+  assert.equal(document.querySelectorAll('#countries .alert-sidebar .alert-item').length, 0);
+  assert.equal(document.querySelectorAll('#platforms .platform-card[data-platform]').length, 4);
+  assert.match(html, /平台经营指标未接入可信数据源/);
+  assert.match(html, /暂无已接入资源/);
+  assert.equal(html.includes('部分经营模块含演示样本'), false);
+  assert.ok(document.querySelector('#alerts #al-summary'));
+  assert.ok(document.querySelector('#alerts #al-search-input'));
+  assert.ok(document.querySelector('#alerts #al-filter-type'));
+  assert.ok(document.querySelector('#alerts #al-filter-level'));
+  assert.ok(document.querySelector('#alerts #al-filter-time'));
+  assert.ok(document.querySelector('#alerts #al-tabs'));
+  assert.ok(document.querySelector('#alerts #al-list'));
+  assert.ok(document.querySelector('#alerts #al-pagination'));
+  assert.match(browserSource, /function renderAlerts\(\)\{[\s\S]*var filtered=getFilteredAlerts\(\);/);
+  assert.doesNotMatch(browserSource, /function renderAlerts\(\)\{\s*return;/);
+  assert.doesNotMatch(browserSource, /function renderPlatforms\(\)\{[\s\S]*renderPfStats\(\)/);
+  assert.equal(browserSource.includes('renderPlatforms();'), false);
+  assert.doesNotMatch(browserSource, /function cn2Render\(/);
+  const countryLoader = browserSource.slice(browserSource.indexOf('async function loadCountryData()'), browserSource.indexOf('// Remove old renderCountry default call'));
+  assert.equal(countryLoader.includes('cn2Render('), false);
+  assert.equal(browserSource.includes('count:\'66 平台\''), false);
+  assert.equal(browserSource.includes('count:\'40 国\''), false);
+  assert.equal(browserSource.includes('var mockResults='), false);
+  assert.equal(browserSource.includes('全球平台增长总结'), false);
+  const catalogSource = fs.readFileSync(path.join(root, 'assets/js/catalog.js'), 'utf8');
+  const countrySource = fs.readFileSync(path.join(root, 'assets/js/products-shops.js'), 'utf8');
+  const policySource = fs.readFileSync(path.join(root, 'assets/js/markets-policies.js'), 'utf8');
+  const reportsSource = fs.readFileSync(path.join(root, 'assets/js/reports-decisions.js'), 'utf8');
+  assert.match(catalogSource, /let platformsData=\[\];/);
+  assert.match(catalogSource, /let pfExtData=\{\};/);
+  assert.match(catalogSource, /const policyData=\[\];/);
+  assert.match(catalogSource, /const rulesData=\[\];/);
+  assert.match(catalogSource, /const contentData=\[\];/);
+  assert.match(countrySource, /let countryFullData=\{\};/);
+  assert.equal(policySource.includes('defaultPoliciesData'), false);
+  assert.equal(policySource.includes('defaultRulesData'), false);
+  assert.equal(policySource.includes('p-fallback-'), false);
+  assert.equal(policySource.includes('r-fallback-'), false);
+  assert.equal(policySource.includes('using built-in fallback'), false);
+  assert.equal(policySource.includes('AI 合规深度解读'), false);
+  assert.equal(reportsSource.includes('DS_DOMAINS'), false);
+  assert.equal(reportsSource.includes('dsRender'), false);
+  const watchlistLoader = reportsSource.slice(reportsSource.indexOf('async function loadWatchlistFromDb()'), reportsSource.indexOf('const alertMessages=[]'));
+  assert.equal(watchlistLoader.includes('Math.random'), false);
+  assert.match(watchlistLoader, /trend:\s*\[\]/);
 });

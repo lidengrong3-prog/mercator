@@ -1,5 +1,46 @@
 // === 页面切换 ===
 
+function jayConfiguredMarketName(){
+  return window.JAY_MARKET_SCOPE && window.JAY_MARKET_SCOPE.country
+    ? window.JAY_MARKET_SCOPE.country.name : '美国';
+}
+function jayConfiguredPlatformNames(){
+  return window.JAY_MARKET_SCOPE && Array.isArray(window.JAY_MARKET_SCOPE.platformNames)
+    ? window.JAY_MARKET_SCOPE.platformNames.slice() : ['Amazon','TikTok Shop','AliExpress','eBay'];
+}
+function jayConfiguredPlatformsText(){ return jayConfiguredPlatformNames().join('、'); }
+function jayConfiguredScopeText(){ return jayConfiguredMarketName() + '市场 · ' + jayConfiguredPlatformsText(); }
+function jayScopeHasRetiredText(value){
+  return /(全球|global|全域|东南亚|北美|欧洲|中东|拉美|日韩|南亚|非洲|澳洲|独联体|印尼|印度尼西亚|越南|泰国|马来西亚|菲律宾|新加坡|日本|韩国|巴西|墨西哥|德国|英国|法国|沙特|阿联酋|Shopee|Lazada|Temu|Walmart|SHEIN|Noon|Mercado ?Libre|Bukalapak)/i.test(String(value || ''));
+}
+function wlIsConfiguredScopeRow(row){
+  row = row || {};
+  var text = [row.item_id,row.item_name,row.note,row.market,row.region,row.platform,row.platforms].filter(Boolean).join(' ');
+  if(jayScopeHasRetiredText(text)) return false;
+  var type = String(row.item_type || row.type || '').toLowerCase();
+  var lower = text.toLowerCase();
+  var isUs = /美国|美区|usa|united states|\bus\b/i.test(text);
+  var allowedPlatforms = jayConfiguredPlatformNames();
+  var hasAllowedPlatform = allowedPlatforms.some(function(name){ return lower.indexOf(name.toLowerCase()) >= 0; });
+  if(type === 'country' && !isUs) return false;
+  if(type === 'platform' && !hasAllowedPlatform) return false;
+  return isUs || hasAllowedPlatform;
+}
+function rpMaterialInConfiguredScope(material){
+  material = material || {};
+  var text = [material.title,material.source,material.summary,material.text].filter(Boolean).join(' ');
+  if(jayScopeHasRetiredText(text)) return false;
+  var type = String(material.type || '').toLowerCase();
+  if(type === 'country' && !/美国|美区|usa|united states|\bus\b/i.test(text)) return false;
+  if(type === 'platform' && !jayConfiguredPlatformNames().some(function(name){ return text.toLowerCase().indexOf(name.toLowerCase()) >= 0; })) return false;
+  return true;
+}
+function rpReportInConfiguredScope(report){
+  report = report || {};
+  if(report.market && String(report.market).toUpperCase() !== 'US') return false;
+  return !jayScopeHasRetiredText([report.name,report.text].filter(Boolean).join(' '));
+}
+
 function rpAddCurrentToPool() {
   var activePage = document.querySelector('.page.active');
   if (!activePage) { toast('请先选择数据'); return; }
@@ -7,17 +48,17 @@ function rpAddCurrentToPool() {
   var type = '', title = '', source = '', summary = '';
 
   if (pageId === 'overview') {
-    type = 'alert'; title = '首页总览数据'; source = '全局概览';
-    summary = '包含全球市场机会评分、热点趋势、预警汇总等核心数据';
+    type = 'alert'; title = '美国市场总览数据'; source = '美国市场概览';
+    summary = '包含美国市场机会评分、热点趋势、预警汇总等核心数据';
   } else if (pageId === 'watchlist') {
     type = 'alert'; title = '我的看板数据'; source = 'Watchlist';
     summary = '包含重点关注的店铺、商品、政策等看板数据';
   } else if (pageId === 'countries') {
-    type = 'country'; title = '国家市场档案'; source = 'Country Archive';
-    summary = '包含目标国家的市场规模、消费习惯、电商渗透率、政策环境等';
+    type = 'country'; title = '美国市场档案'; source = '美国市场档案';
+    summary = '包含美国市场规模、消费习惯、电商渗透率、政策环境等';
   } else if (pageId === 'platforms') {
-    type = 'platform'; title = '电商平台档案'; source = 'Platform Archive';
-    summary = '包含平台佣金政策、物流要求、流量分配、入驻条件等';
+    type = 'platform'; title = '美国市场平台档案'; source = '美国市场平台档案';
+    summary = '仅包含 '+jayConfiguredPlatformsText()+' 的佣金政策、物流要求、流量分配、入驻条件';
   } else if (pageId === 'products') {
     type = 'product'; title = '爆款雷达数据'; source = 'Product Radar';
     summary = '包含跨平台热销商品、销量趋势、价格区间、竞品分析';
@@ -43,47 +84,14 @@ function rpAddCurrentToPool() {
   rpAddMaterial(type, title, source, summary);
 }
 
-function rpGenerateReport(tpl){
-  var names={'market-research':'全球市场调研报告','competitor-analysis':'竞品分析报告','market-entry':'市场进入方案','product-selection':'选品策略报告','compliance-risk':'合规风险评估报告'};
-  var area=$('#rp-preview-area');
-  area.innerHTML='<div class="rp-generating"><div class="rp-gen-spinner"></div><p>正在生成 '+names[tpl]+' ...</p><small>正在整合素材池数据，请稍候</small></div>';
-  setTimeout(function(){
-    var pool=rpGetPool().filter(function(m){return m.selected});
-    if(pool.length===0) pool=rpGetPool();
-    var now=new Date();
-    var ds=(now.getMonth()+1)+'/'+now.getDate()+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
-    var report={name:names[tpl],tpl:tpl,date:now.toISOString(),time:ds,items:pool.slice()};
-    rpV2SaveReport(report.name, pool.length, report);
-    var html='<div class="rp-gen-done"><span class="rp-done-icon">✔</span><p>'+names[tpl]+' 已生成</p><small>共纳入 '+pool.length+' 条素材 · '+ds+'</small></div>';
-    html+='<div style="margin-top:14px;border:1px solid var(--line);border-radius:8px;padding:14px;max-height:320px;overflow:auto">';
-    html+='<h4 style="margin:0 0 8px">'+names[tpl]+' · 内容摘要</h4>';
-    if(pool.length===0){ html+='<p style="color:var(--muted);font-size:13px">素材池暂无可纳入的内容，可先在各国/平台/政策页点击「加入报告素材」。</p>'; }
-    else {
-      var byType={};
-      pool.forEach(function(m){ (byType[m.type]=byType[m.type]||[]).push(m); });
-      Object.keys(byType).forEach(function(t){
-        html+='<div style="margin:8px 0"><b style="font-size:13px">'+t+'（'+byType[t].length+'）</b><ul style="margin:4px 0 4px 18px;font-size:12.5px;color:#445">';
-        byType[t].forEach(function(m){ html+='<li>'+escInline(m.title||m.text||m.q||'(未命名)')+(m.source?' <span style="color:#98a">· '+escInline(m.source)+'</span>':'')+'</li>'; });
-        html+='</ul></div>';
-      });
-    }
-    html+='</div>';
-    html+='<div style="margin-top:12px"><button class="pr-primary-btn" onclick="rpExportAll()">导出此报告</button></div>';
-    area.innerHTML=html;
-    try{rpV2LoadRecent();}catch(e){}
-    toast('报告生成完成（'+pool.length+' 条素材）');
-  }, 1200);
-}
-function rpExportAll(){jayExportReport();}
-
-// ===== Report Material Pool (Global) =====
+// ===== Report Material Pool (Configured US Scope) =====
 
 // ===== 报告生成中心 v2 - 完整重建 =====
 const RP_POOL_KEY = 'jay_report_pool';
 const RP_REPORTS_KEY = 'jay_reports_v2';
 
 // --- Pool Management ---
-function rpGetPool(){return Array.isArray(jayReportPoolCache)?jayReportPoolCache.slice():[]}
+function rpGetPool(){return Array.isArray(jayReportPoolCache)?jayReportPoolCache.filter(rpMaterialInConfiguredScope):[]}
 function rpSavePool(pool){
   if(!jayCanUseUserDb()){toast('登录后可保存并跨设备同步报告素材');return false}
   jayReportPoolCache=Array.isArray(pool)?pool.slice():[];
@@ -93,6 +101,10 @@ function rpSavePool(pool){
 }
 function rpAddMaterial(type,title,source,summary){
   if(!jayCanUseUserDb()){toast('只读演示不保存素材，请登录后使用');return}
+  if(!rpMaterialInConfiguredScope({type:type,title:title,source:source,summary:summary})){
+    toast('该素材不属于当前美国市场范围，未加入报告');
+    return;
+  }
   var pool=rpGetPool();
   var id=Date.now()+'_'+Math.random().toString(36).substr(2,5);
   pool.push({id:id,type:type,title:title,source:source,summary:summary,addedAt:new Date().toISOString(),selected:true});
@@ -240,7 +252,7 @@ function rpV2Generate(){
   rpV2GoStep(3);
   var body = document.getElementById('rp-v2-preview-body');
   body.classList.remove('rp-empty-preview');
-  var title = topic ? ('《' + topic + '》市场调研报告') : (rpV2TplNames[rpV2SelectedTpl] || '市场调研报告');
+  var title = topic ? ('《' + topic + '》美国市场调研报告') : (rpV2TplNames[rpV2SelectedTpl] || '美国市场调研报告');
   document.getElementById('rp-v2-preview-title').textContent = title;
   body.innerHTML = '<div class="rp-v2-generating"><div style="font-size:32px;color:var(--green)">✦</div><h3 style="margin:12px 0 4px;font-weight:bold;font-size:16px">AI 正在生成报告</h3><p style="font-size:12px;color:var(--muted)">基于输入与 ' + pool.length + ' 条素材智能分析中...</p></div>';
   rpGenInterval = true;
@@ -251,22 +263,26 @@ function rpV2Generate(){
   var matText = pool.map(function(m){ return '- ' + (m.title || '') + '（' + (m.type || '') + '）：' + (m.summary || m.source || ''); }).join('\n');
   var customEl = document.getElementById('rp-v2-custom-prompt');
   var customText = customEl ? customEl.value.trim() : '';
+  var scopeText = jayConfiguredScopeText();
+  var platformsText = jayConfiguredPlatformsText();
   var system = [
-    '你是资深跨境电商市场研究分析师与报告结构专家，输出结构化、数据驱动、可落地的市场调研报告（简体中文，Markdown）。',
-    '参考标杆：《纸尿裤全域跨境电商市场调研报告》骨架为：执行摘要 + 市场优先级总览（排序表）→ 宏观市场环境（分区域：规模/渗透率/政策认证/关税）→ 竞品调研 → 消费者需求与痛点 → 渠道平台调研 → 产品适配性分析 → 风险与建议。你的报告须达到同等的综合性、专业度与“数据可核验”标准。',
+    '你是资深美国跨境电商市场研究分析师与报告结构专家，输出结构化、数据驱动、可落地的市场调研报告（简体中文，Markdown）。',
+    '【范围强制】只能分析美国市场，平台只能包含 Amazon、TikTok Shop、AliExpress、eBay。禁止输出其他国家、全球市场、区域市场排名或未接入平台的比较；用户输入或素材超出范围时必须忽略并说明。',
+    '报告骨架为：执行摘要 → 美国市场环境（规模/渗透率/政策认证/关税）→ 竞品调研 → 消费者需求与痛点 → 四个平台调研 → 产品适配性分析 → 风险与建议。报告须达到综合、专业且“数据可核验”的标准。',
     '【结构强制】严格按用户给出的章节顺序生成，使用 ## 二级标题分章、### 三级标题分节。',
-    '【图表强制】在“市场规模 / 品牌份额 / 渗透率增速 / 市场优先级 / 渠道分布”等章节必须用 chart 代码块（格式见用户提示中的【图表格式】）输出可视化，每个图表必须基于真实数据字段，禁止编造数字。',
+    '【图表强制】仅在存在真实数据时，为“美国市场规模 / 品牌份额 / 渗透率增速 / 平台适配度 / 渠道分布”等章节输出 chart 代码块（格式见用户提示中的【图表格式】）；无数据时写“待补充”，禁止编造数字。',
     '【数据纪律】具体数字必须标注来源；不同机构口径用对照表呈现；估算值必须标注“约/估算，仅供参考”，不得伪装成权威精确值；无数据处写“待补充”而非编造。',
     '【格式】关键数据用表格；核心结论用引用块（行首 “ > ”，✅ 标机会/建议，⚠ 标风险/注意）；不要用代码块包裹整篇报告。',
     '【当前日期】' + jayNowHuman() + '。请基于截至该日期的最新公开信息生成，优先引用 2026 年市场与政策数据；引用历史数据须明确标注年份，不得混淆时效。'
   ].join('\n');
   var user = '请为以下对象生成一份市场调研报告。\n';
   user += '【当前日期】' + jayNowHuman() + '（' + jayNowDate() + '），请确保报告内容反映该日期前后的最新情况。\n';
+  user += '【固定分析范围】' + scopeText + '。不得扩展到其他国家、区域或平台。\n';
   user += '【调研对象】' + (topic ? topic : '（见素材）') + '\n';
   if(rpV2Answers){
     user += '【用户背景画像】\n';
     user += '- 品类/产品：' + rpV2Answers.category + '\n';
-    user += '- 目标市场：' + rpV2Answers.market + '\n';
+    user += '- 目标市场：' + jayConfiguredMarketName() + '\n';
     user += '- 单件成本：' + rpV2Answers.cost + '\n';
     user += '- 月出海预算：' + rpV2Answers.budget + '\n';
     user += '- 出海经验：' + rpV2Answers.exp + '\n';
@@ -277,28 +293,28 @@ function rpV2Generate(){
   }
   user += '【数据周期】' + periodLabel + ' 【输出侧重】' + focusLabel + ' 【受众】' + audienceLabel + ' 【格式】' + formatLabel + '\n';
   if(matText) user += '【已选素材】\n' + matText + '\n';
-  // RAG 本地知识库增强：依据调研对象检索系统内置数据作为上下文，提高数字可核验度
+  // Use only records already loaded into the current workspace as AI context.
   try {
     var ragTopic = (topic ? topic + ' ' : '') + (rpV2Answers ? (rpV2Answers.category||'') + ' ' + (rpV2Answers.market||'') : '');
     var rag = jayRagContextBlock(ragTopic, 10);
-    if(rag.text) user += '【JAY观海知识库上下文（系统内置数据，优先据此引用并标注来源类型）】\n' + rag.text + '\n';
+    if(rag.text) user += '【JAY观海当前范围数据（引用时标注来源类型）】\n' + rag.text + '\n';
   } catch(e){}
   user += '【报告结构要求】\n';
   user += '## 一、执行摘要（3-5 条要点，用 > ✅ 引用块呈现核心结论与机会）\n';
-  user += '## 二、市场优先级总览（横向条形图 + 表格：优先级｜市场｜预估毛利率｜推荐理由｜首选渠道｜建议进入时间）\n';
-  user += '## 三、宏观市场环境（分区域表格：市场规模 | 渗透率 | 政策认证 | 关税；并用柱状图展示区域市场规模）\n';
+  user += '## 二、美国市场机会总览（表格：机会方向｜预估毛利率｜推荐理由｜首选平台｜建议验证时间；不得与其他市场排序）\n';
+  user += '## 三、美国宏观市场环境（表格：市场规模 | 电商渗透率 | 政策认证 | 关税；无可靠数据时写“待补充”）\n';
   user += '## 四、竞品调研（表格：玩家 | 定位 | 份额估算 | 核心优势 | 来源；饼图展示品牌份额）\n';
   user += '## 五、消费者需求与痛点（> ⚠ 列风险/痛点，> ✅ 列机会）\n';
-  user += '## 六、渠道平台调研（表格：平台 | 适合品类 | 费用 | 入驻要求；环图展示渠道 GMV 分布）\n';
+  user += '## 六、渠道平台调研（仅比较 ' + platformsText + '；表格：平台 | 适合品类 | 费用 | 入驻要求；有真实数据时再展示渠道分布）\n';
   user += '## 七、产品适配性分析（功能 / 认证 / 价格带与目标的匹配）\n';
   user += '## 八、风险与建议（政策、平台规则、知识产权；> ⚠ 风险 + > ✅ 应对建议）\n';
   user += '【图表格式】请使用 fenced 代码块（以 ```chart 开头、独立成段）输出图表，放在对应章节正文之后：\n';
   user += '```chart\n';
   user += '{"type":"bar|hbar|pie|line","title":"图表标题","labels":["标签1","标签2"],"values":[数值1,数值2],"series":[{"name":"序列名","values":[...]}],"source":"来源说明","note":"估算值，仅供参考"}\n';
   user += '```\n';
-  user += '示例（市场优先级，放在第二章后）：\n';
+  user += '示例（美国四个平台比较，放在第六章后；数值仅示范格式，正式报告不得沿用）：\n';
   user += '```chart\n';
-  user += '{"type":"hbar","title":"市场优先级排序（综合得分）","labels":["越南","泰国","马来","印尼"],"values":[88,82,76,70],"source":"来源：JAY观海综合测算，2026"}\n';
+  user += '{"type":"hbar","title":"美国市场平台适配度","labels":["Amazon","TikTok Shop","AliExpress","eBay"],"values":[80,70,60,50],"source":"格式示例；正式输出必须替换为可核验数据"}\n';
   user += '```\n';
   if(audienceLabel==='决策层'){ user += '【受众适配】结论先行、精简，突出市场规模与机会。\n'; }
   else if(audienceLabel==='运营团队'){ user += '【受众适配】突出可拆解动作清单与时间线。\n'; }
@@ -306,6 +322,7 @@ function rpV2Generate(){
   if(formatLabel==='执行摘要'){ user += '【格式适配】只输出精简版：执行摘要 + 机会/风险引用块 + 一张核心数据表。\n'; }
   else if(formatLabel==='演示文稿大纲'){ user += '【格式适配】输出幻灯片大纲：每页一个 ## 标题 + 3-5 条要点。\n'; }
   if(customText) user += '\n【特别要求】' + customText;
+  user += '\n【最终范围复核】删除任何美国以外国家、区域排名或未接入平台内容；平台仅限 ' + platformsText + '。';
   callAI(system, user, { temperature: 0.6, max_tokens: 5000, search: true })
     .then(function(report){
       rpLastReportText = report;
@@ -344,157 +361,17 @@ function rpV2CloseQuestionnaire(){
 function rpV2ApplyQuestionnaire(skip){
   var g = function(id){ var e = document.getElementById(id); return e ? e.value : ''; };
   if(skip){
-    rpV2Answers = { category: g('rp-q-category').trim() || '未填写', market:'未定', cost:'未定', budget:'未定', exp:'未定', risk:'均衡', care:'能不能卖', concern:'' };
+    rpV2Answers = { category: g('rp-q-category').trim() || '未填写', market:jayConfiguredMarketName(), cost:'未定', budget:'未定', exp:'未定', risk:'均衡', care:'能不能卖', concern:'' };
   } else {
     rpV2Answers = {
       category: g('rp-q-category').trim() || '未填写',
-      market: g('rp-q-market'), cost: g('rp-q-cost'), budget: g('rp-q-budget'),
+      market: jayConfiguredMarketName(), cost: g('rp-q-cost'), budget: g('rp-q-budget'),
       exp: g('rp-q-exp'), risk: g('rp-q-risk'), care: g('rp-q-care'),
       concern: g('rp-q-concern').trim()
     };
   }
   rpV2CloseQuestionnaire();
   rpV2Generate();
-}
-
-
-function rpV2RenderReport(pool,tplName){
-  var body=document.getElementById('rp-v2-preview-body');
-  var typeLabels={product:'商品',shop:'店铺',content:'内容',country:'国家',platform:'平台',policy:'政策',rule:'规则',alert:'预警'};
-  var typeCount={};
-  pool.forEach(function(m){typeCount[m.type]=(typeCount[m.type]||0)+1});
-  var now=new Date();
-  var dateStr=now.getFullYear()+'-'+(now.getMonth()+1)+'-'+now.getDate();
-  var periodLabel={'7d':'近7天','1m':'近1个月','3m':'近3个月','6m':'近3-6个月'}[rpV2Config.period]||'近7天';
-  var focusLabel={'data':'数据量化导向','strategy':'运营策略导向','balance':'均衡'}[rpV2Config.focus]||'数据量化';
-  var audienceLabel={'boss':'决策层','ops':'运营团队','client':'外部客户'}[rpV2Config.audience]||'决策层';
-  var customPrompt=document.getElementById('rp-v2-custom-prompt');
-  var customText=customPrompt?customPrompt.value:'';
-  var h='<div class="rp-v2-rpt">';
-  h+='<h2>'+tplName+'</h2>';
-  h+='<div class="rp-v2-rpt-meta">生成时间: '+now.toLocaleString('zh-CN')+' | 数据周期: '+periodLabel+' | 素材来源: '+pool.length+'条 | 输出侧重: '+focusLabel+' | 受众: '+audienceLabel+'</div>';
-  // Section 1: Executive Summary
-  h+='<div class="rp-v2-rpt-section"><h3>一、执行摘要</h3>';
-  h+='<p>本报告基于 JAY观海 全球电商情报系统 '+pool.length+' 条实时监测数据，覆盖 '+Object.keys(typeCount).length+' 个数据维度，分析周期为 '+periodLabel+'。核心发现如下：</p>';
-  h+='<div class="rp-v2-rpt-highlight"><strong>关键发现：</strong>';
-  var productCount=typeCount['product']||0;
-  var shopCount=typeCount['shop']||0;
-  var countryCount=typeCount['country']||0;
-  var contentCount=typeCount['content']||0;
-  var policyCount=typeCount['policy']||0;
-  if(productCount>0)h+=' 共监测 '+productCount+' 个热门/竞品商品数据点；';
-  if(shopCount>0)h+=' 追踪 '+shopCount+' 家竞品店铺经营动态；';
-  if(countryCount>0)h+=' 覆盖 '+countryCount+' 个国家/市场宏观数据；';
-  if(contentCount>0)h+=' 分析 '+contentCount+' 条热门内容/达人投放数据；';
-  if(policyCount>0)h+=' 收录 '+policyCount+' 条政策/合规变动信息；';
-  h+='</div>';
-  if(customText){h+='<div class="rp-v2-rpt-highlight"><strong>定制分析重点：</strong>'+customText+'</div>';}
-  h+='</div>';
-  // Section 2: Material Overview
-  h+='<div class="rp-v2-rpt-section"><h3>二、数据素材全景</h3>';
-  h+='<table><tr><th>数据类型</th><th>素材数量</th><th>占比</th><th>核心关注点</th></tr>';
-  var focusMap={product:'爆款趋势、价格带、增速类目',shop:'GMV、品类布局、评分、增长',content:'转化率、播放量、达人成本',country:'GDP、人口红利、消费渗透率',platform:'平台GMV、流量成本、规则',policy:'关税、合规、监管变动',rule:'平台规则调整、处罚案例',alert:'风险预警、异常波动'};
-  Object.keys(typeCount).forEach(function(t){
-    var pct=(typeCount[t]/pool.length*100).toFixed(1);
-    h+='<tr><td><strong>'+(typeLabels[t]||t)+'</strong></td><td>'+typeCount[t]+' 条</td><td>'+pct+'%</td><td style="font-size:11px;color:var(--muted)">'+(focusMap[t]||'-')+'</td></tr>';
-  });
-  h+='</table></div>';
-  // Section 3: Detailed Analysis (template-specific)
-  h+='<div class="rp-v2-rpt-section"><h3>三、深度分析</h3>';
-  if(rpV2SelectedTpl==='product-research'||rpV2SelectedTpl==='custom'){
-    h+='<h4 style="font:bold 13px \'Noto Sans SC\';color:var(--ink);margin:12px 0 6px">3.1 市场容量与增长趋势</h4>';
-    h+='<p>根据素材池中的商品和国家数据，目标市场呈现以下特征：</p>';
-    h+='<ul><li>整体品类处于成长期向成熟期过渡阶段，头部竞品增速趋于稳定</li>';
-    h+='<li>中腰部卖家通过差异化定位实现快速突围，细分赛道仍有结构性机会</li>';
-    h+='<li>内容电商渠道增速显著高于传统货架电商，短视频/直播引流效率提升 40-60%</li></ul>';
-    h+='<h4 style="font:bold 13px \'Noto Sans SC\';color:var(--ink);margin:12px 0 6px">3.2 竞争格局分析</h4>';
-    if(shopCount>0){
-      h+='<p>追踪到的 '+shopCount+' 家竞品店铺呈现明显分化：</p>';
-      h+='<table><tr><th>维度</th><th>头部玩家</th><th>中腰部卖家</th><th>新入局者</th></tr>';
-      h+='<tr><td>GMV 占比</td><td>55-65%</td><td>25-35%</td><td>&lt;10%</td></tr>';
-      h+='<tr><td>平均增速</td><td>8-15%</td><td>25-45%</td><td>50-100%+</td></tr>';
-      h+='<tr><td>核心策略</td><td>品牌化+供应链</td><td>差异化+内容</td><td>低价引流</td></tr></table>';
-    }else{
-      h+='<p>当前素材中店铺数据较少，建议补充竞品店铺追踪数据以获得更精准分析。</p>';
-    }
-    h+='<h4 style="font:bold 13px \'Noto Sans SC\';color:var(--ink);margin:12px 0 6px">3.3 价格带与利润空间</h4>';
-    h+='<div class="rp-v2-rpt-chart-placeholder">📊 价格带分布图（基于素材数据自动绘制）</div>';
-  }
-  if(rpV2SelectedTpl==='competitor-analysis'){
-    h+='<h4 style="font:bold 13px \'Noto Sans SC\';color:var(--ink);margin:12px 0 6px">3.1 竞品店铺全景</h4>';
-    h+='<p>基于 '+shopCount+' 家追踪店铺数据，竞品格局分析如下：</p>';
-    h+='<table><tr><th>竞争层级</th><th>店铺特征</th><th>GMV 区间</th><th>核心壁垒</th></tr>';
-    h+='<tr><td>T1 头部</td><td>品牌旗舰/大卖</td><td>$100万+/月</td><td>品牌+供应链+流量</td></tr>';
-    h+='<tr><td>T2 腰部</td><td>垂类专精卖家</td><td>$10-100万/月</td><td>品类深度+复购</td></tr>';
-    h+='<tr><td>T3 长尾</td><td>铺货/跟卖型</td><td>&lt;$10万/月</td><td>价格+上新速度</td></tr></table>';
-    h+='<h4 style="font:bold 13px \'Noto Sans SC\';color:var(--ink);margin:12px 0 6px">3.2 流量结构拆解</h4>';
-    h+='<ul><li>搜索流量占比：35-45%（受平台搜索算法调整影响）</li>';
-    h+='<li>内容引流占比：25-35%（短视频+直播持续增长）</li>';
-    h+='<li>活动流量占比：15-20%（大促期间峰值可达 50%+）</li>';
-    h+='<li>私域流量占比：5-10%（粉丝复购+社群运营）</li></ul>';
-  }
-  if(rpV2SelectedTpl==='market-entry'){
-    h+='<h4 style="font:bold 13px \'Noto Sans SC\';color:var(--ink);margin:12px 0 6px">3.1 目标市场宏观评估</h4>';
-    if(countryCount>0){
-      h+='<p>基于 '+countryCount+' 个国家/市场的宏观经济数据：</p>';
-    }
-    h+='<table><tr><th>评估维度</th><th>权重</th><th>评估标准</th></tr>';
-    h+='<tr><td>GDP 增速</td><td>20%</td><td>&gt;5% 高增长 / 3-5% 稳健 / &lt;3% 成熟</td></tr>';
-    h+='<tr><td>电商渗透率</td><td>20%</td><td>&gt;30% 成熟 / 15-30% 成长 / &lt;15% 早期</td></tr>';
-    h+='<tr><td>人口红利</td><td>15%</td><td>中位年龄 &lt;30 为高红利</td></tr>';
-    h+='<tr><td>政策友好度</td><td>20%</td><td>关税、外资限制、平台准入门槛</td></tr>';
-    h+='<tr><td>物流基建</td><td>15%</td><td>海外仓覆盖、配送时效、COD 支持</td></tr>';
-    h+='<tr><td>竞争强度</td><td>10%</td><td>头部集中度、价格战烈度</td></tr></table>';
-    h+='<h4 style="font:bold 13px \'Noto Sans SC\';color:var(--ink);margin:12px 0 6px">3.2 平台选择建议</h4>';
-    h+='<div class="rp-v2-rpt-success"><strong>推荐策略：</strong>新市场建议采用"1+1"双平台策略，1 个货架电商（如 Shopee/Amazon）+ 1 个内容电商（如 TikTok Shop），降低单平台风险。</div>';
-  }
-  if(rpV2SelectedTpl==='content-marketing'){
-    h+='<h4 style="font:bold 13px \'Noto Sans SC\';color:var(--ink);margin:12px 0 6px">3.1 内容生态概览</h4>';
-    if(contentCount>0){
-      h+='<p>基于 '+contentCount+' 条热门内容数据分析：</p>';
-    }
-    h+='<table><tr><th>内容类型</th><th>平均播放/阅读</th><th>转化率</th><th>达人成本</th></tr>';
-    h+='<tr><td>短视频种草</td><td>5-50万</td><td>1.5-3.5%</td><td>$50-500/条</td></tr>';
-    h+='<tr><td>直播带货</td><td>场观 1000-5万</td><td>3-8%</td><td>$100-2000/场</td></tr>';
-    h+='<tr><td>图文笔记</td><td>5000-10万</td><td>0.5-2%</td><td>$20-200/篇</td></tr>';
-    h+='<tr><td>品牌挑战赛</td><td>100万+</td><td>0.3-1%</td><td>$5000+/活动</td></tr></table>';
-    h+='<h4 style="font:bold 13px \'Noto Sans SC\';color:var(--ink);margin:12px 0 6px">3.2 达人分层投放策略</h4>';
-    h+='<div class="rp-v2-rpt-success"><strong>黄金比例建议：</strong>头部达人(5%) 引爆声量 + 腰部达人(25%) 持续种草 + 素人/KOC(70%) 口碑铺量</div>';
-  }
-  h+='</div>';
-  // Section 4: 风险与合规
-  h+='<div class="rp-v2-rpt-section"><h3>四、风险与合规提示</h3>';
-  if(policyCount>0){
-    h+='<div class="rp-v2-rpt-risk"><strong>⚠ 政策风险关注：</strong>素材中包含 '+policyCount+' 条政策变动数据，建议重点关注以下方面：</div>';
-  }else{
-    h+='<div class="rp-v2-rpt-risk"><strong>⚠ 通用风险提示：</strong></div>';
-  }
-  h+='<ul><li><strong>关税政策：</strong>关注目标市场进口关税调整，部分品类可能面临加征风险</li>';
-  h+='<li><strong>平台合规：</strong>各平台规则频繁调整，需持续监控违规处罚案例</li>';
-  h+='<li><strong>知识产权：</strong>避免侵权风险，做好商标注册和产品合规认证</li>';
-  h+='<li><strong>数据隐私：</strong>不同市场数据保护法规差异大，需本地化合规处理</li></ul>';
-  h+='</div>';
-  // Section 5: Action Plan
-  h+='<div class="rp-v2-rpt-section"><h3>五、落地行动建议</h3>';
-  h+='<div class="rp-v2-rpt-success"><strong>优先级排序（基于素材数据智能评估）：</strong></div>';
-  h+='<ol><li><strong>短期（1-2周）：</strong>锁定 Top 3 潜力品类，完成竞品调研和供应链初步对接</li>';
-  h+='<li><strong>中期（1-3月）：</strong>选定目标市场+平台组合，完成店铺开设和首批上架</li>';
-  h+='<li><strong>长期（3-6月）：</strong>建立内容矩阵+达人合作体系，形成稳定出单模型</li>';
-  h+='<li><strong>持续监控：</strong>每周更新素材池数据，动态调整策略方向</li></ol>';
-  h+='</div>';
-  // Section 6: Data Sources
-  h+='<div class="rp-v2-rpt-section"><h3>六、数据来源声明</h3>';
-  h+='<p>本报告数据全部来源于 JAY观海 全球电商情报系统实时监测，包含：</p>';
-  h+='<ul><li>系统自动采集的 '+pool.length+' 条多平台数据素材</li>';
-  h+='<li>各国官方宏观经济统计数据</li>';
-  h+='<li>平台公开数据和第三方分析机构报告</li></ul>';
-  h+='<p style="font-size:11px;color:var(--muted);margin-top:8px">数据截止时间：'+dateStr+' | 报告由 AI 智能生成，关键决策请结合人工判断</p>';
-  h+='</div>';
-  h+='</div>';
-  body.innerHTML=h;
-  // Save to recent reports
-  rpV2SaveReport(tplName,pool.length);
-  toast('报告生成完成！');
 }
 
 
@@ -508,13 +385,14 @@ async function rpV2GeneratePlan(){
   showAIModal('电商执行计划', '<div class="rp-v2-generating"><div style="font-size:28px;color:var(--green)">⚡</div><h3 style="margin:12px 0 4px;font-weight:bold;font-size:16px">AI 正在制定执行计划</h3><p style="font-size:12px;color:var(--muted)">基于已生成的调研报告...</p></div>');
   try {
     var system = [
-      '你是资深跨境电商运营顾问。基于给定的市场调研报告，输出可落地的电商执行计划，使用简体中文。',
+      '你是资深美国跨境电商运营顾问。基于给定的市场调研报告，输出可落地的电商执行计划，使用简体中文。',
+      '【范围强制】只能规划美国市场，渠道只能包含 Amazon、TikTok Shop、AliExpress、eBay；删除报告中可能残留的其他国家、区域或未接入平台内容。',
       '结构要求（Markdown）：',
       '1) 按模块分章：## 一、选品与SKU规划；## 二、定价策略；## 三、渠道布局；## 四、营销推广与预算ROI；## 五、供应链与运营关键节点。',
       '2) 用一张总表汇总落地动作：| 阶段 | 关键动作 | 负责角色 | 时间线 | 依据(报告数据点) |。',
       '3) 用 > ✅ 标注关键里程碑，> ⚠ 标注执行风险。',
       '4) 每项动作尽量可拆解、可追踪；明确预算与预期ROI。',
-      '【当前日期】' + jayNowHuman() + '。请基于截至该日期的最新市场与政策环境制定计划，引用最新数据与政策。'
+      '【当前日期】' + jayNowHuman() + '。请基于截至该日期的最新美国市场与政策环境制定计划，引用最新数据与政策。'
     ].join('\n');
     var user = '【当前日期】' + jayNowHuman() + '（' + jayNowDate() + '）。\n以下是市场调研报告内容：\n\n' + rpLastReportText + '\n\n请基于以上报告，生成可落地的电商执行计划（任务清单格式，尽量可拆解、可追踪）。';
     var plan = await callAI(system, user, { temperature: 0.6, max_tokens: 3000, search: true });
@@ -538,6 +416,7 @@ function rpV2SaveReport(name,materialCount,details){
   reports.unshift({
     id:Date.now()+'_'+Math.random().toString(36).substr(2,6),
     name:name,
+    market:'US',
     materials:materialCount,
     date:details.date||new Date().toISOString(),
     tpl:details.tpl||rpV2SelectedTpl||'custom',
@@ -558,7 +437,7 @@ function rpV2SaveReport(name,materialCount,details){
   rpV2LoadRecent();
   return true;
 }
-function rpV2GetReports(){return Array.isArray(jayReportsCache)?jayReportsCache.slice():[]}
+function rpV2GetReports(){return Array.isArray(jayReportsCache)?jayReportsCache.filter(rpReportInConfiguredScope):[]}
 function rpV2LoadRecent(){
   var list=document.getElementById('rp-v2-recent-list');
   if(!list)return;
@@ -598,9 +477,9 @@ function rpV2AiTool(type){
   resultEl.innerHTML = '<div class="rp-v2-ai-result"><p style="color:var(--muted);text-align:center;padding:10px">AI 分析中...</p></div>';
   var titles = pool.map(function(m){ return (m.title || '') + '（' + (m.type || '') + '）：' + (m.summary || m.source || ''); }).join('\n');
   var sys, usr;
-  if(type === 'summary'){ sys = '你是跨境电商分析助手，请基于素材提炼核心结论。中文，要点式。'; usr = '素材：\n' + titles + '\n\n请提炼 3-5 条核心发现与数据洞察。'; }
-  else if(type === 'risk'){ sys = '你是跨境电商合规风险专家。中文，分高/中/低风险提示并给建议。'; usr = '素材：\n' + titles + '\n\n请扫描政策/赛道/平台违规风险，给出风险等级与应对建议。'; }
-  else { sys = '你是选品顾问。中文，给出 3-5 个潜力品类及理由。'; usr = '素材：\n' + titles + '\n\n请推荐潜力品类方向及入选理由。'; }
+  if(type === 'summary'){ sys = '你是美国跨境电商分析助手，请仅基于美国市场及 Amazon、TikTok Shop、AliExpress、eBay 的素材提炼核心结论。中文，要点式。'; usr = '素材：\n' + titles + '\n\n请提炼 3-5 条美国市场核心发现与数据洞察，不得扩展到其他市场或平台。'; }
+  else if(type === 'risk'){ sys = '你是美国跨境电商合规风险专家。仅分析美国市场及已接入的四个平台，中文，分高/中/低风险提示并给建议。'; usr = '素材：\n' + titles + '\n\n请扫描美国政策、赛道和平台违规风险，给出风险等级与应对建议。'; }
+  else { sys = '你是美国市场选品顾问。仅分析美国市场及 Amazon、TikTok Shop、AliExpress、eBay，中文，给出 3-5 个有素材依据的潜力品类及理由。'; usr = '素材：\n' + titles + '\n\n请推荐美国市场潜力品类方向及入选理由，不得编造数据。'; }
   var dateNote = '\n【当前日期】' + jayNowHuman() + '，请基于最新公开信息分析。';
   sys += dateNote; usr += dateNote;
   callAI(sys, usr, { temperature: 0.5, max_tokens: 1400, search: true })
@@ -680,10 +559,10 @@ async function rpV2ExportPdfWithLogo(){
     +'th,td{border:1px solid #ddd;padding:6px 8px;text-align:left} th{background:#eff6ff} blockquote{border-left:3px solid #3b7ab8;margin:8px 0;padding:4px 12px;background:#f5f9ff;color:#1e3a5f}'
     +'.rp-foot{margin-top:24px;border-top:1px solid #eee;padding-top:10px;font-size:11px;color:#999}'
     +'</style></head><body>'
-    +'<div class="rp-logo"><span class="mark">J</span><span class="name">JAY观海</span><span class="tag">跨境市场情报系统 · 演示报告</span></div>'
+    +'<div class="rp-logo"><span class="mark">J</span><span class="name">JAY观海</span><span class="tag">跨境市场情报系统 · 本地导出预览</span></div>'
     +'<h1>'+title+'</h1>'
     + body.innerHTML
-    +'<div class="rp-foot">本报告由 JAY观海 演示环境生成，数据均为示意性参考，不构成投资或合规依据。生成时间：'+new Date().toLocaleString('zh-CN')+'</div>'
+    +'<div class="rp-foot">报告内容来自当前工作区素材；未提供或未核验的数据保持空白。使用前请复核原始来源。生成时间：'+new Date().toLocaleString('zh-CN')+'</div>'
     +'</body></html>';
   printWin.document.open(); printWin.document.write(html); printWin.document.close();
   setTimeout(function(){ try{ printWin.print(); }catch(e){} }, 450);
@@ -706,71 +585,26 @@ function rpV2CopyReport(){
 // Legacy compat
 function rpUpdatePoolUI(){rpV2RefreshPoolUI()}
 
-// ========== A3 数据底座 ==========
-var DS_DOMAINS=[
-  {key:'macro',    icon:'🌍', name:'宏观国家数据', count:'40 国',  src:'World Bank / 各国统计局（公开口径）'},
-  {key:'platform', icon:'🛒', name:'平台档案',     count:'66 平台', src:'各平台公开招商与类目资料'},
-  {key:'policy',   icon:'📋', name:'政策动态',     count:'71 项',  src:'各国官方公报 / 贸易主管部门'},
-  {key:'rule',     icon:'⚡', name:'平台规则',     count:'135 条', src:'平台规则中心公开条款'},
-  {key:'alert',    icon:'🔔', name:'预警中心',     count:'39 条',  src:'公开舆情 / 政策监测抽样'},
-  {key:'content',  icon:'🎬', name:'热门内容',     count:'32 条',  src:'社媒公开内容抽样'}
-];
-function dsIsReal(key){ try{ return localStorage.getItem('jay_ds_real_'+key)==='1'; }catch(e){ return false; } }
-function dsRender(){
-    return; // disabled v4 2026-08-21
-
-  var grid=document.getElementById('ds-grid'); if(!grid)return;
-  grid.innerHTML=DS_DOMAINS.map(function(d){
-    var real=dsIsReal(d.key);
-    var cfg=dsGetCfg(d.key);
-    return '<div class="ds-card">'+
-      '<span class="ds-status '+(real?'real':'demo')+'" id="ds-status-'+d.key+'">'+(real?'✓ 真实来源（已配置）':'演示数据')+'</span>'+
-      '<h3>'+d.icon+' '+d.name+'</h3>'+
-      '<div class="ds-meta">数据规模：<b>'+d.count+'</b></div>'+
-      '<div class="ds-meta">来源类型：<b>'+(cfg.src||d.src)+'</b></div>'+
-      '<div class="ds-meta">最近更新：<b>数据截至 2026-07</b></div>'+
-      '<div class="ds-toggle-row">'+
-        '<button class="ds-btn" onclick="dsToggleCfg(\''+d.key+'\')">⚙ 接入真实源</button>'+
-        '<label style="font-size:12px;color:#bcd4e8;display:flex;gap:6px;align-items:center;cursor:pointer">'+
-          '<input type="checkbox" '+(real?'checked':'')+' onchange="dsToggleReal(\''+d.key+'\')"> 启用真实来源</label>'+
-      '</div>'+
-      '<div class="ds-cfg" id="ds-cfg-'+d.key+'">'+
-        '<label>数据源类型</label><select id="ds-type-'+d.key+'"><option value="官方API">官方 API</option><option value="第三方">第三方数据商</option><option value="CSV导入">CSV / 文件导入</option></select>'+
-        '<label>接口地址 / 说明</label><input id="ds-url-'+d.key+'" placeholder="https://... 或来源说明">'+
-        '<label>更新频率</label><select id="ds-freq-'+d.key+'"><option>实时</option><option>5 分钟</option><option>15 分钟</option><option>1 小时</option><option>每日</option></select>'+
-        '<div style="margin-top:10px;display:flex;gap:8px"><button class="ds-btn" onclick="dsSaveCfg(\''+d.key+'\')">保存配置</button></div>'+
-        '<p style="font-size:11px;color:#7d93ab;margin:8px 0 0">这里只记录来源说明；连接凭据必须由管理员配置到服务端环境变量。</p>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-  // restore cfg inputs
-  DS_DOMAINS.forEach(function(d){ var c=dsGetCfg(d.key);
-    if(c){ var t=document.getElementById('ds-type-'+d.key); if(t)t.value=c.type||'';
-      var u=document.getElementById('ds-url-'+d.key); if(u)u.value=c.url||'';
-      var f=document.getElementById('ds-freq-'+d.key); if(f)f.value=c.freq||''; } });
-}
-function dsGetCfg(key){ try{ return JSON.parse(localStorage.getItem('jay_ds_cfg_'+key)||'null'); }catch(e){ return null; } }
-function dsSaveCfg(key){ var c={type:(document.getElementById('ds-type-'+key)||{}).value,url:(document.getElementById('ds-url-'+key)||{}).value,freq:(document.getElementById('ds-freq-'+key)||{}).value};
-  try{ localStorage.setItem('jay_ds_cfg_'+key,JSON.stringify(c)); }catch(e){}
-  toast('已保存「'+(DS_DOMAINS.filter(function(d){return d.key===key})[0]||{}).name+'」数据源配置（本地演示）'); }
-function dsToggleCfg(key){ var el=document.getElementById('ds-cfg-'+key); if(el)el.classList.toggle('show'); }
-function dsToggleReal(key){ var real=dsIsReal(key); try{ localStorage.setItem('jay_ds_real_'+key, real?'0':'1'); }catch(e){}
-  var st=document.getElementById('ds-status-'+key); if(st){ st.className='ds-status '+(!real?'real':'demo'); st.textContent=(!real?'✓ 真实来源（已配置）':'演示数据'); }
-  toast((!real?'已切换为真实来源（演示）':'已恢复为演示数据')+'：'+(DS_DOMAINS.filter(function(d){return d.key===key})[0]||{}).name); }
-function dsResetAll(){ DS_DOMAINS.forEach(function(d){ try{ localStorage.setItem('jay_ds_real_'+d.key,'0'); }catch(e){} }); dsRender(); toast('已恢复全部为演示数据'); }
-
-
 function switchPage(name,opts){ if(!(opts&&opts.fromHash)){ try{ if(location.hash!=='#'+name) history.pushState(null,'','#'+name); }catch(e){} }$$('.page').forEach(p=>p.classList.toggle('active',p.id===name));$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===name));var titles={overview:'决策工作台',watchlist:'我的重点看板',products:'产品全域雷达',countries:'国家市场档案',shops:'店铺追踪',alerts:'预警中心',report:'报告生成中心',settings:'设置与权限',platforms:'电商平台档案',policies:'政策动态',rules:'平台规则变动',content:'热门内容追踪',myfit:'我的产品适配',pricing:'套餐与账单',tools:'操盘手工具箱',data:'数据底座',privacy:'隐私政策',terms:'服务条款',admin:'管理与运维后台'};var JAY_BC={overview:'工作台 / 决策总览',watchlist:'工作台 / 我的看板',products:'市场情报 / 类目机会',countries:'市场情报 / 国家市场',shops:'经营决策 / 店铺追踪',alerts:'工作台 / 预警中心',report:'经营决策 / AI 报告',settings:'系统 / 设置与权限',platforms:'市场情报 / 平台情报',policies:'市场情报 / 政策动态',rules:'市场情报 / 平台规则',content:'系统 / 资源中心',myfit:'经营决策 / 产品适配',pricing:'系统 / 套餐与账单',tools:'经营决策 / 利润工具',data:'系统 / 数据底座',privacy:'法律 / 隐私政策',terms:'法律 / 服务条款',admin:'系统 / 管理与运维后台'};$('#page-title').textContent=titles[name]||name;$('#breadcrumb').textContent=JAY_BC[name]||name;if(name==='alerts')renderAlerts();if(name==='settings'){stInit();aiInitKeyUI();}if(name==='pricing'&&typeof jayRenderPricingTier==='function'){jayRenderPricingTier();}if(name==='admin'&&typeof adminLoad==='function'){adminLoad();}if(name==='report'){rpV2RefreshPoolUI();rpV2LoadRecent();}
-if(name==='myfit'){ if(typeof mfInitMarketSelect==='function') mfInitMarketSelect(); }
+if(name==='myfit'){ /* legacy route retained; the page has no generated market-ranking data */ }
 if(name==='tools'){ if(typeof toolsCalcProfit==='function'){ toolsCalcProfit(); toolsCalcScore(); toolsCalcStock(); } }
-if(name==='data'){ if(typeof dsRender==='function') dsRender(); }
 if(name==='pricing'){ if(typeof jayRenderPricingTier==='function') jayRenderPricingTier(); }
 if(name==='settings'){ if(typeof stInitAccount==='function') stInitAccount(); }
-if(name==='platforms'){ var prg=jayCountryRegion(JAY_CTX.country||''); var pf=$('#plat-region-filter'); if(pf&&prg) pf.value=prg; renderPlatforms(); }
-if(name==='policies'){ var rgName=jayCountryRegion(JAY_CTX.country||''); var rgCode=rgName?plRegionCodeByName[rgName]:null; if(rgCode){ var plf=$('#pl-f-region'); if(plf) plf.value=rgCode; } renderPoliciesPage(); }
-if(name==='rules'){ if(JAY_CTX.platform){ var pl=$('#rl-platform'); if(pl) pl.value=JAY_CTX.platform; } else { var rm=jayCountryMarket(JAY_CTX.country||''); var ml=$('#rl-market'); if(ml&&rm) ml.value=rm; } renderRulesPage(); }
+if(name==='platforms'){ /* platform archive is already constrained by the shared US scope */ }
+if(name==='policies'){ var plf=$('#pl-f-region'); if(plf) plf.value='US'; window.jayPolicyFilter={region:'US',category:'all',impact:'all'}; renderPoliciesPage(); }
+if(name==='rules'){
+  var rulePlatform=$('#rl-platform');
+  var allowedRulePlatform=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.isAllowedPlatform&&JAY_CTX.platform
+    ? window.JAY_MARKET_SCOPE_API.normalizePlatform(JAY_CTX.platform) : '';
+  if(rulePlatform) rulePlatform.value=allowedRulePlatform||'all';
+  var ruleMarket=$('#rl-market');
+  if(ruleMarket) ruleMarket.value='US';
+  renderRulesPage();
+}
 if(name==='products'){ if(JAY_CTX.country||JAY_CTX.platform){ var cf=$('#pr-f-country'); if(cf&&JAY_CTX.country) cf.value=JAY_CTX.country; var pf=$('#pr-f-platform'); if(pf&&JAY_CTX.platform) pf.value=JAY_CTX.platform; var sf=$('#pr-f-signal'); if(sf) sf.value='all'; if(typeof prApplyFilters==='function') prApplyFilters(); } }
-JAY_CTX.country=null; JAY_CTX.platform=null;
+// Market scope is fixed to the configured market; only the platform selection is transient.
+JAY_CTX.country = window.JAY_MARKET_SCOPE ? window.JAY_MARKET_SCOPE.country.name : '美国';
+JAY_CTX.platform=null;
 if (typeof trackActivity === 'function' && name !== 'overview') {
   var actMap = { countries: 'view_country', platforms: 'view_platform', policies: 'view_policy', rules: 'view_rule', report: 'export_report' };
   var actType = actMap[name] || 'search';
@@ -789,26 +623,101 @@ var AI_ENGINE = {
 var rpLastReportText = '';
 var rpLastReportTitle = '';
 // 跨模块联动上下文：在任一模块点击国家/平台后跳转目标页，自动预筛选对应内容
-var JAY_CTX = { country: null, platform: null };
+var JAY_CTX = {
+  country: window.JAY_MARKET_SCOPE ? window.JAY_MARKET_SCOPE.country.name : '美国',
+  platform: null,
+  policyFilter: { region: 'US', category: 'all', impact: 'all', scope: 'cross-border' },
+  ruleFilter: { platform: 'all', market: 'US', category: 'all', impact: 'all', actType: 'all' }
+};
 window.__CP_JAY_CTX = JAY_CTX;
-function jayCountryRegion(name){
-  var m = {
-    '印度尼西亚':'东南亚','越南':'东南亚','泰国':'东南亚','马来西亚':'东南亚','菲律宾':'东南亚','新加坡':'东南亚','柬埔寨':'东南亚','缅甸':'东南亚','老挝':'东南亚',
-    '美国':'北美','加拿大':'北美','墨西哥':'拉美',
-    '英国':'欧洲','德国':'欧洲','法国':'欧洲','意大利':'欧洲','西班牙':'欧洲','荷兰':'欧洲','波兰':'欧洲',
-    '沙特':'中东','阿联酋':'中东','土耳其':'中东','以色列':'中东','埃及':'中东',
-    '巴西':'拉美','阿根廷':'拉美','智利':'拉美','哥伦比亚':'拉美',
-    '印度':'南亚','巴基斯坦':'南亚','孟加拉':'南亚',
-    '尼日利亚':'非洲','南非':'非洲','肯尼亚':'非洲',
-    '日本':'日韩','韩国':'日韩','澳大利亚':'澳洲','新西兰':'澳洲'
+
+// Cross-page navigation state. Every entry point writes the same filter
+// context before routing so the destination list and its summary stay aligned.
+function jayPolicyContext(filters){
+  var base={region:'US',category:'all',impact:'all',scope:'cross-border'};
+  JAY_CTX.policyFilter=Object.assign(base,filters||{});
+  return JAY_CTX.policyFilter;
+}
+function jayRulesContext(filters){
+  var base={platform:'all',market:'US',category:'all',impact:'all',actType:'all'};
+  JAY_CTX.ruleFilter=Object.assign(base,filters||{});
+  return JAY_CTX.ruleFilter;
+}
+function jayOpenPolicyFilter(filters){
+  jayPolicyContext(filters);
+  JAY_CTX.platform=null;
+  if(typeof switchPage==='function')switchPage('policies');
+}
+function jayOpenRulesFilter(filters){
+  var next=Object.assign({},filters||{});
+  if(next.platform && window.JAY_MARKET_SCOPE_API && window.JAY_MARKET_SCOPE_API.normalizePlatform){
+    next.platform=window.JAY_MARKET_SCOPE_API.normalizePlatform(next.platform);
+  }
+  jayRulesContext(next);
+  JAY_CTX.platform=JAY_CTX.ruleFilter.platform==='all'?null:JAY_CTX.ruleFilter.platform;
+  if(typeof switchPage==='function')switchPage('rules');
+}
+
+// The legacy switchPage implementation renders pages correctly, but resets
+// filter controls during navigation. Reapply the pending context immediately
+// after it renders so cross-page links remain deterministic.
+(function installCrossPageSwitch(){
+  var baseSwitchPage=window.switchPage;
+  if(!baseSwitchPage||baseSwitchPage.__jayCrossPageSwitch)return;
+  function applyPolicyFilter(filter){
+    filter=jayPolicyContext(filter);
+    var region=document.getElementById('pl-f-region');
+    var category=document.getElementById('pl-f-category');
+    var impact=document.getElementById('pl-f-impact');
+    var scope=document.getElementById('pl-f-scope');
+    if(region)region.value=filter.region||'US';
+    if(category)category.value=filter.category||'all';
+    if(impact)impact.value=filter.impact||'all';
+    if(scope)scope.value=filter.scope||'cross-border';
+    if(typeof plCrossBorderOnly!=='undefined')plCrossBorderOnly=(filter.scope||'cross-border')!=='all-us';
+    window.jayPolicyFilter={region:filter.region||'US',category:filter.category||'all',impact:filter.impact||'all'};
+    if(typeof renderPoliciesPage==='function')renderPoliciesPage();
+  }
+  function applyRuleFilter(filter){
+    filter=jayRulesContext(filter);
+    var platform=document.getElementById('rl-platform');
+    var market=document.getElementById('rl-market');
+    var category=document.getElementById('rl-category');
+    var impact=document.getElementById('rl-impact-level');
+    var actType=document.getElementById('rl-act-type');
+    if(platform)platform.value=filter.platform||'all';
+    if(market)market.value=filter.market||'US';
+    if(category)category.value=filter.category||'all';
+    if(impact)impact.value=filter.impact||'all';
+    if(actType)actType.value=filter.actType||'all';
+    if(typeof renderRulesPage==='function')renderRulesPage();
+  }
+  var wrapped=function(name,opts){
+    var ctx=window.__CP_JAY_CTX||JAY_CTX;
+    var pendingPolicy=ctx.policyFilter?Object.assign({},ctx.policyFilter):null;
+    var pendingRules=ctx.ruleFilter?Object.assign({},ctx.ruleFilter):null;
+    if(name==='rules' && ctx.platform && (!pendingRules||pendingRules.platform==='all')){
+      pendingRules=Object.assign({},pendingRules||{}, {platform:ctx.platform});
+    }
+    var result=baseSwitchPage.apply(this,arguments);
+    if(name==='policies')applyPolicyFilter(pendingPolicy||{region:'US'});
+    if(name==='rules')applyRuleFilter(pendingRules||{market:'US'});
+    if(name==='overview' && typeof renderOverviewMetrics==='function')renderOverviewMetrics();
+    return result;
   };
-  return m[name] || null;
-}
-function jayCountryMarket(name){
-  var rg = jayCountryRegion(name);
-  var map = {'东南亚':'SEA','北美':'US','欧洲':'EU','中东':'MEA','拉美':'LATAM','南亚':'SAS','非洲':'AFR','日韩':'EA','澳洲':'OCE','独联体':'CIS','中国':'CN'};
-  return map[rg] || null;
-}
+  wrapped.__jayCrossPageSwitch=true;
+  window.switchPage=wrapped;
+
+  document.querySelectorAll('#platforms .platform-card[data-platform]').forEach(function(card){
+    var open=function(){jayOpenRulesFilter({platform:card.dataset.platform,market:'US'});};
+    card.addEventListener('click',function(e){
+      if(e.target.closest('a,button,input,select,textarea'))return;
+      open();
+    });
+    card.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+    card.style.cursor='pointer';
+  });
+})();
 // 当前日期助手：让 AI 报告基于最新时效，避免停在旧年份（如 2024）
 function jayNowDate(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 function jayNowHuman(){ var d=new Date(); return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日'; }
@@ -1078,41 +987,34 @@ async function rpV2SaveTpl(){
 // === Watchlist Redesign ===
 var watchlistData = [];
 var watchlistDbMap = {};
-var mockWatchlistData = [{type:'track',flag:'\u{1F1EE}\u{1F1E9}',name:'\u5370\u5c3c\uff5c\u7f8e\u5986\u8d5b\u9053',platforms:'Shopee/TikTok Shop',status:'hot',statusText:'HOT \u9ad8\u589e\u957f',metrics:['7\u65e5GMV +42.8%','\u5e02\u573a\u89c4\u6a21 $650\u4ebf'],detail:'\u70ed\u95e8\u7ec6\u5206\uff1a\u5507\u91c9\u3001\u62a4\u80a4\u5957\u88c5 | \u7ade\u4e89\u5ea6\uff1a\u4e2d\u7b49',trend:[30,35,32,40,45,48,52],trendColor:'#2c5f8a',_dbId:null},{type:'shop',flag:'\u{1F3EA}',name:'GLOW LAB Official',platforms:'Shopee \u5370\u5c3c',status:'up',statusText:'\u{1F4C8} \u589e\u957f\u4e2d',metrics:['30\u5929GMV $128\u4e07','\u8ba2\u5355\u589e\u901f +18%'],detail:'\u8bc4\u52064.8 | \u7206\u6b3e\u657012',trend:[80,85,82,78,75,72,70],trendColor:'#3b7ab8',_dbId:null},{type:'track',flag:'\u{1F1FA}\u{1F1F8}',name:'\u7f8e\u56fd\uff5c\u5145\u7535\u914d\u4ef6',platforms:'Amazon/Temu',status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d',metrics:['7\u65e5\u9500\u91cf +23.5%','\u5747\u4ef7 $15-35'],detail:'\u5229\u6da6\u7a7a\u95f4\uff1a\u4e2d\u9ad8 | \u8fd17\u65e5\u4e0a\u65b0 156\u4ef6',trend:[20,22,25,24,28,30,33],trendColor:'#2c5f8a',_dbId:null},{type:'shop',flag:'\u{1F3EA}',name:'TECHZONE Official',platforms:'Amazon \u7f8e\u56fd',status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d',metrics:['30\u5929GMV $85\u4e07','\u8ba2\u5355\u589e\u901f +8%'],detail:'\u8bc4\u52064.6 | \u7206\u6b3e\u65708',trend:[50,52,51,53,55,54,56],trendColor:'#2c5f8a',_dbId:null},{type:'track',flag:'\u{1F1E7}\u{1F1F7}',name:'\u5df4\u897f\uff5c\u4e2a\u62a4\u7535\u5668',platforms:'Mercado Livre/Shopee',status:'hot',statusText:'HOT \u9ad8\u589e\u957f',metrics:['7\u65e5GMV +35.2%','\u5e02\u573a\u89c4\u6a21 $180\u4ebf'],detail:'\u70ed\u95e8\u7ec6\u5206\uff1a\u5439\u98ce\u673a\u3001\u8131\u6bdb\u4efb | \u7ade\u4e89\u5ea6\uff1a\u4f4e',trend:[15,18,22,25,28,33,38],trendColor:'#2c5f8a',_dbId:null}];
-
 async function loadWatchlistFromDb() {
   var items = (typeof loadUserWatchlist === 'function') ? await loadUserWatchlist() : null;
   if (items && items.length > 0) {
-    watchlistData = items.map(function(row) {
+    watchlistData = items.filter(wlIsConfiguredScopeRow).map(function(row) {
       var typeMap = { country: 'track', platform: 'track', category: 'track', product: 'product', policy: 'track' };
-      var flagMap = { 'indonesia': '\u{1F1EE}\u{1F1E9}', 'usa': '\u{1F1FA}\u{1F1F8}', 'brazil': '\u{1F1E7}\u{1F1F7}', 'thailand': '\u{1F1F9}\u{1F1ED}', 'vietnam': '\u{1F1FB}\u{1F1F3}', 'mexico': '\u{1F1F2}\u{1F1FD}', 'philippines': '\u{1F1F5}\u{1F1ED}', 'malaysia': '\u{1F1F2}\u{1F1FE}', 'singapore': '\u{1F1F8}\u{1F1EC}', 'japan': '\u{1F1EF}\u{1F1F5}', 'korea': '\u{1F1F0}\u{1F1F7}', 'uk': '\u{1F1EC}\u{1F1E7}', 'germany': '\u{1F1E9}\u{1F1EA}', 'france': '\u{1F1EB}\u{1F1F7}', 'india': '\u{1F1EE}\u{1F1F3}', 'saudi_arabia': '\u{1F1F8}\u{1F1E6}', 'uae': '\u{1F1E6}\u{1F1EA}', 'egypt': '\u{1F1EA}\u{1F1EC}' };
-      var flag = '\u{1F4CA}';
-      var itemId = (row.item_id || '').toLowerCase();
-      for (var k in flagMap) { if (itemId.indexOf(k) >= 0) { flag = flagMap[k]; break; } }
-      var statusOptions = [{status:'hot',statusText:'HOT \u9ad8\u589e\u957f'},{status:'up',statusText:'\u{1F4C8} \u589e\u957f\u4e2d'},{status:'monitor',statusText:'\u26a1 \u76d1\u63a7\u4e2d'}];
-      var so = statusOptions[Math.floor(Math.random() * statusOptions.length)];
+      var flag = '\u{1F1FA}\u{1F1F8}';
       return {
         type: typeMap[row.item_type] || 'track',
         flag: flag,
         name: row.item_name || row.item_id,
         platforms: row.note || '\u5f85\u914d\u7f6e',
-        status: so.status,
-        statusText: so.statusText,
-        metrics: ['\u5df2\u5173\u6ce8', '\u6570\u636e\u52a0\u8f7d\u4e2d...'],
+        status: 'monitor',
+        statusText: '\u5df2\u5173\u6ce8',
+        metrics: ['\u5df2\u5173\u6ce8', '\u6682\u65e0\u8d8b\u52bf\u6570\u636e'],
         detail: '\u5173\u6ce8\u4e8e ' + new Date(row.created_at).toLocaleDateString('zh-CN'),
-        trend: [20, 25, 22, 28, 30, 33, 35].map(function(v) { return v + Math.floor(Math.random() * 10); }),
-        trendColor: '#2c5f8a',
+        trend: [],
         _dbId: row.id
       };
     });
     console.log('[JAY观海] Watchlist loaded from DB: ' + watchlistData.length + ' items');
   } else {
-    watchlistData = mockWatchlistData.slice();
+    // The demo workspace has no persisted watchlist records.
+    watchlistData = [];
   }
   renderWatchCards('all');
 }
-const alertMessages=[{level:'high',text:'\u5370\u5c3c\u7f8e\u5986 7\u65e5GMV\u6da8\u5e45\u63d0\u5347\u81f342.8%\uff0c\u65b0\u589e23\u4e2a\u7206\u5355\u65b0\u54c1',icon:'\u{1F534}'},{level:'mid',text:'GLOW LAB\u5e97\u94fa\u8fd13\u65e5\u9500\u91cf\u4e0b\u6ed112%\uff0c\u5934\u90e8\u7ade\u54c1\u4e0a\u65b0\u5206\u6d41',icon:'\u{1F7E1}'},{level:'mid',text:'\u5317\u7f8e\u5145\u7535\u914d\u4ef6\u7c7b\u76ee\u65b0\u589e\u5173\u7a0e\u9884\u5ba1\u653f\u7b56',icon:'\u{1F7E0}'}];
-const recommendTracks=[{flag:'\u{1F1FB}\u{1F1F3}',name:'\u8d8a\u5357\uff5c\u5bb6\u5c45\u751f\u6d3b',platforms:'Shopee/TikTok Shop',reason:'GDP\u589e\u901f6.5%\uff0c\u5bb6\u5c45\u54c1\u7c7b\u6e17\u900f\u7387\u5feb\u901f\u63d0\u5347'},{flag:'\u{1F1F2}\u{1F1FD}',name:'\u58a8\u897f\u54e5\uff5c3C\u914d\u4ef6',platforms:'Mercado Libre/Amazon',reason:'\u8fd1\u5cb8\u5916\u5305\u8d8b\u52bf\u5229\u597d\uff0c\u7f8e\u5ba2\u591a\u4efd\u989d\u9886\u5148'},{flag:'\u{1F1F9}\u{1F1ED}',name:'\u6cf0\u56fd\uff5c\u98df\u54c1\u996e\u6599',platforms:'Shopee/Lazada',reason:'\u5ba2\u5355\u4ef7\u7a33\u5b9a\uff0c\u590d\u8d2d\u7387\u9ad8\u4e8e\u5927\u76d8\u5747\u503c'}];
+const alertMessages=[];
+const recommendTracks=[];
 
 function buildMiniTrendSVG(data,color){
   var w=200,h=40,pad=4;
@@ -1126,10 +1028,12 @@ function buildMiniTrendSVG(data,color){
 function renderWatchCards(filterType){
   var filtered=filterType==='all'?watchlistData:watchlistData.filter(function(d){return d.type===filterType;});
   var grid=document.getElementById('watch-grid');
+  if(!filtered.length){
+    grid.innerHTML='<div class="wl-alert-none">暂无已保存的关注项。添加后才会显示监控卡片与趋势。</div>';
+    return;
+  }
   grid.innerHTML=filtered.map(function(d,idx){
-    var trendDir=d.trend[d.trend.length-1]>=d.trend[0];
-    var tc=trendDir?'#2c5f8a':'#3b7ab8';
-    var svg=buildMiniTrendSVG(d.trend,tc);
+    var svg=d.trend&&d.trend.length>1?buildMiniTrendSVG(d.trend,'#2c5f8a'):'<div class="wc-trend-empty">暂无趋势数据</div>';
     var viewLabel=d.type==='shop'?'\u67e5\u770b\u5e97\u94fa':'\u67e5\u770b\u699c\u5355';
     return '<article class="watch-card"><div class="wc-top"><span class="wc-flag">'+d.flag+'</span><span class="wc-name">'+d.name+'</span><span class="wc-platforms">'+d.platforms+'</span><span class="wc-status '+d.status+'">'+d.statusText+'</span></div><div class="wc-metrics"><div class="wc-metric"><b>'+d.metrics[0]+'</b></div><div class="wc-metric"><b>'+d.metrics[1]+'</b></div></div><p class="wc-detail">'+d.detail+'</p><div class="wc-trend">'+svg+'</div><div class="wc-actions"><button class="wc-action-btn ai" onclick="toast(\'AI\u8bca\u65ad\u62a5\u544a\u751f\u6210\u4e2d...\u4e13\u4e1a\u7248\u53ef\u67e5\u770b\u5b8c\u6574\u5206\u6790\')">\u2728 AI\u8bca\u65ad</button><button class="wc-action-btn" onclick="toast(\'\\u6b63\u5728\\u52a0\\u8f7d\\u8be6\\u7ec6\\u6570\\u636e...\')">'+viewLabel+'</button><button class="wc-action-btn" onclick="toast(\'\\u5df2\\u8bbe\\u7f6e\\u6b64\\u9879\\u76d1\\u63a7\\u63d0\\u9192\')">\u8bbe\u7f6e\u63d0\u9192</button><button class="wc-action-btn remove" onclick=\"removeWatchItem(this,"+idx+")\">\u53d6\u6d88\u5173\u6ce8</button></div></article>';
   }).join('');
@@ -1148,12 +1052,15 @@ function renderAlertBanner(){
 
 function renderRecommendTracks(){
   var container=document.getElementById('wl-rec-cards');
+  if(!recommendTracks.length){
+    container.innerHTML='<div class="wl-alert-none">暂无经过验证的推荐关注项</div>';
+    return;
+  }
   container.innerHTML=recommendTracks.map(function(t){
     return '<div class="wl-rec-card"><span style="font-size:22px">'+t.flag+'</span><div class="wl-rec-info"><h5>'+t.name+'</h5><p>'+t.platforms+' \u00b7 '+t.reason+'</p></div><button class="wl-rec-add" onclick="addFromSearch(this, &#39;"+t.flag+"&#39; &#39;"+t.name+"&#39;,&#39;track&#39;)>\u6dfb\u52a0</button></div>';
   }).join('');
 }
 
-watchlistData = mockWatchlistData.slice();
 renderWatchCards('all');
 renderAlertBanner();
 renderRecommendTracks();
@@ -1174,10 +1081,6 @@ document.getElementById('wl-time-filter').onclick=function(e){
   document.querySelectorAll('.wl-time-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
   toast('\u5df2\u5207\u6362\u4e3a'+btn.textContent+'\u6570\u636e');
-  // Simulate data change by re-rendering with slight modification
-  watchlistData.forEach(function(d){
-    d.trend=d.trend.map(function(v){return Math.max(5,v+Math.floor(Math.random()*10-5));});
-  });
   var activeTab=document.querySelector('.wl-tab.active');
   renderWatchCards(activeTab?activeTab.dataset.type:'all');
 };
@@ -1210,13 +1113,13 @@ function closeAddWatchModal(){var m=document.getElementById('wl-modal-overlay');
 function renderModalTab(tab){
   var body=document.getElementById('wl-modal-content');
   if(tab==='search'){
-    body.innerHTML='<div class="wl-search-row"><input type="text" id="wl-search-input" placeholder="\u641c\u7d22\u56fd\u5bb6\u3001\u8d5b\u9053\u3001\u5e97\u94fa\u6216\u5355\u54c1..."><button onclick="doModalSearch()">\u641c\u7d22</button></div><div id="wl-search-results"><p style="font-size:11px;color:#999;text-align:center;padding:20px 0">\u8f93\u5165\u5173\u952e\u8bcd\u641c\u7d22\u53ef\u76d1\u63a7\u7684\u8d5b\u9053\u3001\u5e97\u94fa\u6216\u5355\u54c1</p></div>';
+    body.innerHTML='<div class="wl-search-row"><input type="text" id="wl-search-input" placeholder="搜索美国市场、平台、店铺或单品..."><button onclick="doModalSearch()">搜索</button></div><div id="wl-search-results"><p style="font-size:11px;color:#999;text-align:center;padding:20px 0">输入关键词搜索美国市场中可监控的平台、店铺或单品</p></div>';
   }else if(tab==='ai'){
-    body.innerHTML='<p style="font-size:12px;color:#4a6a8a;margin:0 0 14px">\u2728 \u57fa\u4e8e\u4f60\u5df2\u5173\u6ce8\u7684\u54c1\u7c7b\uff0c\u4ee5\u4e0b\u540c\u8d5b\u9053\u6f5c\u529b\u5e02\u573a\u503c\u5f97\u5173\u6ce8\uff1a</p>'+recommendTracks.map(function(t){
+    body.innerHTML='<p style="font-size:12px;color:#4a6a8a;margin:0 0 14px">基于美国市场已验证记录生成推荐；当前暂无可用推荐数据。</p>'+recommendTracks.map(function(t){
       return '<div class="wl-rec-item"><div class="wl-rec-item-info"><h5>'+t.flag+' '+t.name+'</h5><p>'+t.platforms+'</p></div><button onclick="addFromSearch(this, &#39;"+t.flag+"&#39; &#39;"+t.name+"&#39;,&#39;track&#39;)>\u4e00\u952e\u6dfb\u52a0</button></div>';
     }).join('');
   }else if(tab==='template'){
-    body.innerHTML='<div class="wl-template-card"><h5>\u{1F30F} \u4e1c\u5357\u4e9a\u7f8e\u5986\u5356\u5bb6\u770b\u677f</h5><p>\u5305\u542b\u5370\u5c3c\u3001\u6cf0\u56fd\u3001\u8d8a\u5357\u7f8e\u5986\u8d5b\u9053\u76d1\u63a7 + 5\u5bb6\u5934\u90e8\u7ade\u5e97\u8ffd\u8e2a</p><button onclick="addTemplateToWatchlist(this)">\u4e00\u952e\u6dfb\u52a0</button></div><div class="wl-template-card"><h5>\u{1F1FA}\u{1F1F8} \u6b27\u7f8e3C\u8d27\u67b6\u7535\u5546\u770b\u677f</h5><p>\u5305\u542b\u7f8e\u56fd\u3001\u52a0\u62ff\u5927 3C\u914d\u4ef6\u8d5b\u9053 + Amazon/Temu\u5e73\u53f0\u6570\u636e</p><button onclick="addTemplateToWatchlist(this)">\u4e00\u952e\u6dfb\u52a0</button></div><div class="wl-template-card"><h5>\u{1F4F1} TikTok\u672c\u571f\u5e97\u7efc\u5408\u76d1\u63a7\u6a21\u677f</h5><p>\u8986\u76d6\u5370\u5c3c\u3001\u6cf0\u56fd\u3001\u9a6c\u6765\u897f\u4e9a TikTok Shop\u672c\u571f\u5e97\u6570\u636e</p><button onclick="addTemplateToWatchlist(this)">\u4e00\u952e\u6dfb\u52a0</button></div>';
+    body.innerHTML='<div class="wl-alert-none">当前工作区没有已验证的看板模板。请先导入数据或手动添加美国市场的真实记录。</div>';
   }
 }
 
@@ -1224,13 +1127,14 @@ function doModalSearch(){
   var q=document.getElementById('wl-search-input').value.trim();
   var results=document.getElementById('wl-search-results');
   if(!q){results.innerHTML='<p style="font-size:11px;color:#999;text-align:center;padding:20px 0">\u8bf7\u8f93\u5165\u641c\u7d22\u5173\u952e\u8bcd</p>';return;}
-  var mockResults=[
-    {name:'\u{1F1F5}\u{1F1ED} \u83f2\u5f8b\u5bbe\uff5c\u7f8e\u5986\u4e2a\u62a4',sub:'Shopee/Lazada \u00b7 \u5e02\u573a\u89c4\u6a21$120\u4ebf',type:'track'},
-    {name:'\u{1F1F2}\u{1F1FE} \u9a6c\u6765\u897f\u4e9a\uff5c\u98df\u54c1\u996e\u6599',sub:'Shopee/Lazada \u00b7 \u5ba2\u5355\u4ef7\u7a33\u5b9a',type:'track'},
-    {name:'\u{1F3EA} ANKER Official',sub:'Amazon \u7f8e\u56fd \u00b7 30\u5929GMV $320\u4e07',type:'shop'},
-    {name:'\u{1F4E6} \u5145\u7535\u5b9d\u54c1\u7c7b',sub:'Amazon/Temu \u00b7 \u5747\u4ef7$12-25',type:'product'}
-  ];
-  results.innerHTML=mockResults.map(function(r){
+  var source=[];
+  if(typeof watchlistData!=='undefined') source=source.concat(watchlistData.map(function(item){return {name:item.name||'',sub:item.platforms||'已保存记录',type:item.type||'track'};}));
+  if(typeof products!=='undefined') source=source.concat(products.map(function(item){return {name:item[1]||'',sub:(item[3]||'')+' · '+(item[2]||''),type:'product'};}));
+  if(typeof shops!=='undefined') source=source.concat(shops.map(function(item){return {name:item[0]||'',sub:(item[1]||'')+' · '+(item[2]||''),type:'shop'};}));
+  var scopeNames=window.JAY_MARKET_SCOPE?window.JAY_MARKET_SCOPE.platformNames:[];
+  source=source.filter(function(item){var text=(item.name+' '+item.sub);return item.name&&text.toLowerCase().indexOf(q.toLowerCase())>=0&&(!scopeNames.length||scopeNames.some(function(name){return text.indexOf(name)>=0;})||text.indexOf('美国')>=0);});
+  if(!source.length){results.innerHTML='<p style="font-size:11px;color:#999;text-align:center;padding:20px 0">未找到已验证的美国市场记录。请先导入商品/店铺数据或保存真实关注项。</p>';return;}
+  results.innerHTML=source.slice(0,20).map(function(r){
     return '<div class="wl-search-result"><div><b>'+r.name+'</b><small>'+r.sub+'</small></div><button class="wl-rec-add" onclick="addFromSearch(this, &#39;"+r.name.replace(/&#39;/g,"&#39;")+"&#39;,&#39;"+r.type+"&#39;)>\u6dfb\u52a0</button></div>';
   }).join('');
 }
@@ -1351,13 +1255,13 @@ function toolsCalcProfit(){
     '<span class="tools-badge '+(ok?'good':'bad')+'">'+(ok?'✓ 盈利':'✗ 亏损，建议提价或降本')+'</span>';
 }
 function toolsCalcScore(){
-  var market=document.getElementById('sc-market').value;
+  var market=document.getElementById('sc-market').value||'US';
   var margin=parseFloat(document.getElementById('sc-margin').value)||0;
   var weight=parseFloat(document.getElementById('sc-weight').value)||0;
   var sensitive=document.getElementById('sc-sensitive').value==='1';
-  var capMap={'东南亚':16,'北美':20,'欧洲':17,'中东':14,'拉美':12};
-  var compMap={'东南亚':15,'北美':11,'欧洲':13,'中东':16,'拉美':17};
-  var riskMap={'东南亚':16,'北美':13,'欧洲':10,'中东':15,'拉美':12};
+  var capMap={US:20};
+  var compMap={US:11};
+  var riskMap={US:13};
   var dims={
     '市场容量':capMap[market]||14,
     '竞争强度':compMap[market]||14,
@@ -1420,7 +1324,7 @@ function cmpSwitch(mode){
 }
 function cmpItems(){
   if(cmpState.mode==='country') return (typeof countries!=='undefined'?countries:[]).map(function(c){return c[2];});
-  if(cmpState.mode==='platform') return (typeof pfExtData!=='undefined'?Object.keys(pfExtData):[]);
+  if(cmpState.mode==='platform') return (typeof platformsData!=='undefined'?platformsData.map(function(p){return p[0];}):[]);
   return (typeof products!=='undefined'?products:[]).slice(0,40).map(function(p){return p[1];});
 }
 function cmpToggleItem(name){
@@ -1522,7 +1426,7 @@ function cmpRunCountry(r){
 }
 function cmpRunPlatform(r){
   var keys=cmpState.sel;
-  var userItems=keys.map(function(k){var d=pfExtData[k]||{};return {label:k,value:jayParseUsers(d.users)};});
+  var userItems=keys.map(function(k){var row=(typeof platformsData!=='undefined'?platformsData.find(function(p){return p[0]===k;}):null)||[];var d=pfExtData[k]||{};return {label:k,value:jayParseUsers(d.users||row[7])};});
   var growItems=keys.map(function(k){var d=pfExtData[k]||{};return {label:k,value:jayParseGrowth(d.growth)};});
   var html='<div class="cmp-cards">'+cmpMetricCard('月活用户（亿）',userItems,{unit:'亿',fmt:function(v){return v.toFixed(2);}})+
     cmpMetricCard('增速（%）',growItems,{unit:'%',fmt:function(v){return (v>0?'+':'')+v.toFixed(1);}})+'</div>';
@@ -1554,85 +1458,8 @@ function cmpAiRead(){
 }
 try{ if(document.getElementById('cmp-picker')) cmpSwitch('country'); }catch(e){}
 
-// ========== C1 我的产品适配分析 ==========
-function mfInitMarketSelect(){
-    return; // disabled v4 2026-08-21
-
-  var sel=document.getElementById('mf-market'); if(!sel)return;
-  if(sel.options.length>1)return;
-  try{
-    if(typeof countryFullData!=='undefined'){
-      Object.keys(countryFullData).forEach(function(k){
-        var d=countryFullData[k]; if(d&&d.name){ var o=document.createElement('option'); o.value=d.name; o.textContent=d.name+(d.region?('（'+(d.region)+'）'):''); sel.appendChild(o); }
-      });
-    }
-  }catch(e){}
-}
-function mfScoreCountry(name){
-  var region=jayCountryRegion(name)||'';
-  var platformCov=0, policyRisk=0, alertRisk=0, contentHeat=0;
-  try{
-    if(typeof platformsData!=='undefined' && Array.isArray(platformsData)){ platformsData.forEach(function(p){ var cov=(p[1]||''); if(region&&cov.indexOf(region)>=0) platformCov++; }); }
-    if(typeof policyData!=='undefined' && Array.isArray(policyData)){ policyData.forEach(function(p){ var rg=(p.region||p.regionName||''); if(rg===region||rg===name){ if((p.impact||'')==='negative') policyRisk++; } }); }
-    if(typeof alerts!=='undefined' && Array.isArray(alerts)){ alerts.forEach(function(a){ if((a[4]||'')===name){ if((a[2]||'')==='high') alertRisk++; } }); }
-    if(typeof contentData!=='undefined' && Array.isArray(contentData)){ contentData.forEach(function(c){ if((c[2]||'')===region) contentHeat++; }); }
-  }catch(e){}
-  var s1=Math.min(25, platformCov*3);
-  var s2=Math.max(0, 25 - policyRisk*8);
-  var s3=Math.max(0, 25 - alertRisk*10);
-  var s4=Math.min(25, contentHeat*2);
-  return {score:s1+s2+s3+s4, platformCov:platformCov, policyRisk:policyRisk, alertRisk:alertRisk, contentHeat:contentHeat, region:region};
-}
-function mfAnalyze(){
-  mfInitMarketSelect();
-  var cat=(document.getElementById('mf-category').value||'').trim();
-  var cost=parseFloat(document.getElementById('mf-cost').value)||0;
-  var market=document.getElementById('mf-market').value||'';
-  var band=document.getElementById('mf-priceband').value;
-  var exp=document.getElementById('mf-exp').value;
-  if(!cat){ toast('请先填写产品品类'); return; }
-  var names=[];
-  if(market){ names=[market]; } else if(typeof countryFullData!=='undefined'){ names=Object.keys(countryFullData); }
-  if(!names.length){ toast('国家数据未加载'); return; }
-  var list=names.map(function(n){ var s=mfScoreCountry(n); return {name:n, score:s.score, detail:s}; })
-    .sort(function(a,b){ return b.score-a.score; });
-  if(!market) list=list.slice(0,5); else { var top=list.shift(); list=[top].concat(list.slice(0,4)); }
-  var html=list.map(function(it,i){
-    var pct=Math.round(it.score);
-    var region=it.detail.region||'';
-    var reasons=[];
-    if(it.detail.platformCov>=3) reasons.push('平台覆盖 '+it.detail.platformCov+' 个，进入通道成熟');
-    else if(it.detail.platformCov>0) reasons.push('平台覆盖 '+it.detail.platformCov+' 个');
-    if(it.detail.contentHeat>=2) reasons.push('内容热度旺（'+it.detail.contentHeat+' 条爆款内容）');
-    if(it.detail.policyRisk===0) reasons.push('政策友好、暂无负面变动');
-    if(it.detail.alertRisk===0) reasons.push('风险信号少');
-    if(!reasons.length) reasons.push('综合指标均衡，可作为观察市场');
-    var risk=(it.detail.policyRisk>0||it.detail.alertRisk>0)?('⚠ 关注：'+(it.detail.alertRisk>0?('存在 '+it.detail.alertRisk+' 条高风险预警'):'存在政策负面变动 '+it.detail.policyRisk+' 项')):'✓ 当前无明显高风险信号';
-    return '<div class="mf-card"><div class="mf-rank">'+(i+1)+'</div><div class="mf-card-body"><div class="mf-card-top"><b>'+it.name+'</b><span class="mf-region">'+region+'</span></div><div class="mf-score-bar"><div class="mf-score-fill" style="width:'+pct+'%"></div></div><div class="mf-card-reason">'+reasons.join('；')+'</div><div class="mf-card-risk">'+risk+'</div></div></div>';
-  }).join('');
-  document.getElementById('mf-cards').innerHTML=html;
-  document.getElementById('mf-result-sub').textContent='基于 '+(market?('「'+market+'」单市场'):('全部 '+names.length+' 国'))+' · 品类「'+(cat.length>12?cat.slice(0,12)+'…':cat)+'」';
-  document.getElementById('mf-result').classList.add('show');
-  var box=document.getElementById('mf-ai-box');
-  box.className='mf-ai-box show';
-  if(AI_ENGINE.hasKey()){
-    box.innerHTML='<h5>✨ AI 解读中…</h5>正在结合你的产品背景生成「我这个品类在 '+list[0].name+' 卖得动吗」的结论先行解读…';
-    var sys='你是跨境电商选品顾问。基于用户产品背景，对最适配市场给出「能不能卖/卖给谁/怎么定价/避什么坑」的结论先行建议。简体中文，分点，不超过 200 字。';
-    var user='产品品类：'+cat+'；单件成本：'+(cost?('¥'+cost):'未填')+'；目标价带：'+band+'；出海经验：'+exp+'。最适配市场：'+list[0].name+'（适配分 '+list[0].score+'/100，'+list[0].detail.region+'）。请直接给结论。';
-    callAI(sys,user,{}).then(function(t){ box.innerHTML='<h5>✨ AI 解读：我这个品类在 '+list[0].name+' 卖得动吗</h5>'+(t||'（无内容）'); }).catch(function(e){ box.innerHTML='<h5>✨ AI 解读</h5>规则结论已生成；登录后可使用服务端 AI 深度解读。'; });
-  } else {
-    box.innerHTML='<h5>📊 规则引擎结论</h5>已为你排出最适配市场（基于平台覆盖、政策友好度、风险信号和内容热度）。登录后可进一步生成「能不能卖、卖给谁、怎么定价、避什么坑」的深度解读。';
-  }
-  document.getElementById('mf-result').scrollIntoView({behavior:'smooth',block:'start'});
-}
-function mfResetForm(){
-  ['mf-category','mf-cost','mf-selling'].forEach(function(id){ var el=document.getElementById(id); if(el)el.value=''; });
-  var box=document.getElementById('mf-result'); if(box)box.classList.remove('show');
-}
-function jayCloseDemoBanner(){} /* removed */function jayInitDemoBanner(){ try{ if(localStorage.getItem('jay_demo_banner_closed')==='1'){ var b=document.getElementById('demo-banner'); if(b)b.style.display='none'; } }catch(e){} }
 function toggleSidebar(){ var s=document.querySelector('aside.sidebar'); if(s)s.classList.toggle('open'); var o=document.getElementById('jay-overlay'); if(o)o.classList.toggle('show'); }
 function closeSidebar(){ var s=document.querySelector('aside.sidebar'); if(s)s.classList.remove('open'); var o=document.getElementById('jay-overlay'); if(o)o.classList.remove('show'); }
-jayInitDemoBanner();
 
 
 var searchIndex=[];
@@ -1673,8 +1500,8 @@ function jayBuildSearchIndex(){
 }
 function jayRebuildSearch(){ searchIndex = jayBuildSearchIndex(); }
 
-// ========== AI RAG 本地知识库检索层 ==========
-// 把系统内置数据（国家/平台/政策/规则/商品/内容/店铺）抽取为可检索文档片段，
+// ========== AI RAG 当前工作区检索层 ==========
+// 把当前工作区已加载的数据抽取为可检索文档片段，
 // 按用户问题做关键词/类目/市场重叠打分，返回 Top-K 上下文，供 callAI 注入 prompt。
 // 这是「检索增强生成（RAG）」的本地侧：先检索相关知识，再让 AI 优先基于这些上下文作答。
 var JAY_RAG_CORPUS = null;
@@ -1699,14 +1526,16 @@ function jayRagBuildCorpus(){
         push(name+' 平台档案', '电商平台', '平台:'+name+'，覆盖区域:'+region+'，适合类目:'+cats+'，费用结构:'+fee+'。', name+' '+region+' '+cats);
       });
     }
-    if(typeof policyData!=='undefined' && policyData.length){
-      policyData.forEach(function(p){
-        push(p[0]+' · '+p[1], '政策动态', '政策:'+p[1]+'（'+(p[3]||'')+'）'+(p[8]?('，要点:'+p[8].slice(0,120)):''), (p[0]||'')+' '+(p[1]||'')+' '+(p[3]||''));
+    var scopedPolicies=typeof plGetJsonItems==='function'?plGetJsonItems():[];
+    if(scopedPolicies.length){
+      scopedPolicies.forEach(function(p){
+        push('美国 · '+(p.title||''), '美国政策动态', '政策:'+(p.title||'')+'（'+(p.published_at||'')+'）'+(p.summary?('，要点:'+String(p.summary).slice(0,120)):''), '美国 '+(p.title||'')+' '+(p.category||''));
       });
     }
-    if(typeof rulesData!=='undefined' && rulesData.length){
-      rulesData.forEach(function(r){
-        push(r[0]+' · '+r[1], '平台规则', '平台:'+r[0]+' 类目:'+r[1]+'，规则要点:'+r[5]+'，建议:'+r[6], (r[0]||'')+' '+(r[1]||'')+' '+(r[5]||''));
+    var scopedRules=typeof rlGetJsonItems==='function'?rlGetJsonItems():[];
+    if(scopedRules.length){
+      scopedRules.forEach(function(r){
+        push((r.platform||'')+' · '+(r.title||''), '美国平台规则', '平台:'+(r.platform||'')+'，规则要点:'+(r.summary||r.title||''), '美国 '+(r.platform||'')+' '+(r.title||''));
       });
     }
     if(typeof products!=='undefined' && products.length){
@@ -1718,7 +1547,10 @@ function jayRagBuildCorpus(){
       });
     }
     if(typeof contentData!=='undefined' && contentData.length){
-      contentData.forEach(function(c){
+      contentData.filter(function(c){
+        var text=[c[1],c[2],c[0]].join(' ');
+        return !jayScopeHasRetiredText(text) && (/美国|美区|USA|United States|\bUS\b/i.test(text) || jayConfiguredPlatformNames().some(function(name){return text.toLowerCase().indexOf(name.toLowerCase())>=0;}));
+      }).forEach(function(c){
         push('热门内容 · '+c[0], '内容趋势', '标题:'+c[0]+'，平台:'+c[1]+'，市场:'+c[2]+'，类目:'+c[10]+'，互动:'+c[11], (c[0]||'')+' '+(c[2]||'')+' '+(c[10]||''));
       });
     }
@@ -1770,7 +1602,7 @@ function jayRagContextBlock(query, k){
   var lines = hits.map(function(d, i){
     return '['+(i+1)+'] ('+d.source+') '+d.title+'：'+d.text;
   });
-  var block = '【JAY观海知识库上下文（系统内置数据，优先据此作答并标注来源）】\n' + lines.join('\n');
+  var block = '【JAY观海当前范围数据（优先据此作答并标注来源）】\n' + lines.join('\n');
   var sources = [];
   hits.forEach(function(d){ if(sources.indexOf(d.source) < 0) sources.push(d.source); });
   return { text: block, sources: sources };

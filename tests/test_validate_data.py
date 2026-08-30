@@ -9,7 +9,14 @@ from datetime import datetime, timedelta, timezone
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
-from validate_data import DatasetResult, valid_http_url, validate_items_dataset  # noqa: E402
+from validate_data import (  # noqa: E402
+    DatasetResult,
+    count_scoped_items,
+    normalize_platform,
+    valid_http_url,
+    validate_all,
+    validate_items_dataset,
+)
 
 
 class ValidateDataTests(unittest.TestCase):
@@ -57,6 +64,27 @@ class ValidateDataTests(unittest.TestCase):
         self.assertTrue(any("重复 ID" in error for error in result.errors))
         self.assertTrue(any("异常未来日期" in error for error in result.errors))
         self.assertTrue(any("来源 URL" in warning for warning in result.warnings))
+
+    def test_current_scope_normalizes_only_the_four_configured_platforms(self):
+        self.assertEqual(normalize_platform("AliExpress 速卖通"), "AliExpress")
+        self.assertEqual(normalize_platform("TikTok Shop US"), "TikTok Shop")
+        rows = [
+            {"platform": "Amazon", "market": "US"},
+            {"platform": "TikTok Shop", "market": "US"},
+            {"platform": "Amazon", "market": "Global"},
+            {"platform": "Shopee", "market": "US"},
+        ]
+        self.assertEqual(count_scoped_items("rules", rows), 2)
+
+    def test_quality_report_exposes_raw_and_current_scope_totals(self):
+        report = validate_all(datetime(2026, 8, 28, tzinfo=timezone.utc))
+        raw_total = sum(item["raw_records"] for item in report["datasets"].values())
+        scoped_total = sum(item["scoped_records"] for item in report["datasets"].values())
+        self.assertEqual(report["summary"]["raw_records"], raw_total)
+        self.assertEqual(report["summary"]["scoped_records"], scoped_total)
+        self.assertEqual(report["datasets"]["countries"]["scoped_records"], 1)
+        self.assertEqual(report["datasets"]["platforms"]["scoped_records"], 4)
+        self.assertLess(report["datasets"]["rules"]["scoped_records"], report["datasets"]["rules"]["raw_records"])
 
 
 if __name__ == "__main__":
