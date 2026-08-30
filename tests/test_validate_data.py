@@ -10,6 +10,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 from validate_data import (  # noqa: E402
+    CPSC_MAX_AGE_HOURS,
     DatasetResult,
     count_scoped_items,
     normalize_platform,
@@ -20,6 +21,9 @@ from validate_data import (  # noqa: E402
 
 
 class ValidateDataTests(unittest.TestCase):
+    def test_cpsc_freshness_window_covers_weekends(self):
+        self.assertEqual(CPSC_MAX_AGE_HOURS, 72)
+
     def test_http_source_urls_require_a_real_host(self):
         self.assertTrue(valid_http_url("https://www.federalregister.gov/documents/1"))
         self.assertFalse(valid_http_url("javascript:alert(1)"))
