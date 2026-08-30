@@ -2,8 +2,8 @@
   "meta": {
     "market": "美国家居厨具 (US Home & Kitchen)",
     "cat_key": "home",
-    "generated_at": "2026-08-28T22:23:03.275378+00:00",
-    "as_of": "2026-08-28",
+    "generated_at": "2026-08-30T05:27:49.644841+00:00",
+    "as_of": "2026-08-30",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
       "country",
@@ -109,7 +109,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-08-28"
+    "as_of": "2026-08-30"
   },
   "findings": [
     "家居厨具为 Amazon 高客单主力类目，厨房小电+锅具是爆款集中地。",
@@ -130,7 +130,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "hotCats": [
         "厨房小电",
         "锅具餐具",
@@ -149,7 +149,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "hotCats": [
         "空气炸锅",
         "咖啡机",
@@ -168,7 +168,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "hotCats": [
         "家庭装",
         "基础家具",
@@ -186,7 +186,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "hotCats": [
         "二手家具",
         "收藏餐具",
@@ -204,7 +204,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "hotCats": [
         "手作家居",
         "定制餐具",
@@ -222,7 +222,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "hotCats": [
         "品牌官网",
         "设计款",
@@ -240,7 +240,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "hotCats": [
         "低价厨具",
         "合金/塑料"
@@ -306,7 +306,7 @@
       "severity": "high",
       "source": "FDA",
       "source_url": "https://www.fda.gov/food/food-packaging-food-contact-substances-fcs",
-      "as_of": "2026-08-28"
+      "as_of": "2026-08-30"
     },
     {
       "platform": "CPSC",
@@ -315,7 +315,7 @@
       "severity": "high",
       "source": "CPSC",
       "source_url": "https://www.cpsc.gov/",
-      "as_of": "2026-08-28"
+      "as_of": "2026-08-30"
     },
     {
       "platform": "EPA / 州",
@@ -324,7 +324,7 @@
       "severity": "medium",
       "source": "EPA / California",
       "source_url": "https://www.epa.gov/pfas",
-      "as_of": "2026-08-28"
+      "as_of": "2026-08-30"
     },
     {
       "platform": "Amazon",
@@ -333,7 +333,7 @@
       "severity": "medium",
       "source": "Amazon Seller Central",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-28"
+      "as_of": "2026-08-30"
     },
     {
       "platform": "TikTok Shop（美国）",
@@ -342,7 +342,7 @@
       "severity": "high",
       "source": "TikTok Shop 卖家中心",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-28"
+      "as_of": "2026-08-30"
     }
   ],
   "policies": [
@@ -354,7 +354,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17486/air-plan-approval-michigan-2015-ozone-moderate-reasonably-available-control-technology",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -365,7 +365,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16446/wooden-bedroom-furniture-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -376,7 +376,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16361/mattresses-from-malaysia-final-results-of-antidumping-duty-administrative-review-2024-2025",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -387,7 +387,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/04/2026-15817/hazardous-materials-adoption-of-department-of-transportation-special-permit-21287",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -398,7 +398,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/24/2026-15034/mattresses-from-the-peoples-republic-of-china-final-results-of-the-expedited-first-sunset-review-of",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -409,7 +409,7 @@
       "url": "https://www.federalregister.gov/documents/2026/04/13/2026-07107/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-continuation-of",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -420,7 +420,7 @@
       "url": "https://www.federalregister.gov/documents/2026/04/01/2026-06313/kitchen-appliance-shelving-and-racks-from-china",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -431,7 +431,7 @@
       "url": "https://www.federalregister.gov/documents/2026/03/12/2026-04884/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-final-results-of-the",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -442,7 +442,7 @@
       "url": "https://www.federalregister.gov/documents/2026/03/12/2026-04878/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-final-results-of-the",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -453,7 +453,7 @@
       "url": "https://www.federalregister.gov/documents/2026/02/09/2026-02538/kitchen-appliance-shelving-and-racks-from-china-scheduling-of-expedited-five-year-reviews",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -464,7 +464,7 @@
       "url": "https://www.federalregister.gov/documents/2025/12/03/2025-21794/kitchen-appliance-shelving-and-racks-from-china-revised-schedule-for-the-subject-proceeding",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     }
   ],
@@ -475,10 +475,10 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 94(家具)/7323-7324(餐厨金属制品)/8516(小电) 等受 Section 301 约束；2026 强迫劳动提案对部分经济体加征附加税。精确税率须用 USTR 检索或 CBP 裁定确认。",
-      "date": "2026-08-28",
+      "date": "2026-08-30",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": false
     },
     {
@@ -490,7 +490,7 @@
       "date": "2026-08-12",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16446/wooden-bedroom-furniture-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -502,7 +502,7 @@
       "date": "2026-08-11",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16361/mattresses-from-malaysia-final-results-of-antidumping-duty-administrative-review-2024-2025",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -514,7 +514,7 @@
       "date": "2026-07-24",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/07/24/2026-15034/mattresses-from-the-peoples-republic-of-china-final-results-of-the-expedited-first-sunset-review-of",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -526,7 +526,7 @@
       "date": "2026-04-13",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/04/13/2026-07107/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-continuation-of",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -538,7 +538,7 @@
       "date": "2026-03-12",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/03/12/2026-04884/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-final-results-of-the",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -550,7 +550,7 @@
       "date": "2026-03-12",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/03/12/2026-04878/certain-kitchen-appliance-shelving-and-racks-from-the-peoples-republic-of-china-final-results-of-the",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     },
     {
@@ -562,7 +562,7 @@
       "date": "2026-02-09",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/02/09/2026-02538/kitchen-appliance-shelving-and-racks-from-china-scheduling-of-expedited-five-year-reviews",
-      "as_of": "2026-08-28",
+      "as_of": "2026-08-30",
       "live": true
     }
   ]

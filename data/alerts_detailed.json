@@ -1,12 +1,61 @@
 {
   "meta": {
-    "generated_at": "2026-08-29T06:23:18.528587+08:00",
+    "generated_at": "2026-08-30T13:28:00.824434+08:00",
     "total": 100,
     "sources": {
       "cpsc": 34,
       "policies": 11,
-      "us_market": 59
+      "us_market": 60
     }
   },
-  "alerts": []
+  "alerts": [
+    {
+      "id": "usm-20260830-e10e7d9e",
+      "type": "policy",
+      "level": "high",
+      "title": "Resetting NHTSA's Fuel Economy Program: Commercial Medium- a",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "The National Highway Traffic Safety Administration is issuing this interpretive rule regarding the scope of its authority to set fuel economy standards for commercial medium- and heavy-duty on-highway…",
+      "date": "2026-08-31",
+      "read": false,
+      "source": "Federal Register"
+    },
+    {
+      "id": "usm-20260830-214dc687",
+      "type": "policy",
+      "level": "medium",
+      "title": "Temporary Exemption From Motor Vehicle Safety and Bumper Sta",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "In response to a request from the Alliance for Automotive Innovation (Auto Innovators), NHTSA is announcing a 30-day extension of the public comment period for the interim final rule (IFR) published o…",
+      "date": "2026-08-31",
+      "read": false,
+      "source": "Federal Register"
+    },
+    {
+      "id": "usm-20260830-b21013df",
+      "type": "policy",
+      "level": "medium",
+      "title": "Amendments to Brake System Maintenance and Inspection Requir",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "This rule amends mechanical equipment safety standards related to brake inspections for passenger and freight rail equipment and incorporates longstanding waivers for locomotive brake system maintenan…",
+      "date": "2026-08-31",
+      "read": false,
+      "source": "Federal Register"
+    },
+    {
+      "id": "usm-20260830-542fae20",
+      "type": "policy",
+      "level": "high",
+      "title": "Van-Type Trailers and Subassemblies Thereof From the People'",
+      "market": "美国",
+      "platform": "Commerce Department",
+      "detail": "The U.S. Department of Commerce (Commerce) determines that countervailable subsidies are being provided to producers and exporters of van-type trailers and subassemblies thereof (van-type trailers) fr…",
+      "date": "2026-08-31",
+      "read": false,
+      "source": "Federal Register"
+    }
+  ]
 }

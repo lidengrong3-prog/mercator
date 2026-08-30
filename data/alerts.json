@@ -1,5 +1,49 @@
 [
   [
+    "usm-20260830-e10e7d9e",
+    "policy",
+    "high",
+    "Resetting NHTSA's Fuel Economy Program: Commercial Medium- a",
+    "美国",
+    "Transportation Department",
+    "The National Highway Traffic Safety Administration is issuing this interpretive rule regarding the scope of its authority to set fuel economy standards for commercial medium- and heavy-duty on-highway…",
+    "2026-08-31",
+    false
+  ],
+  [
+    "usm-20260830-214dc687",
+    "policy",
+    "medium",
+    "Temporary Exemption From Motor Vehicle Safety and Bumper Sta",
+    "美国",
+    "Transportation Department",
+    "In response to a request from the Alliance for Automotive Innovation (Auto Innovators), NHTSA is announcing a 30-day extension of the public comment period for the interim final rule (IFR) published o…",
+    "2026-08-31",
+    false
+  ],
+  [
+    "usm-20260830-b21013df",
+    "policy",
+    "medium",
+    "Amendments to Brake System Maintenance and Inspection Requir",
+    "美国",
+    "Transportation Department",
+    "This rule amends mechanical equipment safety standards related to brake inspections for passenger and freight rail equipment and incorporates longstanding waivers for locomotive brake system maintenan…",
+    "2026-08-31",
+    false
+  ],
+  [
+    "usm-20260830-542fae20",
+    "policy",
+    "high",
+    "Van-Type Trailers and Subassemblies Thereof From the People'",
+    "美国",
+    "Commerce Department",
+    "The U.S. Department of Commerce (Commerce) determines that countervailable subsidies are being provided to producers and exporters of van-type trailers and subassemblies thereof (van-type trailers) fr…",
+    "2026-08-31",
+    false
+  ],
+  [
     "usm-20260828-46ab734b",
     "policy",
     "medium",
@@ -1053,50 +1097,6 @@
     "-",
     "所有跨境包裹均需缴纳关税+VAT，成本上升 20-30%",
     "2026-07-15",
-    false
-  ],
-  [
-    "a22",
-    "macro",
-    "high",
-    "土耳其里拉单日暴跌 5.2%，汇率风险极高",
-    "土耳其",
-    "-",
-    "美元/里拉突破 38.5，跨境电商定价需紧急调整",
-    "2026-07-15",
-    false
-  ],
-  [
-    "a27",
-    "platform",
-    "high",
-    "TikTok Shop 印尼佣金从 1% 上调至 5%",
-    "印尼",
-    "TikTok Shop",
-    "7月20日生效，美妆/食品类目额外加收 1%",
-    "2026-07-15",
-    false
-  ],
-  [
-    "usm-20260819-033057d7",
-    "policy",
-    "medium",
-    "Certain Glow Fish Tape Systems, Safety Helmet Systems, and C",
-    "美国",
-    "International Trade Commission",
-    "Notice is hereby given that on June 5, 2026, the presiding chief administrative law judge (\"CALJ\") issued an Initial Determination on Violation of Section 337 and Recommendation on Remedy and Bond, sh…",
-    "2026-07-15",
-    false
-  ],
-  [
-    "a3",
-    "shop",
-    "mid",
-    "Lazada 泰国服装店差评率激增至 8.7%",
-    "泰国",
-    "Lazada",
-    "近7日差评 47 条，主要集中在尺码偏差和色差问题",
-    "2026-07-14",
     false
   ]
 ]

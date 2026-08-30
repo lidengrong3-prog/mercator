@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-28T22:22:58.831562+00:00",
-  "as_of": "2026-08-28",
+  "generated_at": "2026-08-30T05:27:47.214284+00:00",
+  "as_of": "2026-08-30",
   "categories": [
     {
       "key": "electronics",
@@ -10,8 +10,8 @@
       "file": "electronics.json",
       "market_size": "US$ 2,616 亿 (2026E)",
       "cagr": "CAGR 4.8% (2026-2031)",
-      "policy_count": 17,
-      "alert_count": 8,
+      "policy_count": 19,
+      "alert_count": 7,
       "report": "reports/us_market/electronics_report.pdf"
     },
     {
@@ -83,7 +83,7 @@
       "market_size": "US$ 2,387.5 亿 (2026E)",
       "cagr": "CAGR 4.12% (2026-2031)",
       "policy_count": 24,
-      "alert_count": 12,
+      "alert_count": 14,
       "report": "reports/us_market/auto_report.pdf"
     },
     {
@@ -94,7 +94,7 @@
       "file": "supplements.json",
       "market_size": "US$ 773.7 亿 (2026E)",
       "cagr": "CAGR 7.9% (2026-2031)",
-      "policy_count": 23,
+      "policy_count": 24,
       "alert_count": 4,
       "report": "reports/us_market/supplements_report.pdf"
     }
