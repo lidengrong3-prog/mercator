@@ -1,7 +1,31 @@
 {
-  "updated_at": "2026-08-31T13:35:28.863414+08:00",
+  "updated_at": "2026-09-01T00:09:35.669422+08:00",
   "source_count": 4,
   "items": [
+    {
+      "id": "p20260901-d46a0ba8",
+      "title": "Expanding Certain Locomotive Wheel Set Diameter Variations",
+      "summary": "This rule amends FRA's locomotive safety regulations to expand the maximum permitted variation in diameter for locomotive wheel sets using alternating current technology, in response to a Class I railroad's May 2019 petition for rulemaking and innovations in traction motor control.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/31/2026-17788/expanding-certain-locomotive-wheel-set-diameter-variations",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-31",
+      "collected_at": "2026-09-01T00:09:35.669422+08:00"
+    },
+    {
+      "id": "p20260901-ba8b8249",
+      "title": "Repealing Outdated Railroad Workplace Safety Requirements and Making Other Improvements",
+      "summary": "This rule repeals several roadway workplace safety requirements that have become obsolete. In addition, FRA establishes a new special approval procedure to enable regulated entities, after public notice and FRA approval, to utilize an alternative approach to bridge worker safety that provides for an",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/08/31/2026-17789/repealing-outdated-railroad-workplace-safety-requirements-and-making-other-improvements",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-08-31",
+      "collected_at": "2026-09-01T00:09:35.669422+08:00"
+    },
     {
       "id": "p20260831-f375c1dd",
       "title": "2026年俄罗斯公司注册服务商甄选指南及合规风险预警",
