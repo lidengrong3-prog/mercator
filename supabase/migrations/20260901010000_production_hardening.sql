@@ -75,18 +75,29 @@ CREATE TRIGGER report_runs_updated_at
 
 CREATE OR REPLACE FUNCTION public.enforce_report_run_owner_links()
 RETURNS TRIGGER AS $$
+DECLARE
+  linked_run_id UUID;
+  linked_report_id UUID;
 BEGIN
-  IF TG_TABLE_NAME = 'generated_reports' AND NEW.report_run_id IS NOT NULL AND NOT EXISTS (
-    SELECT 1 FROM public.report_runs
-    WHERE id = NEW.report_run_id AND user_id = NEW.user_id
-  ) THEN
-    RAISE EXCEPTION 'REPORT_RUN_OWNER_MISMATCH' USING ERRCODE = '42501';
-  END IF;
-  IF TG_TABLE_NAME = 'report_runs' AND NEW.report_id IS NOT NULL AND NOT EXISTS (
-    SELECT 1 FROM public.generated_reports
-    WHERE id = NEW.report_id AND user_id = NEW.user_id
-  ) THEN
-    RAISE EXCEPTION 'REPORT_OWNER_MISMATCH' USING ERRCODE = '42501';
+  -- A trigger record only exposes columns from its own table. Read the
+  -- optional link through JSON so this shared function is valid for both
+  -- generated_reports and report_runs.
+  IF TG_TABLE_NAME = 'generated_reports' THEN
+    linked_run_id := NULLIF(to_jsonb(NEW)->>'report_run_id', '')::UUID;
+    IF linked_run_id IS NOT NULL AND NOT EXISTS (
+      SELECT 1 FROM public.report_runs
+      WHERE id = linked_run_id AND user_id = NEW.user_id
+    ) THEN
+      RAISE EXCEPTION 'REPORT_RUN_OWNER_MISMATCH' USING ERRCODE = '42501';
+    END IF;
+  ELSIF TG_TABLE_NAME = 'report_runs' THEN
+    linked_report_id := NULLIF(to_jsonb(NEW)->>'report_id', '')::UUID;
+    IF linked_report_id IS NOT NULL AND NOT EXISTS (
+      SELECT 1 FROM public.generated_reports
+      WHERE id = linked_report_id AND user_id = NEW.user_id
+    ) THEN
+      RAISE EXCEPTION 'REPORT_OWNER_MISMATCH' USING ERRCODE = '42501';
+    END IF;
   END IF;
   RETURN NEW;
 END;
