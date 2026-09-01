@@ -1,108 +1,13 @@
 {
   "meta": {
-    "generated_at": "2026-09-01T05:31:26.384971+08:00",
-    "total": 100,
+    "generated_at": "2026-09-01T14:24:41.483827+08:00",
+    "total": 7,
     "sources": {
-      "cpsc": 34,
-      "policies": 11,
-      "us_market": 60
+      "cpsc": 4,
+      "policies": 3
     }
   },
   "alerts": [
-    {
-      "id": "cpsc-cat-20260901-0e3bef86",
-      "type": "policy",
-      "level": "high",
-      "title": "⚠️ 消费电子品类: 近90天83起中国产品召回",
-      "market": "美国",
-      "platform": "CPSC",
-      "detail": "过去90天内，消费电子品类有83起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
-      "date": "2026-09-01",
-      "read": false,
-      "source": "CPSC 数据分析",
-      "url": "https://www.saferproducts.gov/RestWebServices/Recall",
-      "category_codes": [
-        "electronics"
-      ]
-    },
-    {
-      "id": "cpsc-cat-20260901-026e3a82",
-      "type": "policy",
-      "level": "high",
-      "title": "⚠️ 玩具品类: 近90天4起中国产品召回",
-      "market": "美国",
-      "platform": "CPSC",
-      "detail": "过去90天内，玩具品类有4起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
-      "date": "2026-09-01",
-      "read": false,
-      "source": "CPSC 数据分析",
-      "url": "https://www.saferproducts.gov/RestWebServices/Recall",
-      "category_codes": [
-        "toys"
-      ]
-    },
-    {
-      "id": "cpsc-cat-20260901-7facea87",
-      "type": "policy",
-      "level": "high",
-      "title": "⚠️ 服饰鞋包品类: 近90天20起中国产品召回",
-      "market": "美国",
-      "platform": "CPSC",
-      "detail": "过去90天内，服饰鞋包品类有20起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
-      "date": "2026-09-01",
-      "read": false,
-      "source": "CPSC 数据分析",
-      "url": "https://www.saferproducts.gov/RestWebServices/Recall",
-      "category_codes": [
-        "apparel"
-      ]
-    },
-    {
-      "id": "cpsc-cat-20260901-da4d2bbe",
-      "type": "policy",
-      "level": "high",
-      "title": "⚠️ 汽配品类: 近90天3起中国产品召回",
-      "market": "美国",
-      "platform": "CPSC",
-      "detail": "过去90天内，汽配品类有3起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
-      "date": "2026-09-01",
-      "read": false,
-      "source": "CPSC 数据分析",
-      "url": "https://www.saferproducts.gov/RestWebServices/Recall",
-      "category_codes": [
-        "auto"
-      ]
-    },
-    {
-      "id": "pol-20260901-ec3afb29",
-      "type": "policy",
-      "level": "high",
-      "title": "政策更新：中华人民共和国木房家具:反倾销税行政审查最终结果;2024年.",
-      "market": "美国",
-      "platform": "tariff",
-      "detail": "美国商务部(Commerce)继续认定被审查的11家公司没有确定各自享有单独费率的权利,因此是中华人民共和国(中国)全域实体的一部分,适用全域实体费率. 期间审查为Januar",
-      "date": "2026-08-12",
-      "read": false,
-      "source": "Federal Register / 政策分析",
-      "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16446/wooden-bedroom-furniture-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
-      "change_type": null,
-      "category_codes": []
-    },
-    {
-      "id": "pol-20260901-659f27e3",
-      "type": "policy",
-      "level": "high",
-      "title": "政策更新：启动反倾销和反补贴税行政审查",
-      "market": "美国",
-      "platform": "tariff",
-      "detail": "美国商务部(Commerce)收到了对各种反倾销税(AD)和反补贴税(CVD)令进行行政审查的请求,日期为6月. 根据商业条例,我们正在启动这些行政审查。",
-      "date": "2026-08-10",
-      "read": false,
-      "source": "Federal Register / 政策分析",
-      "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16265/initiation-of-antidumping-and-countervailing-duty-administrative-reviews",
-      "change_type": null,
-      "category_codes": []
-    },
     {
       "id": "pol-20260901-0cbfb20f",
       "type": "policy",
