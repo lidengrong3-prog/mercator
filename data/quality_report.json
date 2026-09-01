@@ -1,67 +1,13 @@
 {
   "schema_version": 1,
-  "data_contract_version": "3.0",
-  "provenance_fields": [
-    "source_kind",
-    "source_type",
-    "source_url",
-    "source_record_id",
-    "collected_at",
-    "retrieved_at",
-    "published_at",
-    "effective_from",
-    "effective_to",
-    "rule_key",
-    "rule_version",
-    "change_summary",
-    "change_type",
-    "title_zh",
-    "summary_zh",
-    "translation",
-    "verified_at",
-    "verification_status",
-    "verification_notes",
-    "evidence_hash"
-  ],
-  "scope": {
-    "config_version": "2.0",
-    "market_codes": [
-      "US"
-    ],
-    "platform_names": [
-      "AliExpress",
-      "Amazon",
-      "TikTok Shop",
-      "eBay"
-    ],
-    "configured_market_codes": [
-      "ID",
-      "US"
-    ],
-    "configured_platform_names": [
-      "AliExpress",
-      "Amazon",
-      "Lazada",
-      "Shopee",
-      "TikTok Shop",
-      "eBay"
-    ],
-    "manifest": "data/market_scope.json"
-  },
-  "provenance_schema": "data/provenance_schema.json",
-  "generated_at": "2026-09-01T06:17:38.654137+00:00",
-  "status": "stale",
-  "publishable": false,
+  "generated_at": "2026-08-31T21:31:27.934623+00:00",
+  "status": "healthy",
+  "publishable": true,
   "summary": {
-    "datasets": 10,
-    "raw_records": 661,
-    "scoped_records": 480,
-    "formal_records": 480,
-    "demo_records": 0,
-    "unverified_records": 0,
-    "missing_source_records": 0,
-    "excluded_records": 181,
-    "healthy": 6,
+    "datasets": 8,
+    "raw_records": 757,
+    "scoped_records": 567,
+    "healthy": 8,
     "degraded": 0,
     "stale": 4,
     "failed": 0,
@@ -74,25 +20,13 @@
       "label": "政策动态",
       "status": "stale",
       "path": "data/policies.json",
-      "records": 262,
-      "raw_records": 262,
-      "scoped_records": 228,
-      "formal_records": 228,
-      "demo_records": 0,
-      "unverified_records": 0,
-      "missing_source_records": 0,
-      "excluded_records": 34,
-      "exclusion_reasons": {
-        "out_of_scope": 34
-      },
-      "updated_at": "2026-08-28T22:20:32.587819+00:00",
-      "freshness_hours": 80.0,
-      "errors": [
-        "超过新鲜度阈值：80.0 小时 > 36 小时"
-      ],
-      "warnings": [
-        "存在 262 条记录仍依赖兼容性来源推断，建议回填显式 provenance 字段"
-      ],
+      "records": 273,
+      "raw_records": 273,
+      "scoped_records": 235,
+      "updated_at": "2026-08-31T21:28:13.396100+00:00",
+      "freshness_hours": 0.1,
+      "errors": [],
+      "warnings": [],
       "metrics": {
         "formal_records": 228,
         "demo_records": 0,
@@ -280,22 +214,10 @@
       "records": 52,
       "raw_records": 52,
       "scoped_records": 5,
-      "formal_records": 5,
-      "demo_records": 0,
-      "unverified_records": 0,
-      "missing_source_records": 0,
-      "excluded_records": 47,
-      "exclusion_reasons": {
-        "out_of_scope": 47
-      },
-      "updated_at": "2026-08-28T22:20:32.587819+00:00",
-      "freshness_hours": 80.0,
-      "errors": [
-        "超过新鲜度阈值：80.0 小时 > 36 小时"
-      ],
-      "warnings": [
-        "存在 52 条记录仍依赖兼容性来源推断，建议回填显式 provenance 字段"
-      ],
+      "updated_at": "2026-08-31T21:28:13.396100+00:00",
+      "freshness_hours": 0.1,
+      "errors": [],
+      "warnings": [],
       "metrics": {
         "formal_records": 5,
         "demo_records": 0,
@@ -350,17 +272,11 @@
       "label": "风险预警",
       "status": "healthy",
       "path": "data/alerts.json",
-      "records": 7,
-      "raw_records": 7,
-      "scoped_records": 7,
-      "formal_records": 7,
-      "demo_records": 0,
-      "unverified_records": 0,
-      "missing_source_records": 0,
-      "excluded_records": 0,
-      "exclusion_reasons": {},
-      "updated_at": "2026-09-01T02:14:31.601118+00:00",
-      "freshness_hours": 4.1,
+      "records": 100,
+      "raw_records": 100,
+      "scoped_records": 95,
+      "updated_at": "2026-08-31T21:31:26.384971+00:00",
+      "freshness_hours": 0.0,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -420,7 +336,7 @@
       "excluded_records": 38,
       "exclusion_reasons": {},
       "updated_at": "2026-08-28T22:20:32.587819+00:00",
-      "freshness_hours": 80.0,
+      "freshness_hours": 71.2,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -463,17 +379,9 @@
       "records": 8,
       "raw_records": 8,
       "scoped_records": 8,
-      "formal_records": 8,
-      "demo_records": 0,
-      "unverified_records": 0,
-      "missing_source_records": 0,
-      "excluded_records": 0,
-      "exclusion_reasons": {},
-      "updated_at": "2026-08-28T22:22:58.831562+00:00",
-      "freshness_hours": 79.9,
-      "errors": [
-        "超过新鲜度阈值：79.9 小时 > 36 小时"
-      ],
+      "updated_at": "2026-08-31T21:30:11.029636+00:00",
+      "freshness_hours": 0.0,
+      "errors": [],
       "warnings": [],
       "metrics": {
         "duplicate_category_keys": 0,
@@ -486,17 +394,11 @@
       "label": "美国宏观指标",
       "status": "healthy",
       "path": "data/us_market/macro_indicators.json",
-      "records": 30,
-      "raw_records": 30,
-      "scoped_records": 30,
-      "formal_records": 30,
-      "demo_records": 0,
-      "unverified_records": 0,
-      "missing_source_records": 0,
-      "excluded_records": 0,
-      "exclusion_reasons": {},
-      "updated_at": "2026-08-31T01:30:09.720060+00:00",
-      "freshness_hours": 28.8,
+      "records": 22,
+      "raw_records": 22,
+      "scoped_records": 22,
+      "updated_at": "2026-08-31T21:31:26.327327+00:00",
+      "freshness_hours": 0.0,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -548,20 +450,10 @@
       "records": 197,
       "raw_records": 197,
       "scoped_records": 197,
-      "formal_records": 197,
-      "demo_records": 0,
-      "unverified_records": 0,
-      "missing_source_records": 0,
-      "excluded_records": 0,
-      "exclusion_reasons": {},
-      "updated_at": "2026-08-28T11:28:36.585601+00:00",
-      "freshness_hours": 90.8,
-      "errors": [
-        "超过新鲜度阈值：90.8 小时 > 72 小时"
-      ],
-      "warnings": [
-        "存在 197 条记录仍依赖兼容性来源推断，建议回填显式 provenance 字段"
-      ],
+      "updated_at": "2026-08-31T21:30:22.250980+00:00",
+      "freshness_hours": 0.0,
+      "errors": [],
+      "warnings": [],
       "metrics": {
         "formal_records": 197,
         "demo_records": 0,
