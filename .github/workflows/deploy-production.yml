@@ -164,4 +164,4 @@ jobs:
           curl --fail --silent --show-error --location --retry 3 --max-time 30 \
             -H "apikey: $SUPABASE_ANON_KEY" \
             -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
-            "$SUPABASE_URL/rest/v1/market_data?select=id&limit=1" > /dev/null
+            "$SUPABASE_URL/rest/v1/market_catalog?select=code&limit=1" > /dev/null
