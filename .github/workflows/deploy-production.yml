@@ -157,7 +157,10 @@ jobs:
           test -n "$PRODUCTION_SITE_URL"
           test -n "$SUPABASE_URL"
           test -n "$SUPABASE_ANON_KEY"
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --max-time 30 "$PRODUCTION_SITE_URL" | grep -q 'JAY观海'
+          site_html="$(mktemp)"
+          trap 'rm -f "$site_html"' EXIT
+          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --max-time 30 "$PRODUCTION_SITE_URL" -o "$site_html"
+          grep -q 'JAY观海' "$site_html"
           curl --fail --silent --show-error --location --retry 3 --max-time 30 \
             -H "apikey: $SUPABASE_ANON_KEY" \
             -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
