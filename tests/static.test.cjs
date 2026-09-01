@@ -680,6 +680,8 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(workflow, /needs: authenticated-acceptance/);
   assert.match(workflow, /PROD_TEST_USER_A_EMAIL/);
   assert.match(workflow, /PROD_TEST_USER_B_EMAIL/);
+  assert.match(workflow, /rest\/v1\/market_catalog\?select=code&limit=1/);
+  assert.doesNotMatch(workflow, /rest\/v1\/market_data\?select=id&limit=1/);
 
   const acceptance = fs.readFileSync(path.join(root, 'scripts', 'production_acceptance.py'), 'utf8');
   assert.match(acceptance, /account B can read account A report/);
