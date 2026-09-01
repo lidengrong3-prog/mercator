@@ -12,7 +12,19 @@
       "category": "regulation",
       "impact_level": "medium",
       "published_at": "2026-08-31",
-      "collected_at": "2026-09-01T00:09:35.669422+08:00"
+      "collected_at": "2026-09-01T00:09:35.669422+08:00",
+      "title_zh": "扩展某些 Locomotive 轮盘集参数变化",
+      "summary_zh": "本规则修改了FRA的机车安全条例,以利用交替电流技术扩大机车轮机组最大允许直径变化,以响应I级铁路2019年5月提出的牵引电动机控制规则制定和创新请求.",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-01T06:24:41.628091+00:00",
+        "source_hash": "ce9225c4f189730e96af075478f8784f870639b249cf200aee1475e612547382",
+        "human_reviewed": false
+      }
     },
     {
       "id": "p20260901-ba8b8249",
@@ -24,7 +36,19 @@
       "category": "regulation",
       "impact_level": "medium",
       "published_at": "2026-08-31",
-      "collected_at": "2026-09-01T00:09:35.669422+08:00"
+      "collected_at": "2026-09-01T00:09:35.669422+08:00",
+      "title_zh": "废除过时的铁路工作场所安全要求并作出其他改进",
+      "summary_zh": "这项规则废除了若干已经过时的公路工作场所安全要求。 此外,联邦权利机构制定了新的特别批准程序,使受管制实体在得到公告和联邦权利机构批准后,能够采用替代方法,将工人安全联系起来,从而规定",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-01T06:24:41.628091+00:00",
+        "source_hash": "9021f710cefc72fd76ba8206e430d2cc307542eb3aefc4afb91b90ee6c79d2d2",
+        "human_reviewed": false
+      }
     },
     {
       "id": "p20260831-f375c1dd",
@@ -36,7 +60,18 @@
       "category": "regulation",
       "impact_level": "medium",
       "published_at": "2026-08-31",
-      "collected_at": "2026-08-31T03:18:58.380549+08:00"
+      "collected_at": "2026-08-31T03:18:58.380549+08:00",
+      "title_zh": "2026年俄罗斯公司注册服务商甄选指南及合规风险预警",
+      "summary_zh": "一、俄罗斯公司注册市场火热，合规暗流不容忽视 中俄经贸合作持续深化，中国商品在俄罗斯市场的渗透率不断提升。海关总署数据显示，2024年中俄双边贸易额已突破2400亿美元，同比增长约26%，其中中国对俄出口占比约55%。与此同时，俄罗斯电商渗透率约20%，跨境电商占中俄贸易比重约15%，规模已超过360亿美元，且增速明显快于传统贸易。 市场向好吸引了大批中国企业前往俄罗斯设立主体。然而，俄罗斯联邦税务局对境外投资者的审核日趋严格，尤其是2024年强化反洗钱审查以来，所有法人实体须提交最终受益人（UBO）声明。市面上不少代办机构缺乏本地持牌资质，递交的注册地址无法接收税务局信函，导致公司被列入高风险名单；也有机构以低价引流，签约后在中途加收翻译公证费、地址挂靠费等，最终落地成本比预算高出数倍；还有企业注册成功后无人跟进年审与税务申报，面临罚款甚至强制注销的风险。俄罗斯公司注册远不止“交材料拿证书”这么简单，其中涉及公司类型选择、注册资本实缴、税务登记、电子税控机配置等多个环节，任一环节不规范都会为后续经营埋下隐患。 图片来源：司盟企服 当前俄罗斯公司注册的核心风险集中在三个方面：一是代理机...",
+      "translation": {
+        "source_language": "zh-CN",
+        "target_language": "zh-CN",
+        "status": "source_zh",
+        "provider": "source",
+        "translated_at": "2026-09-01T06:24:41.628091+00:00",
+        "source_hash": "57cbebd965c974d82387bcd50e73c8658ea9eb396cacdc8db0509aeb53588416",
+        "human_reviewed": true
+      }
     },
     {
       "id": "p20260830-05bd9c07",
@@ -48,7 +83,19 @@
       "category": "regulation",
       "impact_level": "medium",
       "published_at": "2026-08-31",
-      "collected_at": "2026-08-30T13:24:45.336818+08:00"
+      "collected_at": "2026-08-30T13:24:45.336818+08:00",
+      "title_zh": "FRA 6180.107和FRA 6180.150的退休表格",
+      "summary_zh": "本规则将FRA F 6180.107表格“声称与工作有关的疾病替代记录”(6180.107表格)和FRA F 6180.150表格“高速公路使用者伤害调查表”(6180.150表格)保留下来。 该规则还修改了FRA事故报告条例规定的记录保留期。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-01T06:24:41.628091+00:00",
+        "source_hash": "1069ed34660c66b8618efa4991cac87eeffa33258ac2d9b239a2e182642108ee",
+        "human_reviewed": false
+      }
     },
     {
       "id": "p20260830-f62d1463",
@@ -60,7 +107,19 @@
       "category": "regulation",
       "impact_level": "medium",
       "published_at": "2026-08-31",
-      "collected_at": "2026-08-30T13:24:45.336818+08:00"
+      "collected_at": "2026-08-30T13:24:45.336818+08:00",
+      "title_zh": "对联邦资源局事故报告条例的杂项修正",
+      "summary_zh": "本条规则对FRA的事故报告条例作了各种修正。 具体地说,这些修正案促进以电子方式向联邦资源局提交文件,取消多余的条例,并允许有额外时间的铁路完成某些表格。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-01T06:24:41.628091+00:00",
+        "source_hash": "b33742ecd3f8e995a9dc9f637cda331dcea4c986cded0364e05fc5b167f0ed1d",
+        "human_reviewed": false
+      }
     },
     {
       "id": "p20260830-6e5adbd7",
@@ -72,7 +131,19 @@
       "category": "regulation",
       "impact_level": "medium",
       "published_at": "2026-08-31",
-      "collected_at": "2026-08-30T13:24:45.336818+08:00"
+      "collected_at": "2026-08-30T13:24:45.336818+08:00",
+      "title_zh": "允许使用基于计算机的三维模拟制动系统定期更新培训",
+      "summary_zh": "这项规则允许铁路使用一种由教员指导的、以计算机为基础的和三维(3D)的模拟,以满足FRA制动系统培训要求下定期复习培训的实际操作部分,这符合FRA迄今给予的豁免。 这个基于计算机的 3D si",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-01T06:24:41.628091+00:00",
+        "source_hash": "94b3299b0184e8d3e87c70efcd52a9be897480405567a843847c49529fafe9fe",
+        "human_reviewed": false
+      }
     },
     {
       "id": "p20260830-c96d187a",
@@ -84,7 +155,19 @@
       "category": "regulation",
       "impact_level": "medium",
       "published_at": "2026-08-31",
-      "collected_at": "2026-08-30T13:24:45.336818+08:00"
+      "collected_at": "2026-08-30T13:24:45.336818+08:00",
+      "title_zh": "豁免和其他救济申请",
+      "summary_zh": "2026年7月23日,Jet Blue Airways Corporation(Jet Blue)和Spirit Airlines, LLC(Spirit)(以及承运人)向运输部(该部)和联邦航空管理局(FAA)申请免于禁止出售或购买Authoriza",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-01T06:24:41.628091+00:00",
+        "source_hash": "5ac790bad434ad0c590ecf7759c0bdccc5f9b9ef1368bb5ad9b595ec904be5b7",
+        "human_reviewed": false
+      }
     },
     {
       "id": "p20260830-c63cd16c",
@@ -96,7 +179,19 @@
       "category": "regulation",
       "impact_level": "medium",
       "published_at": "2026-08-31",
-      "collected_at": "2026-08-30T13:24:45.336818+08:00"
+      "collected_at": "2026-08-30T13:24:45.336818+08:00",
+      "title_zh": "袭击修道院门五周年",
+      "summary_zh": "详情见资料来源。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-01T06:24:41.628091+00:00",
+        "source_hash": "3f3e1743b9e08bd50627613281d4af9545e62cd3cf343fbb96ba1364db837120",
+        "human_reviewed": false
+      }
     },
     {
       "id": "p20260830-d32dade0",
@@ -108,7 +203,19 @@
       "category": "regulation",
       "impact_level": "medium",
       "published_at": "2026-08-31",
-      "collected_at": "2026-08-30T13:24:45.336818+08:00"
+      "collected_at": "2026-08-30T13:24:45.336818+08:00",
+      "title_zh": "宣布国家紧急状态,以保障美国的散装电力系统",
+      "summary_zh": "详情见资料来源。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-01T06:24:41.628091+00:00",
+        "source_hash": "8b68c9d091faa7fd5b196b00fad87b47504361f152a37a856e8da9c2ec29d9dd",
+        "human_reviewed": false
+      }
     },
     {
       "id": "p20260830-8cef64c1",
@@ -120,7 +227,19 @@
       "category": "regulation",
       "impact_level": "medium",
       "published_at": "2026-08-31",
-      "collected_at": "2026-08-30T13:24:45.336818+08:00"
+      "collected_at": "2026-08-30T13:24:45.336818+08:00",
+      "title_zh": "未经面谈的肯定庇护移交",
+      "summary_zh": "详情见资料来源。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-01T06:24:41.628091+00:00",
+        "source_hash": "ca289fb3f6c41565cf94b8dae1a7ea5cf8403f33c2bc63358b77b4d64041bfdb",
+        "human_reviewed": false
+      }
     },
     {
       "id": "p20260830-23fc3c7c",
@@ -132,7 +251,19 @@
       "category": "regulation",
       "impact_level": "medium",
       "published_at": "2026-08-31",
-      "collected_at": "2026-08-30T13:24:45.336818+08:00"
+      "collected_at": "2026-08-30T13:24:45.336818+08:00",
+      "title_zh": "进一步确保美国消费者负担得起的牛肉",
+      "summary_zh": "详情见资料来源。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-01T06:24:41.628091+00:00",
+        "source_hash": "ad22f84b36817ac7903bf484b6b0ebb9cb81cd369e667152018b9321e7d08e71",
+        "human_reviewed": false
+      }
     },
     {
       "id": "p20260828-eb209220",
