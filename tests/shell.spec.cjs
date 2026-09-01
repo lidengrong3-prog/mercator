@@ -2,6 +2,22 @@ const { test, expect } = require('@playwright/test');
 const os = require('node:os');
 const path = require('node:path');
 
+// Browser acceptance tests use the repository's immutable fixtures. A live
+// catalog can change after a production migration and race the scope setup,
+// so keep read-only Supabase catalog/data requests out of this suite while
+// leaving the explicit authenticated write mocks below untouched.
+const remoteReadTables = /\/rest\/v1\/(?:market_catalog|platform_catalog|market_platforms|jurisdiction_catalog|category_profiles|report_template_catalog|market_data)(?:[/?]|$)/;
+test.beforeEach(async ({ page }) => {
+  await page.route('**/rest/v1/**', async (route) => {
+    const request = route.request();
+    if (request.method() === 'GET' && remoteReadTables.test(request.url())) {
+      await route.abort();
+      return;
+    }
+    await route.continue();
+  });
+});
+
 test('authenticated entry and read-only demo shell work on desktop', async ({ page }) => {
   const pageErrors = [];
   const userTableRequests = [];
