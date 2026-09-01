@@ -639,6 +639,12 @@ test('production hardening isolates user data and records idempotent operations'
   assert.match(migration, /idx_report_exports_idempotency/);
   assert.match(migration, /product_catalog_import/);
   assert.match(migration, /REPORT_RUN_OWNER_MISMATCH/);
+  assert.match(migration, /to_jsonb\(NEW\)->>'report_run_id'/);
+  assert.match(migration, /to_jsonb\(NEW\)->>'report_id'/);
+  const triggerFix = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20260901020000_fix_report_run_owner_trigger.sql'), 'utf8');
+  assert.match(triggerFix, /CREATE OR REPLACE FUNCTION public\.enforce_report_run_owner_links/);
+  assert.match(triggerFix, /to_jsonb\(NEW\)->>'report_run_id'/);
+  assert.match(triggerFix, /to_jsonb\(NEW\)->>'report_id'/);
   assert.match(migration, /request_id IS NULL[\s\S]*idempotency_key IS NULL/);
   assert.equal(/\b(prompt|response_body|messages)\s+(TEXT|JSONB)/i.test(migration), false);
 
