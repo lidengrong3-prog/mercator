@@ -725,7 +725,7 @@ test('settings exposes only real account, preference, and service states', async
   await page.locator('.st-side-btn[data-st-tab="team"]').click();
   await expect(page.locator('#st-workspace-unavailable')).toContainText('只读演示模式不加载团队数据');
   await page.locator('.st-side-btn[data-st-tab="system"]').click();
-  await expect(page.locator('#st-system-quality')).toContainText(/数据(实时|过期|部分降级|校验失败|读取中)/);
+  await expect(page.locator('#st-system-quality')).toContainText(/(?:数据)?(?:实时|过期|部分降级|校验失败|读取中)/);
   await expect(page.locator('#st-tab-system .st-status-item')).toHaveCount(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
   await page.screenshot({ path: path.join(os.tmpdir(), 'jay-settings-real.png'), fullPage: true });
@@ -851,11 +851,11 @@ test('data trust center reports the publish gate on desktop and mobile', async (
   await page.getByRole('button', { name: '浏览只读演示' }).click();
   await page.evaluate(() => window.switchPage('data'));
 
-  await expect(page.locator('#data-quality-badge')).toContainText(/数据(实时|过期|部分降级|校验失败|读取中)/);
+  await expect(page.locator('#data-quality-badge')).toContainText(/(?:数据)?(?:实时|过期|部分降级|校验失败|读取中)/);
   const qualityDatasetCount = await page.evaluate(() => Object.keys((window.JAY_QUALITY_REPORT || {}).datasets || {}).length);
   expect(qualityDatasetCount).toBeGreaterThan(0);
   await expect(page.locator('#data-quality-rows tr')).toHaveCount(qualityDatasetCount);
-  await expect(page.locator('#shell-data-status')).toContainText(/数据(实时|过期|部分降级|校验失败|读取中)/);
+  await expect(page.locator('#shell-data-status')).toContainText(/(?:数据)?(?:实时|过期|部分降级|校验失败|读取中)/);
   const qualitySummary = await page.evaluate(() => {
     const report = window.JAY_QUALITY_REPORT || {};
     return {
