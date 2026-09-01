@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "config_version": "2.0",
+  "display_locale": "zh-CN",
+  "data_domains": {
+    "policy": {"label": "政策法规", "display_locale": "zh-CN"},
+    "tax": {"label": "税收与关税", "display_locale": "zh-CN", "types": ["customs_duty", "vat", "sales_tax", "marketplace_collection", "import_fee"]},
+    "access": {"label": "准入与合规", "display_locale": "zh-CN", "types": ["certification", "labeling", "packaging", "registration", "intellectual_property", "import_requirement"]}
+  },
+  "default_market_codes": ["US"],
+  "markets": [
+    {
+      "code": "US",
+      "key": "us",
+      "name": "美国",
+      "label": "美国市场",
+      "flag": "🇺🇸",
+      "aliases": ["us", "usa", "united states", "美国", "美区"],
+      "region_code": "NA",
+      "region_name": "北美",
+      "jurisdiction_codes": ["US"],
+      "platform_keys": ["amazon", "tiktok-shop", "aliexpress", "ebay"],
+      "category_keys": ["generic", "electronics", "beauty", "apparel", "home", "pet-food", "pet-supplies"],
+      "data_sources": {
+        "macro": {
+          "local_path": "data/us_market/macro_indicators.json",
+          "source_kind": "official",
+          "source_type": "official_feed",
+          "commerce_profile": {
+            "indicator_map": {
+              "ecommerce_sales": "ECOMSA",
+              "ecommerce_penetration": "ECOMPCTSA",
+              "retail_sales": "RSAFS",
+              "disposable_income": "DSPIC96",
+              "consumer_confidence": "UMCSENT",
+              "consumer_spending": "PCEC96",
+              "inflation": "CPIAUCSL",
+              "exchange_rate": "DEXCHUS"
+            },
+            "category_indicator_map": {
+              "apparel": ["MRTSSM448USS"],
+              "electronics": ["MRTSSM443USS"],
+              "beauty": [],
+              "pet-food": [],
+              "generic": []
+            },
+            "background_codes": ["GDP", "UNRATE", "INDPRO", "BOPGSTB"]
+          }
+        }
+      },
+      "status": "active",
+      "data_status": "configured"
+    },
+    {
+      "code": "ID",
+      "key": "id",
+      "name": "印度尼西亚",
+      "label": "印度尼西亚市场",
+      "flag": "🇮🇩",
+      "aliases": ["id", "indonesia", "印尼", "印度尼西亚"],
+      "region_code": "SEA",
+      "region_name": "东南亚",
+      "jurisdiction_codes": ["ID"],
+      "platform_keys": ["tiktok-shop", "shopee", "lazada"],
+      "category_keys": ["generic", "electronics", "beauty", "apparel", "home", "pet-supplies"],
+      "data_sources": {},
+      "status": "active",
+      "data_status": "schema_only"
+    }
+  ],
+  "platforms": [
+    {"key": "amazon", "name": "Amazon", "kind": "marketplace", "aliases": ["amazon", "amazon.com"], "status": "active"},
+    {"key": "tiktok-shop", "name": "TikTok Shop", "kind": "social-commerce", "aliases": ["tiktok shop", "tiktokshop"], "status": "active"},
+    {"key": "aliexpress", "name": "AliExpress", "kind": "marketplace", "aliases": ["aliexpress", "速卖通"], "status": "active"},
+    {"key": "ebay", "name": "eBay", "kind": "marketplace", "aliases": ["ebay"], "status": "active"},
+    {"key": "shopee", "name": "Shopee", "kind": "marketplace", "aliases": ["shopee", "虾皮"], "status": "active"},
+    {"key": "lazada", "name": "Lazada", "kind": "marketplace", "aliases": ["lazada"], "status": "active"}
+  ],
+  "market_platforms": [
+    {"market_code": "US", "platform_key": "amazon", "status": "active", "data_status": "configured", "label": "美国站"},
+    {"market_code": "US", "platform_key": "tiktok-shop", "status": "active", "data_status": "configured", "label": "美国站"},
+    {"market_code": "US", "platform_key": "aliexpress", "status": "active", "data_status": "configured", "label": "美国站"},
+    {"market_code": "US", "platform_key": "ebay", "status": "active", "data_status": "configured", "label": "美国站"},
+    {"market_code": "ID", "platform_key": "tiktok-shop", "status": "active", "data_status": "schema_only", "label": "印度尼西亚站"},
+    {"market_code": "ID", "platform_key": "shopee", "status": "active", "data_status": "schema_only", "label": "印度尼西亚站"},
+    {"market_code": "ID", "platform_key": "lazada", "status": "active", "data_status": "schema_only", "label": "印度尼西亚站"}
+  ],
+  "jurisdictions": [
+    {"code": "US", "name": "美国联邦辖区", "type": "country", "status": "active"},
+    {"code": "ID", "name": "印度尼西亚共和国辖区", "type": "country", "status": "active"}
+  ],
+  "categories": [
+    {"code": "generic", "name": "通用品类", "aliases": ["generic", "通用"], "required_fields": ["category", "market", "platform"], "report_modules": ["category_overview", "price_band", "competition", "risk"], "status": "active", "data_status": "schema_only"},
+    {"code": "electronics", "name": "电子产品", "aliases": ["electronics", "电子", "3c"], "required_fields": ["category", "market", "platform", "productCost", "sellingPrice", "certifications"], "report_modules": ["category_overview", "price_band", "unit_economics", "access_requirements", "logistics", "risk"], "status": "active", "data_status": "schema_only"},
+    {"code": "beauty", "name": "美妆个护", "aliases": ["beauty", "cosmetics", "美妆", "个护"], "required_fields": ["category", "market", "platform", "ingredients", "claims", "sellingPrice"], "report_modules": ["category_overview", "consumer_profile", "access_requirements", "price_band", "risk"], "status": "active", "data_status": "schema_only"},
+    {"code": "apparel", "name": "服装", "aliases": ["apparel", "fashion", "服装", "服饰"], "required_fields": ["category", "market", "platform", "material", "sizeSystem", "sellingPrice"], "report_modules": ["category_overview", "consumer_profile", "seasonality", "price_band", "risk"], "status": "active", "data_status": "schema_only"},
+    {"code": "pet-food", "name": "宠物食品", "aliases": ["pet-food", "pet food", "宠物食品", "宠物粮"], "required_fields": ["category", "market", "platform", "ingredients", "shelfLife", "certifications"], "report_modules": ["category_overview", "consumer_profile", "access_requirements", "unit_economics", "risk"], "status": "active", "data_status": "schema_only"},
+    {"code": "pet-supplies", "name": "宠物用品", "aliases": ["pet-supplies", "pet supplies", "宠物用品", "宠物用具"], "required_fields": ["category", "market", "platform", "material", "safetyClaims", "sellingPrice"], "report_modules": ["category_overview", "consumer_profile", "access_requirements", "price_band", "risk"], "status": "active", "data_status": "schema_only"},
+    {"code": "home", "name": "家居产品", "aliases": ["home", "home-goods", "家居", "家居产品", "家用产品"], "required_fields": ["category", "market", "platform", "material", "dimensions", "sellingPrice"], "report_modules": ["category_overview", "consumer_profile", "platform_research", "price_band", "logistics", "risk"], "status": "active", "data_status": "schema_only"}
+  ],
+  "report_templates": [
+    {"id": "market-research-v1", "code": "market-research", "version": 1, "name": "市场调研报告", "market_codes": [], "platform_keys": [], "category_codes": ["generic"], "required_domains": ["market", "policy", "platform", "rule"], "modules": ["executive_summary", "market_environment", "competitor_research", "consumer_needs", "platform_research", "product_fit", "risk_recommendations"], "status": "active", "data_status": "schema_only"},
+    {"id": "electronics-market-v1", "code": "electronics-market", "version": 1, "name": "电子产品市场调研报告", "market_codes": [], "platform_keys": [], "category_codes": ["electronics"], "required_domains": ["market", "policy", "tax", "access", "logistics", "platform", "rule"], "modules": ["executive_summary", "market_environment", "consumer_needs", "platform_research", "unit_economics", "access_requirements", "logistics", "risk_recommendations"], "status": "active", "data_status": "schema_only"},
+    {"id": "beauty-market-v1", "code": "beauty-market", "version": 1, "name": "美妆个护市场调研报告", "market_codes": [], "platform_keys": [], "category_codes": ["beauty"], "required_domains": ["market", "policy", "tax", "access", "platform", "rule"], "modules": ["executive_summary", "market_environment", "consumer_profile", "platform_research", "access_requirements", "price_band", "risk_recommendations"], "status": "active", "data_status": "schema_only"},
+    {"id": "apparel-market-v1", "code": "apparel-market", "version": 1, "name": "服装市场调研报告", "market_codes": [], "platform_keys": [], "category_codes": ["apparel"], "required_domains": ["market", "policy", "access", "platform", "rule"], "modules": ["executive_summary", "market_environment", "consumer_profile", "seasonality", "platform_research", "price_band", "risk_recommendations"], "status": "active", "data_status": "schema_only"},
+    {"id": "pet-food-market-v1", "code": "pet-food-market", "version": 1, "name": "宠物食品市场调研报告", "market_codes": [], "platform_keys": [], "category_codes": ["pet-food"], "required_domains": ["market", "policy", "tax", "access", "logistics", "platform", "rule"], "modules": ["executive_summary", "market_environment", "consumer_profile", "platform_research", "access_requirements", "unit_economics", "logistics", "risk_recommendations"], "status": "active", "data_status": "schema_only"}
+  ]
+}

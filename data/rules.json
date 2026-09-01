@@ -1,6 +1,13 @@
 {
   "updated_at": "2026-08-29T06:20:32.587819+08:00",
   "source_count": 1,
+  "versioning": {
+    "identity_field": "rule_key",
+    "version_field": "rule_version",
+    "effective_from_field": "effective_date",
+    "effective_to_field": "effective_to",
+    "history_field": "version_history"
+  },
   "items": [
     {
       "id": "r20260828-5fe32868",

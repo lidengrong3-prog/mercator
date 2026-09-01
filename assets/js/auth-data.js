@@ -36,8 +36,15 @@ function jayRenderQualityReport(){
   setText('dq-healthy', publishableCount);
   setText('dq-raw-records', summary.raw_records == null ? '--' : summary.raw_records);
   setText('dq-scoped-records', summary.scoped_records == null ? '--' : summary.scoped_records);
+  setText('dq-formal-records', summary.formal_records == null ? '--' : summary.formal_records);
+  setText('dq-excluded-records', summary.excluded_records == null ? '--' : summary.excluded_records);
   setText('dq-errors', summary.errors || 0);
   setText('dq-warnings', summary.warnings || 0);
+  var scopeMeta = report.scope || {};
+  if(scopeMeta.config_version){
+    var scopeNote = document.getElementById('dq-scope-note');
+    if(scopeNote) scopeNote.textContent = '配置 v' + scopeMeta.config_version + ' · 当前市场与已配置平台';
+  }
   setText('data-quality-generated', '最近校验：' + jayQualityDate(report.generated_at) + ' · 发布闸门：' + (report.publishable ? '已通过' : '已阻断'));
 
   var badge = document.getElementById('data-quality-badge');
@@ -47,7 +54,7 @@ function jayRenderQualityReport(){
   }
   var rows = document.getElementById('data-quality-rows');
   if(rows){
-    if(!keys.length){ rows.innerHTML='<tr><td colspan="6" class="data-quality-empty">质量报告中没有数据集。</td></tr>'; }
+    if(!keys.length){ rows.innerHTML='<tr><td colspan="8" class="data-quality-empty">质量报告中没有数据集。</td></tr>'; }
     else rows.innerHTML = keys.map(function(key){
       var item=datasets[key]||{};
       var state=item.status||'failed';
@@ -57,6 +64,8 @@ function jayRenderQualityReport(){
         '<td><span class="data-quality-state '+escapeHtml(state)+'">'+escapeHtml(JAY_QUALITY_LABELS[state]||state)+'</span></td>'+
         '<td>'+escapeHtml(String(item.raw_records==null?(item.records==null?'--':item.records):item.raw_records))+'</td>'+
         '<td>'+escapeHtml(String(item.scoped_records==null?'--':item.scoped_records))+'</td>'+
+        '<td>'+escapeHtml(String(item.formal_records==null?'--':item.formal_records))+'</td>'+
+        '<td>'+escapeHtml(String(item.excluded_records==null?'--':item.excluded_records))+'</td>'+
         '<td>'+escapeHtml(stamp)+'</td>'+
         '<td>'+escapeHtml(notes[0]||'结构、来源与时效校验通过')+'</td></tr>';
     }).join('');
@@ -85,6 +94,7 @@ async function jayLoadQualityReport(){
     JAY_QUALITY_REPORT=report;
     jayRenderQualityReport();
     jayUpdateDataStamp();
+    if(typeof renderOverviewDecisionState==='function')renderOverviewDecisionState();
     if(typeof stInitSystemStatus==='function')stInitSystemStatus();
   }
   var localReport=await localTry();
@@ -111,8 +121,11 @@ function jayFreshestStamp(){
 async function jayRefreshViaAI(key, label){
   if(!AI_ENGINE.hasKey()){ toast('请先登录后使用 AI 简报服务'); return null; }
   var catLabel = label || key;
-  var sys = '你是美国市场跨境电商情报分析师，基于联网检索整理最新动态。输出简体中文 Markdown：每条用 "## 美国/平台｜要点" 开头，正文含「影响」与「来源」（如可知网址）。最多 12 条，只分析美国市场及 Amazon、TikTok Shop、AliExpress、eBay，聚焦 2026 年最新政策、规则、平台变动与风险预警。禁止输出其他国家、区域或平台。';
-  var user = '【当前日期】' + jayNowHuman() + '。请联网检索并整理「' + catLabel + '」截至今日的最新美国市场动态，优先 2026 年 7 月以来的信息；平台仅限 Amazon、TikTok Shop、AliExpress、eBay。';
+  var scopeMarkets=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames():['当前'];
+  var scopePlatforms=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActivePlatformNames?window.JAY_MARKET_SCOPE_API.getActivePlatformNames():[];
+  var scopeLabel=scopeMarkets.join('、')+'市场';
+  var sys = '你是跨境电商情报分析师，基于联网检索整理最新动态。输出简体中文 Markdown：每条用 "## 市场/平台｜要点" 开头，正文含「影响」与「来源」（如可知网址）。最多 12 条，只分析'+scopeLabel+'及已配置平台 '+scopePlatforms.join('、')+'，聚焦最新政策、规则、平台变动与风险预警。禁止输出其他国家、区域或平台，禁止补造事实。';
+  var user = '【当前日期】' + jayNowHuman() + '。请联网检索并整理「' + catLabel + '」截至今日的最新'+scopeLabel+'动态；平台仅限 '+scopePlatforms.join('、')+'。';
   toast('正在联网检索最新' + catLabel + '数据...');
   try {
     var brief = await callAI(sys, user, { temperature: 0.4, max_tokens: 2600, search: true });
@@ -178,7 +191,7 @@ function jayRenderBriefCard(){
   });
   var body = document.getElementById('ov-brief-body');
   if(!body) return;
-  if(!best){ body.innerHTML = '<p style="color:var(--muted);font-size:12px">暂无实时简报。点击「刷新实时数据」，AI 将联网检索并生成最新美国市场动态。</p>'; return; }
+  if(!best){ var marketText=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames().join('、'):'当前'; body.innerHTML = '<p style="color:var(--muted);font-size:12px">暂无实时简报。点击「刷新实时数据」，AI 将联网检索并生成最新'+marketText+'市场动态。</p>'; return; }
   var d = new Date(best.ts);
   var label = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
   body.innerHTML = '<div class="rp-v2-rpt" style="box-shadow:none;padding:0">' + renderMarkdownSafe(best.text) + '</div><div style="font-size:11px;color:var(--muted);margin-top:8px">生成时间：'+label+'</div>';
@@ -186,6 +199,28 @@ function jayRenderBriefCard(){
 
 // 初始化总览页数据印章与 AI 实时情报卡（依赖 JAY_DATA_META / JAY_CORE_KEYS，必须在数据层定义后调用）
 jayUpdateDataStamp(); jayRenderBriefCard(); jayLoadQualityReport();
+
+function jayMarketDataContractValid(key,data){
+  if(!data)return false;
+  if(key==='policies'){
+    var contract=data.language_contract;
+    if(!contract||contract.target_language!=='zh-CN'||!Array.isArray(data.items))return false;
+    return data.items.every(function(item){
+      if(!item||typeof item!=='object')return false;
+      var translation=item.translation;
+      return /[\u3400-\u9fff]/.test(String(item.title_zh||''))
+        && translation&&['source_zh','translated','reviewed'].indexOf(translation.status)>=0;
+    });
+  }
+  if(key==='taxes')return data.domain==='tax'&&Array.isArray(data.items);
+  if(key==='access_requirements')return data.domain==='access'&&Array.isArray(data.items);
+  if(key==='alerts')return Array.isArray(data)&&data.every(function(row){
+    return Array.isArray(row)&&row.length>9&&row[9]&&typeof row[9]==='object'
+      &&row[9].source&&row[9].source_record_id&&['verified','uploaded'].indexOf(row[9].verification_status)>=0
+      &&row[9].display_locale==='zh-CN';
+  });
+  return true;
+}
 
 async function jayFetchMarketData(key, fallbackUrl) {
   function localTry() {
@@ -201,7 +236,7 @@ async function jayFetchMarketData(key, fallbackUrl) {
     }).then(function(r){ return r.ok ? r.json() : null; })
       .then(function(rows){
         clearTimeout(timer);
-        if (rows && rows.length > 0 && rows[0].data){
+        if (rows && rows.length > 0 && rows[0].data && jayMarketDataContractValid(key,rows[0].data)){
           var mt = (rows[0].meta && typeof rows[0].meta === 'object' && rows[0].meta.updated_at) ? rows[0].meta.updated_at : new Date().toISOString();
           JAY_DATA_META[key] = { updated_at: mt, source: 'supabase' };
           return rows[0].data;
@@ -231,6 +266,7 @@ var jayIsDemo = false;
 var authMode = 'login';
 var jayReportPoolCache = [];
 var jayReportsCache = [];
+var jayReportExportsCache = [];
 var jayPreferenceCache = { notification_prefs: {}, ui_prefs: {}, workspace_prefs: {} };
 var jayWorkspaceContext = {
   available: false,
@@ -250,11 +286,12 @@ var jayWorkspaceHydration = null;
 var jayHydratedUserId = null;
 var jayReportPoolSyncTimer = null;
 
-function jayResetUserWorkspace() {
+function jayResetUserWorkspace(previousUserId) {
   if (jayReportPoolSyncTimer) clearTimeout(jayReportPoolSyncTimer);
   jayReportPoolSyncTimer = null;
   jayReportPoolCache = [];
   jayReportsCache = [];
+  jayReportExportsCache = [];
   jayPreferenceCache = { notification_prefs: {}, ui_prefs: {}, workspace_prefs: {} };
   jayWorkspaceContext = { available: false, loading: false, workspace: null, membership: null, members: [], invites: [], error: null };
   jayNotificationsCache = [];
@@ -265,6 +302,10 @@ function jayResetUserWorkspace() {
   jayWorkspaceAssetSaveVersions = {};
   jayWorkspaceHydration = null;
   jayHydratedUserId = null;
+  try {
+    if (previousUserId && typeof prPurgeImportedDataForUser === 'function') prPurgeImportedDataForUser(previousUserId);
+    else if (typeof prResetImportedDataForAuthChange === 'function') prResetImportedDataForAuthChange();
+  } catch (e) {}
 }
 
 function initJayAuth() {
@@ -275,11 +316,13 @@ function initJayAuth() {
     // 认证状态监听：自动续期 token / 处理登出，避免被静默踢回登录页
     supabaseClient.auth.onAuthStateChange(function(event, session) {
       if (event === 'SIGNED_IN' && session) {
+        if (jayUser && jayUser.id && jayUser.id !== session.user.id) jayResetUserWorkspace(jayUser.id);
         jayIsDemo = false;
         jayUser = session.user;
         loadJayProfile().then(onAuthSuccess);
       } else if (event === 'SIGNED_OUT') {
-        jayUser = null; jayProfile = null; jayResetUserWorkspace(); showLoginScreen();
+        var signedOutUserId = jayUser && jayUser.id;
+        jayUser = null; jayProfile = null; jayResetUserWorkspace(signedOutUserId); showLoginScreen();
       } else if (event === 'TOKEN_REFRESHED' && session) {
         jayUser = session.user; // token 已自动刷新，无需额外操作
       } else if (event === 'USER_UPDATED') {
@@ -335,7 +378,8 @@ function switchAuthTab(mode) {
   tabs.forEach(function(t,i){ t.classList.toggle('active', (i===0 && mode==='login') || (i===1 && mode==='register')); });
   document.getElementById('field-name').classList.toggle('show', mode==='register');
   document.getElementById('field-company').classList.toggle('show', mode==='register');
-  document.getElementById('auth-title').textContent = mode==='login' ? '进入美国市场情报台' : '创建免费账号';
+  var activeMarketText=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames().join('、'):'市场';
+  document.getElementById('auth-title').textContent = mode==='login' ? '进入'+activeMarketText+'情报台' : '创建免费账号';
   document.getElementById('auth-submit-btn').textContent = mode==='login' ? '登录 →' : '注册 →';
   document.getElementById('auth-reset-link').style.display = mode==='login' ? '' : 'none';
   document.getElementById('auth-error').classList.remove('show');
@@ -397,10 +441,11 @@ async function doRegister(email, password, name, company) {
 }
 
 async function jayLogout() {
+  var signedOutUserId = jayUser && !jayIsDemo ? jayUser.id : null;
   if (supabaseClient && !jayIsDemo) await supabaseClient.auth.signOut();
   jayIsDemo = false;
   jayUser = null; jayProfile = null;
-  jayResetUserWorkspace();
+  jayResetUserWorkspace(signedOutUserId);
   showLoginScreen();
   toast('已安全登出');
 }
@@ -443,6 +488,7 @@ function onAuthSuccess() {
   if (!jayIsDemo && typeof jayLoadWorkspaceContext === 'function') jayLoadWorkspaceContext();
   if (!jayIsDemo && typeof jayLoadNotifications === 'function') jayLoadNotifications().then(function(){ if(typeof updateAlBadge==='function') updateAlBadge(); });
   if (!jayIsDemo && typeof jayLoadSubscription === 'function') jayLoadSubscription().then(function(){ if(typeof jayRenderPricingTier==='function') jayRenderPricingTier(); });
+  if (typeof prReloadImportedDataForCurrentUser === 'function') prReloadImportedDataForCurrentUser();
   if (typeof updateAlBadge === 'function') updateAlBadge();
   if (typeof stInitAccount === 'function') stInitAccount();
 }
@@ -462,6 +508,9 @@ var JAY_USER_TABLES = {
   workspace_members: true,
   workspace_invites: true,
   notification_events: true,
+  report_exports: true,
+  report_runs: true,
+  ai_request_logs: true,
   user_subscriptions: true
 };
 
@@ -636,24 +685,136 @@ async function jayMarkNotificationRead(notificationId) {
   return true;
 }
 
-async function jayGenerateReportPdf(title, text, reportId) {
-  if (!jayCanUseUserDb()) throw new Error('AUTH_REQUIRED');
+async function jayFunctionRequest(functionName, payload, options) {
+  options = options || {};
+  if (!jayCanUseUserDb()) {
+    var authError = new Error('AUTH_REQUIRED');
+    authError.code = 'AUTH_REQUIRED';
+    authError.status = 401;
+    throw authError;
+  }
   var sessionResult = await supabaseClient.auth.getSession();
   var session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
-  if (!session || !session.access_token) throw new Error('AUTH_REQUIRED');
-  var response = await fetch(JAY_SUPABASE_URL + '/functions/v1/report-export', {
-    method: 'POST',
-    headers: { 'apikey': JAY_ANON_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title: title || 'JAY观海市场决策报告', text: text || '', report_id: reportId || null })
-  });
+  if (!session || !session.access_token) {
+    var sessionError = new Error('AUTH_REQUIRED');
+    sessionError.code = 'AUTH_REQUIRED';
+    sessionError.status = 401;
+    throw sessionError;
+  }
+  var controller = new AbortController();
+  var timeoutMs = Math.max(1000, Number(options.timeout || 60000));
+  var timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
+  var response;
+  try {
+    response = await fetch(JAY_SUPABASE_URL + '/functions/v1/' + functionName, {
+      method: 'POST',
+      headers: {
+        'apikey': JAY_ANON_KEY,
+        'Authorization': 'Bearer ' + session.access_token,
+        'Content-Type': 'application/json',
+        'X-Request-Id': options.requestId || ''
+      },
+      body: JSON.stringify(payload || {}),
+      signal: controller.signal
+    });
+  } catch (networkError) {
+    if (networkError && networkError.name === 'AbortError') {
+      networkError.code = 'REQUEST_TIMEOUT';
+      networkError.status = 408;
+    } else {
+      networkError.code = networkError.code || 'NETWORK_ERROR';
+      networkError.status = 0;
+    }
+    throw networkError;
+  } finally {
+    clearTimeout(timer);
+  }
   var raw = await response.text();
-  var result = raw ? JSON.parse(raw) : {};
+  var result = {};
+  if (raw) {
+    try { result = JSON.parse(raw); } catch (e) { result = { message: raw.slice(0, 300) }; }
+  }
   if (!response.ok) {
-    var error = new Error(result.error || ('HTTP ' + response.status));
+    var error = new Error(result.error || result.message || ('HTTP ' + response.status));
+    error.code = result.error || result.code || 'SERVICE_ERROR';
     error.status = response.status;
+    error.details = result;
+    var retryAfter = response.headers.get('retry-after');
+    if (retryAfter) error.retryAfter = retryAfter;
     throw error;
   }
   return result;
+}
+
+function jayExportIdempotencyKey(reportId, format, exportOptions) {
+  exportOptions = exportOptions || {};
+  if (exportOptions.idempotencyKey) return String(exportOptions.idempotencyKey);
+  var retry = exportOptions.parentExportId ? ':retry:' + String(exportOptions.parentExportId) + ':' + Number(exportOptions.attempt || 1) : ':current';
+  return ['report-export', reportId || 'unsaved', format, retry].join(':');
+}
+
+async function jayGenerateReportPdf(title, text, reportId, exportOptions) {
+  exportOptions = exportOptions || {};
+  var requestId = exportOptions.requestId || ('pdf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10));
+  return jayFunctionRequest('report-export', {
+    title: title || 'JAY观海市场决策报告',
+    text: text || '',
+    report_id: reportId || null,
+    parent_export_id: exportOptions.parentExportId || null,
+    attempt: exportOptions.attempt || 1,
+    request_id: requestId,
+    idempotency_key: jayExportIdempotencyKey(reportId, 'pdf', exportOptions)
+  }, { timeout: exportOptions.timeout || 60000, requestId: requestId });
+}
+
+// All server exports use the same authenticated contract. Keeping the format
+// in this small adapter means the report page can render one export history
+// regardless of whether the file was produced as PDF or DOCX.
+async function jayGenerateReportDocx(title, text, reportId, exportOptions) {
+  exportOptions = exportOptions || {};
+  var requestId = exportOptions.requestId || ('docx_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10));
+  return jayFunctionRequest('report-docx', {
+    title: title || 'JAY观海市场决策报告',
+    text: text || '',
+    report_id: reportId || null,
+    parent_export_id: exportOptions.parentExportId || null,
+    attempt: exportOptions.attempt || 1,
+    request_id: requestId,
+    idempotency_key: jayExportIdempotencyKey(reportId, 'docx', exportOptions)
+  }, { timeout: exportOptions.timeout || 60000, requestId: requestId });
+}
+
+async function jayLoadReportExports(reportId) {
+  if (!jayCanUseUserDb()) return [];
+  var query = 'select=id,report_id,format,status,file_path,file_url,error_message,attempt,parent_export_id,request_id,idempotency_key,duration_ms,metadata,created_at,updated_at,started_at,completed_at&user_id=eq.' + encodeURIComponent(jayUser.id) + '&order=created_at.desc&limit=100';
+  if (reportId) query += '&report_id=eq.' + encodeURIComponent(reportId);
+  var rows = await jayDbGet('report_exports', query);
+  jayReportExportsCache = Array.isArray(rows) ? rows : [];
+  try { if (typeof rpV2RenderExportHistory === 'function') rpV2RenderExportHistory(jayReportExportsCache); } catch (e) {}
+  return jayReportExportsCache;
+}
+
+async function jayCreateReportExportEvent(reportId, format, status, details) {
+  if (!jayCanUseUserDb() || !reportId) return null;
+  var payload = Object.assign({
+    user_id: jayUser.id,
+    report_id: reportId,
+    format: ['pdf', 'docx', 'md'].indexOf(format) >= 0 ? format : 'md',
+    status: ['queued', 'processing', 'completed', 'failed'].indexOf(status) >= 0 ? status : 'queued',
+    attempt: 1
+  }, details || {});
+  try {
+    var rows = await jayDbInsert('report_exports', payload);
+    var row = rows && rows[0] ? rows[0] : null;
+    if (row) {
+      jayReportExportsCache.unshift(row);
+      if (typeof rpV2RenderExportHistory === 'function') rpV2RenderExportHistory(jayReportExportsCache);
+    }
+    return row;
+  } catch (error) {
+    console.warn('[JAY观海] export history write failed:', error);
+    return null;
+  }
 }
 
 async function jayCreateBillingCheckout(plan) {
@@ -709,12 +870,48 @@ async function jayUserHeaders(prefer) {
   };
 }
 
+var JAY_SERVICE_ERROR_MESSAGES = {
+  AUTH_REQUIRED: '登录状态已失效，请重新登录',
+  ORIGIN_NOT_ALLOWED: '当前访问地址未获服务端授权，请联系管理员检查生产域名配置',
+  ADMIN_FORBIDDEN: '当前账号没有管理员权限',
+  WORKSPACE_FORBIDDEN: '当前账号没有执行此操作的权限',
+  RATE_LIMITED: '请求过于频繁，请稍后重试',
+  AI_RATE_LIMITED: 'AI 服务请求过于频繁，请稍后重试',
+  QUOTA_EXCEEDED: '当前服务额度不足，请联系管理员补充额度',
+  AI_QUOTA_EXCEEDED: 'AI 服务额度不足，请联系管理员补充额度',
+  REQUEST_TIMEOUT: '请求超时，请检查网络后重试',
+  AI_PROVIDER_TIMEOUT: 'AI 服务响应超时，请稍后重试',
+  NETWORK_ERROR: '网络连接失败，请检查网络后重试',
+  AI_PROVIDER_UNREACHABLE: 'AI 服务暂时无法连接，请稍后重试',
+  AI_SERVICE_NOT_CONFIGURED: 'AI 服务尚未完成生产配置',
+  REPORT_SERVICE_NOT_CONFIGURED: '报告导出服务尚未完成生产配置',
+  REPORT_NOT_FOUND: '未找到已保存的报告，无法创建导出文件',
+  REPORT_EXPORT_IN_PROGRESS: '相同报告正在导出，请勿重复提交',
+  REPORT_STORAGE_UPLOAD_FAILED: '报告文件保存失败，请稍后重试',
+  REPORT_SIGNED_URL_FAILED: '报告下载链接创建失败，请稍后重试',
+  SERVICE_UNAVAILABLE: '服务暂时不可用，请稍后重试'
+};
+
+function jayErrorCode(error) {
+  if (!error) return 'UNKNOWN_ERROR';
+  return String(error.code || (error.details && (error.details.error || error.details.code)) || error.message || 'UNKNOWN_ERROR').split(':')[0];
+}
+
 function jayDbErrorText(error) {
   if (!error) return '未知错误';
-  if (error.message === 'AUTH_REQUIRED' || error.status === 401 || error.status === 403) return '登录状态已失效，请重新登录';
-  if (error.status === 0) return '网络连接失败，请检查网络后重试';
+  var code = jayErrorCode(error);
+  if (JAY_SERVICE_ERROR_MESSAGES[code]) return JAY_SERVICE_ERROR_MESSAGES[code];
+  if (error.status === 401) return JAY_SERVICE_ERROR_MESSAGES.AUTH_REQUIRED;
+  if (error.status === 403) return '当前账号没有执行此操作的权限';
+  if (error.status === 429) return JAY_SERVICE_ERROR_MESSAGES.RATE_LIMITED;
+  if (error.status === 408 || error.status === 504 || (error && error.name === 'AbortError')) return JAY_SERVICE_ERROR_MESSAGES.REQUEST_TIMEOUT;
+  if (error.status === 402) return JAY_SERVICE_ERROR_MESSAGES.QUOTA_EXCEEDED;
+  if (error.status === 0) return JAY_SERVICE_ERROR_MESSAGES.NETWORK_ERROR;
+  if (error.status >= 500) return JAY_SERVICE_ERROR_MESSAGES.SERVICE_UNAVAILABLE;
   return error.message || '数据保存失败，请稍后重试';
 }
+
+window.jayServiceErrorText = jayDbErrorText;
 
 async function jayDbRequest(method, table, query, payload, prefer) {
   if (!JAY_USER_TABLES[table]) throw new Error('UNSUPPORTED_USER_TABLE');
@@ -767,6 +964,67 @@ function jayDbDelete(table, filter) {
   return jayDbRequest('DELETE', table, filter, undefined, 'return=representation');
 }
 
+async function jayStartReportRun(details) {
+  if (!jayCanUseUserDb()) throw new Error('AUTH_REQUIRED');
+  details = details || {};
+  var key = String(details.idempotencyKey || '').trim();
+  if (!key) throw new Error('REPORT_RUN_IDEMPOTENCY_REQUIRED');
+  var payload = {
+    user_id: jayUser.id,
+    client_report_id: String(details.clientReportId || key).slice(0, 180),
+    idempotency_key: key.slice(0, 240),
+    purpose: String(details.purpose || 'market-research').slice(0, 80),
+    status: 'running',
+    market_codes: Array.isArray(details.marketCodes) ? details.marketCodes : [],
+    platform_keys: Array.isArray(details.platformKeys) ? details.platformKeys : [],
+    category_codes: Array.isArray(details.categoryCodes) ? details.categoryCodes : [],
+    data_version: details.dataVersion || null,
+    model: details.model || null,
+    section_count: Math.max(0, Number(details.sectionCount || 0)),
+    metadata: details.metadata && typeof details.metadata === 'object' ? details.metadata : {}
+  };
+  try {
+    var rows = await jayDbInsert('report_runs', payload);
+    var created = rows && rows[0] ? rows[0] : null;
+    return created ? Object.assign({ duplicate: false }, created) : null;
+  } catch (error) {
+    if (error.code !== '23505' && error.status !== 409) throw error;
+    var existing = await jayDbGet('report_runs', 'select=*&user_id=eq.' + encodeURIComponent(jayUser.id) + '&idempotency_key=eq.' + encodeURIComponent(payload.idempotency_key) + '&limit=1');
+    return existing && existing[0] ? Object.assign({ duplicate: true }, existing[0]) : null;
+  }
+}
+
+async function jayFinishReportRun(runId, status, details) {
+  if (!jayCanUseUserDb() || !runId) return false;
+  details = details || {};
+  var allowedStatus = ['completed', 'failed', 'cancelled'];
+  var finalStatus = allowedStatus.indexOf(status) >= 0 ? status : 'failed';
+  var payload = {
+    status: finalStatus,
+    completed_at: new Date().toISOString(),
+    duration_ms: Math.max(0, Number(details.durationMs || 0)),
+    report_id: details.reportId || null,
+    failed_section: details.failedSection || null,
+    error_code: details.errorCode || null,
+    error_message: details.errorMessage ? String(details.errorMessage).slice(0, 1000) : null
+  };
+  if (details.model) payload.model = details.model;
+  if (details.metadata && typeof details.metadata === 'object') payload.metadata = details.metadata;
+  var rows = await jayDbPatch('report_runs', 'id=eq.' + encodeURIComponent(runId) + '&user_id=eq.' + encodeURIComponent(jayUser.id), payload);
+  return rows && rows[0] ? rows[0] : true;
+}
+
+async function jayLoadReportRunMetrics(reportId) {
+  if (!jayCanUseUserDb()) return { runs: [], requests: [] };
+  var runQuery = 'select=*&user_id=eq.' + encodeURIComponent(jayUser.id) + '&order=created_at.desc&limit=100';
+  if (reportId) runQuery += '&report_id=eq.' + encodeURIComponent(reportId);
+  var runs = await jayDbGet('report_runs', runQuery);
+  var requestQuery = 'select=id,report_run_id,report_id,request_id,operation,status,provider,model,input_tokens,output_tokens,total_tokens,estimated_cost_usd,duration_ms,http_status,error_code,data_version,created_at&user_id=eq.' + encodeURIComponent(jayUser.id) + '&order=created_at.desc&limit=500';
+  if (reportId) requestQuery += '&report_id=eq.' + encodeURIComponent(reportId);
+  var requests = await jayDbGet('ai_request_logs', requestQuery);
+  return { runs: runs || [], requests: requests || [] };
+}
+
 function jayReadLegacyJson(key, fallback) {
   try {
     var raw = localStorage.getItem(key);
@@ -795,18 +1053,31 @@ function jayNormalizeMaterialType(type) {
 }
 
 function jayMaterialFromRow(row) {
-  return {
+  var metadata = row.metadata && typeof row.metadata === 'object' ? row.metadata : {};
+  return Object.assign({
     id: row.client_id,
     type: row.material_type,
     title: row.title,
     source: row.source || '',
     summary: row.summary || '',
     addedAt: row.created_at,
-    selected: row.selected !== false
-  };
+    selected: row.selected !== false,
+    snapshot_type: row.snapshot_type || null,
+    snapshot_data: row.snapshot_data || null,
+    snapshot_source: row.snapshot_source || '',
+    snapshot_at: row.snapshot_at || null,
+    snapshot_market: row.snapshot_market || '',
+    snapshot_platform: row.snapshot_platform || '',
+    snapshot_category: row.snapshot_category || ''
+  }, metadata);
 }
 
 function jayMaterialToRow(item) {
+  var metadata = Object.assign({}, item.metadata && typeof item.metadata === 'object' ? item.metadata : {});
+  ['snapshot_type','snapshot_data','snapshot_source','snapshot_at','snapshot_market','snapshot_platform','snapshot_category',
+    'source_kind','source_type','source_record_id','verification_status','verification_notes'].forEach(function(key){
+    if (item[key] !== undefined && item[key] !== null) metadata[key] = item[key];
+  });
   return {
     user_id: jayUser.id,
     client_id: String(item.id || jayStableClientId('material', item)),
@@ -815,7 +1086,14 @@ function jayMaterialToRow(item) {
     source: item.source || '',
     summary: item.summary || '',
     selected: item.selected !== false,
-    metadata: item.type && jayNormalizeMaterialType(item.type) !== item.type ? { original_type: item.type } : {},
+    snapshot_type: item.snapshot_type || null,
+    snapshot_data: item.snapshot_data || null,
+    snapshot_source: item.snapshot_source || '',
+    snapshot_at: item.snapshot_at || null,
+    snapshot_market: item.snapshot_market || '',
+    snapshot_platform: item.snapshot_platform || '',
+    snapshot_category: item.snapshot_category || '',
+    metadata: Object.assign({}, metadata, item.type && jayNormalizeMaterialType(item.type) !== item.type ? { original_type: item.type } : {}),
     created_at: item.addedAt || new Date().toISOString()
   };
 }
@@ -866,6 +1144,18 @@ function jayReportType(template) {
 
 function jayReportFromRow(row) {
   var content = row.content && typeof row.content === 'object' ? row.content : {};
+  var scopeApi = window.JAY_MARKET_SCOPE_API;
+  var marketCodes = Array.isArray(content.market_codes) ? content.market_codes.slice()
+    : (Array.isArray(content.marketCodes) ? content.marketCodes.slice() : (content.market ? [content.market] : []));
+  var platformKeys = Array.isArray(content.platform_keys) ? content.platform_keys.slice()
+    : (Array.isArray(content.platformKeys) ? content.platformKeys.slice() : []);
+  var categoryCodes = Array.isArray(content.category_codes) ? content.category_codes.slice()
+    : (Array.isArray(content.categoryCodes) ? content.categoryCodes.slice() : (content.category ? [content.category] : []));
+  if (scopeApi) {
+    marketCodes = marketCodes.map(scopeApi.normalizeMarketCode).filter(Boolean);
+    platformKeys = platformKeys.map(scopeApi.normalizePlatformKey).filter(Boolean);
+    categoryCodes = scopeApi.normalizeCategoryCodes ? scopeApi.normalizeCategoryCodes(categoryCodes) : categoryCodes.map(scopeApi.normalizeCategoryCode).filter(Boolean);
+  }
   return {
     id: row.client_id || row.id,
     dbId: row.id,
@@ -873,13 +1163,58 @@ function jayReportFromRow(row) {
     materials: content.material_count || (content.materials || []).length || 0,
     date: row.created_at,
     market: content.market || '',
+    market_codes: marketCodes,
+    platform_keys: platformKeys,
+    category_codes: categoryCodes,
+    template_id: content.template_id || content.template || row.report_type || 'custom',
+    scope_version: content.scope_version || '',
     tpl: content.template || row.report_type,
     text: content.text || '',
-    items: content.materials || []
+    items: content.materials || [],
+    engineVersion: content.engine_version || '',
+    seriesId: content.series_id || '',
+    revision: Number(content.revision || 1),
+    parentId: content.parent_id || null,
+    model: content.model || null,
+    completeness: content.completeness || null,
+    publishable: content.publishable !== false,
+    sourceAppendix: content.source_appendix || [],
+    reconciliation: content.reconciliation || null,
+    scopeCheck: content.scope_check || null,
+    generationStatus: row.generation_status || content.generation_status || row.status || 'completed',
+    saveStatus: row.save_status || content.save_status || (row.status === 'failed' ? 'failed' : 'saved'),
+    savedAt: row.saved_at || content.saved_at || null,
+    templateVersion: row.template_version || content.template_version || '',
+    dataVersion: row.data_version || content.data_version || '',
+    qualityReportVersion: row.quality_report_version || content.quality_report_version || '',
+    dataSnapshotAt: row.data_snapshot_at || content.data_snapshot_at || null,
+    materialSnapshotIds: row.material_snapshot_ids || content.material_snapshot_ids || [],
+    sourceRecordIds: row.source_record_ids || content.source_record_ids || [],
+    scopeSnapshot: row.scope_snapshot || content.scope_snapshot || null,
+    reportRunId: row.report_run_id || content.report_run_id || null,
+    cloudSaved: (row.save_status || content.save_status || (row.status === 'failed' ? 'failed' : 'saved')) === 'saved'
   };
 }
 
 function jayReportToRow(report) {
+  var scopeApi = window.JAY_MARKET_SCOPE_API;
+  var active = scopeApi && typeof scopeApi.getActiveContext === 'function' ? scopeApi.getActiveContext() : {};
+  var marketCodes = Array.isArray(report.market_codes) ? report.market_codes.slice()
+    : (Array.isArray(report.marketCodes) ? report.marketCodes.slice() : (Array.isArray(report.markets) ? report.markets.slice() : []));
+  if (!marketCodes.length && report.market) marketCodes = [report.market];
+  if (!marketCodes.length) marketCodes = Array.isArray(active.marketCodes) ? active.marketCodes.slice() : ['US'];
+  var platformKeys = Array.isArray(report.platform_keys) ? report.platform_keys.slice()
+    : (Array.isArray(report.platformKeys) ? report.platformKeys.slice() : []);
+  if (!platformKeys.length) platformKeys = Array.isArray(active.platformKeys) ? active.platformKeys.slice() : [];
+  var categoryCodes = Array.isArray(report.category_codes) ? report.category_codes.slice()
+    : (Array.isArray(report.categoryCodes) ? report.categoryCodes.slice() : (Array.isArray(report.categories) ? report.categories.slice() : []));
+  if (!categoryCodes.length) categoryCodes = Array.isArray(active.categoryCodes) ? active.categoryCodes.slice() : [];
+  if (scopeApi) {
+    marketCodes = marketCodes.map(scopeApi.normalizeMarketCode).filter(Boolean);
+    platformKeys = platformKeys.map(scopeApi.normalizePlatformKey).filter(Boolean);
+    categoryCodes = scopeApi.normalizeCategoryCodes ? scopeApi.normalizeCategoryCodes(categoryCodes) : categoryCodes.map(scopeApi.normalizeCategoryCode).filter(Boolean);
+  }
+  var marketName = report.market || (scopeApi && scopeApi.getPrimaryMarketName ? scopeApi.getPrimaryMarketName() : '');
   return {
     user_id: jayUser.id,
     client_id: String(report.id || jayStableClientId('report', report)),
@@ -890,17 +1225,72 @@ function jayReportToRow(report) {
       materials: report.items || [],
       material_count: report.materials || (report.items || []).length || 0,
       template: report.tpl || 'custom',
-      market: report.market || 'US'
+      template_id: report.template_id || report.tpl || 'custom',
+      market: marketName,
+      market_codes: marketCodes,
+      platform_keys: platformKeys,
+      category_codes: categoryCodes,
+      scope_version: scopeApi && scopeApi.configVersion ? scopeApi.configVersion : '',
+      engine_version: report.engineVersion || (report.model && report.model.engineVersion) || '',
+      series_id: report.seriesId || report.series_id || '',
+      revision: Number(report.revision || report.version || 1),
+      parent_id: report.parentId || report.parent_id || null,
+      model: report.model || null,
+      completeness: report.completeness || (report.model && report.model.completeness) || null,
+      publishable: report.publishable !== false,
+      source_appendix: report.sourceAppendix || (report.model && report.model.sourceAppendix) || [],
+      reconciliation: report.reconciliation || (report.model && report.model.reconciliation) || null,
+      scope_check: report.scopeCheck || (report.model && report.model.scopeCheck) || null,
+      generation_status: report.generationStatus || 'completed',
+      save_status: report.saveStatus || (report.cloudSaved ? 'saved' : 'pending'),
+      saved_at: report.savedAt || null,
+      template_version: String(report.templateVersion || (report.model && report.model.template && report.model.template.version) || ''),
+      data_version: String(report.dataVersion || ''),
+      quality_report_version: String(report.qualityReportVersion || ''),
+      data_snapshot_at: report.dataSnapshotAt || (report.model && report.model.dataSnapshotAt) || null,
+      material_snapshot_ids: Array.isArray(report.materialSnapshotIds) ? report.materialSnapshotIds : [],
+      source_record_ids: Array.isArray(report.sourceRecordIds) ? report.sourceRecordIds : [],
+      scope_snapshot: report.scopeSnapshot || (report.model && report.model.scopeSnapshot) || null,
+      report_run_id: report.reportRunId || null
     },
-    status: 'completed',
+    status: report.generationStatus || 'completed',
+    generation_status: report.generationStatus || 'completed',
+    save_status: report.saveStatus || (report.cloudSaved ? 'saved' : 'pending'),
+    saved_at: report.savedAt || null,
+    template_version: String(report.templateVersion || (report.model && report.model.template && report.model.template.version) || ''),
+    data_version: String(report.dataVersion || ''),
+    quality_report_version: String(report.qualityReportVersion || ''),
+    data_snapshot_at: report.dataSnapshotAt || (report.model && report.model.dataSnapshotAt) || null,
+    material_snapshot_ids: Array.isArray(report.materialSnapshotIds) ? report.materialSnapshotIds : [],
+    source_record_ids: Array.isArray(report.sourceRecordIds) ? report.sourceRecordIds : [],
+    scope_snapshot: report.scopeSnapshot || (report.model && report.model.scopeSnapshot) || {},
+    report_run_id: report.reportRunId || null,
     created_at: report.date || new Date().toISOString()
   };
 }
 
 async function jayPersistGeneratedReport(report) {
   if (!jayCanUseUserDb()) throw new Error('AUTH_REQUIRED');
-  await jayDbUpsert('generated_reports', jayReportToRow(report), 'user_id,client_id');
-  return true;
+  var rowPayload = jayReportToRow(report);
+  // The row is written only after the request has reached Supabase. Marking
+  // it saved in the persisted payload keeps refresh/re-login semantics honest;
+  // a rejected request never produces a saved row.
+  rowPayload.save_status = 'saved';
+  rowPayload.saved_at = new Date().toISOString();
+  if (rowPayload.content && typeof rowPayload.content === 'object') {
+    rowPayload.content.save_status = 'saved';
+    rowPayload.content.saved_at = rowPayload.saved_at;
+  }
+  var rows = await jayDbUpsert('generated_reports', rowPayload, 'user_id,client_id');
+  var row = rows && rows[0] ? rows[0] : null;
+  if (row) {
+    report.dbId = row.id || report.dbId || null;
+    report.id = row.client_id || report.id;
+    report.saveStatus = row.save_status || 'saved';
+    report.savedAt = row.saved_at || new Date().toISOString();
+    report.cloudSaved = true;
+  }
+  return row || true;
 }
 
 function jayApplyPreferencesToUi() {
@@ -947,21 +1337,49 @@ async function jayLoadReportMaterials() {
 async function jayLoadGeneratedReports() {
   var pending = jayReadLegacyJson(jayPendingKey(RP_REPORTS_KEY), null);
   var legacy = pending === null ? jayReadLegacyJson(RP_REPORTS_KEY, null) : pending;
+  var pendingRestoreFailed = false;
   if (Array.isArray(legacy) && legacy.length) {
     legacy.forEach(function(report){ if (!report.id) report.id = jayStableClientId('legacy_report', report); });
-    await jayDbUpsert('generated_reports', legacy.map(jayReportToRow), 'user_id,client_id');
+    try {
+      var restored = await jayDbUpsert('generated_reports', legacy.map(jayReportToRow), 'user_id,client_id');
+      // A pending local copy becomes cloud-saved only after the upsert returns.
+      (restored || []).forEach(function(row){
+        var local = jayReportsCache.find(function(item){ return item.id === row.client_id; });
+        if(local){ local.dbId = row.id; local.saveStatus = row.save_status || 'saved'; local.cloudSaved = true; local.savedAt = row.saved_at || new Date().toISOString(); }
+      });
+    } catch (error) {
+      // Keep the pending copy visible and explicitly unsaved. A transient
+      // network failure must not make a report appear to have vanished.
+      jayReportsCache = Array.isArray(legacy) ? legacy.map(function(item){ return Object.assign({}, item, { saveStatus: 'failed', cloudSaved: false }); }) : [];
+      pendingRestoreFailed = true;
+      try { rpV2LoadRecent(); } catch (e) {}
+      console.warn('[JAY观海] pending report restore failed:', error);
+    }
   }
-  var rows = await jayDbGet('generated_reports', 'select=*&user_id=eq.' + encodeURIComponent(jayUser.id) + '&order=created_at.desc&limit=50');
-  jayReportsCache = rows.map(jayReportFromRow);
   try {
-    localStorage.removeItem(jayPendingKey(RP_REPORTS_KEY));
-    localStorage.removeItem(RP_REPORTS_KEY);
-  } catch (e) {}
+    var rows = await jayDbGet('generated_reports', 'select=*&user_id=eq.' + encodeURIComponent(jayUser.id) + '&order=created_at.desc&limit=50');
+    var cloudReports = rows.map(jayReportFromRow);
+    if (pendingRestoreFailed && Array.isArray(legacy)) {
+      var cloudIds = {}; cloudReports.forEach(function(item){ cloudIds[item.id] = true; });
+      jayReportsCache = legacy.map(function(item){ return Object.assign({}, item, { saveStatus: 'failed', cloudSaved: false }); }).concat(cloudReports.filter(function(item){ return !cloudIds[item.id]; }));
+    } else {
+      jayReportsCache = cloudReports;
+      try { localStorage.removeItem(jayPendingKey(RP_REPORTS_KEY)); localStorage.removeItem(RP_REPORTS_KEY); } catch (e) {}
+    }
+  } catch (error) {
+    // Do not replace a usable local pending list with an empty state when the
+    // session is valid but Supabase is temporarily unavailable.
+    if (!Array.isArray(jayReportsCache) || !jayReportsCache.length) {
+      jayReportsCache = Array.isArray(legacy) ? legacy.map(function(item){ return Object.assign({}, item, { saveStatus: 'failed', cloudSaved: false }); }) : [];
+    }
+    console.warn('[JAY观海] report history load failed:', error);
+  }
   var stat = document.getElementById('rp-stat-reports');
   if (stat) stat.textContent = jayReportsCache.length;
   var settingsStat = document.getElementById('st-rep-count');
   if (settingsStat) settingsStat.textContent = jayReportsCache.length;
   try { rpV2LoadRecent(); } catch (e) {}
+  try { await jayLoadReportExports(); } catch (e) { console.warn('[JAY观海] export history load failed:', e); }
 }
 
 async function jayLoadUserPreferences() {
@@ -1019,7 +1437,8 @@ var JAY_WORKSPACE_ASSET_TYPES = {
   report_templates: 'object',
   shop_groups: 'shop_groups',
   content_collections: 'content_collections',
-  report_draft: 'object'
+  report_draft: 'object',
+  product_catalog_import: 'object'
 };
 
 function jayIsJsonObject(value) {
@@ -1102,6 +1521,8 @@ function jayApplyWorkspaceAssets() {
     ctFavFolders = Array.isArray(collections.folders) ? collections.folders : [];
     ctFavItems = collections.items || {};
   }
+  var productImport = jayGetWorkspaceAsset('product_catalog_import', null);
+  if (productImport && typeof prApplyImportedPayload === 'function') prApplyImportedPayload(productImport, { persist: false, source: 'cloud' });
   try { shRenderGroups(); } catch (e) {}
   try { shRenderTplSelect(); } catch (e) {}
   try { ctRenderTplSelect(); } catch (e) {}
@@ -1212,7 +1633,8 @@ async function addToWatchlist(itemType, itemId, itemName, note) {
   if (typeof wlIsConfiguredScopeRow === 'function' && !wlIsConfiguredScopeRow({
     item_type: itemType, item_id: itemId, item_name: itemName, note: note
   })) {
-    toast('只能添加美国市场及当前 4 个平台范围内的记录');
+    var scopeLabel=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getScopeLabel?window.JAY_MARKET_SCOPE_API.getScopeLabel():'当前市场与平台';
+    toast('只能添加'+scopeLabel+'范围内的记录');
     return false;
   }
   try {
@@ -1296,7 +1718,8 @@ async function addFromSearch(btn, name, type) {
   var typeMap = { track: 'country', shop: 'product', product: 'product' };
   var dbType = typeMap[type] || 'country';
   var itemId = name.replace(/[\u{1F1EE}\u{1F1E9}\u{1F1FA}\u{1F1F8}\u{1F1E7}\u{1F1F7}\u{1F1F9}\u{1F1ED}\u{1F1FB}\u{1F1F3}\u{1F1F2}\u{1F1FD}\u{1F1F5}\u{1F1ED}\u{1F1F2}\u{1F1FE}\u{1F1F8}\u{1F1EC}\u{1F1EF}\u{1F1F5}\u{1F1F0}\u{1F1F7}\u{1F1EC}\u{1F1E7}\u{1F1E9}\u{1F1EA}\u{1F1EB}\u{1F1F7}\u{1F1EE}\u{1F1F3}\u{1F1F8}\u{1F1E6}\u{1F1E6}\u{1F1EA}\u{1F1EA}\u{1F1EC}\u{1F3EA}\u{1F4E6}]/g, '').trim();
-  var ok = await addToWatchlist(dbType, itemId, name, '美国市场 · '+(typeof jayConfiguredPlatformsText==='function'?jayConfiguredPlatformsText():'Amazon、TikTok Shop、AliExpress、eBay'));
+  var scopeText=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getScopeLabel?window.JAY_MARKET_SCOPE_API.getScopeLabel():'当前市场与平台';
+  var ok = await addToWatchlist(dbType, itemId, name, scopeText);
   if (ok) {
     btn.textContent = '\u2705 \u5df2\u6dfb\u52a0';
     btn.disabled = true;
@@ -1368,7 +1791,7 @@ function showUpgradePrompt(feature) {
   card.style.cssText = 'background:#fff;border-radius:8px;padding:32px;max-width:400px;text-align:center';
   card.innerHTML = '<div style="font-size:32px;margin-bottom:16px">★</div>'
     + '<h3 style="margin:0 0 8px;font-size:18px">升级到 Pro 版</h3>'
-    + '<p style="color:#6b7b8d;font-size:13px;line-height:1.6;margin:0 0 20px">' + (names[feature]||'该功能') + ' 为 Pro 版专属功能。<br>解锁全部高级功能，深度洞察美国市场。</p>'
+    + '<p style="color:#6b7b8d;font-size:13px;line-height:1.6;margin:0 0 20px">' + (names[feature]||'该功能') + ' 为 Pro 版专属功能。<br>解锁全部高级功能，深度洞察当前市场。</p>'
     + '<button id="upgrade-ok" style="border:0;background:#3b7ab8;color:#fff;padding:10px 24px;border-radius:4px;cursor:pointer;font-size:13px">了解 Pro 版 →</button>'
     + '<br><button id="upgrade-cancel" style="border:0;background:none;color:#6b7b8d;padding:8px;cursor:pointer;font-size:12px;margin-top:8px">稍后再说</button>';
   overlay.appendChild(card);

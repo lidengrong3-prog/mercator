@@ -24,6 +24,8 @@ import ssl
 import hashlib
 from datetime import datetime, timezone, timedelta
 
+from collect_data import annotate_provenance
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DATA_DIR = os.path.join(ROOT, "data", "us_market")
@@ -237,7 +239,7 @@ def process_recalls(recalls, days=120):
         china_related = any("china" in country.lower() for country in countries) or is_china_related(searchable)
         
         # Build recall entry
-        entry = {
+        entry = annotate_provenance({
             "id": gen_recall_id(recall),
             "recall_number": recall_number,
             "title": title,
@@ -250,7 +252,7 @@ def process_recalls(recalls, days=120):
             "manufacturer_countries": countries,
             "products": products,
             "hazards": hazards,
-        }
+        }, default_source_kind="official", default_source_type="regulator")
         
         results["recalls"].append(entry)
         
@@ -282,6 +284,22 @@ def merge_recalls(old_data, new_data):
     if not old_data or not old_data.get("recalls"):
         return new_data
     
+    # Upgrade retained records in place so future runs remove legacy
+    # compatibility inference without changing the public recall shape.
+    for recall in old_data.get("recalls", []):
+        if isinstance(recall, dict):
+            recall.update(annotate_provenance(
+                recall,
+                default_source_kind="official",
+                default_source_type="regulator",
+            ))
+    for recall in old_data.get("china_related", []):
+        if isinstance(recall, dict):
+            recall.update(annotate_provenance(
+                recall,
+                default_source_kind="official",
+                default_source_type="regulator",
+            ))
     existing_ids = {r["id"] for r in old_data["recalls"]}
     added = 0
     for recall in new_data["recalls"]:

@@ -2,7 +2,10 @@
 (function(){
   var el=$('#ov-ai-diagnosis');
   if(!el)return;
-  el.innerHTML='<h4>✨ 美国市场综合诊断 <span class="pro-badge">PRO</span></h4><ul><li>🇺🇸 <b>当前范围：</b>美国市场，接入 Amazon、TikTok Shop、AliExpress、eBay</li><li>🔥 <b>重点方向：</b>先用已核验政策、平台规则和用户导入商品数据做判断</li><li>⚠️ <b>数据边界：</b>未接入实时经营数据的商品、店铺和类目不生成虚构结论</li></ul>';
+  var api=window.JAY_MARKET_SCOPE_API;
+  var markets=api&&api.getActiveMarketNames?api.getActiveMarketNames():['美国'];
+  var platforms=api&&api.getActivePlatformNames?api.getActivePlatformNames():['Amazon','TikTok Shop','AliExpress','eBay'];
+  el.innerHTML='<h4>✨ '+markets.join('、')+'市场综合诊断 <span class="pro-badge">PRO</span></h4><ul><li><b>当前范围：</b>'+markets.join('、')+'市场，接入 '+platforms.join('、')+'</li><li>🔥 <b>重点方向：</b>先用已核验政策、平台规则和用户导入商品数据做判断</li><li>⚠️ <b>数据边界：</b>未接入实时经营数据的商品、店铺和类目不生成虚构结论</li></ul>';
 })();
 
 
@@ -11,44 +14,124 @@
 var dynamicAlerts = [];
 var dynamicAlertsLoaded = false;
 
+function syncPlatformScopeUi(){
+  var api=window.JAY_MARKET_SCOPE_API;
+  if(!api||!api.getActivePlatforms)return;
+  var platforms=api.getActivePlatforms();
+  var names=platforms.map(function(p){return p.name||p.key;});
+  var marketNames=api.getActiveMarketNames?api.getActiveMarketNames():[];
+  var page=document.getElementById('platforms');
+  if(!page)return;
+  var header=page.querySelector('.page-header h2'); if(header)header.textContent=marketNames.join('、')+'市场 · 平台档案';
+  var linkage=page.querySelector('.platform-linkage'); if(linkage)linkage.textContent='当前市场：'+marketNames.join('、');
+  var note=page.querySelector('.platform-source-note'); if(note)note.textContent='平台范围来自统一市场配置；规则数量由当前市场已验证规则记录实时计算。';
+  var grid=page.querySelector('.platform-grid'); if(!grid)return;
+  var empty=grid.querySelector('.platform-scope-empty');
+  if(!empty){
+    empty=document.createElement('div');
+    empty.className='platform-scope-empty';
+    empty.setAttribute('role','status');
+    grid.appendChild(empty);
+  }
+  empty.textContent=marketNames.length?'当前'+marketNames.join('、')+'市场暂无已配置平台':'当前市场暂无已配置平台';
+  empty.style.display=platforms.length?'none':'';
+  var existing={}; grid.querySelectorAll('.platform-card[data-platform]').forEach(function(card){ existing[card.dataset.platform]=card; });
+  grid.querySelectorAll('.platform-card[data-platform]').forEach(function(card){ card.style.display=names.indexOf(card.dataset.platform)>=0?'':'none'; });
+  platforms.forEach(function(platform){
+    var name=platform.name||platform.key;
+    if(existing[name]){
+      var region=existing[name].querySelector('.platform-region'); if(region)region.textContent=(platform.marketName||marketNames[0]||'当前')+'站';
+      var desc=existing[name].querySelector('.platform-desc'); if(desc)desc.textContent='平台经营指标未接入可信数据源，当前仅展示已验证的'+(platform.marketName||marketNames[0]||'当前')+'规则记录。';
+      return;
+    }
+    var card=document.createElement('article'); card.className='platform-card'; card.dataset.platform=name; card.tabIndex=0; card.setAttribute('role','button'); card.setAttribute('aria-label','查看 '+name+' 平台规则');
+    var shortName=name.replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||name.slice(0,1);
+    card.innerHTML='<div class="platform-header"><div class="platform-logo">'+escapeHtml(shortName)+'</div><div><div class="platform-name">'+escapeHtml(name)+'</div><div class="platform-region">'+escapeHtml((platform.marketName||marketNames[0]||'当前')+'站')+'</div></div></div><div class="platform-rule-status" data-platform-status="'+escapeHtml(name)+'"><span>已验证规则</span><b>正在读取...</b></div><p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证规则记录。</p><span class="platform-open-rules">查看平台规则 →</span>';
+    var open=function(){ if(typeof jayOpenRulesFilter==='function')jayOpenRulesFilter({platform:name,market:platform.marketCode||((api.getPrimaryMarketCode&&api.getPrimaryMarketCode())||'')}); else if(typeof switchPage==='function')switchPage('rules'); };
+    card.addEventListener('click',function(e){if(e.target.closest('a,button,input,select,textarea'))return;open();});
+    card.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+    grid.appendChild(card);
+  });
+  if(typeof renderPlatformProfileStatus==='function')renderPlatformProfileStatus();
+}
+
 function generateDynamicAlerts(){
   dynamicAlerts = [];
   // --- from policies: impact_level === 'high' ---
   // Keep alerts on the policy page's formal data boundary: verified official
-  // US records whose subjects are relevant to cross-border operations.
-  var pItems = typeof plGetVerifiedUsPolicies === 'function'
-    ? plGetVerifiedUsPolicies(true)
+  // records whose subjects are relevant to the active markets.
+  var pItems = typeof plGetVerifiedPolicies === 'function'
+    ? plGetVerifiedPolicies(true)
     : [];
-  var regionLabelMap = {US:'美国',EU:'欧盟',SEA:'东南亚',CN:'中国',UK:'英国',JP:'日本',KR:'韩国',Global:'全球',JP:'日本',IN:'印度',BR:'巴西',MX:'墨西哥'};
+  var api=window.JAY_MARKET_SCOPE_API;
+  var regionLabelMap = {};
+  (api&&api.getConfig&&api.getConfig().markets||[]).forEach(function(m){ regionLabelMap[m.code]=m.name||m.label||m.code; });
   pItems.forEach(function(p, idx){
-    if(p.impact_level !== 'high') return;
-    var region = regionLabelMap[p.region] || p.region || '全球';
-    var title = p.title || '未命名政策';
-    var summary = p.summary || '详见来源链接';
+    var changeType=p.change_type||p.changeType;
+    var impact=p.impact_level||p.impactLevel;
+    // High-impact policies remain visible as risk alerts. Lower-impact
+    // records only become alerts when the source explicitly identifies a
+    // change and supplies a severity; the browser never invents one.
+    if(impact !== 'high' && (!changeType || ['medium','low'].indexOf(impact)<0)) return;
+    var regionCode=api&&api.normalizeMarketCode?api.normalizeMarketCode(p.region||p.market):String(p.region||p.market||'');
+    var region = regionLabelMap[regionCode] || p.region || p.market || '待补充市场';
+    var title = typeof plDisplayTitle==='function' ? plDisplayTitle(p) : (p.title_zh||p.title||'未命名政策');
+    var summary = typeof plDisplaySummary==='function' ? plDisplaySummary(p) : (p.summary_zh||p.summary||'详见来源链接');
+    var changeSummary=p.change_summary||p.changeSummary;
+    if(changeSummary && !summary) summary=changeSummary;
     dynamicAlerts.push({
-      id: 'dyn-p-' + (p.id || idx),
+      id: 'dyn-p-' + (p.id || idx) + (changeType ? '-' + changeType : ''),
       type: 'policy',
-      level: 'high',
-      title: title,
+      level: impact==='medium'?'mid':(impact||'high'),
+      title: changeType ? '政策变更：'+title : title,
       country: region,
       platform: '-',
       detail: summary,
       date: p.published_at || p.effective_date || '',
       read: false,
-      source: p.source || '美国官方政策源',
+      source: p.source || '官方政策源',
       refId: p.id,
-      category: p.category || 'regulation'
+      category: p.category || 'regulation',
+      categoryCodes: p.category_codes || p.categoryCodes || [],
+      changeType: changeType || null
+    });
+  });
+
+  // Tax and market-access records stay in independent domains. A record only
+  // becomes a change alert when the source explicitly supplies change_type
+  // and impact_level; the browser never invents a severity from a tax rate or
+  // requirement description.
+  ['tax','access'].forEach(function(domain){
+    var records=typeof plGetVerifiedDomainRecords==='function'?plGetVerifiedDomainRecords(domain):[];
+    records.forEach(function(record,idx){
+      var changeType=record.change_type||record.changeType;
+      var impact=record.impact_level||record.impactLevel;
+      if(!changeType||['high','medium','low'].indexOf(impact)<0)return;
+      var marketCode=api&&api.normalizeMarketCode?api.normalizeMarketCode(record.market||record.region||record.market_code):String(record.market||record.region||record.market_code||'');
+      var title=typeof plDisplayTitle==='function'?plDisplayTitle(record):(record.title_zh||record.title||'未命名变更');
+      var detail=typeof plDisplaySummary==='function'?plDisplaySummary(record):(record.summary_zh||record.change_summary||record.summary||'详见来源记录');
+      dynamicAlerts.push({
+        id:'dyn-'+domain+'-'+(record.id||idx)+'-'+changeType,
+        type:domain, level:impact==='medium'?'mid':impact,
+        title:(domain==='tax'?'税收变更：':'准入变更：')+title,
+        country:regionLabelMap[marketCode]||marketCode||'待补充市场',
+        platform:record.platform||'-', detail:detail,
+        date:record.effective_from||record.effective_date||record.published_at||'',
+        read:false, source:record.source||'可追溯法规来源', refId:record.id,
+        category:domain, categoryCodes:record.category_codes||record.categoryCodes||[], changeType:changeType
+      });
     });
   });
 
   // --- from rules: impact_level === 'high' ---
-  // rlGetJsonItems already limits rules to explicit US records on the four
+  // rlGetJsonItems already limits rules to explicit active-market records and
   // configured platforms; Global and unsupported-platform rules stay out.
   var rItems = typeof rlGetJsonItems === 'function' ? rlGetJsonItems() : [];
   rItems.forEach(function(r, idx){
     if(r.impact_level !== 'high') return;
     var platform = r.platform || '多平台';
-    var market = regionLabelMap[r.market] || r.market || '全球';
+    var marketCode=api&&api.normalizeMarketCode?api.normalizeMarketCode(r.market||r.region):String(r.market||r.region||'');
+    var market = regionLabelMap[marketCode] || r.market || r.region || '待补充市场';
     var title = r.title || '未命名规则';
     var summary = r.summary || '详见平台公告';
     dynamicAlerts.push({
@@ -63,7 +146,8 @@ function generateDynamicAlerts(){
       read: false,
       source: r.source || (r.platform ? r.platform + ' 官方公告' : '平台官方公告'),
       refId: r.id,
-      category: r.category || 'regulation'
+      category: r.category || 'regulation',
+      categoryCodes: r.category_codes || r.categoryCodes || []
     });
   });
 
@@ -77,66 +161,135 @@ function generateDynamicAlerts(){
 var alDynReadMap = {};
 var alertsDataLoaded = false;
 var alertsDataLoading = false;
+var alertsDataState = 'loading';
 
 function alertIsInConfiguredScope(item){
-  return window.JAY_MARKET_SCOPE_API && typeof window.JAY_MARKET_SCOPE_API.isUsAlert === 'function'
-    ? window.JAY_MARKET_SCOPE_API.isUsAlert(item)
-    : (Array.isArray(item) ? item[4] : item && (item.country || item.region || item.market)) === '美国';
+  var api=window.JAY_MARKET_SCOPE_API;
+  if(!api) return false;
+  var market=Array.isArray(item) ? item[4] : item && (item.country || item.region || item.market || item.market_code || item.marketCode);
+  var code=api.normalizeMarketCode?api.normalizeMarketCode(market):String(market||'').toUpperCase();
+  var active=api.getActiveMarkets?api.getActiveMarkets().map(function(m){return m.code;}):[];
+  if(active.indexOf(code)<0) return false;
+  var platform=Array.isArray(item) ? item[5] : item && (item.platform || item.platform_key || item.platformKey);
+  if(!platform || platform==='-' || !api.getPlatform)return true;
+  // Alert feeds often use an agency or source name in the platform column.
+  // Only enforce the platform relationship when the value is a known catalog
+  // platform; unknown source labels must not make a valid market alert vanish.
+  var known=api.getPlatform(platform);
+  return !known || !api.isAllowedPlatform || api.isAllowedPlatform(platform);
 }
 
 function replaceScopedAlertData(rows){
   alertsFull.length = 0;
   (Array.isArray(rows) ? rows : []).filter(alertIsInConfiguredScope).forEach(function(row){
-    if(!Array.isArray(row)) return;
-    var normalized = row.slice();
-    if(normalized[2] === 'medium') normalized[2] = 'mid';
-    alertsFull.push(normalized);
+    if(Array.isArray(row)){
+      var normalized = row.slice();
+      if(normalized[2] === 'medium') normalized[2] = 'mid';
+      alertsFull.push(normalized);
+      return;
+    }
+    if(row && typeof row==='object'){
+      var objectRecord=Object.assign({},row);
+      if(objectRecord.level==='medium')objectRecord.level='mid';
+      alertsFull.push(objectRecord);
+    }
   });
+}
+
+function alertRecordForProvenance(item){
+  if(Array.isArray(item)){
+    var metadata=item[9]&&typeof item[9]==='object'?item[9]:{};
+    return Object.assign({},metadata,{
+      id:item[0], title:item[3], market:item[4], platform:item[5], detail:item[6],
+      published_at:item[7], collected_at:item[7], source:item[5]||'official_feed',
+      source:metadata.source||item[5]||'', source_record_id:metadata.source_record_id||'',
+    });
+  }
+  return item && typeof item==='object' ? item : {};
+}
+
+function alertIsFormalRecord(item){
+  // Retired sample cards used short IDs such as a1/a13 and had no source
+  // record. They must never become formal merely because the legacy payload
+  // happens to match the old nine-column array shape.
+  if(Array.isArray(item)&&(!item[9]||typeof item[9]!=='object'||!item[9].source||!item[9].source_record_id||item[9].display_locale!=='zh-CN'))return false;
+  var api=window.JAY_MARKET_SCOPE_API;
+  var record=alertRecordForProvenance(item);
+  return !api || typeof api.isFormalRecord!=='function'
+    ? true
+    : api.isFormalRecord(record,{domain:'alert'});
 }
 
 async function loadAlertsData(){
   if(alertsDataLoading || alertsDataLoaded || typeof jayFetchMarketData !== 'function') return;
   alertsDataLoading = true;
+  alertsDataState = 'loading';
   var url = (document.querySelector('base') ? document.querySelector('base').href : location.pathname.replace(/[^/]*$/,'')) + 'data/alerts.json';
   try {
     var data = await jayFetchMarketData('alerts', url);
     var rows = Array.isArray(data) ? data : (data && Array.isArray(data.items) ? data.items : []);
     replaceScopedAlertData(rows);
     alertsDataLoaded = true;
+    alertsDataState = 'ready';
     if(typeof refreshDynamicAlerts === 'function') refreshDynamicAlerts();
     if(typeof renderAlerts === 'function') renderAlerts();
   } catch(e) {
+    alertsDataState = 'error';
     console.warn('[JAY观海] Alerts data unavailable; keeping the configured empty state:', e);
   } finally {
     alertsDataLoading = false;
+    if(typeof renderDecisionOverview==='function')renderDecisionOverview();
   }
 }
 
 // Merge scoped source records and generated records for rendering.
 function getCombinedAlerts(){
+  function normalizedType(value){
+    var type=String(value||'policy').toLowerCase();
+    if(type==='rule'||type==='rules')return 'platform';
+    if(type==='macro'||type==='country')return 'market';
+    if(type==='tariff')return 'tax';
+    return type;
+  }
   // Convert array-format alertsFull entries to objects for unified handling.
-  var base = alertsFull.filter(alertIsInConfiguredScope).map(function(a){
+  var base = alertsFull.filter(alertIsInConfiguredScope).filter(alertIsFormalRecord).map(function(a){
+    if(!Array.isArray(a)){
+      return {
+        id:a.id, type:normalizedType(a.type), level:a.level, title:a.title,
+        country:a.country||a.market||a.region||a.market_code||a.marketCode,
+        marketCode:a.market_code||a.marketCode||'', platform:a.platform||a.platform_key||a.platformKey||'-',
+        detail:a.detail||a.summary_zh||a.summary||'', date:a.date||a.published_at||a.effective_date||'',
+        read:!!a.read, source:a.source||a.source_name||'来源待补充', sourceUrl:a.source_url||a.url||'',
+        categoryCodes:a.category_codes||a.categoryCodes||[], dynamic:false
+      };
+    }
+    var metadata=a[9]&&typeof a[9]==='object'?a[9]:{};
     return {
-      id: a[0], type: a[1], level: a[2], title: a[3],
+      id: a[0], type: normalizedType(a[1]), level: a[2], title: a[3],
       country: a[4], platform: a[5], detail: a[6],
       date: a[7], read: a[8],
-      source: '公开数据源'
+      source: metadata.source||'公开数据源', sourceUrl:metadata.source_url||'',
+      categoryCodes:metadata.category_codes||[], dynamic:false
     };
   });
   // Apply read-state map to dynamic alerts
   var dyn = dynamicAlerts.filter(alertIsInConfiguredScope).map(function(a){
     return {
-      id: a.id, type: a.type, level: a.level, title: a.title,
+      id: a.id, type: normalizedType(a.type), level: a.level, title: a.title,
       country: a.country, platform: a.platform, detail: a.detail,
       date: a.date,
       read: !!alDynReadMap[a.id],
-      source: a.source || '来源待补充'
+      source: a.source || '来源待补充', sourceUrl:a.sourceUrl||'',
+      categoryCodes:a.categoryCodes||[], dynamic:true
     };
   });
   // Filter out dynamic alerts that duplicate base ones (by title similarity)
+  function titleKey(value){
+    return String(value||'').replace(/^(?:政策更新|政策变更|税收变更|准入变更)[：:]\s*/,'').replace(/\s+/g,' ').trim().toLowerCase();
+  }
   var baseTitles = {};
-  base.forEach(function(a){ baseTitles[a.title] = true; });
-  dyn = dyn.filter(function(a){ return !baseTitles[a.title]; });
+  base.forEach(function(a){ baseTitles[titleKey(a.title)] = true; });
+  dyn = dyn.filter(function(a){ return !baseTitles[titleKey(a.title)]; });
   return base.concat(dyn);
 }
 
@@ -150,16 +303,18 @@ function refreshDynamicAlerts(){
   }
   // Update sidebar badge
   updateAlBadge();
+  if(typeof renderDecisionOverview==='function')renderDecisionOverview();
 }
 
 var alCurrentTab='all';
 var alCurrentPage=1;
 var alPerPage=10;
 var alSelected=new Set();
-var alTypeIcons={shop:'🏪',cat:'📈',policy:'📜',macro:'💹',platform:'🔧'};
-var alTypeLabels={shop:'店铺异动',cat:'类目爆款',policy:'政策合规',macro:'宏观经济',platform:'平台规则'};
+var alTypeIcons={shop:'🏪',cat:'📈',policy:'📜',tax:'💰',access:'🛂',market:'📊',platform:'🔧'};
+var alTypeLabels={shop:'店铺异动',cat:'类目变化',policy:'政策动态',tax:'税收费用',access:'市场准入',market:'市场变化',platform:'平台规则'};
 var alLevelLabels={high:'高风险',mid:'中风险',low:'普通'};
-var alTypeTargets={shop:'products',cat:'products',policy:'policies',macro:'countries',platform:'rules'};
+var alTypeTargets={shop:'products',cat:'products',policy:'policies',tax:'policies',access:'policies',market:'countries',platform:'rules'};
+var alFilterStorageKey='jay_alert_filters_v2';
 
 // Initial alerts render will be triggered by switchPage
 
@@ -167,30 +322,61 @@ function renderAlerts(){
   var filtered=getFilteredAlerts();
   var pages=Math.max(1,Math.ceil(filtered.length/alPerPage));
   if(alCurrentPage>pages) alCurrentPage=pages;
-  renderAlSummary();
+  renderAlSummary(filtered);
   renderAlTabs();
   renderAlBatch();
   renderAlList(filtered);
   renderAlPagination(filtered);
-  updateAlBadge();
+  updateAlBadge(filtered);
 }
 
 function getFilteredAlerts(){
-  var typeF=document.getElementById('al-filter-type').value;
-  var levelF=document.getElementById('al-filter-level').value;
-  var timeF=document.getElementById('al-filter-time').value;
-  var searchQ=(document.getElementById('al-search-input').value||'').toLowerCase();
+  var typeNode=document.getElementById('al-filter-type');
+  var levelNode=document.getElementById('al-filter-level');
+  var timeNode=document.getElementById('al-filter-time');
+  var searchNode=document.getElementById('al-search-input');
+  var typeF=typeNode?typeNode.value:'all';
+  var levelF=levelNode?levelNode.value:'all';
+  var timeF=timeNode?timeNode.value:'all';
+  var searchQ=String(searchNode&&searchNode.value||'').trim().toLowerCase();
+  var custom=alCustomRangeValues();
+  var api=window.JAY_MARKET_SCOPE_API;
+  var context=api&&api.getActiveContext?api.getActiveContext():{categoryCodes:[]};
+  var activeCategories=context.categoryCodes||[];
   var tabType=alCurrentTab;
   var all = getCombinedAlerts();
   return all.filter(function(a){
     if(tabType!=='all'&&a.type!==tabType)return false;
     if(typeF!=='all'&&a.type!==typeF)return false;
     if(levelF!=='all'&&a.level!==levelF)return false;
-    if(searchQ&&a.title.toLowerCase().indexOf(searchQ)<0&&(a.platform||'').toLowerCase().indexOf(searchQ)<0&&a.detail.toLowerCase().indexOf(searchQ)<0)return false;
-    if(!alMatchesTimeFilter(a.date,timeF))return false;
+    var fields=[a.title,a.country,a.platform,a.detail,a.source].map(function(value){return String(value||'').toLowerCase();});
+    if(searchQ&&!fields.some(function(value){return value.indexOf(searchQ)>=0;}))return false;
+    if(!alMatchesTimeFilter(a.date,timeF,undefined,custom.start,custom.end))return false;
+    var recordCategories=Array.isArray(a.categoryCodes)?a.categoryCodes:[];
+    if(activeCategories.length&&recordCategories.length){
+      var normalized=recordCategories.map(function(code){return api&&api.normalizeCategoryCode?api.normalizeCategoryCode(code):String(code);});
+      if(!normalized.some(function(code){return activeCategories.indexOf(code)>=0;}))return false;
+    }
     return true;
   });
 }
+
+function jayOpenAlertsFilter(filters){
+  filters=filters||{};
+  alCurrentTab=filters.type&&filters.type!=='all'?filters.type:'all';
+  var type=document.getElementById('al-filter-type');if(type)type.value=filters.type||'all';
+  var level=document.getElementById('al-filter-level');if(level)level.value=filters.level||'all';
+  var time=document.getElementById('al-filter-time');if(time)time.value=filters.time||'all';
+  var search=document.getElementById('al-search-input');if(search)search.value=filters.search||'';
+  var start=document.getElementById('al-date-start');if(start)start.value=filters.start||'';
+  var end=document.getElementById('al-date-end');if(end)end.value=filters.end||'';
+  alSyncCustomRangeUi();
+  alPersistFilters();
+  alCurrentPage=1;
+  if(typeof switchPage==='function')switchPage('alerts');
+  else renderAlerts();
+}
+window.jayOpenAlertsFilter=jayOpenAlertsFilter;
 
 function alLocalDay(value){
   if(value instanceof Date){
@@ -215,25 +401,103 @@ function alCalendarDayDiff(value,nowValue){
   return Math.round((currentUtc-alertUtc)/86400000);
 }
 
+function alIsoLocalDay(value){
+  var day=alLocalDay(value);
+  if(!day)return '';
+  return day.getFullYear()+'-'+String(day.getMonth()+1).padStart(2,'0')+'-'+String(day.getDate()).padStart(2,'0');
+}
+
+function alCustomRangeValues(){
+  var start=document.getElementById('al-date-start');
+  var end=document.getElementById('al-date-end');
+  return {start:start?start.value:'',end:end?end.value:''};
+}
+
+function alValidateCustomRange(){
+  var time=document.getElementById('al-filter-time');
+  var error=document.getElementById('al-date-error');
+  if(!time||time.value!=='custom'){
+    if(error)error.textContent='';
+    return true;
+  }
+  var values=alCustomRangeValues();
+  var start=alLocalDay(values.start),end=alLocalDay(values.end),today=alLocalDay(new Date());
+  var message='';
+  if(!start||!end)message='请选择完整的开始和结束日期';
+  else if(start>end)message='开始日期不能晚于结束日期';
+  else if(start>today||end>today)message='自定义范围不能晚于今天';
+  if(error)error.textContent=message;
+  return !message;
+}
+
+function alSyncCustomRangeUi(){
+  var time=document.getElementById('al-filter-time');
+  var range=document.getElementById('al-custom-range');
+  if(!time||!range)return;
+  range.hidden=time.value!=='custom';
+  var today=alIsoLocalDay(new Date());
+  ['al-date-start','al-date-end'].forEach(function(id){var input=document.getElementById(id);if(input)input.max=today;});
+  alValidateCustomRange();
+}
+
+function alPersistFilters(){
+  var type=document.getElementById('al-filter-type');
+  var level=document.getElementById('al-filter-level');
+  var time=document.getElementById('al-filter-time');
+  var search=document.getElementById('al-search-input');
+  var custom=alCustomRangeValues();
+  try{localStorage.setItem(alFilterStorageKey,JSON.stringify({
+    type:type?type.value:'all',level:level?level.value:'all',time:time?time.value:'all',
+    search:search?search.value:'',start:custom.start,end:custom.end,tab:alCurrentTab
+  }));}catch(e){}
+}
+
+function alRestoreFilters(){
+  var state={};
+  try{state=JSON.parse(localStorage.getItem(alFilterStorageKey)||'{}')||{};}catch(e){state={};}
+  var assign=function(id,value){var node=document.getElementById(id);if(node&&value!==undefined&&Array.from(node.options||[]).some(function(option){return option.value===value;}))node.value=value;};
+  assign('al-filter-type',state.type||'all');assign('al-filter-level',state.level||'all');assign('al-filter-time',state.time||'all');
+  var search=document.getElementById('al-search-input');if(search)search.value=state.search||'';
+  var start=document.getElementById('al-date-start');if(start)start.value=state.start||'';
+  var end=document.getElementById('al-date-end');if(end)end.value=state.end||'';
+  alCurrentTab=state.tab&&['all','policy','tax','access','market','platform'].indexOf(state.tab)>=0?state.tab:'all';
+  alSyncCustomRangeUi();
+}
+
+function alCustomRangeChange(){
+  alCurrentPage=1;
+  alValidateCustomRange();
+  alPersistFilters();
+  renderAlerts();
+}
+
 function alMatchesTimeFilter(value,timeFilter,nowValue){
   if(timeFilter==='all') return true;
+  if(timeFilter==='custom'){
+    var start=alLocalDay(arguments.length>3?arguments[3]:'');
+    var end=alLocalDay(arguments.length>4?arguments[4]:'');
+    var alertDay=alLocalDay(value);
+    var currentDay=alLocalDay(nowValue instanceof Date?nowValue:new Date());
+    if(!start||!end||!alertDay||!currentDay||start>end||start>currentDay||end>currentDay)return false;
+    return alertDay>=start&&alertDay<=end;
+  }
   var maxAge={today:0,'3d':2,'7d':6}[timeFilter];
   if(maxAge===undefined) return true;
   var diff=alCalendarDayDiff(value,nowValue);
   return diff!==null&&diff>=0&&diff<=maxAge;
 }
 
-function renderAlSummary(){
-  var all = getCombinedAlerts();
-  var total=all.filter(function(a){return!a.read}).length;
-  var high=all.filter(function(a){return a.level==='high'&&!a.read}).length;
+function renderAlSummary(filtered){
+  var all = Array.isArray(filtered)?filtered:getFilteredAlerts();
+  var total=all.length;
+  var high=all.filter(function(a){return a.level==='high'}).length;
   var latestDate=all.reduce(function(max,a){return a.date&&a.date>max?a.date:max;},'');
   var today=latestDate?all.filter(function(a){return a.date===latestDate}).length:0;
   var done=all.filter(function(a){return a.read}).length;
-  var scopedDynamic = dynamicAlerts.filter(alertIsInConfiguredScope);
+  var scopedDynamic = all.filter(function(a){return a.dynamic;});
   var dynCount = scopedDynamic.length;
   var el=document.getElementById('al-summary');
-  el.innerHTML='<div class="al-summary-card sc-total"><div class="al-sc-label">未读预警</div><div class="al-sc-val">'+total+'</div><div class="al-sc-sub">当前范围</div></div>'
+  el.innerHTML='<div class="al-summary-card sc-total"><div class="al-sc-label">筛选结果</div><div class="al-sc-val">'+total+'</div><div class="al-sc-sub">与当前列表一致</div></div>'
     +'<div class="al-summary-card sc-high"><div class="al-sc-label">高风险紧急</div><div class="al-sc-val">'+high+'</div><div class="al-sc-sub">需立即处理</div></div>'
     +'<div class="al-summary-card sc-today"><div class="al-sc-label">最新批次</div><div class="al-sc-val">'+today+'</div><div class="al-sc-sub">'+(latestDate||'暂无数据')+'</div></div>'
     +'<div class="al-summary-card sc-done"><div class="al-sc-label">已处理归档</div><div class="al-sc-val">'+done+'</div><div class="al-sc-sub">累计已处理</div></div>';
@@ -241,14 +505,14 @@ function renderAlSummary(){
   var bannerHtml = '<div class="al-dyn-banner">'
     + '<span class="al-dyn-icon">↗</span>'
     + '<div class="al-dyn-text">'
-    + '<b>范围联动预警</b>：基于当前美国政策与平台规则自动生成 <span class="al-dyn-count">' + dynCount + '</span> 条预警'
-    + '（政策变动 ' + scopedDynamic.filter(function(a){return a.type==='policy'}).length + ' 条 · 平台规则 ' + scopedDynamic.filter(function(a){return a.type==='platform'}).length + ' 条）'
+    + '<b>范围联动预警</b>：基于当前市场政策与平台规则自动生成 <span class="al-dyn-count">' + dynCount + '</span> 条预警'
+    + '（政策 ' + scopedDynamic.filter(function(a){return a.type==='policy'}).length + ' · 税收 ' + scopedDynamic.filter(function(a){return a.type==='tax'}).length + ' · 准入 ' + scopedDynamic.filter(function(a){return a.type==='access'}).length + ' · 平台规则 ' + scopedDynamic.filter(function(a){return a.type==='platform'}).length + '）'
     + '</div></div>';
   el.innerHTML = bannerHtml + el.innerHTML;
 }
 
 function renderAlTabs(){
-  var tabs=[{k:'all',l:'全部'},{k:'shop',l:'店铺追踪'},{k:'cat',l:'类目爆款'},{k:'policy',l:'政策合规'},{k:'macro',l:'宏观数据'},{k:'platform',l:'平台规则'}];
+  var tabs=[{k:'all',l:'全部'},{k:'policy',l:'政策'},{k:'tax',l:'税收'},{k:'access',l:'准入'},{k:'market',l:'市场'},{k:'platform',l:'平台规则'}];
   var html='';
   var all = getCombinedAlerts();
   tabs.forEach(function(t){
@@ -270,9 +534,12 @@ function renderAlList(filtered){
   if(!filtered.length){
     var isFiltered=document.getElementById('al-filter-type').value!=='all'||document.getElementById('al-filter-level').value!=='all'||document.getElementById('al-filter-time').value!=='all'||document.getElementById('al-search-input').value;
     if(isFiltered){
-      el.innerHTML='<div class="al-empty"><div class="al-empty-icon">🔍</div><h3>未找到匹配的预警</h3><p>请尝试调整筛选条件</p></div>';
+      var customInvalid=document.getElementById('al-filter-time').value==='custom'&&!alValidateCustomRange();
+      el.innerHTML='<div class="al-empty"><div class="al-empty-icon">🔍</div><h3>'+(customInvalid?'日期范围不完整':'未找到匹配的预警')+'</h3><p>'+(customInvalid?'请填写有效的开始和结束日期':'当前范围内没有符合这些条件的真实预警记录')+'</p></div>';
+    }else if(alertsDataState==='error'){
+      el.innerHTML='<div class="al-empty"><div class="al-empty-icon">!</div><h3>预警数据读取失败</h3><p>当前没有可展示的动态记录，请稍后刷新数据源</p></div>';
     }else{
-      el.innerHTML='<div class="al-empty"><div class="al-empty-icon">✅</div><h3>当前所有监控运行平稳</h3><p>暂无任何预警，所有店铺、类目、国家市场无异动风险</p><button class="al-btn al-btn-primary" onclick="openAlertSettings()">前往告警设置</button></div>';
+      el.innerHTML='<div class="al-empty"><div class="al-empty-icon">○</div><h3>当前范围暂无预警</h3><p>尚未接入符合来源与验证要求的预警记录；不会使用其他市场或示例数据补位</p></div>';
     }
     return;
   }
@@ -286,16 +553,16 @@ function renderAlList(filtered){
     var levelLabel=alLevelLabels[level]||level;
     var checked=alSelected.has(id)?'checked':'';
     var readCls=read?'read':'unread';
-    html+='<div class="al-card '+readCls+'" id="al-card-'+id+'">';
-    html+='<div class="al-card-check"><input type="checkbox" '+checked+' onchange="alToggleSelect(\''+id+'\',this.checked)"></div>';
+    html+='<div class="al-card '+readCls+'" id="al-card-'+escapeHtml(id)+'">';
+    html+='<div class="al-card-check"><input type="checkbox" '+checked+' onchange="alToggleSelect(\''+escInline(id)+'\',this.checked)"></div>';
     html+='<div class="al-card-icon type-'+type+'">'+icon+'</div>';
     html+='<div class="al-card-body">';
-    html+='<div class="al-card-title">'+title+'</div>';
+    html+='<div class="al-card-title">'+escapeHtml(title)+'</div>';
     html+='<div class="al-card-meta">';
     html+='<span class="meta-tag '+level+'">'+levelLabel+'</span>';
     html+='<span>'+typeLabel+'</span>';
-    if(country&&country!=='-')html+='<span>📍 '+country+'</span>';
-    if(platform&&platform!=='-')html+='<span>🛒 '+platform+'</span>';
+    if(country&&country!=='-')html+='<span>📍 '+escapeHtml(country)+'</span>';
+    if(platform&&platform!=='-')html+='<span>🛒 '+escapeHtml(platform)+'</span>';
     if(a.source)html+='<span>来源：'+escapeHtml(a.source)+'</span>';
     html+='<span>📅 '+jayFmtTime(date)+'</span>';
     html+='</div>';
@@ -312,7 +579,7 @@ function renderAlList(filtered){
 }
 
 function parseDetail(d){
-  return d.replace(/(\+\d+\.?\d*%)/g,'<span class="val-up">$1</span>')
+  return escapeHtml(String(d||'')).replace(/(\+\d+\.?\d*%)/g,'<span class="val-up">$1</span>')
           .replace(/(-\d+\.?\d*%)/g,'<span class="val-down">$1</span>')
           .replace(/(暴跌|下跌|下滑|贬值|收紧|限制|暴涨|激增至)/g,function(m){
             if(m==='暴跌'||m==='下跌'||m==='下滑'||m==='贬值')return '<span class="val-down">'+m+'</span>';
@@ -334,9 +601,9 @@ function renderAlPagination(filtered){
   el.innerHTML=html;
 }
 
-function alSwitchTab(tab){alCurrentTab=tab;alCurrentPage=1;alSelected.clear();renderAlerts();}
-function alFilterChange(){alCurrentPage=1;renderAlerts();}
-function alSearch(){alCurrentPage=1;renderAlerts(); var al=document.getElementById('al-list'); if(al){ try{ jayHighlightMatches(al, ($('#al-search-input')||{}).value); }catch(e){} } }
+function alSwitchTab(tab){alCurrentTab=tab;alCurrentPage=1;alSelected.clear();alPersistFilters();renderAlerts();}
+function alFilterChange(){alCurrentPage=1;alSyncCustomRangeUi();alPersistFilters();renderAlerts();}
+function alSearch(){alCurrentPage=1;alPersistFilters();renderAlerts(); var al=document.getElementById('al-list'); if(al){ try{ jayHighlightMatches(al, ($('#al-search-input')||{}).value); }catch(e){} } }
 function alGoPage(p){alCurrentPage=p;renderAlerts();window.scrollTo({top:document.getElementById('al-list').offsetTop-80,behavior:'smooth'});}
 
 function alToggleSelect(id,checked){
@@ -353,7 +620,8 @@ function alToggleSelectAll(checked){
 
 function alArchive(id){
   for(var i=0;i<alertsFull.length;i++){
-    if(alertsFull[i][0]===id){alertsFull[i][8]=true;break;}
+    if(Array.isArray(alertsFull[i])&&alertsFull[i][0]===id){alertsFull[i][8]=true;break;}
+    if(alertsFull[i]&&typeof alertsFull[i]==='object'&&alertsFull[i].id===id){alertsFull[i].read=true;break;}
   }
   alDynReadMap[id] = true;
   alSelected.delete(id);
@@ -361,14 +629,21 @@ function alArchive(id){
   renderAlerts();
 }
 function alMarkAllRead(){
-  alertsFull.forEach(function(a){a[8]=true;});
-  dynamicAlerts.forEach(function(a){ alDynReadMap[a.id] = true; });
-  toast('已全部标为已读');
+  var ids=new Set(getFilteredAlerts().map(function(a){return a.id;}));
+  alertsFull.forEach(function(a){
+    if(Array.isArray(a)&&ids.has(a[0]))a[8]=true;
+    else if(a&&typeof a==='object'&&ids.has(a.id))a.read=true;
+  });
+  dynamicAlerts.forEach(function(a){if(ids.has(a.id))alDynReadMap[a.id]=true;});
+  toast('已将当前筛选结果标为已读');
   renderAlerts();
 }
 function alBatchArchive(){
   alSelected.forEach(function(id){
-    for(var i=0;i<alertsFull.length;i++){if(alertsFull[i][0]===id){alertsFull[i][8]=true;break;}}
+    for(var i=0;i<alertsFull.length;i++){
+      if(Array.isArray(alertsFull[i])&&alertsFull[i][0]===id){alertsFull[i][8]=true;break;}
+      if(alertsFull[i]&&typeof alertsFull[i]==='object'&&alertsFull[i].id===id){alertsFull[i].read=true;break;}
+    }
     alDynReadMap[id] = true;
   });
   var n=alSelected.size;
@@ -376,21 +651,16 @@ function alBatchArchive(){
   toast('已批量归档 '+n+' 条预警');
   renderAlerts();
 }
-function alBatchWatch(){
-  var n=alSelected.size;
-  alSelected.clear();
-  toast('已将 '+n+' 条预警加入看板监控');
-  renderAlerts();
-}
-
 function alViewDetail(id){
   var all = getCombinedAlerts();
   var a = all.find(function(x){return x.id===id});
   if(!a)return;
   if(a.type==='shop'||a.type==='cat')switchPage('products');
-  else if(a.type==='policy')switchPage('policies');
-  else if(a.type==='macro')switchPage('countries');
-  else if(a.type==='platform')switchPage('rules');
+  else if(a.type==='tax'&&typeof jayOpenPolicyFilter==='function')jayOpenPolicyFilter({domain:'tax'});
+  else if(a.type==='access'&&typeof jayOpenPolicyFilter==='function')jayOpenPolicyFilter({domain:'access'});
+  else if(a.type==='policy'&&typeof jayOpenPolicyFilter==='function')jayOpenPolicyFilter({domain:'policy'});
+  else if(a.type==='market')switchPage('countries');
+  else if(a.type==='platform'&&typeof jayOpenRulesFilter==='function')jayOpenRulesFilter({platform:a.platform||'all'});
   else switchPage('overview');
   toast('已跳转到'+alTypeLabels[a.type]+'板块');
 }
@@ -399,56 +669,31 @@ function alAiAnalysis(id){
   var all = getCombinedAlerts();
   var a = all.find(function(x){return x.id===id});
   if(!a)return;
-  var prompt='请基于这条美国市场预警的原始记录，给出不超过 120 字的影响、核验动作和下一步建议，并明确引用记录中的来源；禁止补造未提供的数字。\n标题：'+(a.title||'')+'\n类型：'+(a.type||'')+'\n平台：'+(a.platform||'')+'\n详情：'+(a.detail||'')+'\n来源：'+(a.source||'');
+  var scopeName=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames().join('、'):'当前市场';
+  var prompt='请基于这条'+scopeName+'市场预警的原始记录，给出不超过 120 字的影响、核验动作和下一步建议，并明确引用记录中的来源；禁止补造未提供的数字。\n标题：'+(a.title||'')+'\n类型：'+(a.type||'')+'\n平台：'+(a.platform||'')+'\n详情：'+(a.detail||'')+'\n来源：'+(a.source||'');
   if(typeof AI_ENGINE==='undefined'||!AI_ENGINE.hasKey()){ toast('当前没有可用的服务端 AI，暂不生成解读'); return; }
   toast('正在生成基于来源的 AI 解读…');
-  callAI('你是美国跨境电商合规分析师。只根据给定预警记录作答，不得编造数字或来源。',prompt,{max_tokens:500,search:false})
+  callAI('你是跨境电商合规分析师。只根据给定预警记录作答，不得编造数字或来源。',prompt,{max_tokens:500,search:false})
     .then(function(text){ toast(text||'暂无可生成的解读'); })
     .catch(function(error){ toast(error&&error.message==='AUTH_REQUIRED'?'请登录后使用 AI 解读':'AI 解读暂不可用'); });
 }
 
 function alExport(){toast('预警报告导出功能需升级专业版');}
 
-function updateAlBadge(){
+function updateAlBadge(filtered){
   var all = getCombinedAlerts();
   var unread = all.filter(function(a){return!a.read}).length;
+  var resultCount=Array.isArray(filtered)?filtered.length:(document.getElementById('al-filter-type')?getFilteredAlerts().length:all.length);
   var badge=document.getElementById('al-unread-badge');
-  if(badge){badge.textContent=unread;badge.style.display=unread>0?'inline-block':'none';}
+  if(badge){badge.textContent=resultCount;badge.style.display='inline-block';badge.title='当前筛选结果 '+resultCount+' 条';badge.setAttribute('aria-label','当前筛选结果 '+resultCount+' 条');}
   var navBadge=document.querySelector('.nav-item[data-page="alerts"] .nav-badge');
   if(navBadge){navBadge.textContent=unread;navBadge.style.display=unread>0?'inline-block':'none';}
 }
 
 // Hydrate the alert center from the scoped source as soon as the data layer is ready.
+alRestoreFilters();
 generateDynamicAlerts();
 loadAlertsData();
-
-function openAlertSettings(){
-  var overlay=document.createElement('div');
-  overlay.className='al-modal-overlay show';
-  overlay.onclick=function(e){if(e.target===overlay)overlay.remove();};
-  overlay.innerHTML='<div class="al-modal">'
-    +'<div class="al-modal-head"><h3>⚙ 告警设置</h3><button class="al-modal-close" onclick="this.closest(\'.al-modal-overlay\').remove()">✕</button></div>'
-    +'<div class="al-modal-body">'
-    +'<div class="al-setting-group"><h4>预警类型开关</h4>'
-    +'<div class="al-setting-item"><span class="al-setting-label">店铺异动预警</span><div class="al-toggle on" onclick="this.classList.toggle(\'on\')"></div></div>'
-    +'<div class="al-setting-item"><span class="al-setting-label">类目爆款异动</span><div class="al-toggle on" onclick="this.classList.toggle(\'on\')"></div></div>'
-    +'<div class="al-setting-item"><span class="al-setting-label">政策合规预警</span><div class="al-toggle on" onclick="this.classList.toggle(\'on\')"></div></div>'
-    +'<div class="al-setting-item"><span class="al-setting-label">宏观经济预警</span><div class="al-toggle on" onclick="this.classList.toggle(\'on\')"></div></div>'
-    +'<div class="al-setting-item"><span class="al-setting-label">平台规则变更</span><div class="al-toggle on" onclick="this.classList.toggle(\'on\')"></div></div>'
-    +'</div>'
-    +'<div class="al-setting-group"><h4>推送方式</h4>'
-    +'<div class="al-setting-item"><span class="al-setting-label">站内弹窗通知</span><div class="al-toggle on" onclick="this.classList.toggle(\'on\')"></div></div>'
-    +'<div class="al-setting-item"><span class="al-setting-label">右下角消息浮窗</span><div class="al-toggle on" onclick="this.classList.toggle(\'on\')"></div></div>'
-    +'<div class="al-setting-item"><span class="al-setting-label">同步到「我的看板」</span><div class="al-toggle" onclick="this.classList.toggle(\'on\')"></div></div>'
-    +'</div>'
-    +'<div class="al-setting-group"><h4>自定义阈值（专业版）</h4>'
-    +'<div class="al-setting-item"><span class="al-setting-label">GMV 波动触发阈值</span><input class="al-threshold-input" value="30%" disabled></div>'
-    +'<div class="al-setting-item"><span class="al-setting-label">差评率触发阈值</span><input class="al-threshold-input" value="5%" disabled></div>'
-    +'<div class="al-setting-item"><span class="al-setting-label">类目增速触发阈值</span><input class="al-threshold-input" value="50%" disabled></div>'
-    +'</div>'
-    +'</div></div>';
-  document.body.appendChild(overlay);
-}
 
 
 
@@ -650,6 +895,8 @@ function adminRenderRows(rows,type){
   if(!rows||!rows.length)return '<div class="admin-empty">暂无记录</div>';
   return rows.map(function(row){
     if(type==='incident')return '<div class="admin-row"><strong>'+stTeamEsc(row.title||row.service||'系统事件')+'</strong><small>'+stTeamEsc((row.severity||'info')+' · '+(row.status||'-')+' · '+stTeamDate(row.started_at))+'</small></div>';
+    if(type==='report')return '<div class="admin-row"><strong>'+stTeamEsc((row.status||'-')+' · '+(row.purpose||'报告')+' · '+(row.report_id||row.client_report_id||'-'))+'</strong><small>'+stTeamEsc('用户 '+(row.user_id||'-')+' · 数据 '+(row.data_version||'-')+' · '+(row.duration_ms==null?'耗时待记录':Math.round(Number(row.duration_ms)/1000)+' 秒')+(row.error_code?' · '+row.error_code:'')+' · '+stTeamDate(row.started_at))+'</small></div>';
+    if(type==='ai')return '<div class="admin-row"><strong>'+stTeamEsc((row.status||'-')+' · '+(row.operation||'AI 请求')+' · '+(row.model||'-'))+'</strong><small>'+stTeamEsc('用户 '+(row.user_id||'-')+' · '+Number(row.total_tokens||0)+' Token · $'+Number(row.estimated_cost_usd||0).toFixed(6)+' · '+Number(row.duration_ms||0)+' ms'+(row.error_code?' · '+row.error_code:'')+' · '+stTeamDate(row.created_at))+'</small></div>';
     return '<div class="admin-row"><strong>'+stTeamEsc((row.backup_type||'backup')+' · '+(row.status||'-'))+'</strong><small>'+stTeamEsc((row.location||'未记录位置')+' · '+stTeamDate(row.completed_at||row.started_at))+'</small></div>';
   }).join('');
 }
@@ -658,14 +905,17 @@ async function adminLoad(){
   if(note){note.style.display='block';note.textContent='正在校验管理员权限…';}if(content)content.style.display='none';
   if(jayIsDemo){if(note)note.textContent='只读演示不加载管理数据。';return}
   try{
-    var data=await jayLoadAdminSummary();var counts=data.counts||{};
+    var data=await jayLoadAdminSummary();var counts=data.counts||{},metrics=data.metrics||{};
     if(note)note.style.display='none';if(content)content.style.display='block';
     adminSetText('admin-users',counts.users);adminSetText('admin-subs',counts.subscriptions);adminSetText('admin-workspaces',counts.workspaces);adminSetText('admin-incidents-count',counts.open_incidents);adminSetText('admin-deliveries',counts.pending_deliveries);
+    adminSetText('admin-report-failure',Math.round(Number(metrics.report_failure_rate||0)*100)+'%');adminSetText('admin-ai-tokens',Number(metrics.total_tokens||0).toLocaleString('zh-CN'));adminSetText('admin-ai-cost','$'+Number(metrics.estimated_ai_cost_usd||0).toFixed(4));adminSetText('admin-report-duration',Number(metrics.average_report_duration_ms||0)?Math.round(Number(metrics.average_report_duration_ms)/1000)+'秒':'--');adminSetText('admin-export-failures',metrics.failed_exports||0);
+    var reportRuns=document.getElementById('admin-report-runs');if(reportRuns)reportRuns.innerHTML=adminRenderRows(data.report_runs,'report');
+    var aiRequests=document.getElementById('admin-ai-requests');if(aiRequests)aiRequests.innerHTML=adminRenderRows(data.ai_requests,'ai');
     var incidents=document.getElementById('admin-incidents');if(incidents)incidents.innerHTML=adminRenderRows(data.incidents,'incident');
     var backups=document.getElementById('admin-backups');if(backups)backups.innerHTML=adminRenderRows(data.backups,'backup');
     var generated=document.getElementById('admin-generated');if(generated)generated.textContent='管理员角色：'+(data.role||'-')+' · 更新时间 '+(data.generated_at?new Date(data.generated_at).toLocaleString('zh-CN'):'-');
   }catch(error){
-    if(note)note.textContent=error.message==='ADMIN_FORBIDDEN'?'当前账号不是平台管理员。':('管理后台不可用：'+(error.message||'请检查服务配置'));
+    if(note)note.textContent=window.jayServiceErrorText?window.jayServiceErrorText(error):(error.message==='ADMIN_FORBIDDEN'?'当前账号不是平台管理员。':('管理后台不可用：'+(error.message||'请检查服务配置')));
   }
 }
 function stToast(msg){
@@ -708,14 +958,16 @@ function stToast(msg){
   function jayApplyBoard(key, data){
     try {
       if(key==='countries'){
-        countryFullData = data && data.us ? { us: data.us } : {};
+        countryDataSource = data && typeof data==='object' ? data : {};
+        if(typeof jayApplyCountryDataScope==='function')jayApplyCountryDataScope();
       }
       else if(key==='platforms'){
         if(Array.isArray(data)){ var scopedPlatformRecords=(window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.filterPlatforms)?window.JAY_MARKET_SCOPE_API.filterPlatforms(data,function(d){return d&&d.name;}):data; platformsData=scopedPlatformRecords.map(function(d){var name=(window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.normalizePlatform)?window.JAY_MARKET_SCOPE_API.normalizePlatform(d.name):d.name;return [name||'',d.region||'',d.categories||'',d.gmv||'',d.fee||'',d.feeDesc||'',d.type||'',d.mau||'',d.updates||''];}); var _staticPfExt=pfExtData; pfExtData={}; Object.keys(_staticPfExt||{}).forEach(function(k){ pfExtData[k]=_staticPfExt[k]; }); scopedPlatformRecords.forEach(function(d){ if(d.ext&&Object.keys(d.ext).length){ var key=(window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.normalizePlatform)?window.JAY_MARKET_SCOPE_API.normalizePlatform(d.name):d.name; pfExtData[key]=Object.assign({}, pfExtData[key]||{}, d.ext); } }); fillSelect('#pf-f-region',[...new Set(platformsData.map(function(p){return p[1];}))].sort()); fillSelect('#pf-f-type',[...new Set(platformsData.map(function(p){return p[6];}))].sort()); }
       }
       else if(key==='rules'){ rulesJsonData=data; if(typeof rlInitFromJson==='function') rlInitFromJson(); }
-      else if(key==='policies'){ policiesJsonData=data; if(typeof plInitFromJson==='function') plInitFromJson(); }
-      else if(key==='alerts'){ replaceScopedAlertData(data); alertsDataLoaded=true; if(typeof refreshDynamicAlerts==='function') refreshDynamicAlerts(); if(typeof renderAlerts==='function') renderAlerts(); }
+      else if(key==='policies'){ policiesJsonData=data; policiesDataState='ready'; if(typeof plInitFromJson==='function') plInitFromJson(); }
+      else if(key==='alerts'){ replaceScopedAlertData(data); alertsDataLoaded=true; alertsDataState='ready'; if(typeof refreshDynamicAlerts==='function') refreshDynamicAlerts(); if(typeof renderAlerts==='function') renderAlerts(); }
+      if(key==='platforms') syncPlatformScopeUi();
     } catch(e){ console.warn('[JAY观海] apply board failed for '+key+':', e); }
   }
 
@@ -844,6 +1096,12 @@ function stToast(msg){
 
   window.jayRefreshBoard=jayRefreshBoard; window.jayStartRefreshScheduler=jayStartRefreshScheduler;
 
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', jayStartRefreshScheduler); }
-  else { jayStartRefreshScheduler(); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', function(){ syncPlatformScopeUi(); jayStartRefreshScheduler(); }); }
+  else { syncPlatformScopeUi(); jayStartRefreshScheduler(); }
 })();
+
+if(window.addEventListener) window.addEventListener('jay:market-scope-change', function(){
+  syncPlatformScopeUi();
+  if(typeof refreshDynamicAlerts==='function')refreshDynamicAlerts();
+  if(typeof renderAlerts==='function')renderAlerts();
+});

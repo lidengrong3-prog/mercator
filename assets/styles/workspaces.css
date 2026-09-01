@@ -263,6 +263,18 @@
 .rp-v2-config-group select:focus,.rp-v2-config-group input[type=text]:focus{border-color:var(--green);outline:none;box-shadow:0 0 0 2px rgba(44,95,138,.1)}
 .rp-v2-config-group textarea{padding:10px 12px;border:1px solid var(--line);border-radius:6px;font:12px 'Noto Sans SC';background:#fff;color:var(--ink);resize:vertical;min-height:70px;transition:.15s}
 .rp-v2-config-group textarea:focus{border-color:var(--green);outline:none;box-shadow:0 0 0 2px rgba(44,95,138,.1)}
+.rp-v2-data-check{border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:0 0 14px;background:#fafcfd;font:11px/1.6 'Noto Sans SC';color:var(--muted)}
+.rp-v2-data-check.is-blocked{border-color:#f3c6c6;background:#fff7f7;color:#8e3d3d}
+.rp-v2-data-check.is-ready{border-color:#b9dec9;background:#f5fbf7;color:#276749}
+.rp-v2-data-check strong{color:var(--ink);margin-right:8px}
+.rp-v2-data-check ul{display:flex;flex-wrap:wrap;gap:4px 18px;margin:5px 0 0;padding-left:17px}
+.rp-v2-publish-status{display:inline-flex;align-items:center;margin-left:8px;padding:2px 7px;border-radius:10px;font:10px 'Noto Sans SC';color:#64748b;background:#f1f5f9;vertical-align:middle}
+.rp-v2-publish-status.is-publishable{background:#e8f6ee;color:#23734a}
+.rp-v2-publish-status.is-blocked{background:#fff0f0;color:#a23b3b}
+.rp-v2-save-status{display:inline-flex;align-items:center;margin-left:5px;padding:2px 7px;border-radius:10px;font:10px 'Noto Sans SC';color:#64748b;background:#f1f5f9;vertical-align:middle}
+.rp-v2-save-status.is-saving{background:#fff7e8;color:#9a641d}
+.rp-v2-save-status.is-saved{background:#e8f6ee;color:#23734a}
+.rp-v2-save-status.is-failed{background:#fff0f0;color:#a23b3b}
 .rp-v2-toggle-row{display:flex;gap:8px;flex-wrap:wrap}
 .rp-v2-toggle{padding:6px 14px;border:1px solid var(--line);border-radius:6px;font:11px 'Noto Sans SC';background:#fff;cursor:pointer;transition:.15s}
 .rp-v2-toggle.active{background:var(--green);color:#fff;border-color:var(--green)}
@@ -316,6 +328,13 @@
 .rp-v2-rpt table.rp-v2-rpt-table td{padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top}
 .rp-v2-rpt table.rp-v2-rpt-table tr:nth-child(even) td{background:#f8fafc}
 .rp-v2-rpt table.rp-v2-rpt-table tr:hover td{background:#eef5f1}
+.rp-v2-export-history{margin-top:16px}
+.rp-v2-history-empty{padding:12px 0;color:var(--muted);font:11px 'Noto Sans SC';text-align:center}
+.rp-v2-history-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font:11px 'Noto Sans SC'}
+.rp-v2-history-row:last-child{border-bottom:0}
+.rp-v2-history-row strong{display:block;font-size:11px;color:var(--ink)}
+.rp-v2-history-row small{display:block;margin-top:2px;color:var(--muted);font-size:10px;line-height:1.4}
+.rp-v2-history-retry{border:1px solid var(--line);background:#fff;color:var(--green);border-radius:4px;padding:3px 6px;cursor:pointer}
 /* ===== 报告图表（内联 SVG） ===== */
 .jay-chart{margin:18px 0;background:#fff;border:1px solid #e6eef6;border-radius:10px;padding:14px 16px;box-shadow:0 4px 16px rgba(30,95,174,.05)}
 .jay-chart-svg{width:100%;height:auto;display:block}
@@ -367,6 +386,8 @@
 .rp-v2-recent-item:last-child{border-bottom:none}
 .rp-v2-recent-icon{width:32px;height:32px;border-radius:6px;background:var(--sage);display:grid;place-items:center;font-size:14px;color:var(--green);flex-shrink:0}
 .rp-v2-recent-info{flex:1;min-width:0}
+.rp-v2-recent-action{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:14px;padding:4px 3px;border-radius:4px;line-height:1}
+.rp-v2-recent-action:hover{background:var(--sage);color:var(--green)}
 .rp-v2-recent-info strong{display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rp-v2-recent-info small{font:10px 'DM Mono';color:var(--muted)}
 /* Responsive */

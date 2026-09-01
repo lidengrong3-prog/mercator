@@ -21,6 +21,8 @@ collect_us_macro.py — 美国宏观经济数据实时采集器
 """
 
 import json
+import csv
+import io
 import os
 import sys
 import urllib.request
@@ -29,6 +31,8 @@ import urllib.error
 import ssl
 from datetime import datetime, timezone, timedelta
 
+from collect_data import annotate_provenance
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DATA_DIR = os.path.join(ROOT, "data", "us_market")
@@ -36,6 +40,7 @@ DEFAULT_OUTPUT = os.path.join(DATA_DIR, "macro_indicators.json")
 US_COUNTRY_FILE = os.path.join(ROOT, "data", "countries.json")
 
 FRED_API_BASE = "https://api.stlouisfed.org/fred/series/observations"
+FRED_CSV_BASE = "https://fred.stlouisfed.org/graph/fredgraph.csv"
 CENSUS_API_BASE = "https://api.census.gov/data"
 BLS_API_BASE = "https://api.bls.gov/publicAPI/v2/timeseries/data"
 
@@ -43,9 +48,15 @@ UA = "Mozilla/5.0 (Mercator Bot; +https://github.com/lidengrong3-prog/mercator)"
 
 # FRED 系列 ID 及说明
 FRED_SERIES = {
+    # 电商市场规模
+    "ECOMSA": {"name": "电商零售额", "unit": "百万美元", "seasonal": "SA"},
+    "ECOMPCTSA": {"name": "电商占零售总额比例", "unit": "%", "seasonal": "SA"},
     # 消费 & 零售
     "RSAFS": {"name": "零售和食品服务销售", "unit": "百万美元", "seasonal": "SA"},
     "UMCSENT": {"name": "密歇根消费者信心指数", "unit": "指数", "seasonal": ""},
+    "DSPIC96": {"name": "实际可支配个人收入", "unit": "十亿美元（2017年不变价）", "seasonal": "SAAR"},
+    "PCEC96": {"name": "实际个人消费支出", "unit": "十亿美元（2017年不变价）", "seasonal": "SAAR"},
+    "DEXCHUS": {"name": "美元兑人民币汇率", "unit": "人民币/美元", "seasonal": "NSA"},
     # 就业
     "UNRATE": {"name": "失业率", "unit": "%", "seasonal": "SA"},
     "PAYEMS": {"name": "非农就业人数", "unit": "千人", "seasonal": "SA"},
@@ -69,9 +80,9 @@ FRED_SERIES = {
     # 贸易
     "BOPGSTB": {"name": "商品贸易差额", "unit": "百万美元", "seasonal": "SA"},
     # 电商相关
-    "MRTSSM448000": {"name": "服装及配饰零售", "unit": "百万美元", "seasonal": ""},
-    "MRTSSM443000": {"name": "电子产品和家电零售", "unit": "百万美元", "seasonal": ""},
-    "MRTSSM442000": {"name": "家具和家居用品零售", "unit": "百万美元", "seasonal": ""},
+    "MRTSSM448USS": {"name": "服装及配饰门店零售", "unit": "百万美元", "seasonal": "SA"},
+    "MRTSSM443USS": {"name": "电子产品和家电门店零售", "unit": "百万美元", "seasonal": "SA"},
+    "MRTSSM442USS": {"name": "家具和家居用品门店零售", "unit": "百万美元", "seasonal": "SA"},
 }
 
 # BLS 系列 (补充 FRED)
@@ -125,6 +136,27 @@ def fetch_fred(series_id, api_key="", limit=5):
     return None
 
 
+def fetch_fred_csv(series_id):
+    """Fetch the latest official FRED observation without requiring an API key."""
+    url = FRED_CSV_BASE + "?" + urllib.parse.urlencode({"id": series_id})
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    try:
+        kwargs = {"timeout": 30}
+        if SSL_CTX:
+            kwargs["context"] = SSL_CTX
+        with urllib.request.urlopen(req, **kwargs) as resp:
+            body = resp.read().decode("utf-8")
+        rows = list(csv.DictReader(io.StringIO(body)))
+        for row in reversed(rows):
+            value = str(row.get(series_id, "")).strip()
+            date = str(row.get("observation_date", "")).strip()
+            if value and value != "." and date:
+                return {"value": value, "date": date}
+    except Exception as exc:
+        print(f"  [WARN] FRED CSV failed: {series_id} -> {exc}")
+    return None
+
+
 def fetch_bls(series_id, years=2):
     """Fetch from BLS public API (no key needed)."""
     url = BLS_API_BASE + "/" + series_id
@@ -136,12 +168,18 @@ def fetch_bls(series_id, years=2):
             latest = series_list[0]["data"][0]
             # BLS returns period as "M01", "M02" etc or "Q01" etc
             year = latest.get("year", "")
-            period = latest.get("periodName", "") or latest.get("period", "")
+            period = str(latest.get("period", ""))
             value = latest.get("value", "")
             if value and value != "not available":
+                if len(period) == 3 and period.startswith("M") and period[1:].isdigit() and 1 <= int(period[1:]) <= 12:
+                    observation_date = f"{year}-{int(period[1:]):02d}-01"
+                elif len(period) == 3 and period.startswith("Q") and period[1:].isdigit() and 1 <= int(period[1:]) <= 4:
+                    observation_date = f"{year}-{(int(period[1:]) - 1) * 3 + 1:02d}-01"
+                else:
+                    observation_date = f"{year}-01-01"
                 return {
                     "value": value,
-                    "date": f"{year}-{period}" if period else year,
+                    "date": observation_date,
                 }
     return None
 
@@ -165,22 +203,17 @@ def collect_all(fred_key="", census_key=""):
     for series_id, meta in FRED_SERIES.items():
         print(f"  FRED: {series_id} ({meta['name']})...", end=" ")
         
-        if fred_key:
-            result = fetch_fred(series_id, api_key=fred_key)
-        else:
-            # Without API key, FRED won't work via API
-            # Try alternate free sources
-            result = None
+        result = fetch_fred(series_id, api_key=fred_key) if fred_key else fetch_fred_csv(series_id)
         
         if result:
-            indicators[series_id] = {
+            indicators[series_id] = annotate_provenance({
                 "name": meta["name"],
                 "value": result["value"],
                 "unit": meta["unit"],
                 "date": result["date"],
                 "source": "FRED",
                 "source_url": f"https://fred.stlouisfed.org/series/{series_id}",
-            }
+            }, default_source_kind="official", default_source_type="official_feed")
             fetched += 1
             print(f"✅ {result['value']} ({result['date']})")
         else:
@@ -194,14 +227,14 @@ def collect_all(fred_key="", census_key=""):
         result = fetch_bls(series_id)
         if result:
             bls_key = f"BLS_{series_id}"
-            indicators[bls_key] = {
+            indicators[bls_key] = annotate_provenance({
                 "name": name,
                 "value": result["value"],
                 "unit": "见BLS",
                 "date": result["date"],
                 "source": "BLS",
-                "source_url": f"https://www.bls.gov/data/",
-            }
+                "source_url": f"https://api.bls.gov/publicAPI/v2/timeseries/data/{series_id}",
+            }, default_source_kind="official", default_source_type="official_feed")
             fetched += 1
             print(f"✅ {result['value']} ({result['date']})")
         else:

@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "domain": "access",
+  "updated_at": null,
+  "source_count": 0,
+  "requirement_types": [
+    "certification",
+    "labeling",
+    "packaging",
+    "registration",
+    "intellectual_property",
+    "import_requirement"
+  ],
+  "items": [],
+  "language_contract": {
+    "source_fields": [
+      "title",
+      "summary"
+    ],
+    "display_fields": [
+      "title_zh",
+      "summary_zh"
+    ],
+    "target_language": "zh-CN",
+    "translation_metadata_field": "translation"
+  }
+}
