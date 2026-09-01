@@ -19,6 +19,7 @@ generate_alerts.py — 动态预警生成器
 import json
 import os
 import hashlib
+import re
 from datetime import datetime, timezone, timedelta
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -50,6 +51,58 @@ def gen_id(prefix, text):
     return f"{prefix}-{TODAY.replace('-','')}-{h}"
 
 
+def is_industry_advisory(item):
+    source_class = str(item.get("source_class") or item.get("sourceClass") or "").strip().casefold()
+    source_name = str(item.get("source") or "").casefold()
+    source_url = str(item.get("source_url") or item.get("url") or "").casefold()
+    return (
+        source_class == "industry_advisory"
+        or bool(re.search(r"雨果|amz123|cifnews|行业资讯|行业协会", source_name))
+        or bool(re.search(r"(^|\.)cifnews\.com/|(^|\.)amz123\.com/", source_url))
+    )
+
+
+def has_chinese(value):
+    return bool(re.search(r"[\u3400-\u9fff]", str(value or "")))
+
+
+DIRECT_POLICY_RE = re.compile(
+    r"跨境|电商|平台|卖家|商家|海关|清关|报关|电子申报|产品安全|消费品|知识产权|商标|包装|纺织|"
+    r"CPSC|FDA|USTR|OFAC|Section\s*301|Section\s*122|customs?|importation|marketplaces?|sellers?|"
+    r"product safety|consumer products?|consumer protection|sanctions?|de minimis|HTS|ACE system|"
+    r"forced labor|international (?:trademark|trade|mail|shipping)|intellectual property|foreign[- ]trade|WTO",
+    re.I,
+)
+TRADE_POLICY_RE = re.compile(
+    r"进口|出口|关税|税务|增值税|销售税|反倾销|反补贴|制裁|贸易|强迫劳动|tariffs?|dut(?:y|ies|iable)|"
+    r"trade|imports?|exports?|anti[- ]dumping|countervailing|sanctions?|WTO|(?:sales|import|value[- ]added|excise)\s+tax(?:es)?",
+    re.I,
+)
+BUSINESS_CONTEXT_RE = re.compile(
+    r"跨境|电商|平台|卖家|商家|海关|清关|报关|电子申报|消费品|产品安全|知识产权|商标|CPSC|FDA|USTR|"
+    r"OFAC|Section\s*301|Section\s*122|WTO|forced labor|marketplaces?|sellers?|consumer products?|"
+    r"product safety|customs?|de minimis|HTS|ACE system|international trademark|intellectual property",
+    re.I,
+)
+INDUSTRY_ONLY_RE = re.compile(
+    r"贷款|金融|基金信托|银行控股|资产管理|loan|financial|fund trust|asset management|bank holding|nuclear|核能|"
+    r"marine mammals?|海洋哺乳|oil and gas|石油天然气|aircraft|航空器|aerospace|科学仪器|scientific instruments?|"
+    r"commodity swaps?|军工|arms export|defen[cs]e|cheese|奶酪|sugar|食糖|soybean|大豆|fish fillets?|鱼片|"
+    r"mushrooms?|蘑菇|steel|钢材|aluminum|铝材|quartz surface|石英板|motor vehicles?|机动车|dairy|乳制品|"
+    r"water quality|水质|railroad|locomotive|铁路",
+    re.I,
+)
+
+
+def is_cross_border_policy(item):
+    text = "\n".join(str(item.get(key) or "") for key in ("title", "summary"))
+    if not text.strip():
+        return False
+    if INDUSTRY_ONLY_RE.search(text) and not BUSINESS_CONTEXT_RE.search(text):
+        return False
+    return bool(DIRECT_POLICY_RE.search(text) or TRADE_POLICY_RE.search(text))
+
+
 def generate_from_cpsc():
     """Generate alerts from CPSC recall data."""
     alerts = []
@@ -70,6 +123,13 @@ def generate_from_cpsc():
     # Keep the alert center multi-source instead of allowing one large recall
     # feed to displace all policy and market alerts.
     for recall in recent_china[:30]:
+        title_zh = recall.get("title_zh")
+        description_zh = recall.get("description_zh") or recall.get("summary_zh")
+        # The formal UI is Chinese-first. Keep untranslated official payloads
+        # in the raw CPSC dataset until the translation pipeline supplies both
+        # display fields; never improvise a translation in the browser.
+        if not has_chinese(title_zh) or not has_chinese(description_zh):
+            continue
         date = recall.get("date", "")
         cat = recall.get("category", "other")
         category_names = {
@@ -84,14 +144,15 @@ def generate_from_cpsc():
             "id": recall.get("id", gen_id("cpsc", recall.get("title", ""))),
             "type": "policy",
             "level": "high",
-            "title": f"CPSC 召回: {recall.get('title', '中国产品')[:60]}",
+            "title": f"CPSC 召回：{title_zh[:60]}",
             "market": "美国",
             "platform": "CPSC",
-            "detail": f"美国 CPSC 发布产品召回，涉及中国产品。品类: {cat_cn}。{recall.get('description', '')[:200]}",
+            "detail": f"美国 CPSC 发布产品召回，涉及中国产品。品类：{cat_cn}。{description_zh[:200]}",
             "date": date or TODAY,
             "read": False,
             "source": "CPSC Recall API",
             "url": recall.get("url", "https://www.saferproducts.gov/RestWebServices/Recall"),
+            "category_codes": [cat],
         })
     
     # Category summary alerts
@@ -119,6 +180,8 @@ def generate_from_cpsc():
                 "date": TODAY,
                 "read": False,
                 "source": "CPSC 数据分析",
+                "url": "https://www.saferproducts.gov/RestWebServices/Recall",
+                "category_codes": [cat],
             })
     
     return alerts
@@ -140,99 +203,78 @@ def generate_from_policies():
                    "cpsc", "fda", "fcc", "federal register"]
     
     for item in items:
+        # Third-party industry articles remain reference material. They may be
+        # shown in the advisory view but never create automatic risk alerts.
+        if is_industry_advisory(item):
+            continue
+        if not is_cross_border_policy(item):
+            continue
         pub_date = item.get("published_at", "") or item.get("effective_date", "")
         if pub_date < cutoff:
             continue
-        
-        # Check if US-related
+
+        # A global article is not silently relabeled as a US alert. The
+        # collector may add other market generators later; this generator is
+        # intentionally limited to records explicitly scoped to US.
+        region = str(item.get("region") or item.get("market") or "").strip().upper()
+        if region != "US":
+            continue
+
+        change_type = item.get("change_type") or item.get("changeType")
+        impact = item.get("impact_level") or item.get("impactLevel")
+
+        # Check if US-related. Explicit change metadata is sufficient to
+        # create a medium/low alert; otherwise preserve the existing high-risk
+        # policy behavior based on the source text.
         text = json.dumps(item, ensure_ascii=False).lower()
         is_us = any(kw in text for kw in us_keywords)
-        
-        if is_us and item.get("impact_level") == "high":
-            region = item.get("region", "US")
-            if region not in ("US", "Global"):
-                continue
-            
+        changed_record = bool(change_type and impact in ("high", "medium", "low"))
+
+        if (is_us and impact == "high") or changed_record:
+            display_title = item.get("title_zh") or item.get("title") or "新政策"
+            display_summary = (
+                item.get("summary_zh")
+                or item.get("summary")
+                or item.get("change_summary")
+                or "详见来源链接"
+            )
+            title_prefix = "政策变更：" if change_type else "政策更新："
             alerts.append({
                 "id": gen_id("pol", item.get("title", "")[:30]),
                 "type": "policy",
-                "level": "high",
-                "title": f"政策更新: {item.get('title', '新政策')[:60]}",
+                "level": "mid" if impact == "medium" else (impact or "high"),
+                "title": f"{title_prefix}{display_title[:60]}",
                 "market": "美国",
                 "platform": item.get("category", "政策"),
-                "detail": item.get("summary", "")[:300],
+                "detail": display_summary[:300],
                 "date": pub_date[:10] if pub_date else TODAY,
                 "read": False,
                 "source": "Federal Register / 政策分析",
                 "url": item.get("source_url", ""),
+                "change_type": change_type,
+                "category_codes": item.get("category_codes", item.get("categoryCodes", [])),
             })
-    
-    return alerts
-
-
-def generate_from_us_market():
-    """Generate alerts from us_market data files."""
-    alerts = []
-    
-    if not os.path.exists(US_MARKET_DIR):
-        return alerts
-    
-    category_names = {
-        "electronics": "消费电子", "apparel": "服饰鞋包",
-        "home_cooking": "家居厨具", "beauty": "美妆个护",
-        "toys": "玩具", "sports": "运动户外",
-        "auto_parts": "汽配", "health": "保健品", "pets": "宠物",
-    }
-    
-    for fname in sorted(os.listdir(US_MARKET_DIR)):
-        if not fname.endswith(".json") or fname in ("index.json", "cpsc_recalls.json", "macro_indicators.json"):
-            continue
-        
-        cat_key = fname.replace(".json", "")
-        data = load_json(os.path.join(US_MARKET_DIR, fname))
-        if not data:
-            continue
-        
-        # Check tariff alert
-        tariff = data.get("country", {}).get("tariff_alert", {}) if data.get("country") else {}
-        if tariff and tariff.get("level") == "high":
-            cat_cn = category_names.get(cat_key, cat_key)
-            alerts.append({
-                "id": gen_id("tariff", cat_key),
-                "type": "macro",
-                "level": "high",
-                "title": f"🔴 {cat_cn}关税预警: {tariff.get('title', '关税风险')[:50]}",
-                "market": "美国",
-                "platform": tariff.get("platform", "USTR/CBP"),
-                "detail": tariff.get("detail", "")[:300],
-                "date": tariff.get("date", tariff.get("as_of", TODAY)),
-                "read": False,
-                "source": tariff.get("source", "USTR"),
-                "url": tariff.get("url", ""),
-            })
-        
-        # Check for recent alerts in category data
-        cat_alerts = data.get("alerts", [])
-        for a in cat_alerts:
-            if isinstance(a, dict) and a.get("live"):
-                alerts.append({
-                    "id": gen_id("usm", a.get("title", "")[:20]),
-                    "type": a.get("type", "policy"),
-                    "level": a.get("level", "mid"),
-                    "title": a.get("title", "")[:60],
-                    "market": "美国",
-                    "platform": a.get("platform", ""),
-                    "detail": a.get("detail", "")[:300],
-                    "date": a.get("date", TODAY),
-                    "read": False,
-                    "source": a.get("source", "US Market Data"),
-                })
     
     return alerts
 
 
 def merge_alerts(existing_alerts, new_alerts):
     """Merge new alerts with existing, deduplicating by title similarity."""
+    # The retired array payload had no provenance envelope and mixed old
+    # category-file fallbacks into the formal feed. Only explicitly sourced
+    # records emitted by the current generator may survive a later run.
+    existing_alerts = [
+        alert for alert in (existing_alerts or [])
+        if (
+            isinstance(alert, list) and len(alert) > 9 and isinstance(alert[9], dict)
+            and alert[9].get("source") and alert[9].get("source_record_id")
+            and alert[9].get("schema_version") == "2.0" and alert[9].get("display_locale") == "zh-CN"
+            and alert[9].get("generator_version") == "2026.09.01.2"
+        ) or (
+            isinstance(alert, dict) and alert.get("source") and alert.get("id")
+            and str(alert.get("source_kind", "")).casefold() not in {"demo", "mock"}
+        )
+    ]
     if not existing_alerts:
         return new_alerts
     
@@ -301,10 +343,6 @@ def main():
     print(f"  Policy updates: {len(policy_alerts)} alerts")
     all_new.extend(policy_alerts)
     
-    us_market_alerts = generate_from_us_market()
-    print(f"  US market data: {len(us_market_alerts)} alerts")
-    all_new.extend(us_market_alerts)
-    
     # Load existing
     existing = load_json(ALERTS_FILE)
     if isinstance(existing, list):
@@ -334,8 +372,8 @@ def main():
     if len(merged) > args.max_alerts:
         merged = merged[:args.max_alerts]
     
-    # Separate format: keep array format for compatibility with existing frontend
-    # Frontend expects alertsFull as array of [id, type, level, title, country, platform, detail, date, read]
+    # Keep the compatible display columns and append an explicit provenance
+    # envelope. The browser and validators must not infer trust from a title.
     alerts_array = []
     for a in merged:
         if isinstance(a, dict):
@@ -349,6 +387,18 @@ def main():
                 a.get("detail", ""),
                 a.get("date", ""),
                 a.get("read", False),
+                {
+                    "source": a.get("source", ""),
+                    "source_url": a.get("url", ""),
+                    "source_kind": "official",
+                    "source_type": "regulator",
+                    "source_record_id": a.get("id", ""),
+                    "verification_status": "verified",
+                    "category_codes": a.get("category_codes", []),
+                    "schema_version": "2.0",
+                    "display_locale": "zh-CN",
+                    "generator_version": "2026.09.01.2",
+                },
             ])
         elif isinstance(a, list):
             alerts_array.append(a)
@@ -365,7 +415,6 @@ def main():
             "sources": {
                 "cpsc": len(cpsc_alerts),
                 "policies": len(policy_alerts),
-                "us_market": len(us_market_alerts),
             },
         },
         "alerts": [a for a in merged if isinstance(a, dict)],

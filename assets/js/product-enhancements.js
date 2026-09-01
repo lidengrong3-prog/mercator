@@ -231,16 +231,25 @@
   };
   window.jayExportPolicy=function(){
     try{
-      var rows=['政策类型,地区,标题,生效时间,影响范围,平台,摘要'];
-      var data=(typeof policiesData!=='undefined'&&policiesData)?policiesData:[];
-      data.slice(0,200).forEach(function(p){
-        rows.push([p[0],p[1],p[2],p[3],p[4],p[5],(p[8]||'').replace(/,/g,'，').slice(0,120)].join(','));
+      function cell(value){return '"'+String(value===undefined||value===null?'':value).replace(/"/g,'""')+'"';}
+      var domain=typeof plActiveDomain!=='undefined'?plActiveDomain:'policy';
+      var labels={policy:'政策法规',tax:'税收费用',access:'市场准入'};
+      var data=typeof plGetVerifiedDomainRecords==='function'?plGetVerifiedDomainRecords(domain):[];
+      var rows=['数据域,分类,市场,中文标题,发布日期,生效日期,验证状态,来源链接,中文摘要'];
+      data.slice(0,500).forEach(function(p){
+        var type=typeof plDomainTypeValue==='function'?plDomainTypeValue(p,domain):(p.category||'');
+        var typeLabels=typeof plDomainCategoryLabels==='function'?plDomainCategoryLabels(domain):{};
+        var market=typeof plRecordMarketCode==='function'?plRecordMarketCode(p):(p.market||p.region||'');
+        var title=typeof plDisplayTitle==='function'?plDisplayTitle(p):(p.title_zh||'');
+        var summary=typeof plDisplaySummary==='function'?plDisplaySummary(p):(p.summary_zh||'');
+        var evidence=typeof plAssessEvidence==='function'?plAssessEvidence(p):{label:p.verification_status||''};
+        rows.push([labels[domain],typeLabels[type]||type,market,title,p.published_at||'',p.effective_from||p.effective_date||'',evidence.label,p.source_url||'',summary].map(cell).join(','));
       });
       var csv='﻿'+rows.join('\n');
       var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
       var a=document.createElement('a');a.href=URL.createObjectURL(blob);
-      a.download='JAY观海_政策动态_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
-      if(typeof toast==='function')toast('政策动态已导出（CSV）');
+      a.download='JAY观海_'+(labels[domain]||'法规数据')+'_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+      if(typeof toast==='function')toast((labels[domain]||'法规数据')+'已导出（CSV）');
     }catch(e){ if(typeof toast==='function')toast('导出失败：'+e.message); }
   };
 

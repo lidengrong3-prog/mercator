@@ -25,6 +25,25 @@ var prFieldAliases={
   compliance:['合规风险','合规提示','compliance','risk']
 };
 
+var prCategoryFieldAliases={
+  productCost:['产品成本','成本','单位成本','cost','product_cost','unit_cost'],
+  sellingPrice:['售价','价格','售价区间','selling_price','price','local_price'],
+  certifications:['认证','认证信息','认证资质','certification','certifications'],
+  ingredients:['成分','配方','ingredients','ingredient'],
+  claims:['宣称','功效宣称','claims','claim'],
+  material:['材质','面料','material','fabric'],
+  sizeSystem:['尺码体系','尺码','size_system','size'],
+  shelfLife:['保质期','有效期','shelf_life','shelfLife'],
+  sourceUrl:['来源链接','商品链接','数据来源','source_url','sourceUrl','url'],
+  sourceRecordId:['来源记录ID','记录ID','source_record_id','sourceRecordId'],
+  collectedAt:['采集时间','抓取时间','collected_at','collectedAt'],
+  verificationStatus:['核验状态','验证状态','verification_status','verificationStatus']
+};
+var prCategoryFieldLabels={
+  category:'品类',market:'市场',platform:'平台',productCost:'产品成本',sellingPrice:'售价',
+  certifications:'认证',ingredients:'成分',claims:'宣称',material:'材质',sizeSystem:'尺码体系',shelfLife:'保质期'
+};
+
 function prNormalizeKey(value){return String(value===undefined||value===null?'':value).replace(/^\uFEFF/,'').trim().toLowerCase().replace(/[\s_\-\/\\（）()：:]+/g,'');}
 function prRawValue(row,aliases){
   if(!row||typeof row!=='object')return '';
@@ -35,20 +54,92 @@ function prRawValue(row,aliases){
 function prText(value){return value===0?'0':(value===undefined||value===null||String(value).trim()===''?'':String(value).trim());}
 function prDisplay(value){var v=prText(value);return v||'未提供';}
 function prNormalizeMarket(value){
-  var raw=prText(value), lower=raw.toLowerCase();
-  if(!raw)return '';
-  if(lower==='us'||lower==='usa'||lower==='united states'||lower==='unitedstates'||raw.indexOf('美国')>=0||raw.indexOf('美区')>=0)return '美国';
+  var raw=prText(value); if(!raw)return '';
+  var api=window.JAY_MARKET_SCOPE_API;
+  if(api&&typeof api.normalizeMarketCode==='function'){
+    var code=api.normalizeMarketCode(raw);
+    var market=api.getMarket&&api.getMarket(code);
+    if(market)return market.name||market.label||code;
+  }
   return raw;
 }
 function prNormalizePlatform(value){
   var api=window.JAY_MARKET_SCOPE_API;
   return api&&typeof api.normalizePlatform==='function'?api.normalizePlatform(value):prText(value);
 }
-function prAllowedMarket(value){return value==='美国';}
-function prAllowedPlatform(value){
-  if(!value)return false;
-  var scope=window.JAY_MARKET_SCOPE;
-  return !!(scope&&scope.platformNames&&scope.platformNames.indexOf(value)>=0);
+function prAllowedMarket(value){
+  var api=window.JAY_MARKET_SCOPE_API;
+  return !!(api&&typeof api.isAllowedMarket==='function'&&api.isAllowedMarket(value));
+}
+function prAllowedPlatform(value,market){
+  var api=window.JAY_MARKET_SCOPE_API;
+  return !!(api&&typeof api.isAllowedPlatform==='function'&&api.isAllowedPlatform(value,market));
+}
+function prMarketCode(value){
+  var api=window.JAY_MARKET_SCOPE_API;
+  return api&&typeof api.normalizeMarketCode==='function'?api.normalizeMarketCode(value):prText(value);
+}
+function prCategoryProfile(value){
+  var api=window.JAY_MARKET_SCOPE_API;
+  return api&&typeof api.getCategoryProfile==='function'?api.getCategoryProfile(value):null;
+}
+function prCategoryRawValue(row,key){
+  if(!row)return '';
+  if(key==='category')return prText(row[4]);
+  if(key==='market')return prText(row[2]);
+  if(key==='platform')return prText(row[3]);
+  if(key==='sellingPrice')return prText(row[6])||prRawValue(row._rawRecord,prCategoryFieldAliases.sellingPrice);
+  return prRawValue(row._rawRecord,prCategoryFieldAliases[key]||[]);
+}
+function prAttachCategoryRule(row){
+  var rawCategory=prText(row&&row[4]);
+  var profile=prCategoryProfile(rawCategory);
+  if(!profile){
+    row._categoryRule={code:rawCategory||'',name:rawCategory||'未提供',status:'unconfigured',requiredFields:[],providedFields:[],missingFields:[]};
+    return row;
+  }
+  var required=(profile.requiredFields||profile.required_fields||[]).slice();
+  var provided=required.filter(function(key){return prCategoryRawValue(row,key)!=='';});
+  var missing=required.filter(function(key){return provided.indexOf(key)<0;});
+  row._categoryRule={code:profile.code||rawCategory,name:profile.name||rawCategory,status:missing.length?'incomplete':'complete',requiredFields:required,providedFields:provided,missingFields:missing};
+  return row;
+}
+function prCategoryRuleLabel(rule){
+  if(!rule)return '尚未配置品类规则';
+  if(rule.status==='unconfigured')return '尚未配置品类规则';
+  if(rule.status==='complete')return '品类规则字段完整';
+  return '待补：'+rule.missingFields.map(function(key){return prCategoryFieldLabels[key]||key;}).join('、');
+}
+function prScopedContext(){
+  var api=window.JAY_MARKET_SCOPE_API;
+  return api&&typeof api.getActiveContext==='function'?api.getActiveContext():{marketCodes:[],platformKeys:null,categoryCodes:[]};
+}
+function prIsInCurrentScope(row){
+  if(!row)return false;
+  var api=window.JAY_MARKET_SCOPE_API;
+  if(!api)return true;
+  var context=prScopedContext();
+  var marketCode=prMarketCode(row[2]);
+  if(!context.marketCodes||context.marketCodes.indexOf(marketCode)<0)return false;
+  if(typeof api.isAllowedPlatform==='function'&&!api.isAllowedPlatform(row[3],marketCode))return false;
+  if(context.categoryCodes&&context.categoryCodes.length){
+    var categoryCode=api.normalizeCategoryCode?api.normalizeCategoryCode(row[4]):row[4];
+    if(context.categoryCodes.indexOf(categoryCode)<0)return false;
+  }
+  return true;
+}
+function prScopedProducts(){return products.filter(prIsInCurrentScope);}
+function prScopedShops(){return shops.filter(function(row){
+  if(!row)return false;
+  var api=window.JAY_MARKET_SCOPE_API;if(!api)return true;
+  var context=prScopedContext(),marketCode=prMarketCode(row[2]);
+  return context.marketCodes.indexOf(marketCode)>=0 && (!api.isAllowedPlatform||api.isAllowedPlatform(row[1],marketCode));
+});}
+function prProductSnapshot(row){
+  return {row:Array.prototype.slice.call(row||[]),raw:row&&row._rawRecord&&typeof row._rawRecord==='object'?JSON.parse(JSON.stringify(row._rawRecord)):null,categoryRule:row&&row._categoryRule?JSON.parse(JSON.stringify(row._categoryRule)):null,source:row&&row._source||'',market:row&&row[2]||'',platform:row&&row[3]||'',category:row&&row[4]||''};
+}
+function prShopSnapshot(row){
+  return {row:Array.prototype.slice.call(row||[]),raw:row&&row._rawRecord&&typeof row._rawRecord==='object'?JSON.parse(JSON.stringify(row._rawRecord)):null,categoryRule:row&&row._categoryRule?JSON.parse(JSON.stringify(row._categoryRule)):null,source:row&&row._source||'',market:row&&row[2]||'',platform:row&&row[1]||'',category:row&&row[6]||''};
 }
 function prArrayProvided(row){
   return {name:prText(row[1])!=='',market:prText(row[2])!=='',platform:prText(row[3])!=='',category:prText(row[4])!=='',subcategory:prText(row[5])!=='',price:prText(row[6])!=='',rmbPrice:prText(row[7])!=='',sales:prText(row[8])!=='',growth:prText(row[9])!=='',signal:prText(row[10])!=='',shop:prText(row[11])!=='',age:prText(row[12])!=='',updated:prText(row[13])!==''};
@@ -58,8 +149,10 @@ function prNormalizeProduct(raw){
     var arr=raw.slice(0,14);while(arr.length<14)arr.push('');
     arr[2]=prNormalizeMarket(arr[2]);arr[3]=prNormalizePlatform(arr[3]);
     if(!prText(arr[1]))return null;
+    arr._rawRecord=raw.slice();
     arr._provided=prArrayProvided(arr);arr._source='用户导入文件';
-    return {row:arr,valid:prAllowedMarket(arr[2])&&prAllowedPlatform(arr[3])};
+    prAttachCategoryRule(arr);
+    return {row:arr,valid:prAllowedMarket(arr[2])&&prAllowedPlatform(arr[3],prMarketCode(arr[2]))};
   }
   if(!raw||typeof raw!=='object')return null;
   var name=prText(prRawValue(raw,prFieldAliases.name));if(!name)return null;
@@ -73,9 +166,11 @@ function prNormalizeProduct(raw){
     prText(prRawValue(raw,prFieldAliases.signal)),prText(prRawValue(raw,prFieldAliases.shop)),
     prText(prRawValue(raw,prFieldAliases.age)),prText(prRawValue(raw,prFieldAliases.updated))
   ];
+  row._rawRecord=Object.assign({},raw);
   row._provided={};Object.keys(prFieldAliases).forEach(function(key){if(['trend','samePlatforms','links','compliance','icon','rmbPrice'].indexOf(key)<0)row._provided[key]=prText(prRawValue(raw,prFieldAliases[key]))!=='';});
   row._trend=prRawValue(raw,prFieldAliases.trend);row._samePlatforms=prRawValue(raw,prFieldAliases.samePlatforms);row._links=prRawValue(raw,prFieldAliases.links);row._compliance=prRawValue(raw,prFieldAliases.compliance);row._source='用户导入文件';
-  return {row:row,valid:prAllowedMarket(market)&&prAllowedPlatform(platform)};
+  prAttachCategoryRule(row);
+  return {row:row,valid:prAllowedMarket(market)&&prAllowedPlatform(platform,prMarketCode(market))};
 }
 function prParseCSV(text){
   var rows=[],row=[],cell='',quoted=false,src=String(text||'').replace(/^\uFEFF/,'');
@@ -112,43 +207,100 @@ function prNormalizeShop(raw){
     var arr=raw.slice(0,13);while(arr.length<13)arr.push('');
     arr[1]=prNormalizePlatform(arr[1]);arr[2]=prNormalizeMarket(arr[2]);
     if(!prText(arr[0]))return null;
+    arr._rawRecord=raw.slice();
     arr._source='用户导入文件';
-    return {row:arr,valid:prAllowedMarket(arr[2])&&prAllowedPlatform(arr[1])};
+    arr[6]=prText(arr[6]);
+    var productLike=[ '', '', arr[2], arr[1], arr[6] ];
+    productLike._rawRecord=arr._rawRecord;
+    arr._categoryRule=prAttachCategoryRule(productLike)._categoryRule;
+    return {row:arr,valid:prAllowedMarket(arr[2])&&prAllowedPlatform(arr[1],prMarketCode(arr[2]))};
   }
   if(!raw||typeof raw!=='object')return null;
   var name=prText(prRawValue(raw,['店铺名','店铺名称','shop_name','shop','store','store_name','name']));if(!name)return null;
   var market=prNormalizeMarket(prRawValue(raw,['国家/市场','国家','市场','地区','country','market','region']));
   var platform=prNormalizePlatform(prRawValue(raw,['电商平台','平台','platform','channel']));
   var row=[name,platform,market,prText(prRawValue(raw,['月GMV','gmv','monthly_gmv'])),prText(prRawValue(raw,['增速','growth','growth_rate'])),prText(prRawValue(raw,['状态','status'])),prText(prRawValue(raw,['主营类目','类目','category'])),prText(prRawValue(raw,['在售商品','商品数','products','sku_count'])),prText(prRawValue(raw,['30天波动','波动','wave'])),prText(prRawValue(raw,['标签','tags'])),prText(prRawValue(raw,['粉丝数','粉丝','followers'])),prText(prRawValue(raw,['评分','rating'])),prText(prRawValue(raw,['更新时间','updated_at','updated']))];
+  row._rawRecord=Object.assign({},raw);
   row._source='用户导入文件';
-  return {row:row,valid:prAllowedMarket(market)&&prAllowedPlatform(platform)};
+  var productLike=[ '', '', market, platform, row[6] ];
+  productLike._rawRecord=row._rawRecord;
+  row._categoryRule=prAttachCategoryRule(productLike)._categoryRule;
+  return {row:row,valid:prAllowedMarket(market)&&prAllowedPlatform(platform,prMarketCode(market))};
+}
+function prImportedDataOwner(){
+  if(typeof jayUser!=='undefined'&&jayUser&&jayUser.id)return String(jayUser.id);
+  return 'signed-out';
+}
+function prImportedDataKey(){return 'jay_product_catalog_import_v2_'+prImportedDataOwner();}
+function prSerializeImportedData(){
+  return {meta:prDataMeta,products:products.map(function(p){return {row:Array.prototype.slice.call(p),raw:p._rawRecord||null,trend:p._trend,samePlatforms:p._samePlatforms,links:p._links,compliance:p._compliance,categoryRule:p._categoryRule||null};}),shops:shops.map(function(s){return {row:Array.prototype.slice.call(s),raw:s._rawRecord||null,categoryRule:s._categoryRule||null};})};
 }
 function prPersistImportedData(){
+  var payload=prSerializeImportedData();
   try{
-    var payload={meta:prDataMeta,products:products.map(function(p){return {row:Array.prototype.slice.call(p),trend:p._trend,samePlatforms:p._samePlatforms,links:p._links,compliance:p._compliance};}),shops:shops.map(function(s){return Array.prototype.slice.call(s);})};
-    localStorage.setItem('jay_product_catalog_import_v1',JSON.stringify(payload));
+    localStorage.setItem(prImportedDataKey(),JSON.stringify(payload));
+    // The retired unscoped key could expose one account's import to the next
+    // account using the same browser, so it is removed without migration.
+    localStorage.removeItem('jay_product_catalog_import_v1');
   }catch(e){}
+  if(typeof jaySaveWorkspaceAsset==='function'&&typeof jayCanUseUserDb==='function'&&jayCanUseUserDb()){
+    jaySaveWorkspaceAsset('product_catalog_import',payload).then(function(saved){if(!saved)toast('导入数据已保存在本机，但云端同步失败');});
+  }
+}
+function prApplyImportedPayload(payload,options){
+  options=options||{};
+  if(!payload||!Array.isArray(payload.products))return false;
+  products.splice(0,products.length);shops.splice(0,shops.length);prSelectedIds.clear();
+  payload.products.forEach(function(item){var n=prNormalizeProduct(item&&item.row?item.row:item);if(n&&n.valid){if(item&&item.raw)n.row._rawRecord=item.raw;if(item&&item.trend!==undefined)n.row._trend=item.trend;if(item&&item.samePlatforms!==undefined)n.row._samePlatforms=item.samePlatforms;if(item&&item.links!==undefined)n.row._links=item.links;if(item&&item.compliance!==undefined)n.row._compliance=item.compliance;if(item&&item.categoryRule)n.row._categoryRule=item.categoryRule;products.push(n.row);}});
+  (payload.shops||[]).forEach(function(item){var n=prNormalizeShop(item&&item.row?item.row:item);if(n&&n.valid){if(item&&item.raw)n.row._rawRecord=item.raw;if(item&&item.categoryRule)n.row._categoryRule=item.categoryRule;shops.push(n.row);}});
+  prDataMeta=payload.meta||{source:options.source||'account-cache',fileName:'',importedAt:'',accepted:products.length+shops.length,skipped:0};
+  if(options.persist!==false){try{localStorage.setItem(prImportedDataKey(),JSON.stringify(prSerializeImportedData()));}catch(e){}}
+  if(document.getElementById('pr-table-body')){
+    prInitFilters();prRenderAI();prSwitchTab(prActiveTab||'burst');
+    if(typeof shInitFilters==='function')shInitFilters();if(typeof shApplyFilters==='function')shApplyFilters();
+    if(typeof renderOverviewMetrics==='function')renderOverviewMetrics();if(typeof renderOvDataTable==='function')renderOvDataTable();if(typeof renderOverviewDecisionState==='function')renderOverviewDecisionState();
+    var countLabel=(products.length?'已恢复 '+products.length+' 条商品':'暂无商品记录')+(shops.length?'、'+shops.length+' 家店铺':'');
+    prSetDataStatus(countLabel+' · '+(options.source==='cloud'?'个人云端数据':'当前账号本地数据'),products.length||shops.length?'ok':'');
+    var clear=document.getElementById('pr-clear-data');if(clear)clear.disabled=!(products.length||shops.length);
+  }
+  return products.length>0||shops.length>0;
 }
 function prRestoreImportedData(){
   try{
-    var raw=localStorage.getItem('jay_product_catalog_import_v1');if(!raw)return false;
-    var payload=JSON.parse(raw);if(!payload||!Array.isArray(payload.products))return false;
-    products.splice(0,products.length);shops.splice(0,shops.length);
-    payload.products.forEach(function(item){var n=prNormalizeProduct(item&&item.row?item.row:item);if(n&&n.valid){if(item&&item.trend!==undefined)n.row._trend=item.trend;if(item&&item.samePlatforms!==undefined)n.row._samePlatforms=item.samePlatforms;if(item&&item.links!==undefined)n.row._links=item.links;if(item&&item.compliance!==undefined)n.row._compliance=item.compliance;products.push(n.row);}});
-    (payload.shops||[]).forEach(function(item){var n=prNormalizeShop(item);if(n&&n.valid)shops.push(n.row);});
-    prDataMeta=payload.meta||{source:'localStorage',fileName:'',importedAt:'',accepted:products.length,skipped:0};
-    return products.length>0||shops.length>0;
+    localStorage.removeItem('jay_product_catalog_import_v1');
+    var raw=localStorage.getItem(prImportedDataKey());if(!raw)return false;
+    return prApplyImportedPayload(JSON.parse(raw),{persist:false,source:'account-cache'});
   }catch(e){return false;}
+}
+function prResetImportedDataForAuthChange(){
+  products.splice(0,products.length);shops.splice(0,shops.length);prSelectedIds.clear();
+  prDataMeta={source:'none',fileName:'',importedAt:'',accepted:0,skipped:0};
+}
+function prPurgeImportedDataForUser(userId){
+  if(!userId)return;
+  try{localStorage.removeItem('jay_product_catalog_import_v2_'+String(userId));}catch(e){}
+  prResetImportedDataForAuthChange();
+}
+function prReloadImportedDataForCurrentUser(){
+  prResetImportedDataForAuthChange();
+  var restored=prRestoreImportedData();
+  if(!restored&&document.getElementById('pr-table-body')){
+    prInitFilters();prRenderAI();prSwitchTab(prActiveTab||'burst');prSetDataStatus('暂无已导入的类目数据','');
+    var clear=document.getElementById('pr-clear-data');if(clear)clear.disabled=true;
+  }
+  return restored;
 }
 function prImportPayload(payload,fileName){
   var acceptedProducts=[],acceptedShops=[],skipped=0;
-  (payload.products||[]).forEach(function(raw){
+  var sourceProducts=(payload.products||[]).slice(0,5000),sourceShops=(payload.shops||[]).slice(0,5000-sourceProducts.length);
+  skipped+=Math.max(0,(payload.products||[]).length-sourceProducts.length)+Math.max(0,(payload.shops||[]).length-sourceShops.length);
+  sourceProducts.forEach(function(raw){
     var n=prNormalizeProduct(raw);
     if(n){if(n.valid)acceptedProducts.push(n.row);else skipped++;return;}
     var shop=prNormalizeShop(raw);
     if(shop&&shop.valid)acceptedShops.push(shop.row);else skipped++;
   });
-  (payload.shops||[]).forEach(function(raw){var n=prNormalizeShop(raw);if(!n){skipped++;return;}if(n.valid)acceptedShops.push(n.row);else skipped++;});
+  sourceShops.forEach(function(raw){var n=prNormalizeShop(raw);if(!n){skipped++;return;}if(n.valid)acceptedShops.push(n.row);else skipped++;});
   products.splice(0,products.length);products.push.apply(products,acceptedProducts);
   shops.splice(0,shops.length);shops.push.apply(shops,acceptedShops);
   prDataMeta={source:'user-file',fileName:fileName||'',importedAt:new Date().toISOString(),accepted:acceptedProducts.length+acceptedShops.length,skipped:skipped};
@@ -156,6 +308,7 @@ function prImportPayload(payload,fileName){
   prInitFilters();
   if(typeof renderOverviewMetrics==='function')renderOverviewMetrics();
   if(typeof renderOvDataTable==='function')renderOvDataTable();
+  if(typeof renderOverviewDecisionState==='function')renderOverviewDecisionState();
   if(typeof shInitFilters==='function')shInitFilters();
   prRenderAI();
   prSwitchTab(prActiveTab);
@@ -163,7 +316,10 @@ function prImportPayload(payload,fileName){
   if(typeof shRenderGroups==='function')shRenderGroups();
   if(typeof shApplyFilters==='function')shApplyFilters();
   var detail=(acceptedProducts.length?'已导入 '+acceptedProducts.length+' 条商品':'暂无商品记录')+(acceptedShops.length?'、'+acceptedShops.length+' 家店铺':'');
-  if(skipped)detail+='；跳过 '+skipped+' 行（不完整或超出美国市场/4 个平台范围）';
+  if(skipped){
+    var scopeLabel=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getScopeLabel?window.JAY_MARKET_SCOPE_API.getScopeLabel():'当前市场范围';
+    detail+='；跳过 '+skipped+' 行（不完整或超出'+scopeLabel+'范围）';
+  }
   prSetDataStatus(detail+' · '+(fileName||'用户文件'),'ok');
   var clear=document.getElementById('pr-clear-data');if(clear)clear.disabled=!(products.length||shops.length);
   var note=document.getElementById('pr-data-import-note');if(note)note.textContent=skipped?'已按当前工作区范围校验，未导入的行不会参与分析。':'仅使用文件中提供的字段参与筛选、统计和详情展示。';
@@ -171,6 +327,7 @@ function prImportPayload(payload,fileName){
 }
 function prHandleFile(file){
   if(!file)return;
+  if(file.size>5*1024*1024){prSetDataStatus('文件超过 5MB 限制，请拆分后上传','error');toast('文件过大，请拆分为不超过 5MB');return;}
   var reader=new FileReader();
   reader.onload=function(){try{prImportPayload(prParseImportPayload(reader.result,file.name),file.name);}catch(e){prSetDataStatus('文件解析失败：请检查 CSV/JSON 格式','error');toast('文件解析失败，请检查格式');}};
   reader.onerror=function(){prSetDataStatus('文件读取失败','error');toast('文件读取失败');};
@@ -179,12 +336,14 @@ function prHandleFile(file){
 function prClearImportedData(){
   products.splice(0,products.length);shops.splice(0,shops.length);prSelectedIds.clear();
   prDataMeta={source:'none',fileName:'',importedAt:'',accepted:0,skipped:0};
-  try{localStorage.removeItem('jay_product_catalog_import_v1');}catch(e){}
+  try{localStorage.removeItem(prImportedDataKey());localStorage.removeItem('jay_product_catalog_import_v1');}catch(e){}
+  if(typeof jaySaveWorkspaceAsset==='function'&&typeof jayCanUseUserDb==='function'&&jayCanUseUserDb())jaySaveWorkspaceAsset('product_catalog_import',prSerializeImportedData());
   prInitFilters();prRenderAI();prSwitchTab(prActiveTab);prSetDataStatus('暂无已导入的类目数据','');
   if(typeof renderOverviewMetrics==='function')renderOverviewMetrics();
   if(typeof renderOvDataTable==='function')renderOvDataTable();
+  if(typeof renderOverviewDecisionState==='function')renderOverviewDecisionState();
   var clear=document.getElementById('pr-clear-data');if(clear)clear.disabled=true;
-  var note=document.getElementById('pr-data-import-note');if(note)note.textContent='支持商品字段：商品名、国家/市场、平台、类目、三级类目、售价、销量、增速、信号、店铺、上架天数、更新时间。超出当前美国市场或 4 个平台范围的行会被跳过。';
+  var note=document.getElementById('pr-data-import-note');if(note)note.textContent='支持商品字段：商品名、国家/市场、平台、类目、三级类目、售价、销量、增速、信号、店铺、上架天数、更新时间。超出当前工作区市场或平台范围的行会被跳过。';
   if(typeof shInitFilters==='function')shInitFilters();if(typeof shRenderAI==='function')shRenderAI();if(typeof shApplyFilters==='function')shApplyFilters();
   toast('已清空导入数据');
 }
@@ -194,7 +353,7 @@ function prAvgPrice(range){if(!range)return 0;var parts=String(range).split('-')
 
 function prInitFilters(){
   var regions=[],platforms=[],categories=[],shopNames=[];
-  products.forEach(function(p){
+  prScopedProducts().forEach(function(p){
     if(prText(p[2])&&regions.indexOf(p[2])<0)regions.push(p[2]);
     if(prText(p[3])&&platforms.indexOf(p[3])<0)platforms.push(p[3]);
     if(prText(p[4])&&categories.indexOf(p[4])<0)categories.push(p[4]);
@@ -202,9 +361,9 @@ function prInitFilters(){
   });
   regions.sort();platforms.sort();categories.sort();shopNames.sort();
   var fill=function(id,items,label){var el=$('#'+id);el.innerHTML='<option value="all">'+label+'</option>'+items.map(function(i){return '<option value="'+i+'">'+i+'</option>'}).join('')};
-  fill('pr-f-country',regions,'全部国家');
-  fill('pr-f-platform',platforms,'全部平台');
-  fill('pr-f-category',categories,'全部类目');
+  fill('pr-f-country',regions,'当前范围全部市场');
+  fill('pr-f-platform',platforms,'当前范围全部平台');
+  fill('pr-f-category',categories,'当前范围全部类目');
   $('#pr-shop-select').innerHTML='<option value="">-- 请选择已监控店铺 --</option>'+shopNames.map(function(s){return '<option value="'+s+'">'+s+'</option>'}).join('');
 }
 
@@ -213,7 +372,7 @@ function prApplyFilters(){
   var signal=$('#pr-f-signal').value,age=$('#pr-f-age').value,keyword=$('#pr-f-keyword').value.toLowerCase();
   var sortVal=$('#pr-f-sort').value,pMin=prParseNum($('#pr-f-price-min').value),pMax=prParseNum($('#pr-f-price-max').value);
   var tabCfg=prTabConfig[prActiveTab];
-  var list=products.filter(tabCfg.filter);
+  var list=prScopedProducts().filter(tabCfg.filter);
   if(country!=='all')list=list.filter(function(p){return p[2]===country});
   if(platform!=='all')list=list.filter(function(p){return p[3]===platform});
   if(category!=='all')list=list.filter(function(p){return p[4]===category});
@@ -238,8 +397,8 @@ function prSignalClass(s){return s==='爆发'?'burst':s==='上升'?'rise':s==='�
 function prRenderTable(list){
   var tbody=$('#pr-table-body');
   if(!list.length){
-    tbody.innerHTML='<tr><td colspan="12"><div class="pr-empty-note">'+(products.length?'暂无符合当前筛选条件的数据':'暂无已导入的类目数据，请先上传 CSV 或 JSON 文件')+'</div></td></tr>';
-    $('#pr-count').textContent=products.length?'○ 0 条筛选结果':'○ 暂无已导入数据';
+    tbody.innerHTML='<tr><td colspan="12"><div class="pr-empty-note">'+(prScopedProducts().length?'暂无符合当前筛选条件的数据':'暂无当前范围的已导入类目数据，请先上传 CSV 或 JSON 文件')+'</div></td></tr>';
+    $('#pr-count').textContent=prScopedProducts().length?'○ 0 条筛选结果':'○ 暂无已导入数据（当前范围暂无数据）';
     $('#pr-count').className='source-warn';
     prUpdateBatchBar();
     return;
@@ -268,7 +427,7 @@ function prRenderTable(list){
       '<td><span class="pr-time-col">'+escapeHtml(prDisplay(p[13]))+'</span></td>'+
       '</tr>';
   }).join('');
-  $('#pr-count').textContent='● '+list.length+' / '+products.length+' 条已导入数据';
+  $('#pr-count').textContent='● '+list.length+' / '+prScopedProducts().length+' 条已导入数据 · 当前范围';
   $('#pr-count').className='source-ok';
   prUpdateBatchBar();
 }
@@ -297,6 +456,10 @@ function prShowDetail(idx){
   var trendHtml=trend.length?'<div class="pr-m-chart">'+trend.map(function(v){var n=Number(v);return '<i style="height:'+Math.max(8,Math.min(90,isNaN(n)?8:n))+'%;background:var(--green)"></i>';}).join('')+'</div>':'<p class="pr-empty-note">未提供 30 天销量趋势字段</p>';
   var sameCount=prDisplay(p._samePlatforms),linkCount=prDisplay(p._links);
   var compliance=prText(p._compliance)?'<span class="pr-m-tag">'+escapeHtml(prText(p._compliance))+'</span>':'<span class="pr-m-tag">未提供合规字段</span>';
+  var categoryRule=p._categoryRule||{status:'unconfigured',missingFields:[]};
+  var categoryRuleHtml='<div class="pr-m-section"><h4>📋 品类规则包</h4><p><strong>'+escapeHtml(categoryRule.name||prDisplay(p[4]))+'</strong> · '+escapeHtml(prCategoryRuleLabel(categoryRule))+'</p>';
+  if(categoryRule.missingFields&&categoryRule.missingFields.length)categoryRuleHtml+='<p style="font-size:12px;color:var(--muted)">待补字段：'+escapeHtml(categoryRule.missingFields.map(function(key){return prCategoryFieldLabels[key]||key;}).join('、'))+'</p>';
+  categoryRuleHtml+='</div>';
   var summaryStr='售价'+prDisplay(p[6])+',销量'+prDisplay(p[8])+',增速'+prDisplay(p[9]);
 
   $('#pr-modal-content').innerHTML=
@@ -312,6 +475,7 @@ function prShowDetail(idx){
     '<div class="pr-m-section"><h4>🏪 竞品店铺</h4><p>店铺: <strong>'+escapeHtml(prDisplay(p[11]))+'</strong> · <span style="color:var(--green);cursor:pointer;text-decoration:underline" id="pr-detail-shop">查看店铺详情 ↗</span></p></div>'+
     '<div class="pr-m-section"><h4>🌐 全网同款分布</h4><p>平台数量: <strong>'+escapeHtml(sameCount)+'</strong> · 链接数量: <strong>'+escapeHtml(linkCount)+'</strong></p></div>'+
     '<div class="pr-m-section"><h4>⚠️ 合规风险提示</h4><div class="pr-m-tags">'+compliance+'</div></div>'+
+    categoryRuleHtml+
     '<div style="margin-top:16px;display:flex;gap:8px">'+
       '<button class="filter-button" style="padding:8px 18px" id="pr-detail-add">✦ 加入报告素材</button>'+
       '<button style="background:none;border:1px solid var(--line);padding:8px 18px;border-radius:4px;font:12px Noto Sans SC;cursor:pointer" id="pr-detail-country">🌍 查看对应国家市场</button>'+
@@ -319,7 +483,7 @@ function prShowDetail(idx){
 
   $('#pr-modal').classList.add('open');
   $('#pr-detail-shop').onclick=function(){switchPage('shops');toast('已跳转到店铺追踪')};
-  $('#pr-detail-add').onclick=function(){rpAddMaterial('product',p[1],p[2]+' '+p[3],summaryStr);toast('已加入报告素材')};
+  $('#pr-detail-add').onclick=function(){rpAddMaterial('product',p[1],p[2]+' '+p[3],summaryStr,{snapshot:prProductSnapshot(p),snapshot_type:'product'});toast('已加入报告素材')};
   $('#pr-detail-country').onclick=function(){switchPage('countries');toast('已跳转到国家市场')};
 }
 
@@ -357,18 +521,19 @@ function prRenderAI(){
 }
 
 function prBuildAIItems(tab){
-  if(!products.length)return [{text:'暂无已导入的类目数据，上传 CSV 或 JSON 后才会生成机会判断。',addable:false}];
+  var scopedProducts=prScopedProducts();
+  if(!scopedProducts.length)return [{text:'暂无当前市场范围的已导入类目数据，上传 CSV 或 JSON 后才会生成机会判断（需提供对应市场记录）。',addable:false}];
   var items=[],counts={};
-  products.forEach(function(p){var c=prText(p[4])||'未提供类目';counts[c]=(counts[c]||0)+1;});
+  scopedProducts.forEach(function(p){var c=prText(p[4])||'未提供类目';counts[c]=(counts[c]||0)+1;});
   var categories=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];});
   if(tab==='short'){
-    items.push({text:'当前文件共 '+products.length+' 条商品记录，覆盖 '+categories.length+' 个类目。',addable:false});
+    items.push({text:'当前范围文件共 '+scopedProducts.length+' 条商品记录，覆盖 '+categories.length+' 个类目。',addable:false});
     if(categories[0])items.push({text:'文件中记录最多的类目是“'+categories[0]+'”（'+counts[categories[0]]+' 条），仅代表导入文件的样本分布，不等同于市场机会。',addable:false});
-    var growth=products.filter(function(p){return prText(p[9])!=='';});
+    var growth=scopedProducts.filter(function(p){return prText(p[9])!=='';});
     items.push({text:growth.length?'文件提供了 '+growth.length+' 条增速字段，可在筛选器中按增速排序；系统不补算缺失增速。':'文件未提供增速字段，无法生成增长判断。',addable:false});
   }else{
-    var markets={},platforms={};products.forEach(function(p){if(prText(p[2]))markets[p[2]]=1;if(prText(p[3]))platforms[p[3]]=1;});
-    items.push({text:'长期视图仅汇总当前文件：'+Object.keys(markets).length+' 个市场、'+Object.keys(platforms).length+' 个平台、'+products.length+' 条商品记录。',addable:false});
+    var markets={},platforms={};scopedProducts.forEach(function(p){if(prText(p[2]))markets[p[2]]=1;if(prText(p[3]))platforms[p[3]]=1;});
+    items.push({text:'长期视图仅汇总当前范围：'+Object.keys(markets).length+' 个市场、'+Object.keys(platforms).length+' 个平台、'+scopedProducts.length+' 条商品记录。',addable:false});
     items.push({text:'未提供时间序列、成本或利润字段，系统不会推断市场容量、GMV、复合增长率或长期推荐。',addable:false});
   }
   return items;
@@ -431,9 +596,10 @@ function jayPrintMarkdownReport(title, markdown, sourceNote){
 }
 
 function prExportExcel(){
-  if(!products.length){toast('暂无已导入数据，无法导出');return;}
+  var scopedProducts=prScopedProducts();
+  if(!scopedProducts.length){toast('暂无当前范围的已导入数据，无法导出');return;}
   var rows=['商品,国家,平台,类目,三级类目,售价,销量,增速,信号,店铺,上架天数'];
-  var data=prSelectedIds.size>0?Array.from(prSelectedIds).map(function(i){return products[i]}):products;
+  var data=prSelectedIds.size>0?Array.from(prSelectedIds).map(function(i){return products[i]}).filter(prIsInCurrentScope):scopedProducts;
   data.forEach(function(p){rows.push([p[1],p[2],p[3],p[4],p[5],p[6],p[8],p[9],p[10],p[11],p[12]].map(prCsvCell).join(','))});
   var csv=rows.join('\n');
   var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
@@ -442,8 +608,9 @@ function prExportExcel(){
 }
 function prCsvCell(value){var v=prText(value);return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
 function prExportPDF(){
-  if(!products.length){toast('暂无已导入数据，无法导出');return;}
-  var data=prSelectedIds.size>0?Array.from(prSelectedIds).map(function(i){return products[i]}):products;
+  var scopedProducts=prScopedProducts();
+  if(!scopedProducts.length){toast('暂无当前范围的已导入数据，无法导出');return;}
+  var data=prSelectedIds.size>0?Array.from(prSelectedIds).map(function(i){return products[i]}).filter(prIsInCurrentScope):scopedProducts;
   var md='# 产品全域雷达 - 竞品分析报告\n\n';
   md+='> 生成时间: '+new Date().toLocaleString('zh-CN')+' | 数据来源: 用户导入文件（'+escapeHtml(prDataMeta.fileName||'未命名文件')+'）\n\n';
   md+='## 数据总览\n- 筛选结果: '+data.length+' 条商品\n';
@@ -514,7 +681,7 @@ function prExportPDF(){
   $('#pr-modal-close').onclick=function(){$('#pr-modal').classList.remove('open')};
   $('#pr-modal').onclick=function(e){if(e.target===this)this.classList.remove('open')};
   $('#pr-batch-add').onclick=function(){
-    Array.from(prSelectedIds).forEach(function(i){var p=products[i];rpAddMaterial('product',p[1],p[2]+' '+p[3],'售价'+p[6]+',销量'+p[8]+',增速'+p[9])});
+    Array.from(prSelectedIds).forEach(function(i){var p=products[i];if(p&&prIsInCurrentScope(p))rpAddMaterial('product',p[1],p[2]+' '+p[3],'售价'+p[6]+',销量'+p[8]+',增速'+p[9],{snapshot:prProductSnapshot(p),snapshot_type:'product'});});
     toast(prSelectedIds.size+' 件商品已加入报告素材');
   };
   $('#pr-batch-monitor').onclick=function(){toast('已将 '+prSelectedIds.size+' 个店铺加入监控');prSelectedIds.clear();prUpdateBatchBar()};
@@ -527,7 +694,7 @@ function prExportPDF(){
   $('#pr-shop-load').onclick=function(){
     var shop=$('#pr-shop-select').value;
     if(!shop){toast('请先选择店铺');return}
-    var shopProducts=products.filter(function(p){return p[11]===shop});
+    var shopProducts=prScopedProducts().filter(function(p){return p[11]===shop});
     var hotCount=shopProducts.filter(function(p){return p[10]==='爆发'||p[10]==='上升'}).length;
     $('#pr-shop-stats').innerHTML=
       '<div class="pr-shop-stat"><b>'+shopProducts.length+'</b><span>在售商品</span></div>'+
@@ -569,7 +736,7 @@ function shSwitchAI(tab) {
 function shRenderAI() {
   var el = document.getElementById('sh-ai-content');
   if(!el) return;
-  if(!shops.length){
+  if(!prScopedShops().length){
     el.innerHTML='<div class="pr-empty-note">暂无已导入的店铺数据，店铺洞察不会使用示例或推测指标。</div>';
     return;
   }
@@ -609,7 +776,7 @@ function shRenderAI() {
 }
 
 function shBuildAIItems(tab){
-  var provided=shops.filter(function(s){return s&&s._source;});
+  var provided=prScopedShops().filter(function(s){return s&&s._source;});
   if(!provided.length)return [{title:'暂无可用店铺洞察',desc:'当前页面只接受用户导入或已接入的店铺记录。',time:'状态'}];
   if(tab==='risk'){
     var riskCount=provided.filter(function(s){return prText(s[5])==='风险'||(prText(s[4])&&prText(s[4]).charAt(0)==='-');}).length;
@@ -621,14 +788,14 @@ function shBuildAIItems(tab){
 function shRenderCompareTab(){
   var el=document.getElementById('sh-compare-panel'); if(!el) return;
   var cats={},markets={},plats={};
-  shops.forEach(function(x){if(prText(x[6]))cats[x[6]]=1;if(prText(x[2]))markets[x[2]]=1;if(prText(x[1]))plats[x[1]]=1;});
+  prScopedShops().forEach(function(x){if(prText(x[6]))cats[x[6]]=1;if(prText(x[2]))markets[x[2]]=1;if(prText(x[1]))plats[x[1]]=1;});
   function opts(o,all){return '<option value="">'+all+'</option>'+Object.keys(o).map(function(k){return '<option>'+k+'</option>';}).join('');}
   var html='';
   html+='<div style="border:1px solid var(--wave);background:var(--sea-soft);border-radius:8px;padding:14px;margin-bottom:14px">';
   html+='<p style="margin:0 0 10px;font-size:13px;color:var(--ink)"><b>竞品对标</b><span style="color:var(--muted);font-weight:400"> · 仅基于已导入店铺记录</span></p>';
   html+='<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">';
   html+='<select id="sh-cmp-cat" style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(cats,'全部品类')+'</select>';
-  html+='<select id="sh-cmp-market" style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(markets,'全部市场')+'</select>';
+  html+='<select id="sh-cmp-market" style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(markets,'当前范围全部市场')+'</select>';
   html+='<select id="sh-cmp-plat" style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(plats,'全部平台')+'</select>';
   html+='<button onclick="shRunCompare()" style="padding:8px 18px;background:var(--sea-deep);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px">对标分析</button>';
   html+='</div></div>';
@@ -641,7 +808,7 @@ function shRunCompare(){
   var market=document.getElementById('sh-cmp-market')?document.getElementById('sh-cmp-market').value:'';
   var plat=document.getElementById('sh-cmp-plat')?document.getElementById('sh-cmp-plat').value:'';
   var res=document.getElementById('sh-cmp-result'); if(!res) return;
-  var peers=shops.filter(function(x){return (!cat||x[6]===cat)&&(!market||x[2]===market)&&(!plat||x[1]===plat);});
+  var peers=prScopedShops().filter(function(x){return (!cat||x[6]===cat)&&(!market||x[2]===market)&&(!plat||x[1]===plat);});
   if(!peers.length){ res.innerHTML='<p style="color:var(--muted);font-size:13px">该条件下暂无已导入店铺。</p>'; return; }
   peers.sort(function(a,b){return shParseGMV(b[3])-shParseGMV(a[3]);});
   var top5=peers.slice(0,5);
@@ -667,7 +834,7 @@ function shRunCompare(){
 // ========== FILTERS ==========
 function shInitFilters() {
   var regions = [], plats = [], cats = [], allTags = [];
-  shops.forEach(function(s) {
+  prScopedShops().forEach(function(s) {
     if(regions.indexOf(s[2])<0) regions.push(s[2]);
     if(plats.indexOf(s[1])<0) plats.push(s[1]);
     if(cats.indexOf(s[6])<0) cats.push(s[6]);
@@ -678,7 +845,7 @@ function shInitFilters() {
   var cSel = document.getElementById('sh-f-cat');
   var tSel = document.getElementById('sh-f-tag');
   if(!rSel||!pSel||!cSel||!tSel)return;
-  rSel.innerHTML='<option value="">全部市场</option>';
+  rSel.innerHTML='<option value="">当前范围全部市场</option>';
   pSel.innerHTML='<option value="">全部平台</option>';
   cSel.innerHTML='<option value="">全部类目</option>';
   tSel.innerHTML='<option value="">全部标签</option>';
@@ -709,7 +876,7 @@ function shApplyFilters() {
   var kw = document.getElementById('sh-f-keyword').value.trim().toLowerCase();
   var sort = document.getElementById('sh-f-sort').value;
 
-  var filtered = shops.map(function(s,i){ return {s:s,idx:i}; }).filter(function(o) {
+  var filtered = prScopedShops().map(function(s){ return {s:s,idx:shops.indexOf(s)}; }).filter(function(o) {
     var s = o.s;
     if(shActiveGroup !== 'all') {
       var grpShops = shGroupShops[shActiveGroup] || [];
@@ -745,7 +912,7 @@ function shApplyFilters() {
   });
 
   shRenderTable(filtered);
-  document.getElementById('sh-count').textContent = '(' + filtered.length + '/' + shops.length + ')';
+  document.getElementById('sh-count').textContent = '(' + filtered.length + '/' + prScopedShops().length + ')';
 }
 
 function shStatusCls(st) {
@@ -840,6 +1007,7 @@ function shShowDetail(idx) {
       '<div class="pr-m-stat"><b>'+escapeHtml(prDisplay(s[12]))+'</b><span>更新时间</span></div>'+
       '</div>'+
       '<div class="pr-m-section"><h4>店铺信息</h4><p>平台：'+escapeHtml(prDisplay(s[1]))+' · 市场：'+escapeHtml(prDisplay(s[2]))+' · 类目：'+escapeHtml(prDisplay(s[6]))+'</p><p>粉丝：'+escapeHtml(prDisplay(s[10]))+' · 评分：'+escapeHtml(prDisplay(s[11]))+' · 标签：'+escapeHtml(prDisplay(s[9]))+'</p></div>'+
+      '<div class="pr-m-section"><h4>品类规则包</h4><p>'+escapeHtml(prCategoryRuleLabel(s._categoryRule))+'</p></div>'+
       '<div class="pr-m-section"><h4>趋势与结构</h4><p>未提供可验证的时间序列、品类结构或流量结构字段。</p></div>'+
       '<div style="display:flex;gap:8px;margin-top:16px"><button class="filter-button" style="padding:8px 18px" onclick="shAddToReport('+idx+')">加入报告素材</button></div>';
     document.getElementById('sh-modal-overlay').classList.add('show');
@@ -854,7 +1022,8 @@ function shCloseModal() {
 
 function shAddToReport(idx) {
   var s = shops[idx];
-  rpAddMaterial('shop',s[0]+' ('+s[1]+')',s[2],'月GMV '+s[3]+' 增速'+s[4]+' 主营'+s[6]+' 状态:'+s[5]);
+  if(!s||!prIsInCurrentScope(s))return;
+  rpAddMaterial('shop',s[0]+' ('+s[1]+')',s[2],'月GMV '+s[3]+' 增速'+s[4]+' 主营'+s[6]+' 状态:'+s[5],{snapshot:prShopSnapshot(s),snapshot_type:'shop'});
 }
 
 // ========== BATCH OPS ==========
@@ -863,7 +1032,7 @@ function shBatchAddReport() {
   var pool = rpGetPool();
   shSelected.forEach(function(idx) {
     var s = shops[idx];
-    pool.push({id:Date.now()+'_'+idx,type:'shop',title:s[0]+' ('+s[1]+')',source:s[2],summary:'月GMV '+s[3]+' 增速'+s[4]+' 主营'+s[6],addedAt:new Date().toISOString(),selected:true});
+    if(s&&prIsInCurrentScope(s))pool.push({id:Date.now()+'_'+idx,type:'shop',title:s[0]+' ('+s[1]+')',source:s[2],summary:'月GMV '+s[3]+' 增速'+s[4]+' 主营'+s[6],addedAt:new Date().toISOString(),selected:true,source_kind:'derived',source_type:'derived',source_record_id:String(idx),verification_status:'verified',verification_notes:'由当前范围内已导入店铺记录生成',snapshot_type:'shop',snapshot_data:prShopSnapshot(s),snapshot_source:s._source||'用户导入文件',snapshot_at:new Date().toISOString(),snapshot_market:s[2],snapshot_platform:s[1],snapshot_category:s[6]});
   });
   rpSavePool(pool);
   toast('已批量加入 ' + shSelected.size + ' 家店铺到报告素材');
@@ -894,22 +1063,28 @@ function shDoAddSingle() {
   var cat = document.getElementById('sh-add-cat').value.trim();
   var tags = document.getElementById('sh-add-tags').value.trim() || '';
   if(!name) { toast('请输入店铺名称'); return; }
-  if(!prAllowedMarket(market)||!prAllowedPlatform(plat)){toast('店铺必须属于美国市场和已接入的 4 个平台');return;}
+  if(!prAllowedMarket(market)||!prAllowedPlatform(plat)){
+    var scopeLabel=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getScopeLabel?window.JAY_MARKET_SCOPE_API.getScopeLabel():'当前工作区范围';
+    toast('店铺必须属于'+scopeLabel);return;
+  }
   var addedShop=[name, plat, market, '', '', '', cat, '', '', tags, '', '', ''];
+  addedShop._rawRecord={shop_name:name,platform:plat,market:market,category:cat,tags:tags};
+  var productLike=['','',market,plat,cat];productLike._rawRecord=addedShop._rawRecord;
+  addedShop._categoryRule=prAttachCategoryRule(productLike)._categoryRule;
   addedShop._source='用户手动添加';
   shops.push(addedShop);
   shCloseAddModal();
   shApplyFilters();
   toast('已添加店铺: ' + name);
   // Also add to products cross-link
-  rpAddMaterial('shop',name+' ('+plat+')',market,'新添加监控店铺 主营'+cat);
+  rpAddMaterial('shop',name+' ('+plat+')',market,'新添加监控店铺 主营'+cat,{snapshot:prShopSnapshot(addedShop),snapshot_type:'shop'});
 }
 function shDoAddBatch() {
   var text = document.getElementById('sh-add-batch-text').value.trim();
   if(!text) { toast('请粘贴店铺名称'); return; }
   var lines = text.split('\n').filter(function(l){return l.trim()});
   shCloseAddModal();
-  toast('批量店铺需通过类目机会页上传 CSV/JSON，并提供美国市场和平台字段');
+  toast('批量店铺需通过类目机会页上传 CSV/JSON，并提供当前市场和平台字段');
 }
 
 // ========== GROUPS ==========
@@ -986,9 +1161,10 @@ function shLoadTpl(idx) {
 
 // ========== EXPORT ==========
 function shExportExcel() {
-  if(!shops.length){toast('暂无已导入店铺数据，无法导出');return;}
+  var scopedShops=prScopedShops();
+  if(!scopedShops.length){toast('暂无当前范围的已导入店铺数据，无法导出');return;}
   var header = '店铺名\t平台\t市场\t主营类目\t月GMV\t30天波动\t在售商品\t增速\t粉丝数\t标签\t状态\t更新时间';
-  var rows = shops.map(function(s){ return s.join('\t'); });
+  var rows = scopedShops.map(function(s){ return s.join('\t'); });
   var csv = '\uFEFF' + header + '\n' + rows.join('\n');
   var blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
   var a = document.createElement('a');
@@ -998,16 +1174,17 @@ function shExportExcel() {
   toast('Excel导出完成');
 }
 function shExportPDF() {
-  if(!shops.length){toast('暂无已导入店铺数据，无法导出');return;}
+  var scopedShops=prScopedShops();
+  if(!scopedShops.length){toast('暂无当前范围的已导入店铺数据，无法导出');return;}
   var md = '# 店铺追踪竞品分析报告\\n\\n';
   md += '导出时间: ' + new Date().toLocaleString() + '\\n\\n';
   md += '## 监控概览\\n\\n';
-  md += '- 监控店铺总数: ' + shops.length + '\\n';
+  md += '- 监控店铺总数: ' + scopedShops.length + '\\n';
   var regions = {};
-  shops.forEach(function(s){ regions[s[2]] = (regions[s[2]]||0)+1; });
+  scopedShops.forEach(function(s){ regions[s[2]] = (regions[s[2]]||0)+1; });
   Object.keys(regions).forEach(function(r){ md += '- ' + r + ': ' + regions[r] + '家\\n'; });
   md += '\\n## 头部店铺分析\\n\\n';
-  shops.filter(function(s){ return shParseGMV(s[3]) >= 300; }).sort(function(a,b){ return shParseGMV(b[3])-shParseGMV(a[3]); }).forEach(function(s){
+  scopedShops.filter(function(s){ return shParseGMV(s[3]) >= 300; }).sort(function(a,b){ return shParseGMV(b[3])-shParseGMV(a[3]); }).forEach(function(s){
     md += '### ' + s[0] + '\\n';
     md += '- 平台: ' + s[1] + ' | 市场: ' + s[2] + ' | 类目: ' + s[6] + '\\n';
     md += '- 月GMV: ' + s[3] + ' | 增速: ' + s[4] + ' | 30天波动: ' + s[8] + '\\n';
@@ -1085,6 +1262,18 @@ async function jayLoadShopsFromCloud() {
   shRenderTplSelect();
   shApplyFilters();
 })();
+
+if(window.addEventListener) window.addEventListener('jay:market-scope-change', function(){
+  prSelectedIds.clear();
+  shSelected.clear();
+  prInitFilters();
+  prRenderAI();
+  prApplyFilters();
+  shInitFilters();
+  shRenderAI();
+  shRenderGroups();
+  shApplyFilters();
+});
 
 
 let countryFullData={};

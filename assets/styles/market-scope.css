@@ -1,3 +1,29 @@
+.market-scope-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 9px 0 11px;
+  border: 1px solid var(--line, #dfe6e2);
+  border-radius: 7px;
+  background: #fff;
+  color: #66716d;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.market-scope-control select {
+  max-width: 150px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink, #1e2b27);
+  font: 650 12px/1.2 inherit;
+  cursor: pointer;
+}
+.market-scope-control select:invalid { color: #66716d; }
+.market-scope-control[for="jay-platform-selector"] select { max-width: 132px; }
+.market-scope-control[for="jay-category-selector"] select { max-width: 132px; }
+
 .scope-banner {
   display: flex;
   align-items: center;
@@ -48,6 +74,7 @@
 .scope-badge.pending { background: #fff5dd; color: #8a5a00; }
 .scope-link { color: #276c58; text-decoration: none; }
 .scope-link:hover { text-decoration: underline; }
+.tools-score-note { margin-top: 8px; color: #7a8681; font-size: 11px; line-height: 1.5; }
 
 .scope-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; color: #66716d; font-size: 12px; }
 .scope-page-buttons { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -103,18 +130,60 @@
 #policies .pl-trust-summary .pass { color: #187642; font-weight: 650; }
 #policies .pl-trust-summary small { margin-left: auto; color: #7b8783; font-size: 10px; }
 
+#policies .pl-domain-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 0 12px;
+  padding: 3px;
+  border: 1px solid #d7e4de;
+  border-radius: 7px;
+  background: #f4f7f6;
+}
+#policies .pl-domain-tab {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #62706b;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+#policies .pl-domain-tab.active {
+  background: #fff;
+  color: #176b55;
+  box-shadow: 0 1px 3px rgba(25, 56, 47, .12);
+}
+#policies .pl-translation-badge {
+  display: inline-flex;
+  padding: 1px 7px;
+  border: 1px solid #d8e2de;
+  border-radius: 999px;
+  background: #f7f9f8;
+  color: #68746f;
+  font-size: 10px;
+}
+#policies .pl-domain-empty-note { color: #68746f; font-size: 12px; }
+
 @media (max-width: 900px) {
   .scope-summary-grid, .scope-platform-status { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .scope-card { grid-template-columns: 4px minmax(0, 1fr); }
   .scope-card-side { grid-column: 2; padding: 0 12px 12px 0; }
 }
 @media (max-width: 600px) {
+  .market-scope-control span { display: none; }
+  .market-scope-control { min-width: 0; padding: 0 6px; }
+  .market-scope-control select { max-width: 92px; }
   .scope-banner { align-items: flex-start; flex-direction: column; }
   .scope-chips { justify-content: flex-start; }
   .scope-summary-grid, .scope-platform-status { grid-template-columns: 1fr; }
   .scope-toolbar input[type="search"] { min-width: 100%; }
   .scope-toolbar .scope-count { width: 100%; margin-left: 0; }
   .scope-pagination { align-items: flex-start; flex-direction: column; }
-  #policies .pl-trust-summary { gap: 4px 10px; padding: 7px 10px; }
+  #policies .pl-trust-summary { gap: 3px 8px; padding: 5px 8px; line-height: 1.25; font-size: 10px; }
   #policies .pl-trust-summary small { flex-basis: 100%; margin-left: 0; }
+  #policies .pl-domain-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+  #policies .pl-domain-tab { min-width: 0; padding: 0 6px; }
 }

@@ -6,13 +6,13 @@ module.exports = defineConfig({
   timeout: 30_000,
   workers: 1,
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: process.env.JAY_PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:4173',
     browserName: 'chromium',
     channel: process.env.CI ? undefined : 'chrome',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
-  webServer: {
+  webServer: process.env.JAY_PLAYWRIGHT_BASE_URL ? undefined : {
     command: 'python -m http.server 4173 --bind 127.0.0.1',
     url: 'http://127.0.0.1:4173',
     reuseExistingServer: true,

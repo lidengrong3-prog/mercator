@@ -30,14 +30,53 @@ function toast(message) {
   setTimeout(function(){ element.classList.remove('show'); }, 2400);
 }
 
-// Scope identity only. Market metrics are loaded from sourced country records.
-const countries=[['🇺🇸','美国','美国','','','']];
+// Scope identity only. Market metrics are loaded from sourced country records;
+// this list never invents macro values and is rebuilt when the active market
+// changes.
+let countries=[];
 const alerts=[];
 const alertsFull=[];
 const products=[];
 const shops=[];
 let platformsData=[];
 let pfExtData={};
+let platformSourceData=[];
+
+function jayMarketIdentityRecords(){
+  var api=window.JAY_MARKET_SCOPE_API;
+  var markets=api&&api.getActiveMarkets?api.getActiveMarkets():[];
+  return markets.map(function(m){ return [(m.flag||'🌐'), m.name||m.label||m.code, m.name||m.label||m.code, '', '', '']; });
+}
+function jaySyncCountryIdentityRecords(){
+  countries=jayMarketIdentityRecords();
+  window.countries=countries;
+  if(typeof renderOvCountries==='function')renderOvCountries();
+}
+
+function jayApplyPlatformDataScope(){
+  var data=Array.isArray(platformSourceData)?platformSourceData:[];
+  var api=window.JAY_MARKET_SCOPE_API;
+  var scopedPlatformRecords=api&&api.filterPlatforms
+    ? api.filterPlatforms(data,function(d){return d&&d.name;}) : data;
+  platformsData=scopedPlatformRecords.map(function(d){
+    var name=api&&api.normalizePlatform?api.normalizePlatform(d.name):d.name;
+    return [name||'',d.region||'',d.categories||'',d.gmv||'',d.fee||'',d.feeDesc||'',d.type||'',d.mau||'',d.updates||''];
+  });
+  pfExtData={};
+  scopedPlatformRecords.forEach(function(d){
+    if(d.ext&&Object.keys(d.ext).length){
+      var key=api&&api.normalizePlatform?api.normalizePlatform(d.name):d.name;
+      pfExtData[key]=Object.assign({},pfExtData[key]||{},d.ext);
+    }
+  });
+  if(typeof fillSelect==='function'){
+    fillSelect('#pf-f-region',[...new Set(platformsData.map(function(p){return p[1];}))].sort());
+    fillSelect('#pf-f-type',[...new Set(platformsData.map(function(p){return p[6];}))].sort());
+  }
+  if(typeof syncPlatformScopeUi==='function')syncPlatformScopeUi();
+}
+
+jaySyncCountryIdentityRecords();
 
 // -- 动态加载平台数据 --
 var JAY_SUPABASE_URL = 'https://ftlzofrnosgvdvwajhuz.supabase.co';
@@ -45,6 +84,75 @@ var JAY_SUPABASE_KEY = 'sb_publishable_y2zfDKmuW9Lj4gUqIYKpxw_COuX1JQQ';
 // 提前初始化数据层基址，避免顶层 loadXxx() 调用时 JAY_API_URL 仍为 undefined（var 提升 bug 导致 Supabase 主路径失效，每次启动白费 4 次废请求）
 var JAY_API_URL = JAY_SUPABASE_URL + '/rest/v1';
 var JAY_ANON_KEY = JAY_SUPABASE_KEY;
+
+function jayCatalogPayload(raw){
+  raw=raw||{};
+  return {
+    markets:Array.isArray(raw.markets)?raw.markets.map(function(item){ var metadata=item.metadata&&typeof item.metadata==='object'?item.metadata:{}; return Object.assign({},item,{dataStatus:item.dataStatus||item.data_status,platformKeys:item.platformKeys||item.platform_keys||[],categoryKeys:item.categoryKeys||item.category_keys||[],jurisdictionCodes:item.jurisdictionCodes||item.jurisdiction_codes||[],regionCode:item.regionCode||item.region_code,regionName:item.regionName||item.region_name,dataSources:item.dataSources||item.data_sources||metadata.dataSources||metadata.data_sources||{}}); }):[],
+    platforms:Array.isArray(raw.platforms)?raw.platforms.map(function(item){ return Object.assign({},item,{dataStatus:item.dataStatus||item.data_status}); }):[],
+    marketPlatforms:Array.isArray(raw.marketPlatforms)?raw.marketPlatforms.map(function(item){ return Object.assign({},item,{marketCode:item.marketCode||item.market_code,platformKey:item.platformKey||item.platform_key,dataStatus:item.dataStatus||item.data_status}); }):(Array.isArray(raw.market_platforms)?raw.market_platforms:[]),
+    jurisdictions:Array.isArray(raw.jurisdictions)?raw.jurisdictions.map(function(item){ return Object.assign({},item,{parentCode:item.parentCode||item.parent_code||null}); }):[],
+    categories:Array.isArray(raw.categories)?raw.categories.map(function(item){ return Object.assign({},item,{dataStatus:item.dataStatus||item.data_status}); }):[],
+    reportTemplates:Array.isArray(raw.reportTemplates)?raw.reportTemplates.map(function(item){ return Object.assign({},item,{categoryCodes:item.categoryCodes||item.category_codes||[],requiredDomains:item.requiredDomains||item.required_domains||[],dataStatus:item.dataStatus||item.data_status}); }):(Array.isArray(raw.report_templates)?raw.report_templates:[]),
+  };
+}
+
+var localCatalogReady = (async function(){
+  try {
+    var base=document.querySelector('base')?document.querySelector('base').href:location.pathname.replace(/[^/]*$/,'');
+    var response=await fetch(base+'data/market_scope.json',{cache:'no-store'});
+    if(!response.ok)throw new Error('local catalog '+response.status);
+    var payload=jayCatalogPayload(await response.json());
+    if(payload.markets.length&&payload.platforms.length&&payload.marketPlatforms.length&&window.JAY_MARKET_SCOPE_API){
+      window.JAY_MARKET_SCOPE_API.hydrateCatalog(payload);
+      console.log('[JAY观海] Local market catalog loaded:',payload.markets.length,'markets');
+    }
+  } catch(e) {
+    console.info('[JAY观海] Local market catalog unavailable; using embedded registry');
+  }
+}());
+
+var marketCatalogLoading = false;
+async function loadMarketCatalog(){
+  if(marketCatalogLoading || !window.JAY_MARKET_SCOPE_API || !JAY_SUPABASE_URL) return;
+  await localCatalogReady;
+  marketCatalogLoading=true;
+  var controller = new AbortController();
+  var timeout = setTimeout(function(){ controller.abort(); }, 2800);
+  function read(path){
+    return fetch(JAY_API_URL+'/'+path, {headers:{apikey:JAY_ANON_KEY,Authorization:'Bearer '+JAY_ANON_KEY},signal:controller.signal})
+      .then(function(response){ if(!response.ok) throw new Error('catalog '+response.status); return response.json(); });
+  }
+  try{
+    var rows = await Promise.all([
+      read('market_catalog?select=*'),
+      read('platform_catalog?select=*'),
+      read('market_platforms?select=*'),
+      read('jurisdiction_catalog?select=*'),
+      read('category_profiles?select=*'),
+      read('report_template_catalog?select=*'),
+    ]);
+    if(rows.every(Array.isArray) && rows[0].length && rows[1].length && rows[2].length){
+      window.JAY_MARKET_SCOPE_API.hydrateCatalog(jayCatalogPayload({
+        markets: rows[0], platforms: rows[1], market_platforms: rows[2], jurisdictions: rows[3],
+        categories: rows[4], report_templates: rows[5],
+      }));
+      console.log('[JAY观海] Market catalog loaded from Supabase:',rows[0].length,'markets');
+    }
+  }catch(e){
+    // The catalog migration is optional during local development. The
+    // immutable default registry remains the safe fallback when it is absent.
+    console.info('[JAY观海] Market catalog unavailable; using local registry');
+  }finally{
+    clearTimeout(timeout);
+    marketCatalogLoading=false;
+  }
+}
+
+// Load the remote catalog as soon as the base registry exists. Data modules
+// can render immediately from the local metadata and will be refreshed when
+// the catalog arrives; switching markets later must not be the first trigger.
+loadMarketCatalog();
 
 var platformDataLoading=false;
 async function loadPlatformData(){
@@ -60,19 +168,11 @@ async function loadPlatformData(){
     const data=await jayFetchMarketData('platforms', url);
     if(!data)throw new Error('Failed to load platform data');
     if(!Array.isArray(data)||!data.length)throw new Error('Platform data is empty');
-    // Rebuild platformsData from JSON, constrained by the active market scope.
-    var scopedPlatformRecords = (window.JAY_MARKET_SCOPE_API && window.JAY_MARKET_SCOPE_API.filterPlatforms)
-      ? window.JAY_MARKET_SCOPE_API.filterPlatforms(data, function(d){ return d && d.name; })
-      : data;
-    platformsData=scopedPlatformRecords.map(d=>[(window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.normalizePlatform?window.JAY_MARKET_SCOPE_API.normalizePlatform(d.name):d.name)||'',d.region||'',d.categories||'',d.gmv||'',d.fee||'',d.feeDesc||'',d.type||'',d.mau||'',d.updates||'']);
-    // Rebuild pfExtData from JSON
-    pfExtData={};
-    scopedPlatformRecords.forEach(d=>{if(d.ext&&Object.keys(d.ext).length){var key=(window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.normalizePlatform?window.JAY_MARKET_SCOPE_API.normalizePlatform(d.name):d.name);pfExtData[key]=Object.assign({}, pfExtData[key]||{}, d.ext);}});
-    // Repopulate filter selects
-    fillSelect('#pf-f-region',[...new Set(platformsData.map(p=>p[1]))].sort());
-    fillSelect('#pf-f-type',[...new Set(platformsData.map(p=>p[6]))].sort());
+    platformSourceData=data.slice();
+    jayApplyPlatformDataScope();
     console.log('[JAY观海] Platform data loaded dynamically:',platformsData.length,'scoped platforms');
   }catch(e){
+    platformSourceData=[];
     platformsData=[];
     pfExtData={};
     console.error('[JAY观海] Platform data load failed; records remain empty:',e.message);
@@ -80,6 +180,12 @@ async function loadPlatformData(){
   platformDataLoading=false;
 }
 loadPlatformData();
+
+if(window.addEventListener) window.addEventListener('jay:market-scope-change', function(){
+jaySyncCountryIdentityRecords();
+loadMarketCatalog();
+  jayApplyPlatformDataScope();
+});
 
 const macroData=[];
 const policyData=[];

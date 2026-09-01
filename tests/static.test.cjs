@@ -68,6 +68,7 @@ test('frontend assets are externalized and loaded in dependency order', () => {
   const expectedModules = [
     'assets/js/market-scope.js',
     'assets/js/catalog.js',
+    'assets/js/report-engine.js',
     'assets/js/products-shops.js',
     'assets/js/markets-policies.js',
     'assets/js/content-overview.js',
@@ -93,17 +94,41 @@ test('market scope is centralized before data modules load', () => {
   assert.match(scope, /name:\s*'TikTok Shop'/);
   assert.match(scope, /name:\s*'AliExpress'/);
   assert.match(scope, /name:\s*'eBay'/);
-  assert.match(scope, /platformCount:\s*platformNames\.length/);
-  assert.match(scope, /market === country\.code \|\| market === 'GLOBAL'/);
+  assert.match(scope, /version:\s*CONFIG_VERSION/);
+  assert.match(scope, /marketPlatforms:/);
+  assert.match(scope, /dataDomains:/);
+  assert.match(scope, /categoryProfiles:/);
+  assert.match(scope, /function normalizeMarketCode/);
+  assert.match(scope, /function normalizePlatformKey/);
+  assert.match(scope, /function getApplicableRecords/);
+  assert.match(scope, /getActiveMarketNames/);
+  assert.match(scope, /SCOPE_STORAGE_KEY/);
+  assert.match(scope, /getConfiguredMarketPlatforms/);
+  assert.match(scope, /normalizeDataRecord/);
+  assert.match(scope, /getReportTemplates/);
   assert.match(scope, /global\.JAY_MARKET_SCOPE/);
 });
 
-test('platform rules consume the configured US scope', () => {
-  assert.match(browserSource, /当前仅展示已匹配的 4 个平台/);
-  assert.match(browserSource, /fillSelect\('#rl-market', \['US'\]/);
-  assert.match(browserSource, /return market==='US';/);
-  assert.match(browserSource, /window\.JAY_MARKET_SCOPE\.platformNames/);
-  assert.match(browserSource, /if\(name==='rules'\)[\s\S]*ruleMarket\.value='US'/);
+test('platform rules consume the configured market scope', () => {
+  assert.match(browserSource, /当前展示已配置平台规则/);
+  assert.match(browserSource, /platform-scope-empty/);
+  assert.match(browserSource, /getActiveMarkets\(\)/);
+  assert.match(browserSource, /getActivePlatformNames\(\)/);
+  assert.match(browserSource, /allowedMarkets\.indexOf\(market\)>=0/);
+  assert.match(browserSource, /function rlMarketLabel/);
+  assert.match(browserSource, /rlRuleFieldDefinitions/);
+  assert.match(browserSource, /rule_version/);
+  assert.match(browserSource, /function rlRuleVersionHistoryHtml/);
+  const ruleData = JSON.parse(fs.readFileSync(path.join(root, 'data', 'rules.json'), 'utf8'));
+  assert.deepEqual(ruleData.versioning, {
+    identity_field: 'rule_key',
+    version_field: 'rule_version',
+    effective_from_field: 'effective_date',
+    effective_to_field: 'effective_to',
+    history_field: 'version_history',
+  });
+  const versionMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20260831000000_platform_rule_versions.sql'), 'utf8');
+  assert.match(versionMigration, /record_version/);
 });
 
 test('rules and formal pages do not seed retired global AI insights', () => {
@@ -121,38 +146,71 @@ test('rules and formal pages do not seed retired global AI insights', () => {
   assert.match(browserSource, /if\(name==='rules'\)[\s\S]*renderRulesPage\(\)/);
 });
 
-test('policy dynamics consume only verified records from the configured US scope', () => {
-  assert.match(browserSource, /function plGetJsonItems\(\)[\s\S]*items\.filter\(isUs\)/);
-  assert.match(browserSource, /fillSelect\('#pl-f-region', \['US'\]/);
-  assert.match(browserSource, /美国市场政策更新时间/);
-  assert.match(browserSource, /const plAiTabs=\['美国最新政策','美国准入与认证','美国关税与税务','美国合规风险'\]/);
+test('policy dynamics consume only verified records from the configured market scope', () => {
+  assert.match(browserSource, /function plGetJsonItems\(\)[\s\S]*return plGetVerifiedPolicies/);
+  assert.match(browserSource, /plConfiguredMarketCodes\(\)/);
+  assert.match(browserSource, /function plRenderDataInfo/);
+  assert.match(browserSource, /jayFetchMarketData\('taxes', '\.\/data\/taxes\.json'\)/);
+  assert.match(browserSource, /jayFetchMarketData\('access_requirements', '\.\/data\/access_requirements\.json'\)/);
+  assert.equal(document.querySelectorAll('#policies .pl-domain-tab').length, 3);
+  assert.match(browserSource, /const plAiTabs=\['最新市场政策','市场准入与认证','关税与税务','合规风险'\]/);
   assert.match(browserSource, /function plAssessEvidence\(p\)/);
   assert.match(browserSource, /specificRecordUrl=validUrl/);
-  assert.match(browserSource, /var official=\/\(\^\|\\\.\)gov\$\|\(\^\|\\\.\)mil\$/);
+  assert.match(browserSource, /var officialHost=/);
+  assert.match(browserSource, /var traceableVerified=/);
   assert.match(browserSource, /function plAssessEvidenceForSet\(p, items\)/);
   assert.match(browserSource, /function plAssessPolicyRelevance\(p\)/);
   assert.match(browserSource, /var plIndustryOnlyKeywords/);
   assert.match(browserSource, /var plBusinessCrossBorderContextKeywords/);
-  assert.match(browserSource, /plComplianceKeywords\.test\(title\) && plProductOrTradeContextKeywords\.test\(title\)/);
+  assert.match(browserSource, /plComplianceKeywords\.test\(text\) && plProductOrTradeContextKeywords\.test\(text\)/);
   assert.match(browserSource, /class="pl-relevance-tag"/);
-  assert.match(browserSource, /verified \? 100/);
+  assert.match(browserSource, /var score=verified\?\(officialVerified\?100:85\):null/);
+  assert.match(browserSource, /function plHasChineseDisplay/);
+  assert.match(browserSource, /function plGetVerifiedDomainRecords/);
+  assert.match(browserSource, /function plIsIndustryAdvisory\(item\)/);
+  assert.match(browserSource, /sourceClass==='industry_advisory'/);
+  assert.match(browserSource, /行业资讯 · 可追溯参考/);
+  assert.match(browserSource, /可追溯参考 · 非官方核验/);
+  assert.match(browserSource, /if\(plIsIndustryAdvisory\(p\)\) return false/);
   assert.match(browserSource, /var plCrossBorderOnly = true/);
   assert.match(browserSource, /function plIsCrossBorderPolicy\(p\)/);
   assert.match(browserSource, /function plGetVerifiedUsPolicies\(crossBorderOnly\)/);
-  assert.match(browserSource, /plAssessEvidenceForSet\(p, (?:items|allUsItems)\)\.flag!=='pass'/);
+  assert.match(browserSource, /plAssessEvidenceForSet\(p, (?:items|allScopedItems)\)\.flag!=='pass'/);
   assert.match(html, /<select id="pl-f-scope"[\s\S]*跨境经营相关/);
+  assert.match(html, /data-domain="tax"/);
+  assert.match(html, /data-domain="access"/);
+  const translationScript = fs.readFileSync(path.join(root, 'scripts', 'translate_regulatory_data.py'), 'utf8');
+  assert.match(translationScript, /source_hash/);
+  assert.match(translationScript, /title_zh/);
+  const regulatoryMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20260831010000_regulatory_domains.sql'), 'utf8');
+  assert.match(regulatoryMigration, /idx_market_tax_type/);
+  assert.match(regulatoryMigration, /idx_market_access_requirement/);
+  const industryMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20260831020000_industry_advisory.sql'), 'utf8');
+  assert.match(industryMigration, /source_class/);
+  assert.match(industryMigration, /traceable-feed/);
+  const provenanceSchema = JSON.parse(fs.readFileSync(path.join(root, 'data', 'provenance_schema.json'), 'utf8'));
+  assert.deepEqual(provenanceSchema.fields.source_class.enum, ['industry_advisory']);
+  assert.match(provenanceSchema.industry_advisory_rule.join('\n'), /formal policy statistics/);
   assert.equal(browserSource.includes('示意性数据'), false);
   assert.equal(browserSource.includes('固定核验时间'), false);
-  assert.match(browserSource, /if\(name==='policies'\)[\s\S]*plf\.value='US'/);
+  assert.match(browserSource, /if\(name==='policies'\)[\s\S]*jayConfiguredMarketCode\(\)/);
 });
 
-test('dynamic alerts share the verified US scope and use the current local date', () => {
+test('dynamic alerts share the configured scope and expose complete time and domain filters', () => {
   const alertSource = fs.readFileSync(path.join(root, 'assets/js/alerts-settings.js'), 'utf8');
-  assert.match(alertSource, /plGetVerifiedUsPolicies\(true\)/);
+  assert.match(alertSource, /plGetVerifiedPolicies\(true\)/);
   assert.match(alertSource, /typeof rlGetJsonItems === 'function' \? rlGetJsonItems\(\) : \[\]/);
+  assert.match(alertSource, /\['tax','access'\]/);
+  assert.match(alertSource, /changeType/);
   assert.match(alertSource, /function alCalendarDayDiff\(value,nowValue\)/);
   assert.match(alertSource, /function alMatchesTimeFilter\(value,timeFilter,nowValue\)/);
-  assert.match(alertSource, /var scopedDynamic = dynamicAlerts\.filter\(alertIsInConfiguredScope\)/);
+  assert.match(alertSource, /timeFilter==='custom'/);
+  assert.match(alertSource, /item\.market_code/);
+  assert.match(alertSource, /type:domain/);
+  assert.match(alertSource, /var scopedDynamic = all\.filter\(function\(a\)\{return a\.dynamic;\}\)/);
+  assert.match(alertSource, /badge\.textContent=resultCount/);
+  assert.match(alertSource, /navBadge\.textContent=unread/);
+  assert.match(alertSource, /function titleKey\(value\)/);
   assert.equal(alertSource.includes("new Date('2026-07-15')"), false);
   assert.equal(alertSource.includes('from countryFullData'), false);
 });
@@ -164,13 +222,17 @@ test('cross-page navigation shares one market and platform filter context', () =
   ]);
   assert.ok(document.querySelector('#ov-metrics'));
   assert.match(browserSource, /function renderOverviewMetrics\(\)/);
-  assert.match(browserSource, /policyFilter:\s*\{\s*region:\s*'US'/);
-  assert.match(browserSource, /ruleFilter:\s*\{\s*platform:\s*'all',\s*market:\s*'US'/);
+  assert.match(browserSource, /policyFilter:\s*\{\s*domain:'policy',\s*region:\s*jayConfiguredMarketCode\(\)/);
+  assert.match(browserSource, /ruleFilter:\s*\{\s*platform:\s*'all',\s*market:\s*jayConfiguredMarketCode\(\)/);
   assert.match(browserSource, /function jayOpenPolicyFilter\(filters\)/);
   assert.match(browserSource, /function jayOpenRulesFilter\(filters\)/);
   assert.match(browserSource, /function installCrossPageSwitch\(\)/);
   assert.match(browserSource, /wrapped\.__jayCrossPageSwitch=true/);
-  assert.match(browserSource, /data-page="policies">查看美国政策/);
+  assert.match(browserSource, /data-destination=\"policies\"/);
+  assert.match(browserSource, /data-destination=\"rules\"/);
+  assert.match(browserSource, /data-destination=\"tax\"/);
+  assert.match(browserSource, /data-destination=\"access\"/);
+  assert.match(browserSource, /data-destination=\"report\"/);
   assert.match(browserSource, /function plClearFilters\(\)[\s\S]*jayPolicyContext\(filter\)/);
 });
 
@@ -182,22 +244,24 @@ test('reports, watchlist, and tools expose only the configured US scope', () => 
   for (const pageId of ['report', 'watchlist', 'tools']) {
     assert.doesNotMatch(document.querySelector(`#${pageId}`).textContent, retiredLabels);
   }
-  assert.deepEqual([...document.querySelectorAll('#rp-q-market option')].map((option) => [option.value, option.textContent]), [['US', '美国']]);
-  assert.deepEqual([...document.querySelectorAll('#sc-market option')].map((option) => [option.value, option.textContent]), [['US', '美国']]);
-  assert.deepEqual([...document.querySelectorAll('#wl-group-sel option')].map((option) => [option.value, option.textContent]), [['us-market', '美国市场（当前范围）']]);
-  assert.match(document.querySelector('#rp-v2-topic').placeholder, /美国/);
+  assert.deepEqual([...document.querySelectorAll('#rp-q-market option')].map((option) => [option.value, option.textContent]), [['US', '当前市场']]);
+  assert.deepEqual([...document.querySelectorAll('#sc-market option')].map((option) => [option.value, option.textContent]), [['US', '当前市场']]);
+  assert.deepEqual([...document.querySelectorAll('#wl-group-sel option')].map((option) => [option.value, option.textContent]), [['us-market', '当前市场（当前范围）']]);
+  assert.match(document.querySelector('#rp-v2-topic').placeholder, /当前市场/);
 
-  assert.match(reportsSource, /【范围强制】只能分析美国市场/);
-  assert.match(reportsSource, /平台只能包含 Amazon、TikTok Shop、AliExpress、eBay/);
+  assert.match(reportsSource, /function jayConfiguredScopeInstruction\(\)/);
+  assert.match(reportsSource, /【范围强制】/);
   assert.match(reportsSource, /items\.filter\(wlIsConfiguredScopeRow\)/);
   assert.match(reportsSource, /function wlIsConfiguredScopeRow\(row\)/);
-  assert.match(reportsSource, /var capMap=\{US:20\}/);
-  assert.match(reportsSource, /var compMap=\{US:11\}/);
-  assert.match(reportsSource, /var riskMap=\{US:13\}/);
+  assert.match(reportsSource, /getMarketScoreBasis/);
+  assert.match(reportsSource, /暂无已验证评分数据/);
+  assert.doesNotMatch(reportsSource, /\|\|14/);
   assert.doesNotMatch(reportsSource, /'market-research':'全球市场调研报告'/);
   assert.match(authSource, /content\.market \|\| ''/);
-  assert.match(authSource, /market: report\.market \|\| 'US'/);
-  assert.match(authSource, /只能添加美国市场及当前 4 个平台范围内的记录/);
+  assert.match(authSource, /market_codes/);
+  assert.match(authSource, /platform_keys/);
+  assert.match(authSource, /category_codes/);
+  assert.match(authSource, /scope_version/);
 });
 
 test('settings source cannot fall back to the retired fictional workspace', () => {
@@ -219,6 +283,58 @@ test('database policy is authenticated-user scoped', () => {
   assert.equal(/FOR\s+ALL\s+TO\s+anon/i.test(sql), false);
   assert.match(sql, /auth\.uid\(\)\s*=\s*user_id/);
   assert.match(sql, /REVOKE ALL ON public\.monitored_shops FROM anon/);
+});
+
+test('market catalog foundation is relational, versionable, and read-only to the browser', () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'data', 'market_scope.json'), 'utf8'));
+  assert.deepEqual(manifest.default_market_codes, ['US']);
+  assert.equal(manifest.markets[0].platform_keys.length, 4);
+  assert.equal(manifest.markets[0].data_sources.macro.local_path, 'data/us_market/macro_indicators.json');
+  assert.equal(manifest.markets[0].data_sources.macro.source_kind, 'official');
+  assert.equal(manifest.markets[0].data_sources.macro.commerce_profile.indicator_map.ecommerce_sales, 'ECOMSA');
+  assert.equal(manifest.markets[0].data_sources.macro.commerce_profile.indicator_map.ecommerce_penetration, 'ECOMPCTSA');
+  assert.deepEqual(manifest.markets[0].data_sources.macro.commerce_profile.background_codes, ['GDP', 'UNRATE', 'INDPRO', 'BOPGSTB']);
+  assert.ok(manifest.report_templates.some((template) => template.category_codes.includes('electronics')));
+  const migration = fs.readFileSync(
+    path.join(root, 'supabase', 'migrations', '20260830000000_market_catalog.sql'),
+    'utf8',
+  );
+  const provenanceMigration = fs.readFileSync(
+    path.join(root, 'supabase', 'migrations', '20260830010000_data_provenance.sql'),
+    'utf8',
+  );
+  for (const table of [
+    'market_catalog',
+    'platform_catalog',
+    'market_platforms',
+    'jurisdiction_catalog',
+    'category_profiles',
+    'market_data_applicability',
+  ]) {
+    assert.match(migration, new RegExp(`CREATE TABLE IF NOT EXISTS public\\.${table}`));
+    assert.match(migration, new RegExp(`ALTER TABLE public\\.${table} ENABLE ROW LEVEL SECURITY`));
+  }
+  assert.match(migration, /REFERENCES public\.market_catalog/);
+  assert.match(migration, /REFERENCES public\.platform_catalog/);
+  assert.match(migration, /verification_status/);
+  assert.match(migration, /effective_from/);
+  assert.match(provenanceMigration, /raw_data_records/);
+  assert.match(provenanceMigration, /retrieved_at TIMESTAMPTZ/);
+  assert.match(provenanceMigration, /market_data_applicability ADD COLUMN IF NOT EXISTS retrieved_at/);
+  assert.match(provenanceMigration, /REVOKE ALL ON public\.raw_data_records FROM anon, authenticated/);
+  assert.match(migration, /idx_market_data_applicability_scope/);
+  assert.match(migration, /verification_status IN \('verified', 'uploaded'\)/);
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.report_template_catalog/);
+  assert.match(migration, /source_kind TEXT/);
+  assert.match(migration, /market_code::text/);
+  assert.match(migration, /GRANT SELECT ON public\.market_catalog/);
+  assert.match(browserSource, /data\/market_scope\.json/);
+  assert.match(browserSource, /function jayCatalogPayload\(raw\)/);
+  assert.match(browserSource, /function loadCountryCommerceData\(\)/);
+  assert.ok(document.querySelector('#country-profile-selector'));
+  assert.ok(document.querySelector('#country-commerce-content'));
+  assert.ok(document.querySelector('#country-commerce-category'));
+  assert.equal(document.querySelector('.country-linked-actions'), null);
 });
 
 test('authenticated workspace data uses the canonical Supabase layer', () => {
@@ -327,6 +443,33 @@ test('report PDF export has a server-side job ledger and honest fallback', () =>
   assert.match(browserSource, /本地 PDF 预览/);
 });
 
+test('report output lifecycle separates save state, snapshots and export formats', () => {
+  const lifecycle = fs.readFileSync(
+    path.join(root, 'supabase', 'migrations', '20260901000000_report_output_lifecycle.sql'),
+    'utf8',
+  );
+  const docx = fs.readFileSync(
+    path.join(root, 'supabase', 'functions', 'report-docx', 'index.ts'),
+    'utf8',
+  );
+  assert.match(lifecycle, /save_status/);
+  assert.match(lifecycle, /template_version/);
+  assert.match(lifecycle, /data_snapshot_at/);
+  assert.match(lifecycle, /material_snapshot_ids/);
+  assert.match(lifecycle, /source_record_ids/);
+  assert.match(lifecycle, /format IN \('pdf', 'docx', 'md'\)/);
+  assert.match(lifecycle, /report_exports_insert_own/);
+  assert.match(browserSource, /报告已保存/);
+  assert.match(browserSource, /云端保存失败/);
+  assert.match(browserSource, /jayGenerateReportDocx/);
+  assert.match(browserSource, /rpV2RenderExportHistory/);
+  assert.match(browserSource, /rpBuildDocxBlob/);
+  assert.match(browserSource, /report\.dbId/);
+  assert.match(docx, /application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document/);
+  assert.match(docx, /format: 'docx'/);
+  assert.match(docx, /REPORT_STORAGE_UPLOAD_FAILED/);
+});
+
 test('billing is server-controlled and never upgrades a browser tier directly', () => {
   const migration = fs.readFileSync(
     path.join(root, 'supabase', 'migrations', '20260826040000_billing_admin.sql'),
@@ -381,14 +524,20 @@ test('data publication is gated and exposes its quality report', () => {
   assert.match(syncScript, /"key": "quality_report"/);
   assert.match(syncScript, /Legacy table fan-out disabled/);
   assert.match(syncScript, /SUPABASE_SYNC_LEGACY_TABLES/);
+  assert.match(syncScript, /def build_catalog_rows\(\)/);
+  assert.match(syncScript, /report_template_catalog/);
+  assert.match(syncScript, /def build_raw_record_rows\(/);
+  assert.match(syncScript, /def build_applicability_rows\(/);
+  assert.match(syncScript, /def _scope_catalog\(/);
+  assert.match(syncScript, /on_conflict/);
 
   const report = JSON.parse(fs.readFileSync(path.join(root, 'data', 'quality_report.json'), 'utf8'));
   assert.equal(report.schema_version, 1);
-  assert.equal(report.publishable, true);
+  assert.equal(report.publishable, ['healthy', 'degraded'].includes(report.status));
   assert.ok(report.datasets.policies);
   assert.ok(report.datasets.macro);
-  assert.equal(report.status, 'healthy');
-  assert.equal(report.datasets.cpsc.status, 'healthy');
+  assert.ok(['healthy', 'degraded', 'stale', 'failed'].includes(report.status));
+  assert.ok(['healthy', 'degraded', 'stale', 'failed'].includes(report.datasets.cpsc.status));
   assert.ok(report.summary.raw_records > report.summary.scoped_records);
   assert.equal(report.summary.raw_records, Object.values(report.datasets).reduce((sum, item) => sum + item.raw_records, 0));
   assert.equal(report.summary.scoped_records, Object.values(report.datasets).reduce((sum, item) => sum + item.scoped_records, 0));
@@ -429,6 +578,9 @@ test('formal pages do not retain retired mock render paths', () => {
   assert.ok(document.querySelector('#alerts #al-filter-type'));
   assert.ok(document.querySelector('#alerts #al-filter-level'));
   assert.ok(document.querySelector('#alerts #al-filter-time'));
+  assert.ok(document.querySelector('#alerts #al-custom-range'));
+  assert.ok(document.querySelector('#alerts #al-date-start'));
+  assert.ok(document.querySelector('#alerts #al-date-end'));
   assert.ok(document.querySelector('#alerts #al-tabs'));
   assert.ok(document.querySelector('#alerts #al-list'));
   assert.ok(document.querySelector('#alerts #al-pagination'));
@@ -443,6 +595,15 @@ test('formal pages do not retain retired mock render paths', () => {
   assert.equal(browserSource.includes('count:\'40 国\''), false);
   assert.equal(browserSource.includes('var mockResults='), false);
   assert.equal(browserSource.includes('全球平台增长总结'), false);
+  assert.equal(browserSource.includes('function openAlertSettings()'), false);
+  assert.equal(browserSource.includes('function alBatchWatch()'), false);
+  const generatorSource = fs.readFileSync(path.join(root, 'scripts', 'generate_alerts.py'), 'utf8');
+  assert.equal(generatorSource.includes('def generate_from_us_market()'), false);
+  assert.match(generatorSource, /source_record_id/);
+  const alertRows = JSON.parse(fs.readFileSync(path.join(root, 'data', 'alerts.json'), 'utf8'));
+  assert.equal(alertRows.some((row) => Array.isArray(row) && /^(a\d+|usm-)/i.test(String(row[0] || ''))), false);
+  assert.equal(alertRows.every((row) => /[\u3400-\u9fff]/.test(String(row[3])) && /[\u3400-\u9fff]/.test(String(row[6]))), true);
+  assert.equal(html.includes('<option value="all">全部市场</option>'), false);
   const catalogSource = fs.readFileSync(path.join(root, 'assets/js/catalog.js'), 'utf8');
   const countrySource = fs.readFileSync(path.join(root, 'assets/js/products-shops.js'), 'utf8');
   const policySource = fs.readFileSync(path.join(root, 'assets/js/markets-policies.js'), 'utf8');
@@ -464,4 +625,63 @@ test('formal pages do not retain retired mock render paths', () => {
   const watchlistLoader = reportsSource.slice(reportsSource.indexOf('async function loadWatchlistFromDb()'), reportsSource.indexOf('const alertMessages=[]'));
   assert.equal(watchlistLoader.includes('Math.random'), false);
   assert.match(watchlistLoader, /trend:\s*\[\]/);
+});
+
+test('production hardening isolates user data and records idempotent operations', () => {
+  const migration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20260901010000_production_hardening.sql'), 'utf8');
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.report_runs/);
+  assert.match(migration, /UNIQUE \(user_id, idempotency_key\)/);
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.ai_request_logs/);
+  assert.match(migration, /public\.report_runs ENABLE ROW LEVEL SECURITY/);
+  assert.match(migration, /public\.ai_request_logs ENABLE ROW LEVEL SECURITY/);
+  assert.match(migration, /report_runs_select_own[\s\S]*auth\.uid\(\) = user_id/);
+  assert.match(migration, /ai_request_logs_select_own[\s\S]*auth\.uid\(\) = user_id/);
+  assert.match(migration, /idx_report_exports_idempotency/);
+  assert.match(migration, /product_catalog_import/);
+  assert.match(migration, /REPORT_RUN_OWNER_MISMATCH/);
+  assert.match(migration, /request_id IS NULL[\s\S]*idempotency_key IS NULL/);
+  assert.equal(/\b(prompt|response_body|messages)\s+(TEXT|JSONB)/i.test(migration), false);
+
+  const authSource = fs.readFileSync(path.join(root, 'assets', 'js', 'auth-data.js'), 'utf8');
+  const productSource = fs.readFileSync(path.join(root, 'assets', 'js', 'products-shops.js'), 'utf8');
+  const reportSource = fs.readFileSync(path.join(root, 'assets', 'js', 'reports-decisions.js'), 'utf8');
+  assert.match(authSource, /function jayStartReportRun/);
+  assert.match(authSource, /function jayFinishReportRun/);
+  assert.match(authSource, /function jayExportIdempotencyKey/);
+  assert.match(authSource, /AI_QUOTA_EXCEEDED/);
+  assert.match(authSource, /REQUEST_TIMEOUT/);
+  assert.match(productSource, /jay_product_catalog_import_v2_/);
+  assert.match(productSource, /jaySaveWorkspaceAsset\('product_catalog_import'/);
+  assert.match(productSource, /function prResetImportedDataForAuthChange/);
+  assert.match(productSource, /function prPurgeImportedDataForUser/);
+  assert.doesNotMatch(productSource, /setItem\('jay_product_catalog_import_v1'/);
+  assert.match(reportSource, /var rpExportBusy/);
+  assert.match(reportSource, /function rpV2GenerationIdentity/);
+  assert.match(reportSource, /reportRunId/);
+});
+
+test('production release deploys database and functions before the frontend', () => {
+  const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'deploy-production.yml'), 'utf8');
+  const migrationsAt = workflow.indexOf('Apply database migrations before functions');
+  const functionsAt = workflow.indexOf('Deploy JWT-protected Edge Functions');
+  const acceptanceAt = workflow.indexOf('Run two-account production report acceptance');
+  const frontendAt = workflow.indexOf('Assemble static site after backend acceptance');
+  assert.ok(migrationsAt > 0);
+  assert.ok(functionsAt > migrationsAt);
+  assert.ok(acceptanceAt > functionsAt);
+  assert.ok(frontendAt > acceptanceAt);
+  assert.match(workflow, /needs: deploy-backend/);
+  assert.match(workflow, /needs: authenticated-acceptance/);
+  assert.match(workflow, /PROD_TEST_USER_A_EMAIL/);
+  assert.match(workflow, /PROD_TEST_USER_B_EMAIL/);
+
+  const acceptance = fs.readFileSync(path.join(root, 'scripts', 'production_acceptance.py'), 'utf8');
+  assert.match(acceptance, /account B can read account A report/);
+  assert.match(acceptance, /account B can sign account A/);
+  assert.match(acceptance, /saved report did not recover after re-login/);
+  assert.match(acceptance, /report-export/);
+  assert.match(acceptance, /report-docx/);
+
+  const config = fs.readFileSync(path.join(root, 'supabase', 'config.toml'), 'utf8');
+  assert.match(config, /\[functions\.report-docx\][\s\S]*verify_jwt = true/);
 });

@@ -14,6 +14,7 @@ import traceback
 from datetime import datetime, timezone, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError, HTTPError
+from html import unescape
 from html.parser import HTMLParser
 
 # ---- Config ----
@@ -26,6 +27,249 @@ NOW_DATE = NOW.strftime('%Y-%m-%d')
 def gen_id(prefix, title):
     h = hashlib.md5(title.encode()).hexdigest()[:8]
     return f"{prefix}{NOW.strftime('%Y%m%d')}-{h}"
+
+
+SOURCE_KINDS = ('official', 'traceable', 'uploaded', 'derived', 'demo')
+VERIFICATION_STATUSES = ('verified', 'uploaded', 'pending', 'rejected')
+PLATFORM_SOURCE_HOSTS = {
+    'sellercentral.amazon.com',
+    'seller.tiktokshopglobalselling.com',
+    'seller.shein.com',
+    'seller.temu.com',
+    'sellercenter.lazada.sg',
+    'seller.shopee.sg',
+}
+
+# Third-party industry articles are useful leads, but their market scope must
+# be explicit before they are shown in a market-specific view.  A global
+# article with no identifiable target market remains in the raw feed only.
+INDUSTRY_MARKET_PATTERNS = {
+    'US': re.compile(
+        r'美国|美区|美国站|白宫|联邦|美海关|美税|美国市场|'
+        r'\b(?:american|united\s+states|u\.s\.?|us\s+(?:tariff|customs|market))\b',
+        re.IGNORECASE,
+    ),
+    'EU': re.compile(
+        r'欧盟|欧洲|法国|德国|意大利|西班牙|英国|'
+        r'\b(?:eu|europe|france|germany|italy|spain|uk)\b',
+        re.IGNORECASE,
+    ),
+    'CA': re.compile(r'加拿大|\bcanada\b', re.IGNORECASE),
+    'JP': re.compile(r'日本|日区|\bjapan\b', re.IGNORECASE),
+    'KR': re.compile(r'韩国|韩区|\bkorea\b', re.IGNORECASE),
+    'SEA': re.compile(
+        r'东南亚|新加坡|马来西亚|印度尼西亚|印尼|泰国|越南|'
+        r'\b(?:sea|singapore|malaysia|indonesia|thailand|vietnam)\b',
+        re.IGNORECASE,
+    ),
+}
+
+INDUSTRY_REGION_PATTERNS = {
+    'EU': re.compile(r'欧盟|欧洲|\b(?:eu|europe)\b', re.IGNORECASE),
+    'SEA': re.compile(
+        r'东南亚|\b(?:sea|southeast\s+asia)\b', re.IGNORECASE,
+    ),
+}
+
+
+def _industry_market_alias_pattern(values):
+    """Build a boundary-aware matcher for a market's configured aliases."""
+    parts = []
+    for value in values:
+        raw = str(value or '').strip()
+        if not raw:
+            continue
+        escaped = re.escape(raw)
+        if re.search(r'[\u3400-\u9fff]', raw):
+            parts.append(escaped)
+        else:
+            parts.append(rf'(?<![A-Za-z0-9]){escaped}(?![A-Za-z0-9])')
+    return re.compile('|'.join(parts), re.IGNORECASE) if parts else None
+
+
+def _industry_market_catalog():
+    """Read configured market aliases without making the feed depend on them."""
+    path = os.path.join(DATA_DIR, 'market_scope.json')
+    try:
+        with open(path, encoding='utf-8') as handle:
+            data = json.load(handle)
+    except (OSError, json.JSONDecodeError):
+        return []
+    return [item for item in data.get('markets', []) if isinstance(item, dict) and item.get('code')]
+
+
+def _normalize_industry_market_value(value):
+    raw = str(value or '').strip()
+    if not raw:
+        return ''
+    for market in _industry_market_catalog():
+        aliases = [
+            market.get('code'), market.get('key'), market.get('name'),
+            market.get('label'), *(market.get('aliases') or []),
+        ]
+        if any(str(alias or '').strip().casefold() == raw.casefold() for alias in aliases):
+            return str(market.get('code')).strip().upper()
+    return raw.upper()
+
+
+def _source_host(url):
+    match = re.match(r'^https?://([^/]+)', str(url or '').strip(), re.I)
+    return (match.group(1) if match else '').split(':', 1)[0].lower().rstrip('.')
+
+
+def _source_record_id(item):
+    url = str(item.get('source_url') or item.get('url') or '').strip()
+    title = str(item.get('title') or item.get('name') or item.get('id') or '').strip()
+    return hashlib.sha256(f'{url}|{title}'.encode('utf-8')).hexdigest()[:24]
+
+
+def annotate_provenance(item, *, default_source_kind=None, default_source_type=None):
+    """Attach the provenance envelope to every newly collected record.
+
+    A collector may fetch a page successfully without proving that the page
+    is the authoritative record.  Such entries intentionally remain pending;
+    the publication gate can show them in the raw feed without publishing
+    them to formal statistics.
+    """
+    record = dict(item or {})
+    url = str(record.get('source_url') or record.get('url') or '').strip()
+    host = _source_host(url)
+    source_kind = str(record.get('source_kind') or default_source_kind or '').strip().lower()
+    source_type = str(record.get('source_type') or default_source_type or '').strip().lower()
+    if not source_kind:
+        source_kind = 'official' if host.endswith(('.gov', '.gov.cn', '.mil', '.europa.eu')) else 'traceable'
+    if source_kind not in SOURCE_KINDS:
+        source_kind = 'traceable'
+    if not source_type:
+        if host in PLATFORM_SOURCE_HOSTS:
+            source_type = 'platform'
+        elif host.endswith(('.gov', '.gov.cn', '.mil', '.europa.eu')):
+            source_type = 'government'
+        else:
+            source_type = 'licensed_provider' if url else 'unknown'
+    if source_type not in {'government', 'regulator', 'platform', 'official_feed', 'industry_association', 'licensed_provider', 'user_upload', 'derived', 'demo', 'unknown'}:
+        source_type = 'unknown'
+
+    existing_status = str(record.get('verification_status') or '').strip().lower()
+    has_specific_url = bool(re.match(r'^https?://[^/]+/.+', url, re.I))
+    if existing_status in VERIFICATION_STATUSES:
+        verification_status = existing_status
+    elif source_kind == 'demo' or record.get('data_quality') in ('demo', 'demonstration', 'mock', '演示'):
+        source_kind = 'demo'
+        source_type = 'demo'
+        verification_status = 'pending'
+    elif source_kind == 'uploaded':
+        verification_status = 'uploaded'
+    elif source_kind == 'official' and has_specific_url:
+        verification_status = 'verified'
+    else:
+        verification_status = 'pending'
+
+    record['source_kind'] = source_kind
+    record['source_type'] = source_type
+    if url and not record.get('source_url'):
+        record['source_url'] = url
+    record['source_record_id'] = str(record.get('source_record_id') or _source_record_id(record))
+    record['verification_status'] = verification_status
+    record['collected_at'] = record.get('collected_at') or NOW_ISO
+    record['retrieved_at'] = record.get('retrieved_at') or record['collected_at']
+    if record.get('effective_date') and not record.get('effective_from'):
+        record['effective_from'] = record['effective_date']
+    if verification_status == 'verified':
+        record['verified_at'] = record.get('verified_at') or NOW_ISO
+        record['verification_notes'] = record.get('verification_notes') or '由采集器来源规则初步核验；正式使用前仍应复核原文。'
+    else:
+        record['verification_notes'] = record.get('verification_notes') or '来源已抓取但尚未完成记录级核验，暂不进入正式统计。'
+    evidence_payload = json.dumps({
+        'title': record.get('title'),
+        'source_url': url,
+        'source_record_id': record['source_record_id'],
+        'published_at': record.get('published_at'),
+        'effective_from': record.get('effective_from'),
+    }, ensure_ascii=False, sort_keys=True)
+    record['evidence_hash'] = str(record.get('evidence_hash') or hashlib.sha256(evidence_payload.encode('utf-8')).hexdigest())
+    return record
+
+
+def infer_industry_market_codes(*values):
+    """Return only markets explicitly mentioned by an industry article."""
+    text = '\n'.join(str(value or '') for value in values)
+    codes = []
+    configured_codes = set()
+    for market in _industry_market_catalog():
+        code = str(market.get('code') or '').strip().upper()
+        if not code:
+            continue
+        configured_codes.add(code)
+        aliases = [
+            market.get('code'), market.get('key'), market.get('name'),
+            market.get('label'), *(market.get('aliases') or []),
+        ]
+        matcher = _industry_market_alias_pattern(aliases)
+        region_code = str(market.get('region_code') or market.get('regionCode') or '').strip().upper()
+        region_name = market.get('region_name') or market.get('regionName')
+        region_matcher = INDUSTRY_REGION_PATTERNS.get(region_code)
+        if (matcher and matcher.search(text)) or (
+            region_matcher and region_matcher.search(text)
+        ):
+            codes.append(code)
+
+    # Keep compatibility with a market manifest that has not yet been
+    # expanded. Unknown aggregate codes are never emitted when a concrete
+    # market catalog is available, so a future DE/FR market can be selected
+    # independently instead of receiving an opaque EU record.
+    for code, pattern in INDUSTRY_MARKET_PATTERNS.items():
+        if (not configured_codes or code in configured_codes) and pattern.search(text):
+            if code not in codes:
+                codes.append(code)
+    return codes
+
+
+def refresh_industry_market_scope(record):
+    """Re-evaluate scope after article text or translation has been filled."""
+    explicit = record.get('market_codes') or record.get('marketCodes') or []
+    if not isinstance(explicit, list):
+        explicit = [explicit]
+    explicit = [
+        _normalize_industry_market_value(value) for value in explicit
+        if str(value or '').strip() and str(value).strip().upper() not in {'GLOBAL', 'GLOBAL_MARKET', 'ALL'}
+    ]
+    catalog = _industry_market_catalog()
+    expanded = []
+    for code in explicit:
+        if code in INDUSTRY_REGION_PATTERNS:
+            expanded.extend(
+                str(market.get('code')).strip().upper()
+                for market in catalog
+                if str(market.get('region_code') or market.get('regionCode') or '').strip().upper() == code
+            )
+    explicit = list(dict.fromkeys(explicit + expanded))
+    inferred = infer_industry_market_codes(
+        record.get('title'), record.get('summary'),
+        record.get('title_zh'), record.get('summary_zh'),
+    )
+    record['market_codes'] = list(dict.fromkeys(explicit + inferred))
+    record['market_scope_status'] = 'identified' if record['market_codes'] else 'unscoped'
+    return record
+
+
+def annotate_industry_advisory(item):
+    """Attach a non-official, traceable provenance envelope to industry news."""
+    record = annotate_provenance(
+        item,
+        default_source_kind='traceable',
+        default_source_type='licensed_provider',
+    )
+    # A fetched article is not an official verification event.  Keep it
+    # pending so the formal publication gate cannot count it as policy.
+    record['verification_status'] = 'pending'
+    record['source_class'] = 'industry_advisory'
+    refresh_industry_market_scope(record)
+    record['verification_notes'] = (
+        '第三方行业资讯：保留原文链接、发布日期和采集时间，仅作可追溯参考；'
+        '未完成官方记录级核验，不进入正式政策统计。'
+    )
+    return record
 
 # ---- HTTP helpers ----
 def fetch_json(url, headers=None):
@@ -66,6 +310,12 @@ def fetch_html(url, headers=None):
     except Exception as e:
         print(f"  [WARN] fetch_html failed for {url}: {e}")
         return None
+
+
+def _clean_link_text(value):
+    """Reduce an HTML anchor body to a readable title for feed records."""
+    text = re.sub(r'<[^>]+>', ' ', str(value or ''))
+    return re.sub(r'\s+', ' ', unescape(text)).strip()
 
 # ---- Source: Federal Register API (US Trade Policies) ----
 def collect_federal_register():
@@ -312,7 +562,7 @@ def collect_cn_news():
             if not any(kw in title for kw in policy_kw):
                 continue
             seen.add(title)
-            items.append({
+            items.append(annotate_industry_advisory({
                 'id': gen_id('p', title),
                 'title': title,
                 'summary': '',
@@ -322,37 +572,46 @@ def collect_cn_news():
                 'category': 'regulation',
                 'impact_level': 'medium',
                 'published_at': NOW_DATE,
-                'collected_at': NOW_ISO
-            })
+                'collected_at': NOW_ISO,
+            }))
             if len(items) >= 8:
                 break
     
     # AMZ123
     html2 = fetch_html('https://www.amz123.com/')
     if html2:
-        pattern = r'<a[^>]+href="(/t/[^"]+)"[^>]*>([^<]{10,100})</a>'
-        matches = re.findall(pattern, html2)
+        pattern = r'<a[^>]+href="((?:https?://(?:www\.)?amz123\.com)?/t/[^"]+)"[^>]*>(.*?)</a>'
+        matches = re.findall(pattern, html2, flags=re.IGNORECASE | re.DOTALL)
         seen2 = set()
-        for path, title in matches:
-            title = title.strip()
+        for path, raw_title in matches:
+            title = _clean_link_text(raw_title)
+            if len(title) < 10:
+                # The current homepage often puts the visible title in a
+                # data attribute while the anchor body starts with an image.
+                anchor = re.search(
+                    r'<a[^>]+href="' + re.escape(path) + r'"[^>]*>(.*?)</a>',
+                    html2, flags=re.IGNORECASE | re.DOTALL,
+                )
+                attr = re.search(r'data-sdk-resource-id="([^"]+)"', anchor.group(0) if anchor else '')
+                title = _clean_link_text(attr.group(1) if attr else '')
             if title in seen2 or len(title) < 10:
                 continue
             policy_kw = ['政策', '新规', '规则', '关税', '合规', '调整', '变更', '费用', 'FBA', '物流']
             if not any(kw in title for kw in policy_kw):
                 continue
             seen2.add(title)
-            items.append({
+            items.append(annotate_industry_advisory({
                 'id': gen_id('p', title),
                 'title': title,
                 'summary': '',
                 'source': 'AMZ123',
-                'source_url': f'https://www.amz123.com{path}',
+                'source_url': path if path.startswith('http') else f'https://www.amz123.com{path}',
                 'region': 'Global',
                 'category': 'regulation',
                 'impact_level': 'medium',
                 'published_at': NOW_DATE,
-                'collected_at': NOW_ISO
-            })
+                'collected_at': NOW_ISO,
+            }))
             if len(items) >= 15:
                 break
     
@@ -703,6 +962,11 @@ def merge_data(existing_file, new_items, key_fields=['title'], baseline_kind=Non
     else:
         existing = {'updated_at': NOW_ISO, 'source_count': 0, 'items': []}
     
+    # Normalize provenance before deduplication so new and persisted records
+    # share the same evidence envelope.  Legacy records are left untouched;
+    # the validator reports their compatibility inference separately.
+    new_items = [annotate_provenance(item) for item in new_items if isinstance(item, dict)]
+
     existing_titles = set()
     for item in existing['items']:
         t = item.get('title', '').strip()
@@ -727,6 +991,7 @@ def merge_data(existing_file, new_items, key_fields=['title'], baseline_kind=Non
     baseline_added = 0
     if baseline_kind:
         for b in load_baseline_items(baseline_kind):
+            b = annotate_provenance(b, default_source_kind='demo', default_source_type='demo')
             bt = (b.get('title') or '').strip().lower()
             if not bt:
                 continue
@@ -1500,18 +1765,12 @@ def main():
     
     try:
         cn_items = collect_cn_news()
-        # Separate CN news into policies vs rules based on content
+        # Keep third-party news in the advisory policy feed regardless of
+        # whether an article mentions a platform. Platform-specific articles
+        # are still not official platform rules and must not enter the formal
+        # rules projection.
         for item in cn_items:
-            rule_kw = ['平台', '亚马逊', 'TikTok', 'Shopee', 'Temu', 'SHEIN', 'Lazada', '店铺', '卖家']
-            if any(kw in item.get('title', '') for kw in rule_kw):
-                item.pop('region', None)
-                item.pop('source', None)
-                item['platform'] = 'Multi'
-                item['market'] = 'Global'
-                item['id'] = gen_id('r', item['title'])
-                all_rules.append(item)
-            else:
-                all_policies.append(item)
+            all_policies.append(item)
     except Exception as e:
         print(f"  [ERROR] CN News: {e}")
         traceback.print_exc()
@@ -1573,6 +1832,12 @@ def main():
     
     print(f"  Article extraction complete: {article_count} attempted")
     print(f"  AI summaries generated: {ai_count}")
+
+    # Some headlines are generic while the extracted body names the target
+    # market. Refresh advisory scope after extraction before persisting it.
+    for item in all_policies:
+        if item.get('source_class') == 'industry_advisory':
+            refresh_industry_market_scope(item)
     
     print(f"\n--- Merge Results ---")
     

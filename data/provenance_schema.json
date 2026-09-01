@@ -1,0 +1,56 @@
+{
+  "schema_version": "3.0",
+  "description": "JAY观海 factual-record provenance envelope",
+  "source_kind": {
+    "enum": ["official", "traceable", "uploaded", "derived", "demo"],
+    "description": "Where the record came from and whether it is suitable for formal publication."
+  },
+  "source_type": {
+    "enum": ["government", "regulator", "platform", "official_feed", "industry_association", "licensed_provider", "user_upload", "derived", "demo", "unknown"]
+  },
+  "verification_status": {
+    "enum": ["verified", "uploaded", "pending", "rejected"],
+    "formal_values": ["verified", "uploaded"]
+  },
+  "fields": {
+    "source_url": {"type": "string", "required_for": ["official", "traceable"]},
+    "source_record_id": {"type": "string", "required": true},
+    "collected_at": {"type": "datetime", "required": true},
+    "retrieved_at": {"type": "datetime", "required": false},
+    "published_at": {"type": "datetime", "required": false},
+    "effective_from": {"type": "date", "required": false},
+    "effective_to": {"type": "date", "required": false},
+    "rule_key": {"type": "string", "required_for": ["rule"]},
+    "rule_version": {"type": "string", "required_for": ["rule"]},
+    "change_summary": {"type": "string", "required_for": ["rule", "tax", "access"]},
+    "change_type": {"type": "string", "required_for": ["changed_record"]},
+    "title_zh": {"type": "string", "required_for": ["policy", "tax", "access"]},
+    "summary_zh": {"type": "string", "required_for": ["policy", "tax", "access"]},
+    "translation": {"type": "object", "required_for": ["policy", "tax", "access"]},
+    "verified_at": {"type": "datetime", "required_for": ["verified", "uploaded"]},
+    "verification_notes": {"type": "string", "required": true},
+    "evidence_hash": {"type": "sha256", "required": true},
+    "source_class": {"type": "string", "enum": ["industry_advisory"], "required_for": ["traceable_industry"]},
+    "market_scope_status": {"type": "string", "enum": ["identified", "unscoped"], "required_for": ["traceable_industry"]}
+  },
+  "formal_publication_rule": [
+    "source_kind is not demo",
+    "verification_status is verified or uploaded",
+    "the record has a current market scope",
+    "policy, tax and access records have a current Simplified Chinese display translation",
+    "official, traceable and derived records have a source_url or source_record_id",
+    "uploaded records have a source_record_id, source_file or evidence_hash"
+  ],
+  "industry_advisory_rule": [
+    "source_kind is traceable and source_class is industry_advisory",
+    "the article has a specific source_url, published_at and collected_at",
+    "market_codes are populated only when the article explicitly identifies a market",
+    "verification_status remains pending unless a separate record-level review is performed",
+    "industry advisory records are visible as traceable reference material but are excluded from formal policy statistics, reports and automatic high-risk alerts"
+  ],
+  "retention": {
+    "raw_records": "Retain pending, rejected and demo records for audit/reprocessing.",
+    "scoped_records": "Records matching the active market/platform/category scope.",
+    "formal_records": "Only records passing the formal publication rule."
+  }
+}

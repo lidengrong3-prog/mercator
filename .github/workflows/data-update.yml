@@ -14,6 +14,9 @@ env:
   CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+  REGULATORY_TRANSLATION_API_URL: ${{ secrets.REGULATORY_TRANSLATION_API_URL }}
+  REGULATORY_TRANSLATION_API_KEY: ${{ secrets.REGULATORY_TRANSLATION_API_KEY }}
+  REGULATORY_TRANSLATION_MODEL: ${{ secrets.REGULATORY_TRANSLATION_MODEL }}
 
 jobs:
   update-data:
@@ -31,6 +34,9 @@ jobs:
       # ---- Step 1: Federal Register 政策采集 (原有) ----
       - name: Run global data collector (Federal Register)
         run: python scripts/collect_data.py
+
+      - name: Translate policy, tax and access records to Simplified Chinese
+        run: python scripts/translate_regulatory_data.py --require-config
 
       # ---- Step 2: US Market 品类数据采集 (原有) ----
       - name: Collect US market intelligence (8 categories)

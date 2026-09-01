@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "domain": "tax",
+  "updated_at": null,
+  "source_count": 0,
+  "tax_types": [
+    "customs_duty",
+    "vat",
+    "sales_tax",
+    "marketplace_collection",
+    "import_fee"
+  ],
+  "items": [],
+  "language_contract": {
+    "source_fields": [
+      "title",
+      "summary"
+    ],
+    "display_fields": [
+      "title_zh",
+      "summary_zh"
+    ],
+    "target_language": "zh-CN",
+    "translation_metadata_field": "translation"
+  }
+}

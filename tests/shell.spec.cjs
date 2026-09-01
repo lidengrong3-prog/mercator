@@ -19,7 +19,7 @@ test('authenticated entry and read-only demo shell work on desktop', async ({ pa
 
   await page.getByRole('button', { name: '浏览只读演示' }).click();
   await expect(page.locator('#mainApp')).toHaveClass(/active/);
-  await expect(page.getByRole('heading', { name: '今天从哪个市场机会开始？' })).toBeVisible();
+  await expect(page.locator('#ov-workspace-title')).toHaveText('美国市场决策工作台');
   await expect(page.locator('aside.sidebar')).toHaveCSS('width', '248px');
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -38,7 +38,7 @@ test('mobile shell uses a drawer without horizontal overflow', async ({ page }) 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
-  await expect(page.getByRole('heading', { name: '今天从哪个市场机会开始？' })).toBeVisible();
+  await expect(page.locator('#ov-workspace-title')).toHaveText('美国市场决策工作台');
   await expect(page.locator('#jay-hamburger')).toBeVisible();
   await page.locator('#jay-hamburger').click();
   await expect(page.locator('aside.sidebar')).toHaveClass(/open/);
@@ -80,9 +80,33 @@ test('core product pages stay in the workspace and render above the fold', async
 
   await page.evaluate(() => window.switchPage('countries'));
   await expect(page.locator('#countries .country-scope-summary')).toContainText('美国');
-  await expect(page.locator('#country-macro-status')).toContainText('尚未接入');
+  await expect(page.locator('#country-profile-selector')).toHaveValue('US');
+  await expect(page.locator('#country-commerce-title')).toHaveText('美国电商市场环境');
+  await expect(page.locator('#country-commerce-count')).toHaveText('8 项已接入');
+  await expect(page.locator('#country-commerce-content .country-commerce-metric')).toHaveCount(11);
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.has-data')).toHaveCount(8);
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.is-missing')).toHaveCount(3);
+  await expect(page.locator('#country-commerce-status')).toHaveAttribute('data-data-status', 'ready');
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.is-missing').first()).toHaveAttribute('data-data-status', 'not-connected');
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.is-missing').first()).toContainText('尚未接入');
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.has-data a')).toHaveCount(8);
+  await expect(page.locator('#country-commerce-content')).toContainText('电商零售总额');
+  await expect(page.locator('#country-commerce-content')).toContainText('电商渗透率');
+  await expect(page.locator('#country-commerce-content')).not.toContainText(/国债|房贷|房价|非农/);
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.has-data').first().locator('a')).toHaveAttribute('href', /^https:\/\//);
+  await expect(page.locator('#country-commerce-category')).toHaveValue('');
+  await expect(page.locator('[data-commerce-section="category"]')).toContainText('请选择具体品类');
+
+  await page.locator('#country-commerce-category').selectOption('apparel');
+  await expect(page.locator('[data-commerce-section="category"] .country-commerce-metric.has-data')).toHaveCount(1);
+  await expect(page.locator('[data-commerce-section="category"]')).toContainText('服装及配饰门店零售');
+  await expect(page.locator('#country-commerce-count')).toHaveText('9 项已接入');
+  await page.locator('#country-commerce-category').selectOption('');
   await expect(page.locator('#countries .chart-placeholder')).toHaveCount(0);
   await expect(page.locator('#countries .alert-sidebar .alert-item')).toHaveCount(0);
+
+  await page.evaluate(() => window.switchPage('overview'));
+  await expect(page.locator('#ov-country-grid .ov-ccard-metrics')).toContainText('8 项');
 
   await page.evaluate(() => window.switchPage('tools'));
   await expect(page.locator('#pf-res')).toContainText('单件净利润');
@@ -125,12 +149,12 @@ test('alert center renders scoped source data with real pagination and filters',
   expect(initial.total).toBeGreaterThan(10);
   expect(initial.filtered).toBe(initial.total);
   expect(initial.countries).toEqual(['美国']);
-  expect(initial.badge).toBe(initial.unread);
+  expect(initial.badge).toBe(initial.filtered);
   await expect(page.locator('#al-pagination .al-page-btn')).toHaveCount(Math.ceil(initial.total / 10));
 
   const dynamicState = await page.evaluate(() => ({
     actual: window.dynamicAlerts.length,
-    expected: window.plGetVerifiedUsPolicies(true).filter((item) => item.impact_level === 'high').length
+    expected: window.plGetVerifiedPolicies(true).filter((item) => item.impact_level === 'high').length
       + window.rlGetJsonItems().filter((item) => item.impact_level === 'high').length,
     countries: [...new Set(window.dynamicAlerts.map((item) => item.country))],
     hasLegacyCountryData: window.dynamicAlerts.some((item) => item.source === 'country_data'),
@@ -148,6 +172,10 @@ test('alert center renders scoped source data with real pagination and filters',
       sevenDaysIncludesBoundary: window.alMatchesTimeFilter('2026-08-22', '7d', new Date(2026, 7, 28, 12)),
       sevenDaysExcludesOlder: window.alMatchesTimeFilter('2026-08-21', '7d', new Date(2026, 7, 28, 12)),
       excludesFuture: window.alMatchesTimeFilter('2026-08-29', '7d', new Date(2026, 7, 28, 12)),
+      customIncludesStart: window.alMatchesTimeFilter('2026-08-26', 'custom', new Date(2026, 7, 28, 12), '2026-08-26', '2026-08-28'),
+      customIncludesEnd: window.alMatchesTimeFilter('2026-08-28', 'custom', new Date(2026, 7, 28, 12), '2026-08-26', '2026-08-28'),
+      customExcludesOutside: window.alMatchesTimeFilter('2026-08-25', 'custom', new Date(2026, 7, 28, 12), '2026-08-26', '2026-08-28'),
+      customRejectsFuture: window.alMatchesTimeFilter('2026-08-29', 'custom', new Date(2026, 7, 28, 12), '2026-08-26', '2026-08-29'),
     },
   }));
   expect(dynamicState.actual).toBe(dynamicState.expected);
@@ -162,16 +190,21 @@ test('alert center renders scoped source data with real pagination and filters',
     sevenDaysIncludesBoundary: true,
     sevenDaysExcludesOlder: false,
     excludesFuture: false,
+    customIncludesStart: true,
+    customIncludesEnd: true,
+    customExcludesOutside: false,
+    customRejectsFuture: false,
   });
 
   const firstTitle = await page.locator('#al-list .al-card-title').first().innerText();
   await page.locator('#al-pagination .al-page-btn').nth(1).click();
-  await expect(page.locator('#al-list .al-card')).toHaveCount(10);
+  await expect(page.locator('#al-list .al-card')).toHaveCount(Math.min(10, initial.total - 10));
   await expect(page.locator('#al-list .al-card-title').first()).not.toHaveText(firstTitle);
 
   await page.locator('#al-search-input').fill('CPSC');
   const searchTotal = await page.evaluate(() => window.getFilteredAlerts().length);
   expect(searchTotal).toBeGreaterThan(0);
+  await expect(page.locator('#al-unread-badge')).toHaveText(String(searchTotal));
   await expect(page.locator('#al-list .al-card')).toHaveCount(Math.min(10, searchTotal));
   await expect(page.locator('#al-list')).toContainText('CPSC');
 
@@ -186,6 +219,23 @@ test('alert center renders scoped source data with real pagination and filters',
   expect(policyState.types).toEqual(['policy']);
   expect(policyState.countries).toEqual(['美国']);
   await expect(page.locator('#al-list .al-card')).toHaveCount(Math.min(10, policyState.filtered));
+  await expect(page.locator('#al-unread-badge')).toHaveText(String(policyState.filtered));
+
+  await expect(page.locator('#al-filter-type option')).toHaveText([
+    '全部类型', '政策动态', '税收费用', '市场准入', '市场变化', '平台规则',
+    '店铺异动（导入数据）', '类目变化（导入数据）',
+  ]);
+  expect(await page.evaluate(() => window.alertIsInConfiguredScope({ market_code: 'US', platform: '-' }))).toBe(true);
+  expect(await page.evaluate(() => window.alertIsInConfiguredScope({ market_code: 'DE', platform: '-' }))).toBe(false);
+
+  await page.locator('#al-filter-type').selectOption('all');
+  await page.locator('#al-filter-time').selectOption('custom');
+  await expect(page.locator('#al-custom-range')).toBeVisible();
+  await page.locator('#al-date-start').fill('2026-08-01');
+  await page.locator('#al-date-end').fill('2026-09-01');
+  const customTotal = await page.evaluate(() => window.getFilteredAlerts().length);
+  expect(customTotal).toBeGreaterThan(0);
+  await expect(page.locator('#al-unread-badge')).toHaveText(String(customTotal));
 
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
@@ -200,8 +250,22 @@ test('decision overview is constrained to the configured US market scope', async
   await page.getByRole('button', { name: '浏览只读演示' }).click();
 
   const metrics = page.locator('#ov-metrics .ov-metric-card');
+  await expect(metrics).toHaveCount(4);
   await expect(metrics.nth(0).locator('.ov-metric-val')).toHaveText('1');
   await expect(metrics.nth(1).locator('.ov-metric-val')).toHaveText('4');
+  await expect(metrics.nth(2).locator('.ov-metric-val')).not.toHaveText('—', { timeout: 15_000 });
+  await expect(metrics.nth(3).locator('.ov-metric-val')).not.toHaveText('—', { timeout: 15_000 });
+  const dynamicCounts = await page.evaluate(() => ({
+    policies: window.plGetVerifiedPolicies(true).length,
+    alerts: window.getCombinedAlerts().length,
+  }));
+  await expect(page.locator('#ov-metrics [data-metric="policy-count"] .ov-metric-val')).toHaveText(String(dynamicCounts.policies));
+  await expect(page.locator('#ov-metrics [data-metric="alert-count"] .ov-metric-val')).toHaveText(String(dynamicCounts.alerts));
+  await expect(page.locator('#ov-product-upload')).toBeVisible();
+  await expect(page.locator('#ov-signal-product-title')).toContainText('尚未导入');
+  await expect(page.locator('#overview')).not.toContainText('高增长类目进入观察窗口');
+  await expect(page.locator('#ov-scope-summary')).toContainText('美国');
+  await expect(page.locator('#ov-scope-summary')).toContainText('4 个平台');
 
   const countries = page.locator('#ov-country-grid .ov-ccard');
   await expect(countries).toHaveCount(1);
@@ -215,6 +279,75 @@ test('decision overview is constrained to the configured US market scope', async
     platformCount: window.JAY_MARKET_SCOPE.platformCount,
     countries: [...document.querySelectorAll('#ov-country-grid .ov-ccard h3')].map((el) => el.textContent.trim()),
   }))).toEqual({ countryCount: 1, platformCount: 4, countries: ['美国'] });
+});
+
+test('decision overview supports multi-market scope and keeps market entry filters aligned', async ({ page }) => {
+  const pageErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+
+  await page.evaluate(() => {
+    const api = window.JAY_MARKET_SCOPE_API;
+    api.registerPlatform({ key: 'otto', name: 'Otto', aliases: ['otto'], kind: 'marketplace' });
+    api.registerMarket({
+      code: 'DE', key: 'de', name: '德国', label: '德国市场', flag: '🇩🇪', aliases: ['de', '德国'],
+      regionCode: 'EU', regionName: '欧洲', jurisdictionCodes: ['DE'],
+      platformKeys: ['otto'], categoryKeys: [], dataStatus: 'configured',
+    }, [{ marketCode: 'DE', platformKey: 'otto', status: 'active', dataStatus: 'configured', label: '德国站' }]);
+  });
+
+  await page.locator('#ov-market-scope-toggle').click();
+  await expect(page.locator('#ov-market-scope-options input')).toHaveCount(3);
+  expect(await page.locator('#ov-market-scope-options input').evaluateAll((inputs) => inputs.map((input) => input.value))).toEqual(['US', 'ID', 'DE']);
+  await page.locator('#ov-market-scope-options input[value="DE"]').check();
+  await page.locator('#ov-market-scope-apply').click();
+
+  await expect(page.locator('#ov-market-scope-toggle')).toContainText('2 个市场');
+  await expect(page.locator('label[for="jay-market-selector"] span')).toHaveText('主市场');
+  await expect(page.locator('#ov-metrics [data-metric="country-count"] .ov-metric-val')).toHaveText('2');
+  await expect(page.locator('#ov-metrics [data-metric="platform-count"] .ov-metric-val')).toHaveText('5');
+  await expect(page.locator('#ov-scope-summary')).toContainText('美国、德国');
+  await expect(page.locator('#jay-platform-selector option')).toHaveText(['全部平台', 'Amazon', 'TikTok Shop', 'AliExpress', 'eBay', 'Otto']);
+  await expect(page.locator('#ov-country-grid .ov-ccard')).toHaveCount(2);
+
+  await expect(page.locator('#ov-metrics [data-metric="policy-count"] .ov-metric-val')).not.toHaveText('—', { timeout: 15_000 });
+  const policyCount = await page.locator('#ov-metrics [data-metric="policy-count"] .ov-metric-val').textContent();
+  await page.locator('#ov-metrics [data-metric="policy-count"]').click();
+  await expect(page.locator('#pl-f-region')).toHaveValue('all');
+  await expect(page.locator('#pl-f-scope')).toHaveValue('cross-border');
+  await expect(page.locator('#pl-filter-count')).toContainText(`${policyCount} 条政策`);
+
+  const resetMultiScope = async () => page.evaluate(() => {
+    window.JAY_MARKET_SCOPE_API.setActiveMarkets(['US', 'DE']);
+    window.switchPage('overview');
+  });
+  await resetMultiScope();
+  await page.locator('#ov-country-grid .ov-ccard[data-market-code="DE"] [data-destination="tax"]').click();
+  await expect(page.locator('#policies')).toHaveClass(/active/);
+  await expect(page.locator('#pl-f-region')).toHaveValue('DE');
+  await expect(page.locator('#pl-f-category')).toHaveValue('all');
+  expect(await page.evaluate(() => window.plActiveDomain)).toBe('tax');
+
+  await resetMultiScope();
+  await page.locator('#ov-country-grid .ov-ccard[data-market-code="DE"] [data-destination="access"]').click();
+  await expect(page.locator('#policies')).toHaveClass(/active/);
+  await expect(page.locator('#pl-f-region')).toHaveValue('DE');
+  expect(await page.evaluate(() => window.plActiveDomain)).toBe('access');
+
+  await resetMultiScope();
+  await page.locator('#ov-country-grid .ov-ccard[data-market-code="DE"] [data-destination="rules"]').click();
+  await expect(page.locator('#rules')).toHaveClass(/active/);
+  await expect(page.locator('#rl-market')).toHaveValue('DE');
+  await expect(page.locator('#rl-platform')).toHaveValue('all');
+
+  await resetMultiScope();
+  await page.locator('#ov-country-grid .ov-ccard[data-market-code="DE"] [data-destination="report"]').click();
+  await expect(page.locator('#report')).toHaveClass(/active/);
+  expect(await page.evaluate(() => window.JAY_MARKET_SCOPE.marketCodes)).toEqual(['DE']);
+  await expect(page.locator('label[for="jay-market-selector"] span')).toHaveText('当前市场');
+  expect(pageErrors).toEqual([]);
 });
 
 test('platform archive and watchlist do not expose retired global records', async ({ page }) => {
@@ -275,6 +408,8 @@ test('report and operating tools stay within the configured US scope', async ({ 
   await expect(page.locator('#rp-questionnaire')).toHaveClass(/show/);
   await expect(page.locator('#rp-q-market option')).toHaveText(['美国']);
   await expect(page.locator('#rp-q-market')).toHaveValue('US');
+  await expect(page.locator('#rp-panel-step3 button[onclick*="docx"]')).toHaveCount(1);
+  await expect(page.locator('#rp-v2-export-history')).toContainText('暂无导出记录');
   await expect(page.locator('#report')).not.toContainText(/东南亚|北美|欧洲|中东|拉美|日韩|印尼/);
 
   expect(await page.evaluate(() => ({
@@ -308,7 +443,7 @@ test('platform rules are filtered to the US market and supported platforms', asy
   await expect(page.locator('#rl-platform option')).toHaveText([
     '全部平台', 'Amazon', 'TikTok Shop', 'AliExpress', 'eBay',
   ]);
-  await expect(page.locator('#rl-market option')).toHaveText(['全部市场', '美国']);
+  await expect(page.locator('#rl-market option')).toHaveText(['当前范围全部市场', '美国']);
   await expect(page.locator('#rl-market')).toHaveValue('US');
 
   const rules = page.locator('#rl-rules-list .rl-rule-card');
@@ -326,6 +461,20 @@ test('platform rules are filtered to the US market and supported platforms', asy
   await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(2);
   await expect(page.locator('#rl-count')).toContainText('规则 2 条');
   await expect(page.locator('#rl-rules-list')).not.toContainText('TikTok Shop');
+
+  await page.locator('#rl-rules-list .rl-rule-card').first().getByRole('button', { name: '查看详情' }).click();
+  const ruleDetail = page.locator('.rl-detail-overlay').last();
+  await expect(ruleDetail.locator('[data-rule-field]')).toHaveCount(7);
+  await expect(ruleDetail).toContainText('费用');
+  await expect(ruleDetail).toContainText('佣金');
+  await expect(ruleDetail).toContainText('保证金');
+  await expect(ruleDetail).toContainText('履约');
+  await expect(ruleDetail).toContainText('禁售');
+  await expect(ruleDetail).toContainText('结算');
+  await expect(ruleDetail).toContainText('处罚');
+  await expect(ruleDetail).toContainText('版本与历史变化');
+  await expect(ruleDetail).toContainText('暂无已验证历史版本记录');
+  await ruleDetail.locator('.close-btn').click();
 });
 
 test('policy dynamics are constrained to the configured US market', async ({ page }) => {
@@ -347,7 +496,9 @@ test('policy dynamics are constrained to the configured US market', async ({ pag
   await expect(page.locator('#pl-filter-count')).toContainText(`${policyTotal} 条政策`);
   await expect(page.locator('#pl-stats-row')).toContainText('跨境经营相关');
   await expect(page.locator('#pl-list')).toContainText('美国');
-  await expect(page.locator('#pl-list')).not.toContainText(/全球|欧洲|东南亚|印尼|巴西/);
+  expect(await page.locator('#pl-list .pl-country-tag').allTextContents()).toEqual(
+    Array(10).fill('美国'),
+  );
   await expect(page.locator('#pl-list')).not.toContainText('Loan Performance Categories');
   await expect(page.locator('#pl-list')).not.toContainText('Bangor-Pacific Hydro Associates');
   await expect(page.locator('#pl-list')).not.toContainText('FLSA Claims and Compliance');
@@ -356,11 +507,12 @@ test('policy dynamics are constrained to the configured US market', async ({ pag
   await expect(page.locator('#pl-list')).not.toContainText('示意性数据');
   await expect(page.locator('#pl-list')).not.toContainText('40 · 低可信');
   await expect(page.locator('#pl-list .pl-verify-badge.pass').first()).toBeVisible();
+  await expect(page.locator('#pl-list .pl-translation-badge')).toHaveCount(10);
   await expect(page.locator('#pl-list .pl-relevance-tag').first()).toContainText(/跨境|贸易/);
   await expect(page.locator('#pl-list .pl-relevance-tag').first()).toHaveAttribute('title', /相关性判断/);
   await expect(page.locator('#pl-list .pl-meta a')).toHaveCount(10);
-  await expect(page.locator('#pl-verify-bar')).toContainText('依据：具体官方记录 + 日期');
-  await expect(page.locator('#pl-verify-bar small')).toHaveAttribute('title', /具体官方记录链接/);
+  await expect(page.locator('#pl-verify-bar')).toContainText('依据：记录链接 + 验证状态 + 日期');
+  await expect(page.locator('#pl-verify-bar small')).toHaveAttribute('title', /官方或已复核可追溯记录/);
   expect(await page.locator('#pl-verify-bar').evaluate((node) => node.getBoundingClientRect().height)).toBeLessThan(70);
 
   const policyState = await page.evaluate(() => ({
@@ -368,6 +520,8 @@ test('policy dynamics are constrained to the configured US market', async ({ pag
     regions: [...new Set(window.plGetJsonItems().map((item) => item.region))],
     scores: [...new Set(window.plGetJsonItems().slice(0, 20).map((item) => item.credibility_score))],
     verifyIssues: [...new Set(window.plGetJsonItems().slice(0, 20).map((item) => (item._verifyIssues || []).length))],
+    chineseReady: window.plGetJsonItems().every((item) => /[\u3400-\u9fff]/.test(item.title_zh || '')
+      && ['source_zh', 'translated', 'reviewed'].includes((item.translation || {}).status)),
     homepageEvidence: window.plAssessEvidence({
       title: '首页来源不应核验', source_url: 'https://ustr.gov/',
       published_at: '2026-08-27', collected_at: '2026-08-27T09:00:00+08:00',
@@ -401,11 +555,12 @@ test('policy dynamics are constrained to the configured US market', async ({ pag
   expect(policyState.regions).toEqual(['US']);
   expect(policyState.scores).toEqual([100]);
   expect(policyState.verifyIssues).toEqual([0]);
+  expect(policyState.chineseReady).toBe(true);
   expect(policyState.homepageEvidence.flag).not.toBe('pass');
   expect(policyState.homepageEvidence.issues).toContain('来源链接指向官网首页，无法定位具体政策记录');
   expect(policyState.specificEvidence.flag).toBe('pass');
   expect(policyState.spoofedDomainEvidence.flag).not.toBe('pass');
-  expect(policyState.spoofedDomainEvidence.issues).toContain('来源域名未列入官方来源');
+  expect(policyState.spoofedDomainEvidence.issues).toContain('来源未满足官方或已复核可追溯条件');
   expect(policyState.duplicateEvidence.flag).not.toBe('pass');
   expect(policyState.relevance).toEqual({
     direct: 'direct',
@@ -421,13 +576,75 @@ test('policy dynamics are constrained to the configured US market', async ({ pag
   const allUsTotal = await page.evaluate(() => window.plGetJsonItems().length);
   expect(allUsTotal).toBeGreaterThan(policyTotal);
   await expect(page.locator('#pl-filter-count')).toContainText(`${allUsTotal} 条政策`);
-  await expect(page.locator('#pl-stats-row')).toContainText('全部美国已核验');
+  await expect(page.locator('#pl-stats-row')).toContainText('当前市场已核验');
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator('#pl-f-scope').selectOption('cross-border');
   await expect(page.locator('#pl-list .pl-card').first()).toBeVisible();
   expect(await page.locator('#pl-verify-bar').evaluate((node) => node.getBoundingClientRect().height)).toBeLessThan(70);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
+});
+
+test('third-party industry news is visible as traceable reference only', async ({ page }) => {
+  const pageErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => window.switchPage('policies'));
+  await page.waitForFunction(() => window.policiesJsonData && window.policiesJsonData.items && window.policiesJsonData.items.length > 0);
+  await expect(page.locator('#pl-f-scope')).toHaveValue('cross-border');
+  await page.locator('#pl-f-scope').selectOption('industry');
+
+  const state = await page.evaluate(() => {
+    const records = window.plGetIndustryPolicyRecords();
+    const formal = window.plGetVerifiedPolicies(true);
+    return {
+      count: records.length,
+      records: records.map((item) => ({
+        source: item.source,
+        title: item.title_zh,
+        market: item._display_market_code,
+        advisory: item._advisory === true,
+        evidence: item._evidence && item._evidence.label,
+        normalized: window.JAY_MARKET_SCOPE_API.normalizeDataRecord(item, 'policy'),
+      })),
+      formalHasAdvisory: formal.some((item) => window.plIsIndustryAdvisory(item)),
+    };
+  });
+  expect(state.count).toBeGreaterThan(0);
+  expect(state.records.every((item) => item.advisory && item.market === 'US')).toBe(true);
+  expect(state.records.every((item) => ['雨果网', 'AMZ123'].includes(item.source))).toBe(true);
+  expect(state.records.every((item) => item.evidence === '可追溯参考 · 非官方核验')).toBe(true);
+  expect(state.records.every((item) => item.normalized.source_kind === 'traceable')).toBe(true);
+  expect(state.records.every((item) => item.normalized.verification_status !== 'verified')).toBe(true);
+  expect(state.formalHasAdvisory).toBe(false);
+  await expect(page.locator('#pl-list .pl-card')).toHaveCount(Math.min(10, state.count));
+  await expect(page.locator('#pl-list')).toContainText('可追溯参考');
+  await expect(page.locator('#pl-list')).toContainText('第三方行业资讯');
+  await expect(page.locator('#pl-list')).not.toContainText('40 · 低可信');
+  await expect(page.locator('#pl-stats-row')).toContainText('可追溯参考，不纳入正式政策统计');
+  expect(pageErrors).toEqual([]);
+});
+
+test('tax and market-access domains stay independent and honest when empty', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => window.switchPage('policies'));
+
+  await page.locator('#policies .pl-domain-tab[data-domain="tax"]').click();
+  expect(await page.evaluate(() => window.plActiveDomain)).toBe('tax');
+  await expect(page.locator('#pl-f-category option')).toHaveText(['全部类别', '关税', '进口费用', '平台代扣税', '销售税', '增值税']);
+  await expect(page.locator('#pl-f-scope')).toBeDisabled();
+  await expect(page.locator('#pl-list .pl-card')).toHaveCount(0);
+  await expect(page.locator('#pl-empty')).toContainText('税收数据尚未接入');
+
+  await page.locator('#policies .pl-domain-tab[data-domain="access"]').click();
+  expect(await page.evaluate(() => window.plActiveDomain)).toBe('access');
+  await expect(page.locator('#pl-f-category option')).toHaveText(['全部类别', '认证', '进口要求', '知识产权', '标签', '包装', '注册']);
+  await expect(page.locator('#pl-list .pl-card')).toHaveCount(0);
+  await expect(page.locator('#pl-empty')).toContainText('准入条件尚未接入');
 });
 
 test('cross-page entries preserve the configured market and platform filters', async ({ page }) => {
@@ -444,13 +661,16 @@ test('cross-page entries preserve the configured market and platform filters', a
   };
   await routeFromMetric('country-count', 'countries');
   await routeFromMetric('platform-count', 'platforms');
-  await routeFromMetric('product-count', 'products');
-  await routeFromMetric('policy-rule-count', 'policies');
+  await routeFromMetric('alert-count', 'alerts');
+  await expect(page.locator('#al-filter-type')).toHaveValue('all');
+  await expect(page.locator('#al-filter-level')).toHaveValue('all');
+  await expect(page.locator('#al-filter-time')).toHaveValue('all');
+  await routeFromMetric('policy-count', 'policies');
   await expect(page.locator('#pl-f-region')).toHaveValue('US');
   await expect(page.locator('#pl-f-scope')).toHaveValue('cross-border');
 
   await page.evaluate(() => window.switchPage('overview'));
-  await page.locator('#ov-country-grid .ov-ccard-btn[data-page="policies"]').click();
+  await page.locator('#ov-country-grid .ov-ccard-btn[data-destination="policies"]').click();
   await expect(page.locator('#policies')).toHaveClass(/active/);
   await expect(page.locator('#pl-f-region')).toHaveValue('US');
   await expect(page.locator('#pl-f-scope')).toHaveValue('cross-border');
@@ -632,10 +852,19 @@ test('data trust center reports the publish gate on desktop and mobile', async (
   await page.evaluate(() => window.switchPage('data'));
 
   await expect(page.locator('#data-quality-badge')).toContainText(/数据(实时|过期|部分降级|校验失败|读取中)/);
-  await expect(page.locator('#data-quality-rows tr')).toHaveCount(8);
+  const qualityDatasetCount = await page.evaluate(() => Object.keys((window.JAY_QUALITY_REPORT || {}).datasets || {}).length);
+  expect(qualityDatasetCount).toBeGreaterThan(0);
+  await expect(page.locator('#data-quality-rows tr')).toHaveCount(qualityDatasetCount);
   await expect(page.locator('#shell-data-status')).toContainText(/数据(实时|过期|部分降级|校验失败|读取中)/);
-  await expect(page.locator('#dq-errors')).toHaveText('0');
-  await expect(page.locator('#dq-warnings')).toHaveText('0');
+  const qualitySummary = await page.evaluate(() => {
+    const report = window.JAY_QUALITY_REPORT || {};
+    return {
+      errors: Number(report.summary?.errors || 0),
+      warnings: Number(report.summary?.warnings || 0),
+    };
+  });
+  await expect(page.locator('#dq-errors')).toHaveText(String(qualitySummary.errors));
+  await expect(page.locator('#dq-warnings')).toHaveText(String(qualitySummary.warnings));
   await expect(page.locator('#dq-raw-records')).toHaveText(/^\d+$/);
   await expect(page.locator('#dq-scoped-records')).toHaveText(/^\d+$/);
   const qualityCounts = await page.evaluate(() => ({
@@ -752,4 +981,252 @@ test('category opportunities use only validated user-imported records', async ({
   await page.evaluate(() => window.switchPage('products'));
   await page.locator('#pr-clear-data').click();
   expect(pageErrors).toEqual([]);
+});
+
+test('uploaded catalog cache is account-scoped and service errors are explicit', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  const state = await page.evaluate(() => {
+    window.jayIsDemo = true;
+    window.jayUser = { id: 'account-a', email: 'a@example.com' };
+    window.prResetImportedDataForAuthChange();
+    window.prImportPayload({ products: [{
+      商品名: '账号A商品', 国家: '美国', 平台: 'Amazon', 类目: '家居',
+      售价: '$19.99', 销量: '10', 更新时间: '2026-09-01',
+    }] }, 'account-a.csv');
+    const accountAKey = window.prImportedDataKey();
+    const accountAStored = !!localStorage.getItem(accountAKey);
+
+    window.prResetImportedDataForAuthChange();
+    window.jayUser = { id: 'account-b', email: 'b@example.com' };
+    const accountBRestored = window.prRestoreImportedData();
+    const accountBCount = products.length;
+
+    window.jayUser = { id: 'account-a', email: 'a@example.com' };
+    const accountARestored = window.prRestoreImportedData();
+    const accountAProducts = products.map((row) => row[1]);
+    const context = window.rpV2ReportContext('家居');
+    const firstIdentity = window.rpV2GenerationIdentity(context, '家居', []);
+    const secondIdentity = window.rpV2GenerationIdentity(context, '家居', []);
+    window.prPurgeImportedDataForUser('account-a');
+    return {
+      accountAKey, accountAStored, accountBRestored, accountBCount, accountARestored, accountAProducts,
+      retiredKey: localStorage.getItem('jay_product_catalog_import_v1'),
+      errors: {
+        unauthorized: window.jayServiceErrorText({ status: 401 }),
+        forbidden: window.jayServiceErrorText({ status: 403 }),
+        limited: window.jayServiceErrorText({ status: 429 }),
+        timeout: window.jayServiceErrorText({ code: 'REQUEST_TIMEOUT', status: 408 }),
+        quota: window.jayServiceErrorText({ code: 'AI_QUOTA_EXCEEDED', status: 402 }),
+        server: window.jayServiceErrorText({ status: 503 }),
+      },
+      identitiesMatch: firstIdentity.idempotencyKey === secondIdentity.idempotencyKey,
+      purgedOnSignOut: localStorage.getItem(accountAKey) === null && products.length === 0,
+    };
+  });
+
+  expect(state.accountAKey).toBe('jay_product_catalog_import_v2_account-a');
+  expect(state.accountAStored).toBe(true);
+  expect(state.accountBRestored).toBe(false);
+  expect(state.accountBCount).toBe(0);
+  expect(state.accountARestored).toBe(true);
+  expect(state.accountAProducts).toEqual(['账号A商品']);
+  expect(state.retiredKey).toBeNull();
+  expect(state.errors.unauthorized).toContain('重新登录');
+  expect(state.errors.forbidden).toContain('没有执行此操作的权限');
+  expect(state.errors.limited).toContain('请求过于频繁');
+  expect(state.errors.timeout).toContain('请求超时');
+  expect(state.errors.quota).toContain('额度不足');
+  expect(state.errors.server).toContain('服务暂时不可用');
+  expect(state.identitiesMatch).toBe(true);
+  expect(state.purgedOnSignOut).toBe(true);
+});
+
+test('market scope can register and switch to a market-specific platform set', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  const state = await page.evaluate(() => {
+    const api = window.JAY_MARKET_SCOPE_API;
+    api.registerPlatform({ key: 'otto', name: 'Otto', aliases: ['otto'], kind: 'marketplace' });
+    api.registerMarket({
+      code: 'DE', key: 'de', name: '德国', label: '德国市场', aliases: ['de', '德国'],
+      regionCode: 'EU', regionName: '欧洲', jurisdictionCodes: ['DE'],
+      platformKeys: ['otto'], categoryKeys: [], dataStatus: 'configured',
+    }, [{ marketCode: 'DE', platformKey: 'otto', status: 'active', dataStatus: 'configured', label: '德国站' }]);
+    api.setActiveMarket('DE');
+    return {
+      markets: api.getActiveMarketNames(),
+      platforms: api.getActivePlatformNames(),
+      context: api.getActiveContext(),
+      scope: window.JAY_MARKET_SCOPE,
+    };
+  });
+  expect(state.markets).toEqual(['德国']);
+  expect(state.platforms).toEqual(['Otto']);
+  expect(state.context.marketCodes).toEqual(['DE']);
+  expect(state.context.platformKeys).toEqual(['otto']);
+  expect(state.scope.marketCount).toBe(1);
+  expect(state.scope.platformCount).toBe(1);
+});
+
+test('market without platform relations shows an explicit platform empty state', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => {
+    const api = window.JAY_MARKET_SCOPE_API;
+    api.registerMarket({
+      code: 'JP', key: 'jp', name: '日本', label: '日本市场', aliases: ['jp', '日本'],
+      regionCode: 'EA', regionName: '东亚', jurisdictionCodes: ['JP'],
+      platformKeys: [], categoryKeys: [], dataStatus: 'configured',
+    }, []);
+    api.setActiveMarket('JP');
+    window.switchPage('platforms');
+  });
+  await expect(page.locator('#platforms .platform-card:visible')).toHaveCount(0);
+  await expect(page.locator('#platforms .platform-scope-empty')).toBeVisible();
+  await expect(page.locator('#platforms .platform-scope-empty')).toContainText('日本市场暂无已配置平台');
+});
+
+test('visible scope controls propagate a newly registered market across workspace pages', async ({ page }) => {
+  const pageErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+
+  await page.evaluate(() => {
+    const api = window.JAY_MARKET_SCOPE_API;
+    api.registerPlatform({ key: 'otto', name: 'Otto', aliases: ['otto'], kind: 'marketplace' });
+    api.registerMarket({
+      code: 'DE', key: 'de', name: '德国', label: '德国市场', flag: '🇩🇪', aliases: ['de', '德国'],
+      regionCode: 'EU', regionName: '欧洲', jurisdictionCodes: ['DE'],
+      platformKeys: ['otto'], categoryKeys: [], dataStatus: 'configured',
+    }, [{ marketCode: 'DE', platformKey: 'otto', status: 'active', dataStatus: 'configured', label: '德国站' }]);
+    api.setActiveMarket('DE');
+  });
+
+  await expect(page.locator('#jay-market-selector')).toHaveValue('DE');
+  await expect(page.locator('#jay-market-selector option')).toHaveText(['美国', '印度尼西亚', '德国']);
+  await expect(page.locator('.market-switcher').first()).toContainText('德国市场');
+  await expect(page.locator('#ov-metrics .ov-metric-card').nth(0).locator('.ov-metric-val')).toHaveText('1');
+  await expect(page.locator('#ov-metrics .ov-metric-card').nth(1).locator('.ov-metric-val')).toHaveText('1');
+  await expect(page.locator('#ov-country-grid .ov-ccard')).toHaveCount(1);
+  await expect(page.locator('#ov-country-grid')).toContainText('德国');
+  await expect(page.locator('#ov-country-grid')).not.toContainText('美国');
+
+  await page.evaluate(() => window.switchPage('countries'));
+  await expect(page.locator('#countries-page-title')).toHaveText('德国市场档案');
+  await expect(page.locator('#country-scope-market-code')).toHaveText('DE');
+  await expect(page.locator('#country-profile-selector')).toHaveValue('DE');
+  await expect(page.locator('#country-commerce-title')).toHaveText('德国电商市场环境');
+  await expect(page.locator('#country-commerce-count')).toHaveText('0 项已接入');
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.has-data')).toHaveCount(0);
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.is-missing')).toHaveCount(11);
+  await expect(page.locator('#country-commerce-status')).toHaveAttribute('data-data-status', 'not-connected');
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.is-missing').first()).toHaveAttribute('data-data-status', 'not-connected');
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.is-missing').first()).toContainText('尚未接入');
+  await expect(page.locator('#country-commerce-content')).not.toContainText('美国');
+
+  await page.locator('#country-profile-selector').selectOption('US');
+  await expect(page.locator('#countries-page-title')).toHaveText('美国市场档案');
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.has-data')).toHaveCount(8);
+  await page.locator('#country-profile-selector').selectOption('DE');
+  await expect(page.locator('#countries-page-title')).toHaveText('德国市场档案');
+  await expect(page.locator('#country-commerce-content .country-commerce-metric.has-data')).toHaveCount(0);
+
+  await page.evaluate(() => window.switchPage('platforms'));
+  await expect(page.locator('#platforms .platform-card:visible')).toHaveCount(1);
+  await expect(page.locator('#platforms .platform-card:visible')).toContainText('Otto');
+  await expect(page.locator('#platforms .platform-card:visible')).toContainText('德国站');
+  await page.locator('#platforms .platform-card:visible').click();
+  await expect(page.locator('#rules')).toHaveClass(/active/);
+  await expect(page.locator('#rl-market')).toHaveValue('DE');
+  await expect(page.locator('#rl-platform')).toHaveValue('Otto');
+
+  await page.evaluate(() => window.switchPage('policies'));
+  await expect(page.locator('#pl-f-region')).toHaveValue('DE');
+  await expect(page.locator('#pl-empty')).toBeVisible();
+  await expect(page.locator('#pl-list')).not.toContainText('美国');
+
+  await page.evaluate(() => window.switchPage('rules'));
+  await expect(page.locator('#rl-market')).toHaveValue('DE');
+  await expect(page.locator('#rl-platform option')).toHaveText(['全部平台', 'Otto']);
+  await expect(page.locator('#rl-rules-list')).toContainText('暂无匹配规则');
+
+  await page.evaluate(() => window.switchPage('report'));
+  await page.locator('#rp-v2-next-btn').click();
+  await expect(page.locator('#rp-v2-topic')).toHaveAttribute('placeholder', /德国/);
+  await page.locator('#rp-v2-topic').fill('宠物用品');
+  await page.getByRole('button', { name: '生成报告', exact: true }).click();
+  await expect(page.locator('#rp-q-market')).toHaveValue('DE');
+
+  await page.evaluate(() => window.switchPage('tools'));
+  await expect(page.locator('#sc-market')).toHaveValue('DE');
+  expect(pageErrors).toEqual([]);
+});
+
+test('platform and category selectors update the shared scope without stale selection limits', async ({ page }) => {
+  const pageErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+
+  await expect(page.locator('#jay-platform-selector option')).toHaveText(['全部平台', 'Amazon', 'TikTok Shop', 'AliExpress', 'eBay']);
+  await page.locator('#jay-platform-selector').selectOption('amazon');
+  await expect(page.locator('#jay-platform-selector')).toHaveValue('amazon');
+  await page.locator('#jay-platform-selector').selectOption('tiktok-shop');
+  await expect(page.locator('#jay-platform-selector')).toHaveValue('tiktok-shop');
+  await page.locator('#jay-category-selector').selectOption('electronics');
+  await expect(page.locator('#jay-category-selector')).toHaveValue('electronics');
+
+  const context = await page.evaluate(() => window.JAY_MARKET_SCOPE_API.getActiveContext());
+  expect(context.marketCodes).toEqual(['US']);
+  expect(context.platformKeys).toEqual(['tiktok-shop']);
+  expect(context.selectedPlatformKeys).toEqual(['tiktok-shop']);
+  expect(context.categoryCodes).toEqual(['electronics']);
+  expect(pageErrors).toEqual([]);
+});
+
+test('category rules, provenance gates, and report snapshots stay explicit', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  const result = await page.evaluate(() => {
+    const valid = ['标题', 'TikTok Shop', '美国', '短视频', '100', '1000', '2026-08-31', '达人', '商品', '2.1', '美妆', '测评', '50', 'US Store', '上升'];
+    valid.source_kind = 'uploaded';
+    valid.source_type = 'user_upload';
+    valid.verification_status = 'uploaded';
+    valid.source_url = 'https://example.test/content/1';
+    const invalid = ['无来源内容', 'TikTok Shop', '美国', '短视频'];
+    window.jaySetContentRecords([valid, invalid]);
+    const product = window.prNormalizeProduct({
+      商品名: '电子产品样本', 国家: '美国', 平台: 'Amazon', 类目: '电子产品',
+      售价: '$20', 产品成本: '$8', 认证: 'FCC',
+    }).row;
+    const snapshot = window.prProductSnapshot(product);
+    const materialRow = window.jayMaterialToRow({
+      id: 'snapshot-1', type: 'product', title: product[1], source: '用户文件',
+      summary: '测试快照', snapshot_type: 'product', snapshot_data: snapshot,
+      snapshot_source: product._source, snapshot_at: '2026-08-31T00:00:00.000Z',
+      snapshot_market: product[2], snapshot_platform: product[3], snapshot_category: product[4],
+    });
+    return {
+      contentCount: window.ctScopedData().length,
+      validContent: window.ctIsValidatedContent(valid),
+      invalidContent: window.ctIsValidatedContent(invalid),
+      ruleStatus: product._categoryRule.status,
+      ruleMissing: product._categoryRule.missingFields,
+      snapshotSource: snapshot.source,
+      snapshotCategory: materialRow.snapshot_category,
+      snapshotPersisted: materialRow.snapshot_data.row[1],
+    };
+  });
+  expect(result.contentCount).toBe(1);
+  expect(result.validContent).toBe(true);
+  expect(result.invalidContent).toBe(false);
+  expect(result.ruleStatus).toBe('complete');
+  expect(result.ruleMissing).toEqual([]);
+  expect(result.snapshotSource).toBe('用户导入文件');
+  expect(result.snapshotCategory).toBe('电子产品');
+  expect(result.snapshotPersisted).toBe('电子产品样本');
 });

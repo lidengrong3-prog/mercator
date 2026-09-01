@@ -10,6 +10,76 @@ var ctAiTrend = [];
 var ctAiRisk = [];
 var ctLiveData = [];
 
+function ctRecordMeta(record) {
+  if(!record || typeof record !== 'object') return {};
+  return Object.assign({}, record._provenance||record.provenance||record._sourceMeta||record.meta||{}, record);
+}
+function ctIsValidatedContent(record) {
+  if(!Array.isArray(record)) return false;
+  var meta=ctRecordMeta(record);
+  var sourceKind=String(meta.source_kind||meta.sourceKind||meta.provenance||'').toLowerCase();
+  var status=String(meta.verification_status||meta.verificationStatus||meta.verification||'').toLowerCase();
+  var evidence=meta.source_url||meta.sourceUrl||meta.source_record_id||meta.sourceRecordId||meta.source_file||meta.sourceFile||record[15]||'';
+  if(sourceKind==='demo'||sourceKind==='mock'||sourceKind==='演示') return false;
+  if(['verified','uploaded'].indexOf(status)<0) return false;
+  if(!evidence) return false;
+  var api=window.JAY_MARKET_SCOPE_API;
+  if(!api) return true;
+  var marketCode=api.normalizeMarketCode?api.normalizeMarketCode(record[2]):record[2];
+  var context=api.getActiveContext?api.getActiveContext():{marketCodes:[],categoryCodes:[]};
+  if(context.marketCodes&&context.marketCodes.length&&context.marketCodes.indexOf(marketCode)<0)return false;
+  if(api.isAllowedPlatform&& !api.isAllowedPlatform(record[1],marketCode))return false;
+  if(context.categoryCodes&&context.categoryCodes.length&&api.normalizeCategoryCode){
+    if(context.categoryCodes.indexOf(api.normalizeCategoryCode(record[10]))<0)return false;
+  }
+  return true;
+}
+function ctScopedData(){return Array.isArray(contentData)?contentData.filter(ctIsValidatedContent):[];}
+function ctMetric(value){return value===undefined||value===null||String(value).trim()===''?'未提供':String(value);}
+function ctHasNumericMetric(record,index){return record&&String(record[index]===undefined?'':record[index]).trim()!==''&&Number.isFinite(Number(String(record[index]).replace(/[%万,]/g,'')));}
+function ctContentSnapshot(record){
+  var meta=ctRecordMeta(record);
+  return {row:Array.prototype.slice.call(record||[]),raw:meta.raw||meta.raw_record||null,provenance:{
+    source_kind:meta.source_kind||meta.sourceKind||'',source_type:meta.source_type||meta.sourceType||'',
+    source_url:meta.source_url||meta.sourceUrl||'',source_record_id:meta.source_record_id||meta.sourceRecordId||'',
+    verification_status:meta.verification_status||meta.verificationStatus||'',collected_at:meta.collected_at||meta.collectedAt||null
+  },source:meta.source_url||meta.source_file||meta.sourceFile||'',market:record&&record[2]||'',platform:record&&record[1]||'',category:record&&record[10]||''};
+}
+function ctRawField(raw, aliases){
+  for(var i=0;i<aliases.length;i++){
+    if(raw[aliases[i]]!==undefined&&raw[aliases[i]]!==null&&String(raw[aliases[i]]).trim()!=='')return raw[aliases[i]];
+  }
+  return '';
+}
+function ctSetContentRecords(records){
+  var next=(Array.isArray(records)?records:[]).map(function(raw){
+    var record;
+    if(Array.isArray(raw))record=raw.slice();
+    else if(raw&&typeof raw==='object')record=[
+      ctRawField(raw,['标题','title','name']),ctRawField(raw,['平台','platform','channel']),
+      ctRawField(raw,['市场','国家/市场','market','country','region']),ctRawField(raw,['类型','内容类型','type','content_type']),
+      ctRawField(raw,['点赞','点赞量','likes','likes_wan']),ctRawField(raw,['播放','播放量','plays','views','views_wan']),
+      ctRawField(raw,['日期','发布时间','date','published_at','publishedAt']),ctRawField(raw,['创作者','达人','creator','author']),
+      ctRawField(raw,['带货商品','商品','product','product_name']),ctRawField(raw,['转化率','conversion_rate','conversion','conv_rate']),
+      ctRawField(raw,['类目','品类','category']),ctRawField(raw,['脚本类型','script_type','script']),
+      ctRawField(raw,['达人粉丝','粉丝数','followers','followers_wan']),ctRawField(raw,['关联店铺','店铺','shop','store']),
+      ctRawField(raw,['信号','signal','trend'])
+    ];
+    else return null;
+    Object.keys(raw||{}).forEach(function(key){if(!/^\d+$/.test(key))record[key]=raw[key];});
+    return record;
+  }).filter(Boolean);
+  contentData.splice(0,contentData.length);
+  contentData.push.apply(contentData,next);
+  ctSelected.clear();
+  ctRenderAI();
+  ctApplyFilters();
+  ctRenderCreator();
+  ctRenderLive();
+  return next.length;
+}
+window.jaySetContentRecords=ctSetContentRecords;
+
 function ctSwitchAI(tab) {
   ctActiveAI = tab;
   document.querySelectorAll('.ct-ai-tab').forEach(function(b){b.classList.toggle('active', b.dataset.aitab===tab)});
@@ -20,7 +90,7 @@ function ctRenderAI() {
   var list = ctActiveAI === 'convert' ? ctAiConvert : ctActiveAI === 'trend' ? ctAiTrend : ctAiRisk;
   var el = document.getElementById('ct-ai-content');
   if(!el) return;
-  if(!list.length){
+  if(!ctScopedData().length||!list.length){
     el.innerHTML='<div class="empty-state"><p>暂无已接入的内容洞察数据</p><small>未通过来源校验的内容不会展示。</small></div>';
     return;
   }
@@ -69,6 +139,7 @@ function ctGetCreatorTier(followers) {
 }
 
 function ctApplyFilters() {
+  if(!document.getElementById('ct-f-platform') || !document.getElementById('ct-f-market') || !document.getElementById('ct-f-type') || !document.getElementById('ct-f-cat') || !document.getElementById('ct-f-tier') || !document.getElementById('ct-f-signal') || !document.getElementById('ct-f-period') || !document.getElementById('ct-f-keyword') || !document.getElementById('ct-f-sort')) return;
   var plat = document.getElementById('ct-f-platform').value;
   var market = document.getElementById('ct-f-market').value;
   var type = document.getElementById('ct-f-type').value;
@@ -79,7 +150,8 @@ function ctApplyFilters() {
   var kw = document.getElementById('ct-f-keyword').value.trim().toLowerCase();
   var sort = document.getElementById('ct-f-sort').value;
 
-  var filtered = contentData.map(function(c,i){return {c:c,idx:i};}).filter(function(o) {
+  var scopedData=ctScopedData();
+  var filtered = scopedData.map(function(c){return {c:c,idx:contentData.indexOf(c)};}).filter(function(o) {
     var c = o.c;
     if(plat && c[1] !== plat) return false;
     if(market && c[2] !== market) return false;
@@ -109,7 +181,7 @@ function ctApplyFilters() {
   });
 
   ctRenderCards(filtered);
-  document.getElementById('ct-count').textContent = '(' + filtered.length + '/' + contentData.length + ')';
+  document.getElementById('ct-count').textContent = '(' + filtered.length + '/' + scopedData.length + ')';
 }
 
 function ctSignalCls(s) {
@@ -150,7 +222,7 @@ function ctThumbHtml(c, idx) {
 
   // 互动数（万）
   var likesW = parseFloat(c[4]) || 0;
-  var engage = likesW >= 1000 ? (likesW/10000).toFixed(1) + 'w' : (likesW >= 1 ? likesW + 'w' : Math.round(likesW*10)/10 + 'w');
+  var engage = String(c[4]===undefined?'':c[4]).trim()==='' ? '未提供' : (likesW >= 1000 ? (likesW/10000).toFixed(1) + 'w' : (likesW >= 1 ? likesW + 'w' : Math.round(likesW*10)/10 + 'w'));
 
   return '<div class="ct-thumb" style="--ct-grad:' + grad + '">' +
     '<div class="ct-thumb-bg"></div>' +
@@ -177,7 +249,7 @@ function ctRenderCards(list) {
     var checked = ctSelected.has(idx) ? 'checked' : '';
     var likes = parseFloat(c[4])||0;
     var plays = parseFloat(c[5])||0;
-    var tier = ctGetCreatorTier(c[12]);
+    var tier = ctHasNumericMetric(c,12) ? ctGetCreatorTier(c[12]) : '未提供';
     var tierColor = tier==='头部KOL' ? 'var(--orange)' : tier==='中腰部达人' ? 'var(--green)' : 'var(--muted)';
     return '<article class="ct-card-new">' +
       '<div class="ct-card-check"><input type="checkbox" class="ct-cb" data-idx="' + idx + '" ' + checked + ' onchange="ctToggleOne(' + idx + ',this.checked)"></div>' +
@@ -194,9 +266,9 @@ function ctRenderCards(list) {
       '<p class="ct-product">带货: ' + c[8] + '</p>' +
       '<p class="ct-meta" style="font-size:11px">关联店铺: <span class="ct-shop-link" data-shop="' + c[13] + '" style="color:var(--green);cursor:pointer">' + c[13] + '</span></p>' +
       '<div class="ct-stats">' +
-        '<span>点赞 <b>' + likes + '万</b></span>' +
-        '<span>播放 <b>' + plays + '万</b></span>' +
-        '<span>转化率 <b>' + c[9] + '%</b></span>' +
+        '<span>点赞 <b>' + ctMetric(c[4]) + (ctMetric(c[4])==='未提供'?'':'万') + '</b></span>' +
+        '<span>播放 <b>' + ctMetric(c[5]) + (ctMetric(c[5])==='未提供'?'':'万') + '</b></span>' +
+        '<span>转化率 <b>' + ctMetric(c[9]) + (ctMetric(c[9])==='未提供'?'':'%') + '</b></span>' +
       '</div>' +
       '<div class="ct-card-actions">' +
         '<button class="ct-act-report" data-idx="' + idx + '" title="加入报告素材">📋</button>' +
@@ -204,7 +276,7 @@ function ctRenderCards(list) {
         '<button class="ct-act-copy" data-idx="' + idx + '" title="复制标题">📎</button>' +
       '</div>' +
     '</article>';
-  }).join('') || '<p style="color:#888;padding:20px">暂无匹配内容</p>';
+  }).join('') || '<p style="color:#888;padding:20px">暂无已验证内容数据</p>';
 
   // Event listeners
   grid.querySelectorAll('.ct-card-title').forEach(function(el) {
@@ -249,10 +321,11 @@ function ctUpdateBatch() {
 // ========== CONTENT DETAIL MODAL ==========
 function ctShowDetail(idx) {
   var c = contentData[idx]; if(!c) return;
+  if(!ctIsValidatedContent(c)){toast('该内容尚未通过来源核验');return;}
   document.getElementById('ct-modal-title').textContent = ctTitle(c);
   var body = document.getElementById('ct-modal-body');
-  var likes = parseFloat(c[4])||0;
-  var plays = parseFloat(c[5])||0;
+  var likes = ctMetric(c[4]);
+  var plays = ctMetric(c[5]);
 
   var html = '';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">';
@@ -264,28 +337,28 @@ function ctShowDetail(idx) {
   html += '<div><strong>脚本类型:</strong> ' + c[11] + '</div>';
   html += '<div><strong>内容类型:</strong> ' + c[3] + '</div>';
   html += '<div><strong>带货类目:</strong> ' + c[10] + '</div>';
-  html += '<div><strong>达人层级:</strong> ' + ctGetCreatorTier(c[12]) + '</div>';
+  html += '<div><strong>达人层级:</strong> ' + (ctHasNumericMetric(c,12)?ctGetCreatorTier(c[12]):'未提供') + '</div>';
   html += '<div><strong>热门关键词:</strong> ' + c[0].split(' ').slice(0,3).join(' / ') + '</div>';
-  html += '<div><strong>推荐BGM:</strong> 热门挑战曲/品类匹配曲</div>';
-  html += '<div><strong>封面风格:</strong> 产品特写+大字标题+分屏对比</div>';
+  html += '<div><strong>推荐BGM:</strong> 未提供</div>';
+  html += '<div><strong>封面风格:</strong> 未提供</div>';
   html += '</div></div>';
 
   // Block 2: source fields
   html += '<div style="border:1px solid #ddd;border-radius:8px;padding:14px">';
   html += '<h4 style="margin:0 0 10px;font-size:13px">📈 数据时间序列</h4>';
-  html += '<p style="font-size:12px;color:var(--muted);line-height:1.7">未提供可验证的时间序列字段。当前记录：播放 ' + plays + '万 · 点赞 ' + likes + '万 · 转化 ' + c[9] + '%。</p></div>';
+  html += '<p style="font-size:12px;color:var(--muted);line-height:1.7">未提供可验证的时间序列字段。当前记录：播放 ' + plays + (plays==='未提供'?'':'万') + ' · 点赞 ' + likes + (likes==='未提供'?'':'万') + ' · 转化 ' + ctMetric(c[9]) + (ctMetric(c[9])==='未提供'?'':'%') + '。</p></div>';
 
   // Block 3: Similar content
   html += '<div style="border:1px solid #ddd;border-radius:8px;padding:14px">';
   html += '<h4 style="margin:0 0 10px;font-size:13px">🔗 同款内容聚合</h4>';
-  var similarItems = contentData.filter(function(x,i){ return i !== idx && x[10] === c[10]; }).slice(0,4);
+  var similarItems = ctScopedData().filter(function(x){ return x !== c && x[10] === c[10]; }).slice(0,4);
   if(similarItems.length === 0) {
     html += '<p style="font-size:12px;color:var(--muted)">暂无同类目同款内容</p>';
   } else {
     similarItems.forEach(function(s) {
       html += '<div style="padding:4px 0;border-bottom:1px solid #f0f0f0;font-size:12px">';
       html += '<span>' + s[0].substring(0,25) + '...</span>';
-      html += '<span style="float:right;color:var(--green)">' + s[5] + '万播放</span>';
+      html += '<span style="float:right;color:var(--green)">' + ctMetric(s[5]) + (ctMetric(s[5])==='未提供'?'':'万') + '播放</span>';
       html += '</div>';
     });
   }
@@ -316,17 +389,22 @@ function ctCloseModal() { document.getElementById('ct-modal-overlay').classList.
 
 function ctAddToReport(idx) {
   var c = contentData[idx];
-  rpAddMaterial('custom',c[0],c[1]+' · '+c[2],c[3]+' 播放'+c[5]+'万 转化'+c[9]+'% 达人'+c[7]);
+  if(!ctIsValidatedContent(c)){toast('未核验的内容不能加入报告');return;}
+  rpAddMaterial('custom',c[0],c[1]+' · '+c[2],c[3]+' 播放'+ctMetric(c[5])+' 转化'+ctMetric(c[9])+' 达人'+ctMetric(c[7]),{snapshot:ctContentSnapshot(c),snapshot_type:'content'});
 }
 function ctBatchAddReport() {
   if(!jayCanUseUserDb()){toast('只读演示不保存素材，请登录后使用');return}
   var pool = rpGetPool();
+  var added=0;
   ctSelected.forEach(function(idx) {
     var c = contentData[idx];
-    pool.push({id:Date.now()+'_'+idx,type:'custom',title:c[0],source:c[1]+' · '+c[2],summary:'播放'+c[5]+'万 转化'+c[9]+'%',addedAt:new Date().toISOString(),selected:true});
+    if(!ctIsValidatedContent(c))return;
+    var now=new Date().toISOString();
+    pool.push({id:Date.now()+'_'+idx,type:'custom',title:c[0],source:c[1]+' · '+c[2],summary:'播放'+ctMetric(c[5])+' 转化'+ctMetric(c[9])+'%',addedAt:now,selected:true,source_kind:'derived',source_type:'derived',source_record_id:String(idx),verification_status:'verified',verification_notes:'由已核验内容记录生成',snapshot_type:'content',snapshot_data:ctContentSnapshot(c),snapshot_source:ctContentSnapshot(c).source,snapshot_at:now,snapshot_market:c[2],snapshot_platform:c[1],snapshot_category:c[10]});
+    added++;
   });
   rpSavePool(pool);
-  toast('已批量加入 ' + ctSelected.size + ' 条内容到报告素材');
+  toast('已批量加入 ' + added + ' 条内容到报告素材');
   ctClearSelection();
 }
 
@@ -347,20 +425,27 @@ function ctSwitchMain(tab) {
 
 // ========== CREATOR LEADERBOARD ==========
 function ctRenderCreator() {
+  if(!document.getElementById('ct-cr-platform') || !document.getElementById('ct-cr-market') || !document.getElementById('ct-cr-cat')) return;
   var plat = document.getElementById('ct-cr-platform').value;
   var market = document.getElementById('ct-cr-market').value;
   var cat = document.getElementById('ct-cr-cat').value;
 
   // Aggregate creator data
   var creators = {};
-  contentData.forEach(function(c) {
+  var scopedData=ctScopedData().filter(function(c){return ctHasNumericMetric(c,12)&&ctHasNumericMetric(c,5);});
+  if(!scopedData.length){
+    var empty=document.getElementById('ct-creator-table');
+    if(empty)empty.innerHTML='<tr><td colspan="10"><div class="empty-state">暂无已验证的达人数据，接入正式来源后才会生成榜单。</div></td></tr>';
+    return;
+  }
+  scopedData.forEach(function(c) {
     if(plat && c[1]!==plat) return;
     if(market && c[2]!==market) return;
     if(cat && c[10]!==cat) return;
     var key = c[7];
-    if(!creators[key]) creators[key] = {name:key, platform:c[1], market:c[2], followers:parseFloat(c[12])||0, totalPlays:0, totalConv:0, count:0, cats:[], shop:c[13]};
+    if(!creators[key]) creators[key] = {name:key, platform:c[1], market:c[2], followers:parseFloat(c[12])||0, totalPlays:0, totalConv:0, convCount:0, count:0, cats:[], shop:c[13]};
     creators[key].totalPlays += parseFloat(c[5])||0;
-    creators[key].totalConv += parseFloat(c[9])||0;
+    if(ctHasNumericMetric(c,9)){creators[key].totalConv += parseFloat(c[9]);creators[key].convCount++;}
     creators[key].count++;
     if(creators[key].cats.indexOf(c[10])<0) creators[key].cats.push(c[10]);
   });
@@ -369,7 +454,7 @@ function ctRenderCreator() {
   var tbody = document.getElementById('ct-creator-table');
   tbody.innerHTML = list.map(function(cr, i) {
     var avgPlays = (cr.totalPlays / cr.count).toFixed(0);
-    var avgConv = (cr.totalConv / cr.count).toFixed(1);
+    var avgConv = cr.convCount ? (cr.totalConv / cr.convCount).toFixed(1)+'%' : '未提供';
     return '<tr>' +
       '<td><strong>' + (i+1) + '</strong></td>' +
       '<td>' + cr.name + '</td>' +
@@ -378,7 +463,7 @@ function ctRenderCreator() {
       '<td><b>' + cr.followers + '万</b></td>' +
       '<td>' + avgPlays + '万</td>' +
       '<td>' + cr.cats.join('/') + '</td>' +
-      '<td class="growth">' + avgConv + '%</td>' +
+      '<td class="growth">' + avgConv + '</td>' +
       '<td>' + cr.count + '</td>' +
       '<td><button onclick="toast(\'已添加监控: '+escInline(cr.name)+'\')" style="font-size:11px;padding:3px 8px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer">+ 监控</button></td>' +
       '</tr>';
@@ -389,11 +474,17 @@ function ctRenderCreator() {
 function ctRenderLive() {
   var grid = document.getElementById('ct-live-grid');
   if(!grid) return;
-  if(!ctLiveData.length){
+  var validLive=ctLiveData.filter(function(record){
+    if(!record)return false;
+    var meta=ctRecordMeta(record);
+    var source=meta.source_url||meta.source_record_id||meta.source_file;
+    return ['verified','uploaded'].indexOf(String(meta.verification_status||'').toLowerCase())>=0&&!!source;
+  });
+  if(!validLive.length){
     grid.innerHTML='<div class="empty-state"><p>暂无已接入的直播追踪数据</p><small>未接入正式来源前保持空状态。</small></div>';
     return;
   }
-  grid.innerHTML = ctLiveData.map(function(live) {
+  grid.innerHTML = validLive.map(function(live) {
     return '<article class="ct-live-card">' +
       '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">' +
         '<span class="tag hot" style="font-size:10px">LIVE</span>' +
@@ -417,7 +508,7 @@ function ctSearchSimilar() {
   var kw = document.getElementById('ct-similar-input').value.trim().toLowerCase();
   var results = document.getElementById('ct-similar-results');
   if(!kw) { results.innerHTML = '<p style="color:var(--muted)">请输入商品名称</p>'; return; }
-  var matches = contentData.filter(function(c){ return c[8].toLowerCase().indexOf(kw)>=0 || c[0].toLowerCase().indexOf(kw)>=0 || c[10].toLowerCase().indexOf(kw)>=0; });
+  var matches = ctScopedData().filter(function(c){ return String(c[8]||'').toLowerCase().indexOf(kw)>=0 || String(c[0]||'').toLowerCase().indexOf(kw)>=0 || String(c[10]||'').toLowerCase().indexOf(kw)>=0; });
   if(matches.length === 0) { results.innerHTML = '<p style="color:var(--muted)">未找到与 "' + kw + '" 相关的同款内容</p>'; return; }
   var html = '<p style="font-size:13px;margin-bottom:12px">找到 <b>' + matches.length + '</b> 条与 "' + kw + '" 相关的同款内容</p>';
   html += '<div class="ct-card-grid">';
@@ -482,6 +573,7 @@ function ctRenderFavItems() {
 async function ctAddToFav(idx) {
   if(!jayCanUseUserDb()){toast('只读演示不保存收藏，请登录后使用');return}
   var c = contentData[idx];
+  if(!ctIsValidatedContent(c)){toast('未核验的内容不能收藏');return}
   if(ctFavFolders.length === 0) { toast('请先创建收藏夹文件夹'); return; }
   var folder = ctActiveFolder || ctFavFolders[0];
   if(!ctFavItems[folder]) ctFavItems[folder] = [];
@@ -504,6 +596,7 @@ async function ctBatchAddFav() {
   if(!ctFavItems[folder]) ctFavItems[folder] = [];
   ctSelected.forEach(function(idx) {
     var c = contentData[idx];
+    if(!ctIsValidatedContent(c))return;
     ctFavItems[folder].push({title:ctTitle(c), creator:c[7], platform:c[1], ts:Date.now()});
   });
   var count=ctSelected.size;
@@ -551,8 +644,10 @@ function ctLoadTpl(idx) {
 
 // ========== EXPORT ==========
 function ctExportExcel() {
+  var scopedData=ctScopedData();
+  if(!scopedData.length){toast('暂无已验证内容数据，无法导出');return;}
   var header = '标题\t平台\t市场\t类型\t点赞(万)\t播放(万)\t日期\t创作者\t带货商品\t转化率\t类目\t脚本类型\t达人粉丝\t关联店铺\t信号';
-  var rows = contentData.map(function(c){ return c.join('\t'); });
+  var rows = scopedData.map(function(c){ return c.join('\t'); });
   var csv = '\uFEFF' + header + '\n' + rows.join('\n');
   var blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
   var a = document.createElement('a');
@@ -562,22 +657,24 @@ function ctExportExcel() {
   toast('Excel导出完成');
 }
 function ctExportPDF() {
+  var scopedData=ctScopedData();
+  if(!scopedData.length){toast('暂无已验证内容数据，无法导出');return;}
   var md = '# 热门内容竞品分析报告\n\n';
   md += '导出时间: ' + new Date().toLocaleString() + '\n\n';
   md += '## 内容概览\n\n';
-  md += '- 追踪内容总数: ' + contentData.length + '\n';
+  md += '- 追踪内容总数: ' + scopedData.length + '\n';
   var plats = {};
-  contentData.forEach(function(c){ plats[c[1]] = (plats[c[1]]||0)+1; });
+  scopedData.forEach(function(c){ plats[c[1]] = (plats[c[1]]||0)+1; });
   Object.keys(plats).forEach(function(p){ md += '- ' + p + ': ' + plats[p] + '条\n'; });
   md += '\n## 爆款内容TOP10\n\n';
-  contentData.slice().sort(function(a,b){ return parseFloat(b[5])-parseFloat(a[5]); }).slice(0,10).forEach(function(c){
+  scopedData.slice().sort(function(a,b){ return parseFloat(b[5])-parseFloat(a[5]); }).slice(0,10).forEach(function(c){
     md += '### ' + c[0] + '\n';
     md += '- 平台: ' + c[1] + ' | 市场: ' + c[2] + ' | 类型: ' + c[3] + '\n';
     md += '- 播放: ' + c[5] + '万 | 点赞: ' + c[4] + '万 | 转化率: ' + c[9] + '%\n';
     md += '- 达人: ' + c[7] + ' (' + c[12] + '粉) | 脚本: ' + c[11] + '\n';
     md += '- 带货: ' + c[8] + ' | 店铺: ' + c[13] + '\n\n';
   });
-  if(jayPrintMarkdownReport('热门内容竞品分析报告',md,'内容与转化数据为公开样本和监测结果，请复核原始内容链接。')) toast('已打开打印页，可另存为 PDF');
+  if(jayPrintMarkdownReport('热门内容竞品分析报告',md,'报告仅包含已核验内容记录，并保留来源和快照信息。')) toast('已打开打印页，可另存为 PDF');
 }
 
 // ========== INIT ==========
@@ -588,6 +685,14 @@ function ctExportPDF() {
   ctRenderTplSelect();
   ctApplyFilters();
 })();
+
+if(window.addEventListener) window.addEventListener('jay:market-scope-change', function(){
+  ctSelected.clear();
+  ctRenderAI();
+  ctApplyFilters();
+  ctRenderCreator();
+  ctRenderLive();
+});
 
 
 
@@ -610,10 +715,12 @@ function ctExportPDF() {
     var wrap=document.querySelector('.ov-hero-input-wrap');
     if(wrap)wrap.classList.add('busy');
     resultEl.style.display='';
-    resultEl.innerHTML='<div class="ovr-card"><div class="ovr-head"><span>🤖</span><h4>AI 正在分析「'+escapeHtml(q)+'」<small>结合美国市场 '+JAY_PLATFORM_COUNT+' 个平台数据</small></h4></div>'+
+    var scopeApi=window.JAY_MARKET_SCOPE_API;
+    var scopeLabel=scopeApi&&scopeApi.getScopeLabel?scopeApi.getScopeLabel():'当前市场范围';
+    resultEl.innerHTML='<div class="ovr-card"><div class="ovr-head"><span>🤖</span><h4>AI 正在分析「'+escapeHtml(q)+'」<small>结合'+escapeHtml(scopeLabel)+'数据</small></h4></div>'+
       '<div class="ovr-steps">'+
         '<div class="ovr-step" data-step="1"><span class="ovr-dot">1</span><div><b>关键词解析</b><small>理解你的品类与市场意图</small></div></div>'+
-        '<div class="ovr-step" data-step="2"><span class="ovr-dot">2</span><div><b>匹配市场 / 政策 / 规则</b><small>交叉检索美国市场 + '+JAY_PLATFORM_COUNT+' 个平台</small></div></div>'+
+        '<div class="ovr-step" data-step="2"><span class="ovr-dot">2</span><div><b>匹配市场 / 政策 / 规则</b><small>交叉检索'+escapeHtml(scopeLabel)+'</small></div></div>'+
         '<div class="ovr-step" data-step="3"><span class="ovr-dot">3</span><div><b>生成结论</b><small>输出机会 / 风险 / 下一步</small></div></div>'+
       '</div>'+
       '<div class="ovr-progress-bar"><i></i></div></div>';
@@ -735,104 +842,308 @@ function ctExportPDF() {
 })();
 
 try {
-// -- Block 2: Plain KPI metric cards --
+function ovScopeApi(){return window.JAY_MARKET_SCOPE_API;}
+function ovActiveContext(){var api=ovScopeApi();return api&&api.getActiveContext?api.getActiveContext():{marketCodes:[],platformKeys:[],categoryCodes:[]};}
+function ovScopedProducts(){
+  var api=ovScopeApi();
+  var source=typeof products!=='undefined'&&Array.isArray(products)?products:[];
+  if(!api)return source.slice();
+  return source.filter(function(item){return api.isAllowedMarket(item&&item[2])&&api.isAllowedPlatform(item&&item[3]);});
+}
+function ovPolicyRecords(){return typeof plGetVerifiedPolicies==='function'?plGetVerifiedPolicies(true):[];}
+function ovAlertRecords(){return typeof getCombinedAlerts==='function'?getCombinedAlerts():[];}
+function ovDataState(name){
+  if(name==='policies')return typeof policiesDataState==='string'?policiesDataState:'loading';
+  if(name==='alerts')return typeof alertsDataState==='string'?alertsDataState:'loading';
+  return 'ready';
+}
+function ovMarketCode(value){var api=ovScopeApi();return api&&api.normalizeMarketCode?api.normalizeMarketCode(value):String(value||'').toUpperCase();}
+
+function renderOverviewScopeControl(){
+  var api=ovScopeApi();
+  var toggle=$('#ov-market-scope-toggle');
+  var menu=$('#ov-market-scope-menu');
+  var options=$('#ov-market-scope-options');
+  var selected=$('#ov-market-scope-selected');
+  if(!api||!toggle||!menu||!options)return;
+  var config=api.getConfig?api.getConfig():{markets:[]};
+  var markets=(config.markets||[]).filter(function(m){return m&&m.status!=='inactive';});
+  var activeCodes=(api.getActiveMarkets?api.getActiveMarkets():[]).map(function(m){return m.code;});
+  var draftCodes=menu.hidden?null:Array.prototype.map.call(options.querySelectorAll('input:checked'),function(input){return input.value;});
+  var checkedCodes=draftCodes===null?activeCodes:draftCodes;
+  options.innerHTML=markets.map(function(m){
+    var platformCount=api.getConfiguredMarketPlatforms?api.getConfiguredMarketPlatforms(m.code).length:0;
+    return '<label><input type="checkbox" value="'+escapeHtml(m.code)+'" '+(checkedCodes.indexOf(m.code)>=0?'checked':'')+'><span class="flag">'+escapeHtml(m.flag||'🌐')+'</span><span><b>'+escapeHtml(m.name||m.label||m.code)+'</b><small>'+platformCount+' 个已配置平台</small></span></label>';
+  }).join('');
+  function updateSelected(){
+    var count=options.querySelectorAll('input:checked').length;
+    if(selected)selected.textContent='已选 '+count+' 个';
+  }
+  updateSelected();
+  if(!options.__ovBound){options.__ovBound=true;options.addEventListener('change',updateSelected);}
+  if(!toggle.__ovBound){
+    toggle.__ovBound=true;
+    toggle.addEventListener('click',function(e){e.stopPropagation();menu.hidden=!menu.hidden;toggle.setAttribute('aria-expanded',String(!menu.hidden));});
+  }
+  var all=$('#ov-market-scope-all');
+  if(all&&!all.__ovBound){all.__ovBound=true;all.addEventListener('click',function(){options.querySelectorAll('input').forEach(function(input){input.checked=true;});updateSelected();});}
+  var apply=$('#ov-market-scope-apply');
+  if(apply&&!apply.__ovBound){apply.__ovBound=true;apply.addEventListener('click',function(){
+    var codes=Array.prototype.map.call(options.querySelectorAll('input:checked'),function(input){return input.value;});
+    if(!codes.length){toast('至少保留一个市场');return;}
+    api.setActiveMarkets(codes);menu.hidden=true;toggle.setAttribute('aria-expanded','false');
+  });}
+  if(!menu.__ovOutsideBound){
+    menu.__ovOutsideBound=true;
+    document.addEventListener('click',function(e){if(!menu.hidden&&!e.target.closest('.ov-market-scope-picker')){menu.hidden=true;toggle.setAttribute('aria-expanded','false');}});
+  }
+}
+
+function renderOverviewScopeSummary(){
+  var box=$('#ov-scope-summary');if(!box)return;
+  var api=ovScopeApi();
+  var markets=api&&api.getActiveMarketNames?api.getActiveMarketNames():[];
+  var platforms=api&&api.getActivePlatformNames?api.getActivePlatformNames():[];
+  var context=ovActiveContext();
+  var categories=(context.categoryCodes||[]).map(function(code){var profile=api&&api.getCategoryProfile?api.getCategoryProfile(code):null;return profile&&(profile.name||profile.code)||code;});
+  var report=typeof JAY_QUALITY_REPORT!=='undefined'?JAY_QUALITY_REPORT:null;
+  var qualityStatus=typeof jayQualityStatus==='function'?jayQualityStatus(report):(report&&report.status||'pending');
+  var qualityLabels={healthy:'发布校验通过',degraded:'部分数据降级',stale:'数据已过期',failed:'发布校验阻断',pending:'正在读取质量状态'};
+  box.innerHTML='<span><i data-lucide="globe-2"></i><b>'+escapeHtml(markets.join('、')||'未选择市场')+'</b></span>'+
+    '<span><i data-lucide="store"></i><b>'+platforms.length+'</b> 个平台</span>'+
+    '<span><i data-lucide="tags"></i>'+escapeHtml(categories.length?categories.join('、'):'全部品类')+'</span>'+
+    '<button type="button" id="ov-scope-quality" class="is-'+escapeHtml(qualityStatus)+'"><i data-lucide="database"></i>'+escapeHtml(qualityLabels[qualityStatus]||'质量状态未知')+'</button>';
+  var quality=$('#ov-scope-quality');if(quality)quality.onclick=function(){if(typeof switchPage==='function')switchPage('data');};
+  if(window.lucide&&window.lucide.createIcons)window.lucide.createIcons();
+}
+
+// -- Block 2: current-scope KPI cards --
 function renderOverviewMetrics(){
   var countryCount=window.JAY_MARKET_SCOPE ? window.JAY_MARKET_SCOPE.countryCount : 1;
   var platformCount=window.JAY_MARKET_SCOPE ? window.JAY_MARKET_SCOPE.platformCount : 4;
-  var productCount=typeof products!=='undefined'&&Array.isArray(products)?products.length:0;
-  var policyCount=typeof plGetJsonItems==='function'?plGetJsonItems().length:(typeof policyData!=='undefined'&&Array.isArray(policyData)?policyData.length:0);
-  var ruleCount=typeof rlGetJsonItems==='function'?rlGetJsonItems().length:(typeof rulesData!=='undefined'&&Array.isArray(rulesData)?rulesData.length:0);
-  var policyRuleCount=policyCount+ruleCount;
+  var policyState=ovDataState('policies');
+  var alertState=ovDataState('alerts');
+  var policyCount=ovPolicyRecords().length;
+  var alertCount=ovAlertRecords().length;
   var metrics=[
-    {icon:'🌍',label:'监测覆盖国家',val:String(countryCount),sub:'当前国家档案',color:'#3b7ab8'},
-    {icon:'▣',label:'接入电商平台',val:String(platformCount),sub:'当前平台档案',color:'#4d946e'},
-    {icon:'📦',label:'有效商品样本',val:String(productCount),sub:'页面可核验记录',color:'#c39142',metricKey:'product-count'},
-    {icon:'📋',label:'政策与规则',val:String(policyRuleCount),sub:'页面可核验记录',color:'#e65757',metricKey:'policy-rule-count'}
+    {icon:'globe-2',label:'覆盖市场',val:String(countryCount),sub:'当前总览范围',metricKey:'country-count'},
+    {icon:'store',label:'接入平台',val:String(platformCount),sub:'所选市场平台并集',metricKey:'platform-count'},
+    {icon:'landmark',label:'相关政策',val:policyState==='ready'?String(policyCount):'—',sub:policyState==='error'?'数据读取失败':(policyState==='ready'?'跨境经营相关 · 已核验':'正在读取政策'),metricKey:'policy-count'},
+    {icon:'triangle-alert',label:'风险预警',val:alertState==='ready'?String(alertCount):'—',sub:alertState==='error'?'数据读取失败':(alertState==='ready'?'当前范围正式记录':'正在读取预警'),metricKey:'alert-count'}
   ];
   var ovMetrics = $('#ov-metrics');
   if(ovMetrics) ovMetrics.innerHTML=metrics.map(function(m){
-    var metricKey=m.metricKey||(m.label==='监测覆盖国家'?'country-count':(m.label==='接入电商平台'?'platform-count':''));
-    return '<div class="ov-metric-card"'+(metricKey?' data-metric="'+metricKey+'"':'')+'><div class="ov-metric-icon" style="background:linear-gradient(135deg,'+m.color+'22,'+m.color+'0f)">'+m.icon+'</div><div class="ov-metric-info"><div class="ov-metric-val">'+m.val+'</div><h3>'+m.label+'</h3><div class="ov-metric-sub">'+m.sub+'</div></div></div>';
+    return '<button type="button" class="ov-metric-card" data-metric="'+m.metricKey+'"><span class="ov-metric-icon"><i data-lucide="'+m.icon+'"></i></span><span class="ov-metric-info"><span class="ov-metric-val">'+m.val+'</span><h3>'+m.label+'</h3><span class="ov-metric-sub">'+m.sub+'</span></span><i class="ov-metric-open" data-lucide="arrow-up-right"></i></button>';
   }).join('');
   $$('#ov-metrics .ov-metric-card').forEach(function(card){
-    card.style.cursor='pointer';
     card.onclick=function(){
-      var route={
-        'country-count':'countries',
-        'platform-count':'platforms',
-        'product-count':'products',
-        'policy-rule-count':'policies'
-      }[card.dataset.metric];
-      if(route&&typeof switchPage==='function')switchPage(route);
+      var metric=card.dataset.metric;
+      if(metric==='country-count'&&typeof switchPage==='function')switchPage('countries');
+      else if(metric==='platform-count'&&typeof switchPage==='function')switchPage('platforms');
+      else if(metric==='policy-count'){
+        var context=ovActiveContext();
+        var region=(context.marketCodes||[]).length>1?'all':((context.marketCodes||[])[0]||'all');
+        if(typeof jayOpenPolicyFilter==='function')jayOpenPolicyFilter({region:region,category:'all',impact:'all',scope:'cross-border'});
+        else if(typeof switchPage==='function')switchPage('policies');
+      }else if(metric==='alert-count'){
+        if(typeof jayOpenAlertsFilter==='function')jayOpenAlertsFilter({type:'all',level:'all',time:'all',search:''});
+        else if(typeof switchPage==='function')switchPage('alerts');
+      }
     };
   });
+  if(window.lucide&&window.lucide.createIcons)window.lucide.createIcons();
 }
-renderOverviewMetrics();
 
 // -- Block 2.1: 我的关注 —— 仅展示导入记录，不推导时间序列 --
 function renderOvDataTable(){
   var box=$('#ov-data-table');
   if(!box) return;
-  if(typeof products==='undefined'||!products.length){ box.innerHTML='<div style="padding:24px;color:var(--muted);font-size:12px">暂无产品数据</div>'; return; }
-  var rows=products.map(function(p){
-    var g=prParseNum(p[9]);            // 增速数值（带符号）
-    var avgPrice=prAvgPrice(p[7]);      // 均价 RMB
-    var sales=prParseNum(p[8]);         // 销量（去千分位）
-    var gmv=avgPrice*sales;             // 估算成交金额
-    var gmvTxt = gmv>=10000 ? '≈¥'+(gmv/10000).toFixed(1)+'万' : '≈¥'+gmv.toLocaleString('zh-CN');
+  var scopedProducts=ovScopedProducts();
+  if(!scopedProducts.length){
+    box.innerHTML='<div class="ov-product-empty"><i data-lucide="file-up"></i><div><strong>当前范围暂无用户导入商品</strong><p>总览不会展示示例榜单或自动生成商品机会。</p></div><button type="button" id="ov-product-upload">上传数据</button></div>';
+    var upload=$('#ov-product-upload');if(upload)upload.onclick=function(){if(typeof switchPage==='function')switchPage('products');};
+    if(window.lucide&&window.lucide.createIcons)window.lucide.createIcons();
+    return;
+  }
+  var rows=scopedProducts.map(function(p){
+    var provided=p._provided||{};
+    var hasGrowth=provided.growth!==undefined?provided.growth:String(p[9]||'').trim()!=='';
+    var hasPrice=provided.rmbPrice!==undefined?(provided.rmbPrice||provided.price):String(p[7]||'').trim()!=='';
+    var hasSales=provided.sales!==undefined?provided.sales:String(p[8]||'').trim()!=='';
+    var g=hasGrowth?parseFloat(String(p[9]).replace(/[^0-9+\-.]/g,'')):NaN;
+    var avgPrice=hasPrice?prAvgPrice(p[7]):0;
+    var sales=hasSales?prParseNum(p[8]):0;
+    var canDerive=hasPrice&&hasSales&&avgPrice>0;
+    var gmv=canDerive?avgPrice*sales:0;
+    var gmvTxt = canDerive?(gmv>=10000 ? '≈¥'+(gmv/10000).toFixed(1)+'万' : '≈¥'+gmv.toLocaleString('zh-CN')):'无法计算';
     return { icon:p[0], name:p[1], market:p[2], platform:p[3], signal:p[10],
-             sales:p[8], growth:p[9], up:g>=0, gmvTxt:gmvTxt, gnum:g, seed:p[1] };
+             sales:hasSales?p[8]:'未提供', growth:hasGrowth?p[9]:'未提供', up:isFinite(g)&&g>=0,
+             hasGrowth:hasGrowth&&isFinite(g), gmvTxt:gmvTxt, gnum:isFinite(g)?g:-Infinity, seed:p[1] };
   }).sort(function(a,b){ return b.gnum-a.gnum; }).slice(0,5);
-  var header='<div class="ov-data-table-header"><div>商品信息</div><div>估算成交金额</div><div>销量</div><div>增长率</div><div>趋势</div><div>操作</div></div>';
+  var header='<div class="ov-data-table-header"><div>商品信息</div><div>推算成交金额</div><div>销量</div><div>增长率</div><div>趋势</div><div>操作</div></div>';
   var html=header+rows.map(function(r){
     return '<div class="ov-data-table-row" data-m="'+escapeHtml(r.market)+'" data-p="'+escapeHtml(r.platform)+'">'+
-      '<div class="ov-dt-product"><div class="ov-dt-img">'+r.icon+'</div><div class="ov-dt-info"><h4>'+escapeHtml(r.name)+'</h4><p>'+escapeHtml(r.platform)+' · '+escapeHtml(r.market)+'</p></div></div>'+
+      '<div class="ov-dt-product"><div class="ov-dt-img">'+escapeHtml(r.icon||'📦')+'</div><div class="ov-dt-info"><h4>'+escapeHtml(r.name)+'</h4><p>'+escapeHtml(r.platform)+' · '+escapeHtml(r.market)+'</p></div></div>'+
       '<div class="ov-dt-num">'+r.gmvTxt+'</div>'+
-      '<div class="ov-dt-num">'+r.sales+'</div>'+
-      '<div class="ov-dt-num '+(r.up?'ov-dt-up':'ov-dt-down')+'">'+(r.up?'↑':'↓')+r.growth+'</div>'+
+      '<div class="ov-dt-num">'+escapeHtml(r.sales)+'</div>'+
+      '<div class="ov-dt-num '+(r.hasGrowth?(r.up?'ov-dt-up':'ov-dt-down'):'')+'">'+(r.hasGrowth?(r.up?'↑':'↓'):'')+escapeHtml(r.growth)+'</div>'+
       '<div class="ov-dt-unavailable">未提供</div>'+
-      '<div class="ov-dt-action">查看</div></div>';
+      '<button type="button" class="ov-dt-action">查看</button></div>';
   }).join('');
   box.innerHTML=html;
   $$('#ov-data-table .ov-dt-action').forEach(function(b){
     b.onclick=function(){
       var row=b.closest('.ov-data-table-row');
-      JAY_CTX.country=row.getAttribute('data-m');
-      JAY_CTX.platform=row.getAttribute('data-p');
-      switchPage('products');
+      var api=ovScopeApi();
+      var market=row.getAttribute('data-m');
+      var platform=row.getAttribute('data-p');
+      if(api&&api.setActiveMarket)api.setActiveMarket(market);
+      if(api&&api.setActivePlatforms)api.setActivePlatforms(platform);
+      if(typeof JAY_CTX!=='undefined'){JAY_CTX.country=market;JAY_CTX.platform=platform;}
+      if(typeof switchPage==='function')switchPage('products');
     };
   });
 }
-renderOvDataTable();
+
+function renderOverviewDecisionState(){
+  renderOverviewScopeSummary();
+  var api=ovScopeApi();
+  var marketNames=api&&api.getActiveMarketNames?api.getActiveMarketNames():[];
+  var marketText=marketNames.join('、')||'当前';
+  var title=$('#ov-workspace-title');if(title)title.textContent=marketNames.length>1?marketNames.length+' 个市场决策工作台':marketText+'市场决策工作台';
+  var copy=$('#ov-workspace-copy');if(copy)copy.textContent='汇总'+marketText+'市场内已验证的市场、平台、政策和预警数据。';
+
+  var alertButton=$('#ov-signal-alert');
+  var alertLevel=$('#ov-signal-alert-level');
+  var alertTitle=$('#ov-signal-market');
+  var alertCopy=$('#ov-signal-alert-copy');
+  var alertState=ovDataState('alerts');
+  var alertRows=ovAlertRecords();
+  var highCount=alertRows.filter(function(item){return item&&item.level==='high';}).length;
+  if(alertState==='ready'){
+    if(alertButton)alertButton.className='signal-item '+(highCount?'risk':'neutral');
+    if(alertLevel)alertLevel.textContent=highCount?highCount+' 条高风险':'无高风险';
+    if(alertTitle)alertTitle.textContent=highCount?marketText+'市场存在需优先处理的预警':marketText+'市场暂无高风险预警';
+    if(alertCopy)alertCopy.textContent='当前范围共 '+alertRows.length+' 条正式预警记录';
+  }else{
+    if(alertButton)alertButton.className='signal-item neutral';
+    if(alertLevel)alertLevel.textContent=alertState==='error'?'不可用':'读取中';
+    if(alertTitle)alertTitle.textContent=alertState==='error'?'预警数据读取失败':'正在读取'+marketText+'市场预警';
+    if(alertCopy)alertCopy.textContent='不使用未完成加载的暂存数量';
+  }
+
+  var productRows=ovScopedProducts();
+  var productLevel=$('#ov-signal-product-level');
+  var productTitle=$('#ov-signal-product-title');
+  var productCopy=$('#ov-signal-product-copy');
+  if(productRows.length){
+    if(productLevel)productLevel.textContent=productRows.length+' 条记录';
+    if(productTitle)productTitle.textContent='当前范围已有用户导入商品数据';
+    if(productCopy)productCopy.textContent='仅根据文件提供字段形成观察结果';
+  }else{
+    if(productLevel)productLevel.textContent='待数据';
+    if(productTitle)productTitle.textContent='当前范围尚未导入类目数据';
+    if(productCopy)productCopy.textContent='上传文件后再形成商品观察结论';
+  }
+
+  var report=typeof JAY_QUALITY_REPORT!=='undefined'?JAY_QUALITY_REPORT:null;
+  var reportLevel=$('#ov-signal-report-level');
+  var reportTitle=$('#ov-signal-report-title');
+  var reportCopy=$('#ov-signal-report-copy');
+  if(!report){
+    if(reportLevel)reportLevel.textContent='核验中';
+    if(reportTitle)reportTitle.textContent='正在核对报告数据';
+    if(reportCopy)reportCopy.textContent='生成前检查数据完整性与时效';
+  }else if(report.publishable){
+    if(reportLevel)reportLevel.textContent='可发布';
+    if(reportTitle)reportTitle.textContent=marketText+'市场报告数据已通过校验';
+    if(reportCopy)reportCopy.textContent='报告仍会标注缺失字段和原始来源';
+  }else{
+    var status=typeof jayQualityStatus==='function'?jayQualityStatus(report):(report.status||'failed');
+    if(reportLevel)reportLevel.textContent=status==='stale'?'已过期':'受阻断';
+    if(reportTitle)reportTitle.textContent='当前数据暂不适合直接定稿';
+    if(reportCopy)reportCopy.textContent='可进入报告中心查看范围，定稿前需处理数据质量问题';
+  }
+}
+
+function ovOpenMarketDestination(code,destination){
+  var api=ovScopeApi();
+  if(api&&api.setActiveMarket)api.setActiveMarket(code);
+  if(destination==='policies'){
+    if(typeof jayOpenPolicyFilter==='function')jayOpenPolicyFilter({domain:'policy',region:code,category:'all',impact:'all',scope:'cross-border'});
+    else if(typeof switchPage==='function')switchPage('policies');
+  }else if(destination==='rules'){
+    if(typeof jayOpenRulesFilter==='function')jayOpenRulesFilter({market:code,platform:'all',category:'all',impact:'all',actType:'all'});
+    else if(typeof switchPage==='function')switchPage('rules');
+  }else if(destination==='tax'){
+    if(typeof jayOpenPolicyFilter==='function')jayOpenPolicyFilter({domain:'tax',region:code,category:'all',impact:'all',scope:'cross-border'});
+    else if(typeof switchPage==='function')switchPage('policies');
+  }else if(destination==='access'){
+    if(typeof jayOpenPolicyFilter==='function')jayOpenPolicyFilter({domain:'access',region:code,category:'all',impact:'all',scope:'cross-border'});
+    else if(typeof switchPage==='function')switchPage('policies');
+  }else if(typeof switchPage==='function')switchPage(destination||'countries');
+}
 
 // -- Block 4: Country overview constrained to the configured market scope --
-var ovScope = window.JAY_MARKET_SCOPE || { country: {name:'美国', key:'us'}, countryCount:1 };
-var ovScopeCountryName = ovScope.country && ovScope.country.name ? ovScope.country.name : '美国';
-var ovScopeCountryNames = [ovScopeCountryName];
 function renderOvCountries(){
   var grid=$('#ov-country-grid');
   if(!grid) return;
+  var api=window.JAY_MARKET_SCOPE_API;
+  var activeMarkets=api&&api.getActiveMarkets?api.getActiveMarkets():[];
+  var activeCodes=activeMarkets.map(function(m){return m.code;});
+  var activeNames=activeMarkets.map(function(m){return m.name||m.label||m.code;});
   var source=(typeof countries!=='undefined'&&Array.isArray(countries))?countries:[];
-  var scoped=source.filter(function(c){return c&&ovScopeCountryNames.indexOf(c[1])!==-1;});
+  var scoped=source.filter(function(c){
+    if(!c)return false;
+    var value=c[1]||c.market||c.country;
+    var code=api&&api.normalizeMarketCode?api.normalizeMarketCode(value):String(value||'').toUpperCase();
+    return activeCodes.indexOf(code)>=0 || activeNames.indexOf(value)>=0;
+  });
   if(!scoped.length){
-    grid.innerHTML='<div class="empty-state"><p>暂无通过校验的美国市场档案</p></div>';
+    grid.innerHTML='<div class="empty-state"><p>暂无通过校验的当前市场档案</p></div>';
     return;
   }
+  var policyRows=ovPolicyRecords();
+  var alertRows=ovAlertRecords();
+  var policyReady=ovDataState('policies')==='ready';
+  var alertReady=ovDataState('alerts')==='ready';
   grid.innerHTML=scoped.map(function(c){
-    var flag=escapeHtml(c[0]||'🇺🇸');
-    var name=escapeHtml(c[1]||ovScopeCountryName);
-    return '<article class="ov-ccard"><div class="ov-ccard-top"><span class="flag">'+flag+'</span><div><h3>'+name+'</h3><p class="ov-ccard-sub">当前范围 · US</p></div></div>'+
-      '<div class="ov-ccard-metrics"><div><span>市场档案</span><b>已接入</b></div><div><span>宏观指标</span><b>待官方数据</b></div><div><span>政策联动</span><b>美国</b></div></div>'+
-      '<div class="ov-ccard-actions"><button class="ov-ccard-btn" data-page="countries">进入美国市场档案 →</button><button class="ov-ccard-btn secondary" data-page="policies">查看美国政策 →</button></div></article>';
+    var flag=escapeHtml(c[0]||'🌐');
+    var name=escapeHtml(c[1]||activeNames[0]||'当前市场');
+    var code=api&&api.normalizeMarketCode?api.normalizeMarketCode(c[1]):(activeCodes[0]||'');
+    var commerceState=typeof window.jayGetCountryCommerceState==='function'?window.jayGetCountryCommerceState(code):{status:'idle',count:0};
+    var commerceLabel=commerceState.status==='ready'?commerceState.count+' 项':(commerceState.status==='loading'?'加载中':(commerceState.status==='error'?'读取失败':'尚未接入'));
+    var platformCount=api&&api.getMarketPlatforms?api.getMarketPlatforms(code).length:0;
+    var policyCount=policyRows.filter(function(row){return ovMarketCode(row&&(row.region||row.market||row.market_code))===code;}).length;
+    var alertCount=alertRows.filter(function(row){return ovMarketCode(row&&(row.country||row.region||row.market))===code;}).length;
+    return '<article class="ov-ccard" data-market-code="'+escapeHtml(code)+'"><div class="ov-ccard-top"><span class="flag">'+flag+'</span><div><h3>'+name+'</h3><p class="ov-ccard-sub">当前范围 · '+escapeHtml(code)+'</p></div></div>'+
+      '<div class="ov-ccard-metrics"><div><span>电商指标</span><b>'+escapeHtml(commerceLabel)+'</b></div><div><span>平台</span><b>'+platformCount+' 个</b></div><div><span>政策</span><b>'+(policyReady?policyCount:'—')+'</b></div><div><span>预警</span><b>'+(alertReady?alertCount:'—')+'</b></div></div>'+
+      '<div class="ov-ccard-actions"><button class="ov-ccard-btn primary" data-destination="countries"><i data-lucide="globe-2"></i>市场档案</button><button class="ov-ccard-btn" data-destination="policies"><i data-lucide="landmark"></i>政策</button><button class="ov-ccard-btn" data-destination="rules"><i data-lucide="scroll-text"></i>规则</button><button class="ov-ccard-btn" data-destination="tax"><i data-lucide="receipt-text"></i>税收关税</button><button class="ov-ccard-btn" data-destination="access"><i data-lucide="badge-check"></i>市场准入</button><button class="ov-ccard-btn" data-destination="report"><i data-lucide="file-chart-column"></i>报告</button></div></article>';
   }).join('');
   $$('#ov-country-grid .ov-ccard-btn').forEach(function(btn){btn.onclick=function(e){
     e.stopPropagation();
-    if(btn.dataset.page==='policies'){
-      if(typeof jayOpenPolicyFilter==='function') jayOpenPolicyFilter({region:'US',category:'all',impact:'all',scope:'cross-border'});
-      else if(typeof switchPage==='function') switchPage('policies');
-    } else if(typeof switchPage==='function') switchPage('countries');
+    var card=btn.closest('.ov-ccard');
+    var cardCode=card&&card.dataset.marketCode?card.dataset.marketCode:(activeCodes[0]||'');
+    ovOpenMarketDestination(cardCode,btn.dataset.destination);
   };});
-  $$('#ov-country-grid .ov-ccard').forEach(function(card){card.onclick=function(){if(typeof switchPage==='function')switchPage('countries');};});
+  $$('#ov-country-grid .ov-ccard').forEach(function(card){card.onclick=function(){
+    if(api&&api.setActiveMarket)api.setActiveMarket(card.dataset.marketCode||'');
+    if(typeof switchPage==='function')switchPage('countries');
+  };});
+  if(window.lucide&&window.lucide.createIcons)window.lucide.createIcons();
 }
-renderOvCountries();
+function renderDecisionOverview(){
+  renderOverviewScopeControl();
+  renderOverviewMetrics();
+  renderOvDataTable();
+  renderOvCountries();
+  renderOverviewDecisionState();
+}
+window.renderOverviewMetrics=renderOverviewMetrics;
+window.renderOvDataTable=renderOvDataTable;
+window.renderOvCountries=renderOvCountries;
+window.renderOverviewDecisionState=renderOverviewDecisionState;
+window.renderDecisionOverview=renderDecisionOverview;
+renderDecisionOverview();
+if(window.addEventListener) window.addEventListener('jay:market-scope-change', renderDecisionOverview);
 } catch(e) { if(window.console)console.error('[JAY观海] overview initialization failed:', e); }

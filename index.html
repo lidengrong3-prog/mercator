@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'self' https://ftlzofrnosgvdvwajhuz.supabase.co wss://ftlzofrnosgvdvwajhuz.supabase.co; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<title>JAY观海 - 美国市场监控</title>
+<title>JAY观海 - 跨境市场决策情报</title>
 <link rel="stylesheet" href="assets/styles/legacy-foundation.css">
 <link rel="stylesheet" href="assets/styles/workspaces.css">
 <link rel="stylesheet" href="assets/styles/legacy-theme.css">
@@ -16,6 +16,7 @@
 <script src="assets/app-shell.js" defer></script>
 <script src="assets/js/market-scope.js" defer></script>
 <script src="assets/js/catalog.js" defer></script>
+<script src="assets/js/report-engine.js" defer></script>
 <script src="assets/js/products-shops.js" defer></script>
 <script src="assets/js/markets-policies.js" defer></script>
 <script src="assets/js/content-overview.js" defer></script>
@@ -33,11 +34,11 @@
     </a>
     <div class="login-product-copy">
       <p class="login-kicker">DECISION INTELLIGENCE</p>
-      <h1>从美国市场信号到经营动作，<br>把跨境决策做得更有依据。</h1>
-      <p>美国市场、四个已接入平台、政策与预警数据统一进入一个工作台，帮助团队更快完成市场判断、风险筛查和方案输出。</p>
+      <h1 id="login-product-title">从当前市场信号到经营动作，<br>把跨境决策做得更有依据。</h1>
+      <p id="login-product-copy">已配置市场、平台、政策与预警数据统一进入一个工作台，帮助团队更快完成市场判断、风险筛查和方案输出。</p>
       <div class="login-proof-grid">
-        <div><strong>1</strong><span>美国市场</span></div>
-        <div><strong>4</strong><span>已接入平台</span></div>
+        <div><strong id="login-market-count">1</strong><span id="login-market-label">已配置市场</span></div>
+        <div><strong id="login-platform-count">4</strong><span>已配置平台</span></div>
         <div><strong>4h</strong><span>自动数据更新</span></div>
       </div>
     </div>
@@ -47,7 +48,7 @@
     <div class="auth-card">
       <div class="auth-card-head">
         <p>JAY观海工作台</p>
-        <h2 id="auth-title">进入美国市场情报台</h2>
+        <h2 id="auth-title">进入市场情报台</h2>
         <span>登录后同步看板、预警和团队报告。</span>
       </div>
       <div class="auth-tabs" role="tablist" aria-label="账号操作">
@@ -150,6 +151,18 @@
       <kbd>/</kbd>
     </div>
     <div class="topbar-right">
+      <label class="market-scope-control" for="jay-market-selector">
+        <span>当前市场</span>
+        <select id="jay-market-selector" aria-label="切换当前市场"></select>
+      </label>
+      <label class="market-scope-control" for="jay-platform-selector">
+        <span>平台</span>
+        <select id="jay-platform-selector" aria-label="筛选当前平台"><option value="">全部平台</option></select>
+      </label>
+      <label class="market-scope-control" for="jay-category-selector">
+        <span>品类</span>
+        <select id="jay-category-selector" aria-label="筛选当前品类"><option value="">全部品类</option></select>
+      </label>
       <button class="data-health" id="shell-data-status" type="button" data-page="data">
         <span class="health-dot"></span><span>正在连接数据源</span>
       </button>
@@ -176,14 +189,26 @@
       <div class="workspace-intro">
         <div>
           <p class="workspace-kicker">TODAY'S DECISION DESK</p>
-          <h2>今天从哪个市场机会开始？</h2>
-          <p>输入产品或类目，获得目标国家、平台、合规风险和下一步行动建议。</p>
+          <h2 id="ov-workspace-title">当前市场决策工作台</h2>
+          <p id="ov-workspace-copy">汇总当前范围内已验证的市场、平台、政策和预警数据。</p>
         </div>
         <div class="workspace-intro-actions">
-          <button class="market-switcher" type="button" data-page="countries"><span>🇺🇸</span><b>美国市场</b><i data-lucide="chevron-down"></i></button>
+          <div class="ov-market-scope-picker">
+            <button class="market-switcher" id="ov-market-scope-toggle" type="button" aria-expanded="false" aria-controls="ov-market-scope-menu"><span>🌐</span><b>当前市场</b><i data-lucide="chevron-down"></i></button>
+            <div class="ov-market-scope-menu" id="ov-market-scope-menu" hidden>
+              <div class="ov-market-scope-menu-head"><strong>总览市场范围</strong><span id="ov-market-scope-selected">已选 1 个</span></div>
+              <div class="ov-market-scope-options" id="ov-market-scope-options"></div>
+              <div class="ov-market-scope-actions">
+                <button type="button" id="ov-market-scope-all">全选</button>
+                <button type="button" id="ov-market-scope-apply" class="primary">应用范围</button>
+              </div>
+            </div>
+          </div>
           <button class="freshness-pill" type="button" data-page="data"><span class="health-dot"></span><span id="jay-data-stamp">读取数据状态</span></button>
         </div>
       </div>
+
+      <div class="ov-scope-summary" id="ov-scope-summary" aria-live="polite"></div>
 
       <div class="decision-grid">
         <article class="decision-query">
@@ -192,13 +217,13 @@
             <span class="evidence-badge"><i data-lucide="shield-check"></i>带来源检索</span>
           </div>
           <div class="ov-hero-input-wrap">
-            <textarea id="ov-hero-input" rows="3" placeholder="例如：便携储能电源进入美国市场，利润空间、认证门槛和适合的平台分别是什么？"></textarea>
+            <textarea id="ov-hero-input" rows="3" placeholder="例如：便携储能电源进入当前市场，利润空间、认证门槛和适合的平台分别是什么？"></textarea>
             <button id="ov-hero-send" type="button" aria-label="开始分析" title="开始分析"><i data-lucide="arrow-up"></i></button>
           </div>
           <div class="ov-hero-chips" id="ov-hero-chips">
-            <button type="button" data-q="分析美国市场近 30 天增长最快的三个品类">增长类目</button>
-            <button type="button" data-q="对比 Amazon 与 TikTok Shop 的费用和入驻门槛">平台对比</button>
-            <button type="button" data-q="检查我的产品进入美国市场需要注意的认证和关税风险">合规筛查</button>
+            <button type="button" data-q="分析当前市场近 30 天增长最快的三个品类">增长类目</button>
+            <button type="button" data-q="对比当前市场已配置平台的费用和入驻门槛">平台对比</button>
+            <button type="button" data-q="检查我的产品进入当前市场需要注意的认证和关税风险">合规筛查</button>
           </div>
           <div id="ov-hero-result" class="ov-hero-result" style="display:none"></div>
         </article>
@@ -208,14 +233,14 @@
             <div><span class="section-label">今日情报</span><h3>需要优先处理</h3></div>
             <button class="icon-command" type="button" data-page="alerts" aria-label="打开预警中心" title="打开预警中心"><i data-lucide="arrow-up-right"></i></button>
           </div>
-          <button class="signal-item risk" type="button" data-page="alerts">
-            <span class="signal-level">高风险</span><strong>美国市场政策与召回动态</strong><small>查看影响品类与建议动作</small>
+          <button class="signal-item risk" id="ov-signal-alert" type="button" data-page="alerts">
+            <span class="signal-level" id="ov-signal-alert-level">读取中</span><strong id="ov-signal-market">正在读取当前市场预警</strong><small id="ov-signal-alert-copy">仅统计当前范围内已验证记录</small>
           </button>
-          <button class="signal-item opportunity" type="button" data-page="products">
-            <span class="signal-level">机会</span><strong>高增长类目进入观察窗口</strong><small>按市场和平台继续筛选</small>
+          <button class="signal-item opportunity" id="ov-signal-product" type="button" data-page="products">
+            <span class="signal-level" id="ov-signal-product-level">待数据</span><strong id="ov-signal-product-title">尚未导入类目数据</strong><small id="ov-signal-product-copy">上传文件后再形成商品观察结论</small>
           </button>
-          <button class="signal-item neutral" type="button" data-page="report">
-            <span class="signal-level">待办</span><strong>生成本周市场判断报告</strong><small>汇总看板、政策和选品证据</small>
+          <button class="signal-item neutral" id="ov-signal-report" type="button" data-page="report">
+            <span class="signal-level" id="ov-signal-report-level">核验中</span><strong id="ov-signal-report-title">正在核对报告数据</strong><small id="ov-signal-report-copy">生成前检查数据完整性与时效</small>
           </button>
         </aside>
       </div>
@@ -225,7 +250,7 @@
       <div class="dashboard-grid">
         <section class="dashboard-panel dashboard-panel-wide">
           <div class="panel-heading">
-            <div><span class="section-label">类目机会</span><h3>增长商品观察</h3></div>
+            <div><span class="section-label">用户导入数据</span><h3>商品与类目观察</h3></div>
             <button class="text-command" type="button" data-page="products">进入类目雷达 <i data-lucide="arrow-right"></i></button>
           </div>
           <div id="ov-data-table" class="ov-data-table"></div>
@@ -242,7 +267,7 @@
       <section class="dashboard-panel market-browser">
         <div class="panel-heading">
           <div><span class="section-label">国家市场</span><h3>重点市场快照</h3></div>
-          <button class="text-command" type="button" data-page="countries">查看美国市场 <i data-lucide="arrow-right"></i></button>
+          <button class="text-command" type="button" data-page="countries" id="ov-market-link">查看当前市场 <i data-lucide="arrow-right"></i></button>
         </div>
         <div id="ov-country-filters" class="ov-country-filters"></div>
         <div id="ov-tag-filters" class="ov-tag-filters"></div>
@@ -266,7 +291,7 @@
     <input id="pr-file-input" type="file" accept=".csv,.json,text/csv,application/json" hidden>
     <button class="pr-clear-data" id="pr-clear-data" type="button" disabled>清空导入数据</button>
   </div>
-  <p class="pr-data-import-note" id="pr-data-import-note">支持商品字段：商品名、国家/市场、平台、类目、三级类目、售价、销量、增速、信号、店铺、上架天数、更新时间。超出当前美国市场或 4 个平台范围的行会被跳过。</p>
+  <p class="pr-data-import-note" id="pr-data-import-note">支持商品字段：商品名、国家/市场、平台、类目、三级类目、售价、销量、增速、信号、店铺、上架天数、更新时间。超出当前市场或平台范围的行会被跳过。</p>
 </div>
 <div id="pr-ai-tabs" class="pr-ai-tabs">
   <button class="pr-ai-tab active" data-aitab="short">短期机会（7日）</button>
@@ -291,7 +316,7 @@
 <div class="pr-filter-advanced" id="pr-filters">
   <div class="pr-filter-group">
     <label>国家 / 地区</label>
-    <select id="pr-f-country"><option value="all">全部国家</option></select>
+    <select id="pr-f-country"><option value="all">当前范围全部市场</option></select>
   </div>
   <div class="pr-filter-group">
     <label>电商平台</label>
@@ -403,25 +428,40 @@
       <div class="page-header">
         <div>
           <p class="eyebrow">MARKET PROFILE</p>
-          <h2>美国市场档案</h2>
+          <h2 id="countries-page-title">市场档案</h2>
         </div>
-        <span class="platform-linkage"><span class="flag">🇺🇸</span>当前市场：美国</span>
+        <label class="country-profile-picker" id="countries-page-linkage" for="country-profile-selector">
+          <i data-lucide="globe-2"></i>
+          <span>查看国家</span>
+          <select id="country-profile-selector" aria-label="选择要查看的国家市场"></select>
+        </label>
       </div>
       <div class="country-scope-summary">
-        <div><span>覆盖国家</span><b>1</b><small>美国</small></div>
-        <div><span>接入平台</span><b>4</b><small>当前范围</small></div>
-        <div><span>市场口径</span><b>US</b><small>全站统一</small></div>
+        <div><span>覆盖市场</span><b id="country-scope-market-count">1</b><small id="country-scope-market-names">当前范围</small></div>
+        <div><span>接入平台</span><b id="country-scope-platform-count">4</b><small>当前范围</small></div>
+        <div><span>市场口径</span><b id="country-scope-market-code">US</b><small>全站统一</small></div>
       </div>
-      <div class="country-data-empty" id="country-macro-status">
-        <i data-lucide="database-zap"></i>
-        <h3>美国官方宏观指标尚未接入</h3>
-        <p>当前没有通过来源和更新时间校验的 GDP、电商规模、渗透率、CPI 或汇率数据，因此不展示估算值和预测图。</p>
-      </div>
-      <div class="country-linked-actions">
-        <button type="button" onclick="jayOpenPolicyFilter({region:'US',category:'all',impact:'all',scope:'cross-border'})"><i data-lucide="landmark"></i>查看美国政策</button>
-        <button type="button" onclick="switchPage('alerts')"><i data-lucide="triangle-alert"></i>查看美国预警</button>
-        <button type="button" onclick="switchPage('platforms')"><i data-lucide="store"></i>查看四个平台</button>
-      </div>
+      <section class="country-commerce-panel is-loading" id="country-commerce-status" data-data-status="loading" aria-live="polite">
+        <div class="country-commerce-heading">
+          <div>
+            <p class="eyebrow">E-COMMERCE MARKET ENVIRONMENT</p>
+            <h3 id="country-commerce-title">正在读取当前市场电商环境</h3>
+            <p id="country-commerce-meta">仅展示与电商决策直接相关且通过来源校验的数据</p>
+          </div>
+          <div class="country-commerce-heading-actions">
+            <label for="country-commerce-category">分析品类
+              <select id="country-commerce-category" aria-label="选择国家档案分析品类"><option value="">选择具体品类</option></select>
+            </label>
+            <span class="country-commerce-count" id="country-commerce-count">加载中</span>
+          </div>
+        </div>
+        <div class="country-commerce-content" id="country-commerce-content">
+          <div class="country-commerce-empty">
+            <i data-lucide="loader-circle"></i>
+            <strong>正在加载数据</strong>
+          </div>
+        </div>
+      </section>
     </section>
 
 <section id="shops" class="page">
@@ -446,7 +486,7 @@
 
 <!-- Filter Bar -->
 <div class="sh-filter-bar" id="sh-filter-bar">
-  <select id="sh-f-region"><option value="">全部市场</option></select>
+  <select id="sh-f-region"><option value="">当前范围全部市场</option></select>
   <select id="sh-f-platform"><option value="">全部平台</option></select>
   <select id="sh-f-cat"><option value="">全部类目</option></select>
   <select id="sh-f-status"><option value="">全部状态</option><option value="正常">正常</option><option value="关注">关注</option><option value="风险">风险</option></select>
@@ -542,13 +582,13 @@
       <div id="sh-add-single">
         <label>店铺名称</label><input type="text" id="sh-add-name" placeholder="例: GLOW LAB Official" style="width:100%;margin-bottom:8px">
         <label>平台</label><select id="sh-add-platform" style="width:100%;margin-bottom:8px"><option value="">请选择平台</option><option>Amazon</option><option>TikTok Shop</option><option>AliExpress</option><option>eBay</option></select>
-        <label>市场</label><input type="text" id="sh-add-market" value="美国" readonly style="width:100%;margin-bottom:8px">
+        <label>市场</label><input type="text" id="sh-add-market" value="当前市场" readonly style="width:100%;margin-bottom:8px">
         <label>主营类目</label><input type="text" id="sh-add-cat" placeholder="例: 美妆个护" style="width:100%;margin-bottom:8px">
         <label>标签（逗号分隔）</label><input type="text" id="sh-add-tags" placeholder="例: 对标头部,美妆" style="width:100%;margin-bottom:12px">
         <button class="export" onclick="shDoAddSingle()" style="width:100%">确认添加</button>
       </div>
       <div id="sh-add-batch" style="display:none">
-        <p style="color:var(--muted);font-size:13px;margin-bottom:12px">批量店铺数据需通过类目机会页上传 CSV 或 JSON，并提供店铺名、美国市场和平台字段。</p>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:12px">批量店铺数据需通过类目机会页上传 CSV 或 JSON，并提供店铺名、当前市场和平台字段。</p>
         <textarea id="sh-add-batch-text" rows="4" style="display:none"></textarea>
         <button class="export" onclick="shCloseAddModal();switchPage('products')" style="width:100%">前往上传数据</button>
       </div>
@@ -572,15 +612,17 @@
           <input id="al-search-input" type="search" placeholder="搜索预警标题、平台或详情" oninput="alSearch()">
         </label>
       </div>
-      <p style="color:#6b7280;margin-bottom:20px;">当前范围：美国市场 · 仅展示已接入数据源的预警</p>
+      <p id="al-scope-note" style="color:#6b7280;margin-bottom:20px;">当前范围：当前市场 · 仅展示已接入数据源的预警</p>
       <div class="al-toolbar">
         <select id="al-filter-type" class="al-filter-select" onchange="alFilterChange()">
           <option value="all">全部类型</option>
-          <option value="shop">店铺异动</option>
-          <option value="cat">类目爆款</option>
-          <option value="policy">政策合规</option>
-          <option value="macro">宏观数据</option>
+          <option value="policy">政策动态</option>
+          <option value="tax">税收费用</option>
+          <option value="access">市场准入</option>
+          <option value="market">市场变化</option>
           <option value="platform">平台规则</option>
+          <option value="shop">店铺异动（导入数据）</option>
+          <option value="cat">类目变化（导入数据）</option>
         </select>
         <select id="al-filter-level" class="al-filter-select" onchange="alFilterChange()">
           <option value="all">全部风险</option>
@@ -593,7 +635,16 @@
           <option value="today">今日</option>
           <option value="3d">近 3 天</option>
           <option value="7d">近 7 天</option>
+          <option value="custom">自定义日期</option>
         </select>
+        <div id="al-custom-range" class="al-custom-range" hidden>
+          <label for="al-date-start">开始日期</label>
+          <input id="al-date-start" type="date" onchange="alCustomRangeChange()">
+          <span aria-hidden="true">至</span>
+          <label for="al-date-end">结束日期</label>
+          <input id="al-date-end" type="date" onchange="alCustomRangeChange()">
+          <span id="al-date-error" class="al-date-error" role="status"></span>
+        </div>
         <button class="al-btn" id="al-mark-all" type="button" onclick="alMarkAllRead()">全部标为已读</button>
         <button class="al-btn" type="button" onclick="alExport()">导出</button>
         <span id="al-data-info" style="font-size:.78rem;color:#888;padding:4px 0 8px"></span>
@@ -603,7 +654,6 @@
       <div id="al-batch" class="al-batch" style="display:none">
         <label><input type="checkbox" onchange="alToggleSelectAll(this.checked)"> 全选本页</label>
         <span id="al-batch-info" class="al-batch-info"></span>
-        <button class="al-btn" type="button" onclick="alBatchWatch()">加入看板</button>
         <button class="al-btn" type="button" onclick="alBatchArchive()">批量归档</button>
       </div>
       <div id="al-list" class="al-list"></div>
@@ -614,25 +664,25 @@
       <div class="page-header">
         <div>
           <p class="eyebrow">PLATFORM PROFILES</p>
-          <h2>美国市场 · 平台档案</h2>
+          <h2>市场 · 平台档案</h2>
         </div>
-        <span class="platform-linkage"><span class="flag">🇺🇸</span>当前市场：美国</span>
+        <span class="platform-linkage"><span class="flag">🌐</span>当前市场</span>
       </div>
-      <p class="platform-source-note">平台范围来自统一市场配置；规则数量由美国已验证规则记录实时计算。</p>
+      <p class="platform-source-note">平台范围来自统一市场配置；规则数量由当前市场已验证规则记录实时计算。</p>
       <div class="platform-grid">
         <article class="platform-card amazon" data-platform="Amazon" role="button" tabindex="0" aria-label="查看 Amazon 平台规则">
           <div class="platform-header">
             <div class="platform-logo amazon">A</div>
             <div>
               <div class="platform-name">Amazon</div>
-              <div class="platform-region">美国站</div>
+              <div class="platform-region">当前市场站</div>
             </div>
           </div>
           <div class="platform-rule-status" data-platform-status="Amazon">
             <span>已验证规则</span>
             <b>正在读取...</b>
           </div>
-          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的美国规则记录。</p>
+          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的当前市场规则记录。</p>
           <span class="platform-open-rules">查看平台规则 <i data-lucide="arrow-right"></i></span>
         </article>
         <article class="platform-card ae" data-platform="AliExpress" role="button" tabindex="0" aria-label="查看 AliExpress 平台规则">
@@ -640,14 +690,14 @@
             <div class="platform-logo ae">AE</div>
             <div>
               <div class="platform-name">AliExpress</div>
-              <div class="platform-region">美国站</div>
+              <div class="platform-region">当前市场站</div>
             </div>
           </div>
           <div class="platform-rule-status" data-platform-status="AliExpress">
             <span>已验证规则</span>
             <b>正在读取...</b>
           </div>
-          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的美国规则记录。</p>
+          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的当前市场规则记录。</p>
           <span class="platform-open-rules">查看平台规则 <i data-lucide="arrow-right"></i></span>
         </article>
         <article class="platform-card tiktok" data-platform="TikTok Shop" role="button" tabindex="0" aria-label="查看 TikTok Shop 平台规则">
@@ -655,14 +705,14 @@
             <div class="platform-logo tiktok">T</div>
             <div>
               <div class="platform-name">TikTok Shop</div>
-              <div class="platform-region">美国站</div>
+              <div class="platform-region">当前市场站</div>
             </div>
           </div>
           <div class="platform-rule-status" data-platform-status="TikTok Shop">
             <span>已验证规则</span>
             <b>正在读取...</b>
           </div>
-          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的美国规则记录。</p>
+          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的当前市场规则记录。</p>
           <span class="platform-open-rules">查看平台规则 <i data-lucide="arrow-right"></i></span>
         </article>
         <article class="platform-card ebay" data-platform="eBay" role="button" tabindex="0" aria-label="查看 eBay 平台规则">
@@ -670,26 +720,31 @@
             <div class="platform-logo ebay">e</div>
             <div>
               <div class="platform-name">eBay</div>
-              <div class="platform-region">美国站</div>
+              <div class="platform-region">当前市场站</div>
             </div>
           </div>
           <div class="platform-rule-status" data-platform-status="eBay">
             <span>已验证规则</span>
             <b>正在读取...</b>
           </div>
-          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的美国规则记录。</p>
+          <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的当前市场规则记录。</p>
           <span class="platform-open-rules">查看平台规则 <i data-lucide="arrow-right"></i></span>
         </article>
       </div>
     </section>
     <section id="policies" class="page">
       <div class="pl-top-bar">
-        <div><p class="eyebrow">POLICY TRACKER</p><h2>政策动态</h2></div>
+        <div><p class="eyebrow">REGULATORY INTELLIGENCE</p><h2 id="pl-page-heading">政策、税收和准入</h2></div>
         <div class="pl-search-box">
           <input type="text" id="pl-search" placeholder="搜索政策名称/地区...">
           <button class="filter-button" onclick="plSearch()">搜索</button>
           <button class="filter-button" onclick="plExportReport()" style="background:var(--green)">导出报告</button>
         </div>
+      </div>
+      <div class="pl-domain-tabs" role="tablist" aria-label="法规数据域">
+        <button type="button" class="pl-domain-tab active" data-domain="policy" role="tab" aria-selected="true" onclick="plSwitchDomain('policy')">政策法规</button>
+        <button type="button" class="pl-domain-tab" data-domain="tax" role="tab" aria-selected="false" onclick="plSwitchDomain('tax')">税收费用</button>
+        <button type="button" class="pl-domain-tab" data-domain="access" role="tab" aria-selected="false" onclick="plSwitchDomain('access')">市场准入</button>
       </div>
       <div class="pl-data-info" id="pl-data-info" style="font-size:.78rem;color:#888;padding:0 0 8px"></div>
       <div class="pl-ai-panel" id="pl-ai-panel">
@@ -700,7 +755,7 @@
       <div id="pl-verify-bar"></div>
       <div class="pl-filter-bar" id="pl-filter-bar">
         <span class="pl-filter-label">内容范围</span>
-        <select id="pl-f-scope" onchange="plScopeChange(this.value)"><option value="cross-border">跨境经营相关</option><option value="all-us">全部美国已核验政策</option></select>
+        <select id="pl-f-scope" onchange="plScopeChange(this.value)"><option value="cross-border">已核验政策 · 跨境经营相关</option><option value="all-us">已核验政策 · 当前市场全部</option><option value="industry">行业资讯 · 可追溯参考</option></select>
         <span class="pl-filter-label">地区</span>
         <select id="pl-f-region"><option value="all">全部地区</option></select>
         <span class="pl-filter-label">类别</span>
@@ -731,11 +786,11 @@
     </div>
 
     <section id="rules" class="page">
-      <div id="ai-rules"></div>
+      <div id="ai-rules"><div class="ai-panel" data-ai-state="loading"><div class="ai-header"><div class="ai-tabs"><span class="ai-tab active">规则变动洞察</span></div></div><div class="ai-loading-state">正在读取当前市场已验证的平台规则...</div></div></div>
       <div class="pl-data-info" id="rl-data-info" style="font-size:.78rem;color:#888;padding:0 0 8px"></div>
       <div class="filter-row" style="flex-wrap:wrap;gap:8px">
         <select id="rl-platform"><option value="all">全部平台</option></select>
-        <select id="rl-market"><option value="all">全部市场</option></select>
+        <select id="rl-market"><option value="all">当前范围全部市场</option></select>
         <select id="rl-category"><option value="all">全部类别</option></select>
         <select id="rl-impact-level"><option value="all">全部影响等级</option><option value="high">🔴 高</option><option value="medium">🟡 中</option><option value="low">🔵 低</option></select>
         <select id="rl-act-type"><option value="all">全部活动类型</option></select>
@@ -816,6 +871,7 @@
             <h3 class="rp-v2-panel-title">选择报告模板</h3>
             <p class="rp-v2-panel-desc">当前模板：<b id="rp-v2-tpl-name">未选择</b></p>
             <div class="rp-v2-tpl-grid">
+              <button type="button" class="rp-v2-tpl-card" data-tpl="market-research" onclick="rpV2SelectTpl(this)"><div class="rp-v2-tpl-icon"><i data-lucide="globe-2"></i></div><p class="rp-v2-tpl-name">市场调研</p><p class="rp-v2-tpl-desc">市场环境、消费者、平台和合规边界的基础研究</p><div class="rp-v2-tpl-tags"><span class="rp-v2-tpl-tag">市场</span><span class="rp-v2-tpl-tag">策略</span></div></button>
               <button type="button" class="rp-v2-tpl-card" data-tpl="product-research" onclick="rpV2SelectTpl(this)"><div class="rp-v2-tpl-icon"><i data-lucide="package-search"></i></div><p class="rp-v2-tpl-name">选品调研</p><p class="rp-v2-tpl-desc">市场容量、竞争格局、价格带与利润空间</p><div class="rp-v2-tpl-tags"><span class="rp-v2-tpl-tag">产品</span><span class="rp-v2-tpl-tag">利润</span></div></button>
               <button type="button" class="rp-v2-tpl-card" data-tpl="competitor-analysis" onclick="rpV2SelectTpl(this)"><div class="rp-v2-tpl-icon"><i data-lucide="scan-search"></i></div><p class="rp-v2-tpl-name">竞品对标</p><p class="rp-v2-tpl-desc">店铺分层、流量结构与可复制打法</p><div class="rp-v2-tpl-tags"><span class="rp-v2-tpl-tag">竞品</span><span class="rp-v2-tpl-tag">店铺</span></div></button>
               <button type="button" class="rp-v2-tpl-card" data-tpl="market-entry" onclick="rpV2SelectTpl(this)"><div class="rp-v2-tpl-icon"><i data-lucide="map-pinned"></i></div><p class="rp-v2-tpl-name">单国进入</p><p class="rp-v2-tpl-desc">市场优先级、平台组合、政策与进入节奏</p><div class="rp-v2-tpl-tags"><span class="rp-v2-tpl-tag">国家</span><span class="rp-v2-tpl-tag">合规</span></div></button>
@@ -828,24 +884,26 @@
             <h3 class="rp-v2-panel-title">配置报告范围</h3>
             <p class="rp-v2-panel-desc">模板：<b id="rp-v2-cfg-tpl">-</b></p>
             <div class="rp-v2-config-grid">
-              <div class="rp-v2-config-group" style="grid-column:1/-1"><label for="rp-v2-topic">行业或产品</label><input id="rp-v2-topic" type="text" placeholder="例如：便携式储能电源 / 美国宠物用品"></div>
+              <div class="rp-v2-config-group" style="grid-column:1/-1"><label for="rp-v2-topic">行业或产品</label><input id="rp-v2-topic" type="text" placeholder="例如：便携式储能电源 / 当前市场宠物用品"></div>
               <div class="rp-v2-config-group"><label>数据周期</label><div class="rp-v2-toggle-row"><button type="button" class="rp-v2-toggle active" data-cfg="period" data-val="7d" onclick="rpV2Toggle(this)">近 7 天</button><button type="button" class="rp-v2-toggle" data-cfg="period" data-val="1m" onclick="rpV2Toggle(this)">近 1 月</button><button type="button" class="rp-v2-toggle" data-cfg="period" data-val="3m" onclick="rpV2Toggle(this)">近 3 月</button></div></div>
               <div class="rp-v2-config-group"><label>输出侧重</label><div class="rp-v2-toggle-row"><button type="button" class="rp-v2-toggle active" data-cfg="focus" data-val="data" onclick="rpV2Toggle(this)">数据</button><button type="button" class="rp-v2-toggle" data-cfg="focus" data-val="strategy" onclick="rpV2Toggle(this)">策略</button><button type="button" class="rp-v2-toggle" data-cfg="focus" data-val="balance" onclick="rpV2Toggle(this)">均衡</button></div></div>
               <div class="rp-v2-config-group"><label>报告受众</label><div class="rp-v2-toggle-row"><button type="button" class="rp-v2-toggle active" data-cfg="audience" data-val="boss" onclick="rpV2Toggle(this)">决策层</button><button type="button" class="rp-v2-toggle" data-cfg="audience" data-val="ops" onclick="rpV2Toggle(this)">运营</button><button type="button" class="rp-v2-toggle" data-cfg="audience" data-val="client" onclick="rpV2Toggle(this)">客户</button></div></div>
               <div class="rp-v2-config-group"><label>输出格式</label><div class="rp-v2-toggle-row"><button type="button" class="rp-v2-toggle active" data-cfg="format" data-val="full" onclick="rpV2Toggle(this)">完整报告</button><button type="button" class="rp-v2-toggle" data-cfg="format" data-val="exec" onclick="rpV2Toggle(this)">执行摘要</button><button type="button" class="rp-v2-toggle" data-cfg="format" data-val="slides" onclick="rpV2Toggle(this)">演示大纲</button></div></div>
               <div class="rp-v2-config-group" style="grid-column:1/-1"><label for="rp-v2-custom-prompt">特别要求</label><textarea id="rp-v2-custom-prompt" placeholder="补充希望重点回答的问题"></textarea><div style="display:flex;gap:8px"><select id="rp-v2-tpl-sel" class="rp-v2-tpl-sel"><option value="">选择已保存模板</option></select><button type="button" class="rp-v2-tpl-btn" onclick="rpV2ApplyTpl()">应用</button><button type="button" class="rp-v2-tpl-btn" onclick="rpV2SaveTpl()">保存</button></div></div>
             </div>
+            <div id="rp-v2-data-check" class="rp-v2-data-check" aria-live="polite"></div>
             <div class="rp-v2-generate-bar"><button type="button" class="rp-v2-gen-btn" onclick="rpV2GoStep(1)">返回</button><button type="button" class="rp-v2-gen-btn go" onclick="rpV2Questionnaire()">生成报告</button></div>
           </section>
 
           <section class="rp-v2-preview-panel" id="rp-panel-step3" style="display:none">
-            <div class="rp-v2-preview-toolbar"><div class="rp-v2-preview-toolbar-left"><i data-lucide="file-chart-column"></i><h4 id="rp-v2-preview-title">报告预览</h4></div><div class="rp-v2-preview-toolbar-right"><button type="button" onclick="rpV2GoStep(2)">修改</button><button type="button" onclick="rpV2CopyReport()">复制</button><button type="button" onclick="rpV2Export('md')">导出 MD</button><button type="button" onclick="rpV2Export('pdf')">导出 PDF</button></div></div>
+            <div class="rp-v2-preview-toolbar"><div class="rp-v2-preview-toolbar-left"><i data-lucide="file-chart-column"></i><h4 id="rp-v2-preview-title">报告预览</h4><span id="rp-v2-publish-status" class="rp-v2-publish-status">未生成</span><span id="rp-v2-save-status" class="rp-v2-save-status" aria-live="polite"></span></div><div class="rp-v2-preview-toolbar-right"><button type="button" onclick="rpV2GoStep(2)">修改</button><button type="button" onclick="rpV2CopyReport()">复制</button><button type="button" onclick="rpV2Export('md')">导出 MD</button><button type="button" onclick="rpV2Export('pdf')">导出 PDF</button><button type="button" onclick="rpV2Export('docx')">导出 DOCX</button></div></div>
             <div class="rp-v2-preview-body rp-empty-preview" id="rp-v2-preview-body"><i class="rp-empty-icon" data-lucide="file-clock"></i><p>报告生成后显示在这里</p></div>
           </section>
         </div>
 
         <aside class="rp-v2-right">
           <section class="rp-v2-recent"><h4><i data-lucide="history"></i> 最近报告</h4><div id="rp-v2-recent-list"></div></section>
+          <section class="rp-v2-recent rp-v2-export-history"><h4><i data-lucide="download-cloud"></i> 导出历史</h4><div id="rp-v2-export-history"><div class="rp-v2-history-empty">暂无导出记录</div></div></section>
           <section class="rp-v2-ai-tool"><div class="rp-v2-ai-tool-header"><div class="rp-v2-ai-tool-icon" style="background:var(--sage);color:var(--green)"><i data-lucide="list-todo"></i></div><div><h4>执行计划</h4><p>由当前报告拆解任务</p></div></div><button type="button" class="rp-v2-ai-tool-btn" onclick="rpV2GeneratePlan()">生成执行计划</button></section>
           <section class="rp-v2-ai-tool"><div class="rp-v2-ai-tool-header"><div class="rp-v2-ai-tool-icon" style="background:#eef2ff;color:#4f46e5"><i data-lucide="shield-alert"></i></div><div><h4>风险扫描</h4><p>基于已选素材</p></div></div><button type="button" class="rp-v2-ai-tool-btn" onclick="rpV2AiTool('risk')">扫描风险</button><div id="rp-ai-risk-result"></div></section>
         </aside>
@@ -879,7 +937,7 @@
             <div class="prc-price">¥0<small> / 永久免费</small></div>
             <div class="prc-desc">适合初次了解出海机会的产业带工厂</div>
             <ul class="prc-feat">
-              <li><span class="ck">✓</span>浏览美国市场 / 4 个平台 / 政策 / 预警数据</li>
+              <li><span class="ck">✓</span>浏览当前配置市场 / 平台 / 政策 / 预警数据</li>
               <li><span class="ck">✓</span>AI 搜索与「我的产品适配」分析</li>
               <li><span class="ck">✓</span>生成并导出市场调研报告（Markdown）</li>
               <li class="off"><span class="ck">—</span>批量操作 / 团队协作 / 企服对接</li>
@@ -932,7 +990,7 @@
           <div class="ent-field"><label>公司 / 工厂名称</label><input id="ent-company" placeholder="如：XX 产业带有限公司"></div>
           <div class="ent-field"><label>联系人</label><input id="ent-name" placeholder="您的称呼"></div>
           <div class="ent-field"><label>联系方式（手机 / 微信 / 邮箱）</label><input id="ent-contact" placeholder="便于顾问回访"></div>
-          <div class="ent-field"><label>核心需求</label><textarea id="ent-need" rows="3" placeholder="如：想进入美国美妆市场，需要选品 + 合规 + 物流一站式方案"></textarea></div>
+            <div class="ent-field"><label>核心需求</label><textarea id="ent-need" rows="3" placeholder="如：想进入当前市场，需要选品 + 合规 + 物流一站式方案"></textarea></div>
           <div class="ent-btns">
             <button class="ent-submit" onclick="submitEntLead()">提交需求</button>
             <button class="ent-cancel" onclick="closeEntModal()">暂不需要</button>
@@ -967,7 +1025,7 @@
         <article class="tools-card">
           <div class="tools-card-head"><span class="tools-card-icon blue"><i data-lucide="radar"></i></span><div><h3>选品可行性评分</h3><p class="t-sub">从市场、毛利、物流与政策五维评估</p></div></div>
           <div class="tools-form-grid">
-            <div class="tools-field"><label for="sc-market">目标市场</label><select id="sc-market" onchange="toolsCalcScore()"><option value="US" selected>美国</option></select></div>
+            <div class="tools-field"><label for="sc-market">目标市场</label><select id="sc-market" onchange="toolsCalcScore()"><option value="US" selected>当前市场</option></select></div>
             <div class="tools-field"><label for="sc-margin">预估毛利率（%）</label><input id="sc-margin" type="number" min="0" max="100" value="38" oninput="toolsCalcScore()"></div>
             <div class="tools-field"><label for="sc-weight">单件重量（kg）</label><input id="sc-weight" type="number" min="0" step="0.1" value="0.8" oninput="toolsCalcScore()"></div>
             <div class="tools-field"><label for="sc-sensitive">敏感或强认证品类</label><select id="sc-sensitive" onchange="toolsCalcScore()"><option value="0" selected>否</option><option value="1">是</option></select></div>
@@ -1004,7 +1062,9 @@
           <div><span>监控数据集</span><strong id="dq-datasets">--</strong><small>核心与专项来源</small></div>
           <div><span>可发布数据集</span><strong id="dq-healthy">--</strong><small>通过结构与时效校验</small></div>
           <div><span>原始记录</span><strong id="dq-raw-records">--</strong><small>源文件全部记录</small></div>
-          <div><span>当前范围记录</span><strong id="dq-scoped-records">--</strong><small>美国与当前 4 个平台</small></div>
+          <div><span>当前范围记录</span><strong id="dq-scoped-records">--</strong><small id="dq-scope-note">当前市场与已配置平台</small></div>
+          <div><span>正式发布记录</span><strong id="dq-formal-records">--</strong><small>已核验或人工上传</small></div>
+          <div><span>排除记录</span><strong id="dq-excluded-records">--</strong><small>演示、未核验或超出范围</small></div>
           <div><span>校验错误</span><strong id="dq-errors">--</strong><small>错误会阻断同步</small></div>
           <div><span>质量提醒</span><strong id="dq-warnings">--</strong><small>缺失来源或降级项</small></div>
         </div>
@@ -1021,8 +1081,8 @@
 
         <div class="data-quality-table-wrap">
           <table class="data-quality-table">
-            <thead><tr><th>数据集</th><th>状态</th><th>原始记录</th><th>当前范围记录</th><th>数据时间</th><th>质量说明</th></tr></thead>
-            <tbody id="data-quality-rows"><tr><td colspan="6" class="data-quality-empty">正在读取质量报告...</td></tr></tbody>
+            <thead><tr><th>数据集</th><th>状态</th><th>原始记录</th><th>当前范围记录</th><th>正式发布</th><th>已排除</th><th>数据时间</th><th>质量说明</th></tr></thead>
+            <tbody id="data-quality-rows"><tr><td colspan="8" class="data-quality-empty">正在读取质量报告...</td></tr></tbody>
           </table>
         </div>
 
@@ -1049,8 +1109,8 @@
         <div class="admin-head"><div><span class="section-label">OPERATIONS CONSOLE</span><h2>管理与运维后台</h2><p id="admin-generated">仅平台管理员可读取；权限由服务端校验。</p></div><button type="button" class="st-btn st-btn-outline" onclick="adminLoad()">刷新</button></div>
         <div class="st-inline-notice" id="admin-access-note">正在校验管理员权限…</div>
         <div id="admin-content" style="display:none">
-          <div class="admin-metrics"><article><span>注册用户</span><b id="admin-users">--</b></article><article><span>有效订阅</span><b id="admin-subs">--</b></article><article><span>工作区</span><b id="admin-workspaces">--</b></article><article><span>未解决事件</span><b id="admin-incidents-count">--</b></article><article><span>待处理投递</span><b id="admin-deliveries">--</b></article></div>
-          <div class="admin-grid"><article class="admin-card"><h3>系统事件</h3><div id="admin-incidents" class="admin-list"></div></article><article class="admin-card"><h3>备份运行</h3><div id="admin-backups" class="admin-list"></div></article></div>
+          <div class="admin-metrics"><article><span>注册用户</span><b id="admin-users">--</b></article><article><span>有效订阅</span><b id="admin-subs">--</b></article><article><span>工作区</span><b id="admin-workspaces">--</b></article><article><span>近100次报告失败率</span><b id="admin-report-failure">--</b></article><article><span>近500次 AI Token</span><b id="admin-ai-tokens">--</b></article><article><span>近500次 AI 估算成本</span><b id="admin-ai-cost">--</b></article><article><span>近100次平均报告耗时</span><b id="admin-report-duration">--</b></article><article><span>近100次导出失败</span><b id="admin-export-failures">--</b></article><article><span>未解决事件</span><b id="admin-incidents-count">--</b></article><article><span>待处理投递</span><b id="admin-deliveries">--</b></article></div>
+          <div class="admin-grid"><article class="admin-card"><h3>最近报告运行</h3><div id="admin-report-runs" class="admin-list"></div></article><article class="admin-card"><h3>最近 AI 请求</h3><div id="admin-ai-requests" class="admin-list"></div></article><article class="admin-card"><h3>系统事件</h3><div id="admin-incidents" class="admin-list"></div></article><article class="admin-card"><h3>备份运行</h3><div id="admin-backups" class="admin-list"></div></article></div>
         </div>
       </div>
     </section>
@@ -1062,7 +1122,7 @@
           <h2 class="wl-title">当前关注组</h2>
           <div class="wl-group-select">
             <select id="wl-group-sel">
-              <option value="us-market" selected>美国市场（当前范围）</option>
+              <option value="us-market" selected>当前市场（当前范围）</option>
             </select>
             <button class="wl-btn-sm" id="wl-new-group">+ 新建分组</button>
           </div>
@@ -1166,7 +1226,7 @@
     </div>
     <div class="rp-q-body">
       <div class="rp-q-row"><label>你的品类 / 产品</label><input type="text" id="rp-q-category" placeholder="如：保温杯 / 宠物用品 / 瑜伽服"></div>
-      <div class="rp-q-row"><label>目标市场</label><select id="rp-q-market"><option value="US" selected>美国</option></select></div>
+      <div class="rp-q-row"><label>目标市场</label><select id="rp-q-market"><option value="US" selected>当前市场</option></select></div>
       <div class="rp-q-row"><label>单件成本区间</label><select id="rp-q-cost"><option>未定</option><option>&lt;¥20</option><option>¥20-50</option><option>¥50-100</option><option>¥100-300</option><option>&gt;¥300</option></select></div>
       <div class="rp-q-row"><label>月出海预算</label><select id="rp-q-budget"><option>未定</option><option>&lt;¥1万</option><option>¥1-5万</option><option>¥5-20万</option><option>&gt;¥20万</option></select></div>
       <div class="rp-q-row"><label>出海经验</label><select id="rp-q-exp"><option>纯新手</option><option>1年内</option><option>1-3年</option><option>3年以上</option></select></div>
@@ -1190,10 +1250,10 @@
     <h2>❓ 常见问题（FAQ）</h2>
     <p class="jo-sub">关于 JAY观海 的使用与数据说明</p>
     <ul class="jf-list">
-      <li><b>JAY观海 是什么？</b><span>JAY观海 是轻工业协会专属数字化产业服务工具，面向全国轻工制造企业免费提供美国市场分析、海外爆款选品、跨境合规风险筛查、美国市场出海规划等一体化数据支撑，是协会落实企业出海扶持、产业数字化升级的标准化服务载体。</span></li>
+            <li><b>JAY观海 是什么？</b><span id="faq-product-description">JAY观海 是轻工业协会专属数字化产业服务工具，面向全国轻工制造企业免费提供跨境市场分析、海外商品机会、跨境合规风险筛查和市场出海规划等一体化数据支撑，是协会落实企业出海扶持、产业数字化升级的标准化服务载体。</span></li>
       <li><b>数据是实时的吗？</b><span>系统提供"数据定时刷新"（默认每 2 小时），侧边栏底部可查看刷新状态与更新日志。部分指标为行业估算，仅供决策参考。</span></li>
       <li><b>AI 搜索需要配置密钥吗？</b><span>需要登录并由服务端安全代理调用 AI。未登录或 AI 服务不可用时，系统不会用内置规则编造机会与风险结论。</span></li>
-      <li><b>免费版能用什么？</b><span>免费版可浏览美国市场、4 个平台、政策和预警数据，使用 AI 搜索与定时刷新、生成并导出报告。部分批量操作与高级企业协同功能需升级专业版（PRO）。</span></li>
+            <li><b>免费版能用什么？</b><span id="faq-free-description">免费版可浏览当前配置的市场、平台、政策和预警数据，使用 AI 搜索与定时刷新、生成并导出报告。部分批量操作与高级企业协同功能需升级专业版（PRO）。</span></li>
       <li><b>为什么有些平台显示"N/A"？</b><span>个别平台因公开数据缺失，增速/客单价暂以 N/A 显示。我们正持续补全，不影响其余维度的参考。</span></li>
       <li><b>报告怎么导出？</b><span>在"报告生成中心"点"生成报告"后，点"导出报告"即可下载 HTML 格式报告；政策与产品雷达也支持 CSV/Excel/PDF 导出。</span></li>
     </ul>
