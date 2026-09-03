@@ -77,6 +77,7 @@ test.describe('production authenticated browser acceptance', () => {
           saveStatusText: document.querySelector('#rp-v2-save-status')?.textContent?.trim() || '',
           citationAudit: window.rpLastReportModel?.citationAudit || null,
           reconciliation: window.rpLastReportModel?.reconciliation || null,
+          scopeCheck: window.rpLastReportModel?.scopeCheck || null,
           dataCheckClass: dataCheck?.className || '',
           dataCheckText: dataCheck?.textContent?.trim() || '',
           toasts: Array.isArray(window.__productionAcceptanceToasts)
@@ -102,6 +103,7 @@ test.describe('production authenticated browser acceptance', () => {
       saveStatusText: document.querySelector('#rp-v2-save-status')?.textContent?.trim() || '',
       citationAudit: window.rpLastReportModel?.citationAudit || null,
       reconciliation: window.rpLastReportModel?.reconciliation || null,
+      scopeCheck: window.rpLastReportModel?.scopeCheck || null,
       dataCheckClass: document.querySelector('#rp-v2-data-check')?.className || '',
       dataCheckText: document.querySelector('#rp-v2-data-check')?.textContent?.trim() || '',
       toasts: window.__productionAcceptanceToasts || [],
