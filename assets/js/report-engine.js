@@ -236,7 +236,10 @@
       });
     }
     var policyItems = root.policiesJsonData && root.policiesJsonData.items;
-    if (Array.isArray(policyItems)) policyItems.forEach(function (item) { if (formal(item, 'policy', scope) && matches(item, scope, 'policy')) addRecord(records, 'policy', item, '政策数据集'); });
+    if (Array.isArray(policyItems)) policyItems.forEach(function (item) {
+      var relevant = typeof root.plIsCrossBorderPolicy !== 'function' || root.plIsCrossBorderPolicy(item);
+      if (relevant && formal(item, 'policy', scope) && matches(item, scope, 'policy')) addRecord(records, 'policy', item, '政策数据集');
+    });
     var taxItems = root.taxesJsonData && root.taxesJsonData.items;
     if (Array.isArray(taxItems)) taxItems.forEach(function (item) { if (formal(item, 'tax', scope) && matches(item, scope, 'tax')) addRecord(records, 'tax', item, '税收数据集'); });
     var accessItems = root.accessRequirementsJsonData && root.accessRequirementsJsonData.items;
@@ -403,10 +406,13 @@
   }
 
   function repairSectionCitations(sectionText, citationFacts, appendix) {
-    var terms = ['amazon', '亚马逊', 'tiktok shop', 'tiktok', 'aliexpress', '速卖通', 'ebay', 'fba', 'sipp', 'cpsc', 'cpc', 'gcc', 'smart promotion', 'fb t', 'fbt'];
+    var terms = ['amazon', '亚马逊', 'tiktok shop', 'tiktok', 'aliexpress', '速卖通', 'ebay', 'fba', 'sipp', 'cpsc', 'cpc', 'gcc', 'smart promotion', 'fb t', 'fbt', 'policy', 'policies', '政策', '法规', 'regulation', 'tariff', '关税', 'medium', 'high', 'low'];
+    var genericTerms = ['policy', 'policies', '政策', '法规', 'regulation', 'tariff', '关税', 'medium', 'high', 'low'];
     function matchTerms(value) {
       var raw = lower(value);
-      return terms.filter(function (term) { return raw.indexOf(term) >= 0; });
+      var matched = terms.filter(function (term) { return raw.indexOf(term) >= 0; });
+      var specific = matched.filter(function (term) { return genericTerms.indexOf(term) < 0; });
+      return specific.length ? specific : matched;
     }
     function matchNumbers(value) {
       var raw = text(value).replace(/^\s*(?:\*{1,2}|#{1,6}\s*)?\d+[.)、]\s*/, '');
@@ -419,6 +425,10 @@
         if (day) dates.push(yearValue + '-' + monthValue + '-' + String(Number(day)));
         return ' ';
       }
+      raw = raw.replace(/(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日\s*(?:至|到|[-—–~])\s*(?:(\d{4})\s*年\s*)?(\d{1,2})\s*月\s*(\d{1,2})\s*日/g, function (_match, startYear, startMonth, startDay, endYear, endMonth, endDay) {
+        addDate(startYear, startMonth, startDay);
+        return addDate(endYear || startYear, endMonth, endDay);
+      });
       raw = raw.replace(/(\d{4})\s*年\s*(\d{1,2})\s*月\s*(?:至|到|[-—–~])\s*(\d{1,2})\s*月/g, function (_match, year, startMonth, endMonth) {
         addDate(year, startMonth);
         return addDate(year, endMonth);
@@ -443,7 +453,7 @@
       var lineNumbers = matchNumbers(line);
       if (!lineTerms.length || !lineNumbers.length) return line;
       var candidates = facts.map(function (entry) {
-        var factText = JSON.stringify(entry.record || {});
+        var factText = JSON.stringify(entry.record || {}) + (entry.domain === 'policy' ? ' policy 政策' : ' ' + text(entry.domain));
         var factTerms = matchTerms(factText);
         var factNumbers = matchNumbers(factText);
         var sharedTerms = lineTerms.filter(function (term) { return factTerms.indexOf(term) >= 0; });

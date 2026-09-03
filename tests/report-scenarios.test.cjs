@@ -144,6 +144,24 @@ test('global policy records do not enter a market-scoped collection', () => {
   assert.equal(facts.records.policy.some((entry) => entry.record.id === 'fixture-policy-global'), false);
 });
 
+test('report facts reuse the policy cross-border relevance gate', () => {
+  const { window, api, engine } = createEnvironment();
+  const context = setScope(api, ['US'], ['amazon'], ['pet-supplies']);
+  const provenance = {
+    region: 'US', source_kind: 'official', source_type: 'government', verification_status: 'verified',
+    source_url: 'https://example.gov/policy', published_at: '2026-09-01', collected_at: '2026-09-02T00:00:00Z',
+    verified_at: '2026-09-02T00:00:00Z', evidence_hash: 'a'.repeat(64), translation: { status: 'translated' },
+    title_zh: '跨境经营政策', summary: 'Policy summary', summary_zh: '跨境经营政策摘要',
+  };
+  window.plIsCrossBorderPolicy = (item) => item.relevant === true;
+  window.policiesJsonData = { items: [
+    { ...provenance, id: 'policy-relevant', source_record_id: 'policy-relevant', relevant: true },
+    { ...provenance, id: 'policy-unrelated', source_record_id: 'policy-unrelated', relevant: false },
+  ] };
+  const facts = engine.collectFacts(context, []);
+  assert.deepEqual(Array.from(facts.records.policy, (entry) => entry.record.id), ['policy-relevant']);
+});
+
 test('policy and rule classifications are not treated as product-category scope', () => {
   const { window, api, engine } = createEnvironment();
   const context = setScope(api, ['US'], ['amazon'], ['pet-supplies']);

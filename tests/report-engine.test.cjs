@@ -208,6 +208,19 @@ test('deterministic citation repair can combine traceable facts for a dated summ
   assert.equal(result.audit.ok, true);
 });
 
+test('deterministic citation repair covers a Chinese cross-month policy date range', () => {
+  const appendix = [{ citation: 'S001' }, { citation: 'S002' }];
+  const citationFacts = [
+    { domain: 'policy', record: { category: 'regulation', impact_level: 'medium', published_at: '2026-08-31' }, source: { citation: 'S001' } },
+    { domain: 'policy', record: { category: 'regulation', impact_level: 'medium', published_at: '2026-09-02' }, source: { citation: 'S002' } },
+  ];
+  const text = '以下政策于2026年8月31日至9月2日发布，归类为regulation，影响等级为medium，与宠物用品跨境电商运营的直接关联度较低，暂列为观察项：';
+  const result = engine.repairSectionCitations(text, citationFacts, appendix);
+  assert.equal(result.repairedCount, 1);
+  assert.match(result.text, /\[S001\]\[S002\]$/);
+  assert.equal(result.audit.ok, true);
+});
+
 test('deterministic citation repair ignores a Markdown heading ordinal', () => {
   const appendix = [{ citation: 'S001' }];
   const citationFacts = [{
