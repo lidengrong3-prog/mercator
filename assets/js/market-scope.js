@@ -207,6 +207,7 @@
     var candidate = raw.toUpperCase();
     var found = MARKET_CONFIG.markets.find(function (market) {
       return market.code.toUpperCase() === candidate || market.key.toLowerCase() === raw.toLowerCase()
+        || lower(market.name) === lower(raw) || lower(market.label) === lower(raw)
         || (market.aliases || []).some(function (alias) { return lower(alias) === lower(raw); });
     });
     return found ? found.code : candidate;
@@ -1059,11 +1060,13 @@
       var metadata = item.metadata && typeof item.metadata === 'object' ? item.metadata : {};
       var dataSources = item.dataSources || item.data_sources || metadata.dataSources || metadata.data_sources
         || (previous && previous.dataSources) || {};
-      return Object.assign({ aliases: [], platformKeys: [], categoryKeys: [], jurisdictionCodes: [], dataStatus: 'configured' }, item, {
+      return Object.assign({ aliases: [], platformKeys: [], categoryKeys: [], jurisdictionCodes: [], dataStatus: 'configured' }, previous || {}, item, {
         code: text(item.code).toUpperCase(),
         key: text(item.key || item.code).toLowerCase(),
         flag: item.flag || item.emoji || '🌐',
         dataStatus: item.dataStatus || item.data_status || 'configured',
+        aliases: Array.isArray(item.aliases) && item.aliases.length
+          ? item.aliases.slice() : ((previous && previous.aliases) || []).slice(),
         platformKeys: unique(list(item.platformKeys || item.platform_keys).map(normalizePlatformKey).filter(Boolean)),
         categoryKeys: normalizeCategoryCodes(item.categoryKeys || item.category_keys),
         jurisdictionCodes: Array.isArray(item.jurisdictionCodes) ? item.jurisdictionCodes.slice() : [],
