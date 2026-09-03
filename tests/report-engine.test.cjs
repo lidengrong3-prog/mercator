@@ -87,6 +87,7 @@ test('section prompts assign stable source citations and snapshot metadata', () 
   assert.equal(payload.facts[0].source.citation, 'S001');
   assert.equal(payload.facts[0].source.dataSnapshotAt, '2026-09-01T00:00:00Z');
   assert.match(prompt.system, /关键数字必须.*\[S001\]/);
+  assert.match(prompt.system, /表格必须增加“来源”列/);
 });
 
 test('cross-domain section prompts stay below the production size limit and keep balanced evidence', () => {
@@ -141,6 +142,17 @@ test('citation audit rejects unknown citations and uncited key numbers', () => {
   assert.equal(result.ok, false);
   assert.equal(result.missingNumericCitations.length, 2);
   assert.deepEqual(Array.from(result.invalidCitations, (item) => item.citation), ['S999']);
+});
+
+test('citation audit exempts generated snapshot dates but not unsupported metrics on the same line', () => {
+  const appendix = [{ citation: 'S001' }];
+  const result = engine.auditCitations([
+    { id: 'consumer', text: '数据快照时间为 2026年9月3日04:41:15 UTC，当前数据尚未接入。' },
+    { id: 'market', text: '数据快照时间为 2026年9月3日，销售额为100万美元。' },
+  ], appendix);
+  assert.equal(result.ok, false);
+  assert.equal(result.missingNumericCitations.length, 1);
+  assert.match(result.missingNumericCitations[0].text, /100万美元/);
 });
 
 test('scope check rejects unselected market and platform names', () => {

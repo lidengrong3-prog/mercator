@@ -433,6 +433,20 @@ async function rpV2Generate(){
   var customEl=document.getElementById('rp-v2-custom-prompt');var customText=customEl?customEl.value.trim():'';
   var results=[];
   function renderProgress(index){var p=body.querySelector('.rp-v2-generating p');if(p)p.textContent='正在生成第 '+(index+1)+'/'+plan.sections.length+' 章：'+plan.sections[index].title;}
+  async function generateSection(section,prompts,requestOptions){
+    var output=await callAI(prompts.system,prompts.user,requestOptions);
+    var audit=window.JAY_REPORT_ENGINE.auditCitations([{id:section.id,text:output}],prompts.sourceAppendix||[]);
+    if(audit.ok)return output;
+    var missing=(audit.missingNumericCitations||[]).slice(0,8).map(function(item){return '- '+String(item.text||'').slice(0,180);}).join('\n');
+    var invalid=(audit.invalidCitations||[]).slice(0,8).map(function(item){return item.citation;}).join('、');
+    var repairSystem=prompts.system+'\n上一次输出未通过引用审核。重新生成完整章节，不要解释修订过程。每一行只要包含阿拉伯数字就必须有准确的 [Sxxx]；表格增加“来源”列。没有准确来源的数字必须删除或改为“待补充”。';
+    var repairUser=prompts.user+'\n引用审核失败，请重新生成本章。未引用数字所在行：\n'+(missing||'- 无')+'\n无效引用：'+(invalid||'无');
+    var retryOptions=Object.assign({},requestOptions,{
+      operation:requestOptions.operation+'.citation-retry',
+      requestId:requestOptions.requestId+':citation-retry'
+    });
+    return callAI(repairSystem,repairUser,retryOptions);
+  }
   function localSection(section){
     var scope=facts.scope||context;
     if(section.id==='methodology')return '本章使用当前工作区已选择的'+(scope.marketNames||[]).join('、')+'市场、'+(scope.platformNames||[]).join('、')+'平台和已核验来源记录。缺失数据保持“待补充”，不以其他市场或演示数据替代。生成日期：'+jayNowDate()+'。';
@@ -469,7 +483,7 @@ async function rpV2Generate(){
     var prompts=window.JAY_REPORT_ENGINE.buildSectionPrompt(plan,section,facts,financial,customText);
     var system=prompts.system+'\n当前日期：'+jayNowHuman()+'。输出简体中文 Markdown 章节正文，不要添加未给出的事实。';
     var user=prompts.user+'\n输出要求：只输出“'+section.title+'”本章正文；数字必须来自 facts 或 financial，无法确认就写“待补充”；不得写全球或未选择市场、平台；所有事实结论和关键数字必须保留 citationCatalog 中的 [Sxxx] 行内引用。';
-    callAI(system,user,{temperature:0.35,max_tokens:2800,search:false,timeout:60000,operation:'report.section.'+section.id,requestId:(rpActiveReportRun&&rpActiveReportRun.id||identity.clientReportId)+':'+section.id,reportRunId:rpActiveReportRun&&rpActiveReportRun.id||null,clientReportId:identity.clientReportId,dataVersion:String(quality.data_contract_version||quality.generated_at||'local-unversioned')}).then(async function(output){
+    generateSection(section,{system:system,user:user,sourceAppendix:prompts.sourceAppendix},{temperature:0.35,max_tokens:2800,search:false,timeout:60000,operation:'report.section.'+section.id,requestId:(rpActiveReportRun&&rpActiveReportRun.id||identity.clientReportId)+':'+section.id,reportRunId:rpActiveReportRun&&rpActiveReportRun.id||null,clientReportId:identity.clientReportId,dataVersion:String(quality.data_contract_version||quality.generated_at||'local-unversioned')}).then(async function(output){
       results.push({id:section.id,title:section.title,domain:section.domain,text:output,claims:[]});await next(index+1);
     }).catch(async function(error){
       body.innerHTML='<div class="rp-v2-rpt"><p style="color:#ef4444">第 '+(index+1)+' 章生成失败：'+escapeHtml(error.message)+'</p><p>已停止组装，未保存为正式报告。</p></div>';

@@ -376,8 +376,14 @@
           if (valid.indexOf(citation) < 0) invalid.push({ section: sectionId, citation: citation });
           else used.push(citation);
         });
-        if (exempt || !line.trim() || /^\s*(?:#{1,4}\s+|\|?\s*:?-{2,})/.test(line) || /待补充|尚未接入/.test(line)) return;
-        var factualNumber = /(?:[$￥¥€£]\s*\d|\d+(?:[,.]\d+)*(?:\s*(?:%|％|美元|美金|元|万|亿|百万|件|单|人|天|月|年|个|家|项|倍|bps|USD|CNY))|\d+\.\d+)/i.test(line);
+        if (exempt || !line.trim() || /^\s*(?:#{1,4}\s+|\|?\s*:?-{2,})/.test(line)) return;
+        var auditLine = line;
+        if (/数据快照(?:时间)?|生成日期|当前日期/.test(auditLine)) {
+          auditLine = auditLine
+            .replace(/\d{4}\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日(?:\s*\d{1,2}(?::\d{2}){0,2}\s*(?:UTC)?)?/gi, '')
+            .replace(/\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?Z?)?/gi, '');
+        }
+        var factualNumber = /(?:[$￥¥€£]\s*\d|\d+(?:[,.]\d+)*(?:\s*(?:%|％|美元|美金|元|万|亿|百万|件|单|人|天|月|年|个|家|项|倍|bps|USD|CNY))|\d+\.\d+)/i.test(auditLine);
         if (factualNumber && !citations.some(function (citation) { return valid.indexOf(citation) >= 0; })) {
           missingNumericCitations.push({ section: sectionId, text: line.trim().slice(0, 240) });
         }
@@ -543,7 +549,7 @@
         citationSet[citation] = true;
       }
     });
-    var instruction = '你是报告章节分析员，只能根据结构化事实和来源写作。禁止补写未提供的税率、销量、市场规模、价格、利润、排名或平台规则。没有事实时必须写“待补充”，不得使用其他国家、平台或全球排名。税收或准入事实缺失时，只能说明“尚未接入/待补充”，禁止输出确定性税率、费用、认证或合规结论。每个来源已分配唯一编号；所有基于事实的句子及每个关键数字必须在句末保留一个或多个原始编号，例如 [S001]。只能使用 citationCatalog 中存在的编号，不得改写、猜测或创建引用编号。程序化财务结果必须引用其输入数据对应的来源编号。';
+    var instruction = '你是报告章节分析员，只能根据结构化事实和来源写作。禁止补写未提供的税率、销量、市场规模、价格、利润、排名或平台规则。没有事实时必须写“待补充”，不得使用其他国家、平台或全球排名。税收或准入事实缺失时，只能说明“尚未接入/待补充”，禁止输出确定性税率、费用、认证或合规结论。每个来源已分配唯一编号；所有基于事实的句子及每个关键数字必须在句末保留一个或多个原始编号，例如 [S001]。任何包含阿拉伯数字的业务事实、行动阈值、日期和表格数据行都必须带 citationCatalog 中的原始编号；Markdown 表格必须增加“来源”列并逐行填写 [Sxxx]。无法找到准确来源时，删除该数字或写“待补充”，不得换算、四舍五入或派生新阈值。只能使用 citationCatalog 中存在的编号，不得改写、猜测或创建引用编号。程序化财务结果必须引用其输入数据对应的来源编号。';
     var user = JSON.stringify(promptBody(payload, citationCatalog));
     return { system: instruction, user: user, sourceAppendix: citationCatalog };
   }
