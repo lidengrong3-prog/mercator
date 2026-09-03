@@ -75,6 +75,8 @@ test.describe('production authenticated browser acceptance', () => {
           publishStatusClass: publishStatus?.className || '',
           publishStatusText: publishStatus?.textContent?.trim() || '',
           saveStatusText: document.querySelector('#rp-v2-save-status')?.textContent?.trim() || '',
+          citationAudit: window.rpLastReportModel?.citationAudit || null,
+          reconciliation: window.rpLastReportModel?.reconciliation || null,
           dataCheckClass: dataCheck?.className || '',
           dataCheckText: dataCheck?.textContent?.trim() || '',
           toasts: Array.isArray(window.__productionAcceptanceToasts)
@@ -98,6 +100,8 @@ test.describe('production authenticated browser acceptance', () => {
       publishStatusClass: document.querySelector('#rp-v2-publish-status')?.className || '',
       publishStatusText: document.querySelector('#rp-v2-publish-status')?.textContent?.trim() || '',
       saveStatusText: document.querySelector('#rp-v2-save-status')?.textContent?.trim() || '',
+      citationAudit: window.rpLastReportModel?.citationAudit || null,
+      reconciliation: window.rpLastReportModel?.reconciliation || null,
       dataCheckClass: document.querySelector('#rp-v2-data-check')?.className || '',
       dataCheckText: document.querySelector('#rp-v2-data-check')?.textContent?.trim() || '',
       toasts: window.__productionAcceptanceToasts || [],
