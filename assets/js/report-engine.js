@@ -391,7 +391,7 @@
         });
         if (exempt || !line.trim() || /^\s*(?:#{1,4}\s+|\|?\s*:?-{2,})/.test(line)) return;
         var auditLine = line;
-        var dateOnlyTableLead = /(?:数据|指标|统计).*(?:如下|见下)[：:]?\s*$/.test(auditLine);
+        var dateOnlyTableLead = /(?:(?:数据|指标|统计).*(?:如下|见下)|(?:方面|概览|情况)\s*[（(]?\s*\d{4}\s*年\s*\d{1,2}\s*月\s*[）)]?)[：:]?\s*$/.test(auditLine);
         if (/数据快照(?:时间)?|数据截至|数据时间|生成日期|当前日期|本快照时间|截至\s*[（(]?\d{4}/.test(auditLine) || dateOnlyTableLead) {
           auditLine = auditLine
             .replace(/\d{4}\s*年\s*\d{1,2}\s*月(?:\s*\d{1,2}\s*日(?:\s*\d{1,2}(?::\d{2}){0,2}\s*(?:UTC)?)?)?/gi, '')
@@ -416,7 +416,7 @@
   }
 
   function repairSectionCitations(sectionText, citationFacts, appendix) {
-    var terms = ['amazon', '亚马逊', 'tiktok shop', 'tiktok', 'aliexpress', '速卖通', 'ebay', 'fba', 'sipp', 'cpsc', 'cpc', 'gcc', 'smart promotion', 'fb t', 'fbt', 'policy', 'policies', '政策', '法规', 'regulation', 'tariff', '关税', 'medium', 'high', 'low'];
+    var terms = ['amazon', '亚马逊', 'tiktok shop', 'tiktok', 'aliexpress', '速卖通', 'ebay', 'fba', 'sipp', 'cpsc', 'fda', 'cpc', 'gcc', 'smart promotion', 'fb t', 'fbt', 'policy', 'policies', '政策', '法规', 'regulation', 'tariff', '关税', 'medium', 'high', 'low'];
     var genericTerms = ['policy', 'policies', '政策', '法规', 'regulation', 'tariff', '关税', 'medium', 'high', 'low'];
     function matchTerms(value) {
       var raw = lower(value);
@@ -449,9 +449,14 @@
       raw = raw.replace(/\b(\d{4})-(\d{1,2})(?:-(\d{1,2}))?\b/g, function (_match, year, month, day) {
         return addDate(year, month, day);
       });
-      return uniq(dates.concat((raw.match(/\d+(?:[.,-]\d+)*/g) || []).map(function (item) {
-        return item.split(/([.,-])/).map(function (part) { return /^\d+$/.test(part) ? String(Number(part)) : part; }).join('');
-      })));
+      var numeric = [];
+      (raw.match(/\d+(?:[.,-]\d+)*/g) || []).forEach(function (item) {
+        var normalized = item.split(/([.,-])/).map(function (part) { return /^\d+$/.test(part) ? String(Number(part)) : part; }).join('');
+        numeric.push(normalized);
+        var range = normalized.match(/^(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/);
+        if (range) numeric.push(range[1], range[2]);
+      });
+      return uniq(dates.concat(numeric));
     }
     var valid = list(appendix).map(function (source) { return source.citation; }).filter(Boolean);
     var facts = list(citationFacts).filter(function (entry) { return entry && entry.source && valid.indexOf(entry.source.citation) >= 0; });
@@ -504,6 +509,17 @@
       return false;
     }).join('\n').replace(/\n{3,}/g, '\n\n').trim();
     return { text: repaired, removedCount: removedCount, audit: checkScope(repaired, scope) };
+  }
+
+  function pruneUncitedNumericLines(sectionText, appendix) {
+    var removedCount = 0;
+    var repaired = text(sectionText).split(/\r?\n/).filter(function (line) {
+      var audit = auditCitations([{ id: 'citation-prune', text: line }], appendix);
+      if (!audit.missingNumericCitations.length && !audit.invalidCitations.length) return true;
+      removedCount++;
+      return false;
+    }).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    return { text: repaired, removedCount: removedCount, audit: auditCitations([{ id: 'citation-prune', text: repaired }], appendix) };
   }
 
   function scoreCompleteness(plan, check, appendix, facts) {
@@ -716,7 +732,7 @@
     return Object.assign({}, report, { engineVersion: ENGINE_VERSION, seriesId: seriesId, revision: revision, version: revision, parentId: prior.id || prior.parentId || null, action: action || 'generate', versionCreatedAt: isoNow() });
   }
 
-  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, auditCitations: auditCitations, repairSectionCitations: repairSectionCitations, repairSectionScope: repairSectionScope, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
+  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, auditCitations: auditCitations, repairSectionCitations: repairSectionCitations, pruneUncitedNumericLines: pruneUncitedNumericLines, repairSectionScope: repairSectionScope, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
   root.rpBuildReportPlan = buildPlan;
   root.rpCollectReportFacts = collectFacts;
   root.rpCheckReportData = checkData;
