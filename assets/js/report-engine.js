@@ -109,16 +109,26 @@
     }
     return [];
   }
+  function recordDisplayText(record) {
+    record = record || {};
+    return [record.title_zh, record.titleZh, record.title, record.name, record.summary_zh, record.summaryZh, record.summary]
+      .filter(Boolean).join('\n');
+  }
+  function recordDisplayWithinScope(record, context) {
+    return checkScope(recordDisplayText(record), context).ok;
+  }
   function matches(record, context, domain) {
     if (!record) return false;
-    if (api().recordMatchesContext) return api().recordMatchesContext(record, context, { allowGlobal: false });
+    if (api().recordMatchesContext) {
+      return api().recordMatchesContext(record, context, { allowGlobal: false }) && recordDisplayWithinScope(record, context);
+    }
     var markets = list(record.market_codes || record.marketCodes || record.market_code || record.market || record.region || record.snapshot_market).map(function (item) { return upperCode(item && item.code || item); });
     if (markets.length && !markets.some(function (item) { return context.marketCodes.indexOf(item) >= 0; })) return false;
     var platforms = list(record.platform_keys || record.platformKeys || record.platform_key || record.platform || record.snapshot_platform).map(function (item) { return api().normalizePlatformKey ? api().normalizePlatformKey(item && item.key || item) : lower(item && item.key || item); }).filter(Boolean);
     if (platforms.length && context.platformKeys.length && !platforms.some(function (item) { return context.platformKeys.indexOf(item) >= 0; })) return false;
     var categories = recordScopeCategories(record, domain).map(function (item) { return api().normalizeCategoryCode ? api().normalizeCategoryCode(item && item.code || item) : lower(item && item.code || item); }).filter(Boolean);
     if (categories.length && context.categoryCodes.length && !categories.some(function (item) { return context.categoryCodes.indexOf(item) >= 0; })) return false;
-    return true;
+    return recordDisplayWithinScope(record, context);
   }
   function upperCode(value) { return text(value).trim().toUpperCase(); }
 
@@ -486,6 +496,16 @@
     return { text: repairedText, repairedCount: repairedCount, audit: auditCitations([{ id: 'citation-repair', text: repairedText }], appendix) };
   }
 
+  function repairSectionScope(sectionText, scope) {
+    var removedCount = 0;
+    var repaired = text(sectionText).split(/\r?\n/).filter(function (line) {
+      if (!line.trim() || checkScope(line, scope).ok) return true;
+      removedCount++;
+      return false;
+    }).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    return { text: repaired, removedCount: removedCount, audit: checkScope(repaired, scope) };
+  }
+
   function scoreCompleteness(plan, check, appendix, facts) {
     plan = plan || {}; check = check || {}; appendix = appendix || [];
     var sections = list(plan.sections);
@@ -504,9 +524,35 @@
     var violations = [];
     var marketNames = list(scope.marketNames).map(lower);
     var platformNames = list(scope.platformNames).map(lower);
-    var knownMarkets = ['全球', 'global', '东南亚', '北美', '欧洲', '中东', '拉美', '日韩', '印尼', '印度尼西亚', '越南', '泰国', '马来西亚', '菲律宾', '新加坡', '日本', '韩国', '巴西', '墨西哥', '英国', '法国', '德国'];
-    knownMarkets.forEach(function (value) { if (raw.indexOf(value) >= 0 && marketNames.indexOf(value) < 0) violations.push(value); });
-    ['shopee', 'lazada', 'temu', 'walmart', 'shein', 'noon', 'mercado libre'].forEach(function (value) { if (raw.indexOf(value) >= 0 && platformNames.indexOf(value) < 0) violations.push(value); });
+    var marketCodes = list(scope.marketCodes).map(upperCode);
+    var knownMarkets = [
+      { code: 'GLOBAL', terms: ['全球', 'global'] }, { code: 'SEA', terms: ['东南亚', 'southeast asia'] },
+      { code: 'NA', terms: ['北美', 'north america'] }, { code: 'EU', terms: ['欧洲', '欧盟', 'european union'] },
+      { code: 'ME', terms: ['中东', 'middle east'] }, { code: 'LATAM', terms: ['拉美', 'latin america'] },
+      { code: 'US', terms: ['美国', '美区', 'united states'] }, { code: 'ID', terms: ['印尼', '印度尼西亚', 'indonesia'] },
+      { code: 'VN', terms: ['越南', 'vietnam'] }, { code: 'TH', terms: ['泰国', 'thailand'] },
+      { code: 'MY', terms: ['马来西亚', 'malaysia'] }, { code: 'PH', terms: ['菲律宾', 'philippines'] },
+      { code: 'SG', terms: ['新加坡', 'singapore'] }, { code: 'JP', terms: ['日本', 'japan'] },
+      { code: 'KR', terms: ['韩国', 'korea'] }, { code: 'BR', terms: ['巴西', 'brazil'] },
+      { code: 'MX', terms: ['墨西哥', 'mexico'] }, { code: 'GB', terms: ['英国', 'united kingdom'] },
+      { code: 'FR', terms: ['法国', 'france'] }, { code: 'DE', terms: ['德国', 'germany'] }
+    ];
+    knownMarkets.forEach(function (market) {
+      if (marketCodes.indexOf(market.code) >= 0) return;
+      market.terms.forEach(function (value) { if (raw.indexOf(value) >= 0 && marketNames.indexOf(value) < 0) violations.push(value); });
+    });
+    var platformKeys = list(scope.platformKeys).map(lower);
+    [
+      { key: 'amazon', terms: ['amazon', '亚马逊'] }, { key: 'tiktok-shop', terms: ['tiktok shop'] },
+      { key: 'aliexpress', terms: ['aliexpress', '速卖通'] }, { key: 'ebay', terms: ['ebay'] },
+      { key: 'shopee', terms: ['shopee'] }, { key: 'lazada', terms: ['lazada'] },
+      { key: 'temu', terms: ['temu'] }, { key: 'walmart', terms: ['walmart'] },
+      { key: 'shein', terms: ['shein'] }, { key: 'noon', terms: ['noon'] },
+      { key: 'mercado-libre', terms: ['mercado libre'] }
+    ].forEach(function (platform) {
+      if (platformKeys.indexOf(platform.key) >= 0) return;
+      platform.terms.forEach(function (value) { if (raw.indexOf(value) >= 0 && platformNames.indexOf(value) < 0) violations.push(value); });
+    });
     return { ok: violations.length === 0, violations: uniq(violations) };
   }
 
@@ -670,7 +716,7 @@
     return Object.assign({}, report, { engineVersion: ENGINE_VERSION, seriesId: seriesId, revision: revision, version: revision, parentId: prior.id || prior.parentId || null, action: action || 'generate', versionCreatedAt: isoNow() });
   }
 
-  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, auditCitations: auditCitations, repairSectionCitations: repairSectionCitations, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
+  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, auditCitations: auditCitations, repairSectionCitations: repairSectionCitations, repairSectionScope: repairSectionScope, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
   root.rpBuildReportPlan = buildPlan;
   root.rpCollectReportFacts = collectFacts;
   root.rpCheckReportData = checkData;
