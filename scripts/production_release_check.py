@@ -53,6 +53,21 @@ def production_origin(site_url: str) -> str:
     return f"https://{parsed.netloc}"
 
 
+def validate_webhook_probe(status: int, raw: bytes, billing_enabled: bool) -> str:
+    payload = parse_json(raw, "billing webhook signature probe")
+    error = payload.get("error") if isinstance(payload, dict) else None
+    if status == 400 and error == "INVALID_STRIPE_SIGNATURE":
+        return "signature_verified"
+    if not billing_enabled and status == 503 and error == "BILLING_WEBHOOK_NOT_CONFIGURED":
+        return "disabled_fail_closed"
+    expected = "400 INVALID_STRIPE_SIGNATURE" if billing_enabled else (
+        "400 INVALID_STRIPE_SIGNATURE or 503 BILLING_WEBHOOK_NOT_CONFIGURED"
+    )
+    raise ReleaseCheckError(
+        f"billing webhook probe expected {expected}, got HTTP {status} {error or 'UNKNOWN_ERROR'}"
+    )
+
+
 def main() -> int:
     site = required("PRODUCTION_SITE_URL").rstrip("/") + "/"
     supabase = required("SUPABASE_URL").rstrip("/")
@@ -153,13 +168,13 @@ def main() -> int:
     billing_status = parse_json(raw, "billing status probe")
     if status != 200 or "billing_enabled" not in billing_status or not billing_status.get("entitlement"):
         raise ReleaseCheckError(f"billing status probe failed: HTTP {status}")
+    billing_enabled = billing_status.get("billing_enabled") is True
 
-    status, _, _ = request(
+    status, raw, _ = request(
         "POST", f"{supabase}/functions/v1/billing-webhook",
         headers={"apikey": anon_key, "Stripe-Signature": "t=0,v1=invalid"}, body={},
     )
-    if status != 400:
-        raise ReleaseCheckError(f"billing webhook signature probe expected 400, got {status}")
+    webhook_guard = validate_webhook_probe(status, raw, billing_enabled)
 
     print(json.dumps({
         "status": "passed",
@@ -170,8 +185,8 @@ def main() -> int:
         "storage": True,
         "edge_functions": True,
         "auth_error_contracts": True,
-        "billing_status": True,
-        "webhook_signature_guard": True,
+        "billing_status": "enabled" if billing_enabled else "disabled",
+        "webhook_signature_guard": webhook_guard,
         "frontend": True,
     }, ensure_ascii=False, indent=2))
     return 0
