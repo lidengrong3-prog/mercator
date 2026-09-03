@@ -170,6 +170,30 @@ test('policy and rule classifications are not treated as product-category scope'
   assert.equal(facts.records.platform.length, 1);
 });
 
+test('current US production evidence stays within the per-section prompt budget', () => {
+  const { window, api, engine } = createEnvironment();
+  const context = setScope(api, ['US'], ['amazon', 'tiktok-shop', 'aliexpress', 'ebay'], ['pet-supplies']);
+  window.policiesJsonData = JSON.parse(fs.readFileSync(path.join(root, 'data', 'policies.json'), 'utf8'));
+  window.rulesJsonData = JSON.parse(fs.readFileSync(path.join(root, 'data', 'rules.json'), 'utf8'));
+  window.jayGetCountryCommerceState = () => ({
+    status: 'ready',
+    rows: [{
+      id: 'production-market-fixture', title_zh: '美国电商市场环境', value: '待补充',
+      source: 'FRED', source_url: 'https://fred.stlouisfed.org/', source_record_id: 'production-market-fixture',
+      source_kind: 'official', source_type: 'government', verification_status: 'verified',
+      collected_at: '2026-09-03T00:00:00Z', evidence_hash: 'c'.repeat(64),
+    }],
+  });
+  const facts = engine.collectFacts(context, []);
+  const plan = engine.buildPlan(context, 'market-research', 'market-research');
+  assert.ok(Object.values(facts.records).reduce((count, entries) => count + entries.length, 0) > 250);
+  plan.sections.forEach((section) => {
+    const prompt = engine.buildSectionPrompt(plan, section, facts, { status: 'not_available' }, '');
+    assert.ok(prompt.user.length <= 24_000, `${section.id} prompt was ${prompt.user.length} characters`);
+    assert.ok(prompt.system.length + prompt.user.length < 30_000, `${section.id} exceeded the Edge Function limit`);
+  });
+});
+
 test('explicit product-category scope still excludes mismatched policy records', () => {
   const { window, api, engine } = createEnvironment();
   const context = setScope(api, ['US'], ['amazon'], ['pet-supplies']);
