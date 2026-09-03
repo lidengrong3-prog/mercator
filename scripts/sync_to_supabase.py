@@ -981,6 +981,27 @@ def main():
     else:
         print("[SYNC] Legacy table fan-out disabled; publishing market_data bundle only")
 
+    # Applicability rows reference these catalogs through foreign keys, so a
+    # full sync must publish every scope directory before factual records.
+    if args.only in ("catalog", "all"):
+        print("[SYNC] Processing market scope catalog...")
+        catalog_rows = build_catalog_rows()
+        for table, rows in catalog_rows.items():
+            conflict_key = {
+                "market_catalog": "code",
+                "platform_catalog": "key",
+                "market_platforms": "market_code,platform_key",
+                "jurisdiction_catalog": "code",
+                "category_profiles": "code",
+                "report_template_catalog": "id",
+            }[table]
+            print(f"  {table}: {len(rows)} rows ready")
+            if not args.dry_run and rows:
+                n = supabase_upsert(supa_url, supa_key, table, rows, conflict_key=conflict_key)
+                summary["results"][table] = n
+                if n != len(rows):
+                    failures.append(f"{table}: expected {len(rows)}, synced {n}")
+
     # Raw provenance is written before the public KV bundle.  Pending and
     # rejected records remain auditable here but are filtered from formal
     # browser projections by RLS and the shared data layer.
@@ -1016,27 +1037,6 @@ def main():
         else:
             applicability_rows = build_applicability_rows(quality_report, args.only)
             print(f"  market_data_applicability: {len(applicability_rows)} formal rows ready")
-
-    # Versioned metadata catalog. It is separate from factual market_data so
-    # adding a market/platform does not turn a catalog row into a fake metric.
-    if args.only in ("catalog", "all"):
-        print("[SYNC] Processing market scope catalog...")
-        catalog_rows = build_catalog_rows()
-        for table, rows in catalog_rows.items():
-            conflict_key = {
-                "market_catalog": "code",
-                "platform_catalog": "key",
-                "market_platforms": "market_code,platform_key",
-                "jurisdiction_catalog": "code",
-                "category_profiles": "code",
-                "report_template_catalog": "id",
-            }[table]
-            print(f"  {table}: {len(rows)} rows ready")
-            if not args.dry_run and rows:
-                n = supabase_upsert(supa_url, supa_key, table, rows, conflict_key=conflict_key)
-                summary["results"][table] = n
-                if n != len(rows):
-                    failures.append(f"{table}: expected {len(rows)}, synced {n}")
 
     # Policies
     if legacy_sync and args.only in ("policies", "all"):
