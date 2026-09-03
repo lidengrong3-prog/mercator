@@ -11,8 +11,8 @@ const ready = enabled && baseUrl && Object.values(credentials).every((account) =
 test.describe('production authenticated browser acceptance', () => {
   test.skip(!ready, 'set RUN_PRODUCTION_ACCEPTANCE=1 and two production test accounts to run this suite');
   // The report engine generates one request per chapter. Keep enough room for
-  // a real production AI call while still bounding a stuck deployment.
-  test.setTimeout(300_000);
+  // all sequential production AI calls, exports and account-isolation checks.
+  test.setTimeout(600_000);
 
   async function login(page, account) {
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
@@ -54,15 +54,27 @@ test.describe('production authenticated browser acceptance', () => {
     throw new Error(`timed out waiting for ${table}`);
   }
 
-  async function waitForReportPreview(page, timeout = 280_000) {
+  async function waitForReportPreview(page, timeout = 480_000) {
     const deadline = Date.now() + timeout;
     while (Date.now() < deadline) {
       const state = await page.evaluate(() => {
         const preview = document.querySelector('#rp-v2-preview-body');
         const dataCheck = document.querySelector('#rp-v2-data-check');
+        const publishStatus = document.querySelector('#rp-v2-publish-status');
+        const generationActive = window.rpGenInterval === true;
+        const generating = !!preview?.querySelector('.rp-v2-generating');
         return {
-          ready: !!preview && !preview.classList.contains('rp-empty-preview'),
+          ready: !!preview
+            && !preview.classList.contains('rp-empty-preview')
+            && !generating
+            && !generationActive
+            && publishStatus?.classList.contains('is-publishable'),
+          generationActive,
+          generating,
           previewClass: preview?.className || '',
+          publishStatusClass: publishStatus?.className || '',
+          publishStatusText: publishStatus?.textContent?.trim() || '',
+          saveStatusText: document.querySelector('#rp-v2-save-status')?.textContent?.trim() || '',
           dataCheckClass: dataCheck?.className || '',
           dataCheckText: dataCheck?.textContent?.trim() || '',
           toasts: Array.isArray(window.__productionAcceptanceToasts)
@@ -71,7 +83,9 @@ test.describe('production authenticated browser acceptance', () => {
       });
       if (state.ready) return;
       const terminalToast = state.toasts.find((message) => /停止生成|无法创建报告运行记录|请先登录|额度|相同报告/.test(message));
-      if (/is-blocked/.test(state.dataCheckClass) || terminalToast) {
+      const terminalReportState = !state.generationActive
+        && (/is-blocked/.test(state.publishStatusClass) || /生成失败/.test(state.publishStatusText));
+      if (/is-blocked/.test(state.dataCheckClass) || terminalReportState || terminalToast) {
         const runs = await rows(page, 'report_runs', {});
         throw new Error(`report generation stopped before preview: ${JSON.stringify({ ...state, latestRun: runs[0] || null })}`);
       }
@@ -79,6 +93,11 @@ test.describe('production authenticated browser acceptance', () => {
     }
     const runs = await rows(page, 'report_runs', {});
     const state = await page.evaluate(() => ({
+      generationActive: window.rpGenInterval === true,
+      generating: !!document.querySelector('#rp-v2-preview-body .rp-v2-generating'),
+      publishStatusClass: document.querySelector('#rp-v2-publish-status')?.className || '',
+      publishStatusText: document.querySelector('#rp-v2-publish-status')?.textContent?.trim() || '',
+      saveStatusText: document.querySelector('#rp-v2-save-status')?.textContent?.trim() || '',
       dataCheckClass: document.querySelector('#rp-v2-data-check')?.className || '',
       dataCheckText: document.querySelector('#rp-v2-data-check')?.textContent?.trim() || '',
       toasts: window.__productionAcceptanceToasts || [],
@@ -156,7 +175,7 @@ test.describe('production authenticated browser acceptance', () => {
     await page.locator('#rp-q-category').fill('宠物用品');
     await page.locator('#rp-questionnaire .rp-q-go').click();
     await waitForReportPreview(page);
-    await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端', { timeout: 30_000 });
+    await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端', { timeout: 60_000 });
 
     const reportRow = await waitForRow(page, 'generated_reports', { title: browserReportTitle }, (row) => row.save_status === 'saved');
     expect(reportRow.generation_status).toBe('completed');

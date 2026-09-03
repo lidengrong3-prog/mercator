@@ -266,6 +266,14 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Run real browser account-isolation acceptance
         run: JAY_PLAYWRIGHT_BASE_URL="$PRODUCTION_SITE_URL" npm run test:browser:production
+      - name: Upload browser acceptance diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-acceptance-diagnostics-${{ github.run_id }}
+          path: test-results/
+          if-no-files-found: warn
+          retention-days: 7
 
   production-smoke:
     needs: browser-authenticated-acceptance
