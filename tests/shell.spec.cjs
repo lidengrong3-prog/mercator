@@ -1400,6 +1400,30 @@ test('market scope can register and switch to a market-specific platform set', a
   expect(state.scope.platformCount).toBe(1);
 });
 
+test('remote catalog without aliases still recognizes localized market names', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  const result = await page.evaluate(() => {
+    const api = window.JAY_MARKET_SCOPE_API;
+    const config = api.getConfig();
+    api.hydrateCatalog({
+      markets: config.markets.map((market) => ({ ...market, aliases: [] })),
+      platforms: config.platforms.map((platform) => ({ ...platform })),
+      marketPlatforms: config.marketPlatforms.map((relation) => ({ ...relation })),
+      jurisdictions: config.jurisdictions.map((jurisdiction) => ({ ...jurisdiction })),
+      categories: config.categoryProfiles.map((category) => ({ ...category })),
+      reportTemplates: config.reportTemplates.map((template) => ({ ...template })),
+    });
+    return {
+      nameCode: api.normalizeMarketCode('美国'),
+      labelCode: api.normalizeMarketCode('美国市场'),
+      allowed: api.isAllowedMarket('美国'),
+    };
+  });
+
+  expect(result).toEqual({ nameCode: 'US', labelCode: 'US', allowed: true });
+});
+
 test('market without platform relations shows an explicit platform empty state', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
