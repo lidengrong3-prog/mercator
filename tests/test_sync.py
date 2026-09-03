@@ -1,5 +1,6 @@
 import json
 import os
+import inspect
 import sys
 import tempfile
 import unittest
@@ -13,6 +14,21 @@ import sync_to_supabase  # noqa: E402
 
 
 class SyncTests(unittest.TestCase):
+    def test_full_sync_registers_catalogs_before_applicability_rows(self):
+        source = inspect.getsource(sync_to_supabase.main)
+        catalog_at = source.index('[SYNC] Processing market scope catalog')
+        provenance_at = source.index('[SYNC] Processing source registry and raw evidence')
+        applicability_at = source.index('market_data_applicability: {len(applicability_rows)}')
+        public_bundle_at = source.index('[SYNC] Processing public market_data bundle')
+        self.assertLess(catalog_at, provenance_at)
+        self.assertLess(provenance_at, applicability_at)
+        self.assertLess(applicability_at, public_bundle_at)
+
+        catalog_tables = list(sync_to_supabase.build_catalog_rows())
+        self.assertLess(catalog_tables.index("market_catalog"), catalog_tables.index("market_platforms"))
+        self.assertLess(catalog_tables.index("platform_catalog"), catalog_tables.index("market_platforms"))
+        self.assertLess(catalog_tables.index("category_profiles"), catalog_tables.index("report_template_catalog"))
+
     def test_public_bundle_is_built_for_frontend_market_data_table(self):
         report = {
             "generated_at": "2026-08-27T00:00:00+00:00",

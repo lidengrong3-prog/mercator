@@ -369,6 +369,15 @@ test('market catalog foundation is relational, versionable, and read-only to the
   assert.equal(document.querySelector('.country-linked-actions'), null);
 });
 
+test('market platform status migration accepts configured schema-only relationships', () => {
+  const migration = fs.readFileSync(
+    path.join(root, 'supabase', 'migrations', '20260903010000_market_platform_data_status.sql'),
+    'utf8',
+  );
+  assert.match(migration, /DROP CONSTRAINT IF EXISTS market_platforms_data_status_check/);
+  assert.match(migration, /data_status IN \('verified', 'configured', 'partial', 'unknown', 'schema_only'\)/);
+});
+
 test('authenticated workspace data uses the canonical Supabase layer', () => {
   const migration = fs.readFileSync(
     path.join(root, 'supabase', 'migrations', '20260825000000_unify_user_data.sql'),
