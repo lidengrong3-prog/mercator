@@ -50,6 +50,8 @@ jobs:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       DEEPSEEK_API_URL: ${{ secrets.DEEPSEEK_API_URL }}
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       DEEPSEEK_MODEL: ${{ secrets.DEEPSEEK_MODEL }}
@@ -70,11 +72,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Validate required backend release secrets
         shell: bash
         run: |
           set -eu
-          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID SUPABASE_DB_PASSWORD DEEPSEEK_API_KEY DEEPSEEK_MODEL ALLOWED_ORIGINS; do
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID SUPABASE_DB_PASSWORD SUPABASE_URL SUPABASE_SERVICE_KEY DEEPSEEK_API_KEY DEEPSEEK_MODEL ALLOWED_ORIGINS; do
             test -n "${!name:-}" || { echo "Missing production secret: $name" >&2; exit 1; }
           done
       - name: Validate formal production origin
@@ -116,6 +121,8 @@ jobs:
             $1 == version && $2 == "|" && $3 == version { matched = 1 }
             END { exit matched ? 0 : 1 }
           ' migration-list.txt
+      - name: Sync validated market data and provenance
+        run: python scripts/sync_to_supabase.py
       - name: Configure Edge Function secrets
         shell: bash
         run: |

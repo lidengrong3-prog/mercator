@@ -754,11 +754,13 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(releaseCheck, /X-JAY-Release/);
   assert.match(releaseCheck, /storage_bucket/);
   const migrationsAt = workflow.indexOf('Apply database migrations before functions');
+  const dataSyncAt = workflow.indexOf('Sync validated market data and provenance');
   const functionsAt = workflow.indexOf('Deploy JWT-protected Edge Functions');
   const acceptanceAt = workflow.indexOf('Run two-account production report acceptance');
   const frontendAt = workflow.indexOf('Assemble static site after backend acceptance');
   assert.ok(migrationsAt > 0);
-  assert.ok(functionsAt > migrationsAt);
+  assert.ok(dataSyncAt > migrationsAt);
+  assert.ok(functionsAt > dataSyncAt);
   assert.ok(acceptanceAt > functionsAt);
   assert.ok(frontendAt > acceptanceAt);
   assert.match(workflow, /needs: deploy-backend/);
@@ -768,6 +770,8 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(workflow, /Verify release ref, worktree and migration ordering/);
   assert.match(workflow, /Validate formal production origin/);
   assert.match(workflow, /Verify remote migration head/);
+  assert.match(workflow, /python scripts\/sync_to_supabase\.py/);
+  assert.match(workflow, /SUPABASE_SERVICE_KEY/);
   assert.match(workflow, /migration list --linked/);
   assert.match(workflow, /RELEASE_SHA/);
   assert.match(workflow, /RELEASE_MIGRATION_HEAD/);
