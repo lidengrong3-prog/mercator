@@ -2,8 +2,8 @@
   "meta": {
     "market": "美国保健品 (US Dietary Supplements)",
     "cat_key": "supplements",
-    "generated_at": "2026-08-31T21:30:21.221072+00:00",
-    "as_of": "2026-08-31",
+    "generated_at": "2026-09-03T02:53:00.622966+00:00",
+    "as_of": "2026-09-03",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
       "country",
@@ -109,7 +109,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-08-31"
+    "as_of": "2026-09-03"
   },
   "findings": [
     "保健品为高增速品类（CAGR ≈ 7.9%），维生素/蛋白/草本复购强。",
@@ -130,7 +130,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "维生素",
         "蛋白",
@@ -149,7 +149,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "蛋白",
         " gummies",
@@ -168,7 +168,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "家庭基础",
         "维生素",
@@ -186,7 +186,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "收藏/长尾",
         "二手"
@@ -203,7 +203,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "手工草本",
         "天然",
@@ -221,7 +221,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "品牌官网",
         "订阅制",
@@ -239,7 +239,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "低价软糖",
         "基础维生素"
@@ -305,7 +305,7 @@
       "severity": "high",
       "source": "FDA",
       "source_url": "https://www.fda.gov/food/dietary-supplements",
-      "as_of": "2026-08-31"
+      "as_of": "2026-09-03"
     },
     {
       "platform": "FTC",
@@ -314,7 +314,7 @@
       "severity": "high",
       "source": "FTC",
       "source_url": "https://www.ftc.gov/business-guidance/industry/health-care",
-      "as_of": "2026-08-31"
+      "as_of": "2026-09-03"
     },
     {
       "platform": "Amazon",
@@ -323,7 +323,7 @@
       "severity": "medium",
       "source": "Amazon Seller Central",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-31"
+      "as_of": "2026-09-03"
     },
     {
       "platform": "TikTok Shop（美国）",
@@ -332,7 +332,7 @@
       "severity": "high",
       "source": "TikTok Shop 卖家中心",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-31"
+      "as_of": "2026-09-03"
     }
   ],
   "policies": [
@@ -344,7 +344,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17659/rahim-shafa-denial-of-hearing-final-debarment-order",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -355,7 +355,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17603/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -366,7 +366,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17601/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -377,7 +377,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17536/schedules-of-controlled-substances-placement-of-cipepofol-in-schedule-iv",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -388,7 +388,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/26/2026-17380/international-drug-scheduling-single-convention-on-narcotic-drugs-convention-on-psychotropic",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -399,7 +399,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17084/advisory-committee-oncologic-drugs-advisory-committee-renewal",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -410,7 +410,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16960/potency-assessment-of-active-immunotherapy-products-draft-guidance-for-industry-availability",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -421,7 +421,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16944/gardenia-blue-interest-group-filing-of-color-additive-petition",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -432,7 +432,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16939/gnt-usa-llc-filing-of-color-additive-petition",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -443,7 +443,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16942/food-additives-permitted-in-feed-and-drinking-water-of-animals-chromium-dl-methionine-chelate",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -454,7 +454,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16715/agency-information-collection-activities-proposed-collection-comment-request-investigational-new",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -465,7 +465,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16729/medical-devices-classification-of-accessories-distinct-from-other-devices-proposed-list-of",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -476,7 +476,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16728/gastroenterology-urology-devices-reclassification-of-diagnostic-endoscopic-light-source-systems-to",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -487,7 +487,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16727/hematology-and-pathology-devices-reclassification-of-in-situ-hybridization-test-systems-for-use-with",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -498,7 +498,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16296/substances-generally-recognized-as-safe",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -509,7 +509,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/05/2026-15920/micro-tracers-inc-response-to-objections-and-requests-for-a-public-hearing",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -520,7 +520,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15429/butylated-hydroxytoluene-bht-request-for-information-reopening-of-comment-period",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -531,7 +531,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15395/cercla-administrative-settlement-agreement-with-prospective-purchaser-and-covenants-not-to-sue",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -542,7 +542,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/29/2026-15297/statement-of-organization-functions-and-delegations-of-authority",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -553,7 +553,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/20/2026-14573/food-standards-of-identity-modernization-pasteurized-orange-juice",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -564,7 +564,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/13/2026-14073/drug-establishment-registration-and-drug-listing-requirements-for-establishments-engaged-in",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -575,7 +575,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/07/2026-13716/new-animal-drugs-approval-of-new-animal-drug-applications-withdrawal-of-approval-of-new-animal-drug",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -586,7 +586,7 @@
       "url": "https://www.federalregister.gov/documents/2026/06/24/2026-12700/special-supplemental-nutrition-program-for-women-infants-and-children-wic-revisions-in-the-wic-food",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -597,7 +597,7 @@
       "url": "https://www.federalregister.gov/documents/2026/05/22/2026-10284/protein-efficiency-ratio-rat-bioassay-studies-to-demonstrate-that-a-new-infant-formula-supports-the",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     }
   ],
@@ -608,10 +608,10 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 2106(营养制剂) 多为零基础关税，但胶囊/瓶体包材与生产设备受 Section 301 附加税约束。出口须以 USTR 检索确认具体编码税率。",
-      "date": "2026-08-31",
+      "date": "2026-09-03",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": false
     },
     {
@@ -623,7 +623,7 @@
       "date": "2026-08-17",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16729/medical-devices-classification-of-accessories-distinct-from-other-devices-proposed-list-of",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -635,7 +635,7 @@
       "date": "2026-08-17",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16728/gastroenterology-urology-devices-reclassification-of-diagnostic-endoscopic-light-source-systems-to",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -647,7 +647,7 @@
       "date": "2026-08-17",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16727/hematology-and-pathology-devices-reclassification-of-in-situ-hybridization-test-systems-for-use-with",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     }
   ]

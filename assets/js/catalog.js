@@ -207,6 +207,18 @@ function escapeHtml(s){
     .replace(/"/g,'&quot;')
     .replace(/'/g,'&#39;');
 }
+// Normalize externally supplied links before they reach an href attribute.
+// Only HTTPS sources are linkable; invalid, empty, and script/data URLs are
+// treated as missing rather than rendered as a clickable link.
+function jaySafeHttpsUrl(value){
+  var raw=String(value===null||value===undefined?'':value).trim();
+  if(!raw||!/^https:\/\//i.test(raw))return '';
+  try{
+    var parsed=new URL(raw,document.baseURI);
+    if(parsed.protocol!=='https:'||!parsed.hostname)return '';
+    return parsed.href;
+  }catch(e){return '';}
+}
 // ============ 前端健壮性基础工具 ============
 // 防抖：避免输入时高频重渲染
 function jayDebounce(fn,wait){

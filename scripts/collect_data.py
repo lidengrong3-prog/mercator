@@ -82,6 +82,10 @@ def _industry_market_alias_pattern(values):
         escaped = re.escape(raw)
         if re.search(r'[\u3400-\u9fff]', raw):
             parts.append(escaped)
+        elif re.fullmatch(r'[A-Za-z]{2}', raw):
+            # ISO codes such as ID/DE are meaningful only as explicit uppercase
+            # tokens. Do not infer a market from URL parameters like affiliate_id.
+            parts.append(rf'(?<![A-Za-z0-9_])(?-i:{escaped.upper()})(?![A-Za-z0-9_])')
         else:
             parts.append(rf'(?<![A-Za-z0-9]){escaped}(?![A-Za-z0-9])')
     return re.compile('|'.join(parts), re.IGNORECASE) if parts else None
@@ -433,10 +437,11 @@ def collect_ustr():
     return items
 
 # ---- Source: TikTok Shop Policy Center ----
-def collect_tiktok_shop():
+def collect_tiktok_shop(include_status=False):
     """Collect TikTok Shop policy updates."""
     print("[3/6] Collecting TikTok Shop policy updates...")
     items = []
+    source_checked = False
     
     # TikTok Shop seller academy policy page
     urls = [
@@ -447,6 +452,7 @@ def collect_tiktok_shop():
         html = fetch_html(url)
         if not html:
             continue
+        source_checked = True
         
         # Try to find policy update entries
         # Look for text patterns like policy titles
@@ -480,10 +486,10 @@ def collect_tiktok_shop():
             break
     
     print(f"  Found {len(items)} items from TikTok Shop")
-    return items
+    return (items, source_checked) if include_status else items
 
 # ---- Source: Amazon Seller Central News ----
-def collect_amazon():
+def collect_amazon(include_status=False):
     """Collect Amazon Seller Central announcements."""
     print("[4/6] Collecting Amazon Seller Central announcements...")
     items = []
@@ -493,7 +499,7 @@ def collect_amazon():
         html = fetch_html('https://sellercentral.amazon.com/gp/help/news')
     if not html:
         print("  [WARN] Could not fetch Amazon Seller Central news")
-        return items
+        return (items, False) if include_status else items
     
     # Find announcement titles
     patterns = [
@@ -538,7 +544,7 @@ def collect_amazon():
             break
     
     print(f"  Found {len(items)} items from Amazon")
-    return items
+    return (items, True) if include_status else items
 
 # ---- Source: Chinese Cross-border E-commerce News ----
 def collect_cn_news():
@@ -1737,6 +1743,7 @@ def main():
     # Collect from all sources
     all_policies = []
     all_rules = []
+    rule_source_checked = False
     
     # Policy sources
     try:
@@ -1777,13 +1784,17 @@ def main():
     
     # Rule sources
     try:
-        all_rules.extend(collect_tiktok_shop())
+        items, checked = collect_tiktok_shop(include_status=True)
+        all_rules.extend(items)
+        rule_source_checked = rule_source_checked or checked
     except Exception as e:
         print(f"  [ERROR] TikTok Shop: {e}")
         traceback.print_exc()
     
     try:
-        all_rules.extend(collect_amazon())
+        items, checked = collect_amazon(include_status=True)
+        all_rules.extend(items)
+        rule_source_checked = rule_source_checked or checked
     except Exception as e:
         print(f"  [ERROR] Amazon: {e}")
         traceback.print_exc()
@@ -1847,6 +1858,8 @@ def main():
     
     policies_data, p_added = merge_data(policies_file, all_policies, baseline_kind='policies')
     rules_data, r_added = merge_data(rules_file, all_rules, baseline_kind='rules')
+    if rule_source_checked:
+        rules_data['last_checked_at'] = NOW_ISO
     
     # Save
     os.makedirs(DATA_DIR, exist_ok=True)

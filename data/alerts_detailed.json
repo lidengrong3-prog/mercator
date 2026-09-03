@@ -1,25 +1,41 @@
 {
   "meta": {
-    "generated_at": "2026-09-01T14:24:41.483827+08:00",
-    "total": 7,
+    "generated_at": "2026-09-03T10:54:00.719657+08:00",
+    "total": 9,
     "sources": {
       "cpsc": 4,
-      "policies": 3
+      "policies": 4
     }
   },
   "alerts": [
     {
-      "id": "pol-20260901-0cbfb20f",
+      "id": "cpsc-cat-20260903-93f47ff8",
       "type": "policy",
       "level": "high",
-      "title": "政策更新：马来西亚的聚乙烯零售包:反倾销税行政审查的最终结果;2023-2024年",
+      "title": "⚠️ 消费电子品类: 近90天76起中国产品召回",
+      "market": "美国",
+      "platform": "CPSC",
+      "detail": "过去90天内，消费电子品类有76起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
+      "date": "2026-09-03",
+      "read": false,
+      "source": "CPSC 数据分析",
+      "url": "https://www.saferproducts.gov/RestWebServices/Recall",
+      "category_codes": [
+        "electronics"
+      ]
+    },
+    {
+      "id": "pol-20260903-3b9c5bf1",
+      "type": "policy",
+      "level": "high",
+      "title": "政策更新：阿曼苏丹国提供的聚乙烯戊二酸酯反应:反倾销税行政审查订正最后结果;2023-2024年",
       "market": "美国",
       "platform": "tariff",
-      "detail": "美国商务部(Commerce)认定,马来西亚的聚乙烯零售邮包(PRCB)在2023年8月1日至2024年7月31日的审查(POR)期间,不在美国以低于正常价值出售.",
-      "date": "2026-08-07",
+      "detail": "美国商务部(Commerce)正在修订阿曼苏丹国(阿曼)对聚乙烯四甲酸酯树脂(PET树脂)反倾销税令的行政审查最终结果,以纠正一个部级错误. 2023年5月1日为审查期,",
+      "date": "2026-09-02",
       "read": false,
       "source": "Federal Register / 政策分析",
-      "url": "https://www.federalregister.gov/documents/2026/08/07/2026-16185/polyethylene-retail-carrier-bags-from-malaysia-final-results-of-antidumping-duty-administrative",
+      "url": "https://www.federalregister.gov/documents/2026/09/02/2026-17981/polyethylene-terephthalate-resin-from-the-sultanate-of-oman-amended-final-results-of-antidumping",
       "change_type": null,
       "category_codes": []
     }

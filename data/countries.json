@@ -333,8 +333,8 @@
         "https://fred.stlouisfed.org/series/UNRATE"
       ],
       [
-        "联邦基金利率(2026-07-01)",
-        "3.6300000000 %",
+        "联邦基金利率(2026-08-01)",
+        "3.63 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/FEDFUNDS"
       ],
@@ -352,19 +352,19 @@
       ],
       [
         "零售销售(2026-07-01)",
-        "763602.0 百万美元",
+        "763602 百万美元",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/RSAFS"
       ],
       [
-        "10Y国债收益率(2026-08-28)",
-        "4.73 %",
+        "10Y国债收益率(2026-09-01)",
+        "4.79 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/DGS10"
       ],
       [
         "新屋开工(2026-07-01)",
-        "1239.0 千套",
+        "1239 千套",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/HOUST"
       ],
@@ -652,7 +652,7 @@
         ]
       ]
     },
-    "macro_updated": "2026-08-31 21:31 UTC"
+    "macro_updated": "2026-09-03 02:52 UTC"
   },
   "jp": {
     "flag": "🇯🇵",

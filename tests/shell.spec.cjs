@@ -47,6 +47,176 @@ test('authenticated entry and read-only demo shell work on desktop', async ({ pa
   await page.screenshot({ path: path.join(os.tmpdir(), 'jay-guanhai-desktop.png'), fullPage: true });
 });
 
+test('first load initializes country data without a dependency race', async ({ page }) => {
+  const pageErrors = [];
+  const countryLoadErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error' && message.text().includes('Failed to load countries.json')) {
+      countryLoadErrors.push(message.text());
+    }
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.waitForFunction(() => Object.keys(window.countryDataSource || {}).includes('us'));
+
+  expect(pageErrors).toEqual([]);
+  expect(countryLoadErrors).toEqual([]);
+});
+
+test('report inline citations open a traceable source snapshot', async ({ page }) => {
+  const pageErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => {
+    window.switchPage('report');
+    window.rpV2GoStep(3);
+    const body = document.getElementById('rp-v2-preview-body');
+    body.classList.remove('rp-empty-preview');
+    body.innerHTML = '<div class="rp-v2-rpt">' + window.rpRenderReportWithCharts(
+      '## 市场结论\n\n已核验记录显示该指标为 12%。[S001]',
+      [{
+        citation: 'S001', source: '美国官方测试来源', recordId: 'source-record-001',
+        dataSnapshotAt: '2026-09-02T00:00:00Z', verificationStatus: 'verified',
+        evidenceHash: 'a'.repeat(64), url: 'https://example.com/source-record-001',
+      }],
+    ) + '</div>';
+  });
+
+  await expect(page.locator('[data-report-citation="S001"]')).toHaveText('[S001]');
+  await page.locator('[data-report-citation="S001"]').first().click();
+  await expect(page.locator('#rp-ai-modal')).toContainText('原始记录 ID');
+  await expect(page.locator('#rp-ai-modal')).toContainText('source-record-001');
+  await expect(page.locator('#rp-ai-modal')).toContainText('2026-09-02T00:00:00Z');
+  await expect(page.locator('#rp-ai-modal .rp-citation-source-link')).toHaveAttribute('href', 'https://example.com/source-record-001');
+  expect(pageErrors).toEqual([]);
+});
+
+test('unified search aggregates sourced records and preserves market context', async ({ page }) => {
+  const pageErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.waitForFunction(() => (
+    window.policiesJsonData && window.policiesJsonData.items && window.policiesJsonData.items.length
+    && window.rulesJsonData && window.rulesJsonData.items && window.rulesJsonData.items.length
+    && typeof window.jayRunUnifiedSearch === 'function'
+  ));
+
+  await page.evaluate(() => {
+    window.prApplyImportedPayload({
+      products: [{
+        商品名: '搜索验收宠物饮水器', 市场: '美国', 平台: 'Amazon', 类目: '宠物用品',
+        售价: '$19.99', 更新时间: '2026-09-01', 来源链接: 'https://example.com/product-1',
+      }],
+      shops: [{
+        店铺名: '搜索验收店铺', 市场: '美国', 平台: 'Amazon', 主营类目: '宠物用品',
+        更新时间: '2026-09-01', 来源记录ID: 'shop-search-1',
+      }],
+    }, { persist: false, source: 'browser-test' });
+    window.jaySetContentRecords([{
+      title: '搜索验收内容', market: '美国', platform: 'Amazon', category: '宠物用品',
+      type: '短视频', published_at: '2026-09-01', creator: '验收账号', product: '宠物饮水器',
+      source_kind: 'uploaded', source_type: 'user_upload', verification_status: 'uploaded',
+      source_file: 'search-content.csv', source_record_id: 'content-search-1', collected_at: '2026-09-01T08:00:00Z',
+    }]);
+    window.jayRebuildSearch();
+  });
+
+  const aliases = await page.evaluate(() => ({
+    chinesePinyin: window.jayRunUnifiedSearch({ q: 'meiguo' }).items.map((item) => item.record.type + ':' + item.record.title),
+    platformPinyin: window.jayRunUnifiedSearch({ q: 'yamaxun' }).items.map((item) => item.record.type + ':' + item.record.title),
+    chineseAlias: window.jayRunUnifiedSearch({ q: 'sumaitong' }).items.map((item) => item.record.type + ':' + item.record.title),
+    englishName: window.jayRunUnifiedSearch({ q: 'Indonesia' }).items.map((item) => item.record.type + ':' + item.record.title),
+  }));
+  expect(aliases.chinesePinyin.some((item) => item.startsWith('country:') && item.includes('美国'))).toBe(true);
+  expect(aliases.platformPinyin.some((item) => item.startsWith('platform:') && item.includes('Amazon'))).toBe(true);
+  expect(aliases.chineseAlias.some((item) => item.startsWith('platform:') && item.includes('AliExpress'))).toBe(true);
+  expect(aliases.englishName.some((item) => item.startsWith('country:') && item.includes('印度尼西亚'))).toBe(true);
+
+  await page.locator('#global-search').fill('yamaxun');
+  await expect(page.locator('#search-results .result').first()).toContainText('Amazon');
+  await page.locator('#global-search').press('Enter');
+  await expect(page.locator('#search')).toHaveClass(/active/);
+  await expect(page.locator('#page-title')).toHaveText('统一搜索');
+  await expect(page).toHaveURL(/#search\?q=yamaxun/);
+  await expect(page.locator('#unified-search-types .unified-search-type')).toHaveCount(8);
+
+  const counts = await page.locator('#unified-search-types .unified-search-type').evaluateAll((buttons) => (
+    Object.fromEntries(buttons.map((button) => [button.dataset.type, Number(button.querySelector('b').textContent)]))
+  ));
+  expect(counts.country).toBeGreaterThan(0);
+  expect(counts.platform).toBeGreaterThan(0);
+
+  await page.locator('#unified-search-input').fill('');
+  await page.locator('#unified-search-form').evaluate((form) => form.requestSubmit());
+  const allCounts = await page.locator('#unified-search-types .unified-search-type').evaluateAll((buttons) => (
+    Object.fromEntries(buttons.map((button) => [button.dataset.type, Number(button.querySelector('b').textContent)]))
+  ));
+  for (const type of ['country', 'platform', 'policy', 'rule', 'product', 'shop', 'content']) {
+    expect(allCounts[type], `${type} should have a sourced test result`).toBeGreaterThan(0);
+  }
+
+  await page.locator('#unified-search-sort').selectOption('newest');
+  expect(await page.evaluate(() => window.jayGetUnifiedSearchState().sort)).toBe('newest');
+  const sortedDates = await page.evaluate(() => window.jayRunUnifiedSearch({ sort: 'newest' }).items
+    .map((item) => item.record.updatedAt).filter(Boolean).map((value) => new Date(value).getTime()));
+  expect(sortedDates.every((value, index) => index === 0 || sortedDates[index - 1] >= value)).toBe(true);
+  await page.locator('#unified-search-time').selectOption('custom');
+  await expect(page.locator('#unified-search-custom-time')).toBeVisible();
+  await page.locator('#unified-search-from').fill('2026-01-01');
+  await page.locator('#unified-search-to').fill('2026-12-31');
+  const datedCounts = await page.locator('#unified-search-types .unified-search-type').evaluateAll((buttons) => (
+    Object.fromEntries(buttons.map((button) => [button.dataset.type, Number(button.querySelector('b').textContent)]))
+  ));
+  expect(datedCounts.country).toBe(0);
+  expect(datedCounts.platform).toBe(0);
+  await page.screenshot({ path: path.join(os.tmpdir(), 'jay-unified-search.png'), fullPage: true });
+
+  await page.locator('#unified-search-reset').click();
+  await page.locator('#unified-search-types [data-type="product"]').click();
+  await expect(page.locator('#unified-search-results .unified-search-result')).toHaveCount(1);
+  await expect(page.locator('#unified-search-results')).toContainText('搜索验收宠物饮水器');
+  await page.locator('#unified-search-market').selectOption('US');
+  await page.locator('#unified-search-platform').selectOption('amazon');
+  const scopedRecords = await page.locator('#unified-search-results .unified-search-result').evaluateAll((items) => (
+    items.map((item) => item.textContent)
+  ));
+  expect(scopedRecords.every((item) => item.includes('搜索验收宠物饮水器'))).toBe(true);
+
+  await page.locator('#unified-search-reset').click();
+  await page.locator('#unified-search-input').fill('yinni');
+  await page.locator('#unified-search-form').evaluate((form) => form.requestSubmit());
+  await page.locator('#unified-search-results .unified-search-open').first().click();
+  await expect(page.locator('#countries')).toHaveClass(/active/);
+  await expect.poll(() => page.evaluate(() => window.JAY_MARKET_SCOPE.marketCodes)).toEqual(['ID']);
+  await page.goBack();
+  await expect(page.locator('#search')).toHaveClass(/active/);
+  await expect(page.locator('#unified-search-input')).toHaveValue('yinni');
+
+  await page.locator('#unified-search-reset').click();
+  await page.locator('#unified-search-input').fill('yamaxun');
+  await page.locator('#unified-search-form').evaluate((form) => form.requestSubmit());
+  await page.locator('#unified-search-results .unified-search-result').filter({
+    has: page.locator('.type-platform'),
+  }).first().locator('.unified-search-open').click();
+  await expect(page.locator('#platforms')).toHaveClass(/active/);
+  await expect.poll(() => page.evaluate(() => ({
+    markets: window.JAY_MARKET_SCOPE.marketCodes,
+    platforms: window.JAY_MARKET_SCOPE.platformKeys,
+  }))).toEqual({ markets: ['US'], platforms: ['amazon'] });
+  await page.goBack();
+  await expect(page.locator('#search')).toHaveClass(/active/);
+  await expect(page.locator('#unified-search-input')).toHaveValue('yamaxun');
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
+  expect(pageErrors).toEqual([]);
+});
+
 test('mobile shell uses a drawer without horizontal overflow', async ({ page }) => {
   const pageErrors = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
@@ -1057,6 +1227,150 @@ test('uploaded catalog cache is account-scoped and service errors are explicit',
   expect(state.errors.server).toContain('服务暂时不可用');
   expect(state.identitiesMatch).toBe(true);
   expect(state.purgedOnSignOut).toBe(true);
+});
+
+test('pricing remains disabled by default and renders payment failures as text', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => window.switchPage('pricing'));
+  await expect(page.locator('#prc-billing-notice')).toContainText('不会创建订单');
+  await expect(page.locator('#prc-upgrade-pro')).toBeDisabled();
+
+  await page.evaluate(async () => {
+    window.jayIsDemo = false;
+    window.jayUser = { id: '00000000-0000-4000-8000-000000000001', email: 'billing@example.com' };
+    window.supabaseClient = { auth: { getSession: async () => ({ data: { session: { access_token: 'test-token' } } }) } };
+    window.jayBillingStatusCache = {
+      billing_enabled: true,
+      effective_plan: 'free',
+      subscription: {
+        plan: 'pro', status: 'past_due', provider: '<img src=x onerror=alert(1)>',
+        provider_customer_id: 'cus_test', updated_at: '2026-09-03T00:00:00Z',
+      },
+      entitlement: { monthly_ai_token_limit: 100000, monthly_report_limit: 5, monthly_export_limit: 10 },
+      usage: { ai_tokens: 25000, reports: 2, exports: 3 },
+    };
+    await window.jayRenderPricingTier();
+  });
+  await expect(page.locator('#prc-billing-notice')).toContainText('付款失败');
+  await expect(page.locator('#prc-usage-summary')).toContainText('25,000 / 100,000');
+  await expect(page.locator('#prc-current-tier')).toContainText('<img src=x onerror=alert(1)>');
+  await expect(page.locator('#prc-current-tier img')).toHaveCount(0);
+  await expect(page.locator('#prc-manage-billing')).toBeDisabled();
+});
+
+test('authenticated function errors and network recovery use the real request wrapper', async ({ page }) => {
+  let mode = 'ok';
+  let requestCount = 0;
+  await page.route('**/functions/v1/**', async (route) => {
+    requestCount += 1;
+    if (mode === 'offline-once' && requestCount === 1) return route.abort('internetdisconnected');
+    if (mode === 'timeout') {
+      await new Promise((resolve) => setTimeout(resolve, 1300));
+      try { await route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }); } catch (error) {}
+      return;
+    }
+    const responses = {
+      unauthorized: [401, { error: 'AUTH_REQUIRED' }],
+      forbidden: [403, { error: 'WORKSPACE_FORBIDDEN' }],
+      limited: [429, { error: 'AI_RATE_LIMITED' }],
+      quota: [402, { error: 'AI_QUOTA_EXCEEDED', used_tokens: 100, limit: 100 }],
+      failed: [503, { error: 'SERVICE_UNAVAILABLE' }],
+    };
+    const response = responses[mode] || [200, { ok: true }];
+    await route.fulfill({ status: response[0], contentType: 'application/json', headers: mode === 'limited' ? { 'Retry-After': '60', 'Access-Control-Expose-Headers': 'Retry-After' } : {}, body: JSON.stringify(response[1]) });
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => {
+    window.jayIsDemo = false;
+    window.jayUser = { id: '00000000-0000-4000-8000-000000000001', email: 'billing@example.com' };
+    window.supabaseClient = { auth: { getSession: async () => ({ data: { session: { access_token: 'test-token' } } }) } };
+  });
+
+  async function invoke(currentMode, options = {}) {
+    mode = currentMode;
+    requestCount = 0;
+    return page.evaluate(async ({ retry, timeout }) => {
+      try {
+        const result = await window.jayFunctionRequest('ai-proxy', { messages: [{ role: 'user', content: 'test' }] }, { retryOnNetwork: retry, timeout, requestId: 'error-contract-test' });
+        return { ok: true, result };
+      } catch (error) {
+        return { ok: false, status: error.status, code: error.code, text: window.jayServiceErrorText(error), retryAfter: error.retryAfter || null };
+      }
+    }, { retry: options.retry === true, timeout: options.timeout || 5000 });
+  }
+
+  const unauthorized = await invoke('unauthorized');
+  expect(unauthorized).toMatchObject({ ok: false, status: 401, code: 'AUTH_REQUIRED' });
+  expect(unauthorized.text).toContain('重新登录');
+  const forbidden = await invoke('forbidden');
+  expect(forbidden).toMatchObject({ ok: false, status: 403, code: 'WORKSPACE_FORBIDDEN' });
+  expect(forbidden.text).toContain('没有执行此操作的权限');
+  const limited = await invoke('limited');
+  expect(limited).toMatchObject({ ok: false, status: 429, code: 'AI_RATE_LIMITED', retryAfter: '60' });
+  const quota = await invoke('quota');
+  expect(quota).toMatchObject({ ok: false, status: 402, code: 'AI_QUOTA_EXCEEDED' });
+  const failed = await invoke('failed');
+  expect(failed.text).toContain('服务暂时不可用');
+  const timeout = await invoke('timeout', { timeout: 1000 });
+  expect(timeout).toMatchObject({ ok: false, status: 408, code: 'REQUEST_TIMEOUT' });
+
+  const recovered = await invoke('offline-once', { retry: true });
+  expect(recovered).toMatchObject({ ok: true, result: { ok: true } });
+  expect(requestCount).toBe(2);
+});
+
+test('duplicate checkout, report generation and export actions collapse to one operation', async ({ page }) => {
+  let checkoutRequests = 0;
+  await page.route('**/functions/v1/billing-checkout', async (route) => {
+    checkoutRequests += 1;
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '{"url":"https://checkout.stripe.test/session"}' });
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  const state = await page.evaluate(async () => {
+    window.jayIsDemo = false;
+    window.jayUser = { id: '00000000-0000-4000-8000-000000000001', email: 'billing@example.com' };
+    window.supabaseClient = { auth: { getSession: async () => ({ data: { session: { access_token: 'test-token' } } }) } };
+    const checkoutResults = await Promise.all([window.jayCreateBillingCheckout('pro'), window.jayCreateBillingCheckout('pro')]);
+
+    let generationStarts = 0;
+    let releaseGeneration;
+    window.rpBuildReportPlan = () => ({ sections: [{ id: 'methodology', title: '方法', domain: 'core' }] });
+    window.rpCollectReportFacts = () => ({ scope: { marketNames: ['美国'], marketCodes: ['US'], platformNames: ['Amazon'], platformKeys: ['amazon'], categoryCodes: ['home'] }, records: {}, sources: [] });
+    window.rpCheckReportData = () => ({ ok: true, missing: [], warnings: [], recordCount: 1 });
+    window.jayStartReportRun = () => {
+      generationStarts += 1;
+      return new Promise((resolve) => { releaseGeneration = resolve; });
+    };
+    window.AI_ENGINE.hasKey = () => true;
+    document.getElementById('rp-v2-topic').value = '家居';
+    const firstGeneration = window.rpV2Generate();
+    const secondGeneration = window.rpV2Generate();
+    releaseGeneration({ id: 'run-1', duplicate: true, status: 'running' });
+    await Promise.all([firstGeneration, secondGeneration]);
+
+    let exportStarts = 0;
+    window.rpLastReportRecord = { dbId: '00000000-0000-4000-8000-000000000010', saveStatus: 'saved', cloudSaved: true, name: '测试报告', text: '正文' };
+    const preview = document.getElementById('rp-v2-preview-body');
+    preview.classList.remove('rp-empty-preview');
+    preview.textContent = '正文';
+    window.jayGenerateReportPdf = async () => {
+      exportStarts += 1;
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      return { status: 'processing' };
+    };
+    window.rpV2Export('pdf');
+    window.rpV2Export('pdf');
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    return { checkoutSame: checkoutResults[0].url === checkoutResults[1].url, generationStarts, exportStarts };
+  });
+
+  expect(checkoutRequests).toBe(1);
+  expect(state).toEqual({ checkoutSame: true, generationStarts: 1, exportStarts: 1 });
 });
 
 test('market scope can register and switch to a market-specific platform set', async ({ page }) => {

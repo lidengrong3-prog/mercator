@@ -46,6 +46,13 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(record["market_codes"], ["US"])
         self.assertEqual(record["market_scope_status"], "identified")
 
+    def test_industry_market_detection_ignores_lowercase_url_parameter_codes(self):
+        text = (
+            "Worldfirst注册教程 "
+            "https://example.com/?affiliate_id=8053&referral_id=8053"
+        )
+        self.assertEqual(collect_data.infer_industry_market_codes(text), [])
+
     def test_industry_market_detection_uses_future_market_aliases(self):
         with tempfile.TemporaryDirectory() as directory:
             with open(os.path.join(directory, "market_scope.json"), "w", encoding="utf-8") as handle:

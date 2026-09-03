@@ -2,8 +2,8 @@
   "meta": {
     "market": "美国美妆个护 (US Beauty & Personal Care)",
     "cat_key": "beauty",
-    "generated_at": "2026-08-31T21:30:16.245209+00:00",
-    "as_of": "2026-08-31",
+    "generated_at": "2026-09-03T02:52:43.761481+00:00",
+    "as_of": "2026-09-03",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "sections": [
       "country",
@@ -17,7 +17,7 @@
       "platforms": 7,
       "rules": 4,
       "policies": 24,
-      "alerts": 5
+      "alerts": 6
     }
   },
   "country": {
@@ -109,7 +109,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-08-31"
+    "as_of": "2026-09-03"
   },
   "findings": [
     "美妆个护高毛利、强内容驱动（线上 ≈ 60%，TikTok 占比最高品类之一）。",
@@ -129,7 +129,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "护肤",
         "彩妆",
@@ -148,7 +148,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "护肤爆款",
         "彩妆",
@@ -167,7 +167,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "家庭个护",
         "基础护肤",
@@ -185,7 +185,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "收藏香水",
         "二手",
@@ -203,7 +203,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "手工皂",
         "天然护肤",
@@ -221,7 +221,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "品牌官网",
         "订阅制",
@@ -239,7 +239,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "hotCats": [
         "低价彩妆",
         "合金/塑料包装"
@@ -305,7 +305,7 @@
       "severity": "high",
       "source": "FDA MoCRA",
       "source_url": "https://www.fda.gov/cosmetics/cosmetics-laws-regulations/modernization-cosmetics-regulation-act-2022-mocra",
-      "as_of": "2026-08-31"
+      "as_of": "2026-09-03"
     },
     {
       "platform": "FTC",
@@ -314,7 +314,7 @@
       "severity": "high",
       "source": "FTC",
       "source_url": "https://www.ftc.gov/business-guidance/industry/cosmetics",
-      "as_of": "2026-08-31"
+      "as_of": "2026-09-03"
     },
     {
       "platform": "Amazon",
@@ -323,7 +323,7 @@
       "severity": "medium",
       "source": "Amazon Seller Central",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-08-31"
+      "as_of": "2026-09-03"
     },
     {
       "platform": "TikTok Shop（美国）",
@@ -332,10 +332,43 @@
       "severity": "high",
       "source": "TikTok Shop 卖家中心",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-08-31"
+      "as_of": "2026-09-03"
     }
   ],
   "policies": [
+    {
+      "title": "Determination That CARAFATE (Sucralfate) Oral Suspension, 1 Gram/10 Milliliters, Was Not Withdrawn From Sale for Reasons of Safety or Effectiveness",
+      "date": "2026-09-02",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, Agency, or we) has determined that CARAFATE (sucralfate) oral suspension, 1 gram (g)/10 milliliters (mL), was not withdrawn from sale for reasons of safety or effectiveness. This determination means that FDA will not begin procedures to with…",
+      "url": "https://www.federalregister.gov/documents/2026/09/02/2026-17968/determination-that-carafate-sucralfate-oral-suspension-1-gram10-milliliters-was-not-withdrawn-from",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-03",
+      "live": true
+    },
+    {
+      "title": "Issuance of Priority Review Voucher; Rare Pediatric Disease Product; GENGLYCOS (parisglasgene brecaparvovec-opnr)",
+      "date": "2026-09-02",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is announcing the issuance of a priority review voucher to the sponsor of a rare pediatric disease product application. The Federal Food, Drug, and Cosmetic Act (FD&C Act) authorizes FDA to award priority review vouchers to sponsors of appro…",
+      "url": "https://www.federalregister.gov/documents/2026/09/02/2026-17932/issuance-of-priority-review-voucher-rare-pediatric-disease-product-genglycos-parisglasgene",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-03",
+      "live": true
+    },
+    {
+      "title": "Determination That NAMENDA (Memantine Hydrochloride) Tablets, 5 Milligrams and 10 Milligrams, Were Not Withdrawn From Sale for Reasons of Safety or Effectiveness",
+      "date": "2026-09-01",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA, Agency, or we) has determined that NAMENDA (memantine hydrochloride) tablets, 5 milligrams (mg) and 10 mg, were not withdrawn from sale for reasons of safety or effectiveness. This determination means that FDA will not begin procedures to wi…",
+      "url": "https://www.federalregister.gov/documents/2026/09/01/2026-17812/determination-that-namenda-memantine-hydrochloride-tablets-5-milligrams-and-10-milligrams-were-not",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-03",
+      "live": true
+    },
     {
       "title": "Authorization of Emergency Use for Three Animal Drugs for the Prevention and Treatment of New World Screwworm; Availability",
       "date": "2026-08-31",
@@ -344,7 +377,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17719/authorization-of-emergency-use-for-three-animal-drugs-for-the-prevention-and-treatment-of-new-world",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -355,7 +388,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17677/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -366,7 +399,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17676/agency-information-collection-activities-proposed-collection-comment-request-registration-of-human",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -377,7 +410,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17675/agency-information-collection-activities-proposed-collection-comment-request-medical-devices-reports",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -388,7 +421,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17659/rahim-shafa-denial-of-hearing-final-debarment-order",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -399,7 +432,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17603/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -410,7 +443,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17601/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -421,7 +454,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17599/agency-information-collection-activities-proposed-collection-comment-request-food-canning",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -432,7 +465,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17579/alpha-d-glucopyranoside-beta-d-fructofuranosyl-mixed-palmitates-and-stearates-in-pesticide",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -443,29 +476,7 @@
       "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17536/schedules-of-controlled-substances-placement-of-cipepofol-in-schedule-iv",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
-      "live": true
-    },
-    {
-      "title": "Determination That CABAZITAXEL (Cabazitaxel) Solution (Injection), 60 Milligrams/6 Milliliters (10 Milligrams/Milliliter), Was Not Withdrawn From Sale for Reasons of Safety or Effectiveness",
-      "date": "2026-08-26",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA, Agency, or we) has determined that CABAZITAXEL (cabazitaxel) solution (injection), 60 milligrams (mg)/6 milliliters (mL) (10 mg/mL), was not withdrawn from sale for reasons of safety or effectiveness. This determination will allow FDA to app…",
-      "url": "https://www.federalregister.gov/documents/2026/08/26/2026-17401/determination-that-cabazitaxel-cabazitaxel-solution-injection-60-milligrams6-milliliters-10",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
-      "live": true
-    },
-    {
-      "title": "Food and Drug Administration Modernization Act of 1997: Modifications to the List of Recognized Standards, Recognition List Number: 066",
-      "date": "2026-08-24",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA or the Agency) is announcing a publication containing modifications the Agency is making to the list of standards FDA recognizes for use in premarket reviews (FDA Recognized Consensus Standards). This publication, entitled \"Modifications to t…",
-      "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17229/food-and-drug-administration-modernization-act-of-1997-modifications-to-the-list-of-recognized",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -476,7 +487,7 @@
       "url": "https://www.federalregister.gov/documents/2026/07/17/2026-14434/agency-information-collection-activities-proposed-collection-comment-request-requirements-for",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -487,7 +498,7 @@
       "url": "https://www.federalregister.gov/documents/2026/01/22/2026-01159/fda-records-access-authority-for-cosmetics-draft-guidance-for-industry-availability",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -498,7 +509,7 @@
       "url": "https://www.federalregister.gov/documents/2025/12/18/2025-23249/questions-and-answers-regarding-mandatory-cosmetics-recalls-draft-guidance-for-industry-availability",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -509,7 +520,7 @@
       "url": "https://www.federalregister.gov/documents/2025/11/28/2025-21407/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -520,7 +531,7 @@
       "url": "https://www.federalregister.gov/documents/2025/06/25/2025-11605/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -531,7 +542,7 @@
       "url": "https://www.federalregister.gov/documents/2024/12/27/2024-30544/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -542,7 +553,7 @@
       "url": "https://www.federalregister.gov/documents/2024/12/12/2024-29237/registration-and-listing-of-cosmetic-product-facilities-and-products-guidance-for-industry",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -553,7 +564,7 @@
       "url": "https://www.federalregister.gov/documents/2024/06/03/2024-11893/statement-of-organization-functions-and-delegations-of-authority",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -564,7 +575,7 @@
       "url": "https://www.federalregister.gov/documents/2023/12/19/2023-27649/registration-and-listing-of-cosmetic-product-facilities-and-products-guidance-for-industry",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -575,7 +586,7 @@
       "url": "https://www.federalregister.gov/documents/2023/11/09/2023-24731/compliance-policy-for-cosmetic-product-facility-registration-and-cosmetic-product-listing-guidance",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -586,18 +597,7 @@
       "url": "https://www.federalregister.gov/documents/2023/09/18/2023-20139/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
-      "live": true
-    },
-    {
-      "title": "Pilot Program for Cosmetic Product Facility Registration and Listing Electronic Submissions User Acceptance Testing",
-      "date": "2023-08-08",
-      "agency": "Health and Human Services Department",
-      "summary": "The Office of Cosmetics and Colors (OCAC) and the Office of the Chief Scientist (OCS) in the Food and Drug Administration (FDA, Agency, or we) are soliciting applications from members of the cosmetic product industry interested in participating in a voluntary pilot program to con…",
-      "url": "https://www.federalregister.gov/documents/2023/08/08/2023-16772/pilot-program-for-cosmetic-product-facility-registration-and-listing-electronic-submissions-user",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     }
   ],
@@ -608,22 +608,34 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 3304(化妆品)/3401(洗护) 多数基础关税为零，但灌装/生产设备及部分包材受 Section 301 附加税约束。出口须以 USTR 检索确认具体编码税率。",
-      "date": "2026-08-31",
+      "date": "2026-09-03",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": false
     },
     {
       "level": "medium",
-      "title": "Determination That CABAZITAXEL (Cabazitaxel) Solution (Injection), 60 Milligrams/6 Milliliters (10 Milligrams/Milliliter), Was Not Withdrawn From Sale for Reasons of Safety or Effectiveness",
+      "title": "Determination That CARAFATE (Sucralfate) Oral Suspension, 1 Gram/10 Milliliters, Was Not Withdrawn From Sale for Reasons of Safety or Effectiveness",
       "market": "美国",
       "platform": "Health and Human Services Department",
-      "detail": "The Food and Drug Administration (FDA, Agency, or we) has determined that CABAZITAXEL (cabazitaxel) solution (injection), 60 milligrams (mg)/6 milliliters (mL) (10 mg/mL), was not withdrawn from sale …",
-      "date": "2026-08-26",
+      "detail": "The Food and Drug Administration (FDA, Agency, or we) has determined that CARAFATE (sucralfate) oral suspension, 1 gram (g)/10 milliliters (mL), was not withdrawn from sale for reasons of safety or ef…",
+      "date": "2026-09-02",
       "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/08/26/2026-17401/determination-that-cabazitaxel-cabazitaxel-solution-injection-60-milligrams6-milliliters-10",
-      "as_of": "2026-08-31",
+      "url": "https://www.federalregister.gov/documents/2026/09/02/2026-17968/determination-that-carafate-sucralfate-oral-suspension-1-gram10-milliliters-was-not-withdrawn-from",
+      "as_of": "2026-09-03",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "Determination That NAMENDA (Memantine Hydrochloride) Tablets, 5 Milligrams and 10 Milligrams, Were Not Withdrawn From Sale for Reasons of Safety or Effectiveness",
+      "market": "美国",
+      "platform": "Health and Human Services Department",
+      "detail": "The Food and Drug Administration (FDA, Agency, or we) has determined that NAMENDA (memantine hydrochloride) tablets, 5 milligrams (mg) and 10 mg, were not withdrawn from sale for reasons of safety or …",
+      "date": "2026-09-01",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/09/01/2026-17812/determination-that-namenda-memantine-hydrochloride-tablets-5-milligrams-and-10-milligrams-were-not",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -635,7 +647,7 @@
       "date": "2025-12-18",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2025/12/18/2025-23249/questions-and-answers-regarding-mandatory-cosmetics-recalls-draft-guidance-for-industry-availability",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -647,7 +659,7 @@
       "date": "2025-11-28",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2025/11/28/2025-21407/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     },
     {
@@ -659,7 +671,7 @@
       "date": "2024-12-27",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2024/12/27/2024-30544/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
-      "as_of": "2026-08-31",
+      "as_of": "2026-09-03",
       "live": true
     }
   ]

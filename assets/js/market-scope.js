@@ -297,6 +297,50 @@
       || text(record.source_record_id || record.sourceRecordId || record.source_file || record.sourceFile || record.evidence_hash || record.evidenceHash);
   }
 
+  function validSourceUrl(value) {
+    if (typeof URL === 'undefined') return /^https:\/\/[^\s/]+(?:\/[^\s]*)?$/i.test(text(value));
+    try {
+      var parsed = new URL(text(value));
+      return parsed.protocol === 'https:' && !!parsed.hostname;
+    } catch (e) { return false; }
+  }
+
+  function isIndustryAdvisory(record) {
+    record = record || {};
+    var sourceClass = lower(record.source_class || record.sourceClass);
+    var sourceName = lower(record.source);
+    var url = lower(record.source_url || record.sourceUrl || record.url);
+    var host = '';
+    try { host = new URL(url).hostname.toLowerCase().replace(/\.$/, ''); } catch (e) {}
+    return sourceClass === 'industry_advisory'
+      || ['cifnews.com', 'www.cifnews.com', 'amz123.com', 'www.amz123.com'].indexOf(host) >= 0
+      || sourceName.indexOf('雨果') >= 0 || sourceName.indexOf('amz123') >= 0;
+  }
+
+  function explicitProvenanceMissing(record, domain, verificationStatus, sourceKind, sourceType) {
+    var requiredDomains = ['policy', 'tax', 'access', 'rule', 'alert', 'cpsc'];
+    if (requiredDomains.indexOf(domain) < 0) return [];
+    var missing = [];
+    var aliases = {
+      source_kind: ['source_kind', 'sourceKind'], source_type: ['source_type', 'sourceType'],
+      source_record_id: ['source_record_id', 'sourceRecordId'], verification_status: ['verification_status', 'verificationStatus', 'verification'],
+      collected_at: ['collected_at', 'collectedAt'], published_at: ['published_at', 'publishedAt'], evidence_hash: ['evidence_hash', 'evidenceHash']
+    };
+    ['source_kind', 'source_type', 'source_record_id', 'verification_status', 'collected_at', 'published_at', 'evidence_hash'].forEach(function (field) {
+      var present = aliases[field].some(function (name) { return record[name] != null && record[name] !== ''; });
+      if (!present) missing.push(field);
+    });
+    if (record.source_type && SOURCE_TYPES.indexOf(sourceType) < 0) missing.push('source_type');
+    if (['official', 'traceable'].indexOf(sourceKind) >= 0 && !validSourceUrl(record.source_url || record.sourceUrl || record.url)) missing.push('source_url');
+    if (['verified', 'uploaded'].indexOf(verificationStatus) >= 0 && !(record.verified_at || record.verifiedAt)) missing.push('verified_at');
+    ['collected_at', 'published_at'].forEach(function (field) {
+      if (record[field] && isNaN(new Date(record[field]).getTime())) missing.push(field);
+    });
+    var evidence = record.evidence_hash || record.evidenceHash;
+    if (evidence && !/^[0-9a-f]{64}$/i.test(String(evidence))) missing.push('evidence_hash');
+    return Array.from(new Set(missing));
+  }
+
   function hasExplicitProvenance(record) {
     record = record || {};
     return !!(record.source_kind || record.sourceKind || record.verification_status
@@ -313,7 +357,8 @@
     var sourceType = normalizeSourceType(input.source_type || input.sourceType);
     if (!sourceKind && sourceType === 'user_upload') sourceKind = 'uploaded';
     if (!sourceKind && sourceEvidence(input)) sourceKind = sourceType === 'government' || sourceType === 'regulator' ? 'official' : 'traceable';
-    var verificationStatus = normalizeVerificationStatus(input.verification_status || input.verificationStatus || input.verification, sourceKind);
+    if (isIndustryAdvisory(input)) sourceKind = 'traceable';
+    var verificationStatus = isIndustryAdvisory(input) ? 'pending' : normalizeVerificationStatus(input.verification_status || input.verificationStatus || input.verification, sourceKind);
     var legacyVerified = !verificationStatus && sourceKind !== 'demo' && sourceEvidence(input)
       && input.collected_at && (input.published_at || input.publishedAt || input.effective_date || input.effectiveDate);
     if (!verificationStatus && legacyVerified) verificationStatus = 'verified';
@@ -355,18 +400,21 @@
     var reasons = [];
     var quality = lower(normalized.data_quality);
     if (normalized.source_kind === 'demo' || ['demo', 'demonstration', 'mock', '演示', '示意'].indexOf(quality) >= 0) reasons.push('demo');
+    if (isIndustryAdvisory(normalized)) reasons.push('industry_advisory');
     if (['verified', 'uploaded'].indexOf(normalized.verification_status) < 0) reasons.push('unverified');
     if (!normalized.source_kind) reasons.push('missing_source_kind');
     if (['official', 'traceable', 'derived'].indexOf(normalized.source_kind) >= 0 && !sourceEvidence(normalized)) reasons.push('missing_source');
     if (normalized.source_kind === 'uploaded' && !sourceEvidence(normalized)) reasons.push('missing_upload_reference');
     if (options.requireScope !== false && normalized.scope_status !== 'scoped') reasons.push('out_of_scope');
+    var missingProvenance = explicitProvenanceMissing(record || {}, options.domain, normalized.verification_status, normalized.source_kind, normalized.source_type);
+    if (missingProvenance.length) reasons.push('missing_provenance_fields');
     if (['policy','tax','access'].indexOf(options.domain) >= 0) {
       var translationStatus = text(normalized.translation && normalized.translation.status);
       if (!/[\u3400-\u9fff]/.test(normalized.title_zh)
           || (text(normalized.summary) && !/[\u3400-\u9fff]/.test(normalized.summary_zh))
           || ['source_zh','translated','reviewed'].indexOf(translationStatus) < 0) reasons.push('missing_chinese_display');
     }
-    return { formal: reasons.length === 0, reasons: reasons, source_kind: normalized.source_kind,
+    return { formal: reasons.length === 0, reasons: reasons, missing_provenance_fields: missingProvenance, source_kind: normalized.source_kind,
       verification_status: normalized.verification_status, source_type: normalized.source_type,
       legacy_inferred: !hasExplicitProvenance(record) };
   }

@@ -13,7 +13,7 @@
     "formal_values": ["verified", "uploaded"]
   },
   "fields": {
-    "source_url": {"type": "string", "required_for": ["official", "traceable"]},
+    "source_url": {"type": "string", "format": "uri", "pattern": "^https://", "required_for": ["official", "traceable"]},
     "source_record_id": {"type": "string", "required": true},
     "collected_at": {"type": "datetime", "required": true},
     "retrieved_at": {"type": "datetime", "required": false},
@@ -35,10 +35,12 @@
   },
   "formal_publication_rule": [
     "source_kind is not demo",
+    "source_kind, source_type, source_record_id, verification_status, collected_at and evidence_hash are explicit fields",
     "verification_status is verified or uploaded",
     "the record has a current market scope",
     "policy, tax and access records have a current Simplified Chinese display translation",
     "official, traceable and derived records have a source_url or source_record_id",
+    "verified or uploaded records have verified_at and published_at",
     "uploaded records have a source_record_id, source_file or evidence_hash"
   ],
   "industry_advisory_rule": [

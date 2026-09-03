@@ -15,6 +15,8 @@ JAY观海是面向中国工厂、跨境卖家和服务团队的市场决策情�
 
 ## Local development
 
+本机查找代码、数据、后端和部署文件时，先查看 [本地文件地图](docs/本地文件地图.md)。
+
 ```bash
 npm ci
 npm run dev
@@ -46,7 +48,7 @@ python -m compileall -q scripts data supabase
 - Supabase Edge Function `ai-proxy` calls the AI provider; provider credentials never enter the browser.
 - Static JSON remains a visible fallback when Supabase is unavailable.
 - `scripts/validate_data.py` checks structure, minimum counts, unique IDs, sources, URLs, dates, and freshness before any Supabase write.
-- `data/quality_report.json` drives the product's healthy, degraded, stale, and failed data states.
+- `data/quality_report.json` drives the product's healthy, degraded, not-connected, stale, and failed data states. Empty tax/access datasets are explicitly `not_connected`; they are not treated as healthy and cannot support deterministic conclusions.
 - Every factual record uses the provenance envelope: `source_kind` (`official`, `traceable`, `uploaded`, `derived`, `demo`), `source_type`, `source_url`/`source_record_id`, collection/publication/effective timestamps, `verification_status`, verification notes, and an evidence hash. The data trust center reports both the raw file count and the current-scope/formal-publication count; demo, pending, rejected, and out-of-scope records remain auditable but cannot enter formal pages or reports. Legacy files may show a compatibility-inference warning until they are explicitly re-collected or reviewed; the warning is not treated as manual verification.
 - Supabase migration `20260830010000_data_provenance.sql` adds `data_source_registry` and `raw_data_records`. Raw evidence is retained for audit/reprocessing, while `market_data_applicability` is the normalized scope-filtered projection exposed to the browser.
 - The provenance operating contract and review flow are documented in [docs/DATA_PROVENANCE.md](docs/DATA_PROVENANCE.md).
@@ -55,6 +57,7 @@ python -m compileall -q scripts data supabase
 Run the publication gate locally with:
 
 ```bash
+python scripts/backfill_provenance.py  # only when upgrading an existing evidence cache
 python scripts/validate_data.py
 python scripts/sync_to_supabase.py --dry-run
 ```
@@ -65,16 +68,16 @@ A failed or stale critical dataset returns a non-zero exit code and blocks autom
 
 1. For a fresh project, apply `supabase/schema.sql`, `supabase/phase2_schema.sql`, and `supabase/monitored_shops.sql` once.
 2. Apply `supabase/migrations/20260825000000_unify_user_data.sql`, `supabase/migrations/20260826010000_workspaces.sql`, `supabase/migrations/20260826020000_notifications.sql`, `supabase/migrations/20260826030000_report_exports.sql`, and `supabase/migrations/20260826040000_billing_admin.sql`. They are idempotent; the workspace migration creates a default workspace for existing profiles.
-3. Apply `supabase/migrations/20260830000000_market_catalog.sql`, `supabase/migrations/20260830010000_data_provenance.sql`, `supabase/migrations/20260831000000_platform_rule_versions.sql`, `supabase/migrations/20260831010000_regulatory_domains.sql`, `supabase/migrations/20260831020000_industry_advisory.sql`, `supabase/migrations/20260831030000_report_material_snapshots.sql`, `supabase/migrations/20260901000000_report_output_lifecycle.sql`, and `supabase/migrations/20260901010000_production_hardening.sql` for versioned catalogs, report snapshots, user isolation, idempotency, and operational telemetry.
+3. Apply every ordered file in `supabase/migrations/`, including `20260903000000_billing_lifecycle.sql`, for versioned catalogs, report snapshots, user isolation, idempotency, operational telemetry, subscriptions and plan quotas.
 4. Configure `DEEPSEEK_API_KEY`, `DEEPSEEK_MODEL`, and `ALLOWED_ORIGINS` as Supabase secrets.
-5. Deploy `supabase/functions/ai-proxy`, `supabase/functions/report-export`, `supabase/functions/report-docx`, and `supabase/functions/admin-summary`; JWT verification is enabled in `supabase/config.toml`. Configure `SUPABASE_SERVICE_ROLE_KEY` only as an Edge Function secret.
+5. Deploy the functions listed in `supabase/config.toml`. All browser functions require JWT; only `billing-webhook` disables Supabase JWT because it verifies the raw Stripe signature itself. Configure `SUPABASE_SERVICE_ROLE_KEY` only as an Edge Function secret.
 6. Confirm GitHub secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `FRED_API_KEY`, `CENSUS_API_KEY`, `REGULATORY_TRANSLATION_API_URL`, `REGULATORY_TRANSLATION_API_KEY`, and `REGULATORY_TRANSLATION_MODEL`. The translation step runs before validation and fails when a newly collected regulatory record cannot be converted to Simplified Chinese. The sync workflow publishes the frontend's `market_data` bundle by default; only set `SUPABASE_SYNC_LEGACY_TABLES=1` for a separately provisioned legacy fan-out schema.
 7. Run both quality workflows successfully before merging to `main`.
 
-The production release workflow enforces `quality -> migrations -> secrets -> Edge Functions -> two-account authenticated acceptance -> GitHub Pages -> production smoke`. Configure the `production` environment and switch GitHub Pages source to GitHub Actions before enabling releases. See [docs/PRODUCTION_ACCEPTANCE.md](docs/PRODUCTION_ACCEPTANCE.md).
+The production release workflow enforces `main + clean worktree -> quality -> migrations -> secrets -> Edge Functions -> two-account authenticated acceptance -> GitHub Pages (release manifest) -> production consistency smoke`. Configure the `production` environment and switch GitHub Pages source to GitHub Actions before enabling releases. `ALLOWED_ORIGINS` must contain only the formal site origin in production. See [docs/PRODUCTION_ACCEPTANCE.md](docs/PRODUCTION_ACCEPTANCE.md).
 
 Team invite records are intentionally not reported as emailed until a mail provider or invitation Edge Function is configured. See [docs/WORKSPACES.md](docs/WORKSPACES.md).
 
-`billing-checkout` is a server-controlled Stripe checkout foundation, not a complete production billing system. Keep production charging disabled until a verified Stripe webhook updates `user_subscriptions` and records idempotent `billing_events`.
+Formal charging is fail-closed. Keep `BILLING_ENABLED=false` until the live Stripe key, Pro price ID and webhook signing secret are configured, `billing-webhook` is registered in Stripe, and a live-mode end-to-end payment/cancel/refund test has passed. The UI only enables checkout after `billing-status` confirms this server configuration; signed webhook events update `user_subscriptions` and the idempotent `billing_events` ledger.
 
 Never commit a service-role key, payment secret, or AI provider key. `.env.example` contains names and placeholders only.

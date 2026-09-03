@@ -62,6 +62,43 @@ test('report data check blocks a scope with missing required evidence', () => {
   assert.ok(result.missing.every((item) => item.reason === '当前范围没有已核验记录'));
 });
 
+test('report data check marks empty tax and access domains as non-deterministic', () => {
+  const plan = { requiredDomains: ['market'], sections: [] };
+  const result = engine.checkData(plan, { scope: { marketCodes: ['US'], platformKeys: ['amazon'] }, records: {} });
+  assert.deepEqual(Array.from(result.blockedDomains), ['tax', 'access']);
+  assert.ok(result.warnings.some((item) => item.domain === 'tax' && /禁止生成确定性/.test(item.reason)));
+  assert.ok(result.warnings.some((item) => item.domain === 'access' && /禁止生成确定性/.test(item.reason)));
+});
+
+test('section prompts assign stable source citations and snapshot metadata', () => {
+  const sourceRecord = {
+    domain: 'policy', source: 'FTC', url: 'https://www.ftc.gov/example',
+    recordId: 'policy-us-001', verificationStatus: 'verified', snapshotAt: '2026-09-01T00:00:00Z',
+  };
+  const facts = {
+    scope: { marketCodes: ['US'], platformKeys: ['amazon'] },
+    collectedAt: '2026-09-02T00:00:00Z',
+    sources: [sourceRecord],
+    records: { policy: [{ domain: 'policy', record: { id: 'policy-us-001', title: 'FTC rule', value: '8%' }, source: sourceRecord }] },
+  };
+  const prompt = engine.buildSectionPrompt({}, { id: 'policy', title: '政策', domain: 'policy' }, facts, null, '');
+  const payload = JSON.parse(prompt.user);
+  assert.equal(payload.citationCatalog[0].citation, 'S001');
+  assert.equal(payload.facts[0].source.citation, 'S001');
+  assert.equal(payload.facts[0].source.dataSnapshotAt, '2026-09-01T00:00:00Z');
+  assert.match(prompt.system, /关键数字必须.*\[S001\]/);
+});
+
+test('citation audit rejects unknown citations and uncited key numbers', () => {
+  const appendix = [{ citation: 'S001' }];
+  const result = engine.auditCitations([
+    { id: 'market', text: '市场增速为 12%。\n另一项为 8% [S999]' },
+  ], appendix);
+  assert.equal(result.ok, false);
+  assert.equal(result.missingNumericCitations.length, 2);
+  assert.deepEqual(Array.from(result.invalidCitations, (item) => item.citation), ['S999']);
+});
+
 test('scope check rejects unselected market and platform names', () => {
   const result = engine.checkScope('美国市场、Amazon、Shopee全球排名', { marketNames: ['美国'], platformNames: ['Amazon'] });
   assert.equal(result.ok, false);

@@ -19,7 +19,16 @@
       "published_at": "2026-08-28",
       "collected_at": "2026-08-28T19:23:40.653817+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260828-5fe32868",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "8cd3a2d565cea0225daef05322a871584f126d142a17544c8599718f5222bb01",
+      "source": "Multi"
     },
     {
       "id": "r20260828-35225fd2",
@@ -31,7 +40,16 @@
       "published_at": "2026-08-28",
       "collected_at": "2026-08-28T19:23:40.653817+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260828-35225fd2",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "af8aee893d9bc2e3e7fc070122fcc7d24e8c9b95e8c5ede291ec952fd498dea4",
+      "source": "Multi"
     },
     {
       "id": "r20260828-f63b73ed",
@@ -43,7 +61,16 @@
       "published_at": "2026-08-28",
       "collected_at": "2026-08-28T19:23:40.653817+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260828-f63b73ed",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "72fe5bad7d57b87bfa6cd9e52ce4847abe4860135172131c34c85ad3665a0458",
+      "source": "Multi"
     },
     {
       "id": "r20260828-12bbd3bf",
@@ -55,7 +82,16 @@
       "published_at": "2026-08-28",
       "collected_at": "2026-08-28T19:23:40.653817+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260828-12bbd3bf",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "c059ad90ad61368888dd25de015db5e80417910f1aead36e8597595a55d05c32",
+      "source": "Multi"
     },
     {
       "id": "r20260826-82264cc2",
@@ -67,7 +103,16 @@
       "published_at": "2026-08-26",
       "collected_at": "2026-08-26T12:55:59.333001+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260826-82264cc2",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "efdf9b93586fd5c614c6fcdb26b8f731e41273c8470b6f6f8fce550a1878dca8",
+      "source": "Multi"
     },
     {
       "id": "r20260826-28c0802e",
@@ -79,7 +124,16 @@
       "published_at": "2026-08-26",
       "collected_at": "2026-08-26T12:55:59.333001+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260826-28c0802e",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "411394c8c5fd0113ea955f152da380b9e0b7e49442e18c9926337cf07de1a718",
+      "source": "Multi"
     },
     {
       "id": "r20260825-500bbc6d",
@@ -91,7 +145,16 @@
       "published_at": "2026-08-25",
       "collected_at": "2026-08-25T17:00:04.713778+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260825-500bbc6d",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "c73544c4adb955f13ecf59c1ad0aaba241fce85a370df9b6c6be495441a37c2a",
+      "source": "Multi"
     },
     {
       "id": "r20260825-3f099b1d",
@@ -103,7 +166,16 @@
       "published_at": "2026-08-25",
       "collected_at": "2026-08-25T17:00:04.713778+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260825-3f099b1d",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "b0045f3ac375829e5fc4ef6adcaaf52f3e2f2ccf08b951498e3336b31eb50e1d",
+      "source": "Multi"
     },
     {
       "id": "r20260824-7a690ac6",
@@ -115,7 +187,16 @@
       "published_at": "2026-08-24",
       "collected_at": "2026-08-24T13:01:37.281308+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260824-7a690ac6",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "d30ebd581c0fe9c5db5ee66677ebaa69c70d09beeec0f1a9462187755c7be33f",
+      "source": "Multi"
     },
     {
       "id": "r20260824-54fe91b2",
@@ -127,7 +208,16 @@
       "published_at": "2026-08-24",
       "collected_at": "2026-08-24T13:01:37.281308+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260824-54fe91b2",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "0c92de43586ae8eaf98f20ff49652c968887e9017b7852ff8886c8d6b04102ed",
+      "source": "Multi"
     },
     {
       "id": "r20260823-44bdafcf",
@@ -139,7 +229,16 @@
       "published_at": "2026-08-23",
       "collected_at": "2026-08-23T04:39:34.338991+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260823-44bdafcf",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "309e3b8d5285a85c8207c7895eaa5af324f82861563543e66cd0c0ebcfa6ecf9",
+      "source": "Multi"
     },
     {
       "id": "r20260821-3bc97ada",
@@ -151,7 +250,16 @@
       "published_at": "2026-08-21",
       "collected_at": "2026-08-21T09:57:35.115169+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260821-3bc97ada",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "03d4f442437412240f274ab447798527b2a9687ec98ed962db15df7a80678d0c",
+      "source": "Multi"
     },
     {
       "id": "r20260821-481f43c6",
@@ -163,7 +271,16 @@
       "published_at": "2026-08-21",
       "collected_at": "2026-08-21T09:57:35.115169+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260821-481f43c6",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "6bbeb59a2bc204f04259f1581aff32b8af7e95462cfc417523b61d080071efc9",
+      "source": "Multi"
     },
     {
       "id": "r20260821-2ceab359",
@@ -175,7 +292,16 @@
       "published_at": "2026-08-21",
       "collected_at": "2026-08-21T09:57:35.115169+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260821-2ceab359",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "d27934fe9bcb0899e639e31de4857224d560132ab90632e2643c26a424e891d6",
+      "source": "Multi"
     },
     {
       "id": "r20260820-86ff8860",
@@ -187,7 +313,16 @@
       "published_at": "2026-08-20",
       "collected_at": "2026-08-20T09:51:35.272910+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260820-86ff8860",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "115ac45ba808658c660a7f7292f377509c5a4878da1f4db1523ae72836cc6871",
+      "source": "Multi"
     },
     {
       "id": "r20260819-77126eff",
@@ -199,7 +334,16 @@
       "published_at": "2026-08-19",
       "collected_at": "2026-08-19T16:54:33.481165+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260819-77126eff",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "d9d3bd0f8de8bf6c7817c58aa737e270df9b2fba616aaa745ae8aa017988f86b",
+      "source": "Multi"
     },
     {
       "id": "r20260818-5eff5c23",
@@ -211,7 +355,16 @@
       "published_at": "2026-08-18",
       "collected_at": "2026-08-18T12:52:15.976280+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260818-5eff5c23",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "58927905169fbad6e5d4621df60ddde1d639be399b44d4477bb38aa827db956a",
+      "source": "Multi"
     },
     {
       "id": "r20260817-f4dcde56",
@@ -223,7 +376,16 @@
       "published_at": "2026-08-17",
       "collected_at": "2026-08-17T21:05:43.262456+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260817-f4dcde56",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "d24d18643b09aeada8814dabf35f1af923d557327b310fe4c9d56fab99b4d2e1",
+      "source": "Multi"
     },
     {
       "id": "r20260817-7c62dd9b",
@@ -235,7 +397,16 @@
       "published_at": "2026-08-17",
       "collected_at": "2026-08-17T09:55:13.650124+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260817-7c62dd9b",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "200acf1ab9847ba98683b066d287fcf2609c348106c2c985b9846abb96f0f890",
+      "source": "Multi"
     },
     {
       "id": "r20260816-1513a0f0",
@@ -247,7 +418,16 @@
       "published_at": "2026-08-16",
       "collected_at": "2026-08-16T12:50:11.312769+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260816-1513a0f0",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "63996d16d511d9f9c69d9d5da0aa5e498eebf3d23aea791847f4896f443fd6b6",
+      "source": "Multi"
     },
     {
       "id": "r20260814-7d74a368",
@@ -259,7 +439,16 @@
       "published_at": "2026-08-14",
       "collected_at": "2026-08-14T13:49:56.818683+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260814-7d74a368",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "3c58a34a41b69f9063e35f1ec72a9ffb1eca66833c15543801c4357b1d118a84",
+      "source": "Multi"
     },
     {
       "id": "r20260814-fc04c860",
@@ -271,7 +460,16 @@
       "published_at": "2026-08-14",
       "collected_at": "2026-08-14T13:49:56.818683+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260814-fc04c860",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "2fec6cb2dc7d2451262e1cb57e00f788f4c849b8285df002eb90833cece44d77",
+      "source": "Multi"
     },
     {
       "id": "r20260813-ce90cc9d",
@@ -283,7 +481,16 @@
       "published_at": "2026-08-13",
       "collected_at": "2026-08-13T13:51:54.909152+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260813-ce90cc9d",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "4088cc7494ad4fcc3253d972748afc41fe44ed7311c09b5b0adf9378737367dc",
+      "source": "Multi"
     },
     {
       "id": "r20260813-3ac92d49",
@@ -295,7 +502,16 @@
       "published_at": "2026-08-13",
       "collected_at": "2026-08-13T13:51:54.909152+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260813-3ac92d49",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "8accdfd8c8ea1f2ce7a83fac9e0582bc1561ccdc14a72e944cc6ef8375887727",
+      "source": "Multi"
     },
     {
       "id": "r20260810-570b2ff9",
@@ -307,7 +523,16 @@
       "published_at": "2026-08-10",
       "collected_at": "2026-08-10T19:32:10.375404+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260810-570b2ff9",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "78b172c2fe4a862bb031aff5b98191d3176e0d776f72637e3bd42237d8327937",
+      "source": "Multi"
     },
     {
       "id": "r20260731-e757e21b",
@@ -319,7 +544,16 @@
       "published_at": "2026-07-31",
       "collected_at": "2026-07-31T01:10:46.850649+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260731-e757e21b",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "72d69f4d349dec552250ea01db5b52caa3e513891de60d7ea59dff4167a49605",
+      "source": "Multi"
     },
     {
       "id": "r20260730-114b0bcc",
@@ -331,7 +565,16 @@
       "published_at": "2026-07-30",
       "collected_at": "2026-07-30T17:43:35.580544+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260730-114b0bcc",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "139b6af9efe46ec3e05b290d467c99c4693ec671341850aef574405fbf44eec4",
+      "source": "Multi"
     },
     {
       "id": "r20260730-64581168",
@@ -343,7 +586,16 @@
       "published_at": "2026-07-30",
       "collected_at": "2026-07-30T17:43:35.580544+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260730-64581168",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "b255d228f4151958c897d737f12e9395d4e5f4d9bd4315a904c540563e29f30c",
+      "source": "Multi"
     },
     {
       "id": "r20260729-04f834b1",
@@ -355,7 +607,16 @@
       "published_at": "2026-07-29",
       "collected_at": "2026-07-29T01:14:18.972332+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260729-04f834b1",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "617ecc051fcf723bda8c1ca60d413f0404a04c4727092558d7b161e213ad023b",
+      "source": "Multi"
     },
     {
       "id": "r20260728-f5b7fb8f",
@@ -367,7 +628,16 @@
       "published_at": "2026-07-28",
       "collected_at": "2026-07-28T18:13:03.971459+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260728-f5b7fb8f",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "1d9ec7c546a0ff1aa7e56f552af69ba681b15bc281d08f95a2dbcf4606c527c8",
+      "source": "Multi"
     },
     {
       "id": "r20260723-2cf09fd4",
@@ -379,7 +649,16 @@
       "published_at": "2026-07-23",
       "collected_at": "2026-07-23T17:31:51.186612+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260723-2cf09fd4",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "b7edf9867e40424e122abfea864bc1570c105a75af8cfb2964b541385a9adbdd",
+      "source": "Multi"
     },
     {
       "id": "r20260723-ed9c09a0",
@@ -391,7 +670,16 @@
       "published_at": "2026-07-23",
       "collected_at": "2026-07-23T01:01:44.214383+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260723-ed9c09a0",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "291da4908217f170eab06bc6429dcd6ebcf7d815d403344607a6e7e3b30c64e6",
+      "source": "Multi"
     },
     {
       "id": "r20260721-87649f27",
@@ -403,7 +691,16 @@
       "published_at": "2026-07-21",
       "collected_at": "2026-07-21T17:38:36.059142+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260721-87649f27",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "107f734b21eb83d43faf826a330000aea6105a1d489f5db0b0371f4234353c43",
+      "source": "Multi"
     },
     {
       "id": "r20260720-7b939651",
@@ -415,7 +712,16 @@
       "published_at": "2026-07-20",
       "collected_at": "2026-07-20T19:23:13.102424+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260720-7b939651",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "0ce888afb8d1b1522b7c3c0127ac52a79f3edebae97bc5037e6512f90fe6f231",
+      "source": "Multi"
     },
     {
       "id": "r20260717-e547347e",
@@ -427,7 +733,16 @@
       "published_at": "2026-07-17",
       "collected_at": "2026-07-17T15:36:23.235198+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260717-e547347e",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "b77a70a97c216a655cd7fb3b114cb2ebc88c0a6fdb7510645c9d2fa9a7e807a2",
+      "source": "Multi"
     },
     {
       "id": "r20260716-6d6b48e7",
@@ -439,7 +754,16 @@
       "published_at": "2026-07-16",
       "collected_at": "2026-07-16T14:29:13.294846+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260716-6d6b48e7",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "869c79fabc8088eed8a56354601221a716485fd158198d1398d3e7789aa0d461",
+      "source": "Multi"
     },
     {
       "id": "r20260716-7b69c771",
@@ -451,7 +775,16 @@
       "published_at": "2026-07-16",
       "collected_at": "2026-07-16T14:15:32.263672+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260716-7b69c771",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "01b97025ea4e58685748914d87bb440a77d0b12b3e9501793566b06737f69817",
+      "source": "Multi"
     },
     {
       "id": "r20260716-b608a1ca",
@@ -463,7 +796,16 @@
       "published_at": "2026-07-16",
       "collected_at": "2026-07-16T14:15:32.263672+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260716-b608a1ca",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "1628a2923ec4f67eeb4219caa2e7ac7f2c3c095532aec576baa79888a5d5a37f",
+      "source": "Multi"
     },
     {
       "id": "r20260716-9d5f252d",
@@ -475,7 +817,16 @@
       "published_at": "2026-07-16",
       "collected_at": "2026-07-16T14:15:32.263672+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260716-9d5f252d",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "19bbd35fc01f463eebcdc1b76e064348057f0056bd3cd131bfed921f2dc76514",
+      "source": "Multi"
     },
     {
       "id": "r20260716-656bd85e",
@@ -487,7 +838,16 @@
       "published_at": "2026-07-16",
       "collected_at": "2026-07-16T14:15:32.263672+08:00",
       "platform": "Multi",
-      "market": "Global"
+      "market": "Global",
+      "source_record_id": "r20260716-656bd85e",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "f6d718ed949f9452a0b08874be25d3a4388a7d24c34087f3f09a31358c38f5cf",
+      "source": "Multi"
     },
     {
       "id": "r20260716-001",
@@ -500,7 +860,15 @@
       "effective_date": "2026-07-27",
       "source_url": "https://sellercentral.amazon.com/",
       "published_at": "2026-06-10",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-001",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "cb8dc25f1176b5b6af6d84ad5aced86404428b018f28b51ba393634ece1334b3",
+      "source": "Amazon"
     },
     {
       "id": "r20260716-002",
@@ -513,7 +881,15 @@
       "effective_date": "2026-07-01",
       "source_url": "https://sellercentral.amazon.com/",
       "published_at": "2026-07-01",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-002",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "6c4d97ab48d6145856592e67a8f5ade6af5d4e397c5f6ea40417153f02b41941",
+      "source": "Amazon"
     },
     {
       "id": "r20260716-003",
@@ -526,7 +902,15 @@
       "effective_date": "2026-06-29",
       "source_url": "https://sellercentral.amazon.com/",
       "published_at": "2026-06-29",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-003",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "18ec4f0f541e66c32614dcc32c03962913b46bebe3e9cfc195e329570e98a0ed",
+      "source": "Amazon"
     },
     {
       "id": "r20260716-004",
@@ -539,7 +923,15 @@
       "effective_date": "2026-07-20",
       "source_url": "https://sellercentral.amazon.com/",
       "published_at": "2026-07-07",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-004",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "a085660e42915bf32a3d8edccf04c79e33aa39959d470481affa4af5f7b8d364",
+      "source": "Amazon"
     },
     {
       "id": "r20260716-005",
@@ -552,7 +944,15 @@
       "effective_date": "2026-07-02",
       "source_url": "https://seller.tiktokshopglobalselling.com/",
       "published_at": "2026-07-02",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-005",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "6e68632da09d65df12dc91e12d52cb2c43866ac427e941cd9055a6de6bd4307e",
+      "source": "TikTok Shop"
     },
     {
       "id": "r20260716-006",
@@ -565,7 +965,15 @@
       "effective_date": "2026-06-22",
       "source_url": "https://seller.tiktokshopglobalselling.com/",
       "published_at": "2026-06-22",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-006",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "6cc2a93f6d13e2cbf2824bb679c1b6445c12dda23ea549018644ffa8a2afbf5c",
+      "source": "TikTok Shop"
     },
     {
       "id": "r20260716-007",
@@ -578,7 +986,15 @@
       "effective_date": "2026-07-10",
       "source_url": "https://seller.tiktokshopglobalselling.com/",
       "published_at": "2026-07-10",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-007",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "a208beedf6b9f6e27541a093f85a6518c964b9dfcb9be459a07eb2de4d3c4551",
+      "source": "TikTok Shop"
     },
     {
       "id": "r20260716-008",
@@ -591,7 +1007,15 @@
       "effective_date": "2026-07-01",
       "source_url": "https://seller.temu.com/",
       "published_at": "2026-07-01",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-008",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "d03c884a1d8a28411fb7ebcfb49feeab5dfab52bd651e32c7466af9413032cf5",
+      "source": "Temu"
     },
     {
       "id": "r20260716-009",
@@ -604,7 +1028,15 @@
       "effective_date": "2026-07-06",
       "source_url": "https://seller.shein.com/",
       "published_at": "2026-07-06",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-009",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "34209343f3463bc254af4af0cbaed6abf0786dcae675ca3642dd1cda98b9798b",
+      "source": "SHEIN"
     },
     {
       "id": "r20260716-010",
@@ -617,7 +1049,15 @@
       "effective_date": "2026-07-06",
       "source_url": "https://seller.shopee.sg/",
       "published_at": "2026-07-06",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-010",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "3eff7e425637083d6ff178246cdf3a407fb30ba6e3a7d0dfd5836acd36d57a64",
+      "source": "Shopee"
     },
     {
       "id": "r20260716-011",
@@ -630,7 +1070,15 @@
       "effective_date": "2026-07-08",
       "source_url": "https://seller.shopee.sg/",
       "published_at": "2026-07-08",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-011",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "5248108de2caeba4d8f5df8a02b06ef991a89ba4661b4b5ec3800f598ccee321",
+      "source": "Shopee"
     },
     {
       "id": "r20260716-012",
@@ -643,7 +1091,16 @@
       "effective_date": "2026-07-13",
       "source_url": "https://sellercenter.lazada.sg/",
       "published_at": "2026-07-13",
-      "collected_at": "2026-07-16T14:00:00+08:00"
+      "collected_at": "2026-07-16T14:00:00+08:00",
+      "source_record_id": "r20260716-012",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "platform",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "5dbd070f54721ad822e1c8e8a9d6ea43029e008093e53412aa58a8270e9ca69d",
+      "source": "Lazada"
     }
-  ]
+  ],
+  "last_checked_at": "2026-09-03T10:56:38.346016+08:00"
 }

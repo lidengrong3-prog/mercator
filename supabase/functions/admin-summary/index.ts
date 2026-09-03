@@ -6,7 +6,7 @@ const defaultOrigins = [
 ];
 function origins(): string[] { return (Deno.env.get('ALLOWED_ORIGINS') || defaultOrigins.join(',')).split(',').map((v) => v.trim()).filter(Boolean); }
 function cors(origin: string | null): Record<string, string> { const allowed = origin && origins().includes(origin) ? origin : origins()[0]; return { 'Access-Control-Allow-Origin': allowed, 'Access-Control-Allow-Headers': 'authorization, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS', Vary: 'Origin' }; }
-function json(body: Record<string, unknown>, status: number, origin: string | null): Response { return new Response(JSON.stringify(body), { status, headers: { ...cors(origin), 'Content-Type': 'application/json; charset=utf-8' } }); }
+function json(body: Record<string, unknown>, status: number, origin: string | null): Response { return new Response(JSON.stringify(body), { status, headers: { ...cors(origin), 'Content-Type': 'application/json; charset=utf-8', 'X-JAY-Release': Deno.env.get('RELEASE_SHA') || 'unversioned' } }); }
 
 Deno.serve(async (request) => {
   const origin = request.headers.get('Origin');

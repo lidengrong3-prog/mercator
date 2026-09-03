@@ -1,7 +1,232 @@
 {
-  "updated_at": "2026-09-01T05:28:13.396100+08:00",
-  "source_count": 4,
+  "updated_at": "2026-09-03T10:56:38.346016+08:00",
+  "source_count": 5,
   "items": [
+    {
+      "id": "p20260903-b4c86487",
+      "title": "Worldfirst注册教程 蚂蚁旗下品牌，安全合规，费率0到0.3%，无汇损",
+      "summary": "https://www.worldfirst.com.cn/cn/?affiliate_id=8053&referral_id=8053&utm_medium=partnership&utm_source=amz123&utm_term=frontpage",
+      "source": "AMZ123",
+      "source_url": "https://www.amz123.com/t/z17GTx69",
+      "region": "Global",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-09-03",
+      "collected_at": "2026-09-03T10:51:38.476417+08:00",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "source_record_id": "07a25df3e59d9d4d4fda4763",
+      "verification_status": "pending",
+      "retrieved_at": "2026-09-03T10:51:38.476417+08:00",
+      "verification_notes": "第三方行业资讯：保留原文链接、发布日期和采集时间，仅作可追溯参考；未完成官方记录级核验，不进入正式政策统计。",
+      "evidence_hash": "a4b055a3cec6c686b5e9c8d2bf6b3a4cd4d4576960ef15aae5c24a6ab1ba3162",
+      "source_class": "industry_advisory",
+      "market_codes": [],
+      "market_scope_status": "unscoped",
+      "title_zh": "Worldfirst注册教程 蚂蚁旗下品牌，安全合规，费率0到0.3%，无汇损",
+      "summary_zh": "原文链接：https://www.worldfirst.com.cn/cn/?affiliate_id=8053&referral_id=8053&utm_medium=partnership&utm_source=amz123&utm_term=frontpage",
+      "translation": {
+        "source_language": "mixed",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "source-normalization",
+        "translated_at": "2026-09-03T02:59:35.761719+00:00",
+        "source_hash": "ceaf370a306ab7830d0b392ac318e6acc7584af59bfa11f93e55fe9a2ce6b0ef",
+        "human_reviewed": false
+      }
+    },
+    {
+      "id": "p20260903-0d3a4c4c",
+      "title": "Polyethylene Terephthalate Resin From the Sultanate of Oman: Amended Final Results of Antidumping Duty Administrative Review; 2023-2024",
+      "summary": "The U.S. Department of Commerce (Commerce) is amending the final results of the administrative review of the antidumping duty (AD) order on polyethylene terephthalate resin (PET resin) from the Sultanate of Oman (Oman) to correct a ministerial error. The period of review (POR) is May 1, 2023, throug",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/09/02/2026-17981/polyethylene-terephthalate-resin-from-the-sultanate-of-oman-amended-final-results-of-antidumping",
+      "region": "US",
+      "category": "tariff",
+      "impact_level": "high",
+      "published_at": "2026-09-02",
+      "collected_at": "2026-09-03T10:51:38.476417+08:00",
+      "source_kind": "official",
+      "source_type": "government",
+      "source_record_id": "fe4055c810b7d81bfaa55c20",
+      "verification_status": "verified",
+      "retrieved_at": "2026-09-03T10:51:38.476417+08:00",
+      "verified_at": "2026-09-03T10:51:38.476417+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "45b7f199f5c6f7045d43b66bf925180f4764f2a65fe9e2b979df4fe9cdd88652",
+      "title_zh": "阿曼苏丹国提供的聚乙烯戊二酸酯反应:反倾销税行政审查订正最后结果;2023-2024年",
+      "summary_zh": "美国商务部(Commerce)正在修订阿曼苏丹国(阿曼)对聚乙烯四甲酸酯树脂(PET树脂)反倾销税令的行政审查最终结果,以纠正一个部级错误. 2023年5月1日为审查期,",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-03T02:53:13.916271+00:00",
+        "source_hash": "3156f0b3c4e755e96e96eb3807699f8250bfbf65f36b2e8ce40d0f176403cbf4",
+        "human_reviewed": false
+      }
+    },
+    {
+      "id": "p20260903-c96c7051",
+      "title": "Takes of Endangered and Threatened Species Incidental to Specified Activities; Notice of Issuance for Incidental Take Permit No. 29887 to Texas Parks and Wildlife Department",
+      "summary": "Notice is hereby given that the Texas Parks and Wildlife Department (TPWD) has been issued an incidental take permit (ITP) for the incidental take of Endangered Species Act (ESA) listed sea turtles associated with the otherwise lawful fisheries-independent gill net survey activities within Texas bay",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/09/02/2026-17983/takes-of-endangered-and-threatened-species-incidental-to-specified-activities-notice-of-issuance-for",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-09-02",
+      "collected_at": "2026-09-03T10:51:38.476417+08:00",
+      "source_kind": "official",
+      "source_type": "government",
+      "source_record_id": "79aec158e8bf0e4efb60043f",
+      "verification_status": "verified",
+      "retrieved_at": "2026-09-03T10:51:38.476417+08:00",
+      "verified_at": "2026-09-03T10:51:38.476417+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "be25167ce06f3c4b8dbf4f78f994867c09f6b7d9a6fec044baf4bf785212a72d",
+      "title_zh": "- 向德克萨斯州公园和野生生物局颁发第29887号意外采捕许可证的通知",
+      "summary_zh": "特此通知,德克萨斯州公园和野生生物局(TPWD)已获得一份附带采捕许可,用于附带采捕《濒危物种法》(《濒危物种法》)所列海龟,这些海龟与在德克萨斯湾内进行本来合法的、独立的刺网调查活动有关。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-03T02:53:13.916271+00:00",
+        "source_hash": "e0ffa5c058e2ae7936fbe18c04b34ced6dc1049a2e2003c48cca1600b4c25d43",
+        "human_reviewed": false
+      }
+    },
+    {
+      "id": "p20260903-1fc39c83",
+      "title": "Arms Sales Notification; Correction",
+      "summary": "The DoD is publishing the corrected unclassified text of an arms sales notification.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/09/02/2026-17984/arms-sales-notification-correction",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-09-02",
+      "collected_at": "2026-09-03T10:51:38.476417+08:00",
+      "source_kind": "official",
+      "source_type": "government",
+      "source_record_id": "5f2d8ff6bc7100027d7961db",
+      "verification_status": "verified",
+      "retrieved_at": "2026-09-03T10:51:38.476417+08:00",
+      "verified_at": "2026-09-03T10:51:38.476417+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "addc32038fadaa64e4686e7284b28c89488afd146e84007a15fd20f12e12e232",
+      "title_zh": "武器销售通知;更正",
+      "summary_zh": "国防部正在公布武器销售通知的未经保密的更正文本。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-03T02:53:13.916271+00:00",
+        "source_hash": "7df6c34c56919478f52b1fb33dcc3c0737b4ffbc67be306a67b72c93ebb702b1",
+        "human_reviewed": false
+      }
+    },
+    {
+      "id": "p20260903-0084d749",
+      "title": "Notice of August 31, 2026 Decisions on Petitions for Small Refinery Exemptions Under the Renewable Fuel Standard Program",
+      "summary": "The Environmental Protection Agency (EPA) is providing notification of its final action entitled August 31, 2026 Decision on Petitions for RFS Small Refinery Exemptions (\"August 31, 2026 SRE Decisions Action\") in which EPA issued decisions on 34 small refinery exemption (SRE) petitions under the Ren",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/09/02/2026-17985/notice-of-august-31-2026-decisions-on-petitions-for-small-refinery-exemptions-under-the-renewable",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-09-02",
+      "collected_at": "2026-09-03T10:51:38.476417+08:00",
+      "source_kind": "official",
+      "source_type": "government",
+      "source_record_id": "90f044500f64431cb0019430",
+      "verification_status": "verified",
+      "retrieved_at": "2026-09-03T10:51:38.476417+08:00",
+      "verified_at": "2026-09-03T10:51:38.476417+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "745b91cb86962558864d7b3b054d6759b444d168d688691194338c97e5f3f1a9",
+      "title_zh": "2026年8月31日关于根据可再生能源标准方案申请小炼油豁免的决定的通知",
+      "summary_zh": "环境保护局(EPA)正在提供它题为“2026年8月31日关于RFS小炼油厂豁免申请的决定”(\"2026年8月31日SRE决定行动\")的最终行动通知,其中EPA发布了关于34项小炼油厂豁免申请的决定。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-03T02:53:13.916271+00:00",
+        "source_hash": "44d5bab94b411b9e4bededa1074436d7a3532e98b351d938323b55d94e08c0c6",
+        "human_reviewed": false
+      }
+    },
+    {
+      "id": "p20260903-9aac00a5",
+      "title": "Updated Minimum Performance Standards for Commercialization for Firms That Receive Funding Through the Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) Programs",
+      "summary": "The U.S. Small Business Administration (SBA) is publishing for public comment updated minimum performance standards for commercialization for firms funded through the Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) Programs. This commercialization benchmark es",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/09/02/2026-17987/updated-minimum-performance-standards-for-commercialization-for-firms-that-receive-funding-through",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-09-02",
+      "collected_at": "2026-09-03T10:51:38.476417+08:00",
+      "source_kind": "official",
+      "source_type": "government",
+      "source_record_id": "35347973eded2ea4a44a4cb0",
+      "verification_status": "verified",
+      "retrieved_at": "2026-09-03T10:51:38.476417+08:00",
+      "verified_at": "2026-09-03T10:51:38.476417+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "f7dca906b3dbded4ae49e0022c197752c06fbd1bcb09e86ae9475bd8d069acca",
+      "title_zh": "更新通过小企业创新研究和小企业技术转让方案获得资金的公司商业化最低业绩标准",
+      "summary_zh": "美国小企业管理局(SBA)正在公布通过小企业创新研究和小企业技术转让方案供资的企业商业化的最新最低业绩标准,征求公众意见。 商业化基准",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-03T02:53:13.916271+00:00",
+        "source_hash": "4ece099340ded54da8f0e0b262df89729ef8b92a086d720708aa8327e6802acf",
+        "human_reviewed": false
+      }
+    },
+    {
+      "id": "p20260903-9330de5b",
+      "title": "Honoring the American History of the Great Lakes and Renaming Lake Ontario as Lake America",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/09/02/2026-18020/honoring-the-american-history-of-the-great-lakes-and-renaming-lake-ontario-as-lake-america",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-09-02",
+      "collected_at": "2026-09-03T10:51:38.476417+08:00",
+      "source_kind": "official",
+      "source_type": "government",
+      "source_record_id": "beb58fa647141a89e9553ed8",
+      "verification_status": "verified",
+      "retrieved_at": "2026-09-03T10:51:38.476417+08:00",
+      "verified_at": "2026-09-03T10:51:38.476417+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "29a04fd989f8de816bacd485cd430862eb0ae713dc3fc9b54865460ac224ec1c",
+      "title_zh": "纪念美国五大湖和安大略雷纳明湖的历史为美国湖",
+      "summary_zh": "详情见资料来源。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "argos-offline",
+        "model": "translate-en_zh-1.9",
+        "translated_at": "2026-09-03T02:53:13.916271+00:00",
+        "source_hash": "0231798325a6904a6e6566afe9dd572664550aeec3add4bc684569515f1395a8",
+        "human_reviewed": false
+      }
+    },
     {
       "id": "p20260901-d46a0ba8",
       "title": "Expanding Certain Locomotive Wheel Set Diameter Variations",
@@ -24,7 +249,14 @@
         "translated_at": "2026-09-01T06:24:41.628091+00:00",
         "source_hash": "ce9225c4f189730e96af075478f8784f870639b249cf200aee1475e612547382",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260901-d46a0ba8",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-09-01T00:09:35.669422+08:00",
+      "evidence_hash": "bb7ef775cf4171d7300ceb1ca292287f938783f90ff310a3dcfe0e725f56cf57"
     },
     {
       "id": "p20260901-ba8b8249",
@@ -48,7 +280,14 @@
         "translated_at": "2026-09-01T06:24:41.628091+00:00",
         "source_hash": "9021f710cefc72fd76ba8206e430d2cc307542eb3aefc4afb91b90ee6c79d2d2",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260901-ba8b8249",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-09-01T00:09:35.669422+08:00",
+      "evidence_hash": "f690c10acde3e7cf1a34db02100f0e519a469ada8726216c2764e4e5d7d7ed4c"
     },
     {
       "id": "p20260831-f375c1dd",
@@ -71,7 +310,15 @@
         "translated_at": "2026-09-01T06:24:41.628091+00:00",
         "source_hash": "57cbebd965c974d82387bcd50e73c8658ea9eb396cacdc8db0509aeb53588416",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260831-f375c1dd",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "a57dc2416626671381a0e424518b7620fc31ae67777e07340323b07c8bd4c96c"
     },
     {
       "id": "p20260830-05bd9c07",
@@ -95,7 +342,14 @@
         "translated_at": "2026-09-01T06:24:41.628091+00:00",
         "source_hash": "1069ed34660c66b8618efa4991cac87eeffa33258ac2d9b239a2e182642108ee",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260830-05bd9c07",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-30T13:24:45.336818+08:00",
+      "evidence_hash": "98018f03c54cdbc6f3bd5968098d76d25f7ca2597d4c63c7f49a963de0ecd3a0"
     },
     {
       "id": "p20260830-f62d1463",
@@ -119,7 +373,14 @@
         "translated_at": "2026-09-01T06:24:41.628091+00:00",
         "source_hash": "b33742ecd3f8e995a9dc9f637cda331dcea4c986cded0364e05fc5b167f0ed1d",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260830-f62d1463",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-30T13:24:45.336818+08:00",
+      "evidence_hash": "445a85a0d34cc330d2781fc3760487571dacbd2ccf980546b62167d7e5356a65"
     },
     {
       "id": "p20260830-6e5adbd7",
@@ -143,7 +404,14 @@
         "translated_at": "2026-09-01T06:24:41.628091+00:00",
         "source_hash": "94b3299b0184e8d3e87c70efcd52a9be897480405567a843847c49529fafe9fe",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260830-6e5adbd7",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-30T13:24:45.336818+08:00",
+      "evidence_hash": "47efb7248170a0a4a24557083e4b9baf5535d035d7ac173a471467e66fbc2b8f"
     },
     {
       "id": "p20260830-c96d187a",
@@ -167,7 +435,14 @@
         "translated_at": "2026-09-01T06:24:41.628091+00:00",
         "source_hash": "5ac790bad434ad0c590ecf7759c0bdccc5f9b9ef1368bb5ad9b595ec904be5b7",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260830-c96d187a",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-30T13:24:45.336818+08:00",
+      "evidence_hash": "d5aa03fffaba41719e95bf56a939f60e46506313dda7476671edee594c80cb91"
     },
     {
       "id": "p20260830-c63cd16c",
@@ -191,7 +466,14 @@
         "translated_at": "2026-09-01T06:24:41.628091+00:00",
         "source_hash": "3f3e1743b9e08bd50627613281d4af9545e62cd3cf343fbb96ba1364db837120",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260830-c63cd16c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-30T13:24:45.336818+08:00",
+      "evidence_hash": "48ca89ba6a8070dc68cb0248324c463075fcf64e1cc7100daa6ad336c5bd1356"
     },
     {
       "id": "p20260830-d32dade0",
@@ -215,7 +497,14 @@
         "translated_at": "2026-09-01T06:24:41.628091+00:00",
         "source_hash": "8b68c9d091faa7fd5b196b00fad87b47504361f152a37a856e8da9c2ec29d9dd",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260830-d32dade0",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-30T13:24:45.336818+08:00",
+      "evidence_hash": "3a9aff687ba6fcc2658f829e862803abce91b11a3059ee89451c3a14efbe3f71"
     },
     {
       "id": "p20260830-8cef64c1",
@@ -239,7 +528,14 @@
         "translated_at": "2026-09-01T06:24:41.628091+00:00",
         "source_hash": "ca289fb3f6c41565cf94b8dae1a7ea5cf8403f33c2bc63358b77b4d64041bfdb",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260830-8cef64c1",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-30T13:24:45.336818+08:00",
+      "evidence_hash": "9959dd833ddaebd6db88ac37d2498c105d332553778a8d01ef7173ef5508ebe9"
     },
     {
       "id": "p20260830-23fc3c7c",
@@ -263,7 +559,14 @@
         "translated_at": "2026-09-01T06:24:41.628091+00:00",
         "source_hash": "ad22f84b36817ac7903bf484b6b0ebb9cb81cd369e667152018b9321e7d08e71",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260830-23fc3c7c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-30T13:24:45.336818+08:00",
+      "evidence_hash": "a748474bed1f28826ca4f10468b038ec846b6e86d516f770d38763d7e90f124e"
     },
     {
       "id": "p20260828-eb209220",
@@ -286,7 +589,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "51cdc3d34ca62b4b08b3cf1fba298c50ba06ae4af13d50d3b389170386426510",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260828-eb209220",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "f006b98fc0baddf90c63fd693bd539b52a7a64a93726af5a59e59189148c7c66"
     },
     {
       "id": "p20260828-4cb1deec",
@@ -309,7 +620,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "81e67bfd80f663e015d1e14f19b384e0a55b4411a2ce124644c538bfc883e234",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260828-4cb1deec",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "2e30fccbd4cf891fa7c35fb9e74be9f697dee7570c9dd76ab1d29e88b2cb9579"
     },
     {
       "id": "p20260828-d41b2669",
@@ -332,7 +651,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "1b26ac65b1ec85a888183a78801afca4fe185567d8cabde9559abd8f088b188c",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260828-d41b2669",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "74cf3b8ad726da9113c0ac112ff33ca06d340f4e9a49c5344d3461c783b1c893"
     },
     {
       "id": "p20260828-3c8421e6",
@@ -356,7 +683,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2c634296bda7c5b8f5e38acdcf7b67f3d54befffd1f8a419f3ff0df83a89022c",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260828-3c8421e6",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-28T19:23:40.653817+08:00",
+      "evidence_hash": "f3db6ac8e8579694b0a001f69cbd8317d3779e4876cb74dfa7f94b9cf186b375"
     },
     {
       "id": "p20260828-d831fbc4",
@@ -380,7 +714,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "c7b65030937e6e4d23dfc47cce458f00c927bdfa2069d02eab192cf6fb9b8ae4",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260828-d831fbc4",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-28T19:23:40.653817+08:00",
+      "evidence_hash": "a2cd07a5b6365474eff0d5f44991eb0f0bd4c240537a6df51beb533439aad187"
     },
     {
       "id": "p20260828-9d3d94d2",
@@ -404,7 +745,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a7f839e1dd17881b69b851946c70ecd8c690a9dfa1767339659e62cabd9c5a98",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260828-9d3d94d2",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-28T19:23:40.653817+08:00",
+      "evidence_hash": "04e362eddbe21de02828a8df632988aa41706df3ca5c49c55565b511cf87c6f6"
     },
     {
       "id": "p20260828-aead9de7",
@@ -428,7 +776,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ac46d2170e25a1bc89375340143496922e4ffc784a99130ea3ea40a023ef0230",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260828-aead9de7",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-28T19:23:40.653817+08:00",
+      "evidence_hash": "306c1f5629595c787b4ae3bb93c06adb8f928f80f8a611c3ebafaeda9637381d"
     },
     {
       "id": "p20260828-63556fc3",
@@ -452,7 +807,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "20b56dd21eb94a2a27f96fdc6db56177b8f418336b9d9b398ea44d9bcb6f6efa",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260828-63556fc3",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-28T19:23:40.653817+08:00",
+      "evidence_hash": "0a613c529c2d3e7065e20866fa29a642b49373cb1c799131f2615f3d99c73751"
     },
     {
       "id": "p20260828-0915cfb4",
@@ -476,7 +838,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6b4163cc330ea1aeaac341adcd64a57153048e8ad4bbf81fc64964199c56992c",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260828-0915cfb4",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-28T19:23:40.653817+08:00",
+      "evidence_hash": "a052ab0857917e55c9024976ef8e8a5ec492822073da7d878acc30bbf7be92bd"
     },
     {
       "id": "p20260828-2b87134e",
@@ -500,7 +869,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "5d2df5daa23a577fb8b1483a93cfcb39149c4a01e0810bc37098f882cb545e76",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260828-2b87134e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-28T19:23:40.653817+08:00",
+      "evidence_hash": "e6f0c4833278aee0ebd52ca15d82e30840b57747bb914d67c4b17316686b0e5d"
     },
     {
       "id": "p20260828-2e1b0f9d",
@@ -524,7 +900,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "cd3d4c4c47a067dc5f122cca9201fb1deab59686dba38d1dc3883447240185d3",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260828-2e1b0f9d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-28T19:23:40.653817+08:00",
+      "evidence_hash": "2adfe687c6aee3fba76090e3002ea42744dab1b87443c37152289d4d8ee719a8"
     },
     {
       "id": "p20260828-54aeedad",
@@ -548,7 +931,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "56b2e1907e872bbcce2f74a5501560b87e70c93ac0a7dbab0c61b8ec4e5f96f7",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260828-54aeedad",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-28T19:23:40.653817+08:00",
+      "evidence_hash": "cf48144d96d2d05c82102a57f3857d5e3a89d09e74c4af51fe5cf92c05214349"
     },
     {
       "id": "p20260827-07674672",
@@ -571,7 +961,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "afe1f2d9f390a64c05003817346e4dbbbe2d21f6284784e3a039afa02de89ad5",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260827-07674672",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "01108c0b81bd2d2ea3805b4d410a975f1bc3c491a20f870b1abab39e37cebb2d"
     },
     {
       "id": "p20260827-698715ce",
@@ -594,7 +992,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d4fa7c4359caf39d4c8f3adc33c25c643482400d052817f4f787be39bdd994c3",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260827-698715ce",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "6149145b747a64518f52a15b37ad6edc8c9826fd2b2a52610c1f620fa45ffb6a"
     },
     {
       "id": "p20260827-628ad5e1",
@@ -618,7 +1024,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "fb953715d6399b1005a519bcd5373ddec937d4fbe6ebc910dcea439576d12bc2",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260827-628ad5e1",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-27T17:49:08.856811+08:00",
+      "evidence_hash": "4c11aad0e710a4835083df6f8506878ebaf800c1e307686e318f3edb88f6a4a6"
     },
     {
       "id": "p20260827-285db19c",
@@ -642,7 +1055,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "9c4a6bc737d0a8ad34a1ff4418d202b0b48c563dca7634721bba9effd6a2ab73",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260827-285db19c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-27T17:49:08.856811+08:00",
+      "evidence_hash": "19150b85682fb84b2f055a7897aa8d7e9191971ab86d1850719ecc17ddb9009c"
     },
     {
       "id": "p20260827-66261a54",
@@ -666,7 +1086,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "24821e57202da570d0aae2d9c0f592641f94de123effbd4bb79f7c98bfc69dbf",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260827-66261a54",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-27T17:49:08.856811+08:00",
+      "evidence_hash": "92954a5e2827a82fb4333087e288ed40380e00403e4a6ab5f9ed86acd7145518"
     },
     {
       "id": "p20260827-6a0dcf0a",
@@ -689,7 +1116,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ca01acc24a969afeac74652e3f30339a94ab9bbd0880107ea68cd9da5b6a6dfe",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260827-6a0dcf0a",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "0baf7d621084f501277ed6445eb9f573984cdba1cf154f7ae80089580e42e819"
     },
     {
       "id": "p20260827-2268cd94",
@@ -713,7 +1148,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e7867049e45d952f26939d9409a6613e3a0675ff6d55d48afe41180dec14c646",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260827-2268cd94",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-27T09:53:36.908633+08:00",
+      "evidence_hash": "c27563f8a8563e1c05d3d4171c37140d28517866bcbb89f0e0150ab10aafcd11"
     },
     {
       "id": "p20260827-94593928",
@@ -737,7 +1179,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "0af98ecd8fa7848df300e800a22a23ed09d5a9bfb2fcb1c1b5f008c748f139a4",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260827-94593928",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-27T09:53:36.908633+08:00",
+      "evidence_hash": "2160ea4c38f14da42022029b0f52198f565ccb8f70e76bf1dc7a96ac0afeb913"
     },
     {
       "id": "p20260827-5b9afc14",
@@ -761,7 +1210,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ae0fc8974ce65591be72f45ca4f855231dca2ae44cc016ebc1208d7fbea15ecc",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260827-5b9afc14",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-27T09:53:36.908633+08:00",
+      "evidence_hash": "70f281d8af9e2c83d5c4ed6a5955bb2a4fd14e990c8f3bcc7bb0f9719b40d7c3"
     },
     {
       "id": "p20260827-253ac20f",
@@ -785,7 +1241,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "4ced8a01e1656ff410779dc59a3913d9778191682728726d193f3827845b52dd",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260827-253ac20f",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-27T09:53:36.908633+08:00",
+      "evidence_hash": "b60e7f530a6732bafa0b391774ced8a613018ff082c9a82595ff430080a71455"
     },
     {
       "id": "p20260827-5399a9e7",
@@ -809,7 +1272,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "88093f5bdf34c58670339dc5f9306a73c20278daa5806dc0f6a5766adca96a97",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260827-5399a9e7",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-27T09:53:36.908633+08:00",
+      "evidence_hash": "c3a594be811cb7e10d9851a467f38a0c267e8a5a2ec9eb0ab61560b88d5dec91"
     },
     {
       "id": "p20260826-1e569661",
@@ -832,7 +1302,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ac8ad438ab5526f07d7381baa6a375de83dbda45b88282347dcc5a72a455812d",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260826-1e569661",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "2aaaa474017aeac834a35c26a8994b422c6567bbde55850d7e6fd958d45dfaf2"
     },
     {
       "id": "p20260825-b69ee4ab",
@@ -856,7 +1334,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "f5cda4e9758231eee44b7988999aae3fd956bd01a77dd49c56ab7efc903a0799",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260825-b69ee4ab",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-25T17:00:04.713778+08:00",
+      "evidence_hash": "88b3a3b2fc9630f4ca37f5ee654ef87017f0d186dc2a8a5fd26989b4de2be52d"
     },
     {
       "id": "p20260825-78f3243e",
@@ -880,7 +1365,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "eeab704699d1eaa3460056b2aea4893ab1a90188c9129ed97eb9f0c942b8bbb3",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260825-78f3243e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-25T17:00:04.713778+08:00",
+      "evidence_hash": "db5d819ae1872ad97ea140560f2544b5a7db10902b945f3ea123902a078135c8"
     },
     {
       "id": "p20260825-8a63f372",
@@ -904,7 +1396,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "7c352ea516b50be9de9e89f8ac811f899bec90add2ad9af8c85f74d0caa813fc",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260825-8a63f372",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-25T17:00:04.713778+08:00",
+      "evidence_hash": "33ff22823d118780f16a7ebe648d6ce9471672302c2a827340fb647c74486448"
     },
     {
       "id": "p20260825-2b326239",
@@ -928,7 +1427,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6b4230ff48f57d69bf5a80c40a734428571affc794ca29fd9821d78155456768",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260825-2b326239",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-25T17:00:04.713778+08:00",
+      "evidence_hash": "8c0ac82b81abfe426aaa6195f9e20ccb8979de624865372b08e93d6ba79aec94"
     },
     {
       "id": "p20260825-ffeb810f",
@@ -952,7 +1458,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a19d543e4c533ba734cf55e914daa24e7b2ff19f6d28a4a0f4f6390581733428",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260825-ffeb810f",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-25T17:00:04.713778+08:00",
+      "evidence_hash": "154e0f66ad2c62f0f5f1b68eed44da4f8b7f743298bc7120d4a6fdeaa2793aea"
     },
     {
       "id": "p20260825-78834f98",
@@ -976,7 +1489,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "7c8f5d3db1c436f3b8bb5b8973ef49736ec768638fc3b0a3cfe4cd3cfb981253",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260825-78834f98",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-25T17:00:04.713778+08:00",
+      "evidence_hash": "272db2527bba969099b5f14f5acbee5d9f996d771ea282dfbac343905cad5b81"
     },
     {
       "id": "p20260824-738b72da",
@@ -999,7 +1519,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "da8483a84237da0b25d250e8159ea4221adf2e664cc1d7f22f658a2afc2a961a",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260824-738b72da",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "4cea5ee4ece606b71ea66a60b803f8dc28364c961545ba376fc10b46a65c15e8"
     },
     {
       "id": "p20260822-a68b9197",
@@ -1023,7 +1551,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "fc90d9fe19c372ce7301e32976cb23b7c70c5db18dc77d97780ee23c984da0d7",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260822-a68b9197",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-22T16:47:25.308351+08:00",
+      "evidence_hash": "9bc78f2e939d8b4ba95c777015e9a840d272175660f76bf084583ce12358d086"
     },
     {
       "id": "p20260822-6c923fea",
@@ -1047,7 +1582,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "1840a2dcc17310779999233429e786c4366d8da35bca69958751113f2373a2b4",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260822-6c923fea",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-22T16:47:25.308351+08:00",
+      "evidence_hash": "11b92adc3601d77eb2729bf9c0e23e66f032e196ce3f4654f5cb2a93618dfdc5"
     },
     {
       "id": "p20260822-2050d184",
@@ -1071,7 +1613,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2bb5aa5da100263c88097c5a899512dbcce94d8c8bd1d65f53a2f4a316562687",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260822-2050d184",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-22T16:47:25.308351+08:00",
+      "evidence_hash": "bd0bd5b641cce64c4968ed8362b7dc6edc3ed5eb3d80471b4464312ccb1ac779"
     },
     {
       "id": "p20260822-43df610c",
@@ -1095,7 +1644,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "42bb1c8185ed3470497b539a382eb55162849e6a77232ce6d63e410604a7ac98",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260822-43df610c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-22T16:47:25.308351+08:00",
+      "evidence_hash": "408d8868d0673be849953cdc38b78d4e04b37eb8e29b475be96b04cd72c5e226"
     },
     {
       "id": "p20260822-3b91b5d3",
@@ -1119,7 +1675,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "4cfd290d2bdde220d08e8eee1055f72038b3592a791f4aa77edc8d56a6817a61",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260822-3b91b5d3",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-22T16:47:25.308351+08:00",
+      "evidence_hash": "184ef998a22ed9d46a2952ab41dbe4fffc77f9b291042ab9a885824015ee54f8"
     },
     {
       "id": "p20260822-e2b4bb59",
@@ -1143,7 +1706,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "0048554197a7b028d0911ef7c6b4e4093a5c0b53e05ba3f046662f8d5a69d9fe",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260822-e2b4bb59",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-22T16:47:25.308351+08:00",
+      "evidence_hash": "af2ddbc7aa34ec7f039a3036fcbe2fe1b9855bf0633db20f2e3e73183a10b37f"
     },
     {
       "id": "p20260822-e93e4e05",
@@ -1167,7 +1737,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "418da3d64161ecf7907ba0e4087b1c8855bda688b509cc5b2d228b3ebf5f9ccf",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260822-e93e4e05",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-22T16:47:25.308351+08:00",
+      "evidence_hash": "b501fcd010339de6ec7120ccfb15f353d23856e4b2d45324bb56f867e1d24538"
     },
     {
       "id": "p20260822-e8918124",
@@ -1191,7 +1768,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "7b49c606db77f5a81ec27991a8f760e6d3fa79c5055ff7117df7f6dfdb01d251",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260822-e8918124",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-22T16:47:25.308351+08:00",
+      "evidence_hash": "42a4c693dd10e982532b5d4d0b744abfebd2827ce595329cc89b5c71c0a38fb7"
     },
     {
       "id": "p20260821-79f46aee",
@@ -1215,7 +1799,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6af3ad75ab06496f22bda35b5e8a879c126cbd8edd4bb8e3955948baf4497fd3",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260821-79f46aee",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-21T16:58:27.649218+08:00",
+      "evidence_hash": "0909b579ffdc13fc2e25c1b09aa53ef9e52842aeb2f325499b4e31991c3d83b9"
     },
     {
       "id": "p20260821-bc0d255a",
@@ -1239,7 +1830,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "3d713cd55cdf9aafece845b92e96febf0edc82ba9db18ebcc315f13325c70e79",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260821-bc0d255a",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-21T16:58:27.649218+08:00",
+      "evidence_hash": "d5c31a9206d1cf04b1a2aa6e065543ead728edd0d40ea5f3bb37ed25acc10071"
     },
     {
       "id": "p20260821-e39d0cfd",
@@ -1263,7 +1861,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "acd00ca296d057adb41ea2470a8c5ed838dcce8c3bf5bdaeaa8253f528ff8cc0",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260821-e39d0cfd",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-21T16:58:27.649218+08:00",
+      "evidence_hash": "6ddf5cd7d366d3453515510a6f041a1db4807d7a406fe0895c57059533e78ca3"
     },
     {
       "id": "p20260821-9840e527",
@@ -1287,7 +1892,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "7f5274bab902e6cafcab188ea93d3dff9d8fdb71e33702ed0f274576148a5da8",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260821-9840e527",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-21T16:58:27.649218+08:00",
+      "evidence_hash": "fdb59b0ab466815e155c46f490ee33e3a8dc95bb324f0f29fef0ddd01c367569"
     },
     {
       "id": "p20260821-42598efa",
@@ -1311,7 +1923,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "83d5ab678a4e1437c3b50817a1e73882b5f0b63e8a96a06a758d2f192aec4606",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260821-42598efa",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-21T16:58:27.649218+08:00",
+      "evidence_hash": "84cb55c2f9d1e7834676e77555fe417e88224aaa9d7f1224b9aa9defadf91781"
     },
     {
       "id": "p20260820-bffe68bf",
@@ -1334,7 +1953,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2737aa02ebe459d574089ff632074a0d062c5e67cfd71fffc68fd284864d78f8",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260820-bffe68bf",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "ec46176e34be661da5a96b2c27560c20eba7162be07ab97d85f6fb9df13f77bb"
     },
     {
       "id": "p20260820-4b7f9a3e",
@@ -1358,7 +1985,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "8cc13d5bf8e879649d9ccbaf788b561c0928593e26ad17e938fa89b1e2e919cb",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260820-4b7f9a3e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-20T16:56:28.920692+08:00",
+      "evidence_hash": "4cedf298437240e8d6bb23c6eb8c1f2490ad59c9fbb40403127e4ffdbdb8fe84"
     },
     {
       "id": "p20260820-cba554c4",
@@ -1382,7 +2016,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "37e7e854b5e29979fb3a0475da113f7d9264f62c4e5f7d87951b7eec88b7edb0",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260820-cba554c4",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-20T16:56:28.920692+08:00",
+      "evidence_hash": "7636782d3cf17341d550ffce731f8ceda772d164a8eef100afea3ab92815cb66"
     },
     {
       "id": "p20260820-f6bcc3fb",
@@ -1406,7 +2047,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "9a5e8dd278f38e0c547993aad09209331e07f9d80367ff0eb75db139af1ffe10",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260820-f6bcc3fb",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-20T16:56:28.920692+08:00",
+      "evidence_hash": "cf18e724aa4d56835ada45631dda7e81ab32e51379bfc4a002ddadc0fd236327"
     },
     {
       "id": "p20260820-18243369",
@@ -1430,7 +2078,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "72cde84959f6470c8ebbb0af6c3a5a22a85253ed097a4791c1426db5b6b83765",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260820-18243369",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-20T16:56:28.920692+08:00",
+      "evidence_hash": "51bb2c9260ad3dac96b1101d5e742979498124c4cf2e6d602b40a493c1790af8"
     },
     {
       "id": "p20260820-32fe4301",
@@ -1454,7 +2109,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "56ed5c614d2dee649815c0169e02634164bb3af2abe3880db010749b64527f0d",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260820-32fe4301",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-20T16:56:28.920692+08:00",
+      "evidence_hash": "d08994f9e2696a4eba23ea4922393173517247192c63c44a622f4eff5873d05d"
     },
     {
       "id": "p20260819-105295b7",
@@ -1478,7 +2140,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "262e8b9cccb1abef5f9d429095f098be69c3adf6e2459d6c1e7f5c022c6751e0",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260819-105295b7",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-19T15:05:51.059767+08:00",
+      "evidence_hash": "31115043daf350eba73bd022013c8d781529f8d5206cc83ade37829e591e8ca9"
     },
     {
       "id": "p20260819-f709824b",
@@ -1502,7 +2171,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "5e9ccd5237b52b01f0a96c9dcb852b2d4492fd1ef262d1102c86aeb6fd98be90",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260819-f709824b",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-19T15:05:51.059767+08:00",
+      "evidence_hash": "53bbd4bfd3a2123ca9a09dfc8b2d01a3fd986ff62b0ae2f24f55815f962f2e23"
     },
     {
       "id": "p20260819-51a65f7e",
@@ -1526,7 +2202,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "5f9807e821f676cca176561f86b9e366a38127e5bb3dfc963947886dc7e65f0d",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260819-51a65f7e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-19T15:05:51.059767+08:00",
+      "evidence_hash": "3558d1f3fc2fda30958e8786b8c2cbae3315b9c5aae2619a7240333e3a0ab694"
     },
     {
       "id": "p20260819-056e9b8b",
@@ -1550,7 +2233,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6082777c944b94013989109faff151f0746deb826e65a79204713a2eda1cfddd",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260819-056e9b8b",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-19T15:05:51.059767+08:00",
+      "evidence_hash": "2ba33b0a4c65254f556f3836a94a49f249426953ae9c2321f27bc8dba734bfdf"
     },
     {
       "id": "p20260819-a811f337",
@@ -1574,7 +2264,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e12cb246f4984922f00b616a8373ec922be912c6ea513240a6282f05db933b89",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260819-a811f337",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-19T15:05:51.059767+08:00",
+      "evidence_hash": "bdfe95c9a359645f0667a0787e7937af3abd7957ae6066306e44c0615e8c2966"
     },
     {
       "id": "p20260819-7148e4e0",
@@ -1598,7 +2295,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "74c8c7fdad933320bbabdc465170c9f7be64bfe2b32070f4908bd33df48a4d2b",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260819-7148e4e0",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-19T15:05:51.059767+08:00",
+      "evidence_hash": "a263b48312d804cac524453ea6e6b9c4c3a987c915086b5cecb190cfe7ac7991"
     },
     {
       "id": "p20260819-fefc1249",
@@ -1622,7 +2326,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "587f62b9e2dfd21d7e835ae8bf8fb2f1441f6491df3f4941f0c2d33184c236f4",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260819-fefc1249",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-19T15:05:51.059767+08:00",
+      "evidence_hash": "9b502671deac053c516cbddbe72db77ffd7f387b5a1c227a6647eb20a5b353c8"
     },
     {
       "id": "p20260819-78f94877",
@@ -1645,7 +2356,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ac76cc444788a3bb1ed1a13b1c6bd35cc12069a28e304766d7caa7a3eef9b7aa",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260819-78f94877",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "67506bacbd26aebecf42b456561009176f8b2b8b544bdd65751ea11d10539873"
     },
     {
       "id": "p20260818-2a8b668a",
@@ -1668,7 +2387,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d355ef8fe66146191e78241b76b97e7f8849cdc2e5b9ac24987eddec8c26e4fd",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260818-2a8b668a",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "5ebaea3e6cc6ba6423f54e280f4cb68d4250fe8ca39aea46bb556bf83a4ce216"
     },
     {
       "id": "p20260818-d59ecf5c",
@@ -1692,7 +2419,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "1966230308f1f889497565733bbaccb9044ca2835cc1e70ab786bd24136133e7",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260818-d59ecf5c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-18T16:53:25.046236+08:00",
+      "evidence_hash": "7871f150ca1b903c72c350c1d0e3608b740f46413a976ef524f417ffb6d1d488"
     },
     {
       "id": "p20260818-72d619c8",
@@ -1716,7 +2450,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "94cfd0f649926287c8d7558b2417a4c517e0ff3594a589a6389e258ff5e7f448",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260818-72d619c8",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-18T16:53:25.046236+08:00",
+      "evidence_hash": "7ffb044b66e4d81ab41a3cb90d73ddcb50fbfc8ed883a573e4bde2392feb80bf"
     },
     {
       "id": "p20260818-f3f0863a",
@@ -1740,7 +2481,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "40d6006d27141f3d8046abd11e7085e906bac8f63cc441340a94c27b20a6f0bf",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260818-f3f0863a",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-18T16:53:25.046236+08:00",
+      "evidence_hash": "954c26dca741c5faaa387a617cec27ff4bac4ed399cdd8b79893744a730811bb"
     },
     {
       "id": "p20260818-1f7f7c6c",
@@ -1764,7 +2512,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a05f371cee864972b149604440f26dbcc4e57d67be85e2dbf89d1a6b36992036",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260818-1f7f7c6c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-18T16:53:25.046236+08:00",
+      "evidence_hash": "4adad2ee0e4b3c1ae9f691482791e860616af9901f29544bea4c87faeee04caa"
     },
     {
       "id": "p20260818-bf46d8d1",
@@ -1788,7 +2543,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "050af20be2559a551c2867a59ce5addfe32ca743bffd0dca204cad1a25d7004b",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260818-bf46d8d1",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-18T16:53:25.046236+08:00",
+      "evidence_hash": "f47abcca1afe5d6c26041a26861224d0b11af44e70739d55aa7579d98c130c57"
     },
     {
       "id": "p20260818-8215a28b",
@@ -1812,7 +2574,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "9e5490171409ba457c4fcbc4353037a65e8a569967aa70ee5caab5241bea64bb",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260818-8215a28b",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-18T16:53:25.046236+08:00",
+      "evidence_hash": "bfff1d474ffb7e97e0e2494f5fb7c5f937abc101de9d66b6319b1a3d7addd40d"
     },
     {
       "id": "p20260818-43d26a21",
@@ -1836,7 +2605,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "7d7dda7b2a2ec9dd2edaff1d40f108097fe72e9bab8f2058da933306030c1adb",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260818-43d26a21",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-18T16:53:25.046236+08:00",
+      "evidence_hash": "94844600c4bcaec83024a14a756fd7d6bb8c73199d4db9eded73273bffbb2921"
     },
     {
       "id": "p20260818-f110bdfb",
@@ -1859,7 +2635,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2430d38aaff9cd13f6b936af0494928a86c549260d1ceb26d79c2bca851abea0",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260818-f110bdfb",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "0e92bbdf255a748c8d3050caa671b1fff4219fff7ed770c1f2ee46751db91700"
     },
     {
       "id": "p20260815-1712e843",
@@ -1883,7 +2667,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "52efcbf328a942b2fc61b822b99db2a31af294e114cce6e6c9b8e3db6ceaca2a",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260815-1712e843",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-15T16:45:02.628332+08:00",
+      "evidence_hash": "2783b7992c3b216968a141e4fc9915c1ff09754eb67f56797389cd56a971ca00"
     },
     {
       "id": "p20260815-2263ead3",
@@ -1907,7 +2698,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "72ddefb8aeea9b141d5e36ebf91ee8cd4f1e5a465aae4c21711ae0e1f906780a",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260815-2263ead3",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-15T16:45:02.628332+08:00",
+      "evidence_hash": "ea83ddcae49a2da4149e856f0f34ade46bed2de2fb96e25fcdad9dab9fe813a5"
     },
     {
       "id": "p20260815-6dae3453",
@@ -1931,7 +2729,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6cfc3e42cce0b9225ccdc7a75c87556227ca829f14616363761afcc7486cebd8",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260815-6dae3453",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-15T16:45:02.628332+08:00",
+      "evidence_hash": "d1e9765bae6914afb703201e430a0cc7df1807a776ec1033c01f7954c6c1f2b1"
     },
     {
       "id": "p20260815-e438a6bf",
@@ -1955,7 +2760,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "87f09094a894476017462735192fb4456e512c36f27675e067f9cb1b0bed4ad9",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260815-e438a6bf",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-15T16:45:02.628332+08:00",
+      "evidence_hash": "8428b2b0c585e00e6ace60ba74fbb4fa72e9195ba288f6894bdc358a4c5d3999"
     },
     {
       "id": "p20260815-d31221c4",
@@ -1979,7 +2791,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "dd69e06e4e445f2a37a8c4ffe597d5cebbaa1f6e84aab6efac6247bd9d11c003",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260815-d31221c4",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-15T16:45:02.628332+08:00",
+      "evidence_hash": "13859091e69a11f26752ad39f90836c17576296578f3f69f2f6100d34fef16f9"
     },
     {
       "id": "p20260815-bd0b8957",
@@ -2003,7 +2822,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a497367391bf460e8261d11fca55e29db33cfe2e205b266a05d27c2aabfcb406",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260815-bd0b8957",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-15T16:45:02.628332+08:00",
+      "evidence_hash": "9b8ed178305cd59fc975d208c591906623edf37e3ad41e42fc1b87a63ca6130b"
     },
     {
       "id": "p20260815-b733c97a",
@@ -2027,7 +2853,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "32b2d7fed85f210cc57eb4c3b62b07c5c3a90924bb2e15d51c9da4fa05903eac",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260815-b733c97a",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-15T16:45:02.628332+08:00",
+      "evidence_hash": "57c0efc1e3f13e6b118908a7d084c138fb6163686d1ab03823a61d321b374761"
     },
     {
       "id": "p20260815-6e9762a5",
@@ -2051,7 +2884,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "8bf60a3d36b3917abb2f13b6b609367c235d5c6384c3a540599aafeb54d8b8e1",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260815-6e9762a5",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-15T16:45:02.628332+08:00",
+      "evidence_hash": "026e3079c472783bf3d6e38f881c8ada3780f19ececd3c4b412ebadff355c4d8"
     },
     {
       "id": "p20260814-9f2379ac",
@@ -2074,7 +2914,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "5e7d77a558f28bcb2615717b2cef8c2ee6579e204530913b982207a0f436a3f0",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260814-9f2379ac",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "dd3acc511ff90d7c56b515b3e416f901069c3977c5988a5a357850e40b09f337"
     },
     {
       "id": "p20260814-62c06fa8",
@@ -2098,7 +2946,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "9421898dd5233cddc521cd72925ab136b3288ad3f2f98ba9ec08a7747ed1f861",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260814-62c06fa8",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-14T19:12:05.617022+08:00",
+      "evidence_hash": "84ed8779d9825c85fa7ffdf92c607054b1a36044b9db3be8fb71f83d1f24a25f"
     },
     {
       "id": "p20260814-5cb1d65d",
@@ -2122,7 +2977,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "4439ac2278225cd806b1752c5de463d372b01067f8c2954f101e38743277d80d",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260814-5cb1d65d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-14T19:12:05.617022+08:00",
+      "evidence_hash": "6c118a4764d449ed7161fc9adc0ef38ad18d994f61b7f9d948cf8492926f930b"
     },
     {
       "id": "p20260814-12a8c3a1",
@@ -2146,7 +3008,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d4285c4a7b6757b49a76d996a9bbde9b80ff1a7605a517e251c47a8df83c8e03",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260814-12a8c3a1",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-14T19:12:05.617022+08:00",
+      "evidence_hash": "a62a1f67f63993e72ca319066604f70cfb6d7f2edf0bb1ffafcf4e500b56b537"
     },
     {
       "id": "p20260814-9da22393",
@@ -2169,7 +3038,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ec009114a93f974c3fe2b5066644d32e864482bc149a252b05dfe9ef3251a332",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260814-9da22393",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "55ea22b7bd17ee1fa4a6f9d2dbb584c25a837b30af86954ecb915dac5c9d0b27"
     },
     {
       "id": "p20260813-8ba63223",
@@ -2192,7 +3069,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "54bde977cbea96a45a6c1783ae2c9a5bed499fa925782c2853934bdd7c2afdc1",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260813-8ba63223",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "319f65f025625e3dcd0794713508766dc323d2470e82064b53d2e3ae01890fdf"
     },
     {
       "id": "p20260813-17d6e67a",
@@ -2215,7 +3100,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "be9361457bf0d2f423688da4c7042b68a08264c3872c29d6fb52986dc7644634",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260813-17d6e67a",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "5852741b772c0e24a297473e47eee1e95eaf04666bfc2061cc0712eee0330fd9"
     },
     {
       "id": "p20260813-dd5358e4",
@@ -2238,7 +3131,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "1b6e9e251318a40aa7ae778e83cbfbfd06f7498b7e96e3bc984ad9f631d16051",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260813-dd5358e4",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "dbde2e623a90df0ab9199d54de719cbb471b41981322c1d5b4e0b488452b2fcc"
     },
     {
       "id": "p20260813-5c2bf0f3",
@@ -2262,7 +3163,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "8fc14691c0d92d40cb2b1a06b8cfd23da1d67e2c1b306ff882ac5d2ce1b0f793",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260813-5c2bf0f3",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-13T19:14:02.470234+08:00",
+      "evidence_hash": "4509fe39ccdceabd33972ad861e33a5190859665a57131fe0edcc7f02bc03122"
     },
     {
       "id": "p20260813-d03115b3",
@@ -2286,7 +3194,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "3a17b58e1b98d6954901a74ff250dd76ce1cac7fc0435ccd32f76eaad6bbdbfb",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260813-d03115b3",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-13T19:14:02.470234+08:00",
+      "evidence_hash": "91056d223d9bd6afa828d06888ef758fa8f00e69564abd185c5e7f86ff5da473"
     },
     {
       "id": "p20260813-86690ab4",
@@ -2310,7 +3225,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6cc4e2e6475617fb72258dd30b825a831bc1bb5d700fe5426c1cc971813f8634",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260813-86690ab4",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-13T19:14:02.470234+08:00",
+      "evidence_hash": "c53ea56c521d56f7227f99a81efb219121f490cad0cb787acbe026c7c0f9778c"
     },
     {
       "id": "p20260813-31699bf6",
@@ -2334,7 +3256,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "1f345482741fc895d955419ec350db14dc0aa461e9df07b600afc00e3dc9447a",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260813-31699bf6",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-13T19:14:02.470234+08:00",
+      "evidence_hash": "f1d77913fd20ea169b034d145048f0786b6a8a9c1f025f546366312425330905"
     },
     {
       "id": "p20260813-ba174938",
@@ -2358,7 +3287,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "4a6c46230ed983a99b968a77195ad40f45565b81073d14f5bfaa14f4ee939894",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260813-ba174938",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-13T19:14:02.470234+08:00",
+      "evidence_hash": "8648f1513c0e4c25aa2679191906567dbc9c67947ba0c65751a2964b821c40ee"
     },
     {
       "id": "p20260813-c49c2d97",
@@ -2382,7 +3318,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "09dc045db89b3cf51cd16ab7e358dae4ecbaf4983adacd4c94791564c90c5ee9",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260813-c49c2d97",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-13T19:14:02.470234+08:00",
+      "evidence_hash": "8b00fdaae99705bb816083d57dc042d372f7ad7b0f53dc5bea1fbe2677bc9473"
     },
     {
       "id": "p20260813-8a0ce355",
@@ -2405,7 +3348,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6360b59006ef98c039dbe9ba6c6e9ef00b42a9c67177795d1fc1425215a6b2b4",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260813-8a0ce355",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "a1eba04f4df062d3c517d46b04ab8bf5cbee6740cc7776cd4ac1ff699a3769a1"
     },
     {
       "id": "p20260812-a342e822",
@@ -2429,7 +3380,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "262147d09fcc0921d35963a3c58805aa87574b457e302c30b75703158b3e21df",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260812-a342e822",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-12T13:49:36.177894+08:00",
+      "evidence_hash": "5bd6ac2186f33ef2e2e26884fabec7edadeb73f12f7c58d119bbb1487a638556"
     },
     {
       "id": "p20260812-7a69b0e5",
@@ -2453,7 +3411,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "343de8ab8fb63d2dc02c5ff3b09fcbdf9b15ba0ad330494cdb35bf6d861e9351",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260812-7a69b0e5",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-12T13:49:36.177894+08:00",
+      "evidence_hash": "71c3d8adabd7bd855312ed2b34ed4b7039bbb5768907ef5b74533bdae825cc6a"
     },
     {
       "id": "p20260812-86d062e8",
@@ -2477,7 +3442,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "03b3b110c1b22ff7edb42700bf496e076a71c24fc44dd50c85c0c1c0f5f9c6f0",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260812-86d062e8",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-12T13:49:36.177894+08:00",
+      "evidence_hash": "8dbb9fdf6b04b33c10a05feb8ce1d612253c51741dc5eba00ce9ae558bb4f943"
     },
     {
       "id": "p20260812-9b7cff52",
@@ -2501,7 +3473,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "54a2876db56db675e62f584d634f97ab056a714fe140797e5e0d4ec62e6a39c5",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260812-9b7cff52",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-12T13:49:36.177894+08:00",
+      "evidence_hash": "7d4e7ec8438109b917384f7fc8ae8242a8f26ba3f7aac7f8fff7569816ca35ee"
     },
     {
       "id": "p20260812-cbf90049",
@@ -2525,7 +3504,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2ff707e37ed4c6b3889df4b327b4acf00dbd01706d4d0924efcbf1a23b0d9e25",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260812-cbf90049",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-12T13:49:36.177894+08:00",
+      "evidence_hash": "5451f5ca33c197c24a085677ff0957d37f2be35e8558147536ebceed3c711351"
     },
     {
       "id": "p20260812-4421b4dd",
@@ -2549,7 +3535,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a98b2c8bd70c8ad3517ad3bae0b84d8863e455048c8249159e2471a3d1f6ff2a",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260812-4421b4dd",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-12T13:49:36.177894+08:00",
+      "evidence_hash": "c1d521b4a8a648e8009c08b93a53819a968722867649913852c3bf55eb5c795a"
     },
     {
       "id": "p20260812-72287cf0",
@@ -2573,7 +3566,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "8605c218a9a97e326fe4d5bb171fe1cf88ea56b131c299743480432ddc176763",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260812-72287cf0",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-12T13:49:36.177894+08:00",
+      "evidence_hash": "0e822093ee72c265338baa50594aef9c0cdac69d092db72f2c56700617e5070c"
     },
     {
       "id": "p20260811-d0af0ac7",
@@ -2597,7 +3597,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "c4f3dc45df5cf57e51d4d52d22dc7cf0ba91cd273faba779717966898e33fec8",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260811-d0af0ac7",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-11T19:08:02.660145+08:00",
+      "evidence_hash": "d3661a13ecd6efb6f91781e4ec16fbb6f4bdbd83745609874487510d8cd15470"
     },
     {
       "id": "p20260811-3671ae63",
@@ -2621,7 +3628,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "63639f692f6e4b10d772f5323978b2c19c7e00022d83eed3911a51236d47e9a1",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260811-3671ae63",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-11T19:08:02.660145+08:00",
+      "evidence_hash": "9c5b5856006743e8251bdde798c5cb736d9e64fbeb35c5070c63fbe0811d95ae"
     },
     {
       "id": "p20260811-cbcc75aa",
@@ -2645,7 +3659,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "1d47c77c37a96ebc37784adc8f29d922f99c10ade46b4797607632d40699da11",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260811-cbcc75aa",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-11T19:08:02.660145+08:00",
+      "evidence_hash": "e211e2815c19917c5270429ce72611f4586f41c2fc41eb81d2667662f6b2f7dd"
     },
     {
       "id": "p20260811-b565bf1d",
@@ -2669,7 +3690,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "31bbaf12802f653e91174a4aecfe10009f26c1250cf257b59dc3250173311132",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260811-b565bf1d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-11T19:08:02.660145+08:00",
+      "evidence_hash": "8877d1db63ccf5c6534e3fe8d3e2547c6ae28dbf7f0307441cb34c87b1e937f0"
     },
     {
       "id": "p20260811-273198f8",
@@ -2693,7 +3721,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ee46c36ebb183859b0a7d38d8c26d01c154fa79194393836e7e92c0ffe1be35f",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260811-273198f8",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-11T19:08:02.660145+08:00",
+      "evidence_hash": "c1b2acf61c48c550b75c20fc9a4063807f7ad6a72186d8eeadbb4f63f4486c2a"
     },
     {
       "id": "p20260811-c3db57ef",
@@ -2717,7 +3752,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "9ca379d76bc5754923eced298d80ab62f0a3093b97b3d9fa6c0668b3d88b3fe6",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260811-c3db57ef",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-11T19:08:02.660145+08:00",
+      "evidence_hash": "e6ce1b914ab2e13fb78f6cbb1a3bbad004384c4679669cd494585ef1542c06d0"
     },
     {
       "id": "p20260811-ac98199e",
@@ -2741,7 +3783,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "bd38e7f1a0e86a7bfceb41ee260cacd204f9ad6e793db8c93810cb99ed651dbe",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260811-ac98199e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-11T19:08:02.660145+08:00",
+      "evidence_hash": "4d83319a098c4caf1664ae6671a9d6399df279bf208610a1d0bb5ddb5ed57bd4"
     },
     {
       "id": "p20260811-c6d78ddd",
@@ -2765,7 +3814,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "3f27938a275ac06130eea28de60a0612e6b464b93d9a24b93ce1dbd17a680159",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260811-c6d78ddd",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-11T19:08:02.660145+08:00",
+      "evidence_hash": "86c70580ae7ba851337a34c735a8122434cc5af097098d1a52a8ba61b9d44c9c"
     },
     {
       "id": "p20260810-71ed0e08",
@@ -2788,7 +3844,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d494c8567b9e6eef75f0bba22894bcbbd078ad42decc95af92fa815876bf60ac",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260810-71ed0e08",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "0c2d4de8820dca11a6544c62159b2d8e5f6b9890cae5a1d6aee1698e8d585916"
     },
     {
       "id": "p20260810-f7f6f042",
@@ -2811,7 +3875,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "1ce17600cb119dc92283a771e39eb3bbad7c4a35b4b72377bcd5cb43b33c4bcf",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260810-f7f6f042",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "7b44906594ce1bb0991f359a994af53056dcf087ded0881a817b97917a573f7c"
     },
     {
       "id": "p20260808-0e0ec2c0",
@@ -2835,7 +3907,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e63b0069b6ef959743c9b461dd74ebf89bfdee6bed427f6b71593770fdf1342f",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260808-0e0ec2c0",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-08T18:04:29.468918+08:00",
+      "evidence_hash": "7786fe008209075a8de9683ef7214f0e14db156678a0652b5b4fa1e1668ebfd4"
     },
     {
       "id": "p20260808-a71ce885",
@@ -2859,7 +3938,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "38cf15f9922ab2fa02ee05b782d639c3bbeb982238f926424950a1b8523c9725",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260808-a71ce885",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-08T18:04:29.468918+08:00",
+      "evidence_hash": "8b7f83a4a788ecd376c35da7ba14e9a54cc7e95806c2ce27dde8c33185c54b16"
     },
     {
       "id": "p20260808-2f41df2c",
@@ -2883,7 +3969,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a54baafd9f8a7461fc92ed5fe34f766a5b39176faa2dfdaa6aa41dd79fcaa55d",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260808-2f41df2c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-08T18:04:29.468918+08:00",
+      "evidence_hash": "d3ccf8a925351af7b16b2432f6e81784dac21d621912f45120cad7fc3bdafed5"
     },
     {
       "id": "p20260808-a3810cc9",
@@ -2907,7 +4000,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "29a9a4a7b625d7c86e32cd0d88099bb3b4659bfc59d62d57f1bbaaf8925aa482",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260808-a3810cc9",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-08T18:04:29.468918+08:00",
+      "evidence_hash": "14a994d66ca6e01f2711b1c62a693404661994d99def06afc182dd274a3eb704"
     },
     {
       "id": "p20260808-979b0c6c",
@@ -2931,7 +4031,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "509c7e8daf354d68b2c6412660006e8bf98440b83669179ee8e897ac9c28068c",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260808-979b0c6c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-08T18:04:29.468918+08:00",
+      "evidence_hash": "9364c241ef26a2d41bb7462af98ab764f91aa7a0de33396cdee38d8221d6c8f0"
     },
     {
       "id": "p20260808-712983c8",
@@ -2955,7 +4062,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "93d223a4e85b4aa88a693aed0f012264900950a32ff65b01a84020a3ac6777ee",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260808-712983c8",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-08T18:04:29.468918+08:00",
+      "evidence_hash": "dd05dc716b6930068186c2d2b8bbd88a3a9556a264c997b5d0f0c5e7b292a7a1"
     },
     {
       "id": "p20260808-8aefb37d",
@@ -2979,7 +4093,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a6e035ca93ac69398cc3f1a86654c76cd9fbc8a502abba066ebde638e9c824d7",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260808-8aefb37d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-08T18:04:29.468918+08:00",
+      "evidence_hash": "2ef783f65e372a1e82af17348c7abea52efb1aaf10b3814e36a4cb1103f83b22"
     },
     {
       "id": "p20260808-7266b82a",
@@ -3003,7 +4124,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2965a5c7c0f8ebaf428dcd740dad06f28d788f9873abe94dc7bfaf189b2d05d0",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260808-7266b82a",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-08T18:04:29.468918+08:00",
+      "evidence_hash": "00a44f8bbcc51bafe89f474f1016644add1b949b52da6e52033db0ed18852e65"
     },
     {
       "id": "p20260807-1e8a1acf",
@@ -3027,7 +4155,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e029630f2e22640e3e90dcc9a1d00f4b3745d398ee08671a4ceeac500a74f41b",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-1e8a1acf",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T19:12:32.255790+08:00",
+      "evidence_hash": "dce6ccd07feb0a0095a81851f58712e26c8df2452af3eb35bd0d32ea7a7df304"
     },
     {
       "id": "p20260807-02264713",
@@ -3051,7 +4186,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a772e41689994b5c80e85c5a6414d44507ab4f25ff7b40f221df563e2e857bb8",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-02264713",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T19:12:32.255790+08:00",
+      "evidence_hash": "314a6846f2e6a361fbaa69b1302bac62202b8c29e6ec07c7c5e5e7971fef27bb"
     },
     {
       "id": "p20260807-be3c708f",
@@ -3075,7 +4217,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2fb2d2d7266b7324a447d8e72d06ced53c73ce5bb9fe55615322ee361761339e",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-be3c708f",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T19:12:32.255790+08:00",
+      "evidence_hash": "92c84ba5823c1ec1a291ccf423f78a92fc94d8926b8b8f5544992975e96eae04"
     },
     {
       "id": "p20260807-ea1055df",
@@ -3099,7 +4248,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "7a49a8c16e7eabe97644fb552e2c83a9bb6fd28f4997c5b599e788afdd7c8181",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-ea1055df",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T19:12:32.255790+08:00",
+      "evidence_hash": "d355341a08ce8f5f7f7b00240a5127f03d5d2b1afb5888e3b7c591acc3ab8714"
     },
     {
       "id": "p20260807-78df7c2d",
@@ -3123,7 +4279,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e1d70f0c409ccf1a47ca2b24d021caf3f41cfe01bb13b911f7b8af4c182e9540",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-78df7c2d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T19:12:32.255790+08:00",
+      "evidence_hash": "801a71ec268804b7e6acfe9d2a2d50bdf27c5327f0d4414a62b3f8d9313ed252"
     },
     {
       "id": "p20260807-8529e670",
@@ -3147,7 +4310,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e00313d4ae523ae060508d4bf40b085771fb46942156aab799790aee72fbe746",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-8529e670",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T19:12:32.255790+08:00",
+      "evidence_hash": "925e2e14cf6abd098b16e4ac0e3058b7c3a3cd345d9cc1c67594ee07edd47bad"
     },
     {
       "id": "p20260807-0f43658c",
@@ -3171,7 +4341,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6b21eec6d0ca70fe5c71310ecd239c558740c5b6485c475466d3ac2113b59e1f",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-0f43658c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T19:12:32.255790+08:00",
+      "evidence_hash": "d9dc10075151a868b95f51fb0b573922684e096fc9c9763eb4c849013aa7210d"
     },
     {
       "id": "p20260807-84c02238",
@@ -3195,7 +4372,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6b67bba7f6823d268a1b117f1d1136e9b5b93f917e1c9db620640e8cd353f1d3",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-84c02238",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T12:35:38.982872+08:00",
+      "evidence_hash": "c2a9186b133b79dac1654868b51481e328438bc52a5ee63b16c842c16e515c42"
     },
     {
       "id": "p20260807-e16142ab",
@@ -3219,7 +4403,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "36d5d948c3bc3ac2397d58c451b3cf84e156d570a132ff15c95a81bb42946943",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-e16142ab",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T12:35:38.982872+08:00",
+      "evidence_hash": "a3345f9f6177bd4a63ead6c0d41ea2686ff74f3b54cd02263b6f693c472333e9"
     },
     {
       "id": "p20260807-6f998505",
@@ -3243,7 +4434,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2236756a8e99ff0a009ffbde4d144926a621eb9e6bf0f60f08b026ccee52fbde",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-6f998505",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T12:35:38.982872+08:00",
+      "evidence_hash": "378fc50734a8c1fe6ad700311bbe98e9484989e10cfd9a1345e204ab36c2d904"
     },
     {
       "id": "p20260807-80669bae",
@@ -3267,7 +4465,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "f86e553a934e9a8b27fb5bb03830795cf48a076b1c9e8ff7c122ca32fcecb871",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-80669bae",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T12:35:38.982872+08:00",
+      "evidence_hash": "05b8e2a2a01989f8f9194a816a8efc99702a4c5be2b94836035e91c523081203"
     },
     {
       "id": "p20260807-adb1ac07",
@@ -3291,7 +4496,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "32eab1c7c2fa671d6c40dbf76851b0b7000c5837451c1384a927735dc7f44bad",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-adb1ac07",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T12:35:38.982872+08:00",
+      "evidence_hash": "83dbe312e889708a31b9a1c83f48e0b63e7a5fa59050c9a57e289e8a4ffcdd76"
     },
     {
       "id": "p20260807-539bb1eb",
@@ -3315,7 +4527,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e5fd475f262c8117b6a45dbd081ed30098c6c113bbfec82e0b43e0b55599d355",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260807-539bb1eb",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-07T12:35:38.982872+08:00",
+      "evidence_hash": "9e115030a8af5fe54f3a9e2c2d483ef542a1d31cab5a7171889d84e000733503"
     },
     {
       "id": "p20260805-0d7adfc7",
@@ -3338,7 +4557,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "9cb3baa53421e5b7d8f5de022a3dff24006cbcf4fbbde4aeb39c26f215968376",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260805-0d7adfc7",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "f57c51c4f0c84e8aecd3b7790d8e43db46ed9b85a5747892ed9487c42f6067c9"
     },
     {
       "id": "p20260805-99a30895",
@@ -3362,7 +4589,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d6da0e23db422d634128e7c707b455e775ce659d6182b50d724688307ac518f3",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260805-99a30895",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-05T18:14:50.799830+08:00",
+      "evidence_hash": "a35bb8718a735216e984e13f3f25590e9e32bccdc5da565150d5c1c16d291b3e"
     },
     {
       "id": "p20260805-855a5d5d",
@@ -3386,7 +4620,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a0dbfda4b79396262c3537b7c1852e2cea6f418f2d05b9c104924e85304bb4b8",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260805-855a5d5d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-05T18:14:50.799830+08:00",
+      "evidence_hash": "f9c2bc5f216a02fe3e4e1217dfe53fbbcbe5859ac10a4c6d15e483f9c13b4959"
     },
     {
       "id": "p20260805-525c200f",
@@ -3410,7 +4651,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "3925d9990766f06c4e51fe5f683e0b2b60b0be8b9003c2929a5cead32231ff56",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260805-525c200f",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-05T18:14:50.799830+08:00",
+      "evidence_hash": "161efbcec038b52170ff3745c9653b8d50e925ffc3948380c9ab342f1456f9e1"
     },
     {
       "id": "p20260805-d1d23d8e",
@@ -3434,7 +4682,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "990a7aac94914697d2a3713a2592c1a67c17769fb7834d695416f1df301d69c1",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260805-d1d23d8e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-05T18:14:50.799830+08:00",
+      "evidence_hash": "cd5609e1cd0cfd17d172787d3664c994be99a9bf3c6d3936bbb39b57269022f2"
     },
     {
       "id": "p20260805-61a7d7e0",
@@ -3458,7 +4713,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "493716f74572dde631e55c80b97e8663042419b164f120aead026fbebe8ad930",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260805-61a7d7e0",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-05T18:14:50.799830+08:00",
+      "evidence_hash": "64c5295cb41d9521dc31cfd07586ee4d70786c5ef7f9271cc3aa12d8a31657b9"
     },
     {
       "id": "p20260805-e28c535c",
@@ -3482,7 +4744,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "8451e01eb90abb56661da9efdc67260e736269d1843b118dbd8d512517544ab6",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260805-e28c535c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-05T02:17:23.951864+08:00",
+      "evidence_hash": "7b4d0e1ace731deb0e14ff7caad5b582b42eff1a37b51ab101648a0d5104b7d5"
     },
     {
       "id": "p20260805-c3363d92",
@@ -3506,7 +4775,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "b8859c02a4e1909643c76df23d7ccd9ec7709d712ae8cc780ab6e21895eec699",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260805-c3363d92",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-05T02:17:23.951864+08:00",
+      "evidence_hash": "02174cb238b5ef2516dbe74b664f977b38a368b4abad918c64c573887d8fd947"
     },
     {
       "id": "p20260805-87876bb4",
@@ -3530,7 +4806,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "03a947b9d51e1653cbfd6afa9a0bb18c88f91a4c7df56c1840e4cf75ea9674da",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260805-87876bb4",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-05T02:17:23.951864+08:00",
+      "evidence_hash": "cdafc2e19a6b28c4db9278ef20f5510fc60f45276b1d9c2c39c11f7cb6572237"
     },
     {
       "id": "p20260805-c78a908d",
@@ -3554,7 +4837,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a3526b088100c46c0909c3f2fbeaa56821a84154c860748add9fca209f3c3585",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260805-c78a908d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-05T02:17:23.951864+08:00",
+      "evidence_hash": "140f86e60981c32fd06a5ec5e770881edd37f2332796b27edd3dfd6d5fb6919d"
     },
     {
       "id": "p20260805-ec7605b1",
@@ -3578,7 +4868,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "7af556285e2ef42e0b73b664f11495552a55e5280ab075fc4fb4734e5783a821",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260805-ec7605b1",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-05T02:17:23.951864+08:00",
+      "evidence_hash": "76178f8758c887648e88d7f3bc5c47a32ad439a03c765977507251f5330f8124"
     },
     {
       "id": "p20260804-d3ccda81",
@@ -3601,7 +4898,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "b8726bcc83f096133b2f133a37936a91b21c8a7b7a56d0d98d944702a75ed812",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260804-d3ccda81",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "b2b0a967e1b61f7f0a8b5095706dd080273e9fd2378b46b721d08a9fc318b2c5"
     },
     {
       "id": "p20260801-acd2f2d4",
@@ -3625,7 +4930,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a62b595405c73165ff463f4710acedfd9d7bb8ecc96c5c3d3834819feb860f60",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260801-acd2f2d4",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-01T16:42:10.912662+08:00",
+      "evidence_hash": "36356664000f3442beacac04a2321a76e8a3a5dfcc6eb8e3c2f110c937ed69f5"
     },
     {
       "id": "p20260801-de6da2b6",
@@ -3649,7 +4961,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "dadb8cbb507e11511339778aa08e61075dccf071b970eed3f9222fd509160e0d",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260801-de6da2b6",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-01T16:42:10.912662+08:00",
+      "evidence_hash": "4caa35a7a3530d3fcca15f0162025c77002181e353abf05fcfb07d876ba90c1c"
     },
     {
       "id": "p20260801-602c2fa0",
@@ -3673,7 +4992,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d23e8bf373152fbaf213b1917ae1f9163d1e29b657c5d0241bb9149726b8fd00",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260801-602c2fa0",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-01T16:42:10.912662+08:00",
+      "evidence_hash": "7966e0267fea9b9e4b46d1ff95099953fb6cb01ec9958df357da447eb3664a78"
     },
     {
       "id": "p20260801-00277495",
@@ -3697,7 +5023,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "72071fd1d2a6a3f866e4e84e8ea06ab49f8ca8affc196a2c35501a778e0c81d6",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260801-00277495",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-01T16:42:10.912662+08:00",
+      "evidence_hash": "1354383cfd0185b32c5cf2838844aad8456e731dee75cee44949641a7db294f0"
     },
     {
       "id": "p20260801-cc3cdefd",
@@ -3721,7 +5054,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6fd47643af959a1202a978c6560acc430c68e445d65d80afea7b51b2bcc05451",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260801-cc3cdefd",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-01T16:42:10.912662+08:00",
+      "evidence_hash": "af7f159b8c2a663a54a0b997a09b24f3c64c5ae767e236fdb12604bbae79d93b"
     },
     {
       "id": "p20260801-fc1c109a",
@@ -3745,7 +5085,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "c405793dc4cb44bcd6e2dfaab19578bf896d518b7374e15224400b9b3d798d28",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260801-fc1c109a",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-01T16:42:10.912662+08:00",
+      "evidence_hash": "a9d411bf1b93b899d8a91d761bbabd1a8dab6c372b34f437e8bb79544ff40985"
     },
     {
       "id": "p20260801-704c4777",
@@ -3769,7 +5116,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "c5d2140cf605b1a7c2a079ef6b35621b5776636fbccf41fb232b13b1e53123cf",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260801-704c4777",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-01T16:42:10.912662+08:00",
+      "evidence_hash": "86f57fafb54bc1f5d40454d81c4c2530fe52e558b7800415a15d5b64d63a8998"
     },
     {
       "id": "p20260801-72d3054e",
@@ -3793,7 +5147,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "4db49f5cd9c780b19a968240fceea32f16b6f903b46c90ab3f4cdc56a8eadb55",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260801-72d3054e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-01T16:42:10.912662+08:00",
+      "evidence_hash": "a2163fdc92f872d94803d70181ddabcfe7f765750ae2c9f9be68552f30098ead"
     },
     {
       "id": "p20260801-c194d857",
@@ -3817,7 +5178,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "f7c1351b9c9a897bc08435974b348d4485c8e2b6e27a6f296f989860c0dc2eb6",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260801-c194d857",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-08-01T16:42:10.912662+08:00",
+      "evidence_hash": "f9ebed7dafe44027ff52310be88ef9cf83aa7e1d571cd402e6f5307305065f6a"
     },
     {
       "id": "p20260731-94fe4901",
@@ -3841,7 +5209,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "195a2ebe2494084733e38c67ad69d70f5d468ea28ec9d7047fce8c4a5787ffd1",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260731-94fe4901",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-31T18:10:50.441608+08:00",
+      "evidence_hash": "f145931e61d3b4ac371a33a5a2ebca48368df89498d21df919695fdf61546945"
     },
     {
       "id": "p20260731-a20db6c4",
@@ -3865,7 +5240,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "c9eeb3ec48fc29269d71fc2f2405ae0bd5e6eb42325328f6ad9ed27c6e475c1a",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260731-a20db6c4",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-31T18:10:50.441608+08:00",
+      "evidence_hash": "a2a4b03d819f550609e18029b454a77f36aa979b29cc4a1634f58f6524663e3a"
     },
     {
       "id": "p20260731-e8a661b0",
@@ -3889,7 +5271,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "fd1e097c12814f5a057fe37c4ae2699c8f1895eedf0f2b5fa26d0a65b42533cb",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260731-e8a661b0",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-31T18:10:50.441608+08:00",
+      "evidence_hash": "2cb7eea4ba15132cc59d9af7dfa7daa38adb0a4f0abb251b6f0eb6e3d5eff99e"
     },
     {
       "id": "p20260731-df6ce7e7",
@@ -3913,7 +5302,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e3abdc8cadb913b812aa4d0321dd4e44270cef567fb35faa689eded33c8d728a",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260731-df6ce7e7",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-31T18:10:50.441608+08:00",
+      "evidence_hash": "d30de91ae1c5c9bc4e1ba84365587e7aa28fd70e6f8d3f9b18f263dc1f274832"
     },
     {
       "id": "p20260731-630afeec",
@@ -3937,7 +5333,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "439add4dc5da9d2f9273940224cc311297d481ef84b1a5486d477eef4c6c3518",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260731-630afeec",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-31T18:10:50.441608+08:00",
+      "evidence_hash": "c7282f9f70f38867ead14d5ef60309eba03dd93b1ae78f402280da4b60fc7618"
     },
     {
       "id": "p20260731-106f80c8",
@@ -3961,7 +5364,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a36ed1b480450089d9532fd49e0791d18915b24d1a6ff23be3c3d92c9b0a29e1",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260731-106f80c8",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-31T18:10:50.441608+08:00",
+      "evidence_hash": "f988dce3ced259eb7405a245d40ec4548a1a988f58b8c5793db3c28f59d6abb5"
     },
     {
       "id": "p20260730-77571ef2",
@@ -3985,7 +5395,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e08a70149c1619ece6a9d0dc76b16563b58dd599e22b33dc7e3b8cdf1450b65e",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260730-77571ef2",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-30T17:43:35.580544+08:00",
+      "evidence_hash": "e5db2237463ea1650f2ba7891d440786e11a77f5c77969dc03a726551c195351"
     },
     {
       "id": "p20260730-7ae8d4b7",
@@ -4009,7 +5426,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ed931f1d141f181eb39b365b7a1f6708571826bfda313979af8042a7a6172240",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260730-7ae8d4b7",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-30T17:43:35.580544+08:00",
+      "evidence_hash": "9750121168fccfbc474f422a4f8dc266867cf63e0f75075ff13c30ac78775d68"
     },
     {
       "id": "p20260730-e1043bee",
@@ -4033,7 +5457,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ac4f7e97ca2d1dba7321276a23fad3fbe7ada1d566896350bbf4d481a4a8eec3",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260730-e1043bee",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-30T17:43:35.580544+08:00",
+      "evidence_hash": "376043f127f438ec25df24d39180f8798550176d44b6f7811d0e1524e039169e"
     },
     {
       "id": "p20260730-dea8201d",
@@ -4057,7 +5488,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "b38b77c583b22c99d2c73566d689c0c6f78cc467fcd56e884cdc0542591b1ff3",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260730-dea8201d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-30T17:43:35.580544+08:00",
+      "evidence_hash": "c651e49597d2275c72cb5fa7f9932bcb66ce20ef704e17d6539a32af280db5be"
     },
     {
       "id": "p20260730-0999a421",
@@ -4081,7 +5519,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d3a7069c0896309686e61845261e12856da5abca18af8caa22206e529915e76f",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260730-0999a421",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-30T17:43:35.580544+08:00",
+      "evidence_hash": "346d973288551383992b7c80fa5c4329ecaab9b8bf612e780cdf03f17b8c0a75"
     },
     {
       "id": "p20260730-f22fac3b",
@@ -4105,7 +5550,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ee717b7d868c748c2f3a3d27b18ec212af01fb627de51d5985418922fad3ecfe",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260730-f22fac3b",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-30T17:43:35.580544+08:00",
+      "evidence_hash": "229f11a61491e9d07a23c7c208c3a9643f730b914cbfe7b74b0a3f4c83f38457"
     },
     {
       "id": "p20260730-2139142b",
@@ -4129,7 +5581,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d60246b10e4c1cff8b5171640a4f401888431c1478494e0000f8407594b9e159",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260730-2139142b",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-30T17:43:35.580544+08:00",
+      "evidence_hash": "6acf8be578f51b821c36ff0f75c03c9a0852066b314254beaaae4fc8158886d0"
     },
     {
       "id": "p20260729-72d33fac",
@@ -4153,7 +5612,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "5e4eab37be467d2e571e1f9e3c6900e5787c2839952839ad9fc3f5357b54a954",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260729-72d33fac",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-29T18:16:28.377120+08:00",
+      "evidence_hash": "4e6220bfce3865a852aee2153831b07a178baae70be5e2cb9d8c8644c5dd523f"
     },
     {
       "id": "p20260729-53cf6c6d",
@@ -4177,7 +5643,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "5e1953c7d31755c839a97a2e29e5762b22bf2697005f3902cc2b4526ce916003",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260729-53cf6c6d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-29T18:16:28.377120+08:00",
+      "evidence_hash": "ec6c607b8a71b67acb805d6351ef6fe76def308fde46b8a9f1cf34f17308ea12"
     },
     {
       "id": "p20260729-891080a7",
@@ -4201,7 +5674,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "f31e8ef254c1af26f58c73f213c20e6d834bb804107f3fb58abdb62ebc621daf",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260729-891080a7",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-29T18:16:28.377120+08:00",
+      "evidence_hash": "a117e7f7ce0c39c9adfd8c523153bc11d376f354d952e69d7dd27e05420c4108"
     },
     {
       "id": "p20260729-a46b6e51",
@@ -4225,7 +5705,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "50bde2df2e81e21fcb3325bf87ff8fc94b8939f72e435f421c481d2e34115a20",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260729-a46b6e51",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-29T18:16:28.377120+08:00",
+      "evidence_hash": "bb9a2547047e89bf32b0dcf080312b84c9a20ff64f7b784235cd742f907eab42"
     },
     {
       "id": "p20260729-846cf5da",
@@ -4249,7 +5736,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "9600d815548dcb3853f78219b5e9274822e1a98e510e24c35dd462ac2e5d359a",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260729-846cf5da",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-29T18:16:28.377120+08:00",
+      "evidence_hash": "5fa6731e9f7d52bfaef2fb0e195c81b901f05c016c3c6d8a12f3cbaf8329382c"
     },
     {
       "id": "p20260729-5f6d21b0",
@@ -4273,7 +5767,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a56abf20094e2cc09b9ce3957e7d6d8f17f87d123fbda3cc512f68c64bf46eae",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260729-5f6d21b0",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-29T18:16:28.377120+08:00",
+      "evidence_hash": "a7b7f8caa70ee5325bbcd73650722c825354e8d64e836dacea9dbaf3cf4fe0b0"
     },
     {
       "id": "p20260729-8b926ca3",
@@ -4297,7 +5798,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2d94ca124b52d8880c90d99acbc83d3a7c16776a3514b591ba75550b788c84bb",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260729-8b926ca3",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-29T18:16:28.377120+08:00",
+      "evidence_hash": "9a16813e5e0e5f3e3ca46813d82fd089fc71f373648aa519e579f48c800bb9ea"
     },
     {
       "id": "p20260728-1589c430",
@@ -4320,7 +5828,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "b18847669c4086172aa0abce3c2ca580f579a07f51f138cf1b61f20a589016d8",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260728-1589c430",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "d29f3fada782d1685e67a6b69b40ee9d4b044fc2af1a1ab46f2c022ff2f9ec09"
     },
     {
       "id": "p20260728-f80b3dd6",
@@ -4344,7 +5860,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ec3f624fff386ec48d7617bbe9bc727e9bff27d3203210989c0f1ec941444a70",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260728-f80b3dd6",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-28T18:13:03.971459+08:00",
+      "evidence_hash": "40211f9c2b2c9b7d4ae2229ada54697b470b6a986cfbb1cce1d9ee8463a748ca"
     },
     {
       "id": "p20260728-0981a60c",
@@ -4368,7 +5891,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d905aedd2f9c64b8b256ed032a8ca0cc09645519379eb63f695a6cfd910c0b17",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260728-0981a60c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-28T18:13:03.971459+08:00",
+      "evidence_hash": "bebbec093ec7b7413448841a5d5c2fe7334ca4efac3d6abf4c326dd55d65fcee"
     },
     {
       "id": "p20260728-49c0e27c",
@@ -4392,7 +5922,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2c12e394ecff3a31ad221bc1eb0ca4c8d429495d85c20ab0a440da0cb910b813",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260728-49c0e27c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-28T18:13:03.971459+08:00",
+      "evidence_hash": "c5aba9febef6406ef9202d0394c20003bfa47463e4199fba6d0f7c3175d471d5"
     },
     {
       "id": "p20260728-6e8ee583",
@@ -4416,7 +5953,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "dfd96ab6703102d8483c9466fcb613a0e7d13d23ffc42ad454f02bd07eabd402",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260728-6e8ee583",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-28T18:13:03.971459+08:00",
+      "evidence_hash": "cfba3538202ac51cbee0ec46fad66eecccb5cfab436d69983a1c2cc1d32bc71a"
     },
     {
       "id": "p20260728-060f2f63",
@@ -4440,7 +5984,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d4d5d33110b780a4db2220d7d30b75837ff6c041a530cfcc0ac8244236a112d7",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260728-060f2f63",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-28T18:13:03.971459+08:00",
+      "evidence_hash": "04d14bfc5205fab176f9d5ab087e2e82ca66ce6040fc1483036f6f5dee5846ee"
     },
     {
       "id": "p20260728-54e57d1f",
@@ -4464,7 +6015,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d7846965e45b38e88a63b7b1f272785e515dc0bad50937750b3491400505afb6",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260728-54e57d1f",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-28T18:13:03.971459+08:00",
+      "evidence_hash": "ca3169e14b147bd2dd19109559ec0ecbe9101a4f353ee72fb0b0740a363867c2"
     },
     {
       "id": "p20260728-75568aa9",
@@ -4488,7 +6046,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "b9d5ac9b578c83f97e796713180bb078bbf7a43063dd8baa6a98032d47478d86",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260728-75568aa9",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-28T18:13:03.971459+08:00",
+      "evidence_hash": "f5fba33e257bd0224a8cc96b703fffe7174fec127f7d939a1622fc0ea580e7be"
     },
     {
       "id": "p20260728-46f4b806",
@@ -4512,7 +6077,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "971f4a063511f10825fa2301553991187eac196110045f1b6c1cbff16a6f4b88",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260728-46f4b806",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-28T18:13:03.971459+08:00",
+      "evidence_hash": "b321adb3396888fc84b0b589c6412885c116249d32d86879ef388a3bb5fa1b4f"
     },
     {
       "id": "p20260725-0130048d",
@@ -4536,7 +6108,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d66d3153b5afaa9874badb7e8ee77eef3e8ee902218f7cf8a0de9c2c3d967bd2",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260725-0130048d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-25T15:35:53.198153+08:00",
+      "evidence_hash": "6bbdf09e808b574f92423d56b92e9470169d1db09b3e1b4d3fc902fb11323ef2"
     },
     {
       "id": "p20260725-bafaedd9",
@@ -4560,7 +6139,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "4e8787445e53eb91d54d55aad2c9a6a755d016205b9230aa6e60c5ab4048da68",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260725-bafaedd9",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-25T15:35:53.198153+08:00",
+      "evidence_hash": "a2504ffa2e3ddc989303e37e9defd27c423b90797018937c03394d275f57774a"
     },
     {
       "id": "p20260724-2276b378",
@@ -4583,7 +6169,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2c382c01d65f71b6d6a78963f683830e04d268170680099047470d5b1e259b90",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260724-2276b378",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "e75250882581bee22fdebdd77069d9146467c3c787247225726f9d10472dec4d"
     },
     {
       "id": "p20260724-ddfeb293",
@@ -4607,7 +6201,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "bcd8707e27975b48e9e9469c73d5cc0fcc702ec1d10db8b7b37c56dfe84bb2a5",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260724-ddfeb293",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-24T17:12:54.985111+08:00",
+      "evidence_hash": "677e9418a483a35cc259b56049b4cf286bb27c92badac351dbcd47584e959d50"
     },
     {
       "id": "p20260724-87c143f3",
@@ -4631,7 +6232,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "1296943df503d21a5bfed4d4a74fc62b074ff392095cdd799d222113e54cee27",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260724-87c143f3",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-24T17:12:54.985111+08:00",
+      "evidence_hash": "55fed82ce4ce8ce6afe335f0ab78ededc1d9baabec78669d111d07eac955f8d3"
     },
     {
       "id": "p20260724-f8091151",
@@ -4655,7 +6263,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "13adc9332376e73a05430530665ae05a91fbe516e80c3708d47d335df5db428d",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260724-f8091151",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-24T17:12:54.985111+08:00",
+      "evidence_hash": "6ea6a58a44ba54ce5258cb582bf9896183962086c88384316e5a8b55e7e33fd4"
     },
     {
       "id": "p20260724-03d6fbf4",
@@ -4679,7 +6294,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "5be9ec7dd82b2e2164a07d6caf06b6ad393301b632833758dc43ffb19009066c",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260724-03d6fbf4",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-24T17:12:54.985111+08:00",
+      "evidence_hash": "42ece9af2d82e0fdec7d55ed1e7222a19d9cacf588f5ca62928c348cfd3afee3"
     },
     {
       "id": "p20260724-b1b0b69a",
@@ -4703,7 +6325,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2f353e46e539f9cfdb3f8705319fb8f04f2439fc4ab0f3e2b0d9938f5166aa60",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260724-b1b0b69a",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-24T17:12:54.985111+08:00",
+      "evidence_hash": "fce0cc65db59395a7378713ab19d3e68685c321f7c60465a81a50543c07834b3"
     },
     {
       "id": "p20260723-17fb2f3b",
@@ -4727,7 +6356,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "47a53b2f12cad1647306f001ba49b8ddf0c365d48ce6cbe716f973f4b860b99e",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260723-17fb2f3b",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-23T17:31:51.186612+08:00",
+      "evidence_hash": "d415abd54f10a6998af53e8e1061e510158f96f58a4d874b8480a6e19f2a5353"
     },
     {
       "id": "p20260723-9a871bee",
@@ -4751,7 +6387,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ea8a014eb4cba1c1721d00dcf829f4497d9b3061864f3456ff5069701642da05",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260723-9a871bee",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-23T17:31:51.186612+08:00",
+      "evidence_hash": "8d0620791de0d17aa9c666539b3b0a4ca1241077b27de9b0e5e454301dcff15b"
     },
     {
       "id": "p20260723-1d2d3785",
@@ -4775,7 +6418,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "c78ba1da7ffa1781fb83703be871ef80c4ccd937dd59795490ed8076dc7a9bcf",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260723-1d2d3785",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-23T17:31:51.186612+08:00",
+      "evidence_hash": "bd2621e5c6b082ec2ebfca7dcee321e9e9928ecc80edcfa959ecc39a24f66fc9"
     },
     {
       "id": "p20260723-e2f0ff55",
@@ -4799,7 +6449,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a6ea860131fedf4c5c5a7205707c5698bd99e926d605d68a7ca6641309758141",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260723-e2f0ff55",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-23T17:31:51.186612+08:00",
+      "evidence_hash": "ea415dd43e69a6dde43e1c68f16d85590c15b543c611b1c7650537e294ff9201"
     },
     {
       "id": "p20260723-4b85032a",
@@ -4823,7 +6480,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "94b0496769a879439ecdd8b220e7a1bfb613ea413b8761ae6347bf4e024ff77f",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260723-4b85032a",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-23T17:31:51.186612+08:00",
+      "evidence_hash": "f3e2f09195547867520dedf4e59f62014c950342dcb8a374dc57be40e137b7ca"
     },
     {
       "id": "p20260723-a7831013",
@@ -4847,7 +6511,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "042a573ee0605e5ba384c5e28acde77f3735d4f7be819d1313653aee72224679",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260723-a7831013",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-23T17:31:51.186612+08:00",
+      "evidence_hash": "40c518ab33745bb6af1ee9845627eedb409ea003180f058ea5af6046e5354624"
     },
     {
       "id": "p20260723-1153ab9c",
@@ -4871,7 +6542,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d8d78b21925af23e0ef16f08f72455962c0f1e86fca7cccca67aafa8bdc3ef0f",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260723-1153ab9c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-23T17:31:51.186612+08:00",
+      "evidence_hash": "fec1ed5d9d21d7204b03f40fb0391b6ac82a2f94acb8b2f344c6dc6a1e032f79"
     },
     {
       "id": "p20260722-6729acab",
@@ -4895,7 +6573,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "08e7153da3a4992d8a50a26d7ee6c0eb93352ae23351e6ab861faca74118bdbe",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260722-6729acab",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-22T17:37:12.039867+08:00",
+      "evidence_hash": "206579cf4e4cf1ac394132fadb79494514d5aa7a67ab43450f2b51a4fc588e51"
     },
     {
       "id": "p20260722-52dbf339",
@@ -4919,7 +6604,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d763c3add3c08b3e0296cda3c7d2837a4cc843febf55396bb1877e3792e3b9f9",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260722-52dbf339",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-22T17:37:12.039867+08:00",
+      "evidence_hash": "303bdfd7bf6aec0742acd6a3ffa8c1b56d930330b766b50f24515fd13c455844"
     },
     {
       "id": "p20260722-3463489e",
@@ -4943,7 +6635,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "24b5dfebd7222736a6d5c27efef76532f2f040d953e49d99de3a5e33dd6a9db0",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260722-3463489e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-22T17:37:12.039867+08:00",
+      "evidence_hash": "d5de22c76addbe5e4eb79c40b13a3fa15c9a914b846d8f7b01aa291f766f4c7e"
     },
     {
       "id": "p20260722-40a35639",
@@ -4967,7 +6666,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "612d1150c0f2bd32b8465a0e6b93428ca196c9b9c88df852ff3197671a443dc1",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260722-40a35639",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-22T17:37:12.039867+08:00",
+      "evidence_hash": "ae230b830bca4c50b38f84a80a0b92e1ea78948de0d628be1433ac2b56a541a8"
     },
     {
       "id": "p20260722-47404a6c",
@@ -4991,7 +6697,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "9e426b74726fbc18ef6b911001e6cff6b68075c923bf2cc59468e47fb69eb5d2",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260722-47404a6c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-22T17:37:12.039867+08:00",
+      "evidence_hash": "4ae4f4e6e2e8dde50dca19a5577a4d14de63087e6e027256d1d84f23bbae62a5"
     },
     {
       "id": "p20260722-a745d95c",
@@ -5015,7 +6728,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "56835f4e72d044c0f3456c7ea404a35ab011c4a0b59542a43838d4e6799698a4",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260722-a745d95c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-22T17:37:12.039867+08:00",
+      "evidence_hash": "98e0eb13d84441b015632d1dd475a9565fb1ee1fce39203990f7c2cd658e3862"
     },
     {
       "id": "p20260722-1b28fe03",
@@ -5039,7 +6759,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "54b53d468d92bd71a3ae1fa5d95fcc1384a2c9c8d44f6eb930aa7a1552ffd706",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260722-1b28fe03",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-22T17:37:12.039867+08:00",
+      "evidence_hash": "95a6037d512808e245308129c3844d55821dd453214e38e1b3833619576b00f2"
     },
     {
       "id": "p20260722-1fcfde84",
@@ -5063,7 +6790,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e140b3815bf440b7b7bfa24bcb85bfb245e0770eb5e276cf70c3ba57f76c7f22",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260722-1fcfde84",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-22T17:37:12.039867+08:00",
+      "evidence_hash": "e5185eb401fcf69c242d0fd13441ba534cedf47938cc0881602a1b2594dd96a2"
     },
     {
       "id": "p20260722-834a3c3f",
@@ -5087,7 +6821,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "4a2a77da02ff1055bbc719735c6a28ebe6450e4633a5103327af391968255ce1",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260722-834a3c3f",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-22T17:37:12.039867+08:00",
+      "evidence_hash": "5a126ef67108d2c4e0aace92208310b7335d5169a4f55a529a08cb788dc2ef25"
     },
     {
       "id": "p20260721-489f0ccd",
@@ -5111,7 +6852,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "c9db7e5384e14bdf5f5c78358f68a3114d1559ededa458dde2be118a2b34b486",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260721-489f0ccd",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-21T17:38:36.059142+08:00",
+      "evidence_hash": "dbe4c924c2526bae22832d104033b0ad2b3c6221f7caef46652a2b702b04674a"
     },
     {
       "id": "p20260721-2c9a2f8a",
@@ -5135,7 +6883,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d32547b1514735d22165abe2416d1014cf91fef1ccaf7020fba4dbc301932202",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260721-2c9a2f8a",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-21T17:38:36.059142+08:00",
+      "evidence_hash": "ca1e0668270ee0e146b9154635e0a5eb030643d8521ce65c3cea645f186ef321"
     },
     {
       "id": "p20260721-5de4d1f9",
@@ -5159,7 +6914,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "c8b56e0af8d32f2fed582749eb3156de812de4d7cba3438c6944f4292dc02d8c",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260721-5de4d1f9",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-21T17:38:36.059142+08:00",
+      "evidence_hash": "c42c65e7798a12e39448684e0dcecce0bbfb513c6d1e8e654ae0560795afeadc"
     },
     {
       "id": "p20260721-58d87625",
@@ -5183,7 +6945,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "8465a2d2fb461f246dfe456916f2f5733e0e43690ec0f5b1564336eafdce3cb8",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260721-58d87625",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-21T17:38:36.059142+08:00",
+      "evidence_hash": "eee96398ac552973043be0f4862bf721a5c74ef0c929b828973e345b67f51bb1"
     },
     {
       "id": "p20260721-353f79d1",
@@ -5207,7 +6976,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "adcbcad3650054605be644edba8b097ba33b58fedb180b616833465ffd17b1e1",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260721-353f79d1",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-21T17:38:36.059142+08:00",
+      "evidence_hash": "260947c744212173e42eaf7b1f7921c9250332fb1b297fe685aae66140a43475"
     },
     {
       "id": "p20260721-f13f4f29",
@@ -5231,7 +7007,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "4cf24a7d4ebe1f5062057c2291b13bd192e7104200017747ca95bc574a63a49c",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260721-f13f4f29",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-21T17:38:36.059142+08:00",
+      "evidence_hash": "00467a57c8a55aa2d045d3dacc22422f31b9f2cf60f6d25603bd1e564ad6d200"
     },
     {
       "id": "p20260721-5f32f666",
@@ -5255,7 +7038,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "b99a9cd27a9e3915c51ef4a7a4f7095c87bd587b593dc816a9c8046e9eaf6f40",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260721-5f32f666",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-21T17:38:36.059142+08:00",
+      "evidence_hash": "328a03b624a16d6cbbf05ad44e13e50f277f9116f0f5f1295152355c710c7e41"
     },
     {
       "id": "p20260721-199b2200",
@@ -5279,7 +7069,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "513410c4b53eda0d2380846977d7b6bc61b11a3bbd70cc673010f637fdd68b5b",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260721-199b2200",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-21T17:38:36.059142+08:00",
+      "evidence_hash": "d7ae89fe2f5e9c2edb1f328b5a6cf67383e80360b1cdcd934372069ab54917c2"
     },
     {
       "id": "p20260721-4bc80e72",
@@ -5303,7 +7100,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "737899c975a55d8db99a8fdabfd78d9208f29af8571db3ad8bd82e5fd195bec0",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260721-4bc80e72",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-21T17:38:36.059142+08:00",
+      "evidence_hash": "2b85eac090be0bfadebdb23f978d2e325fbf78d0156d04edfc33283fe2d30bab"
     },
     {
       "id": "p20260718-7fc25fc0",
@@ -5327,7 +7131,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "70e5ee05e1f9a64e5e39e36cd033b159ce6be01a4f24e9bb9d4573a7a8c767b3",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-7fc25fc0",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T15:12:23.402792+08:00",
+      "evidence_hash": "006d59ee7b3848d8a04dfaff67904b36d02e47342e93de95211fffe7dac5f474"
     },
     {
       "id": "p20260718-79fc1322",
@@ -5351,7 +7162,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "cc66b5f89c676e1e9f6d4997e8f12ec782b27cd4ff7b36ea745f5efa93770359",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-79fc1322",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T15:12:23.402792+08:00",
+      "evidence_hash": "0854ae6c9063621faaf04cc82626ebb6e57054e8ccd66f70e4c992a6c464c100"
     },
     {
       "id": "p20260718-3c5a3498",
@@ -5375,7 +7193,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "019e6618833561ad46af7ba3f9bd71e4fc2523b21e4416855a55a3c2fe20d4af",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-3c5a3498",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T15:12:23.402792+08:00",
+      "evidence_hash": "93e979effe3553360f36bff2de27030e4c18d87815404a20b8566fb6f220b8c6"
     },
     {
       "id": "p20260718-6987c6d3",
@@ -5399,7 +7224,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d6e63a4c00e6d390ff46e4a2c5afb5a7ec8094361032f0ead07803ef8196a323",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-6987c6d3",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T15:12:23.402792+08:00",
+      "evidence_hash": "c3e83a75e6cd58410fa65e325d2859322150f478b0adc12321158667ff8bf39c"
     },
     {
       "id": "p20260718-af4646ff",
@@ -5423,7 +7255,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e54150658123ec58302e5b2fe68961e7e3ef20fdd485253b8b838ee6e0d15594",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-af4646ff",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T15:12:23.402792+08:00",
+      "evidence_hash": "625af1ea3e4b6baa353148be828466ea488451e74fc788eb5a7ec5627931f196"
     },
     {
       "id": "p20260718-4c633e77",
@@ -5447,7 +7286,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "09c5b84c755ac542fab2b755f6e7ec99113c79e9c1347f6ea61df8f4c2645eea",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-4c633e77",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T15:12:23.402792+08:00",
+      "evidence_hash": "82984ba4448bdce4d9828c18725a4c2e9865ed81d8e1f9c61302ca6dc7472952"
     },
     {
       "id": "p20260718-30efd498",
@@ -5471,7 +7317,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "08a5721439946732e8d926074eba3f1b09278c17abb012dd23ffc43ef9bb625b",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-30efd498",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T15:12:23.402792+08:00",
+      "evidence_hash": "a2bb02c9d453112b3800dde181537acafd38fce6a1687a38180f0462daffe8aa"
     },
     {
       "id": "p20260718-fb786bc2",
@@ -5495,7 +7348,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "05b6db9af330e204e6a78df855e18870ecaf9bc12505b3bef632b2cef271aeb4",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-fb786bc2",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T15:12:23.402792+08:00",
+      "evidence_hash": "5eb264454bac27ade458d35854ae98dd3588fd633c4a0cd043ff7745bd13fe7a"
     },
     {
       "id": "p20260718-21138901",
@@ -5519,7 +7379,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "234f454fa52842032a9d63fd88b3163b8237e1c81e9efc955d8a0cbee1002c6d",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-21138901",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T15:12:23.402792+08:00",
+      "evidence_hash": "0372885435be2cb1c877ba80fbd5bf7458b6ad7ec13a9dd55fcece213f6e6ee3"
     },
     {
       "id": "p20260718-1773d739",
@@ -5543,7 +7410,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "45f706e3456275e4ed4527ca9952e43e63f60a25dcd55705b47e8baf77d1c962",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-1773d739",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T15:12:23.402792+08:00",
+      "evidence_hash": "2f940d339ff32a2b5d68f4fa3ab335d81a123198fde4890c2e9da325b56ae7e9"
     },
     {
       "id": "p20260718-a814d43d",
@@ -5567,7 +7441,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6d8ee0c894cf658d219f454ed46ca482bb85397ec9ecb3fce379393c757f87a8",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-a814d43d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T04:13:26.954368+08:00",
+      "evidence_hash": "e716dcbda5eb2c106986c8bbdb8c669c21802e6227683eaecc422774a920a881"
     },
     {
       "id": "p20260718-7b638a4e",
@@ -5591,7 +7472,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2df39d6daad254e7e737aae75e568551b93e11fa02ff79f076c8624bc5750212",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260718-7b638a4e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-18T04:13:26.954368+08:00",
+      "evidence_hash": "7783af4fe33e2585ab172ce172df72cf2a70d0e8765a847ea4c035ceb25644a9"
     },
     {
       "id": "p20260717-9bcf1059",
@@ -5615,7 +7503,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "f1333d22549ea3d7e4ecbf55003f60ddc7c6dccb53dabe8f0618ce25e8c07a89",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260717-9bcf1059",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-17T20:20:45.174605+08:00",
+      "evidence_hash": "cb86b8e018bee32b99b939291e6ef7cd11101243f5517cb7b7033777954ce5ee"
     },
     {
       "id": "p20260717-351fa53e",
@@ -5639,7 +7534,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "0c9dfce4bbd9866a81d0eefb76b9977c7bc1b84def2c08fcf1c3a2ebe05eb731",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260717-351fa53e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-17T20:20:45.174605+08:00",
+      "evidence_hash": "368eefa897a864d463a174070c805a1ed758de5000417d1e2123b474dd4439c4"
     },
     {
       "id": "p20260717-e755193e",
@@ -5663,7 +7565,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a9b8e8d6fbe365f3e21e816e15b6e4c415ddda18d293061a2b96b131ca13181f",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260717-e755193e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-17T20:20:45.174605+08:00",
+      "evidence_hash": "bf4772be5e29c056dec7dac14bd655dda4e427d2a27014e88ecc8605818d8e1a"
     },
     {
       "id": "p20260717-e435ec79",
@@ -5687,7 +7596,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "4ed5d2b17110df819a7af4fcd3c711d18fbace0580bb54097f7aacc86aa5aa8b",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260717-e435ec79",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-17T20:20:45.174605+08:00",
+      "evidence_hash": "fce04da0272c3d1c6b08825d40e4ed99eb2aa8f5b48a4d4261a0203240a54c78"
     },
     {
       "id": "p20260717-7730fb0d",
@@ -5711,7 +7627,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "88b91ef7cb7e5af63aba76cb4460451ecf15ce8035fd630a4f60e8256495cf1c",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260717-7730fb0d",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-17T20:20:45.174605+08:00",
+      "evidence_hash": "6f9ce3d2dbfd2a2cdf34745a424a3a6bcac9c0355adbacee7f39e0d9f9ce407c"
     },
     {
       "id": "p20260717-056399d3",
@@ -5735,7 +7658,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "d237aee26567090b096c75332a2fb12db2f9df5df2af496702be80bc71650aaa",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260717-056399d3",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-17T20:20:45.174605+08:00",
+      "evidence_hash": "47c41f1e55ac2f172a7f2f35cffa736dec1840731294de7d06df207cfbbaa0a5"
     },
     {
       "id": "p20260717-14f5be28",
@@ -5759,7 +7689,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "6b88d2658098bed7e7da85edb5c9d3a341c0e12cff2fa1c7a3e9848ee0534bb1",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260717-14f5be28",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-17T20:20:45.174605+08:00",
+      "evidence_hash": "d1c064056f7578486af1162c46ffa904dd7dead27bf7bd538c9b0ce3dae0ec79"
     },
     {
       "id": "p20260717-a561efab",
@@ -5783,7 +7720,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "e3956f23d1f54e902c6b9b78a9711771e747ee97f137f3bf0f56c3f6817800c4",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260717-a561efab",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-17T20:20:45.174605+08:00",
+      "evidence_hash": "cd4de2a69db5217b4fcd325b2433b11684e8cb6df081fafe2caba954c139aad9"
     },
     {
       "id": "p20260716-6778791b",
@@ -5807,7 +7751,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a2c843c0e8a9734c731ca99165120705593c28fbda2eeac5541ace8706229498",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-6778791b",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T19:33:29.537807+08:00",
+      "evidence_hash": "6a760ed8a7d4c35ebc164de2ce8320eaf859c8a0ddc734e74b28cfc1c9750fb2"
     },
     {
       "id": "p20260716-7554f5ea",
@@ -5831,7 +7782,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "37eb27e6890128cdb0bde34d2c424d342ec52a13b48653820e624150cbbe6783",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-7554f5ea",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T19:33:29.537807+08:00",
+      "evidence_hash": "aa8b9e9eca2c6adc2f0f83371c8b79ea5cf5caff37c0f247979f6a1f5bd7778c"
     },
     {
       "id": "p20260716-eae0b301",
@@ -5855,7 +7813,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a6063f7e56bb2671f96985aed42004ceaf87a9012056926093303895fd747ce2",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-eae0b301",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T19:33:29.537807+08:00",
+      "evidence_hash": "4d498c58c32e954be2a09d1e6c1b3e38d5620bc40c524bc3e6e0be443e468852"
     },
     {
       "id": "p20260716-a5d6aaeb",
@@ -5879,7 +7844,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "ed4d01f54260e74a5184915fb8391cbb11898adce89218fae76d4b0406cd4df4",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-a5d6aaeb",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T19:33:29.537807+08:00",
+      "evidence_hash": "2e5f78a3f161c5d4d0813390da40d4793235b4cb88ebb16be5cc3b46f81dd075"
     },
     {
       "id": "p20260716-a948e5f7",
@@ -5903,7 +7875,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "57a13839366adfa0926bd3527b25cf422ba447e85495254132e9fc665c718592",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-a948e5f7",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T19:33:29.537807+08:00",
+      "evidence_hash": "bd642345f316f61fb05789acd2be867eb7e9b11523eff46670e8c08fb33acd56"
     },
     {
       "id": "p20260716-737d6150",
@@ -5927,7 +7906,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "89e435ad351c96d6b5e5307afd879bb849d7f31906a45b2d468726a19d381828",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-737d6150",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T19:33:29.537807+08:00",
+      "evidence_hash": "accc01dba7b14adfa8bedd6d48912a42b7cfd82059ff14815e9a5add9bfbe294"
     },
     {
       "id": "p20260716-8acef25c",
@@ -5951,7 +7937,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "8f23a92315bba529e38c7e7b6702b69dfe72f2f46611a4d4b4984fac87929a08",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-8acef25c",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T19:33:29.537807+08:00",
+      "evidence_hash": "9389ead5faebe6b3673ffcfd23c7fc7c7baec4754f23d53a5607a9f4f1b3dd1e"
     },
     {
       "id": "p20260716-8a6a7045",
@@ -5974,7 +7967,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "b49ed8437be1a3834eb41ac8eba74c9c26f48b5a8c9a98a967443068b44ae707",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-8a6a7045",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "b0ab395a017f74847cf5566e6933e1c5dbbd67c3fe089f7f052b33bc4615f95b"
     },
     {
       "id": "p20260716-a766e627",
@@ -5997,7 +7998,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "acff72ad10cef296274ed2a03bc7cffe05ed82e9ce69a694f6c78c55e4db7a2a",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-a766e627",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "f6a64e3def9e41796dc971cd15a13a8871ec3aae05a4206bfb103b12d3973f8f"
     },
     {
       "id": "p20260716-0fa74a35",
@@ -6020,7 +8029,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "65b3fa4cb884d37b91e9907e919cda3419bb1a5104ec1ab96dd3ad1509a7ad6e",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-0fa74a35",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "7dff9a0c7cab3577a836263381c382073ca60220d0d3b0157a9294b2cc371546"
     },
     {
       "id": "p20260716-dc457a79",
@@ -6043,7 +8060,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "3a81b69764bfe3d05bead7c856e133f8ce622170bb9c03c4686cd060b08490c6",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-dc457a79",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "1980741aafc808a0c49b01ca7f750ff5696c2a766dce799abf9a6a29add9b1d2"
     },
     {
       "id": "p20260716-e6a9b159",
@@ -6066,7 +8091,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "9ddca6e434e23294bd5e7f20aab220bb9ea7f5336a19badfa8cd95e7f6adcf5b",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-e6a9b159",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "84590a3bedcba574e7e2b43c6e1c74dc539191cb1f04addf17f30146b645d3dc"
     },
     {
       "id": "p20260716-d08b13e8",
@@ -6089,7 +8122,15 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "f0115415d3e5a3049709535d2c6e56411fd607dcab10f1e30bed6054224948fc",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-d08b13e8",
+      "source_class": "industry_advisory",
+      "verification_notes": "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "a891c920bcfe72088fbc265fcd08fd16b6e1a64c517dc29dca49dea28ec457c0"
     },
     {
       "id": "p20260716-6ee0c607",
@@ -6113,7 +8154,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "93ba48a446377cd7be36bbc8aab396791ab600525768e08912f9e941ecbae5f9",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-6ee0c607",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:15:32.263672+08:00",
+      "evidence_hash": "b2dbb8d3f3a36e6acf4f63e6fd3b79cd9dceb79162447422bbf1aa67a3a9b209"
     },
     {
       "id": "p20260716-97054fc0",
@@ -6137,7 +8185,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "62a957597b06790dcc77171326e1673243c09ef9f48e3c81551e340ea0a04c14",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-97054fc0",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:15:32.263672+08:00",
+      "evidence_hash": "bdff42a4cdc7094b8d87aff5f535e12c6c16407e40c04e0af605e6c73a776c36"
     },
     {
       "id": "p20260716-e65ee3d3",
@@ -6161,7 +8216,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "2a48ecb583e62a5b3c05461dfbe60816d671cefa6d8a07871106b8905ccd96cc",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-e65ee3d3",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:15:32.263672+08:00",
+      "evidence_hash": "4efe830db74a295c872952133525508f9a65083e89dd6c1c46604c04d14efd21"
     },
     {
       "id": "p20260716-900f4fa8",
@@ -6185,7 +8247,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "4a1ccb5012051095c7720706dac66772c9b76679ebb10911a69a316a8ee0614a",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-900f4fa8",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:15:32.263672+08:00",
+      "evidence_hash": "c90fc95a85147a482afc113af451c749a0eb8b486e350f5cca00793461e0084c"
     },
     {
       "id": "p20260716-2ef507aa",
@@ -6209,7 +8278,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "4e3abf815ca16f8a5f5b0ccfd41aaf197a6a21f6d2703570c1ab5e725e98846a",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-2ef507aa",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:15:32.263672+08:00",
+      "evidence_hash": "181914140c7309de323c2582c5250ba8b636820a8ed41e0c1d1682ea93bb2419"
     },
     {
       "id": "p20260716-146da815",
@@ -6233,7 +8309,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "da7ec0b9a464ce0156e85970287b4fee62eef132027a58339361e44a2e486fbd",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-146da815",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:15:32.263672+08:00",
+      "evidence_hash": "1d33be1bad1bf917de909300d89d356c22a64f70f9b88b04178e702e54cf32bc"
     },
     {
       "id": "p20260716-2ea3435b",
@@ -6257,7 +8340,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "c454998a98cbd278049ac191add48627a7faccba7cbe040a0cd40d0fe1449ac0",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-2ea3435b",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:15:32.263672+08:00",
+      "evidence_hash": "1f941957cb803015caaae030567486a2c907a9ef75b2ab949f3af2be2f9731b9"
     },
     {
       "id": "p20260716-43e4b83e",
@@ -6281,7 +8371,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "81fb6101a0f885a06352abba0e83039d1c0b910501978bb8039abd45a0b7f1c3",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-43e4b83e",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:15:32.263672+08:00",
+      "evidence_hash": "1acd26316a3c249a36fb1c31b07e1f9061b17906f4636501b794abe63fd68e6a"
     },
     {
       "id": "p20260716-3704e712",
@@ -6305,7 +8402,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "8027ba7d89e4dc2818317bcfeecb9e5dcd8decf56e8738e6832b3bff1e5c0c65",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-3704e712",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:15:32.263672+08:00",
+      "evidence_hash": "05c527316d3412fbceedb9f58beeb2b059dfb9bd8fa12581dc684ffe9e840b34"
     },
     {
       "id": "p20260716-24d32972",
@@ -6329,7 +8433,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "69826e694aab9296f85170c7153c19dd762f270955878030e625acea0fcc0e9c",
         "human_reviewed": false
-      }
+      },
+      "source_record_id": "p20260716-24d32972",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:15:32.263672+08:00",
+      "evidence_hash": "df2fe5203d5b5225390248a8849d603066fa9d61cc621e3b836c283f26076925"
     },
     {
       "id": "p20260716-001",
@@ -6352,7 +8463,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "a621600da50f709c5f37e9c2132bbea3ac62f08db9de5f19f46d0a77e48a5f6b",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-001",
+      "verification_notes": "官方站点入口已记录，但缺少具体记录页面，待人工核验。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "00430765d5e5d27abdfcac7a61631758a104ba7b2bc5e451c385bdca24e75700"
     },
     {
       "id": "p20260716-002",
@@ -6375,7 +8493,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "7c20ee974a41ad9cee299fe6cd97f00be43e821095f7db9071dbb0c7ffb34f4a",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-002",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "verified_at": "2026-07-16T14:00:00+08:00",
+      "evidence_hash": "77fee4642069f4dfb70b82cfd0d3f355153d5bdd73aa139982ad8bdcf99f3ce9"
     },
     {
       "id": "p20260716-003",
@@ -6398,7 +8523,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "af79209e46093f787a9eca33730873f5ce21d774913c5beffb34a0a4baf4a392",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-003",
+      "verification_notes": "官方站点入口已记录，但缺少具体记录页面，待人工核验。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "43ead286423fecb672852cbb8d5925b6838b48cfef77c55dd363c7dd2f6651b0"
     },
     {
       "id": "p20260716-004",
@@ -6421,7 +8553,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "b86cec8a72fc5bfb62575aed463d96610d2b0e70eddb9d4f9a541203deacaec3",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-004",
+      "verification_notes": "官方站点入口已记录，但缺少具体记录页面，待人工核验。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "7539de8c9eef0b75081ba51ac0943d7e93ee02149a722a2997d7eea344781573"
     },
     {
       "id": "p20260716-005",
@@ -6444,7 +8583,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "1f16d561cceaa3db9e6ce2c05760b1579577d684a5970dbb5a8c88539b1f3308",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-005",
+      "verification_notes": "来源已抓取但尚未完成记录级核验，暂不进入正式统计。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "45098060e0fecd42f91f27ef349fccbe865a273c0d1a409e355d9be00ad6682f"
     },
     {
       "id": "p20260716-006",
@@ -6467,7 +8613,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "f13bdaf827a88eeffc9ae680b723e0ab8f3d46f5af0d1d0a3a7554f87fa971be",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-006",
+      "verification_notes": "官方站点入口已记录，但缺少具体记录页面，待人工核验。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "b7e89539e877c8c616b8af1844c97efc9dd5b26657e2986b99f6b9ad09234be8"
     },
     {
       "id": "p20260716-007",
@@ -6490,7 +8643,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "727414f27d0d210d577ecbe51158ec3b463b07313bd36f149a63ca9a91bc5c26",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-007",
+      "verification_notes": "来源已抓取但尚未完成记录级核验，暂不进入正式统计。",
+      "source_kind": "traceable",
+      "source_type": "licensed_provider",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "ebc74543c2eeb2342bd756faaa99683cc538ffdf8dc04ecfb0c0d11b4adb41fc"
     },
     {
       "id": "p20260716-008",
@@ -6513,7 +8673,14 @@
         "translated_at": "2026-08-31T06:32:48.257033+00:00",
         "source_hash": "60fcdf78cc861358fdc32e319ff18cd29816ebd697d50ec8d6edcf449a41b0c4",
         "human_reviewed": true
-      }
+      },
+      "source_record_id": "p20260716-008",
+      "verification_notes": "官方站点入口已记录，但缺少具体记录页面，待人工核验。",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "pending",
+      "verified_at": null,
+      "evidence_hash": "273f75ef8a39533f571c417b23253356811d462a91f287f2c96588c2f75f65ea"
     }
   ],
   "language_contract": {

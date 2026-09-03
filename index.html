@@ -23,6 +23,7 @@
 <script src="assets/js/reports-decisions.js" defer></script>
 <script src="assets/js/auth-data.js" defer></script>
 <script src="assets/js/alerts-settings.js" defer></script>
+<script src="assets/js/unified-search.js" defer></script>
 <script src="assets/js/product-enhancements.js" defer></script>
 </head>
 <body>
@@ -147,7 +148,7 @@
   <header class="topbar">
     <div class="topbar-search">
       <i data-lucide="search"></i>
-      <input id="global-search" type="search" autocomplete="off" placeholder="搜索国家、平台、类目或政策">
+      <input id="global-search" type="search" autocomplete="off" placeholder="搜索国家、平台、政策、规则、商品、店铺或内容">
       <kbd>/</kbd>
     </div>
     <div class="topbar-right">
@@ -177,7 +178,7 @@
   <main>
     <button id="jay-hamburger" class="jay-hamburger" aria-label="打开菜单" onclick="toggleSidebar()">☰</button>
     <div id="jay-overlay" class="jay-overlay" onclick="closeSidebar()"></div>
-    <button id="bell" style="display:none">🔔</button><div id="bell-panel"></div><button id="export" style="display:none">导出报告 <span>↓</span></button>
+    <button id="bell" style="display:none">🔔</button><div id="bell-panel"></div>
 <div class="page-head">
   <p class="eyebrow" id="breadcrumb">工作台 / 决策总览</p>
   <h1 id="page-title">决策工作台</h1>
@@ -930,6 +931,8 @@
           <h2>JAY观海 定价方案</h2>
           <p>从「免费看清机会」到「PRO 深度决策」再到「企业级出海服务」，按出海阶段选择。</p>
           <div id="prc-current-tier" class="prc-current-tier" style="margin-top:10px;font-size:13px;color:var(--ink)"></div>
+          <div id="prc-billing-notice" class="prc-billing-notice is-disabled" role="status">正式收费状态：未启用。本页面当前不会创建订单或扣款。</div>
+          <div id="prc-usage-summary" class="prc-usage-summary"></div>
         </div>
         <div class="prc-grid">
           <div class="prc-card">
@@ -943,7 +946,7 @@
               <li class="off"><span class="ck">—</span>批量操作 / 团队协作 / 企服对接</li>
               <li class="off"><span class="ck">—</span>定制化 PDF 报告与深度周报</li>
             </ul>
-            <button class="prc-cta ghost" onclick="jayUpgrade('free')">切换免费版</button>
+            <button id="prc-manage-billing" class="prc-cta ghost" onclick="jayUpgrade('free')" disabled>管理 / 取消订阅</button>
           </div>
           <div class="prc-card featured">
             <div class="prc-badge">最受欢迎</div>
@@ -957,7 +960,7 @@
               <li><span class="ck">✓</span>定制化 PDF 报告 + 数据实时刷新</li>
               <li><span class="ck">✓</span>竞品拆解 / 选品评分卡 / 利润计算器</li>
             </ul>
-            <button class="prc-cta" onclick="jayUpgrade('pro')">升级 PRO →</button>
+            <button id="prc-upgrade-pro" class="prc-cta" onclick="jayUpgrade('pro')" disabled>升级 PRO</button>
           </div>
           <div class="prc-card">
             <div class="prc-tier">企业版 / 企服</div>
@@ -981,7 +984,7 @@
             <div class="prc-lock-item"><b>企服：替你做</b>把结论变成带 Logo 的可投递报告，并配套顾问落地，完成「情报 → 服务」闭环。</div>
           </div>
         </div>
-        <p class="prc-note">* PRO 价格为待配置的商务方案。当前支付供应商未接入，不会创建订单、扣款或直接修改会员等级；正式价格和退款规则以上线公告及支付页面为准。</p>
+        <p class="prc-note">* 正式收费由服务端开关控制；未启用时不会创建订单、扣款或修改会员等级。启用后的实际价格、取消和退款规则以 Stripe 支付页及上线公告为准。</p>
       </div>
       <div id="ent-modal-overlay" class="ent-modal-overlay" style="display:none">
         <div class="ent-modal">
@@ -1092,6 +1095,44 @@
         </section>
       </div>
     </section>
+    <section id="search" class="page">
+      <div class="unified-search-page">
+        <div class="unified-search-head">
+          <div>
+            <p class="eyebrow">WORKSPACE SEARCH</p>
+            <h2>统一搜索</h2>
+            <p>检索已配置市场、平台、已接入来源记录和当前账号上传数据。</p>
+          </div>
+          <span class="unified-search-scope" id="unified-search-scope">全部已配置市场</span>
+        </div>
+
+        <form class="unified-search-query" id="unified-search-form" role="search">
+          <i data-lucide="search"></i>
+          <input id="unified-search-input" type="search" autocomplete="off" placeholder="输入中文、英文、拼音或同义词">
+          <button type="submit">搜索</button>
+        </form>
+
+        <div class="unified-search-filters" aria-label="搜索筛选条件">
+          <label><span>市场</span><select id="unified-search-market"><option value="">全部已配置市场</option></select></label>
+          <label><span>平台</span><select id="unified-search-platform"><option value="">全部平台</option></select></label>
+          <label><span>时间</span><select id="unified-search-time"><option value="all">全部时间</option><option value="7d">近 7 天</option><option value="30d">近 30 天</option><option value="1y">近 1 年</option><option value="custom">自定义</option></select></label>
+          <label><span>排序</span><select id="unified-search-sort"><option value="relevance">相关度</option><option value="newest">时间从新到旧</option><option value="oldest">时间从旧到新</option><option value="title">标题 A-Z</option></select></label>
+          <button type="button" class="unified-search-reset" id="unified-search-reset">重置</button>
+        </div>
+        <div class="unified-search-custom-time" id="unified-search-custom-time" hidden>
+          <label><span>开始日期</span><input type="date" id="unified-search-from"></label>
+          <label><span>结束日期</span><input type="date" id="unified-search-to"></label>
+        </div>
+
+        <div class="unified-search-types" id="unified-search-types" role="tablist" aria-label="结果类型"></div>
+        <div class="unified-search-summary">
+          <strong id="unified-search-total">0 条结果</strong>
+          <span id="unified-search-description">正在建立当前工作区搜索索引...</span>
+        </div>
+        <div class="unified-search-results" id="unified-search-results" aria-live="polite"></div>
+        <nav class="unified-search-pagination" id="unified-search-pagination" aria-label="搜索结果分页"></nav>
+      </div>
+    </section>
     <section id="privacy" class="page">
       <div class="legal-page">
         <div class="legal-head"><span class="section-label">LEGAL &amp; PRIVACY</span><h2>隐私政策</h2><p>最后更新：2026-08-26 · 本页面用于说明 JAY观海如何处理账号、工作区和留资数据。</p></div>
@@ -1188,16 +1229,6 @@
     </section>
 
   </main>
-  <div class="export-modal-overlay" id="export-modal-overlay">
-    <div class="export-modal">
-      <h3>🔒 解锁完整市场报告</h3>
-      <p>升级专业版即可一键生成定制化市场分析报告，涵盖国家宏观数据、品类趋势、政策解读与 AI 智能建议。</p>
-      <div class="modal-btns">
-        <button class="modal-btn modal-btn-primary" id="export-modal-upgrade">了解详情</button>
-        <button class="modal-btn modal-btn-ghost" id="export-modal-close">暂不需要</button>
-      </div>
-    </div>
-  </div>
   <div class="toast" id="toast"></div><div class="search-results" id="search-results"></div>
 
 

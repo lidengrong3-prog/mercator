@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-31T21:30:11.029636+00:00",
-  "as_of": "2026-08-31",
+  "generated_at": "2026-09-03T02:52:27.083808+00:00",
+  "as_of": "2026-09-03",
   "categories": [
     {
       "key": "electronics",
@@ -10,7 +10,7 @@
       "file": "electronics.json",
       "market_size": "US$ 2,616 亿 (2026E)",
       "cagr": "CAGR 4.8% (2026-2031)",
-      "policy_count": 19,
+      "policy_count": 16,
       "alert_count": 7,
       "report": "reports/us_market/electronics_report.pdf"
     },
@@ -47,7 +47,7 @@
       "market_size": "US$ 1,067.6 亿 (2026E)",
       "cagr": "CAGR 2.44% (2026-2031)",
       "policy_count": 24,
-      "alert_count": 5,
+      "alert_count": 6,
       "report": "reports/us_market/beauty_report.pdf"
     },
     {
@@ -70,7 +70,7 @@
       "file": "sports.json",
       "market_size": "运动用品 US$ 339 亿 (2026E)；户外装备全球 ≈ $652.8 亿",
       "cagr": "运动用品 CAGR 6% (2026-2031)",
-      "policy_count": 9,
+      "policy_count": 11,
       "alert_count": 6,
       "report": "reports/us_market/sports_report.pdf"
     },

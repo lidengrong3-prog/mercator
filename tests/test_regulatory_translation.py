@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.join(ROOT, "scripts"))
 from translate_regulatory_data import (  # noqa: E402
     mark_source_chinese,
     source_hash,
+    translate_file,
     translation_is_current,
 )
 
@@ -33,6 +34,29 @@ class RegulatoryTranslationTests(unittest.TestCase):
         self.assertTrue(translation_is_current(record))
         record["summary"] = "Updated"
         self.assertFalse(translation_is_current(record))
+
+    def test_chinese_title_and_url_summary_are_normalized_without_machine_translation(self):
+        import json
+        import tempfile
+        from pathlib import Path
+
+        record = {
+            "title": "跨境支付平台介绍",
+            "summary": "https://example.com/source?id=1",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "policies.json"
+            path.write_text(json.dumps({"items": [record]}), encoding="utf-8")
+            changed, translated, pending = translate_file(
+                path, require_config=False, limit=None, provider="api"
+            )
+            output = json.loads(path.read_text(encoding="utf-8"))["items"][0]
+
+        self.assertEqual((changed, translated, pending), (1, 0, 0))
+        self.assertEqual(output["title_zh"], record["title"])
+        self.assertEqual(output["summary_zh"], f"原文链接：{record['summary']}")
+        self.assertEqual(output["translation"]["provider"], "source-normalization")
+        self.assertTrue(translation_is_current(output))
 
 
 if __name__ == "__main__":

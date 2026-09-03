@@ -107,6 +107,26 @@ test('policy-only scope has no product facts and prompt forbids fabricated ranki
   assert.match(prompt.system, /待补充/);
 });
 
+test('report facts exclude records without explicit provenance and third-party advisories', () => {
+  const { window, api, engine } = createEnvironment();
+  const context = setScope(api, ['US'], ['amazon'], ['beauty']);
+  window.policiesJsonData = { items: [
+    {
+      id: 'legacy-policy', title: 'Legacy policy', title_zh: '旧政策', summary: 'Legacy', summary_zh: '旧政策',
+      market_codes: ['US'], category_codes: ['beauty'], source_url: 'https://example.gov/legacy',
+      published_at: '2026-08-30', collected_at: '2026-08-31T00:00:00.000Z',
+    },
+    {
+      id: 'advisory-policy', title: '美国行业动态', title_zh: '美国行业动态', summary: '行业资讯', summary_zh: '行业资讯',
+      market_codes: ['US'], category_codes: ['beauty'], source: '雨果网', source_url: 'https://www.cifnews.com/article/1',
+      source_kind: 'traceable', source_type: 'licensed_provider', source_record_id: 'advisory-policy', verification_status: 'pending',
+      published_at: '2026-08-30', collected_at: '2026-08-31T00:00:00.000Z', evidence_hash: 'a'.repeat(64),
+    },
+  ] };
+  const facts = engine.collectFacts(context, []);
+  assert.equal(facts.records.policy, undefined);
+});
+
 test('missing cost and selling price blocks deterministic profit conclusions', () => {
   const { engine } = createEnvironment();
   const result = engine.calculateFinancialModel({ logisticsCost: 10, platformFeeRate: 15 });
@@ -132,8 +152,9 @@ test('assembled report carries source IDs, data snapshot time and scope snapshot
   const facts = engine.collectFacts(context, []);
   const plan = engine.buildPlan(context, 'market-research', 'market-research');
   const check = { ok: true, recordCount: Object.values(facts.records).reduce((sum, entries) => sum + entries.length, 0), missing: [] };
+  const taxCitation = engine.buildSourceAppendix(facts).find((source) => source.domain === 'tax').citation;
   const report = engine.assemble(plan, [{
-    id: 'tax_beauty', title: '美妆税收', domain: 'tax', text: '美国美妆记录税率为 0.08',
+    id: 'tax_beauty', title: '美妆税收', domain: 'tax', text: `美国美妆记录税率为 0.08 [${taxCitation}]`,
     claims: [{ value: '0.08' }],
   }], facts, check, { status: 'not_available' });
   assert.ok(report.dataSnapshotAt);
@@ -142,4 +163,6 @@ test('assembled report carries source IDs, data snapshot time and scope snapshot
   assert.equal(report.reconciliation.ok, true);
   assert.ok(report.sourceRecordIds.includes('tax-us-beauty-20260831'));
   assert.ok(report.sourceAppendix.every((source) => source.recordId));
+  assert.equal(report.citationAudit.ok, true);
+  assert.ok(report.sourceAppendix.every((source) => source.dataSnapshotAt));
 });

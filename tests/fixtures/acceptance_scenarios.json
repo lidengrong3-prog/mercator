@@ -9,8 +9,12 @@
         "id": "fixture-rule-us-tiktok",
         "title": "TikTok Shop 美国站履约规则",
         "summary": "美国站履约资料要求（验收夹具）",
-        "market_codes": ["US"],
-        "platform_keys": ["tiktok-shop"],
+        "market_codes": [
+          "US"
+        ],
+        "platform_keys": [
+          "tiktok-shop"
+        ],
         "source": "TikTok Shop US Seller Center",
         "source_url": "https://fixture.example.test/rules/us-tiktok",
         "source_record_id": "rule-us-tiktok-20260831",
@@ -18,14 +22,20 @@
         "source_type": "platform",
         "verification_status": "verified",
         "published_at": "2026-08-30",
-        "collected_at": "2026-08-31T00:00:00.000Z"
+        "collected_at": "2026-08-31T00:00:00.000Z",
+        "verified_at": "2026-08-31T00:00:00.000Z",
+        "evidence_hash": "f190702810748b8db36d8720d752e3543b7ef85f6fd82506a6bfb751b1bee4a7"
       },
       {
         "id": "fixture-rule-id-tiktok",
         "title": "TikTok Shop 印度尼西亚站履约规则",
         "summary": "印度尼西亚站履约资料要求（验收夹具）",
-        "market_codes": ["ID"],
-        "platform_keys": ["tiktok-shop"],
+        "market_codes": [
+          "ID"
+        ],
+        "platform_keys": [
+          "tiktok-shop"
+        ],
         "source": "TikTok Shop Indonesia Seller Center",
         "source_url": "https://fixture.example.test/rules/id-tiktok",
         "source_record_id": "rule-id-tiktok-20260831",
@@ -33,14 +43,20 @@
         "source_type": "platform",
         "verification_status": "verified",
         "published_at": "2026-08-30",
-        "collected_at": "2026-08-31T00:00:00.000Z"
+        "collected_at": "2026-08-31T00:00:00.000Z",
+        "verified_at": "2026-08-31T00:00:00.000Z",
+        "evidence_hash": "acd1e52c9843170f5f017859b9344a06f89b26be2c70a9e0fb52b4c555f646e0"
       },
       {
         "id": "fixture-rule-id-shopee",
         "title": "Shopee 印度尼西亚站平台规则",
         "summary": "印度尼西亚站 Shopee 平台规则（验收夹具）",
-        "market_codes": ["ID"],
-        "platform_keys": ["shopee"],
+        "market_codes": [
+          "ID"
+        ],
+        "platform_keys": [
+          "shopee"
+        ],
         "source": "Shopee Indonesia Seller Center",
         "source_url": "https://fixture.example.test/rules/id-shopee",
         "source_record_id": "rule-id-shopee-20260831",
@@ -48,14 +64,20 @@
         "source_type": "platform",
         "verification_status": "verified",
         "published_at": "2026-08-30",
-        "collected_at": "2026-08-31T00:00:00.000Z"
+        "collected_at": "2026-08-31T00:00:00.000Z",
+        "verified_at": "2026-08-31T00:00:00.000Z",
+        "evidence_hash": "5d4a87283bc7de02cfacb2a6fa769017ee4623e687d11a7b7dc8ab51dd3aa07b"
       },
       {
         "id": "fixture-rule-id-lazada",
         "title": "Lazada 印度尼西亚站平台规则",
         "summary": "印度尼西亚站 Lazada 平台规则（验收夹具）",
-        "market_codes": ["ID"],
-        "platform_keys": ["lazada"],
+        "market_codes": [
+          "ID"
+        ],
+        "platform_keys": [
+          "lazada"
+        ],
         "source": "Lazada Indonesia Seller Center",
         "source_url": "https://fixture.example.test/rules/id-lazada",
         "source_record_id": "rule-id-lazada-20260831",
@@ -63,7 +85,9 @@
         "source_type": "platform",
         "verification_status": "verified",
         "published_at": "2026-08-30",
-        "collected_at": "2026-08-31T00:00:00.000Z"
+        "collected_at": "2026-08-31T00:00:00.000Z",
+        "verified_at": "2026-08-31T00:00:00.000Z",
+        "evidence_hash": "86c3450cf2a1abff167a2bfcd6f621d6942ae3fb974f9da3c66addd2fdb26cf7"
       }
     ],
     "policies": [
@@ -73,17 +97,25 @@
         "title_zh": "美国美妆产品跨境经营政策",
         "summary": "美国美妆政策（验收夹具）",
         "summary_zh": "美国美妆政策（验收夹具）",
-        "market_codes": ["US"],
-        "category_codes": ["beauty"],
+        "market_codes": [
+          "US"
+        ],
+        "category_codes": [
+          "beauty"
+        ],
         "source": "US regulator fixture",
         "source_url": "https://fixture.example.test/policies/us-beauty",
         "source_record_id": "policy-us-beauty-20260831",
         "source_kind": "official",
         "source_type": "regulator",
         "verification_status": "verified",
-        "translation": {"status": "source_zh"},
+        "translation": {
+          "status": "source_zh"
+        },
         "published_at": "2026-08-30",
-        "collected_at": "2026-08-31T00:00:00.000Z"
+        "collected_at": "2026-08-31T00:00:00.000Z",
+        "verified_at": "2026-08-31T00:00:00.000Z",
+        "evidence_hash": "f6b799a723417ea5c19bd7e4e093da5d838498d8a3f6ea76e6de7a737898901c"
       },
       {
         "id": "fixture-policy-id-beauty",
@@ -91,17 +123,25 @@
         "title_zh": "印度尼西亚美妆产品跨境经营政策",
         "summary": "印度尼西亚美妆政策（验收夹具）",
         "summary_zh": "印度尼西亚美妆政策（验收夹具）",
-        "market_codes": ["ID"],
-        "category_codes": ["beauty"],
+        "market_codes": [
+          "ID"
+        ],
+        "category_codes": [
+          "beauty"
+        ],
         "source": "Indonesia regulator fixture",
         "source_url": "https://fixture.example.test/policies/id-beauty",
         "source_record_id": "policy-id-beauty-20260831",
         "source_kind": "official",
         "source_type": "regulator",
         "verification_status": "verified",
-        "translation": {"status": "translated"},
+        "translation": {
+          "status": "translated"
+        },
         "published_at": "2026-08-30",
-        "collected_at": "2026-08-31T00:00:00.000Z"
+        "collected_at": "2026-08-31T00:00:00.000Z",
+        "verified_at": "2026-08-31T00:00:00.000Z",
+        "evidence_hash": "a1e25151c8261102c03b91cc52a828f0c954eefe2bf12dc735561267c3b1d340"
       },
       {
         "id": "fixture-policy-global",
@@ -109,16 +149,22 @@
         "title_zh": "全球跨境政策背景",
         "summary": "未匹配市场的背景信息（验收夹具）",
         "summary_zh": "未匹配市场的背景信息（验收夹具）",
-        "market_codes": ["Global"],
+        "market_codes": [
+          "Global"
+        ],
         "source": "Global industry fixture",
         "source_url": "https://fixture.example.test/policies/global",
         "source_record_id": "policy-global-20260831",
         "source_kind": "traceable",
         "source_type": "industry_association",
         "verification_status": "verified",
-        "translation": {"status": "source_zh"},
+        "translation": {
+          "status": "source_zh"
+        },
         "published_at": "2026-08-30",
-        "collected_at": "2026-08-31T00:00:00.000Z"
+        "collected_at": "2026-08-31T00:00:00.000Z",
+        "verified_at": "2026-08-31T00:00:00.000Z",
+        "evidence_hash": "7f12eb4638b4dd6d1efdbca0d55ba5c54b535b534ed8f7be027e1b47acae9169"
       }
     ],
     "taxes": [
@@ -128,8 +174,12 @@
         "title_zh": "美国美妆销售税记录",
         "summary": "美国税收记录（验收夹具）",
         "summary_zh": "美国税收记录（验收夹具）",
-        "market_codes": ["US"],
-        "category_codes": ["beauty"],
+        "market_codes": [
+          "US"
+        ],
+        "category_codes": [
+          "beauty"
+        ],
         "tax_type": "sales_tax",
         "value": 0.08,
         "source": "US tax authority fixture",
@@ -138,9 +188,13 @@
         "source_kind": "official",
         "source_type": "government",
         "verification_status": "verified",
-        "translation": {"status": "source_zh"},
+        "translation": {
+          "status": "source_zh"
+        },
         "published_at": "2026-08-30",
-        "collected_at": "2026-08-31T00:00:00.000Z"
+        "collected_at": "2026-08-31T00:00:00.000Z",
+        "verified_at": "2026-08-31T00:00:00.000Z",
+        "evidence_hash": "eec8b511869bd095fa32cdc93234652dd6e3fc05c6ad906f150af2d301c5a025"
       },
       {
         "id": "fixture-tax-id-beauty",
@@ -148,8 +202,12 @@
         "title_zh": "印度尼西亚美妆进口税记录",
         "summary": "印度尼西亚税收记录（验收夹具）",
         "summary_zh": "印度尼西亚税收记录（验收夹具）",
-        "market_codes": ["ID"],
-        "category_codes": ["beauty"],
+        "market_codes": [
+          "ID"
+        ],
+        "category_codes": [
+          "beauty"
+        ],
         "tax_type": "import_fee",
         "value": 0.11,
         "source": "Indonesia customs fixture",
@@ -158,9 +216,13 @@
         "source_kind": "official",
         "source_type": "government",
         "verification_status": "verified",
-        "translation": {"status": "source_zh"},
+        "translation": {
+          "status": "source_zh"
+        },
         "published_at": "2026-08-30",
-        "collected_at": "2026-08-31T00:00:00.000Z"
+        "collected_at": "2026-08-31T00:00:00.000Z",
+        "verified_at": "2026-08-31T00:00:00.000Z",
+        "evidence_hash": "259d660226f469d056a5fe1b8f1f47565f6ad1070f14398fb42d0ba44823ec22"
       }
     ],
     "access": [
@@ -170,8 +232,12 @@
         "title_zh": "美国美妆标签要求",
         "summary": "美国标签和备案要求（验收夹具）",
         "summary_zh": "美国标签和备案要求（验收夹具）",
-        "market_codes": ["US"],
-        "category_codes": ["beauty"],
+        "market_codes": [
+          "US"
+        ],
+        "category_codes": [
+          "beauty"
+        ],
         "requirement_type": "labeling",
         "source": "US regulator fixture",
         "source_url": "https://fixture.example.test/access/us-beauty",
@@ -179,9 +245,13 @@
         "source_kind": "official",
         "source_type": "regulator",
         "verification_status": "verified",
-        "translation": {"status": "source_zh"},
+        "translation": {
+          "status": "source_zh"
+        },
         "published_at": "2026-08-30",
-        "collected_at": "2026-08-31T00:00:00.000Z"
+        "collected_at": "2026-08-31T00:00:00.000Z",
+        "verified_at": "2026-08-31T00:00:00.000Z",
+        "evidence_hash": "a146a53ca4f6e019f3eb6ad578521ca0d552a30db40abfba1d14b8f57115c05c"
       },
       {
         "id": "fixture-access-id-beauty",
@@ -189,8 +259,12 @@
         "title_zh": "印度尼西亚美妆备案要求",
         "summary": "印度尼西亚备案要求（验收夹具）",
         "summary_zh": "印度尼西亚备案要求（验收夹具）",
-        "market_codes": ["ID"],
-        "category_codes": ["beauty"],
+        "market_codes": [
+          "ID"
+        ],
+        "category_codes": [
+          "beauty"
+        ],
         "requirement_type": "registration",
         "source": "Indonesia regulator fixture",
         "source_url": "https://fixture.example.test/access/id-beauty",
@@ -198,9 +272,13 @@
         "source_kind": "official",
         "source_type": "regulator",
         "verification_status": "verified",
-        "translation": {"status": "translated"},
+        "translation": {
+          "status": "translated"
+        },
         "published_at": "2026-08-30",
-        "collected_at": "2026-08-31T00:00:00.000Z"
+        "collected_at": "2026-08-31T00:00:00.000Z",
+        "verified_at": "2026-08-31T00:00:00.000Z",
+        "evidence_hash": "d8b1063686efbf29f9d6b64f8fe6b63f4659288129d59b42932caf4c2b3c67cb"
       }
     ]
   }

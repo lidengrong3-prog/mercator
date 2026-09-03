@@ -10,5 +10,14 @@ verify_jwt = true
 [functions.billing-checkout]
 verify_jwt = true
 
+[functions.billing-status]
+verify_jwt = true
+
+[functions.billing-portal]
+verify_jwt = true
+
+[functions.billing-webhook]
+verify_jwt = false
+
 [functions.admin-summary]
 verify_jwt = true
