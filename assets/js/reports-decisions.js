@@ -89,8 +89,8 @@ function rpReportInConfiguredScope(report){
   if(reportMarkets){
     var allowed=jayConfiguredMarketCodes();
     var values=Array.isArray(reportMarkets)?reportMarkets:[reportMarkets];
-    if(!values.some(function(value){ return allowed.indexOf(String(value).toUpperCase())>=0
-      || jayConfiguredMarketNames().some(function(name){ return String(value).toLowerCase()===String(name).toLowerCase(); }); })) return false;
+    return values.some(function(value){ return allowed.indexOf(String(value).toUpperCase())>=0
+      || jayConfiguredMarketNames().some(function(name){ return String(value).toLowerCase()===String(name).toLowerCase(); }); });
   }
   return !jayScopeHasRetiredText([report.name,report.text].filter(Boolean).join(' '));
 }

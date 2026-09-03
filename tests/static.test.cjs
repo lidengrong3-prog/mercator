@@ -317,6 +317,17 @@ test('database policy is authenticated-user scoped', () => {
   assert.match(sql, /REVOKE ALL ON public\.monitored_shops FROM anon/);
 });
 
+test('structured report scope is not overridden by source URL text', () => {
+  const reportsSource = fs.readFileSync(path.join(root, 'assets/js/reports-decisions.js'), 'utf8');
+  const reportFilter = reportsSource.slice(
+    reportsSource.indexOf('function rpReportInConfiguredScope'),
+    reportsSource.indexOf('function rpAddCurrentToPool'),
+  );
+  assert.match(reportFilter, /if\(reportMarkets\)[\s\S]*return values\.some/);
+  assert.match(reportFilter, /return !jayScopeHasRetiredText/);
+  assert.ok(reportFilter.indexOf('return values.some') < reportFilter.indexOf('return !jayScopeHasRetiredText'));
+});
+
 test('market catalog foundation is relational, versionable, and read-only to the browser', () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'data', 'market_scope.json'), 'utf8'));
   assert.deepEqual(manifest.default_market_codes, ['US']);
