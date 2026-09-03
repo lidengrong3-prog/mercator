@@ -159,6 +159,7 @@ test('citation audit treats a date-only table lead as presentation metadata', ()
   const appendix = [{ citation: 'S001' }];
   const result = engine.auditCitations([
     { id: 'market', text: '分行业门店零售数据（2026 年 6 月）如下：\n| 指标 | 数值 | 来源 |\n|---|---|---|\n| 电商销售额 | 100万美元 | [S001] |' },
+    { id: 'market', text: '分行业门店零售方面（2026年6月）：' },
     { id: 'policy', text: '该政策于2026年6月生效。' },
   ], appendix);
   assert.equal(result.ok, false);
@@ -218,6 +219,39 @@ test('deterministic citation repair covers a Chinese cross-month policy date ran
   const result = engine.repairSectionCitations(text, citationFacts, appendix);
   assert.equal(result.repairedCount, 1);
   assert.match(result.text, /\[S001\]\[S002\]$/);
+  assert.equal(result.audit.ok, true);
+});
+
+test('deterministic citation repair matches an FDA publication date', () => {
+  const appendix = [{ citation: 'S001' }];
+  const citationFacts = [{
+    domain: 'policy', record: { summary_zh: '食品和药品管理局（FDA）发布动物饲料添加剂公告', published_at: '2026-08-19' },
+    source: { citation: 'S001' },
+  }];
+  const result = engine.repairSectionCitations('2026 年 8 月 19 日，FDA 发布与饲料添加剂相关的公告。', citationFacts, appendix);
+  assert.equal(result.repairedCount, 1);
+  assert.match(result.text, /\[S001\]$/);
+  assert.equal(result.audit.ok, true);
+});
+
+test('deterministic citation repair matches one endpoint of a numeric range', () => {
+  const appendix = [{ citation: 'S001' }];
+  const citationFacts = [{
+    domain: 'rule', record: { summary: 'Amazon FBA inventory aged 181-270 days and SIPP packaging fees', platform: 'Amazon' },
+    source: { citation: 'S001' },
+  }];
+  const result = engine.repairSectionCitations('建议 Amazon 卖家清理存放超过 181 天的库存，并评估 SIPP。', citationFacts, appendix);
+  assert.equal(result.repairedCount, 1);
+  assert.match(result.text, /\[S001\]$/);
+  assert.equal(result.audit.ok, true);
+});
+
+test('publication pruning removes unsupported numeric lines after retry', () => {
+  const appendix = [{ citation: 'S001' }];
+  const result = engine.pruneUncitedNumericLines('已核验增速为 12% [S001]\n无来源利润为 999%。\n伪造来源编号 [S999]\n暂无可验证利润结论。', appendix);
+  assert.equal(result.removedCount, 2);
+  assert.doesNotMatch(result.text, /999/);
+  assert.match(result.text, /12% \[S001\]/);
   assert.equal(result.audit.ok, true);
 });
 

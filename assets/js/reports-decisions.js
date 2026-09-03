@@ -449,7 +449,8 @@ async function rpV2Generate(){
     });
     var retryOutput=await callAI(repairSystem,repairUser,retryOptions);
     var repaired=window.JAY_REPORT_ENGINE.repairSectionCitations(retryOutput,prompts.citationFacts||[],prompts.sourceAppendix||[]);
-    return window.JAY_REPORT_ENGINE.repairSectionScope(repaired.text,facts.scope||context).text;
+    var sourced=window.JAY_REPORT_ENGINE.pruneUncitedNumericLines(repaired.text,prompts.sourceAppendix||[]);
+    return window.JAY_REPORT_ENGINE.repairSectionScope(sourced.text,facts.scope||context).text;
   }
   function localSection(section){
     var scope=facts.scope||context;
