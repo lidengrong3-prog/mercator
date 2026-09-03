@@ -841,3 +841,9 @@ test('production release deploys database and functions before the frontend', ()
     assert.match(functionSource, /\.\.\/_shared\/billing\.ts/);
   }
 });
+
+test('report generation retries a chapter that fails inline citation validation', () => {
+  assert.match(browserSource, /auditCitations\(\[\{id:section\.id,text:output\}\]/);
+  assert.match(browserSource, /citation-retry/);
+  assert.match(browserSource, /表格增加“来源”列/);
+});
