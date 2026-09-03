@@ -155,6 +155,17 @@ test('citation audit exempts generated snapshot dates but not unsupported metric
   assert.match(result.missingNumericCitations[0].text, /100万美元/);
 });
 
+test('citation audit treats a date-only table lead as presentation metadata', () => {
+  const appendix = [{ citation: 'S001' }];
+  const result = engine.auditCitations([
+    { id: 'market', text: '分行业门店零售数据（2026 年 6 月）如下：\n| 指标 | 数值 | 来源 |\n|---|---|---|\n| 电商销售额 | 100万美元 | [S001] |' },
+    { id: 'policy', text: '该政策于2026年6月生效。' },
+  ], appendix);
+  assert.equal(result.ok, false);
+  assert.equal(result.missingNumericCitations.length, 1);
+  assert.match(result.missingNumericCitations[0].text, /政策于2026年6月生效/);
+});
+
 test('scope check rejects unselected market and platform names', () => {
   const result = engine.checkScope('美国市场、Amazon、Shopee全球排名', { marketNames: ['美国'], platformNames: ['Amazon'] });
   assert.equal(result.ok, false);

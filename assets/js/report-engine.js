@@ -378,9 +378,10 @@
         });
         if (exempt || !line.trim() || /^\s*(?:#{1,4}\s+|\|?\s*:?-{2,})/.test(line)) return;
         var auditLine = line;
-        if (/数据快照(?:时间)?|生成日期|当前日期/.test(auditLine)) {
+        var dateOnlyTableLead = /(?:数据|指标|统计).*(?:如下|见下)[：:]?\s*$/.test(auditLine);
+        if (/数据快照(?:时间)?|生成日期|当前日期/.test(auditLine) || dateOnlyTableLead) {
           auditLine = auditLine
-            .replace(/\d{4}\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日(?:\s*\d{1,2}(?::\d{2}){0,2}\s*(?:UTC)?)?/gi, '')
+            .replace(/\d{4}\s*年\s*\d{1,2}\s*月(?:\s*\d{1,2}\s*日(?:\s*\d{1,2}(?::\d{2}){0,2}\s*(?:UTC)?)?)?/gi, '')
             .replace(/\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?Z?)?/gi, '');
         }
         var factualNumber = /(?:[$￥¥€£]\s*\d|\d+(?:[,.]\d+)*(?:\s*(?:%|％|美元|美金|元|万|亿|百万|件|单|人|天|月|年|个|家|项|倍|bps|USD|CNY))|\d+\.\d+)/i.test(auditLine);
