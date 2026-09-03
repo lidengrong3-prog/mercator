@@ -445,7 +445,9 @@ async function rpV2Generate(){
       operation:requestOptions.operation+'.citation-retry',
       requestId:requestOptions.requestId+':citation-retry'
     });
-    return callAI(repairSystem,repairUser,retryOptions);
+    var retryOutput=await callAI(repairSystem,repairUser,retryOptions);
+    var repaired=window.JAY_REPORT_ENGINE.repairSectionCitations(retryOutput,prompts.citationFacts||[],prompts.sourceAppendix||[]);
+    return repaired.text;
   }
   function localSection(section){
     var scope=facts.scope||context;
@@ -483,7 +485,7 @@ async function rpV2Generate(){
     var prompts=window.JAY_REPORT_ENGINE.buildSectionPrompt(plan,section,facts,financial,customText);
     var system=prompts.system+'\n当前日期：'+jayNowHuman()+'。输出简体中文 Markdown 章节正文，不要添加未给出的事实。';
     var user=prompts.user+'\n输出要求：只输出“'+section.title+'”本章正文；数字必须来自 facts 或 financial，无法确认就写“待补充”；不得写全球或未选择市场、平台；所有事实结论和关键数字必须保留 citationCatalog 中的 [Sxxx] 行内引用。';
-    generateSection(section,{system:system,user:user,sourceAppendix:prompts.sourceAppendix},{temperature:0.35,max_tokens:2800,search:false,timeout:60000,operation:'report.section.'+section.id,requestId:(rpActiveReportRun&&rpActiveReportRun.id||identity.clientReportId)+':'+section.id,reportRunId:rpActiveReportRun&&rpActiveReportRun.id||null,clientReportId:identity.clientReportId,dataVersion:String(quality.data_contract_version||quality.generated_at||'local-unversioned')}).then(async function(output){
+    generateSection(section,{system:system,user:user,sourceAppendix:prompts.sourceAppendix,citationFacts:prompts.citationFacts},{temperature:0.35,max_tokens:2800,search:false,timeout:60000,operation:'report.section.'+section.id,requestId:(rpActiveReportRun&&rpActiveReportRun.id||identity.clientReportId)+':'+section.id,reportRunId:rpActiveReportRun&&rpActiveReportRun.id||null,clientReportId:identity.clientReportId,dataVersion:String(quality.data_contract_version||quality.generated_at||'local-unversioned')}).then(async function(output){
       results.push({id:section.id,title:section.title,domain:section.domain,text:output,claims:[]});await next(index+1);
     }).catch(async function(error){
       body.innerHTML='<div class="rp-v2-rpt"><p style="color:#ef4444">第 '+(index+1)+' 章生成失败：'+escapeHtml(error.message)+'</p><p>已停止组装，未保存为正式报告。</p></div>';
