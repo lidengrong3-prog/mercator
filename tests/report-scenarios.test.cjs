@@ -144,6 +144,49 @@ test('global policy records do not enter a market-scoped collection', () => {
   assert.equal(facts.records.policy.some((entry) => entry.record.id === 'fixture-policy-global'), false);
 });
 
+test('policy and rule classifications are not treated as product-category scope', () => {
+  const { window, api, engine } = createEnvironment();
+  const context = setScope(api, ['US'], ['amazon'], ['pet-supplies']);
+  const provenance = {
+    source_kind: 'official', source_type: 'government', source_record_id: 'record-1',
+    verification_status: 'verified', source_url: 'https://example.gov/record-1',
+    published_at: '2026-09-01', collected_at: '2026-09-02T00:00:00Z',
+    verified_at: '2026-09-02T00:00:00Z', evidence_hash: 'a'.repeat(64),
+  };
+  window.policiesJsonData = { items: [{
+    ...provenance, id: 'policy-regulation', region: 'US', category: 'regulation',
+    title: 'Policy', title_zh: '政策', summary: 'Policy summary', summary_zh: '政策摘要',
+    translation: { status: 'translated' },
+  }] };
+  window.rulesJsonData = { items: [{
+    ...provenance, id: 'rule-fee', source_record_id: 'rule-fee', source_type: 'platform',
+    source_url: 'https://sellercentral.amazon.com/rule-fee', market: 'US', platform: 'Amazon',
+    category: 'fee', title: '平台费用规则', summary: '平台费用规则摘要',
+  }] };
+
+  const facts = engine.collectFacts(context, []);
+  assert.equal(facts.records.policy.length, 1);
+  assert.equal(facts.records.rule.length, 1);
+  assert.equal(facts.records.platform.length, 1);
+});
+
+test('explicit product-category scope still excludes mismatched policy records', () => {
+  const { window, api, engine } = createEnvironment();
+  const context = setScope(api, ['US'], ['amazon'], ['pet-supplies']);
+  window.policiesJsonData = { items: [{
+    id: 'policy-beauty', region: 'US', category: 'regulation', category_codes: ['beauty'],
+    title: 'Policy', title_zh: '政策', summary: 'Policy summary', summary_zh: '政策摘要',
+    source_kind: 'official', source_type: 'government', source_record_id: 'policy-beauty',
+    verification_status: 'verified', source_url: 'https://example.gov/policy-beauty',
+    published_at: '2026-09-01', collected_at: '2026-09-02T00:00:00Z',
+    verified_at: '2026-09-02T00:00:00Z', evidence_hash: 'b'.repeat(64),
+    translation: { status: 'translated' },
+  }] };
+
+  const facts = engine.collectFacts(context, []);
+  assert.equal(facts.records.policy, undefined);
+});
+
 test('assembled report carries source IDs, data snapshot time and scope snapshot', () => {
   const { window, api, engine } = createEnvironment();
   const context = setScope(api, ['US', 'ID'], ['tiktok-shop'], ['beauty']);

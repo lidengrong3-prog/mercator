@@ -95,14 +95,25 @@
     var status = lower(record.verification_status || record.verificationStatus || record.status);
     return ['verified', 'uploaded'].indexOf(status) >= 0 && !!(record.source_url || record.sourceUrl || record.source_record_id || record.sourceRecordId || record.source_file || record.sourceFile);
   }
-  function matches(record, context) {
+  function recordScopeCategories(record, domain) {
+    var explicit = record && (record.category_codes || record.categoryCodes || record.categories || record.category_code || record.categoryCode);
+    // Policy/rule/tax/access `category` values describe the record type (for
+    // example regulation, fee or labeling), not the selected product category.
+    // Product-like material records still use their legacy category fields.
+    if (explicit != null && explicit !== '') return list(explicit);
+    if (['product', 'competitor', 'content', 'category', 'other'].indexOf(domain) >= 0) {
+      return list(record && (record.category || record.subcategory || record.snapshot_category));
+    }
+    return [];
+  }
+  function matches(record, context, domain) {
     if (!record) return false;
     if (api().recordMatchesContext) return api().recordMatchesContext(record, context, { allowGlobal: false });
     var markets = list(record.market_codes || record.marketCodes || record.market_code || record.market || record.region || record.snapshot_market).map(function (item) { return upperCode(item && item.code || item); });
     if (markets.length && !markets.some(function (item) { return context.marketCodes.indexOf(item) >= 0; })) return false;
     var platforms = list(record.platform_keys || record.platformKeys || record.platform_key || record.platform || record.snapshot_platform).map(function (item) { return api().normalizePlatformKey ? api().normalizePlatformKey(item && item.key || item) : lower(item && item.key || item); }).filter(Boolean);
     if (platforms.length && context.platformKeys.length && !platforms.some(function (item) { return context.platformKeys.indexOf(item) >= 0; })) return false;
-    var categories = list(record.category_codes || record.categoryCodes || record.category_code || record.category || record.snapshot_category).map(function (item) { return api().normalizeCategoryCode ? api().normalizeCategoryCode(item && item.code || item) : lower(item && item.code || item); }).filter(Boolean);
+    var categories = recordScopeCategories(record, domain).map(function (item) { return api().normalizeCategoryCode ? api().normalizeCategoryCode(item && item.code || item) : lower(item && item.code || item); }).filter(Boolean);
     if (categories.length && context.categoryCodes.length && !categories.some(function (item) { return context.categoryCodes.indexOf(item) >= 0; })) return false;
     return true;
   }
@@ -206,7 +217,7 @@
     var sources = [];
     list(materials).forEach(function (material) {
       var domain = domainForType(material.type || material.item_type);
-      if (!formal(material, domain, scope) || !matches(material, scope)) return;
+      if (!formal(material, domain, scope) || !matches(material, scope, domain)) return;
       addRecord(records, domain, material, '素材池');
     });
     // Country commerce data is already filtered and provenance-checked by the
@@ -218,14 +229,14 @@
       });
     }
     var policyItems = root.policiesJsonData && root.policiesJsonData.items;
-    if (Array.isArray(policyItems)) policyItems.forEach(function (item) { if (formal(item, 'policy', scope) && matches(item, scope)) addRecord(records, 'policy', item, '政策数据集'); });
+    if (Array.isArray(policyItems)) policyItems.forEach(function (item) { if (formal(item, 'policy', scope) && matches(item, scope, 'policy')) addRecord(records, 'policy', item, '政策数据集'); });
     var taxItems = root.taxesJsonData && root.taxesJsonData.items;
-    if (Array.isArray(taxItems)) taxItems.forEach(function (item) { if (formal(item, 'tax', scope) && matches(item, scope)) addRecord(records, 'tax', item, '税收数据集'); });
+    if (Array.isArray(taxItems)) taxItems.forEach(function (item) { if (formal(item, 'tax', scope) && matches(item, scope, 'tax')) addRecord(records, 'tax', item, '税收数据集'); });
     var accessItems = root.accessRequirementsJsonData && root.accessRequirementsJsonData.items;
-    if (Array.isArray(accessItems)) accessItems.forEach(function (item) { if (formal(item, 'access', scope) && matches(item, scope)) addRecord(records, 'access', item, '准入数据集'); });
+    if (Array.isArray(accessItems)) accessItems.forEach(function (item) { if (formal(item, 'access', scope) && matches(item, scope, 'access')) addRecord(records, 'access', item, '准入数据集'); });
     var ruleItems = root.rulesJsonData && root.rulesJsonData.items;
     if (Array.isArray(ruleItems)) ruleItems.forEach(function (item) {
-      if (!formal(item, 'rule', scope) || !matches(item, scope)) return;
+      if (!formal(item, 'rule', scope) || !matches(item, scope, 'rule')) return;
       addRecord(records, 'rule', item, '平台规则数据集');
       // A platform chapter may use a verified rule record as evidence for the
       // platform offering itself. It never invents fees or traffic metrics.
