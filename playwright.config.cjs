@@ -5,6 +5,7 @@ module.exports = defineConfig({
   testMatch: '**/*.spec.cjs',
   timeout: 30_000,
   workers: 1,
+  reporter: process.env.CI ? [['line'], ['github']] : [['list']],
   use: {
     baseURL: process.env.JAY_PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:4173',
     browserName: 'chromium',
