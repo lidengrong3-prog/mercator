@@ -697,6 +697,7 @@ function plIsCrossBorderPolicy(p){
   if(p) p._relevance=relevance;
   return relevance.flag==='direct'||relevance.flag==='trade';
 }
+window.plIsCrossBorderPolicy=plIsCrossBorderPolicy;
 
 function plNormalizedSourceMeta(item){
   var api=window.JAY_MARKET_SCOPE_API;
