@@ -125,8 +125,16 @@ def main() -> int:
         raise ReleaseCheckError(f"production smoke login failed: HTTP {status}")
 
     headers = {"apikey": anon_key, "Authorization": f"Bearer {access_token}"}
-    for table in ("market_catalog", "market_data_applicability"):
-        status, _, _ = request("GET", f"{supabase}/rest/v1/{table}?select=id&limit=1", headers=headers)
+    database_probes = (
+        ("market_catalog", "code"),
+        ("market_data_applicability", "id"),
+    )
+    for table, primary_key in database_probes:
+        status, _, _ = request(
+            "GET",
+            f"{supabase}/rest/v1/{table}?select={primary_key}&limit=1",
+            headers=headers,
+        )
         if status != 200:
             raise ReleaseCheckError(f"database table {table} is not readable: HTTP {status}")
 
