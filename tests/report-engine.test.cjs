@@ -225,3 +225,9 @@ test('scope check rejects unselected market and platform names', () => {
   assert.equal(result.ok, false);
   assert.deepEqual(Array.from(result.violations), ['全球', 'shopee']);
 });
+
+test('scope check accepts the generated boundary statement', () => {
+  const result = engine.checkScope('报告不覆盖未选择市场、平台、品类及范围外排名。', { marketNames: ['美国'], platformNames: ['Amazon'] });
+  assert.equal(result.ok, true);
+  assert.deepEqual(Array.from(result.violations), []);
+});

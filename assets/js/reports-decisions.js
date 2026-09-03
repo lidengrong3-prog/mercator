@@ -452,7 +452,7 @@ async function rpV2Generate(){
   function localSection(section){
     var scope=facts.scope||context;
     if(section.id==='methodology')return '本章使用当前工作区已选择的'+(scope.marketNames||[]).join('、')+'市场、'+(scope.platformNames||[]).join('、')+'平台和已核验来源记录。缺失数据保持“待补充”，不以其他市场或演示数据替代。生成日期：'+jayNowDate()+'。';
-    if(section.id==='scope')return '适用市场：'+(scope.marketNames||[]).join('、')+'（'+(scope.marketCodes||[]).join('、')+'）；适用平台：'+(scope.platformNames||[]).join('、')+'；适用品类：'+(scope.categoryCodes||[]).join('、')+'。报告不覆盖未选择市场、平台、品类及全球排名。';
+    if(section.id==='scope')return '适用市场：'+(scope.marketNames||[]).join('、')+'（'+(scope.marketCodes||[]).join('、')+'）；适用平台：'+(scope.platformNames||[]).join('、')+'；适用品类：'+(scope.categoryCodes||[]).join('、')+'。报告不覆盖未选择市场、平台、品类及范围外排名。';
     if(section.id==='sources')return '本报告的来源、日期、URL、验证等级和引用关系见文末“来源与核验附录”。';
     return '';
   }
