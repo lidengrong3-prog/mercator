@@ -378,7 +378,13 @@ function rpV2RenderDataCheck(plan, check, financial){
 function rpV2ReportContext(topic){
   var active=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveContext?window.JAY_MARKET_SCOPE_API.getActiveContext():{};
   var categories=Array.isArray(active.categoryCodes)?active.categoryCodes.slice():[];
-  if(!categories.length&&rpV2Answers&&window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.normalizeCategoryCodes){categories=window.JAY_MARKET_SCOPE_API.normalizeCategoryCodes(rpV2Answers.category||'');}
+  var scopeApi=window.JAY_MARKET_SCOPE_API;
+  if(rpV2Answers&&scopeApi&&scopeApi.normalizeCategoryCodes){
+    var answeredCategories=scopeApi.normalizeCategoryCodes(rpV2Answers.category||'').filter(function(code){
+      return !scopeApi.getCategoryProfile||!!scopeApi.getCategoryProfile(code);
+    });
+    if(answeredCategories.length)categories=answeredCategories;
+  }
   return Object.assign({},active,{categoryCodes:categories,templateId:rpV2SelectedTpl||'market-research',purpose:rpV2SelectedTpl||'market-research',topic:topic||''});
 }
 async function rpV2Generate(){

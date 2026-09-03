@@ -54,6 +54,38 @@ test.describe('production authenticated browser acceptance', () => {
     throw new Error(`timed out waiting for ${table}`);
   }
 
+  async function waitForReportPreview(page, timeout = 280_000) {
+    const deadline = Date.now() + timeout;
+    while (Date.now() < deadline) {
+      const state = await page.evaluate(() => {
+        const preview = document.querySelector('#rp-v2-preview-body');
+        const dataCheck = document.querySelector('#rp-v2-data-check');
+        return {
+          ready: !!preview && !preview.classList.contains('rp-empty-preview'),
+          previewClass: preview?.className || '',
+          dataCheckClass: dataCheck?.className || '',
+          dataCheckText: dataCheck?.textContent?.trim() || '',
+          toasts: Array.isArray(window.__productionAcceptanceToasts)
+            ? window.__productionAcceptanceToasts.slice(-5) : [],
+        };
+      });
+      if (state.ready) return;
+      const terminalToast = state.toasts.find((message) => /停止生成|无法创建报告运行记录|请先登录|额度|相同报告/.test(message));
+      if (/is-blocked/.test(state.dataCheckClass) || terminalToast) {
+        const runs = await rows(page, 'report_runs', {});
+        throw new Error(`report generation stopped before preview: ${JSON.stringify({ ...state, latestRun: runs[0] || null })}`);
+      }
+      await page.waitForTimeout(500);
+    }
+    const runs = await rows(page, 'report_runs', {});
+    const state = await page.evaluate(() => ({
+      dataCheckClass: document.querySelector('#rp-v2-data-check')?.className || '',
+      dataCheckText: document.querySelector('#rp-v2-data-check')?.textContent?.trim() || '',
+      toasts: window.__productionAcceptanceToasts || [],
+    }));
+    throw new Error(`timed out waiting for report preview: ${JSON.stringify({ ...state, latestRun: runs[0] || null })}`);
+  }
+
   test('real login, upload, report recovery, exports and account isolation', async ({ browser }) => {
     const context = await browser.newContext({ acceptDownloads: true });
     const page = await context.newPage();
@@ -65,6 +97,15 @@ test.describe('production authenticated browser acceptance', () => {
     page.on('popup', (popup) => popup.close().catch(() => {}));
 
     await login(page, credentials.a);
+
+    await page.evaluate(() => {
+      window.__productionAcceptanceToasts = [];
+      const originalToast = window.toast;
+      window.toast = function productionAcceptanceToast(message) {
+        window.__productionAcceptanceToasts.push(String(message || ''));
+        return originalToast.apply(this, arguments);
+      };
+    });
 
     // Upload through the actual category page. The application stores the
     // parsed payload in an account-scoped workspace asset.
@@ -99,6 +140,12 @@ test.describe('production authenticated browser acceptance', () => {
     // template is intentional: the uploaded product proves the material path,
     // while this template can run without inventing missing unit economics.
     await page.evaluate(() => window.switchPage('report'));
+    await page.waitForFunction(() => (
+      window.policiesDataState === 'ready'
+      && Array.isArray(window.policiesJsonData?.items) && window.policiesJsonData.items.length > 0
+      && Array.isArray(window.rulesJsonData?.items) && window.rulesJsonData.items.length > 0
+      && window.jayGetCountryCommerceState?.('US')?.status === 'ready'
+    ), null, { timeout: 30_000 });
     await page.locator('.rp-v2-tpl-card[data-tpl="market-research"]').click();
     await expect(page.locator('#rp-v2-next-btn')).toBeEnabled();
     await page.locator('#rp-v2-next-btn').click();
@@ -108,7 +155,7 @@ test.describe('production authenticated browser acceptance', () => {
     await expect(page.locator('#rp-questionnaire')).toHaveClass(/show/);
     await page.locator('#rp-q-category').fill('宠物用品');
     await page.locator('#rp-questionnaire .rp-q-go').click();
-    await expect(page.locator('#rp-v2-preview-body')).not.toHaveClass(/rp-empty-preview/, { timeout: 280_000 });
+    await waitForReportPreview(page);
     await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端', { timeout: 30_000 });
 
     const reportRow = await waitForRow(page, 'generated_reports', { title: browserReportTitle }, (row) => row.save_status === 'saved');
