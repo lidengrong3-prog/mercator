@@ -5,10 +5,12 @@
   "description": "JAY观海 cross-border market decision intelligence workspace",
   "scripts": {
     "dev": "python -m http.server 4173 --bind 127.0.0.1",
-    "test": "npm run test:syntax && npm run test:data && node --test tests/static.test.cjs tests/report-engine.test.cjs tests/report-scenarios.test.cjs",
+    "test": "npm run test:syntax && npm run test:data && npm run test:xss && node --test tests/static.test.cjs tests/report-engine.test.cjs tests/report-scenarios.test.cjs tests/billing.test.cjs",
+    "test:xss": "node scripts/xss_verify.js",
     "test:syntax": "node scripts/js_syntax_check.js",
     "test:data": "python -m unittest discover -s tests -p \"test_*.py\"",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "test:browser:production": "playwright test tests/production-auth.spec.cjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

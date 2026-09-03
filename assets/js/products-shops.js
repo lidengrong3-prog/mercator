@@ -263,6 +263,7 @@ function prApplyImportedPayload(payload,options){
     prSetDataStatus(countLabel+' · '+(options.source==='cloud'?'个人云端数据':'当前账号本地数据'),products.length||shops.length?'ok':'');
     var clear=document.getElementById('pr-clear-data');if(clear)clear.disabled=!(products.length||shops.length);
   }
+  if(typeof jayRebuildSearch==='function')jayRebuildSearch();
   return products.length>0||shops.length>0;
 }
 function prRestoreImportedData(){
@@ -345,6 +346,7 @@ function prClearImportedData(){
   var clear=document.getElementById('pr-clear-data');if(clear)clear.disabled=true;
   var note=document.getElementById('pr-data-import-note');if(note)note.textContent='支持商品字段：商品名、国家/市场、平台、类目、三级类目、售价、销量、增速、信号、店铺、上架天数、更新时间。超出当前工作区市场或平台范围的行会被跳过。';
   if(typeof shInitFilters==='function')shInitFilters();if(typeof shRenderAI==='function')shRenderAI();if(typeof shApplyFilters==='function')shApplyFilters();
+  if(typeof jayRebuildSearch==='function')jayRebuildSearch();
   toast('已清空导入数据');
 }
 
@@ -360,11 +362,21 @@ function prInitFilters(){
     if(prText(p[11])&&shopNames.indexOf(p[11])<0)shopNames.push(p[11]);
   });
   regions.sort();platforms.sort();categories.sort();shopNames.sort();
-  var fill=function(id,items,label){var el=$('#'+id);el.innerHTML='<option value="all">'+label+'</option>'+items.map(function(i){return '<option value="'+i+'">'+i+'</option>'}).join('')};
+  var fill=function(id,items,label){
+    var el=$('#'+id);if(!el)return;
+    el.replaceChildren();
+    var allOption=document.createElement('option');allOption.value='all';allOption.textContent=label;el.appendChild(allOption);
+    items.forEach(function(i){var option=document.createElement('option');option.value=String(i);option.textContent=String(i);el.appendChild(option);});
+  };
   fill('pr-f-country',regions,'当前范围全部市场');
   fill('pr-f-platform',platforms,'当前范围全部平台');
   fill('pr-f-category',categories,'当前范围全部类目');
-  $('#pr-shop-select').innerHTML='<option value="">-- 请选择已监控店铺 --</option>'+shopNames.map(function(s){return '<option value="'+s+'">'+s+'</option>'}).join('');
+  var shopSelect=$('#pr-shop-select');
+  if(shopSelect){
+    shopSelect.replaceChildren();
+    var emptyOption=document.createElement('option');emptyOption.value='';emptyOption.textContent='-- 请选择已监控店铺 --';shopSelect.appendChild(emptyOption);
+    shopNames.forEach(function(s){var option=document.createElement('option');option.value=String(s);option.textContent=String(s);shopSelect.appendChild(option);});
+  }
 }
 
 function prApplyFilters(){
@@ -544,7 +556,14 @@ function prGetTemplates(){return jayGetWorkspaceAsset('product_filter_templates'
 function prSaveTemplates(t){return jaySaveWorkspaceAsset('product_filter_templates',t)}
 function prRenderTemplates(){
   var tpls=prGetTemplates();
-  $('#pr-tpl-list').innerHTML=tpls.map(function(t,i){return '<span class="pr-tpl-chip" data-idx="'+i+'">'+t.name+' <span class="tpl-del" data-idx="'+i+'">✕</span></span>'}).join('');
+  var list=$('#pr-tpl-list');if(!list)return;
+  list.replaceChildren();
+  tpls.forEach(function(t,i){
+    var chip=document.createElement('span');chip.className='pr-tpl-chip';chip.dataset.idx=String(i);
+    var name=document.createElement('span');name.className='pr-tpl-name';name.textContent=String(t&&t.name||'');
+    var del=document.createElement('span');del.className='tpl-del';del.dataset.idx=String(i);del.textContent='✕';
+    chip.appendChild(name);chip.appendChild(document.createTextNode(' '));chip.appendChild(del);list.appendChild(chip);
+  });
 }
 async function prSaveCurrentAsTpl(){
   if(!jayCanUseUserDb()){toast('只读演示不保存模板，请登录后使用');return}

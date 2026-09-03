@@ -38,6 +38,7 @@ SOURCE_TYPES = (
     "demo",
     "unknown",
 )
+PROVENANCE_REQUIRED_DOMAINS = {"policy", "tax", "access", "rule", "alert", "cpsc"}
 OFFICIAL_HOST_SUFFIXES = (".gov", ".mil", ".gov.cn", ".europa.eu")
 OFFICIAL_HOSTS = {
     "gov",
@@ -53,6 +54,7 @@ OFFICIAL_HOSTS = {
     "sellercenter.lazada.sg",
     "seller.shopee.sg",
 }
+ADVISORY_HOSTS = {"cifnews.com", "www.cifnews.com", "amz123.com", "www.amz123.com"}
 
 ZH_RE = re.compile(r"[\u3400-\u9fff]")
 TAX_TYPES = {"customs_duty", "vat", "sales_tax", "marketplace_collection", "import_fee"}
@@ -220,6 +222,7 @@ class DatasetResult:
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     metrics: dict[str, Any] = field(default_factory=dict)
+    connected: bool | None = None
 
     @property
     def status(self) -> str:
@@ -227,6 +230,8 @@ class DatasetResult:
             if all("超过新鲜度阈值" in error for error in self.errors):
                 return "stale"
             return "failed"
+        if self.connected is False:
+            return "not_connected"
         if any("超过新鲜度阈值" in warning for warning in self.warnings):
             return "stale"
         if self.warnings:
@@ -250,6 +255,7 @@ class DatasetResult:
             "exclusion_reasons": self.exclusion_reasons,
             "updated_at": self.updated_at,
             "freshness_hours": self.freshness_hours,
+            "connected": self.connected,
             "errors": self.errors,
             "warnings": self.warnings,
             "metrics": self.metrics,
@@ -289,7 +295,31 @@ def valid_http_url(value: Any) -> bool:
     if not isinstance(value, str) or not value.strip():
         return False
     parsed = urlparse(value.strip())
-    return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+    # Formal evidence links must be encrypted.  Plain HTTP is not accepted as
+    # a publication source even when it has a valid host.
+    return parsed.scheme == "https" and bool(parsed.netloc)
+
+
+def is_industry_advisory(item: dict[str, Any]) -> bool:
+    """Identify third-party industry articles that remain traceable only."""
+    source_class = str(item.get("source_class") or item.get("sourceClass") or "").strip().casefold()
+    source_name = str(item.get("source") or "").strip().casefold()
+    url = source_url_for(item).casefold()
+    host = (urlparse(url).hostname or "").casefold().rstrip(".")
+    return (
+        source_class == "industry_advisory"
+        or host in ADVISORY_HOSTS
+        or "雨果" in source_name
+        or "amz123" in source_name
+    )
+
+
+def has_explicit_provenance(item: dict[str, Any]) -> bool:
+    """Return whether a row carries the publish-time provenance envelope."""
+    return isinstance(item, dict) and all(
+        item.get(field) not in (None, "")
+        for field in ("source_kind", "source_type", "source_record_id", "verification_status", "collected_at", "evidence_hash")
+    )
 
 
 def normalize_source_kind(value: Any) -> str:
@@ -386,6 +416,10 @@ def is_official_source_url(value: Any) -> bool:
 
 
 def infer_source_kind(item: dict[str, Any]) -> str:
+    # Advisory publishers are never promoted to official, even if a legacy
+    # row contains an incorrect explicit label.
+    if is_industry_advisory(item):
+        return "traceable"
     explicit = normalize_source_kind(
         item.get("source_kind") or item.get("sourceKind") or item.get("provenance")
     )
@@ -405,6 +439,8 @@ def infer_source_kind(item: dict[str, Any]) -> str:
 
 
 def infer_verification_status(item: dict[str, Any], source_kind: str) -> str:
+    if is_industry_advisory(item):
+        return "pending"
     explicit = normalize_verification_status(
         item.get("verification_status")
         or item.get("verificationStatus")
@@ -431,6 +467,8 @@ def infer_verification_status(item: dict[str, Any], source_kind: str) -> str:
 
 def effective_source_type(item: dict[str, Any], source_kind: str = "") -> str:
     """Return the contract source type, including a deterministic legacy hint."""
+    if is_industry_advisory(item):
+        return "licensed_provider"
     explicit = normalize_source_type(item.get("source_type") or item.get("sourceType"))
     if explicit:
         return explicit
@@ -480,7 +518,13 @@ def is_scoped_record(item: dict[str, Any]) -> bool:
     return bool(record_scope_codes(item) & DEFAULT_SCOPE_MARKET_CODES)
 
 
-def record_quality(item: dict[str, Any], *, require_scope: bool = True) -> dict[str, Any]:
+def record_quality(
+    item: dict[str, Any],
+    *,
+    require_scope: bool = True,
+    domain: str | None = None,
+    require_provenance: bool = False,
+) -> dict[str, Any]:
     """Return formal-publication state and machine-readable exclusion reasons."""
     if not isinstance(item, dict):
         return {"formal": False, "source_kind": "", "verification_status": "pending", "reasons": ["malformed"]}
@@ -490,6 +534,8 @@ def record_quality(item: dict[str, Any], *, require_scope: bool = True) -> dict[
     quality = str(item.get("data_quality") or "").strip().casefold()
     if source_kind == "demo" or quality in {"demo", "demonstration", "mock", "演示", "示意"}:
         reasons.append("demo")
+    if is_industry_advisory(item):
+        reasons.append("industry_advisory")
     if verification_status not in {"verified", "uploaded"}:
         reasons.append("unverified")
     if not source_kind:
@@ -506,14 +552,32 @@ def record_quality(item: dict[str, Any], *, require_scope: bool = True) -> dict[
         reasons.append("missing_upload_reference")
     if require_scope and not is_scoped_record(item):
         reasons.append("out_of_scope")
+    required_domain = require_provenance or domain in PROVENANCE_REQUIRED_DOMAINS
+    missing_fields: list[str] = []
+    if required_domain:
+        required_fields = ("source_kind", "source_type", "source_record_id", "verification_status", "collected_at", "published_at", "evidence_hash")
+        missing_fields.extend(field for field in required_fields if item.get(field) in (None, ""))
+        if item.get("source_type") not in (None, "") and not normalize_source_type(item.get("source_type")):
+            missing_fields.append("source_type")
+        if source_kind in {"official", "traceable"} and not valid_http_url(item.get("source_url")):
+            missing_fields.append("source_url")
+        for date_field in ("collected_at", "published_at"):
+            if item.get(date_field) not in (None, "") and not parse_datetime(item.get(date_field)):
+                missing_fields.append(date_field)
+        if verification_status in {"verified", "uploaded"} and not parse_datetime(item.get("verified_at")):
+            missing_fields.append("verified_at")
+        evidence_hash = str(item.get("evidence_hash") or "").strip()
+        if evidence_hash and not re.fullmatch(r"[0-9a-fA-F]{64}", evidence_hash):
+            missing_fields.append("evidence_hash")
+        if missing_fields:
+            reasons.append("missing_provenance_fields")
     return {
         "formal": not reasons,
         "source_kind": source_kind,
         "verification_status": verification_status,
         "reasons": reasons,
-        "legacy_inferred": not bool(
-            item.get("source_kind") or item.get("sourceKind") or item.get("verification_status")
-        ),
+        "missing_provenance_fields": sorted(set(missing_fields)),
+        "legacy_inferred": not has_explicit_provenance(item),
     }
 
 
@@ -532,7 +596,12 @@ def apply_record_quality_metrics(
     formal = demos = unverified = missing_source = legacy = 0
     for row in rows:
         in_scope = bool(scoped_predicate(row))
-        quality = record_quality(row, require_scope=True)
+        quality = record_quality(
+            row,
+            require_scope=True,
+            domain=domain,
+            require_provenance=domain in PROVENANCE_REQUIRED_DOMAINS,
+        )
         if not in_scope and "out_of_scope" not in quality["reasons"]:
             quality["reasons"].append("out_of_scope")
         if quality["formal"] and in_scope:
@@ -541,7 +610,7 @@ def apply_record_quality_metrics(
             demos += 1
         if "unverified" in quality["reasons"]:
             unverified += 1
-        if any(reason in quality["reasons"] for reason in ("missing_source", "missing_source_kind", "missing_upload_reference")):
+        if any(reason in quality["reasons"] for reason in ("missing_source", "missing_source_kind", "missing_upload_reference", "missing_provenance_fields")):
             missing_source += 1
         if quality.get("legacy_inferred"):
             legacy += 1
@@ -576,6 +645,18 @@ def apply_record_quality_metrics(
         "official_or_traceable_records": sum(
             infer_source_kind(row) in {"official", "traceable"} for row in rows
         ),
+        "provenance_complete_records": sum(
+            not quality_missing
+            for quality_missing in (
+                record_quality(
+                    row,
+                    require_scope=False,
+                    domain=domain,
+                    require_provenance=domain in PROVENANCE_REQUIRED_DOMAINS,
+                ).get("missing_provenance_fields", [])
+                for row in rows
+            )
+        ),
     })
     if demos:
         result.warnings.append(f"存在 {demos} 条演示数据，未进入正式统计")
@@ -583,6 +664,12 @@ def apply_record_quality_metrics(
         result.warnings.append(f"存在 {unverified} 条未核验数据，未进入正式统计")
     if missing_source:
         result.warnings.append(f"存在 {missing_source} 条来源信息不完整记录，未进入正式统计")
+    missing_provenance = reasons.get("missing_provenance_fields", 0)
+    if missing_provenance:
+        result.warnings.append(f"存在 {missing_provenance} 条记录缺少完整 provenance 字段，未进入正式统计")
+    advisory = reasons.get("industry_advisory", 0)
+    if advisory:
+        result.warnings.append(f"存在 {advisory} 条第三方行业资讯，仅作可追溯参考，不视为官方核验")
     if legacy:
         result.warnings.append(f"存在 {legacy} 条记录仍依赖兼容性来源推断，建议回填显式 provenance 字段")
 
@@ -707,8 +794,21 @@ def validate_items_dataset(
 
     items = data["items"]
     result.records = len(items)
+    if key in {"taxes", "access_requirements"}:
+        result.connected = bool(items)
+        if not items and allow_empty:
+            result.warnings.append(
+                f"{DATASET_LABELS[key]}数据集为空：尚未接入当前范围数据，相关结论仅可显示为待补充"
+            )
+            result.metrics["connection_status"] = "not_connected"
     if items or not allow_empty:
-        set_freshness(result, data.get("updated_at"), now, max_age_hours)
+        freshness_value = data.get("last_checked_at") or data.get("updated_at")
+        set_freshness(result, freshness_value, now, max_age_hours)
+        result.metrics["freshness_basis"] = (
+            "last_checked_at" if data.get("last_checked_at") else "updated_at"
+        )
+        if data.get("last_checked_at"):
+            result.metrics["content_updated_at"] = data.get("updated_at")
     if len(items) < minimum:
         result.errors.append(f"记录数不足：{len(items)} < {minimum}")
 
@@ -748,7 +848,12 @@ def validate_items_dataset(
 
     formal_scoped_rows = [
         item for item in rows
-        if is_scoped_record(item) and record_quality(item, require_scope=True)["formal"]
+        if is_scoped_record(item) and record_quality(
+            item,
+            require_scope=True,
+            domain={"policies": "policy", "rules": "rule"}.get(key, key),
+            require_provenance=key in {"policies", "taxes", "access_requirements", "rules"},
+        )["formal"]
     ]
     missing_chinese_display = sum(
         not has_current_chinese_display(item) for item in formal_scoped_rows
@@ -1069,7 +1174,7 @@ def validate_cpsc(now: datetime) -> DatasetResult:
         for row in recalls
         if isinstance(row, dict)
     ]
-    apply_record_quality_metrics(result, recall_rows, domain="alert")
+    apply_record_quality_metrics(result, recall_rows, domain="cpsc")
     set_freshness(
         result,
         data.get("meta", {}).get("generated_at"),
@@ -1156,7 +1261,7 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
         status = "failed"
     elif "stale" in statuses:
         status = "stale"
-    elif warnings:
+    elif warnings or "not_connected" in statuses:
         status = "degraded"
     else:
         status = "healthy"
@@ -1208,6 +1313,7 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
             "excluded_records": sum(result.excluded_records for result in results),
             "healthy": statuses.count("healthy"),
             "degraded": statuses.count("degraded"),
+            "not_connected": statuses.count("not_connected"),
             "stale": statuses.count("stale"),
             "failed": statuses.count("failed"),
             "errors": errors,

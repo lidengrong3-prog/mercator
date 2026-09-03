@@ -27,6 +27,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Verify release ref, worktree and migration ordering
+        run: python scripts/release_preflight.py
       - run: npm ci
       - name: Validate code, data contracts and report engine
         run: npm test
@@ -52,10 +54,17 @@ jobs:
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       DEEPSEEK_MODEL: ${{ secrets.DEEPSEEK_MODEL }}
       ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
+      PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
+      RELEASE_SHA: ${{ github.sha }}
       AI_REQUESTS_PER_MINUTE: ${{ secrets.AI_REQUESTS_PER_MINUTE }}
       AI_MONTHLY_TOKEN_LIMIT: ${{ secrets.AI_MONTHLY_TOKEN_LIMIT }}
       AI_INPUT_COST_PER_MILLION_USD: ${{ secrets.AI_INPUT_COST_PER_MILLION_USD }}
       AI_OUTPUT_COST_PER_MILLION_USD: ${{ secrets.AI_OUTPUT_COST_PER_MILLION_USD }}
+      BILLING_ENABLED: ${{ vars.BILLING_ENABLED || secrets.BILLING_ENABLED || 'false' }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_PRICE_PRO_MONTHLY: ${{ secrets.STRIPE_PRICE_PRO_MONTHLY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      STRIPE_WEBHOOK_TOLERANCE_SECONDS: ${{ secrets.STRIPE_WEBHOOK_TOLERANCE_SECONDS }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -68,10 +77,45 @@ jobs:
           for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID SUPABASE_DB_PASSWORD DEEPSEEK_API_KEY DEEPSEEK_MODEL ALLOWED_ORIGINS; do
             test -n "${!name:-}" || { echo "Missing production secret: $name" >&2; exit 1; }
           done
+      - name: Validate formal production origin
+        run: python scripts/release_preflight.py --origin-only
+      - name: Validate optional production billing configuration
+        shell: bash
+        run: |
+          set -eu
+          case "$BILLING_ENABLED" in
+            true)
+              for name in STRIPE_SECRET_KEY STRIPE_PRICE_PRO_MONTHLY STRIPE_WEBHOOK_SECRET; do
+                test -n "${!name:-}" || { echo "Billing is enabled but $name is missing" >&2; exit 1; }
+              done
+              [[ "$STRIPE_SECRET_KEY" == sk_live_* ]] || { echo "Production billing requires a Stripe live secret key" >&2; exit 1; }
+              [[ "$STRIPE_PRICE_PRO_MONTHLY" == price_* ]] || { echo "Invalid Stripe price ID" >&2; exit 1; }
+              [[ "$STRIPE_WEBHOOK_SECRET" == whsec_* ]] || { echo "Invalid Stripe webhook signing secret" >&2; exit 1; }
+              ;;
+            false) ;;
+            *) echo "BILLING_ENABLED must be true or false" >&2; exit 1 ;;
+          esac
+      - name: Resolve release migration head
+        shell: bash
+        run: |
+          set -eu
+          migration_head="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' -printf '%f\n' | sort | tail -n 1 | sed 's/\.sql$//')"
+          test -n "$migration_head"
+          echo "MIGRATION_HEAD=$migration_head" >> "$GITHUB_ENV"
       - name: Link Supabase project
         run: npx --yes supabase@2.39.2 link --project-ref "$SUPABASE_PROJECT_ID" --password "$SUPABASE_DB_PASSWORD"
       - name: Apply database migrations before functions
         run: npx --yes supabase@2.39.2 db push --linked --include-all --password "$SUPABASE_DB_PASSWORD"
+      - name: Verify remote migration head
+        shell: bash
+        run: |
+          set -eu
+          migration_version="${MIGRATION_HEAD%%_*}"
+          npx --yes supabase@2.39.2 migration list --linked --password "$SUPABASE_DB_PASSWORD" | tee migration-list.txt
+          awk -v version="$migration_version" '
+            $1 == version && $2 == "|" && $3 == version { matched = 1 }
+            END { exit matched ? 0 : 1 }
+          ' migration-list.txt
       - name: Configure Edge Function secrets
         shell: bash
         run: |
@@ -81,19 +125,34 @@ jobs:
             "DEEPSEEK_API_KEY=$DEEPSEEK_API_KEY"
             "DEEPSEEK_MODEL=$DEEPSEEK_MODEL"
             "ALLOWED_ORIGINS=$ALLOWED_ORIGINS"
+            "RELEASE_SHA=$RELEASE_SHA"
+            "RELEASE_MIGRATION_HEAD=$MIGRATION_HEAD"
             "AI_REQUESTS_PER_MINUTE=${AI_REQUESTS_PER_MINUTE:-20}"
             "AI_MONTHLY_TOKEN_LIMIT=${AI_MONTHLY_TOKEN_LIMIT:-0}"
             "AI_INPUT_COST_PER_MILLION_USD=${AI_INPUT_COST_PER_MILLION_USD:-0}"
             "AI_OUTPUT_COST_PER_MILLION_USD=${AI_OUTPUT_COST_PER_MILLION_USD:-0}"
+            "BILLING_ENABLED=$BILLING_ENABLED"
+            "STRIPE_ALLOW_TEST_EVENTS=false"
+            "PRODUCTION_SITE_URL=$PRODUCTION_SITE_URL"
           )
+          if [ "$BILLING_ENABLED" = true ]; then
+            args+=(
+              "STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY"
+              "STRIPE_PRICE_PRO_MONTHLY=$STRIPE_PRICE_PRO_MONTHLY"
+              "STRIPE_WEBHOOK_SECRET=$STRIPE_WEBHOOK_SECRET"
+              "STRIPE_WEBHOOK_TOLERANCE_SECONDS=${STRIPE_WEBHOOK_TOLERANCE_SECONDS:-300}"
+            )
+          fi
           npx --yes supabase@2.39.2 secrets set --project-ref "$SUPABASE_PROJECT_ID" "${args[@]}"
       - name: Deploy JWT-protected Edge Functions
         shell: bash
         run: |
           set -eu
-          for function_name in ai-proxy report-export report-docx billing-checkout admin-summary; do
+          for function_name in ai-proxy report-export report-docx billing-checkout billing-status billing-portal admin-summary; do
             npx --yes supabase@2.39.2 functions deploy "$function_name" --project-ref "$SUPABASE_PROJECT_ID"
           done
+      - name: Deploy Stripe webhook without Supabase JWT verification
+        run: npx --yes supabase@2.39.2 functions deploy billing-webhook --project-ref "$SUPABASE_PROJECT_ID" --no-verify-jwt
 
   authenticated-acceptance:
     needs: deploy-backend
@@ -108,6 +167,8 @@ jobs:
       PROD_TEST_USER_A_PASSWORD: ${{ secrets.PROD_TEST_USER_A_PASSWORD }}
       PROD_TEST_USER_B_EMAIL: ${{ secrets.PROD_TEST_USER_B_EMAIL }}
       PROD_TEST_USER_B_PASSWORD: ${{ secrets.PROD_TEST_USER_B_PASSWORD }}
+      PRODUCTION_ACCEPTANCE_OUTPUT: production-acceptance-result.json
+      RELEASE_SHA: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -115,6 +176,12 @@ jobs:
           python-version: '3.11'
       - name: Run two-account production report acceptance
         run: python scripts/production_acceptance.py
+      - name: Publish backend acceptance result
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-acceptance-result-${{ github.run_id }}
+          path: production-acceptance-result.json
+          if-no-files-found: error
 
   deploy-frontend:
     needs: authenticated-acceptance
@@ -123,8 +190,14 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
+      RELEASE_SHA: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - uses: actions/configure-pages@v5
       - name: Assemble static site after backend acceptance
         shell: bash
@@ -133,6 +206,30 @@ jobs:
           cp index.html .nojekyll _site/
           cp -R assets data _site/
           if [ -d reports ]; then cp -R reports _site/; fi
+      - name: Write release manifest
+        shell: bash
+        run: |
+          set -eu
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          migration_head="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' -printf '%f\n' | sort | tail -n 1 | sed 's/\.sql$//')"
+          test -n "$migration_head"
+          production_origin="$(python -c 'from urllib.parse import urlparse; import os; parsed=urlparse(os.environ["PRODUCTION_SITE_URL"]); print(f"{parsed.scheme}://{parsed.netloc}")')"
+          python - "$migration_head" "$production_origin" <<'PY'
+          import json
+          import os
+          import sys
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          Path('_site/release.json').write_text(json.dumps({
+              'release_sha': os.environ['GITHUB_SHA'],
+              'migration_head': sys.argv[1],
+              'production_origin': sys.argv[2],
+              'frontend': 'github-pages',
+              'source_ref': os.environ.get('GITHUB_REF_NAME', ''),
+              'generated_at': datetime.now(timezone.utc).isoformat(),
+          }, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
@@ -140,8 +237,31 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-  production-smoke:
+  browser-authenticated-acceptance:
     needs: deploy-frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    env:
+      PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
+      PROD_TEST_USER_A_EMAIL: ${{ secrets.PROD_TEST_USER_A_EMAIL }}
+      PROD_TEST_USER_A_PASSWORD: ${{ secrets.PROD_TEST_USER_A_PASSWORD }}
+      PROD_TEST_USER_B_EMAIL: ${{ secrets.PROD_TEST_USER_B_EMAIL }}
+      PROD_TEST_USER_B_PASSWORD: ${{ secrets.PROD_TEST_USER_B_PASSWORD }}
+      RUN_PRODUCTION_ACCEPTANCE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run real browser account-isolation acceptance
+        run: JAY_PLAYWRIGHT_BASE_URL="$PRODUCTION_SITE_URL" npm run test:browser:production
+
+  production-smoke:
+    needs: browser-authenticated-acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: production
@@ -149,19 +269,26 @@ jobs:
       PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
       SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
       SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      PROD_TEST_USER_A_EMAIL: ${{ secrets.PROD_TEST_USER_A_EMAIL }}
+      PROD_TEST_USER_A_PASSWORD: ${{ secrets.PROD_TEST_USER_A_PASSWORD }}
+      EXPECTED_RELEASE_SHA: ${{ github.sha }}
+      ACCEPTANCE_RESULT_FILE: production-acceptance-result.json
     steps:
-      - name: Verify deployed frontend and Supabase API
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download backend acceptance result
+        uses: actions/download-artifact@v4
+        with:
+          name: production-acceptance-result-${{ github.run_id }}
+      - name: Resolve expected migration head
         shell: bash
         run: |
           set -eu
-          test -n "$PRODUCTION_SITE_URL"
-          test -n "$SUPABASE_URL"
-          test -n "$SUPABASE_ANON_KEY"
-          site_html="$(mktemp)"
-          trap 'rm -f "$site_html"' EXIT
-          curl --fail --silent --show-error --location --retry 5 --retry-delay 5 --max-time 30 "$PRODUCTION_SITE_URL" -o "$site_html"
-          grep -q 'JAY观海' "$site_html"
-          curl --fail --silent --show-error --location --retry 3 --max-time 30 \
-            -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
-            "$SUPABASE_URL/rest/v1/market_catalog?select=code&limit=1" > /dev/null
+          migration_head="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' -printf '%f\n' | sort | tail -n 1 | sed 's/\.sql$//')"
+          test -n "$migration_head"
+          echo "EXPECTED_MIGRATION_HEAD=$migration_head" >> "$GITHUB_ENV"
+      - name: Verify deployed frontend, database, Storage and functions
+        shell: bash
+        run: python scripts/production_release_check.py

@@ -76,6 +76,7 @@ function ctSetContentRecords(records){
   ctApplyFilters();
   ctRenderCreator();
   ctRenderLive();
+  if(typeof jayRebuildSearch==='function')jayRebuildSearch();
   return next.length;
 }
 window.jaySetContentRecords=ctSetContentRecords;
@@ -508,9 +509,10 @@ function ctSearchSimilar() {
   var kw = document.getElementById('ct-similar-input').value.trim().toLowerCase();
   var results = document.getElementById('ct-similar-results');
   if(!kw) { results.innerHTML = '<p style="color:var(--muted)">请输入商品名称</p>'; return; }
+  var displayKw=escapeHtml(kw);
   var matches = ctScopedData().filter(function(c){ return String(c[8]||'').toLowerCase().indexOf(kw)>=0 || String(c[0]||'').toLowerCase().indexOf(kw)>=0 || String(c[10]||'').toLowerCase().indexOf(kw)>=0; });
-  if(matches.length === 0) { results.innerHTML = '<p style="color:var(--muted)">未找到与 "' + kw + '" 相关的同款内容</p>'; return; }
-  var html = '<p style="font-size:13px;margin-bottom:12px">找到 <b>' + matches.length + '</b> 条与 "' + kw + '" 相关的同款内容</p>';
+  if(matches.length === 0) { results.innerHTML = '<p style="color:var(--muted)">未找到与 "' + displayKw + '" 相关的同款内容</p>'; return; }
+  var html = '<p style="font-size:13px;margin-bottom:12px">找到 <b>' + matches.length + '</b> 条与 "' + displayKw + '" 相关的同款内容</p>';
   html += '<div class="ct-card-grid">';
   matches.forEach(function(c) {
     var idx = contentData.indexOf(c);
@@ -824,12 +826,6 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
   if(briefRefresh) briefRefresh.onclick=function(){ jayRefreshAll().then(jayRenderBriefCard); };
   var planBtn = $('#ov-plan-btn');
   if(planBtn) planBtn.onclick=function(){toast('即将跳转至套餐页面…')};
-  var exportClose = $('#export-modal-close');
-  if(exportClose) exportClose.onclick=function(){$('#export-modal-overlay').classList.remove('open')};
-  var exportUpgrade = $('#export-modal-upgrade');
-  if(exportUpgrade) exportUpgrade.onclick=function(){$('#export-modal-overlay').classList.remove('open');toast('即将跳转至套餐页面…')};
-  var exportOverlay = $('#export-modal-overlay');
-  if(exportOverlay) exportOverlay.onclick=function(e){if(e.target===this)this.classList.remove('open')};
   $$('.ov-entry-card').forEach(function(c){ c.onclick=function(){ switchPage(c.dataset.go); }; });
   $$('.ov-opp-card').forEach(function(c){ c.onclick=function(){ var p=c.dataset.page; if(p)switchPage(p); }; });
   $$('.ov-insight-card').forEach(function(c){ c.onclick=function(){ switchPage('products'); }; });
@@ -908,7 +904,7 @@ function renderOverviewScopeSummary(){
   var categories=(context.categoryCodes||[]).map(function(code){var profile=api&&api.getCategoryProfile?api.getCategoryProfile(code):null;return profile&&(profile.name||profile.code)||code;});
   var report=typeof JAY_QUALITY_REPORT!=='undefined'?JAY_QUALITY_REPORT:null;
   var qualityStatus=typeof jayQualityStatus==='function'?jayQualityStatus(report):(report&&report.status||'pending');
-  var qualityLabels={healthy:'发布校验通过',degraded:'部分数据降级',stale:'数据已过期',failed:'发布校验阻断',pending:'正在读取质量状态'};
+  var qualityLabels={healthy:'发布校验通过',degraded:'部分数据降级',not_connected:'关键数据尚未接入',stale:'数据已过期',failed:'发布校验阻断',pending:'正在读取质量状态'};
   box.innerHTML='<span><i data-lucide="globe-2"></i><b>'+escapeHtml(markets.join('、')||'未选择市场')+'</b></span>'+
     '<span><i data-lucide="store"></i><b>'+platforms.length+'</b> 个平台</span>'+
     '<span><i data-lucide="tags"></i>'+escapeHtml(categories.length?categories.join('、'):'全部品类')+'</span>'+

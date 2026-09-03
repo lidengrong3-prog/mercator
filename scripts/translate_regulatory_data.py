@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 DATASETS = ("policies.json", "taxes.json", "access_requirements.json")
 ZH_RE = re.compile(r"[\u3400-\u9fff]")
+URL_ONLY_RE = re.compile(r"^https?://\S+$", re.IGNORECASE)
 TITLE_GLOSSARY_ZH = {
     # Argos 1.9 tokenizes this chemical name incorrectly ("ryl"). Keep the
     # established Chinese chemical name explicit and reviewable.
@@ -45,9 +46,15 @@ def source_hash(item: dict) -> str:
 
 def translation_is_current(item: dict) -> bool:
     meta = item.get("translation") if isinstance(item.get("translation"), dict) else {}
+    title = str(item.get("title") or "").strip()
+    summary = str(item.get("summary") or "").strip()
+    title_zh = str(item.get("title_zh") or "").strip()
+    summary_zh = str(item.get("summary_zh") or "").strip()
     return (
-        contains_chinese(item.get("title_zh"))
-        and (not item.get("summary") or contains_chinese(item.get("summary_zh")))
+        contains_chinese(title_zh)
+        and (not summary or contains_chinese(summary_zh))
+        and (not contains_chinese(title) or title_zh == title)
+        and (not URL_ONLY_RE.fullmatch(summary) or summary_zh == f"原文链接：{summary}")
         and meta.get("source_hash") == source_hash(item)
         and meta.get("status") in {"source_zh", "translated", "reviewed"}
     )
@@ -190,6 +197,20 @@ def translate_file(
             mark_source_chinese(item, now)
             changed += 1
             continue
+        if contains_chinese(title) and URL_ONLY_RE.fullmatch(summary):
+            item["title_zh"] = title
+            item["summary_zh"] = f"原文链接：{summary}"
+            item["translation"] = {
+                "source_language": "mixed",
+                "target_language": "zh-CN",
+                "status": "translated",
+                "provider": "source-normalization",
+                "translated_at": now,
+                "source_hash": source_hash(item),
+                "human_reviewed": False,
+            }
+            changed += 1
+            continue
         if limit is not None and translated_count >= limit:
             pending_count += 1
             continue
@@ -202,6 +223,10 @@ def translate_file(
         else:
             title_zh, summary_zh = translate_with_api(item, key, url, model)
             provider_name, provider_model = "openai-compatible", model
+        if contains_chinese(title):
+            title_zh = title
+        if contains_chinese(summary):
+            summary_zh = summary
         item["title_zh"] = title_zh
         item["summary_zh"] = summary_zh
         item["translation"] = {

@@ -9,7 +9,7 @@ var JAY_DATA_META = {};          // { key: { updated_at, source } }
 var JAY_QUALITY_REPORT = null;
 var JAY_STALE_DAYS = 1;
 var JAY_CORE_KEYS = ['policies', 'rules', 'alerts', 'countries', 'platforms'];
-var JAY_QUALITY_LABELS = { healthy:'数据实时', degraded:'部分降级', stale:'数据过期', failed:'校验失败', pending:'读取中' };
+var JAY_QUALITY_LABELS = { healthy:'数据实时', degraded:'部分降级', not_connected:'尚未接入', stale:'数据过期', failed:'校验失败', pending:'读取中' };
 function jayQualityStatus(report){
   if(!report) return 'pending';
   if(!report.generated_at) return 'failed';
@@ -30,7 +30,7 @@ function jayRenderQualityReport(){
   var summary = report.summary || {};
   var datasets = report.datasets || {};
   var keys = Object.keys(datasets);
-  var publishableCount = keys.filter(function(key){ return ['failed','stale'].indexOf(datasets[key].status) < 0; }).length;
+  var publishableCount = keys.filter(function(key){ return ['failed','stale','not_connected'].indexOf(datasets[key].status) < 0; }).length;
   var setText = function(id, value){ var node=document.getElementById(id); if(node) node.textContent=String(value); };
   setText('dq-datasets', summary.datasets == null ? keys.length : summary.datasets);
   setText('dq-healthy', publishableCount);
@@ -160,12 +160,12 @@ function jayUpdateDataStamp(){
     if(hint){
       hint.style.display=qualityStatus==='healthy'?'none':'';
       var hintText=document.getElementById('jay-stale-text');
-      var hints={degraded:'部分数据缺少来源或处于降级状态，请先核对质量报告。',stale:'质量报告或核心数据已过期，请先核对更新时间。',failed:'最近一次数据质量校验未通过，自动发布已阻断。'};
+      var hints={degraded:'部分数据缺少来源或处于降级状态，请先核对质量报告。',not_connected:'税收或准入数据尚未接入，相关报告只能显示待补充。',stale:'质量报告或核心数据已过期，请先核对更新时间。',failed:'最近一次数据质量校验未通过，自动发布已阻断。'};
       if(hintText) hintText.textContent=hints[qualityStatus]||'部分数据需要核对质量报告。';
     }
     [shellStatus,freshness].forEach(function(node){
       if(!node) return;
-      ['ready','fallback','healthy','degraded','stale','failed'].forEach(function(cls){node.classList.remove(cls);});
+      ['ready','fallback','healthy','degraded','not_connected','stale','failed'].forEach(function(cls){node.classList.remove(cls);});
       node.classList.add(qualityStatus);
     });
     if(shellStatus){var qualityText=shellStatus.querySelector('span:last-child');if(qualityText)qualityText.textContent=qualityLabel+' · '+qualityStamp;}
@@ -279,6 +279,9 @@ var jayWorkspaceContext = {
 };
 var jayNotificationsCache = [];
 var jaySubscriptionCache = null;
+var jayBillingStatusCache = null;
+var jayBillingCheckoutPromise = null;
+var jayBillingPortalPromise = null;
 var jayFeedbackCache = {};
 var jayWorkspaceAssetSaveQueues = {};
 var jayWorkspaceAssetSaveVersions = {};
@@ -296,6 +299,9 @@ function jayResetUserWorkspace(previousUserId) {
   jayWorkspaceContext = { available: false, loading: false, workspace: null, membership: null, members: [], invites: [], error: null };
   jayNotificationsCache = [];
   jaySubscriptionCache = null;
+  jayBillingStatusCache = null;
+  jayBillingCheckoutPromise = null;
+  jayBillingPortalPromise = null;
   jayFeedbackCache = {};
   jayWorkspaceAssetCache = {};
   jayWorkspaceAssetSaveQueues = {};
@@ -487,7 +493,7 @@ function onAuthSuccess() {
   if (!jayIsDemo && typeof jayHydrateUserWorkspace === 'function') jayHydrateUserWorkspace();
   if (!jayIsDemo && typeof jayLoadWorkspaceContext === 'function') jayLoadWorkspaceContext();
   if (!jayIsDemo && typeof jayLoadNotifications === 'function') jayLoadNotifications().then(function(){ if(typeof updateAlBadge==='function') updateAlBadge(); });
-  if (!jayIsDemo && typeof jayLoadSubscription === 'function') jayLoadSubscription().then(function(){ if(typeof jayRenderPricingTier==='function') jayRenderPricingTier(); });
+  if (!jayIsDemo && typeof jayLoadBillingStatus === 'function') jayLoadBillingStatus().then(function(status){ if(typeof jayNotifyBillingIssue==='function') jayNotifyBillingIssue(status); if(typeof jayRenderPricingTier==='function') jayRenderPricingTier(); });
   if (typeof prReloadImportedDataForCurrentUser === 'function') prReloadImportedDataForCurrentUser();
   if (typeof updateAlBadge === 'function') updateAlBadge();
   if (typeof stInitAccount === 'function') stInitAccount();
@@ -653,13 +659,35 @@ async function jayLoadNotifications() {
 async function jayLoadSubscription() {
   if (!jayCanUseUserDb()) { jaySubscriptionCache = null; return null; }
   try {
-    var rows = await jayDbGet('user_subscriptions', 'select=id,plan,status,provider,current_period_start,current_period_end,cancel_at_period_end,updated_at&user_id=eq.' + encodeURIComponent(jayUser.id) + '&limit=1');
+    var rows = await jayDbGet('user_subscriptions', 'select=id,plan,status,provider,provider_customer_id,provider_subscription_id,provider_price_id,current_period_start,current_period_end,cancel_at_period_end,latest_invoice_id,latest_payment_status,last_payment_error,last_payment_failed_at,canceled_at,ended_at,refunded_at,updated_at&user_id=eq.' + encodeURIComponent(jayUser.id) + '&limit=1');
     jaySubscriptionCache = rows && rows[0] ? rows[0] : { plan: 'free', status: 'active', provider: 'internal' };
   } catch (error) {
     jaySubscriptionCache = null;
     console.warn('[JAY观海] subscription unavailable:', error);
   }
   return jaySubscriptionCache;
+}
+
+async function jayLoadBillingStatus() {
+  if (!jayCanUseUserDb()) { jayBillingStatusCache = null; return null; }
+  try {
+    var status = await jayFunctionRequest('billing-status', {}, { timeout: 15000, retryOnNetwork: true, requestId: 'billing-status-' + jayUser.id });
+    jayBillingStatusCache = status || null;
+    if (status && status.subscription) jaySubscriptionCache = status.subscription;
+  } catch (error) {
+    jayBillingStatusCache = null;
+    console.warn('[JAY观海] billing status unavailable:', error);
+  }
+  return jayBillingStatusCache;
+}
+
+function jayNotifyBillingIssue(billingStatus) {
+  var subscription=billingStatus&&billingStatus.subscription;
+  if(!subscription||['past_due','expired'].indexOf(subscription.status)<0)return;
+  var marker=['jay_billing_notice',jayUser&&jayUser.id||'unknown',subscription.status,subscription.updated_at||''].join(':');
+  try{if(sessionStorage.getItem(marker))return;sessionStorage.setItem(marker,'1');}catch(error){}
+  if(subscription.status==='past_due')toast('订阅付款失败或待处理，Pro 权益已暂停；请前往“套餐与账单”更新付款方式');
+  else toast('订阅已过期，当前按免费套餐额度执行；请前往“套餐与账单”查看');
 }
 
 async function jayCreateNotification(title, body, eventType, severity, payload) {
@@ -718,14 +746,21 @@ async function jayFunctionRequest(functionName, payload, options) {
       signal: controller.signal
     });
   } catch (networkError) {
+    var requestError;
     if (networkError && networkError.name === 'AbortError') {
-      networkError.code = 'REQUEST_TIMEOUT';
-      networkError.status = 408;
+      requestError = new Error('REQUEST_TIMEOUT');
+      requestError.code = 'REQUEST_TIMEOUT';
+      requestError.status = 408;
     } else {
-      networkError.code = networkError.code || 'NETWORK_ERROR';
-      networkError.status = 0;
+      requestError = new Error(networkError && networkError.message || 'NETWORK_ERROR');
+      requestError.code = 'NETWORK_ERROR';
+      requestError.status = 0;
     }
-    throw networkError;
+    if (requestError.code === 'NETWORK_ERROR' && options.retryOnNetwork && !options._networkRetried) {
+      await jayWaitForOnline(Math.min(5000, timeoutMs));
+      return jayFunctionRequest(functionName, payload, Object.assign({}, options, { _networkRetried: true }));
+    }
+    throw requestError;
   } finally {
     clearTimeout(timer);
   }
@@ -746,6 +781,17 @@ async function jayFunctionRequest(functionName, payload, options) {
   return result;
 }
 
+function jayWaitForOnline(timeoutMs) {
+  if (typeof navigator === 'undefined' || navigator.onLine !== false) return Promise.resolve(true);
+  return new Promise(function(resolve){
+    var settled=false;
+    function finish(value){if(settled)return;settled=true;window.removeEventListener('online',onOnline);clearTimeout(timer);resolve(value);}
+    function onOnline(){finish(true);}
+    var timer=setTimeout(function(){finish(false);},Math.max(250,Number(timeoutMs||5000)));
+    window.addEventListener('online',onOnline,{once:true});
+  });
+}
+
 function jayExportIdempotencyKey(reportId, format, exportOptions) {
   exportOptions = exportOptions || {};
   if (exportOptions.idempotencyKey) return String(exportOptions.idempotencyKey);
@@ -753,35 +799,31 @@ function jayExportIdempotencyKey(reportId, format, exportOptions) {
   return ['report-export', reportId || 'unsaved', format, retry].join(':');
 }
 
-async function jayGenerateReportPdf(title, text, reportId, exportOptions) {
+async function jayGenerateReportPdf(_title, _text, reportId, exportOptions) {
   exportOptions = exportOptions || {};
   var requestId = exportOptions.requestId || ('pdf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10));
   return jayFunctionRequest('report-export', {
-    title: title || 'JAY观海市场决策报告',
-    text: text || '',
     report_id: reportId || null,
     parent_export_id: exportOptions.parentExportId || null,
     attempt: exportOptions.attempt || 1,
     request_id: requestId,
     idempotency_key: jayExportIdempotencyKey(reportId, 'pdf', exportOptions)
-  }, { timeout: exportOptions.timeout || 60000, requestId: requestId });
+  }, { timeout: exportOptions.timeout || 60000, requestId: requestId, retryOnNetwork: true });
 }
 
 // All server exports use the same authenticated contract. Keeping the format
 // in this small adapter means the report page can render one export history
 // regardless of whether the file was produced as PDF or DOCX.
-async function jayGenerateReportDocx(title, text, reportId, exportOptions) {
+async function jayGenerateReportDocx(_title, _text, reportId, exportOptions) {
   exportOptions = exportOptions || {};
   var requestId = exportOptions.requestId || ('docx_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10));
   return jayFunctionRequest('report-docx', {
-    title: title || 'JAY观海市场决策报告',
-    text: text || '',
     report_id: reportId || null,
     parent_export_id: exportOptions.parentExportId || null,
     attempt: exportOptions.attempt || 1,
     request_id: requestId,
     idempotency_key: jayExportIdempotencyKey(reportId, 'docx', exportOptions)
-  }, { timeout: exportOptions.timeout || 60000, requestId: requestId });
+  }, { timeout: exportOptions.timeout || 60000, requestId: requestId, retryOnNetwork: true });
 }
 
 async function jayLoadReportExports(reportId) {
@@ -818,23 +860,22 @@ async function jayCreateReportExportEvent(reportId, format, status, details) {
 }
 
 async function jayCreateBillingCheckout(plan) {
-  if (!jayCanUseUserDb()) throw new Error('AUTH_REQUIRED');
-  var sessionResult = await supabaseClient.auth.getSession();
-  var session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
-  if (!session || !session.access_token) throw new Error('AUTH_REQUIRED');
-  var response = await fetch(JAY_SUPABASE_URL + '/functions/v1/billing-checkout', {
-    method: 'POST',
-    headers: { 'apikey': JAY_ANON_KEY, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ plan: plan })
-  });
-  var raw = await response.text();
-  var result = raw ? JSON.parse(raw) : {};
-  if (!response.ok) {
-    var error = new Error(result.error || ('HTTP ' + response.status));
-    error.status = response.status;
-    throw error;
-  }
-  return result;
+  if (jayBillingCheckoutPromise) return jayBillingCheckoutPromise;
+  var requestId = 'billing_checkout_' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '_' + Math.random().toString(36).slice(2));
+  jayBillingCheckoutPromise = jayFunctionRequest('billing-checkout', {
+    plan: plan,
+    idempotency_key: requestId
+  }, { timeout: 30000, retryOnNetwork: true, requestId: requestId });
+  try { return await jayBillingCheckoutPromise; }
+  finally { jayBillingCheckoutPromise = null; }
+}
+
+async function jayOpenBillingPortal() {
+  if (jayBillingPortalPromise) return jayBillingPortalPromise;
+  var requestId = 'billing_portal_' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '_' + Math.random().toString(36).slice(2));
+  jayBillingPortalPromise = jayFunctionRequest('billing-portal', {}, { timeout: 30000, retryOnNetwork: true, requestId: requestId });
+  try { return await jayBillingPortalPromise; }
+  finally { jayBillingPortalPromise = null; }
 }
 
 async function jayLoadAdminSummary() {
@@ -877,15 +918,30 @@ var JAY_SERVICE_ERROR_MESSAGES = {
   WORKSPACE_FORBIDDEN: '当前账号没有执行此操作的权限',
   RATE_LIMITED: '请求过于频繁，请稍后重试',
   AI_RATE_LIMITED: 'AI 服务请求过于频繁，请稍后重试',
+  AI_RATE_LIMIT_CHECK_FAILED: 'AI 限流状态暂时无法读取，请稍后重试',
   QUOTA_EXCEEDED: '当前服务额度不足，请联系管理员补充额度',
   AI_QUOTA_EXCEEDED: 'AI 服务额度不足，请联系管理员补充额度',
   REQUEST_TIMEOUT: '请求超时，请检查网络后重试',
   AI_PROVIDER_TIMEOUT: 'AI 服务响应超时，请稍后重试',
   NETWORK_ERROR: '网络连接失败，请检查网络后重试',
   AI_PROVIDER_UNREACHABLE: 'AI 服务暂时无法连接，请稍后重试',
+  AI_PROVIDER_ERROR: 'AI 服务端处理失败，请稍后重试',
   AI_SERVICE_NOT_CONFIGURED: 'AI 服务尚未完成生产配置',
+  BILLING_NOT_ENABLED: '正式收费尚未启用，本次不会创建订单或扣款',
+  BILLING_NOT_CONFIGURED: '支付服务尚未完成生产配置',
+  BILLING_STATUS_NOT_CONFIGURED: '订阅状态服务尚未完成生产配置',
+  BILLING_STATUS_UNAVAILABLE: '订阅状态暂时无法读取，请稍后重试',
+  BILLING_ENTITLEMENTS_UNAVAILABLE: '套餐额度暂时无法读取，请稍后重试',
+  BILLING_USAGE_UNAVAILABLE: '本月用量暂时无法读取，请稍后重试',
+  BILLING_PROVIDER_UNREACHABLE: '支付渠道暂时无法连接，请稍后重试',
+  BILLING_PROVIDER_ERROR: '支付渠道处理失败，请稍后重试',
+  BILLING_CUSTOMER_NOT_FOUND: '当前账号还没有可管理的 Stripe 账单',
+  SUBSCRIPTION_ALREADY_ACTIVE: '当前 Pro 订阅已生效，无需重复购买',
+  REPORT_QUOTA_EXCEEDED: '本月报告生成额度已用完，请升级套餐或等待下月重置',
+  EXPORT_QUOTA_EXCEEDED: '本月报告导出额度已用完，请升级套餐或等待下月重置',
   REPORT_SERVICE_NOT_CONFIGURED: '报告导出服务尚未完成生产配置',
   REPORT_NOT_FOUND: '未找到已保存的报告，无法创建导出文件',
+  REPORT_NOT_SAVED: '报告尚未完成云端保存，无法创建正式导出文件',
   REPORT_EXPORT_IN_PROGRESS: '相同报告正在导出，请勿重复提交',
   REPORT_STORAGE_UPLOAD_FAILED: '报告文件保存失败，请稍后重试',
   REPORT_SIGNED_URL_FAILED: '报告下载链接创建失败，请稍后重试',
@@ -990,7 +1046,16 @@ async function jayStartReportRun(details) {
   } catch (error) {
     if (error.code !== '23505' && error.status !== 409) throw error;
     var existing = await jayDbGet('report_runs', 'select=*&user_id=eq.' + encodeURIComponent(jayUser.id) + '&idempotency_key=eq.' + encodeURIComponent(payload.idempotency_key) + '&limit=1');
-    return existing && existing[0] ? Object.assign({ duplicate: true }, existing[0]) : null;
+    var previous=existing&&existing[0];
+    if(previous&&['failed','cancelled'].indexOf(previous.status)>=0){
+      var retryPayload=Object.assign({},payload,{
+        idempotency_key:(payload.idempotency_key+':retry:'+Date.now()).slice(0,240),
+        metadata:Object.assign({},payload.metadata||{},{retry_of:previous.id})
+      });
+      var retryRows=await jayDbInsert('report_runs',retryPayload);
+      return retryRows&&retryRows[0]?Object.assign({duplicate:false,retry:true},retryRows[0]):null;
+    }
+    return previous ? Object.assign({ duplicate: true }, previous) : null;
   }
 }
 
@@ -1179,6 +1244,7 @@ function jayReportFromRow(row) {
     completeness: content.completeness || null,
     publishable: content.publishable !== false,
     sourceAppendix: content.source_appendix || [],
+    citationAudit: content.citation_audit || (content.model && content.model.citationAudit) || null,
     reconciliation: content.reconciliation || null,
     scopeCheck: content.scope_check || null,
     generationStatus: row.generation_status || content.generation_status || row.status || 'completed',
@@ -1239,6 +1305,7 @@ function jayReportToRow(report) {
       completeness: report.completeness || (report.model && report.model.completeness) || null,
       publishable: report.publishable !== false,
       source_appendix: report.sourceAppendix || (report.model && report.model.sourceAppendix) || [],
+      citation_audit: report.citationAudit || (report.model && report.model.citationAudit) || null,
       reconciliation: report.reconciliation || (report.model && report.model.reconciliation) || null,
       scope_check: report.scopeCheck || (report.model && report.model.scopeCheck) || null,
       generation_status: report.generationStatus || 'completed',

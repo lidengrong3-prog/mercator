@@ -26,7 +26,7 @@ function corsHeaders(origin: string | null): Record<string, string> {
 function jsonResponse(body: Record<string, unknown>, status: number, origin: string | null): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders(origin), 'Content-Type': 'application/json; charset=utf-8' },
+    headers: { ...corsHeaders(origin), 'Content-Type': 'application/json; charset=utf-8', 'X-JAY-Release': Deno.env.get('RELEASE_SHA') || 'unversioned' },
   });
 }
 
@@ -134,16 +134,20 @@ Deno.serve(async (request) => {
 
   let payload: Record<string, unknown>;
   try { payload = await request.json(); } catch { return jsonResponse({ error: 'INVALID_JSON' }, 400, origin); }
-  const title = String(payload.title || 'JAY观海市场决策报告').trim().slice(0, 160);
-  const text = String(payload.text || '').trim();
-  if (!text) return jsonResponse({ error: 'REPORT_CONTENT_REQUIRED' }, 400, origin);
-  if (text.length > 80_000) return jsonResponse({ error: 'REPORT_TOO_LARGE' }, 413, origin);
 
   const serviceHeaders = { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey, 'Content-Type': 'application/json' };
   const reportId = typeof payload.report_id === 'string' && /^[0-9a-f-]{36}$/i.test(payload.report_id) ? payload.report_id : null;
   if (!reportId) return jsonResponse({ error: 'REPORT_ID_REQUIRED' }, 400, origin);
-  const reportCheck = await fetch(`${supabaseUrl}/rest/v1/generated_reports?id=eq.${encodeURIComponent(reportId)}&user_id=eq.${encodeURIComponent(user.id)}&select=id&limit=1`, { headers: serviceHeaders });
-  if (!reportCheck.ok || !(await reportCheck.json()).length) return jsonResponse({ error: 'REPORT_NOT_FOUND' }, 404, origin);
+  const reportResponse = await fetch(`${supabaseUrl}/rest/v1/generated_reports?id=eq.${encodeURIComponent(reportId)}&user_id=eq.${encodeURIComponent(user.id)}&select=id,title,content,save_status&limit=1`, { headers: serviceHeaders });
+  const reportRows = reportResponse.ok ? await reportResponse.json() : [];
+  const report = reportRows?.[0] as { title?: unknown; content?: unknown; save_status?: unknown } | undefined;
+  if (!report) return jsonResponse({ error: 'REPORT_NOT_FOUND' }, 404, origin);
+  if (report.save_status !== 'saved') return jsonResponse({ error: 'REPORT_NOT_SAVED' }, 409, origin);
+  const storedContent = report.content && typeof report.content === 'object' ? report.content as Record<string, unknown> : {};
+  const title = String(report.title || 'JAY观海市场决策报告').trim().slice(0, 160);
+  const text = String(storedContent.text || '').trim();
+  if (!text) return jsonResponse({ error: 'REPORT_CONTENT_REQUIRED' }, 400, origin);
+  if (text.length > 80_000) return jsonResponse({ error: 'REPORT_TOO_LARGE' }, 413, origin);
   const jobsUrl = `${supabaseUrl}/rest/v1/report_exports`;
   const parentExportId = typeof payload.parent_export_id === 'string' && /^[0-9a-f-]{36}$/i.test(payload.parent_export_id) ? payload.parent_export_id : null;
   const attempt = Math.max(1, Math.min(100, Number(payload.attempt || 1)) || 1);
@@ -168,7 +172,7 @@ Deno.serve(async (request) => {
   const jobCreate = await fetch(jobsUrl, {
     method: 'POST',
     headers: { ...serviceHeaders, Prefer: 'return=representation' },
-    body: JSON.stringify({ user_id: user.id, report_id: reportId, format: 'pdf', status: 'queued', parent_export_id: parentExportId, attempt, request_id: requestId, idempotency_key: idempotencyKey, metadata: { function: 'report-export' } }),
+    body: JSON.stringify({ user_id: user.id, report_id: reportId, format: 'pdf', status: 'queued', parent_export_id: parentExportId, attempt, request_id: requestId, idempotency_key: idempotencyKey, metadata: { function: 'report-export', content_source: 'persisted_report', data_snapshot_at: storedContent.data_snapshot_at || null, source_record_ids: storedContent.source_record_ids || [] } }),
   });
   if (!jobCreate.ok) {
     if (jobCreate.status === 409) return jsonResponse({ error: 'REPORT_EXPORT_IN_PROGRESS' }, 409, origin);

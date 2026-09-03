@@ -1,5 +1,53 @@
 [
   [
+    "cpsc-cat-20260903-93f47ff8",
+    "policy",
+    "high",
+    "⚠️ 消费电子品类: 近90天76起中国产品召回",
+    "美国",
+    "CPSC",
+    "过去90天内，消费电子品类有76起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
+    "2026-09-03",
+    false,
+    {
+      "source": "CPSC 数据分析",
+      "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_record_id": "cpsc-cat-20260903-93f47ff8",
+      "verification_status": "verified",
+      "category_codes": [
+        "electronics"
+      ],
+      "schema_version": "2.0",
+      "display_locale": "zh-CN",
+      "generator_version": "2026.09.01.2"
+    }
+  ],
+  [
+    "pol-20260903-3b9c5bf1",
+    "policy",
+    "high",
+    "政策更新：阿曼苏丹国提供的聚乙烯戊二酸酯反应:反倾销税行政审查订正最后结果;2023-2024年",
+    "美国",
+    "tariff",
+    "美国商务部(Commerce)正在修订阿曼苏丹国(阿曼)对聚乙烯四甲酸酯树脂(PET树脂)反倾销税令的行政审查最终结果,以纠正一个部级错误. 2023年5月1日为审查期,",
+    "2026-09-02",
+    false,
+    {
+      "source": "Federal Register / 政策分析",
+      "source_url": "https://www.federalregister.gov/documents/2026/09/02/2026-17981/polyethylene-terephthalate-resin-from-the-sultanate-of-oman-amended-final-results-of-antidumping",
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_record_id": "pol-20260903-3b9c5bf1",
+      "verification_status": "verified",
+      "category_codes": [],
+      "schema_version": "2.0",
+      "display_locale": "zh-CN",
+      "generator_version": "2026.09.01.2"
+    }
+  ],
+  [
     "cpsc-cat-20260827-b95104ba",
     "policy",
     "high",
@@ -21,7 +69,12 @@
       ],
       "schema_version": "2.0",
       "display_locale": "zh-CN",
-      "generator_version": "2026.09.01.2"
+      "generator_version": "2026.09.01.2",
+      "published_at": "2026-09-01",
+      "collected_at": "2026-09-01",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "verified_at": "2026-09-01",
+      "evidence_hash": "534728fa781d265056b2df71a39d5b3e71b95eed1c7481954364f6267939a4ab"
     }
   ],
   [
@@ -46,7 +99,12 @@
       ],
       "schema_version": "2.0",
       "display_locale": "zh-CN",
-      "generator_version": "2026.09.01.2"
+      "generator_version": "2026.09.01.2",
+      "published_at": "2026-09-01",
+      "collected_at": "2026-09-01",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "verified_at": "2026-09-01",
+      "evidence_hash": "534728fa781d265056b2df71a39d5b3e71b95eed1c7481954364f6267939a4ab"
     }
   ],
   [
@@ -71,7 +129,12 @@
       ],
       "schema_version": "2.0",
       "display_locale": "zh-CN",
-      "generator_version": "2026.09.01.2"
+      "generator_version": "2026.09.01.2",
+      "published_at": "2026-09-01",
+      "collected_at": "2026-09-01",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "verified_at": "2026-09-01",
+      "evidence_hash": "534728fa781d265056b2df71a39d5b3e71b95eed1c7481954364f6267939a4ab"
     }
   ],
   [
@@ -96,7 +159,12 @@
       ],
       "schema_version": "2.0",
       "display_locale": "zh-CN",
-      "generator_version": "2026.09.01.2"
+      "generator_version": "2026.09.01.2",
+      "published_at": "2026-09-01",
+      "collected_at": "2026-09-01",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "verified_at": "2026-09-01",
+      "evidence_hash": "534728fa781d265056b2df71a39d5b3e71b95eed1c7481954364f6267939a4ab"
     }
   ],
   [
@@ -119,7 +187,12 @@
       "category_codes": [],
       "schema_version": "2.0",
       "display_locale": "zh-CN",
-      "generator_version": "2026.09.01.2"
+      "generator_version": "2026.09.01.2",
+      "published_at": "2026-08-12",
+      "collected_at": "2026-08-12",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "verified_at": "2026-08-12",
+      "evidence_hash": "0274402a1e75cbf5b4533bb6fdfe572211a22cf7b140c6b50aa9f0efd1c22df7"
     }
   ],
   [
@@ -142,7 +215,12 @@
       "category_codes": [],
       "schema_version": "2.0",
       "display_locale": "zh-CN",
-      "generator_version": "2026.09.01.2"
+      "generator_version": "2026.09.01.2",
+      "published_at": "2026-08-10",
+      "collected_at": "2026-08-10",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "verified_at": "2026-08-10",
+      "evidence_hash": "5273fa09581d6e8dc3f47409432c0336254f2cc6b0678ad99e4899a9136ca94b"
     }
   ],
   [
@@ -165,7 +243,12 @@
       "category_codes": [],
       "schema_version": "2.0",
       "display_locale": "zh-CN",
-      "generator_version": "2026.09.01.2"
+      "generator_version": "2026.09.01.2",
+      "published_at": "2026-08-07",
+      "collected_at": "2026-08-07",
+      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
+      "verified_at": "2026-08-07",
+      "evidence_hash": "f4aedca4d94d29db98c86d75ccbee3aae1a7509de61b5fcc855d035cf5a559f3"
     }
   ]
 ]

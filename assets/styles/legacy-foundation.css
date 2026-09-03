@@ -458,17 +458,6 @@
 .ov-ai-diagnosis li{font-size:12px;line-height:2;color:#3a6b9f;padding-left:4px}
 
 /* === Round 2: Export Modal === */
-.export-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center}
-.export-modal-overlay.open{display:flex}
-.export-modal{background:#fff;border-radius:8px;padding:32px 36px;width:400px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.export-modal h3{font-size:18px;margin:0 0 8px;color:var(--ink)}
-.export-modal p{font-size:13px;color:#5e6d80;margin:0 0 24px;line-height:1.6}
-.export-modal .modal-btns{display:flex;gap:12px;justify-content:center}
-.export-modal .modal-btn{border:0;border-radius:12px;padding:10px 24px;font-family:inherit;font-size:13px;cursor:pointer;transition:.2s}
-.export-modal .modal-btn-primary{background:var(--orange);color:#fff}
-.export-modal .modal-btn-primary:hover{background:#c75f30}
-.export-modal .modal-btn-ghost{background:#f4f2ed;color:var(--muted)}
-.export-modal .modal-btn-ghost:hover{background:#eae8e3}
 
 /* === Round 2: Risk highlight === */
 .risk-highlight{color:#4a85d9!important;font-weight:700}

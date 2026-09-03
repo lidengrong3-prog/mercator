@@ -16,6 +16,7 @@ function corsHeaders(origin: string | null): Record<string, string> {
     'Access-Control-Allow-Origin': allowed,
     'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-request-id',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Expose-Headers': 'Retry-After, X-JAY-Release',
     Vary: 'Origin',
   };
 }
@@ -23,7 +24,7 @@ function corsHeaders(origin: string | null): Record<string, string> {
 function jsonResponse(body: Record<string, unknown>, status: number, origin: string | null, extra: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders(origin), 'Content-Type': 'application/json; charset=utf-8', ...extra },
+    headers: { ...corsHeaders(origin), 'Content-Type': 'application/json; charset=utf-8', 'X-JAY-Release': Deno.env.get('RELEASE_SHA') || 'unversioned', ...extra },
   });
 }
 
@@ -67,6 +68,21 @@ Deno.serve(async (request) => {
   const model = Deno.env.get('DEEPSEEK_MODEL') || 'deepseek-chat';
   const dataVersion = payload.data_version ? String(payload.data_version).slice(0, 240) : null;
 
+  const messages = payload.messages;
+  if (!Array.isArray(messages) || messages.length < 1 || messages.length > 20) return jsonResponse({ error: 'INVALID_MESSAGES' }, 400, origin);
+  let totalLength = 0;
+  for (const message of messages) {
+    if (!message || typeof message !== 'object') return jsonResponse({ error: 'INVALID_MESSAGES' }, 400, origin);
+    const role = (message as Record<string, unknown>).role;
+    const content = (message as Record<string, unknown>).content;
+    if (!['system', 'user', 'assistant'].includes(String(role)) || typeof content !== 'string') return jsonResponse({ error: 'INVALID_MESSAGES' }, 400, origin);
+    totalLength += content.length;
+  }
+  if (totalLength > 30_000) return jsonResponse({ error: 'PROMPT_TOO_LARGE' }, 413, origin);
+
+  const temperature = Math.max(0, Math.min(1.5, Number(payload.temperature ?? 0.5)));
+  const maxTokens = Math.max(128, Math.min(3_000, Number(payload.max_tokens ?? 1_500)));
+
   const ownedId = async (table: 'report_runs' | 'generated_reports', value: unknown): Promise<string | null> => {
     const id = uuid(value);
     if (!id) return null;
@@ -89,43 +105,51 @@ Deno.serve(async (request) => {
     });
   };
 
+  const subscriptionResponse = await fetch(`${supabaseUrl}/rest/v1/user_subscriptions?user_id=eq.${encodeURIComponent(user.id)}&select=plan,status&limit=1`, { headers: serviceHeaders });
+  if (!subscriptionResponse.ok) return jsonResponse({ error: 'BILLING_ENTITLEMENTS_UNAVAILABLE' }, 503, origin);
+  const subscriptionRows = await subscriptionResponse.json();
+  const subscription = subscriptionRows?.[0] || { plan: 'free', status: 'active' };
+  const effectivePlan = ['active', 'trialing'].includes(String(subscription.status)) ? String(subscription.plan || 'free') : 'free';
+  const entitlementResponse = await fetch(`${supabaseUrl}/rest/v1/billing_plan_entitlements?plan=eq.${encodeURIComponent(effectivePlan)}&active=eq.true&select=monthly_ai_token_limit,ai_requests_per_minute&limit=1`, { headers: serviceHeaders });
+  if (!entitlementResponse.ok) return jsonResponse({ error: 'BILLING_ENTITLEMENTS_UNAVAILABLE' }, 503, origin);
+  const entitlementRows = await entitlementResponse.json();
+  const entitlement = entitlementRows?.[0];
+  if (!entitlement) return jsonResponse({ error: 'BILLING_ENTITLEMENTS_UNAVAILABLE' }, 503, origin);
+
+  const configuredMinuteCap = Math.max(0, Number(Deno.env.get('AI_REQUESTS_PER_MINUTE') || 0));
+  const planMinuteLimit = Math.max(1, Number(entitlement.ai_requests_per_minute || 1));
+  const perMinuteLimit = configuredMinuteCap > 0 ? Math.min(planMinuteLimit, configuredMinuteCap) : planMinuteLimit;
+  const configuredMonthlyCap = Math.max(0, Number(Deno.env.get('AI_MONTHLY_TOKEN_LIMIT') || 0));
+  const planMonthlyLimit = Math.max(0, Number(entitlement.monthly_ai_token_limit || 0));
+  const monthlyLimit = configuredMonthlyCap > 0 ? Math.min(planMonthlyLimit, configuredMonthlyCap) : planMonthlyLimit;
+  const usageResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/get_user_billing_usage`, {
+    method: 'POST', headers: serviceHeaders, body: JSON.stringify({ p_user_id: user.id }),
+  });
+  if (!usageResponse.ok) return jsonResponse({ error: 'BILLING_USAGE_UNAVAILABLE' }, 503, origin);
+  const billingUsage = await usageResponse.json();
+  const usedTokens = Math.max(0, Number(billingUsage?.ai_tokens || 0));
+  const quotaResetAt = String(billingUsage?.period_end || '');
+
   const minuteStart = new Date(Date.now() - 60_000).toISOString();
   const rateResponse = await fetch(`${supabaseUrl}/rest/v1/ai_request_logs?user_id=eq.${encodeURIComponent(user.id)}&created_at=gte.${encodeURIComponent(minuteStart)}&select=id`, {
     method: 'HEAD', headers: { ...serviceHeaders, Prefer: 'count=exact' },
   });
+  if (!rateResponse.ok) return jsonResponse({ error: 'AI_RATE_LIMIT_CHECK_FAILED' }, 503, origin);
   const recentCount = Number((rateResponse.headers.get('content-range') || '0/0').split('/')[1] || 0);
-  const perMinuteLimit = Math.max(1, Number(Deno.env.get('AI_REQUESTS_PER_MINUTE') || 20));
   if (recentCount >= perMinuteLimit) {
     await logRequest({ status: 'failed', input_tokens: 0, output_tokens: 0, total_tokens: 0, estimated_cost_usd: 0, http_status: 429, error_code: 'AI_RATE_LIMITED' });
-    return jsonResponse({ error: 'AI_RATE_LIMITED' }, 429, origin, { 'Retry-After': '60' });
+    return jsonResponse({ error: 'AI_RATE_LIMITED', plan: effectivePlan, limit: perMinuteLimit, retry_after: 60 }, 429, origin, { 'Retry-After': '60' });
   }
 
-  const monthlyLimit = Math.max(0, Number(Deno.env.get('AI_MONTHLY_TOKEN_LIMIT') || 0));
-  if (monthlyLimit > 0) {
-    const monthStart = new Date(); monthStart.setUTCDate(1); monthStart.setUTCHours(0, 0, 0, 0);
-    const usageResponse = await fetch(`${supabaseUrl}/rest/v1/ai_request_logs?user_id=eq.${encodeURIComponent(user.id)}&created_at=gte.${encodeURIComponent(monthStart.toISOString())}&select=total_tokens&limit=10000`, { headers: serviceHeaders });
-    const usageRows = usageResponse.ok ? await usageResponse.json() : [];
-    const usedTokens = usageRows.reduce((sum: number, row: { total_tokens?: number }) => sum + Number(row.total_tokens || 0), 0);
-    if (usedTokens >= monthlyLimit) {
-      await logRequest({ status: 'failed', input_tokens: 0, output_tokens: 0, total_tokens: 0, estimated_cost_usd: 0, http_status: 402, error_code: 'AI_QUOTA_EXCEEDED' });
-      return jsonResponse({ error: 'AI_QUOTA_EXCEEDED' }, 402, origin);
-    }
+  const estimatedInputTokens = Math.ceil(totalLength / 4);
+  const requestedTokens = estimatedInputTokens + maxTokens;
+  if (monthlyLimit === 0 || usedTokens + requestedTokens > monthlyLimit) {
+    await logRequest({ status: 'failed', input_tokens: 0, output_tokens: 0, total_tokens: 0, estimated_cost_usd: 0, http_status: 402, error_code: 'AI_QUOTA_EXCEEDED' });
+    return jsonResponse({
+      error: 'AI_QUOTA_EXCEEDED', plan: effectivePlan, used_tokens: usedTokens,
+      limit: monthlyLimit, remaining_tokens: Math.max(0, monthlyLimit - usedTokens), reset_at: quotaResetAt,
+    }, 402, origin);
   }
-
-  const messages = payload.messages;
-  if (!Array.isArray(messages) || messages.length < 1 || messages.length > 20) return jsonResponse({ error: 'INVALID_MESSAGES' }, 400, origin);
-  let totalLength = 0;
-  for (const message of messages) {
-    if (!message || typeof message !== 'object') return jsonResponse({ error: 'INVALID_MESSAGES' }, 400, origin);
-    const role = (message as Record<string, unknown>).role;
-    const content = (message as Record<string, unknown>).content;
-    if (!['system', 'user', 'assistant'].includes(String(role)) || typeof content !== 'string') return jsonResponse({ error: 'INVALID_MESSAGES' }, 400, origin);
-    totalLength += content.length;
-  }
-  if (totalLength > 30_000) return jsonResponse({ error: 'PROMPT_TOO_LARGE' }, 413, origin);
-
-  const temperature = Math.max(0, Math.min(1.5, Number(payload.temperature ?? 0.5)));
-  const maxTokens = Math.max(128, Math.min(3_000, Number(payload.max_tokens ?? 1_500)));
   const upstreamBody: Record<string, unknown> = { model, messages, temperature, max_tokens: maxTokens, stream: false };
   if (payload.web_search) upstreamBody.web_search = { type: 'enabled' };
   if (payload.plugins) upstreamBody.plugins = ['web_search'];
@@ -160,5 +184,14 @@ Deno.serve(async (request) => {
   const outputTokens = Math.max(0, Number(usage.completion_tokens || usage.output_tokens || 0));
   const totalTokens = Math.max(inputTokens + outputTokens, Number(usage.total_tokens || 0));
   await logRequest({ status: 'completed', input_tokens: inputTokens, output_tokens: outputTokens, total_tokens: totalTokens, estimated_cost_usd: estimateCost(inputTokens, outputTokens), http_status: 200, error_code: null });
+  if (result && typeof result === 'object') {
+    result.jay_quota = {
+      plan: effectivePlan,
+      used_tokens: usedTokens + totalTokens,
+      limit: monthlyLimit,
+      remaining_tokens: Math.max(0, monthlyLimit - usedTokens - totalTokens),
+      reset_at: quotaResetAt,
+    };
+  }
   return jsonResponse(result, 200, origin);
 });

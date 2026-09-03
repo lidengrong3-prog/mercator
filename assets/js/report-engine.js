@@ -10,7 +10,7 @@
 (function (root) {
   'use strict';
 
-  var ENGINE_VERSION = '3.0';
+  var ENGINE_VERSION = '3.1';
   var CORE_SECTIONS = [
     { id: 'executive_summary', title: '执行摘要', domain: 'summary', required: true },
     { id: 'methodology', title: '研究方法与范围', domain: 'method', required: true },
@@ -176,7 +176,17 @@
     var date = record && (record.published_at || record.publishedAt || record.effective_date || record.effectiveDate || record.snapshot_at || record.snapshotAt || record.collected_at || record.collectedAt) || '';
     var status = record && (record.verification_status || record.verificationStatus || record.status) || 'pending';
     var kind = record && (record.source_kind || record.sourceKind || record.source_type || record.sourceType) || '';
-    return { source: text(source), url: text(url), date: text(date), verificationStatus: text(status), sourceKind: text(kind), recordId: text(record && (record.source_record_id || record.sourceRecordId || record.id || '')) };
+    return {
+      source: text(source), url: text(url), date: text(date), verificationStatus: text(status), sourceKind: text(kind),
+      sourceType: text(record && (record.source_type || record.sourceType || '')),
+      verifiedAt: text(record && (record.verified_at || record.verifiedAt || '')),
+      collectedAt: text(record && (record.collected_at || record.collectedAt || '')),
+      publishedAt: text(record && (record.published_at || record.publishedAt || '')),
+      evidenceHash: text(record && (record.evidence_hash || record.evidenceHash || '')),
+      recordId: text(record && (record.source_record_id || record.sourceRecordId || record.id || '')),
+      snapshotId: text(record && (record.snapshot_id || record.snapshotId || record.source_record_id || record.sourceRecordId || record.id || '')),
+      snapshotAt: text(record && (record.snapshot_at || record.snapshotAt || record.collected_at || record.collectedAt || ''))
+    };
   }
   function compactRecord(record) {
     record = record || {};
@@ -187,7 +197,7 @@
   }
   function addRecord(bucket, domain, record, origin) {
     if (!bucket[domain]) bucket[domain] = [];
-    bucket[domain].push({ record: record, source: sourceFrom(record, origin), origin: origin || '' });
+    bucket[domain].push({ domain: domain, record: record, source: sourceFrom(record, origin), origin: origin || '' });
   }
 
   function collectFacts(context, materials) {
@@ -233,8 +243,15 @@
     var records = facts.records || {};
     var missing = [];
     var warnings = [];
+    var blockedDomains = [];
     uniq(plan.requiredDomains || []).forEach(function (domain) {
       if (!list(records[domain]).length) missing.push({ domain: domain, label: (MODULES[domain] && MODULES[domain].title) || domain, reason: '当前范围没有已核验记录' });
+    });
+    ['tax', 'access'].forEach(function (domain) {
+      if (!list(records[domain]).length) {
+        blockedDomains.push(domain);
+        warnings.push({ domain: domain, label: (domain === 'tax' ? '税收与关税' : '准入、认证与标签'), reason: '数据尚未接入；禁止生成确定性税率、费用或准入结论' });
+      }
     });
     var scope = facts.scope || {};
     if (!list(scope.marketCodes).length) missing.push({ domain: 'scope', label: '市场范围', reason: '未选择目标市场' });
@@ -245,7 +262,7 @@
       });
     });
     var total = Object.keys(records).reduce(function (sum, domain) { return sum + records[domain].length; }, 0);
-    return { ok: missing.length === 0, missing: missing, warnings: warnings, recordCount: total, requiredCount: uniq(plan.requiredDomains || []).length, checkedAt: isoNow() };
+    return { ok: missing.length === 0, missing: missing, warnings: warnings, blockedDomains: blockedDomains, recordCount: total, requiredCount: uniq(plan.requiredDomains || []).length, checkedAt: isoNow() };
   }
 
   function calculateFinancialModel(input) {
@@ -300,12 +317,64 @@
     return input ? calculateFinancialModel(input) : { status: 'not_available', missing: ['sellingPrice', 'productCost', 'logisticsCost', 'platformFeeRate'] };
   }
 
+  function sourceKey(source) {
+    source = source || {};
+    return [source.domain, source.url, source.recordId, source.source].map(text).join('|');
+  }
+
   function buildSourceAppendix(facts) {
     var seen = {};
     return list(facts && facts.sources).filter(function (source) {
-      var key = [source.domain, source.url, source.recordId, source.source].join('|');
+      var key = sourceKey(source);
       if (seen[key]) return false; seen[key] = true; return !!(source.url || source.recordId || source.source);
-    }).map(function (source, index) { return Object.assign({ index: index + 1, citation: 'S' + String(index + 1).padStart(3, '0') }, source); });
+    }).map(function (source, index) {
+      return Object.assign({
+        index: index + 1,
+        citation: 'S' + String(index + 1).padStart(3, '0'),
+        dataSnapshotAt: source.snapshotAt || facts && facts.collectedAt || '',
+        originalUrl: source.url || ''
+      }, source);
+    });
+  }
+
+  function citationForSource(source, appendix) {
+    var key = sourceKey(source);
+    var match = list(appendix).find(function (item) { return sourceKey(item) === key; });
+    return match && match.citation || '';
+  }
+
+  function auditCitations(sections, appendix) {
+    var valid = list(appendix).map(function (source) { return source.citation; }).filter(Boolean);
+    var used = [];
+    var invalid = [];
+    var missingNumericCitations = [];
+    list(sections).forEach(function (section) {
+      var sectionId = section && section.id || '';
+      var exempt = ['methodology', 'scope', 'sources'].indexOf(sectionId) >= 0;
+      text(section && section.text).split(/\r?\n/).forEach(function (line) {
+        var citations = [];
+        line.replace(/\[(S\d{3})\]/g, function (_, citation) { citations.push(citation); return _; });
+        citations.forEach(function (citation) {
+          if (valid.indexOf(citation) < 0) invalid.push({ section: sectionId, citation: citation });
+          else used.push(citation);
+        });
+        if (exempt || !line.trim() || /^\s*(?:#{1,4}\s+|\|?\s*:?-{2,})/.test(line) || /待补充|尚未接入/.test(line)) return;
+        var factualNumber = /(?:[$￥¥€£]\s*\d|\d+(?:[,.]\d+)*(?:\s*(?:%|％|美元|美金|元|万|亿|百万|件|单|人|天|月|年|个|家|项|倍|bps|USD|CNY))|\d+\.\d+)/i.test(line);
+        if (factualNumber && !citations.some(function (citation) { return valid.indexOf(citation) >= 0; })) {
+          missingNumericCitations.push({ section: sectionId, text: line.trim().slice(0, 240) });
+        }
+      });
+    });
+    used = uniq(used);
+    return {
+      ok: invalid.length === 0 && missingNumericCitations.length === 0,
+      validCitations: valid,
+      usedCitations: used,
+      invalidCitations: invalid,
+      missingNumericCitations: missingNumericCitations,
+      coverage: valid.length ? Math.round(used.length / valid.length * 100) : 100,
+      checkedAt: isoNow()
+    };
   }
 
   function scoreCompleteness(plan, check, appendix, facts) {
@@ -367,10 +436,12 @@
   }
 
   function buildSectionPrompt(plan, section, facts, financial, custom) {
+    var appendix = buildSourceAppendix(facts);
     var records = (facts && facts.records && facts.records[section.domain]) || [];
     if (['summary', 'risk', 'action'].indexOf(section.domain) >= 0) {
       records = Object.keys((facts && facts.records) || {}).reduce(function (all, domain) { return all.concat(facts.records[domain] || []); }, []);
     }
+    if (section.domain === 'financial') records = records.concat((facts && facts.records && facts.records.product) || []);
     records = records.filter(function (entry) {
       var record = entry && entry.record || {};
       if (section.marketCode) {
@@ -387,10 +458,27 @@
       }
       return true;
     });
-    var payload = records.slice(0, 80).map(function (entry) { return { record: compactRecord(entry.record), source: entry.source }; });
-    var instruction = '你是报告章节分析员，只能根据结构化事实和来源写作。禁止补写未提供的税率、销量、市场规模、价格、利润、排名或平台规则。没有事实时必须写“待补充”，不得使用其他国家、平台或全球排名。';
-    var user = JSON.stringify({ section: { id: section.id, title: section.title, domain: section.domain }, scope: facts && facts.scope, facts: payload, financial: section.domain === 'financial' ? financial : undefined, custom: custom || '' });
-    return { system: instruction, user: user };
+    var payload = records.slice(0, 80).map(function (entry) {
+      var source = Object.assign({ domain: entry.domain || section.domain }, entry.source || {});
+      source.citation = citationForSource(source, appendix);
+      source.dataSnapshotAt = source.snapshotAt || facts && facts.collectedAt || '';
+      source.originalUrl = source.url || '';
+      return { record: compactRecord(entry.record), source: source };
+    });
+    var citationCatalog = uniq(payload.map(function (entry) { return entry.source.citation; })).map(function (citation) {
+      return appendix.find(function (source) { return source.citation === citation; });
+    }).filter(Boolean);
+    var instruction = '你是报告章节分析员，只能根据结构化事实和来源写作。禁止补写未提供的税率、销量、市场规模、价格、利润、排名或平台规则。没有事实时必须写“待补充”，不得使用其他国家、平台或全球排名。税收或准入事实缺失时，只能说明“尚未接入/待补充”，禁止输出确定性税率、费用、认证或合规结论。每个来源已分配唯一编号；所有基于事实的句子及每个关键数字必须在句末保留一个或多个原始编号，例如 [S001]。只能使用 citationCatalog 中存在的编号，不得改写、猜测或创建引用编号。程序化财务结果必须引用其输入数据对应的来源编号。';
+    var user = JSON.stringify({
+      section: { id: section.id, title: section.title, domain: section.domain },
+      scope: facts && facts.scope,
+      dataSnapshotAt: facts && facts.collectedAt || '',
+      citationCatalog: citationCatalog,
+      facts: payload,
+      financial: section.domain === 'financial' ? financial : undefined,
+      custom: custom || ''
+    });
+    return { system: instruction, user: user, sourceAppendix: citationCatalog };
   }
 
   function assemble(plan, results, facts, check, financial) {
@@ -401,18 +489,19 @@
     });
     var completeness = scoreCompleteness(plan, check, appendix, facts);
     var reconciliation = reconcile(results, facts, financial);
+    var citationAudit = auditCitations(results, appendix);
     var scopeCheck = results.reduce(function (state, section) { var current = checkScope(section.text, facts.scope); state.violations = state.violations.concat(current.violations); return state; }, { violations: [] });
     scopeCheck.violations = uniq(scopeCheck.violations); scopeCheck.ok = scopeCheck.violations.length === 0;
     var textParts = results.map(function (section) { return '## ' + section.title + '\n\n' + text(section.text).trim(); });
-    textParts.push('## 来源与核验附录\n\n' + (appendix.length ? appendix.map(function (source) { return '- [' + source.citation + '] ' + (source.source || '未命名来源') + ' · ' + (source.date || '日期未提供') + ' · ' + (source.verificationStatus || '待核验') + (source.url ? ' · ' + source.url : '') + (source.chapters && source.chapters.length ? ' · 引用章节：' + source.chapters.join('、') : ''); }).join('\n') : '暂无可发布来源记录。'));
+    textParts.push('## 来源与核验附录\n\n' + (appendix.length ? appendix.map(function (source) { return '- [' + source.citation + '] ' + (source.source || '未命名来源') + ' · ' + (source.date || '日期未提供') + ' · ' + (source.verificationStatus || '待核验') + (source.recordId ? ' · 原始记录：' + source.recordId : '') + (source.dataSnapshotAt ? ' · 数据快照：' + source.dataSnapshotAt : '') + (source.url ? ' · ' + source.url : '') + (source.chapters && source.chapters.length ? ' · 引用章节：' + source.chapters.join('、') : ''); }).join('\n') : '暂无可发布来源记录。'));
     var sourceRecordIds = uniq(appendix.map(function (source) { return source.recordId; }).filter(Boolean));
     var scopeSnapshot = Object.assign({}, facts && facts.scope || {}, { capturedAt: isoNow() });
     return {
       text: textParts.join('\n\n'), sections: results, facts: facts, financial: financial,
       sourceAppendix: appendix, sourceRecordIds: sourceRecordIds,
       dataSnapshotAt: facts && facts.collectedAt || isoNow(), scopeSnapshot: scopeSnapshot,
-      completeness: completeness, reconciliation: reconciliation, scopeCheck: scopeCheck,
-      publishable: !!check.ok && scopeCheck.ok && reconciliation.ok, generatedAt: isoNow()
+      completeness: completeness, reconciliation: reconciliation, scopeCheck: scopeCheck, citationAudit: citationAudit,
+      publishable: !!check.ok && scopeCheck.ok && reconciliation.ok && citationAudit.ok, generatedAt: isoNow()
     };
   }
 
@@ -423,7 +512,7 @@
     return Object.assign({}, report, { engineVersion: ENGINE_VERSION, seriesId: seriesId, revision: revision, version: revision, parentId: prior.id || prior.parentId || null, action: action || 'generate', versionCreatedAt: isoNow() });
   }
 
-  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
+  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, auditCitations: auditCitations, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
   root.rpBuildReportPlan = buildPlan;
   root.rpCollectReportFacts = collectFacts;
   root.rpCheckReportData = checkData;

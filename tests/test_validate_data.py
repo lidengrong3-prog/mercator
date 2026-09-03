@@ -175,6 +175,75 @@ class ValidateDataTests(unittest.TestCase):
             )
         self.assertTrue(any("tax_type" in error for error in result.errors))
 
+    def test_empty_regulatory_domain_is_not_connected(self):
+        now = datetime(2026, 8, 31, tzinfo=timezone.utc)
+        payload = {"updated_at": None, "items": []}
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = os.path.join(temp_dir, "taxes.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(payload, handle)
+            result = validate_items_dataset(
+                "taxes", path, now, minimum=0, max_age_hours=168,
+                allow_empty=True, type_field="tax_type", allowed_types={"sales_tax"},
+            )
+        self.assertEqual(result.status, "not_connected")
+        self.assertFalse(result.connected)
+        self.assertTrue(any("尚未接入" in warning for warning in result.warnings))
+
+    def test_advisory_source_is_traceable_pending_even_with_legacy_verified_label(self):
+        record = {
+            "id": "industry-1", "title": "美国平台动态", "market": "US",
+            "source": "雨果网", "source_url": "https://www.cifnews.com/article/1",
+            "source_kind": "official", "source_type": "government",
+            "source_record_id": "industry-1", "verification_status": "verified",
+            "verified_at": "2026-08-30T00:00:00+00:00",
+            "collected_at": "2026-08-30T00:00:00+00:00", "published_at": "2026-08-29",
+            "evidence_hash": "a" * 64,
+        }
+        quality = record_quality(record, domain="policy", require_scope=True, require_provenance=True)
+        self.assertEqual(quality["source_kind"], "traceable")
+        self.assertEqual(quality["verification_status"], "pending")
+        self.assertFalse(quality["formal"])
+        self.assertIn("industry_advisory", quality["reasons"])
+
+    def test_formal_regulatory_record_requires_explicit_provenance_envelope(self):
+        record = {
+            "id": "policy-1", "title": "US policy", "market": "US",
+            "source_url": "https://example.gov/policy-1", "published_at": "2026-08-29",
+            "collected_at": "2026-08-30T00:00:00+00:00",
+        }
+        quality = record_quality(record, domain="policy", require_scope=True, require_provenance=True)
+        self.assertFalse(quality["formal"])
+        self.assertIn("missing_provenance_fields", quality["reasons"])
+        self.assertIn("evidence_hash", quality["missing_provenance_fields"])
+
+    def test_rules_freshness_uses_successful_source_check_time(self):
+        now = datetime(2026, 9, 3, 3, 0, tzinfo=timezone.utc)
+        payload = {
+            "updated_at": "2026-08-20T00:00:00Z",
+            "last_checked_at": "2026-09-03T02:30:00Z",
+            "items": [{
+                "id": "rule-1",
+                "title": "Current rule",
+                "source": "Amazon",
+                "source_url": "https://sellercentral.amazon.com/help/rule-1",
+                "platform": "Amazon",
+                "market": "US",
+            }],
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = os.path.join(temp_dir, "rules.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(payload, handle)
+            result = validate_items_dataset(
+                "rules", path, now, minimum=1, max_age_hours=36
+            )
+
+        self.assertEqual(result.metrics["freshness_basis"], "last_checked_at")
+        self.assertEqual(result.metrics["content_updated_at"], "2026-08-20T00:00:00Z")
+        self.assertEqual(result.freshness_hours, 0.5)
+        self.assertFalse(any("超过新鲜度阈值" in error for error in result.errors))
+
 
 if __name__ == "__main__":
     unittest.main()

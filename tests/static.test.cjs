@@ -75,6 +75,7 @@ test('frontend assets are externalized and loaded in dependency order', () => {
     'assets/js/reports-decisions.js',
     'assets/js/auth-data.js',
     'assets/js/alerts-settings.js',
+    'assets/js/unified-search.js',
     'assets/js/product-enhancements.js',
   ];
   assert.deepEqual(localStyleSources, expectedStyles);
@@ -107,6 +108,37 @@ test('market scope is centralized before data modules load', () => {
   assert.match(scope, /normalizeDataRecord/);
   assert.match(scope, /getReportTemplates/);
   assert.match(scope, /global\.JAY_MARKET_SCOPE/);
+});
+
+test('unified search page exposes seven sourced result domains and restorable filters', () => {
+  const searchSource = fs.readFileSync(path.join(root, 'assets', 'js', 'unified-search.js'), 'utf8');
+  assert.ok(document.querySelector('#search.page'));
+  assert.ok(document.querySelector('#unified-search-form'));
+  assert.ok(document.querySelector('#unified-search-market'));
+  assert.ok(document.querySelector('#unified-search-platform'));
+  assert.ok(document.querySelector('#unified-search-time'));
+  assert.ok(document.querySelector('#unified-search-sort'));
+  assert.ok(document.querySelector('#unified-search-types'));
+  assert.ok(document.querySelector('#unified-search-results'));
+  assert.deepEqual(
+    ['country', 'platform', 'policy', 'rule', 'product', 'shop', 'content'].every((type) => (
+      new RegExp(`\\b${type}\\b`).test(searchSource)
+    )),
+    true,
+  );
+  assert.match(searchSource, /TERM_GROUPS/);
+  assert.match(searchSource, /meiguo/);
+  assert.match(searchSource, /yamaxun/);
+  assert.match(searchSource, /sumaitong/);
+  assert.match(searchSource, /function scoreRecord/);
+  assert.match(searchSource, /URLSearchParams/);
+  assert.match(searchSource, /#search/);
+  assert.match(searchSource, /setActiveMarket/);
+  assert.match(searchSource, /setActivePlatforms/);
+  assert.match(searchSource, /系统不会使用演示数据补充结果/);
+  assert.match(browserSource, /search:'统一搜索'/);
+  assert.match(browserSource, /raw\.split\('\?'\)\[0\]/);
+  assert.doesNotMatch(searchSource, /\.innerHTML\s*=/);
 });
 
 test('platform rules consume the configured market scope', () => {
@@ -439,8 +471,11 @@ test('report PDF export has a server-side job ledger and honest fallback', () =>
   assert.match(migration, /public\.report_exports ENABLE ROW LEVEL SECURITY/);
   assert.match(edge, /SUPABASE_SERVICE_ROLE_KEY/);
   assert.match(edge, /REPORT_STORAGE_UPLOAD_FAILED/);
+  assert.match(edge, /select=id,title,content,save_status/);
+  assert.match(edge, /report\.save_status !== 'saved'/);
+  assert.match(edge, /content_source: 'persisted_report'/);
   assert.match(browserSource, /正在生成服务端 PDF/);
-  assert.match(browserSource, /本地 PDF 预览/);
+  assert.match(browserSource, /本地临时导出/);
 });
 
 test('report output lifecycle separates save state, snapshots and export formats', () => {
@@ -459,7 +494,7 @@ test('report output lifecycle separates save state, snapshots and export formats
   assert.match(lifecycle, /source_record_ids/);
   assert.match(lifecycle, /format IN \('pdf', 'docx', 'md'\)/);
   assert.match(lifecycle, /report_exports_insert_own/);
-  assert.match(browserSource, /报告已保存/);
+  assert.match(browserSource, /报告已保存到云端/);
   assert.match(browserSource, /云端保存失败/);
   assert.match(browserSource, /jayGenerateReportDocx/);
   assert.match(browserSource, /rpV2RenderExportHistory/);
@@ -468,6 +503,19 @@ test('report output lifecycle separates save state, snapshots and export formats
   assert.match(docx, /application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document/);
   assert.match(docx, /format: 'docx'/);
   assert.match(docx, /REPORT_STORAGE_UPLOAD_FAILED/);
+  assert.match(docx, /select=id,title,content,save_status/);
+  assert.match(docx, /report\.save_status !== 'saved'/);
+  assert.match(docx, /content_source: 'persisted_report'/);
+  assert.match(browserSource, /data-report-citation/);
+  assert.match(browserSource, /原始记录 ID/);
+  assert.match(browserSource, /数据快照/);
+  assert.match(browserSource, /打开 HTTPS 原始来源/);
+  assert.match(browserSource, /正文引用核验未通过/);
+  assert.doesNotMatch(browserSource, /jayCreateReportExportEvent\(report\.dbId,'pdf','completed'/);
+  assert.doesNotMatch(browserSource, /jayCreateReportExportEvent\(report\.dbId,'docx','completed'/);
+  assert.doesNotMatch(browserSource, /window\.jayExportReport/);
+  assert.equal(document.querySelector('#export'), null);
+  assert.equal(document.querySelector('#export-modal-overlay'), null);
 });
 
 test('billing is server-controlled and never upgrades a browser tier directly', () => {
@@ -479,13 +527,18 @@ test('billing is server-controlled and never upgrades a browser tier directly', 
     path.join(root, 'supabase', 'functions', 'billing-checkout', 'index.ts'),
     'utf8',
   );
+  const billingShared = fs.readFileSync(
+    path.join(root, 'supabase', 'functions', '_shared', 'billing.ts'),
+    'utf8',
+  );
   assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.user_subscriptions/);
   assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.billing_events/);
   assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.admin_audit_log/);
   assert.match(migration, /sync_profile_tier_from_subscription/);
-  assert.match(edge, /STRIPE_SECRET_KEY/);
+  assert.match(billingShared, /STRIPE_SECRET_KEY/);
+  assert.match(billingShared, /BILLING_ENABLED/);
   assert.match(edge, /BILLING_NOT_CONFIGURED/);
-  assert.match(browserSource, /不会创建订单、扣款或直接修改会员等级/);
+  assert.match(browserSource, /未启用时不会创建订单、扣款或修改会员等级/);
   assert.match(browserSource, /jayCreateBillingCheckout/);
   assert.equal(browserSource.includes("jayProfile.tier = tier"), false);
 });
@@ -536,13 +589,15 @@ test('data publication is gated and exposes its quality report', () => {
   assert.equal(report.publishable, ['healthy', 'degraded'].includes(report.status));
   assert.ok(report.datasets.policies);
   assert.ok(report.datasets.macro);
-  assert.ok(['healthy', 'degraded', 'stale', 'failed'].includes(report.status));
-  assert.ok(['healthy', 'degraded', 'stale', 'failed'].includes(report.datasets.cpsc.status));
+  assert.ok(['healthy', 'degraded', 'not_connected', 'stale', 'failed'].includes(report.status));
+  assert.ok(['healthy', 'degraded', 'not_connected', 'stale', 'failed'].includes(report.datasets.cpsc.status));
   assert.ok(report.summary.raw_records > report.summary.scoped_records);
   assert.equal(report.summary.raw_records, Object.values(report.datasets).reduce((sum, item) => sum + item.raw_records, 0));
   assert.equal(report.summary.scoped_records, Object.values(report.datasets).reduce((sum, item) => sum + item.scoped_records, 0));
   assert.equal(report.datasets.countries.scoped_records, 1);
   assert.equal(report.datasets.platforms.scoped_records, 4);
+  assert.equal(report.datasets.taxes.status, 'not_connected');
+  assert.equal(report.datasets.access_requirements.status, 'not_connected');
   for (const dataset of Object.values(report.datasets)) {
     assert.equal(dataset.records, dataset.raw_records);
     assert.ok(dataset.scoped_records <= dataset.raw_records);
@@ -591,6 +646,8 @@ test('formal pages do not retain retired mock render paths', () => {
   assert.doesNotMatch(browserSource, /function cn2Render\(/);
   const countryLoader = browserSource.slice(browserSource.indexOf('async function loadCountryData()'), browserSource.indexOf('// Remove old renderCountry default call'));
   assert.equal(countryLoader.includes('cn2Render('), false);
+  assert.match(countryLoader, /typeof jayFetchMarketData!==['"]function['"]/);
+  assert.match(countryLoader, /setTimeout\(loadCountryData,0\)/);
   assert.equal(browserSource.includes('count:\'66 平台\''), false);
   assert.equal(browserSource.includes('count:\'40 国\''), false);
   assert.equal(browserSource.includes('var mockResults='), false);
@@ -606,8 +663,22 @@ test('formal pages do not retain retired mock render paths', () => {
   assert.equal(html.includes('<option value="all">全部市场</option>'), false);
   const catalogSource = fs.readFileSync(path.join(root, 'assets/js/catalog.js'), 'utf8');
   const countrySource = fs.readFileSync(path.join(root, 'assets/js/products-shops.js'), 'utf8');
+  const contentSource = fs.readFileSync(path.join(root, 'assets/js/content-overview.js'), 'utf8');
   const policySource = fs.readFileSync(path.join(root, 'assets/js/markets-policies.js'), 'utf8');
   const reportsSource = fs.readFileSync(path.join(root, 'assets/js/reports-decisions.js'), 'utf8');
+  const searchSource = fs.readFileSync(path.join(root, 'assets/js/unified-search.js'), 'utf8');
+  assert.match(catalogSource, /function jaySafeHttpsUrl\(value\)/);
+  assert.match(catalogSource, /parsed\.protocol!==['"]https:/);
+  assert.match(contentSource, /displayKw=escapeHtml\(kw\)/);
+  assert.match(countrySource, /replaceChildren\(\)/);
+  assert.match(countrySource, /textContent=String\(i\)/);
+  assert.match(countrySource, /textContent=String\(t&&t\.name\|\|['"]['"]\)/);
+  assert.match(searchSource, /title\.textContent = item\.record\.title/);
+  assert.match(searchSource, /meta\.textContent = TYPE_META\[item\.record\.type\]\.label/);
+  assert.doesNotMatch(searchSource, /\.innerHTML\s*=/);
+  assert.match(policySource, /jaySafeHttpsUrl\(p\.source_url\)/);
+  assert.match(policySource, /jaySafeHttpsUrl\(r\.source_url\)/);
+  assert.doesNotMatch(policySource, /href="\$\{r\.source_url\}/);
   assert.match(catalogSource, /let platformsData=\[\];/);
   assert.match(catalogSource, /let pfExtData=\{\};/);
   assert.match(catalogSource, /const policyData=\[\];/);
@@ -668,6 +739,20 @@ test('production hardening isolates user data and records idempotent operations'
 
 test('production release deploys database and functions before the frontend', () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'deploy-production.yml'), 'utf8');
+  const preflight = fs.readFileSync(path.join(root, 'scripts', 'release_preflight.py'), 'utf8');
+  const releaseCheck = fs.readFileSync(path.join(root, 'scripts', 'production_release_check.py'), 'utf8');
+  assert.match(preflight, /production release must run from main/);
+  assert.match(preflight, /worktree is dirty/);
+  assert.match(preflight, /ALLOWED_ORIGINS must contain only the production origin/);
+  assert.match(preflight, /INSERT INTO storage\.buckets/);
+  assert.match(releaseCheck, /release manifest unavailable/);
+  assert.match(releaseCheck, /frontend release/);
+  assert.match(releaseCheck, /backend acceptance result does not match/);
+  assert.match(releaseCheck, /JAY_SUPABASE_URL/);
+  assert.match(releaseCheck, /assets\/js\/catalog\.js/);
+  assert.match(releaseCheck, /Edge Function/);
+  assert.match(releaseCheck, /X-JAY-Release/);
+  assert.match(releaseCheck, /storage_bucket/);
   const migrationsAt = workflow.indexOf('Apply database migrations before functions');
   const functionsAt = workflow.indexOf('Deploy JWT-protected Edge Functions');
   const acceptanceAt = workflow.indexOf('Run two-account production report acceptance');
@@ -680,16 +765,63 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(workflow, /needs: authenticated-acceptance/);
   assert.match(workflow, /PROD_TEST_USER_A_EMAIL/);
   assert.match(workflow, /PROD_TEST_USER_B_EMAIL/);
-  assert.match(workflow, /rest\/v1\/market_catalog\?select=code&limit=1/);
+  assert.match(workflow, /Verify release ref, worktree and migration ordering/);
+  assert.match(workflow, /Validate formal production origin/);
+  assert.match(workflow, /Verify remote migration head/);
+  assert.match(workflow, /migration list --linked/);
+  assert.match(workflow, /RELEASE_SHA/);
+  assert.match(workflow, /RELEASE_MIGRATION_HEAD/);
+  assert.match(workflow, /Write release manifest/);
+  assert.match(workflow, /release\.json/);
+  assert.match(workflow, /production-acceptance-result-\$\{\{ github\.run_id \}\}/);
+  assert.match(workflow, /production_release_check\.py/);
+  assert.match(releaseCheck, /market_catalog/);
+  assert.match(releaseCheck, /market_data_applicability/);
   assert.doesNotMatch(workflow, /rest\/v1\/market_data\?select=id&limit=1/);
 
   const acceptance = fs.readFileSync(path.join(root, 'scripts', 'production_acceptance.py'), 'utf8');
   assert.match(acceptance, /account B can read account A report/);
+  assert.match(acceptance, /account A can read account B report/);
   assert.match(acceptance, /account B can sign account A/);
+  assert.match(acceptance, /account A can sign account B/);
   assert.match(acceptance, /saved report did not recover after re-login/);
   assert.match(acceptance, /report-export/);
   assert.match(acceptance, /report-docx/);
+  assert.match(acceptance, /storage_bucket/);
+  assert.match(acceptance, /PRODUCTION_ACCEPTANCE_OUTPUT/);
+  assert.match(acceptance, /acceptance_run_id/);
+
+  const browserAcceptance = fs.readFileSync(path.join(root, 'tests', 'production-auth.spec.cjs'), 'utf8');
+  assert.match(browserAcceptance, /RUN_PRODUCTION_ACCEPTANCE/);
+  assert.match(browserAcceptance, /saved_workspace_items/);
+  assert.match(browserAcceptance, /生产浏览器验收/);
+  assert.match(browserAcceptance, /rpV2Questionnaire/);
+  assert.match(browserAcceptance, /rpV2Export\([^)]*pdf[^)]*\)/);
+  assert.match(browserAcceptance, /rpV2Export\([^)]*docx[^)]*\)/);
+  assert.match(browserAcceptance, /report_exports/);
+  const browserJobAt = workflow.indexOf('browser-authenticated-acceptance:');
+  const browserRunAt = workflow.indexOf('Run real browser account-isolation acceptance');
+  const smokeAt = workflow.indexOf('production-smoke:');
+  assert.ok(browserJobAt > frontendAt);
+  assert.ok(browserRunAt > browserJobAt);
+  assert.ok(smokeAt > browserJobAt);
+  assert.match(workflow, /needs: browser-authenticated-acceptance/);
 
   const config = fs.readFileSync(path.join(root, 'supabase', 'config.toml'), 'utf8');
   assert.match(config, /\[functions\.report-docx\][\s\S]*verify_jwt = true/);
+  assert.match(config, /\[functions\.billing-status\][\s\S]*verify_jwt = true/);
+  assert.match(config, /\[functions\.billing-portal\][\s\S]*verify_jwt = true/);
+  assert.match(config, /\[functions\.billing-webhook\][\s\S]*verify_jwt = false/);
+  for (const functionName of ['ai-proxy', 'report-export', 'report-docx', 'admin-summary']) {
+    const functionSource = fs.readFileSync(path.join(root, 'supabase', 'functions', functionName, 'index.ts'), 'utf8');
+    assert.match(functionSource, /X-JAY-Release/);
+    assert.match(functionSource, /RELEASE_SHA/);
+  }
+  const billingShared = fs.readFileSync(path.join(root, 'supabase', 'functions', '_shared', 'billing.ts'), 'utf8');
+  assert.match(billingShared, /X-JAY-Release/);
+  assert.match(billingShared, /RELEASE_SHA/);
+  for (const functionName of ['billing-checkout', 'billing-status', 'billing-portal', 'billing-webhook']) {
+    const functionSource = fs.readFileSync(path.join(root, 'supabase', 'functions', functionName, 'index.ts'), 'utf8');
+    assert.match(functionSource, /\.\.\/_shared\/billing\.ts/);
+  }
 });

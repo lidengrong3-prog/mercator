@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 import sys
 import time
 import urllib.error
@@ -99,6 +100,7 @@ def main() -> int:
     email_b = required("PROD_TEST_USER_B_EMAIL")
     password_b = required("PROD_TEST_USER_B_PASSWORD")
     expect(email_a.lower() != email_b.lower(), "production acceptance requires two different accounts")
+    acceptance_run_id = os.environ.get("GITHUB_RUN_ID", "").strip() or f"local-{int(time.time())}-{uuid.uuid4().hex[:8]}"
 
     status, site_body, _ = request("GET", SITE_URL, headers={})
     expect(status == 200 and b"JAY" in site_body, f"production site is unavailable: {status}")
@@ -128,11 +130,50 @@ def main() -> int:
         "content": {"meta": {"source": "acceptance"}, "products": [], "shops": []},
     }, "user_id,item_type,client_id")
 
+    # Seed the second account with its own rows as well. Testing only
+    # "B cannot read A" can miss a broken policy that leaks B data to A, so
+    # the production gate exercises both directions explicitly.
+    material_b = upsert("report_materials", token_b, {
+        "user_id": user_b,
+        "client_id": "production-acceptance-material-b",
+        "material_type": "custom",
+        "title": "生产验收B隔离素材",
+        "source": "production-acceptance",
+        "summary": "仅用于验证反向账号隔离。",
+        "selected": True,
+        "metadata": {"verification_status": "uploaded", "test": True},
+    }, "user_id,client_id")
+    upload_b = upsert("saved_workspace_items", token_b, {
+        "user_id": user_b,
+        "item_type": "product_catalog_import",
+        "client_id": "production-acceptance-b",
+        "name": "production-acceptance-b",
+        "content": {"meta": {"source": "acceptance-b"}, "products": [], "shops": []},
+    }, "user_id,item_type,client_id")
+    report_b = upsert("generated_reports", token_b, {
+        "user_id": user_b,
+        "client_id": "production-acceptance-report-b",
+        "report_type": "market",
+        "title": "生产验收B隔离报告",
+        "content": {"text": "仅用于验证反向账号隔离。", "test": True},
+        "status": "completed",
+        "generation_status": "completed",
+        "save_status": "saved",
+        "saved_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "template_version": "acceptance-v1",
+        "data_version": "production-acceptance",
+        "quality_report_version": "production-acceptance",
+        "scope_snapshot": {"marketCodes": ["US"]},
+    }, "user_id,client_id")
+
     for table, row_id in (("report_materials", material["id"]), ("saved_workspace_items", upload["id"])):
         status, rows, _ = rest("GET", table, token_b, query=urllib.parse.urlencode({"select": "id", "id": f"eq.{row_id}"}))
         expect(status == 200 and rows == [], f"account B can read account A {table}")
+    for table, row_id in (("report_materials", material_b["id"]), ("saved_workspace_items", upload_b["id"])):
+        status, rows, _ = rest("GET", table, token_a, query=urllib.parse.urlencode({"select": "id", "id": f"eq.{row_id}"}))
+        expect(status == 200 and rows == [], f"account A can read account B {table}")
 
-    run_key = "production-acceptance-report-v1"
+    run_key = f"production-acceptance-report:{acceptance_run_id}"
     run = upsert("report_runs", token_a, {
         "user_id": user_a,
         "client_report_id": "production-acceptance-report",
@@ -199,13 +240,15 @@ def main() -> int:
 
     status, rows, _ = rest("GET", "generated_reports", token_b, query=urllib.parse.urlencode({"select": "id", "id": f"eq.{report['id']}"}))
     expect(status == 200 and rows == [], "account B can read account A report")
+    status, rows, _ = rest("GET", "generated_reports", token_a, query=urllib.parse.urlencode({"select": "id", "id": f"eq.{report_b['id']}"}))
+    expect(status == 200 and rows == [], "account A can read account B report")
 
     exported = {}
     for name, extension, signature in (("report-export", "pdf", b"%PDF"), ("report-docx", "docx", b"PK")):
         status, result, _ = function(name, fresh_a, {
             "title": "生产端到端验收报告", "text": report_text, "report_id": report["id"],
             "request_id": f"production-acceptance-{extension}",
-            "idempotency_key": f"production-acceptance:{user_a}:{extension}:v1",
+            "idempotency_key": f"production-acceptance:{acceptance_run_id}:{user_a}:{extension}",
         })
         expect(status in (200, 202), f"{extension} export failed: {status} {result}")
         expect(result.get("status") == "completed" and result.get("file_url"), f"{extension} export did not complete: {result}")
@@ -218,22 +261,56 @@ def main() -> int:
         sign_status, _, _ = request("POST", f"{SUPABASE_URL}/storage/v1/object/sign/reports/{encoded_path}", token=token_b, body={"expiresIn": 60})
         expect(sign_status in (400, 401, 403, 404), f"account B can sign account A {extension} file: HTTP {sign_status}")
 
+    # Generate one B-owned export so both report history and private Storage
+    # paths are checked in the reverse direction too.
+    b_export_status, b_export, _ = function("report-export", token_b, {
+        "title": "生产验收B隔离报告", "text": "仅用于验证反向账号隔离。", "report_id": report_b["id"],
+        "request_id": "production-acceptance-b-pdf",
+        "idempotency_key": f"production-acceptance:{acceptance_run_id}:{user_b}:pdf",
+    })
+    expect(b_export_status == 200 and b_export.get("status") == "completed" and b_export.get("file_url"), f"B PDF export failed: {b_export_status} {b_export}")
+    status, b_export_rows, _ = rest("GET", "report_exports", token_b, query=urllib.parse.urlencode({"select": "id,file_path,report_id", "id": f"eq.{b_export['id']}"}))
+    expect(status == 200 and b_export_rows and b_export_rows[0].get("file_path"), f"B PDF export path is missing: {status} {b_export_rows}")
+    b_export_row = b_export_rows[0]
+    status, rows, _ = rest("GET", "report_exports", token_a, query=urllib.parse.urlencode({"select": "id", "id": f"eq.{b_export_row['id']}"}))
+    expect(status == 200 and rows == [], "account A can read account B export history")
+    b_encoded_path = "/".join(urllib.parse.quote(part, safe="") for part in b_export_row["file_path"].split("/"))
+    sign_status, _, _ = request("POST", f"{SUPABASE_URL}/storage/v1/object/sign/reports/{b_encoded_path}", token=token_a, body={"expiresIn": 60})
+    expect(sign_status in (400, 401, 403, 404), f"account A can sign account B PDF file: HTTP {sign_status}")
+
     status, rows, _ = rest("GET", "report_exports", token_b, query=urllib.parse.urlencode({"select": "id", "report_id": f"eq.{report['id']}"}))
     expect(status == 200 and rows == [], "account B can read account A export history")
     status, denied_export, _ = function("report-export", token_b, {
         "title": "越权测试", "text": "越权测试", "report_id": report["id"],
         "request_id": "production-acceptance-denied-export",
-        "idempotency_key": f"production-acceptance:{user_b}:denied",
+        "idempotency_key": f"production-acceptance:{acceptance_run_id}:{user_b}:denied",
     })
     expect(status == 404 and denied_export.get("error") == "REPORT_NOT_FOUND", f"account B can export account A report: {status} {denied_export}")
+    status, denied_export, _ = function("report-export", token_a, {
+        "title": "越权测试", "text": "越权测试", "report_id": report_b["id"],
+        "request_id": "production-acceptance-denied-export-b",
+        "idempotency_key": f"production-acceptance:{acceptance_run_id}:{user_a}:denied-b",
+    })
+    expect(status == 404 and denied_export.get("error") == "REPORT_NOT_FOUND", f"account A can export account B report: {status} {denied_export}")
 
     status, logs, _ = rest("GET", "ai_request_logs", fresh_a, query=urllib.parse.urlencode({"select": "request_id,status,model,total_tokens,duration_ms", "request_id": f"eq.{ai_request_id}"}))
     expect(status == 200 and logs and logs[0]["status"] == "completed", "AI observability record is missing")
 
-    print(json.dumps({
+    result = {
         "status": "passed", "site": SITE_URL, "user_isolation": True, "report_id": report["id"],
-        "report_run_id": run["id"], "exports": exported, "ai_request_id": ai_request_id,
-    }, ensure_ascii=False, indent=2))
+        "report_run_id": run["id"], "exports": exported, "reverse_export_id": b_export["id"], "ai_request_id": ai_request_id,
+        "release_sha": os.environ.get("RELEASE_SHA", ""),
+        "checks": {
+            "database": True,
+            "storage_bucket": True,
+            "storage_policy": True,
+            "edge_functions": ["ai-proxy", "report-export", "report-docx"],
+        },
+    }
+    output_path = os.environ.get("PRODUCTION_ACCEPTANCE_OUTPUT", "").strip()
+    if output_path:
+        Path(output_path).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
 

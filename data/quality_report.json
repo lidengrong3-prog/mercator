@@ -49,24 +49,25 @@
     "manifest": "data/market_scope.json"
   },
   "provenance_schema": "data/provenance_schema.json",
-  "generated_at": "2026-09-01T06:25:18.806780+00:00",
+  "generated_at": "2026-09-03T02:59:53.664450+00:00",
   "status": "degraded",
   "publishable": true,
   "summary": {
     "datasets": 10,
-    "raw_records": 672,
-    "scoped_records": 490,
-    "formal_records": 490,
+    "raw_records": 681,
+    "scoped_records": 498,
+    "formal_records": 493,
     "demo_records": 0,
-    "unverified_records": 0,
-    "missing_source_records": 0,
-    "excluded_records": 182,
-    "healthy": 7,
+    "unverified_records": 79,
+    "missing_source_records": 2,
+    "excluded_records": 188,
+    "healthy": 5,
     "degraded": 3,
+    "not_connected": 2,
     "stale": 0,
     "failed": 0,
     "errors": 0,
-    "warnings": 3
+    "warnings": 9
   },
   "datasets": {
     "policies": {
@@ -74,59 +75,67 @@
       "label": "政策动态",
       "status": "degraded",
       "path": "data/policies.json",
-      "records": 273,
-      "raw_records": 273,
-      "scoped_records": 238,
-      "formal_records": 238,
+      "records": 280,
+      "raw_records": 280,
+      "scoped_records": 244,
+      "formal_records": 241,
       "demo_records": 0,
-      "unverified_records": 0,
+      "unverified_records": 39,
       "missing_source_records": 0,
-      "excluded_records": 35,
+      "excluded_records": 39,
       "exclusion_reasons": {
-        "out_of_scope": 35
+        "industry_advisory": 32,
+        "unverified": 39,
+        "out_of_scope": 36
       },
-      "updated_at": "2026-08-31T21:28:13.396100+00:00",
-      "freshness_hours": 9.0,
+      "updated_at": "2026-09-03T02:56:38.346016+00:00",
+      "freshness_hours": 0.1,
+      "connected": null,
       "errors": [],
       "warnings": [
-        "存在 273 条记录仍依赖兼容性来源推断，建议回填显式 provenance 字段"
+        "存在 39 条未核验数据，未进入正式统计",
+        "存在 32 条第三方行业资讯，仅作可追溯参考，不视为官方核验"
       ],
       "metrics": {
-        "formal_records": 238,
+        "freshness_basis": "updated_at",
+        "formal_records": 241,
         "demo_records": 0,
-        "unverified_records": 0,
+        "unverified_records": 39,
         "missing_source_records": 0,
-        "excluded_records": 35,
+        "excluded_records": 39,
         "exclusion_reasons": {
-          "out_of_scope": 35
+          "industry_advisory": 32,
+          "unverified": 39,
+          "out_of_scope": 36
         },
-        "legacy_inferred_records": 273,
+        "legacy_inferred_records": 0,
         "source_kind_counts": {
-          "official": 240,
-          "traceable": 33,
+          "official": 246,
+          "traceable": 34,
           "uploaded": 0,
           "derived": 0,
           "demo": 0
         },
         "verification_status_counts": {
-          "verified": 273,
+          "verified": 241,
           "uploaded": 0,
-          "pending": 0,
+          "pending": 39,
           "rejected": 0
         },
         "source_type_counts": {
-          "government": 239,
-          "regulator": 1,
+          "government": 246,
+          "regulator": 0,
           "platform": 0,
           "official_feed": 0,
           "industry_association": 0,
-          "licensed_provider": 33,
+          "licensed_provider": 34,
           "user_upload": 0,
           "derived": 0,
           "demo": 0,
           "unknown": 0
         },
-        "official_or_traceable_records": 273,
+        "official_or_traceable_records": 280,
+        "provenance_complete_records": 280,
         "malformed_records": 0,
         "missing_ids": 0,
         "missing_titles": 0,
@@ -143,7 +152,7 @@
     "taxes": {
       "key": "taxes",
       "label": "税收与关税",
-      "status": "healthy",
+      "status": "not_connected",
       "path": "data/taxes.json",
       "records": 0,
       "raw_records": 0,
@@ -156,9 +165,13 @@
       "exclusion_reasons": {},
       "updated_at": null,
       "freshness_hours": null,
+      "connected": false,
       "errors": [],
-      "warnings": [],
+      "warnings": [
+        "税收与关税数据集为空：尚未接入当前范围数据，相关结论仅可显示为待补充"
+      ],
       "metrics": {
+        "connection_status": "not_connected",
         "formal_records": 0,
         "demo_records": 0,
         "unverified_records": 0,
@@ -192,6 +205,7 @@
           "unknown": 0
         },
         "official_or_traceable_records": 0,
+        "provenance_complete_records": 0,
         "malformed_records": 0,
         "missing_ids": 0,
         "missing_titles": 0,
@@ -208,7 +222,7 @@
     "access_requirements": {
       "key": "access_requirements",
       "label": "市场准入",
-      "status": "healthy",
+      "status": "not_connected",
       "path": "data/access_requirements.json",
       "records": 0,
       "raw_records": 0,
@@ -221,9 +235,13 @@
       "exclusion_reasons": {},
       "updated_at": null,
       "freshness_hours": null,
+      "connected": false,
       "errors": [],
-      "warnings": [],
+      "warnings": [
+        "市场准入数据集为空：尚未接入当前范围数据，相关结论仅可显示为待补充"
+      ],
       "metrics": {
+        "connection_status": "not_connected",
         "formal_records": 0,
         "demo_records": 0,
         "unverified_records": 0,
@@ -257,6 +275,7 @@
           "unknown": 0
         },
         "official_or_traceable_records": 0,
+        "provenance_complete_records": 0,
         "malformed_records": 0,
         "missing_ids": 0,
         "missing_titles": 0,
@@ -280,28 +299,36 @@
       "scoped_records": 5,
       "formal_records": 5,
       "demo_records": 0,
-      "unverified_records": 0,
+      "unverified_records": 40,
       "missing_source_records": 0,
       "excluded_records": 47,
       "exclusion_reasons": {
+        "industry_advisory": 40,
+        "unverified": 40,
         "out_of_scope": 47
       },
-      "updated_at": "2026-08-31T21:28:13.396100+00:00",
-      "freshness_hours": 9.0,
+      "updated_at": "2026-09-03T02:56:38.346016+00:00",
+      "freshness_hours": 0.1,
+      "connected": null,
       "errors": [],
       "warnings": [
-        "存在 52 条记录仍依赖兼容性来源推断，建议回填显式 provenance 字段"
+        "存在 40 条未核验数据，未进入正式统计",
+        "存在 40 条第三方行业资讯，仅作可追溯参考，不视为官方核验"
       ],
       "metrics": {
+        "freshness_basis": "last_checked_at",
+        "content_updated_at": "2026-09-01T05:28:13.396100+08:00",
         "formal_records": 5,
         "demo_records": 0,
-        "unverified_records": 0,
+        "unverified_records": 40,
         "missing_source_records": 0,
         "excluded_records": 47,
         "exclusion_reasons": {
+          "industry_advisory": 40,
+          "unverified": 40,
           "out_of_scope": 47
         },
-        "legacy_inferred_records": 52,
+        "legacy_inferred_records": 0,
         "source_kind_counts": {
           "official": 12,
           "traceable": 40,
@@ -310,24 +337,25 @@
           "demo": 0
         },
         "verification_status_counts": {
-          "verified": 52,
+          "verified": 12,
           "uploaded": 0,
-          "pending": 0,
+          "pending": 40,
           "rejected": 0
         },
         "source_type_counts": {
-          "government": 12,
+          "government": 0,
           "regulator": 0,
-          "platform": 40,
+          "platform": 12,
           "official_feed": 0,
           "industry_association": 0,
-          "licensed_provider": 0,
+          "licensed_provider": 40,
           "user_upload": 0,
           "derived": 0,
           "demo": 0,
           "unknown": 0
         },
         "official_or_traceable_records": 52,
+        "provenance_complete_records": 52,
         "malformed_records": 0,
         "missing_ids": 0,
         "missing_titles": 0,
@@ -344,45 +372,54 @@
     "alerts": {
       "key": "alerts",
       "label": "风险预警",
-      "status": "healthy",
+      "status": "degraded",
       "path": "data/alerts.json",
-      "records": 7,
-      "raw_records": 7,
-      "scoped_records": 7,
+      "records": 9,
+      "raw_records": 9,
+      "scoped_records": 9,
       "formal_records": 7,
       "demo_records": 0,
       "unverified_records": 0,
-      "missing_source_records": 0,
-      "excluded_records": 0,
-      "exclusion_reasons": {},
-      "updated_at": "2026-09-01T06:24:41.483827+00:00",
-      "freshness_hours": 0.0,
+      "missing_source_records": 2,
+      "excluded_records": 2,
+      "exclusion_reasons": {
+        "missing_provenance_fields": 2
+      },
+      "updated_at": "2026-09-03T02:54:00.719657+00:00",
+      "freshness_hours": 0.1,
+      "connected": null,
       "errors": [],
-      "warnings": [],
+      "warnings": [
+        "存在 2 条来源信息不完整记录，未进入正式统计",
+        "存在 2 条记录缺少完整 provenance 字段，未进入正式统计",
+        "存在 2 条记录仍依赖兼容性来源推断，建议回填显式 provenance 字段"
+      ],
       "metrics": {
         "formal_records": 7,
         "demo_records": 0,
         "unverified_records": 0,
-        "missing_source_records": 0,
-        "excluded_records": 0,
-        "exclusion_reasons": {},
-        "legacy_inferred_records": 0,
+        "missing_source_records": 2,
+        "excluded_records": 2,
+        "exclusion_reasons": {
+          "missing_provenance_fields": 2
+        },
+        "legacy_inferred_records": 2,
         "source_kind_counts": {
-          "official": 7,
+          "official": 9,
           "traceable": 0,
           "uploaded": 0,
           "derived": 0,
           "demo": 0
         },
         "verification_status_counts": {
-          "verified": 7,
+          "verified": 9,
           "uploaded": 0,
           "pending": 0,
           "rejected": 0
         },
         "source_type_counts": {
           "government": 0,
-          "regulator": 7,
+          "regulator": 9,
           "platform": 0,
           "official_feed": 0,
           "industry_association": 0,
@@ -392,7 +429,8 @@
           "demo": 0,
           "unknown": 0
         },
-        "official_or_traceable_records": 7,
+        "official_or_traceable_records": 9,
+        "provenance_complete_records": 7,
         "malformed_records": 0,
         "missing_ids": 0,
         "missing_titles": 0,
@@ -416,7 +454,8 @@
       "excluded_records": 38,
       "exclusion_reasons": {},
       "updated_at": "2026-08-28T22:20:32.587819+00:00",
-      "freshness_hours": 80.1,
+      "freshness_hours": 124.7,
+      "connected": null,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -442,6 +481,7 @@
       "exclusion_reasons": {},
       "updated_at": null,
       "freshness_hours": null,
+      "connected": null,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -465,8 +505,9 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-08-31T21:30:11.029636+00:00",
-      "freshness_hours": 8.9,
+      "updated_at": "2026-09-03T02:52:27.083808+00:00",
+      "freshness_hours": 0.1,
+      "connected": null,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -489,8 +530,9 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-08-31T21:31:26.327327+00:00",
-      "freshness_hours": 8.9,
+      "updated_at": "2026-09-03T02:52:44.173219+00:00",
+      "freshness_hours": 0.1,
+      "connected": null,
       "errors": [],
       "warnings": [],
       "metrics": {
@@ -527,6 +569,7 @@
           "unknown": 0
         },
         "official_or_traceable_records": 30,
+        "provenance_complete_records": 30,
         "malformed_records": 0,
         "missing_sources": 0,
         "missing_or_invalid_urls": 0,
@@ -537,7 +580,7 @@
     "cpsc": {
       "key": "cpsc",
       "label": "CPSC 产品召回",
-      "status": "degraded",
+      "status": "healthy",
       "path": "data/us_market/cpsc_recalls.json",
       "records": 197,
       "raw_records": 197,
@@ -548,12 +591,11 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-08-31T21:30:22.250980+00:00",
-      "freshness_hours": 8.9,
+      "updated_at": "2026-09-03T02:52:27.878363+00:00",
+      "freshness_hours": 0.1,
+      "connected": null,
       "errors": [],
-      "warnings": [
-        "存在 197 条记录仍依赖兼容性来源推断，建议回填显式 provenance 字段"
-      ],
+      "warnings": [],
       "metrics": {
         "formal_records": 197,
         "demo_records": 0,
@@ -561,7 +603,7 @@
         "missing_source_records": 0,
         "excluded_records": 0,
         "exclusion_reasons": {},
-        "legacy_inferred_records": 197,
+        "legacy_inferred_records": 0,
         "source_kind_counts": {
           "official": 197,
           "traceable": 0,
@@ -588,6 +630,7 @@
           "unknown": 0
         },
         "official_or_traceable_records": 197,
+        "provenance_complete_records": 197,
         "malformed_records": 0,
         "duplicate_ids": 0,
         "missing_titles": 0,

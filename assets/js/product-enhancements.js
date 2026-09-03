@@ -204,31 +204,6 @@
   document.addEventListener('mousemove',function(e){ if(tip.style.display==='block'){ var x=e.clientX+14, y=e.clientY+14; if(x+290>window.innerWidth)x=e.clientX-290; tip.style.left=x+'px'; tip.style.top=y+'px'; } });
   document.addEventListener('mouseout',function(e){ var t=e.target.closest&&e.target.closest('.jay-term'); if(t)tip.style.display='none'; });
 
-  // ================= F-02 真实导出实现 =================
-  window.jayExportReport=function(){
-    try{
-      var pool=rpGetPool();
-      var reps=rpV2GetReports();
-      var html='<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>JAY观海 报告</title>'
-        +'<style>body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;padding:32px;color:#1a2332;max-width:900px;margin:auto}'
-        +'h1{border-bottom:2px solid #3b7ab8;padding-bottom:8px}h2{margin-top:24px;color:#2c5f8a}'
-        +'li{margin:4px 0}.meta{color:#888;font-size:12px}</style></head><body>'
-        +'<h1>JAY观海 · 市场情报报告</h1><p class="meta">导出时间：'+new Date().toLocaleString('zh-CN')
-        +' ｜ 数据来源：JAY观海 跨境市场情报系统</p>';
-      html+='<h2>一、报告素材池（'+pool.length+' 条）</h2><ul>';
-      if(pool.length){pool.forEach(function(it){html+='<li>'+(it.title||it.name||it.q||JSON.stringify(it).slice(0,60))+'</li>';});}
-      else{html+='<li>暂无素材，可在各页面点击「加入报告素材」收集。</li>';}
-      html+='</ul>';
-      html+='<h2>二、已生成报告（'+reps.length+' 份）</h2><ul>';
-      if(reps.length){reps.forEach(function(r){html+='<li>'+(r.name||r.title||'未命名报告')+' — '+(r.time||'')+'</li>';});}
-      else{html+='<li>暂无已生成报告。</li>';}
-      html+='</ul><p class="meta">本报告由 JAY观海系统导出，数据仅供决策参考。</p></body></html>';
-      var blob=new Blob([html],{type:'text/html;charset=utf-8'});
-      var a=document.createElement('a');a.href=URL.createObjectURL(blob);
-      a.download='JAY观海_报告_'+new Date().toISOString().slice(0,10)+'.html';a.click();
-      if(typeof toast==='function')toast('报告已导出（HTML）');
-    }catch(e){ if(typeof toast==='function')toast('导出失败：'+e.message); }
-  };
   window.jayExportPolicy=function(){
     try{
       function cell(value){return '"'+String(value===undefined||value===null?'':value).replace(/"/g,'""')+'"';}
@@ -254,7 +229,7 @@
   };
 
   // ================= F-01 路由：hashchange + 初始化 =================
-  function jayRouteFromHash(){ var h=location.hash.replace('#',''); if(h&&document.getElementById(h)){ switchPage(h,{fromHash:true}); } }
+  function jayRouteFromHash(){ var raw=location.hash.replace(/^#/,''); var h=raw.split('?')[0]; if(h&&document.getElementById(h)){ switchPage(h,{fromHash:true}); } }
   window.addEventListener('hashchange', jayRouteFromHash);
   // 全局错误边界：捕获运行时错误与未处理异步异常，避免白屏
   (function(){
@@ -276,10 +251,10 @@
   var totop=document.getElementById('jay-totop');
   if(totop){ window.addEventListener('scroll',function(){ totop.style.display=window.scrollY>400?'flex':'none'; }); totop.onclick=function(){window.scrollTo({top:0,behavior:'smooth'});}; }
 
-  // ================= N-19 全局搜索：回车 -> AI 跨页分析 =================
+  // ================= N-19 全局搜索：回车 -> 统一搜索结果页 =================
   var gs=document.getElementById('global-search');
   if(gs){
-    gs.addEventListener('keydown',function(e){ if(e.key==='Enter'){ var v=gs.value.trim(); if(v) jayAddSearchHistory(v); var hi=document.getElementById('ov-hero-input'); if(hi){hi.value=gs.value; var hs=document.getElementById('ov-hero-send'); if(hs)hs.click(); switchPage('overview');} jayHideSearchHistory(); } });
+    gs.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); var v=gs.value.trim(); if(v) jayAddSearchHistory(v); if(typeof jayOpenUnifiedSearch==='function')jayOpenUnifiedSearch(v); jayHideSearchHistory(); } });
     gs.addEventListener('focus',function(){ if(!gs.value.trim()) jayShowSearchHistory(); });
     gs.addEventListener('blur',function(){ setTimeout(jayHideSearchHistory,180); });
   }
@@ -575,14 +550,17 @@ function jayAddSearchHistory(q){
 function jayRenderSearchHistory(){
   var box=document.getElementById('search-history'); if(!box) return;
   var arr=[]; try{ arr=JSON.parse(localStorage.getItem('jay_search_history')||'[]'); }catch(e){}
-  if(arr.length===0){ box.innerHTML='<div class="jay-sh-head"><span>搜索历史</span></div><div class="jay-sh-empty">回车搜索后，最近记录会出现在这里。</div>'; return; }
-  var h='<div class="jay-sh-head"><span>🔍 最近搜索</span><span class="jay-sh-clear" onclick="jayClearSearchHistory(event)">清空</span></div>';
+  box.replaceChildren();
+  var head=document.createElement('div');head.className='jay-sh-head';
+  var label=document.createElement('span');label.textContent=arr.length?'最近搜索':'搜索历史';head.appendChild(label);
+  if(arr.length){var clear=document.createElement('button');clear.type='button';clear.className='jay-sh-clear';clear.textContent='清空';clear.addEventListener('click',jayClearSearchHistory);head.appendChild(clear);}
+  box.appendChild(head);
+  if(!arr.length){var empty=document.createElement('div');empty.className='jay-sh-empty';empty.textContent='回车搜索后，最近记录会出现在这里。';box.appendChild(empty);return;}
   arr.forEach(function(q){
-    h+='<div class="jay-sh-item" onclick="jayRunHistorySearch(\''+q.replace(/'/g,"\\'")+'\')"><span>🕘</span>'+q.replace(/</g,'&lt;')+'</div>';
+    var item=document.createElement('button');item.type='button';item.className='jay-sh-item';item.textContent=String(q);item.addEventListener('click',function(){jayRunHistorySearch(q);});box.appendChild(item);
   });
-  box.innerHTML=h;
 }
 function jayShowSearchHistory(){ var box=document.getElementById('search-history'); if(!box) return; jayRenderSearchHistory(); box.classList.add('show'); }
 function jayHideSearchHistory(){ var box=document.getElementById('search-history'); if(box) box.classList.remove('show'); }
 function jayClearSearchHistory(e){ if(e&&e.stopPropagation) e.stopPropagation(); try{ localStorage.removeItem('jay_search_history'); }catch(_){} jayRenderSearchHistory(); }
-function jayRunHistorySearch(q){ var gs=document.getElementById('global-search'); if(gs) gs.value=q; jayHideSearchHistory(); var hi=document.getElementById('ov-hero-input'); if(hi){hi.value=q; var hs=document.getElementById('ov-hero-send'); if(hs)hs.click(); switchPage('overview');} }
+function jayRunHistorySearch(q){ var gs=document.getElementById('global-search'); if(gs) gs.value=q; jayHideSearchHistory(); if(typeof jayOpenUnifiedSearch==='function')jayOpenUnifiedSearch(q); }

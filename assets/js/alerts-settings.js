@@ -795,8 +795,8 @@ function stInitSystemStatus(){
   var authDot=document.getElementById('st-system-auth-dot');if(authDot)authDot.style.background=(!jayIsDemo&&jayUser)?'#27ae60':'#94a3b8';
   var quality=document.getElementById('st-system-quality');
   var status=typeof jayQualityStatus==='function'?jayQualityStatus(JAY_QUALITY_REPORT):'pending';
-  if(quality)quality.textContent={healthy:'数据实时',degraded:'部分降级',stale:'数据过期',failed:'校验失败',pending:'读取中'}[status]||'读取中';
-  var qualityDot=document.getElementById('st-system-quality-dot');if(qualityDot)qualityDot.style.background=status==='healthy'?'#27ae60':(status==='degraded'?'#e8a33d':(status==='pending'?'#94a3b8':'#e25555'));
+  if(quality)quality.textContent={healthy:'数据实时',degraded:'部分降级',not_connected:'尚未接入',stale:'数据过期',failed:'校验失败',pending:'读取中'}[status]||'读取中';
+  var qualityDot=document.getElementById('st-system-quality-dot');if(qualityDot)qualityDot.style.background=(status==='healthy'?'#27ae60':(['degraded','not_connected'].indexOf(status)>=0?'#e8a33d':(status==='pending'?'#94a3b8':'#e25555')));
   var updated=document.getElementById('st-system-updated');if(updated)updated.textContent=JAY_QUALITY_REPORT&&JAY_QUALITY_REPORT.generated_at?jayQualityDate(JAY_QUALITY_REPORT.generated_at):'尚未读取';
   var reports=document.getElementById('st-rep-count');if(reports)reports.textContent=rpV2GetReports().length;
   var materials=document.getElementById('st-fav-count');if(materials)materials.textContent=rpGetPool().length;

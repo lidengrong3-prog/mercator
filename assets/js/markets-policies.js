@@ -2,6 +2,7 @@
 // === Dynamic Country Data Loading ===
 var countryDataLoaded = false;
 var countryDataSource = {};
+var countryDataLoading = false;
 function jayApplyCountryDataScope(){
   var api=window.JAY_MARKET_SCOPE_API;
   var activeCodes=api&&api.getActiveMarkets ? api.getActiveMarkets().map(function(m){return m.code;}) : ['US'];
@@ -19,6 +20,14 @@ function jayApplyCountryDataScope(){
   countryDataLoaded=Object.keys(scoped).length>0;
 }
 async function loadCountryData(){
+  // This module is loaded before auth-data.js, which owns the shared data
+  // loader. Retry after the remaining defer scripts have initialized it.
+  if(countryDataLoading)return;
+  if(typeof jayFetchMarketData!=='function'){
+    setTimeout(loadCountryData,0);
+    return;
+  }
+  countryDataLoading = true;
   try {
     var data = await jayFetchMarketData('countries', './data/countries.json');
     if(!data) throw new Error('Failed to load country data');
@@ -50,6 +59,8 @@ async function loadCountryData(){
     countryDataSource = {};
     countryDataLoaded = false;
     console.error('Failed to load countries.json; country records remain empty:', e);
+  } finally {
+    countryDataLoading = false;
   }
 }
 loadCountryData();
@@ -92,10 +103,7 @@ function jayCountryCommerceUrl(source){
 }
 
 function jayValidCommerceSourceUrl(value){
-  try{
-    var parsed=new URL(String(value||'').trim());
-    return (parsed.protocol==='http:'||parsed.protocol==='https:')&&!!parsed.hostname;
-  }catch(e){return false;}
+  return !!(typeof jaySafeHttpsUrl==='function'&&jaySafeHttpsUrl(value));
 }
 
 function jayValidCommerceDate(value){
@@ -454,6 +462,7 @@ async function loadPoliciesData() {
     $('#pl-data-info').innerHTML = '数据加载失败，当前没有可发布的市场政策记录';
   }
   policiesDataLoading = false;
+  if(typeof jayRebuildSearch==='function')jayRebuildSearch();
   if(typeof renderDecisionOverview==='function')renderDecisionOverview();
 }
 
@@ -577,7 +586,7 @@ function plAssessEvidence(p){
   var published=String(p && p.published_at || '').trim();
   var parsedUrl=null;
   try{ parsedUrl=new URL(url); }catch(e){}
-  var validUrl=!!parsedUrl && (parsedUrl.protocol==='http:' || parsedUrl.protocol==='https:') && !!parsedUrl.hostname;
+  var validUrl=!!parsedUrl && parsedUrl.protocol==='https:' && !!parsedUrl.hostname && !!jaySafeHttpsUrl(url);
   var sourcePath=parsedUrl ? String(parsedUrl.pathname||'').replace(/\/+$/,'') : '';
   var specificRecordUrl=validUrl && sourcePath.length>0;
   var validCollected=!!collected && !isNaN(new Date(collected).getTime());
@@ -773,7 +782,7 @@ function plAssessIndustryEvidence(item, items){
   var meta=plNormalizedSourceMeta(item);
   var url=String(item&&item.source_url||'').trim();
   var parsed=null;try{parsed=new URL(url);}catch(e){}
-  var validUrl=!!parsed&&(parsed.protocol==='http:'||parsed.protocol==='https:')&&!!parsed.hostname;
+  var validUrl=!!parsed&&parsed.protocol==='https:'&&!!parsed.hostname&&!!jaySafeHttpsUrl(url);
   var specific=validUrl&&String(parsed.pathname||'').replace(/\/+$/,'').length>0;
   var collected=String(item&&item.collected_at||'').trim();
   var published=String(item&&item.published_at||'').trim();
@@ -1061,9 +1070,10 @@ function renderPlList(){
     const typeValue=plDomainTypeValue(p,plActiveDomain);
     const catLabel=categoryLabels[typeValue]||typeValue||'未分类';
     const checked=plSelected.has(p._idx)?'checked':'';
-    const sourceLink=p.source_url?`<a href="${escapeHtml(p.source_url)}" target="_blank" rel="noopener noreferrer" style="color:#3366cc;text-decoration:none">${escapeHtml(plSourceLabel(p))}</a>`:`<span class="src-missing">待补充来源</span>`;
+    const safeSourceUrl=jaySafeHttpsUrl(p.source_url);
+    const sourceLink=safeSourceUrl?`<a href="${escapeHtml(safeSourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#3366cc;text-decoration:none">${escapeHtml(plSourceLabel(p))}</a>`:`<span class="src-missing">待补充来源</span>`;
     const title=plDisplayTitle(p);
-    const titleLink=p.source_url?`<a href="${escapeHtml(p.source_url)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">${escapeHtml(title)}</a>`:escapeHtml(title);
+    const titleLink=safeSourceUrl?`<a href="${escapeHtml(safeSourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">${escapeHtml(title)}</a>`:escapeHtml(title);
     const summary=plDisplaySummary(p);
     const pubDate=p.published_at||'';
     const evidence=p._evidence||plAssessEvidence(p);
@@ -1092,20 +1102,20 @@ function renderPlList(){
           ${p._advisory?'<span class="pl-source-advisory">第三方行业资讯</span>':''}
         </div>
         <div class="pl-tags-row">
-          <span class="pl-relevance-tag" title="相关性判断：${escapeHtml(relevance.label)}" style="color:${relevanceColor};border:1px solid ${relevanceColor};background:${relevanceColor}15;padding:1px 8px;border-radius:10px;font-size:12px">${relevanceLabel}</span>
-          <span class="pl-type-tag">${catLabel}</span>
-          <span class="pl-impact-tag" style="color:${impactColor};border-color:${impactColor};background:${impactColor}15">${impactLabel}影响</span>
+          <span class="pl-relevance-tag" title="相关性判断：${escapeHtml(relevance.label)}" style="color:${relevanceColor};border:1px solid ${relevanceColor};background:${relevanceColor}15;padding:1px 8px;border-radius:10px;font-size:12px">${escapeHtml(relevanceLabel)}</span>
+          <span class="pl-type-tag">${escapeHtml(catLabel)}</span>
+          <span class="pl-impact-tag" style="color:${impactColor};border-color:${impactColor};background:${impactColor}15">${escapeHtml(impactLabel)}影响</span>
           ${statusLabel?`<span style="color:${statusColor};border:1px solid ${statusColor};background:${statusColor}15;padding:1px 8px;border-radius:10px;font-size:12px">${escapeHtml(statusLabel)}</span>`:''}
           ${lbLabel?`<span title="法律依据分类" style="color:#6c3483;border:1px solid #6c3483;background:#f5eef8;padding:1px 8px;border-radius:10px;font-size:12px">${escapeHtml(lbLabel)}</span>`:''}
         </div>
         ${(effDate||expDate)?`<div class="pl-verify-row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:12px;color:#666">
-          ${effDate?`<span>生效: <b style="color:#2c3e50">${effDate}</b></span>`:''}
-          ${expDate?`<span>失效: <b style="color:#e74c3c">${expDate}</b></span>`:''}
+           ${effDate?`<span>生效: <b style="color:#2c3e50">${escapeHtml(effDate)}</b></span>`:''}
+           ${expDate?`<span>失效: <b style="color:#e74c3c">${escapeHtml(expDate)}</b></span>`:''}
         </div>`:''}
         ${summary?'<div class="pl-summary">'+escapeHtml(summary)+'</div>':''}
       </div>
       <div class="pl-card-right">
-        <span class="pl-level-badge ${badgeClass}">${impactLabel}</span>
+         <span class="pl-level-badge ${badgeClass}">${escapeHtml(impactLabel)}</span>
         <div class="pl-card-ops">
           <button onclick="event.stopPropagation();openPlDetail(${p._idx})">查看详情</button>
           <button onclick="event.stopPropagation();toast('已添加预警')">添加预警</button>
@@ -1228,7 +1238,8 @@ function openPlDetail(idx){
   const evidence=p._evidence||plAssessEvidence(p);
   const title=plDisplayTitle(p),summary=plDisplaySummary(p);
   const regionLabel=plMarketLabel(plRecordMarketCode(p));
-  const sourceLink=p.source_url?`<a href="${escapeHtml(p.source_url)}" target="_blank" rel="noopener noreferrer" style="color:#3366cc">${escapeHtml(plSourceLabel(p))}</a>`:'尚未接入';
+  const safeSourceUrl=jaySafeHttpsUrl(p.source_url);
+  const sourceLink=safeSourceUrl?`<a href="${escapeHtml(safeSourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#3366cc">${escapeHtml(plSourceLabel(p))}</a>`:'尚未接入';
   const effectiveFrom=p.effective_from||p.effective_date||'';
   const effectiveTo=p.effective_to||p.expire_date||'';
   const originalTitle=String(p.title||'').trim();
@@ -1332,6 +1343,7 @@ async function loadRulesData() {
     $('#rl-data-info').innerHTML = '数据加载失败，当前没有可发布的平台规则记录';
   }
   rulesDataLoading = false;
+  if(typeof jayRebuildSearch==='function')jayRebuildSearch();
 }
 
 function rlInitFromJson() {
@@ -1541,7 +1553,7 @@ function switchRlAiTab(t){
   if(t==='rule'){
     const items=getFilteredRules();
     const highItems=items.filter(r=>r.impact_level==='high').slice(0,3);
-    const aiHtml=highItems.length?highItems.map(r=>'<li>⚠️ <strong>'+escapeHtml(r.platform)+'</strong> '+(r.title||r.summary||'').substring(0,60)+' <button class="ai-action" onclick="rlLocate(\'rule\',\''+escInline(r.platform)+'\')">定位</button><button class="ai-action" onclick="toast(\'已加入预警\')">加入预警</button></li>').join(''):'<li>暂无高影响规则</li>';
+    const aiHtml=highItems.length?highItems.map(r=>'<li>⚠️ <strong>'+escapeHtml(r.platform)+'</strong> '+escapeHtml((r.title||r.summary||'').substring(0,60))+' <button class="ai-action" onclick="rlLocate(\'rule\',\''+escInline(r.platform)+'\')">定位</button><button class="ai-action" onclick="toast(\'已加入预警\')">加入预警</button></li>').join(''):'<li>暂无高影响规则</li>';
     $('#rl-ai-content').innerHTML='<ul>'+aiHtml+'</ul>';
   } else {
     const acts=getFilteredActs().filter(a=>parseInt(a[11])>0).slice(0,5);
@@ -1630,16 +1642,17 @@ function renderRlRules(){
     const effDate=r.effective_date||r.published_at||'';
     const days=effDate?Math.ceil((new Date(effDate)-new Date())/86400000):0;
     const isFuture=days>0;
-    const titleLink=r.source_url?`<a href="${r.source_url}" target="_blank" style="color:inherit;text-decoration:none">${r.title}</a>`:r.title;
+    const safeSourceUrl=jaySafeHttpsUrl(r.source_url);
+    const titleLink=safeSourceUrl?`<a href="${escapeHtml(safeSourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">${escapeHtml(r.title)}</a>`:escapeHtml(r.title);
     return '<div class="rl-rule-card" data-idx="'+globalIdx+'">'
     +'<div class="rl-risk-bar rl-risk-'+riskLevel+'"></div>'
     +'<div class="rl-card-body">'
-    +'<h4><input type="checkbox" class="rl-check" data-idx="'+r.id+'" '+((rlChecked.has(r.id))?'checked':'')+' onchange="rlToggleCheck(\''+r.id+'\')"> '+titleLink+' <span class="tag" style="color:'+impactColor+';border-color:'+impactColor+'">'+catLabel+'</span></h4>'
-    +'<div class="rl-card-meta"><span>📅 '+(r.published_at||'')+'</span><span class="tag watch">'+marketLabel+'</span><span>'+r.platform+'</span>'
+    +'<h4><input type="checkbox" class="rl-check" data-idx="'+escapeHtml(String(r.id||''))+'" '+((rlChecked.has(r.id))?'checked':'')+' onchange="rlToggleCheck(\''+escInline(r.id||'')+'\')"> '+titleLink+' <span class="tag" style="color:'+impactColor+';border-color:'+impactColor+'">'+escapeHtml(catLabel)+'</span></h4>'
+    +'<div class="rl-card-meta"><span>📅 '+escapeHtml(r.published_at||'')+'</span><span class="tag watch">'+escapeHtml(marketLabel)+'</span><span>'+escapeHtml(r.platform||'')+'</span>'
     +(isFuture?'<span class="rl-countdown '+(days<=7?(days<=3?'rl-countdown-urgent':'rl-countdown-warn'):'rl-countdown-ok')+'">'+days+'天后生效</span>':'<span class="rl-countdown rl-countdown-ok">已生效</span>')
     +'<span class="rl-rule-version" data-rule-version="'+escapeHtml(rlRuleVersionLabel(r))+'">版本：'+escapeHtml(rlRuleVersionLabel(r))+'</span>'
     +'</div>'
-    +'<div class="rl-card-summary">'+(r.summary||'').substring(0,80)+((r.summary||'').length>80?'…':'')+'</div>'
+    +'<div class="rl-card-summary">'+escapeHtml((r.summary||'').substring(0,80))+((r.summary||'').length>80?'…':'')+'</div>'
     +'</div>'
     +'<div class="rl-card-actions">'
     +'<button onclick="openRlRuleDetail('+globalIdx+')">查看详情</button>'
@@ -1745,26 +1758,27 @@ function openRlRuleDetail(idx){
   const impactLabel=rlImpactLabels[r.impact_level]||r.impact_level;
   const catLabel=rlCategoryLabels[r.category]||r.category;
   const marketLabel=rlMarketLabel(r.market);
-  const sourceLink=r.source_url?`<a href="${r.source_url}" target="_blank" style="color:#3366cc">查看原始来源</a>`:`<span class="src-missing">⚠️ 待补充来源</span>`;
+  const safeSourceUrl=jaySafeHttpsUrl(r.source_url);
+  const sourceLink=safeSourceUrl?`<a href="${escapeHtml(safeSourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:#3366cc">查看原始来源</a>`:`<span class="src-missing">⚠️ 待补充来源</span>`;
   const effectiveTo=r.effective_to||r.effectiveTo||'';
   const versionLabel=rlRuleVersionLabel(r);
   const overlay=document.createElement('div');
   overlay.className='rl-detail-overlay';
   overlay.onclick=e=>{if(e.target===overlay)overlay.remove()};
   overlay.innerHTML='<div class="rl-detail-modal"><button class="close-btn" onclick="this.closest(\'.rl-detail-overlay\').remove()">×</button>'
-  +'<h2>'+r.title+'</h2>'
+  +'<h2>'+escapeHtml(r.title||'')+'</h2>'
    +'<div class="rl-detail-section"><h3>📋 基础信息</h3><div class="info-grid">'
-  +'<div class="info-item"><div class="lbl">平台</div><div class="val">'+r.platform+'</div></div>'
-  +'<div class="info-item"><div class="lbl">规则类别</div><div class="val"><span class="tag" style="color:'+impactColor+'">'+catLabel+'</span></div></div>'
-   +'<div class="info-item"><div class="lbl">生效日期</div><div class="val">'+(r.effective_date||r.published_at||'N/A')+'</div></div>'
+   +'<div class="info-item"><div class="lbl">平台</div><div class="val">'+escapeHtml(r.platform||'')+'</div></div>'
+   +'<div class="info-item"><div class="lbl">规则类别</div><div class="val"><span class="tag" style="color:'+impactColor+'">'+escapeHtml(catLabel)+'</span></div></div>'
+    +'<div class="info-item"><div class="lbl">生效日期</div><div class="val">'+escapeHtml(r.effective_date||r.published_at||'N/A')+'</div></div>'
    +'<div class="info-item"><div class="lbl">规则版本</div><div class="val" data-rule-version="'+escapeHtml(versionLabel)+'">'+escapeHtml(versionLabel)+'</div></div>'
    +'<div class="info-item"><div class="lbl">结束日期</div><div class="val">'+escapeHtml(effectiveTo||'尚未接入')+'</div></div>'
-   +'<div class="info-item"><div class="lbl">影响市场</div><div class="val">'+marketLabel+'</div></div>'
+    +'<div class="info-item"><div class="lbl">影响市场</div><div class="val">'+escapeHtml(marketLabel)+'</div></div>'
   +'<div class="info-item"><div class="lbl">影响等级</div><div class="val" style="color:'+impactColor+'">'+(r.impact_level==='high'?'🔴 高':r.impact_level==='medium'?'🟡 中':'🔵 低')+'</div></div>'
   +'<div class="info-item"><div class="lbl">来源链接</div><div class="val">'+sourceLink+'</div></div>'
    +'</div></div>'
    +'<div class="rl-detail-section"><h3>📌 平台规则字段</h3>'+rlRuleFieldsHtml(r)+'</div>'
-   +'<div class="rl-detail-section"><h3>📝 规则详情</h3><p>'+(r.summary||r.title||'暂无详细摘要')+'</p></div>'
+    +'<div class="rl-detail-section"><h3>📝 规则详情</h3><p>'+escapeHtml(r.summary||r.title||'暂无详细摘要')+'</p></div>'
    +'<div class="rl-detail-section"><h3>🕘 版本与历史变化</h3>'+rlRuleVersionHistoryHtml(r)+'</div>'
   +'<div class="rl-detail-section"><h3>✅ 后续动作</h3><p>请根据原始来源、发布日期和生效日期复核该规则，再制定平台合规动作。</p></div>'
   +'<div class="rl-detail-section"><h3>🔗 关联联动</h3><p>'
