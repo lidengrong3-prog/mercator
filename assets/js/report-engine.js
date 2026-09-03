@@ -379,7 +379,7 @@
         if (exempt || !line.trim() || /^\s*(?:#{1,4}\s+|\|?\s*:?-{2,})/.test(line)) return;
         var auditLine = line;
         var dateOnlyTableLead = /(?:数据|指标|统计).*(?:如下|见下)[：:]?\s*$/.test(auditLine);
-        if (/数据快照(?:时间)?|生成日期|当前日期/.test(auditLine) || dateOnlyTableLead) {
+        if (/数据快照(?:时间)?|数据截至|生成日期|当前日期/.test(auditLine) || dateOnlyTableLead) {
           auditLine = auditLine
             .replace(/\d{4}\s*年\s*\d{1,2}\s*月(?:\s*\d{1,2}\s*日(?:\s*\d{1,2}(?::\d{2}){0,2}\s*(?:UTC)?)?)?/gi, '')
             .replace(/\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?Z?)?/gi, '');
@@ -414,10 +414,15 @@
       function addDate(year, month, day) {
         var yearValue = String(Number(year));
         var monthValue = String(Number(month));
+        dates.push(yearValue);
         dates.push(yearValue + '-' + monthValue);
         if (day) dates.push(yearValue + '-' + monthValue + '-' + String(Number(day)));
         return ' ';
       }
+      raw = raw.replace(/(\d{4})\s*年\s*(\d{1,2})\s*月\s*(?:至|到|[-—–~])\s*(\d{1,2})\s*月/g, function (_match, year, startMonth, endMonth) {
+        addDate(year, startMonth);
+        return addDate(year, endMonth);
+      });
       raw = raw.replace(/(\d{4})\s*年\s*(\d{1,2})\s*月(?:\s*(\d{1,2})\s*日)?/g, function (_match, year, month, day) {
         return addDate(year, month, day);
       });
@@ -437,18 +442,33 @@
       var lineTerms = matchTerms(line);
       var lineNumbers = matchNumbers(line);
       if (!lineTerms.length || !lineNumbers.length) return line;
-      var matches = facts.map(function (entry) {
+      var candidates = facts.map(function (entry) {
         var factText = JSON.stringify(entry.record || {});
         var factTerms = matchTerms(factText);
         var factNumbers = matchNumbers(factText);
         var sharedTerms = lineTerms.filter(function (term) { return factTerms.indexOf(term) >= 0; });
-        var everyNumberMatches = lineNumbers.every(function (numberValue) { return factNumbers.indexOf(numberValue) >= 0; });
-        return { citation: entry.source.citation, score: sharedTerms.length, eligible: sharedTerms.length > 0 && everyNumberMatches };
-      }).filter(function (entry) { return entry.eligible; }).sort(function (a, b) { return b.score - a.score; });
-      if (!matches.length) return line;
-      var bestScore = matches[0].score;
-      var citations = uniq(matches.filter(function (entry) { return entry.score === bestScore; }).map(function (entry) { return entry.citation; })).slice(0, 3);
-      if (!citations.length) return line;
+        var sharedNumbers = lineNumbers.filter(function (numberValue) { return factNumbers.indexOf(numberValue) >= 0; });
+        return { citation: entry.source.citation, terms: sharedTerms, numbers: sharedNumbers };
+      }).filter(function (entry) { return entry.terms.length && entry.numbers.length; });
+      var missingTerms = lineTerms.slice();
+      var missingNumbers = lineNumbers.slice();
+      var selected = [];
+      while ((missingTerms.length || missingNumbers.length) && selected.length < 3) {
+        var ranked = candidates.filter(function (entry) { return selected.indexOf(entry) < 0; }).map(function (entry) {
+          var newTerms = entry.terms.filter(function (term) { return missingTerms.indexOf(term) >= 0; });
+          var newNumbers = entry.numbers.filter(function (numberValue) { return missingNumbers.indexOf(numberValue) >= 0; });
+          return { entry: entry, gain: newTerms.length + newNumbers.length, numberGain: newNumbers.length };
+        }).filter(function (entry) { return entry.gain > 0; }).sort(function (a, b) {
+          return b.gain - a.gain || b.numberGain - a.numberGain;
+        });
+        if (!ranked.length) break;
+        var chosen = ranked[0].entry;
+        selected.push(chosen);
+        missingTerms = missingTerms.filter(function (term) { return chosen.terms.indexOf(term) < 0; });
+        missingNumbers = missingNumbers.filter(function (numberValue) { return chosen.numbers.indexOf(numberValue) < 0; });
+      }
+      if (missingTerms.length || missingNumbers.length) return line;
+      var citations = uniq(selected.map(function (entry) { return entry.citation; }));
       repairedCount++;
       return line.replace(/\s+$/, '') + ' ' + citations.map(function (citation) { return '[' + citation + ']'; }).join('');
     });

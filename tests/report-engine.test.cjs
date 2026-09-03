@@ -166,6 +166,12 @@ test('citation audit treats a date-only table lead as presentation metadata', ()
   assert.match(result.missingNumericCitations[0].text, /政策于2026年6月生效/);
 });
 
+test('citation audit treats the generated data-as-of label as presentation metadata', () => {
+  const result = engine.auditCitations([{ id: 'platform_research', text: '**市场范围：美国 | 品类：宠物用品 | 数据截至：2026年9月3日**' }], []);
+  assert.equal(result.ok, true);
+  assert.equal(result.missingNumericCitations.length, 0);
+});
+
 test('deterministic citation repair requires matching terms and every number', () => {
   const appendix = [{ citation: 'S001' }];
   const citationFacts = [{
@@ -182,6 +188,19 @@ test('deterministic citation repair requires matching terms and every number', (
   assert.doesNotMatch(result.text.split('\n')[1], /\[S001\]/);
   assert.equal(result.audit.ok, false);
   assert.equal(result.audit.missingNumericCitations.length, 1);
+});
+
+test('deterministic citation repair can combine traceable facts for a dated summary', () => {
+  const appendix = [{ citation: 'S001' }, { citation: 'S002' }];
+  const citationFacts = [
+    { record: { title_zh: 'TikTok Shop FBT物流规则', published_at: '2026-06-18', platform: 'TikTok Shop' }, source: { citation: 'S001' } },
+    { record: { title_zh: 'TikTok Shop CPSC合规规则', published_at: '2026-07-10', platform: 'TikTok Shop' }, source: { citation: 'S002' } },
+  ];
+  const text = 'TikTok Shop美区在2026年6月至7月间密集发布平台政策。';
+  const result = engine.repairSectionCitations(text, citationFacts, appendix);
+  assert.equal(result.repairedCount, 1);
+  assert.match(result.text, /\[S001\]\[S002\]$/);
+  assert.equal(result.audit.ok, true);
 });
 
 test('scope check rejects unselected market and platform names', () => {
