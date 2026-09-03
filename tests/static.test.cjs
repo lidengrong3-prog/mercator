@@ -806,6 +806,13 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(acceptance, /storage_bucket/);
   assert.match(acceptance, /PRODUCTION_ACCEPTANCE_OUTPUT/);
   assert.match(acceptance, /acceptance_run_id/);
+  assert.match(acceptance, /reusable_export_key/);
+  assert.match(acceptance, /idempotency_key.*not\.is\.null/);
+
+  const pdfExportFunction = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-export', 'index.ts'), 'utf8');
+  const docxExportFunction = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-docx', 'index.ts'), 'utf8');
+  assert.match(pdfExportFunction, /EXPORT_QUOTA_EXCEEDED[\s\S]*429/);
+  assert.match(docxExportFunction, /EXPORT_QUOTA_EXCEEDED[\s\S]*429/);
 
   const browserAcceptance = fs.readFileSync(path.join(root, 'tests', 'production-auth.spec.cjs'), 'utf8');
   assert.match(browserAcceptance, /RUN_PRODUCTION_ACCEPTANCE/);

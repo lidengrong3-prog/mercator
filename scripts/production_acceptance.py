@@ -91,6 +91,23 @@ def function(name: str, token: str, body: dict):
     return request("POST", f"{SUPABASE_URL}/functions/v1/{name}", token=token, body=body, headers={"X-Request-Id": str(body.get("request_id", ""))}, timeout=120)
 
 
+def reusable_export_key(token: str, report_id: str, export_format: str) -> str | None:
+    query = urllib.parse.urlencode({
+        "select": "id,idempotency_key,status,file_path",
+        "report_id": f"eq.{report_id}",
+        "format": f"eq.{export_format}",
+        "status": "eq.completed",
+        "idempotency_key": "not.is.null",
+        "order": "created_at.desc",
+        "limit": "1",
+    })
+    status, rows, _ = rest("GET", "report_exports", token, query=query)
+    expect(status == 200 and isinstance(rows, list), f"cannot inspect reusable {export_format} export: {status} {rows}")
+    if rows and rows[0].get("idempotency_key") and rows[0].get("file_path"):
+        return str(rows[0]["idempotency_key"])
+    return None
+
+
 def main() -> int:
     required("SUPABASE_URL")
     required("SUPABASE_ANON_KEY")
@@ -245,10 +262,11 @@ def main() -> int:
 
     exported = {}
     for name, extension, signature in (("report-export", "pdf", b"%PDF"), ("report-docx", "docx", b"PK")):
+        export_key = reusable_export_key(fresh_a, report["id"], extension) or f"production-acceptance:{acceptance_run_id}:{user_a}:{extension}"
         status, result, _ = function(name, fresh_a, {
             "title": "生产端到端验收报告", "text": report_text, "report_id": report["id"],
             "request_id": f"production-acceptance-{extension}",
-            "idempotency_key": f"production-acceptance:{acceptance_run_id}:{user_a}:{extension}",
+            "idempotency_key": export_key,
         })
         expect(status in (200, 202), f"{extension} export failed: {status} {result}")
         expect(result.get("status") == "completed" and result.get("file_url"), f"{extension} export did not complete: {result}")
@@ -263,10 +281,11 @@ def main() -> int:
 
     # Generate one B-owned export so both report history and private Storage
     # paths are checked in the reverse direction too.
+    b_export_key = reusable_export_key(token_b, report_b["id"], "pdf") or f"production-acceptance:{acceptance_run_id}:{user_b}:pdf"
     b_export_status, b_export, _ = function("report-export", token_b, {
         "title": "生产验收B隔离报告", "text": "仅用于验证反向账号隔离。", "report_id": report_b["id"],
         "request_id": "production-acceptance-b-pdf",
-        "idempotency_key": f"production-acceptance:{acceptance_run_id}:{user_b}:pdf",
+        "idempotency_key": b_export_key,
     })
     expect(b_export_status == 200 and b_export.get("status") == "completed" and b_export.get("file_url"), f"B PDF export failed: {b_export_status} {b_export}")
     status, b_export_rows, _ = rest("GET", "report_exports", token_b, query=urllib.parse.urlencode({"select": "id,file_path,report_id", "id": f"eq.{b_export['id']}"}))
