@@ -436,18 +436,20 @@ async function rpV2Generate(){
   async function generateSection(section,prompts,requestOptions){
     var output=await callAI(prompts.system,prompts.user,requestOptions);
     var audit=window.JAY_REPORT_ENGINE.auditCitations([{id:section.id,text:output}],prompts.sourceAppendix||[]);
-    if(audit.ok)return output;
+    var scopeAudit=window.JAY_REPORT_ENGINE.checkScope(output,facts.scope||context);
+    if(audit.ok&&scopeAudit.ok)return output;
     var missing=(audit.missingNumericCitations||[]).slice(0,8).map(function(item){return '- '+String(item.text||'').slice(0,180);}).join('\n');
     var invalid=(audit.invalidCitations||[]).slice(0,8).map(function(item){return item.citation;}).join('、');
-    var repairSystem=prompts.system+'\n上一次输出未通过引用审核。重新生成完整章节，不要解释修订过程。每一行只要包含阿拉伯数字就必须有准确的 [Sxxx]；表格增加“来源”列。没有准确来源的数字必须删除或改为“待补充”。';
-    var repairUser=prompts.user+'\n引用审核失败，请重新生成本章。未引用数字所在行：\n'+(missing||'- 无')+'\n无效引用：'+(invalid||'无');
+    var scopeViolations=(scopeAudit.violations||[]).join('、');
+    var repairSystem=prompts.system+'\n上一次输出未通过发布审核。重新生成完整章节，不要解释修订过程。每一行只要包含阿拉伯数字就必须有准确的 [Sxxx]；表格增加“来源”列。没有准确来源的数字必须删除或改为“待补充”。不得出现未选择的市场或平台名称。';
+    var repairUser=prompts.user+'\n发布审核失败，请重新生成本章。未引用数字所在行：\n'+(missing||'- 无')+'\n无效引用：'+(invalid||'无')+'\n范围外名称：'+(scopeViolations||'无');
     var retryOptions=Object.assign({},requestOptions,{
       operation:requestOptions.operation+'.citation-retry',
       requestId:requestOptions.requestId+':citation-retry'
     });
     var retryOutput=await callAI(repairSystem,repairUser,retryOptions);
     var repaired=window.JAY_REPORT_ENGINE.repairSectionCitations(retryOutput,prompts.citationFacts||[],prompts.sourceAppendix||[]);
-    return repaired.text;
+    return window.JAY_REPORT_ENGINE.repairSectionScope(repaired.text,facts.scope||context).text;
   }
   function localSection(section){
     var scope=facts.scope||context;

@@ -204,7 +204,10 @@ test('current US production evidence stays within the per-section prompt budget'
   });
   const facts = engine.collectFacts(context, []);
   const plan = engine.buildPlan(context, 'market-research', 'market-research');
-  assert.ok(Object.values(facts.records).reduce((count, entries) => count + entries.length, 0) > 250);
+  assert.equal((facts.records.policy || []).some((entry) => /马来西亚|malaysia/i.test([
+    entry.record.title_zh, entry.record.title, entry.record.summary_zh, entry.record.summary,
+  ].filter(Boolean).join(' '))), false);
+  assert.ok(Object.values(facts.records).reduce((count, entries) => count + entries.length, 0) > 50);
   plan.sections.forEach((section) => {
     const prompt = engine.buildSectionPrompt(plan, section, facts, { status: 'not_available' }, '');
     assert.ok(prompt.user.length <= 24_000, `${section.id} prompt was ${prompt.user.length} characters`);

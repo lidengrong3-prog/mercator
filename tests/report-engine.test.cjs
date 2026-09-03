@@ -244,3 +244,18 @@ test('scope check accepts the generated boundary statement', () => {
   assert.equal(result.ok, true);
   assert.deepEqual(Array.from(result.violations), []);
 });
+
+test('scope repair removes complete lines that mention unselected markets', () => {
+  const scope = { marketCodes: ['US'], marketNames: ['美国'], platformKeys: ['amazon'], platformNames: ['Amazon'] };
+  const result = engine.repairSectionScope('美国市场结论保留。\n马来西亚来源商品不在当前范围。\nAmazon 为当前平台。', scope);
+  assert.equal(result.removedCount, 1);
+  assert.equal(result.text, '美国市场结论保留。\nAmazon 为当前平台。');
+  assert.equal(result.audit.ok, true);
+});
+
+test('scope check uses market codes to allow the selected localized market name', () => {
+  const result = engine.checkScope('印度尼西亚市场使用 Shopee。', {
+    marketCodes: ['ID'], marketNames: ['印度尼西亚'], platformKeys: ['shopee'], platformNames: ['Shopee'],
+  });
+  assert.equal(result.ok, true);
+});
