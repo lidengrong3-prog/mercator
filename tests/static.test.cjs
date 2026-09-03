@@ -846,4 +846,5 @@ test('report generation retries a chapter that fails inline citation validation'
   assert.match(browserSource, /auditCitations\(\[\{id:section\.id,text:output\}\]/);
   assert.match(browserSource, /citation-retry/);
   assert.match(browserSource, /表格增加“来源”列/);
+  assert.match(browserSource, /repairSectionCitations\(retryOutput/);
 });

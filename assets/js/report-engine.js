@@ -402,6 +402,60 @@
     };
   }
 
+  function repairSectionCitations(sectionText, citationFacts, appendix) {
+    var terms = ['amazon', '亚马逊', 'tiktok shop', 'tiktok', 'aliexpress', '速卖通', 'ebay', 'fba', 'sipp', 'cpsc', 'cpc', 'gcc', 'smart promotion', 'fb t', 'fbt'];
+    function matchTerms(value) {
+      var raw = lower(value);
+      return terms.filter(function (term) { return raw.indexOf(term) >= 0; });
+    }
+    function matchNumbers(value) {
+      var raw = text(value);
+      var dates = [];
+      function addDate(year, month, day) {
+        var yearValue = String(Number(year));
+        var monthValue = String(Number(month));
+        dates.push(yearValue + '-' + monthValue);
+        if (day) dates.push(yearValue + '-' + monthValue + '-' + String(Number(day)));
+        return ' ';
+      }
+      raw = raw.replace(/(\d{4})\s*年\s*(\d{1,2})\s*月(?:\s*(\d{1,2})\s*日)?/g, function (_match, year, month, day) {
+        return addDate(year, month, day);
+      });
+      raw = raw.replace(/\b(\d{4})-(\d{1,2})(?:-(\d{1,2}))?\b/g, function (_match, year, month, day) {
+        return addDate(year, month, day);
+      });
+      return uniq(dates.concat((raw.match(/\d+(?:[.,-]\d+)*/g) || []).map(function (item) {
+        return item.split(/([.,-])/).map(function (part) { return /^\d+$/.test(part) ? String(Number(part)) : part; }).join('');
+      })));
+    }
+    var valid = list(appendix).map(function (source) { return source.citation; }).filter(Boolean);
+    var facts = list(citationFacts).filter(function (entry) { return entry && entry.source && valid.indexOf(entry.source.citation) >= 0; });
+    var repairedCount = 0;
+    var lines = text(sectionText).split(/\r?\n/).map(function (line) {
+      var lineAudit = auditCitations([{ id: 'citation-repair', text: line }], appendix);
+      if (!lineAudit.missingNumericCitations.length || lineAudit.invalidCitations.length) return line;
+      var lineTerms = matchTerms(line);
+      var lineNumbers = matchNumbers(line);
+      if (!lineTerms.length || !lineNumbers.length) return line;
+      var matches = facts.map(function (entry) {
+        var factText = JSON.stringify(entry.record || {});
+        var factTerms = matchTerms(factText);
+        var factNumbers = matchNumbers(factText);
+        var sharedTerms = lineTerms.filter(function (term) { return factTerms.indexOf(term) >= 0; });
+        var everyNumberMatches = lineNumbers.every(function (numberValue) { return factNumbers.indexOf(numberValue) >= 0; });
+        return { citation: entry.source.citation, score: sharedTerms.length, eligible: sharedTerms.length > 0 && everyNumberMatches };
+      }).filter(function (entry) { return entry.eligible; }).sort(function (a, b) { return b.score - a.score; });
+      if (!matches.length) return line;
+      var bestScore = matches[0].score;
+      var citations = uniq(matches.filter(function (entry) { return entry.score === bestScore; }).map(function (entry) { return entry.citation; })).slice(0, 3);
+      if (!citations.length) return line;
+      repairedCount++;
+      return line.replace(/\s+$/, '') + ' ' + citations.map(function (citation) { return '[' + citation + ']'; }).join('');
+    });
+    var repairedText = lines.join('\n');
+    return { text: repairedText, repairedCount: repairedCount, audit: auditCitations([{ id: 'citation-repair', text: repairedText }], appendix) };
+  }
+
   function scoreCompleteness(plan, check, appendix, facts) {
     plan = plan || {}; check = check || {}; appendix = appendix || [];
     var sections = list(plan.sections);
@@ -552,7 +606,7 @@
     });
     var instruction = '你是报告章节分析员，只能根据结构化事实和来源写作。禁止补写未提供的税率、销量、市场规模、价格、利润、排名或平台规则。没有事实时必须写“待补充”，不得使用其他国家、平台或全球排名。税收或准入事实缺失时，只能说明“尚未接入/待补充”，禁止输出确定性税率、费用、认证或合规结论。每个来源已分配唯一编号；所有基于事实的句子及每个关键数字必须在句末保留一个或多个原始编号，例如 [S001]。任何包含阿拉伯数字的业务事实、行动阈值、日期和表格数据行都必须带 citationCatalog 中的原始编号；Markdown 表格必须增加“来源”列并逐行填写 [Sxxx]。无法找到准确来源时，删除该数字或写“待补充”，不得换算、四舍五入或派生新阈值。只能使用 citationCatalog 中存在的编号，不得改写、猜测或创建引用编号。程序化财务结果必须引用其输入数据对应的来源编号。';
     var user = JSON.stringify(promptBody(payload, citationCatalog));
-    return { system: instruction, user: user, sourceAppendix: citationCatalog };
+    return { system: instruction, user: user, sourceAppendix: citationCatalog, citationFacts: payload };
   }
 
   function assemble(plan, results, facts, check, financial) {
@@ -586,7 +640,7 @@
     return Object.assign({}, report, { engineVersion: ENGINE_VERSION, seriesId: seriesId, revision: revision, version: revision, parentId: prior.id || prior.parentId || null, action: action || 'generate', versionCreatedAt: isoNow() });
   }
 
-  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, auditCitations: auditCitations, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
+  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, auditCitations: auditCitations, repairSectionCitations: repairSectionCitations, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
   root.rpBuildReportPlan = buildPlan;
   root.rpCollectReportFacts = collectFacts;
   root.rpCheckReportData = checkData;

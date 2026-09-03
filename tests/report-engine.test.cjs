@@ -166,6 +166,24 @@ test('citation audit treats a date-only table lead as presentation metadata', ()
   assert.match(result.missingNumericCitations[0].text, /政策于2026年6月生效/);
 });
 
+test('deterministic citation repair requires matching terms and every number', () => {
+  const appendix = [{ citation: 'S001' }];
+  const citationFacts = [{
+    domain: 'rule',
+    record: { title_zh: 'Amazon FBA费用调整', published_at: '2026-07-01', platform: 'Amazon' },
+    source: { citation: 'S001' },
+  }];
+  const result = engine.repairSectionCitations([
+    'Amazon 于 2026 年 7 月 1 日起实施 FBA 费用调整：',
+    'Amazon 于 2026 年 7 月 1 日起新增 999 美元费用。',
+  ].join('\n'), citationFacts, appendix);
+  assert.equal(result.repairedCount, 1);
+  assert.match(result.text.split('\n')[0], /\[S001\]$/);
+  assert.doesNotMatch(result.text.split('\n')[1], /\[S001\]/);
+  assert.equal(result.audit.ok, false);
+  assert.equal(result.audit.missingNumericCitations.length, 1);
+});
+
 test('scope check rejects unselected market and platform names', () => {
   const result = engine.checkScope('美国市场、Amazon、Shopee全球排名', { marketNames: ['美国'], platformNames: ['Amazon'] });
   assert.equal(result.ok, false);
