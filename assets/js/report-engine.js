@@ -11,6 +11,9 @@
   'use strict';
 
   var ENGINE_VERSION = '3.1';
+  var SECTION_USER_PROMPT_LIMIT = 24000;
+  var SECTION_CUSTOM_PROMPT_LIMIT = 2000;
+  var SECTION_RECORD_LIMIT = 80;
   var CORE_SECTIONS = [
     { id: 'executive_summary', title: '执行摘要', domain: 'summary', required: true },
     { id: 'methodology', title: '研究方法与范围', domain: 'method', required: true },
@@ -203,7 +206,11 @@
     record = record || {};
     var allowed = ['id', 'record_key', 'title', 'title_zh', 'name', 'summary', 'summary_zh', 'value', 'unit', 'date', 'published_at', 'effective_date', 'market', 'market_code', 'market_codes', 'platform', 'platform_key', 'platform_keys', 'category', 'category_code', 'category_codes', 'fee', 'feeDesc', 'fee_desc', 'requirement_type', 'tax_type', 'impact_level', 'snapshot_type'];
     var copy = {};
-    allowed.forEach(function (key) { if (record[key] != null && record[key] !== '') copy[key] = typeof record[key] === 'string' && record[key].length > 900 ? record[key].slice(0, 900) + '…' : record[key]; });
+    allowed.forEach(function (key) { if (record[key] != null && record[key] !== '') copy[key] = typeof record[key] === 'string' && record[key].length > 480 ? record[key].slice(0, 480) + '…' : record[key]; });
+    // Reports are generated in Chinese. Avoid sending the source-language
+    // duplicate when a verified Chinese title or summary is already present.
+    if (copy.title_zh) delete copy.title;
+    if (copy.summary_zh) delete copy.summary;
     return copy;
   }
   function addRecord(bucket, domain, record, origin) {
@@ -450,7 +457,20 @@
     var appendix = buildSourceAppendix(facts);
     var records = (facts && facts.records && facts.records[section.domain]) || [];
     if (['summary', 'risk', 'action'].indexOf(section.domain) >= 0) {
-      records = Object.keys((facts && facts.records) || {}).reduce(function (all, domain) { return all.concat(facts.records[domain] || []); }, []);
+      var recordMap = (facts && facts.records) || {};
+      var domains = ['market', 'policy', 'platform', 'rule', 'tax', 'access', 'logistics', 'category', 'product', 'competitor', 'content', 'alert', 'financial']
+        .filter(function (domain) { return list(recordMap[domain]).length; });
+      Object.keys(recordMap).forEach(function (domain) { if (domains.indexOf(domain) < 0 && list(recordMap[domain]).length) domains.push(domain); });
+      records = [];
+      for (var rowIndex = 0; records.length < SECTION_RECORD_LIMIT; rowIndex++) {
+        var added = false;
+        domains.forEach(function (domain) {
+          if (records.length >= SECTION_RECORD_LIMIT) return;
+          var entry = list(recordMap[domain])[rowIndex];
+          if (entry) { records.push(entry); added = true; }
+        });
+        if (!added) break;
+      }
     }
     if (section.domain === 'financial') records = records.concat((facts && facts.records && facts.records.product) || []);
     records = records.filter(function (entry) {
@@ -469,26 +489,62 @@
       }
       return true;
     });
-    var payload = records.slice(0, 80).map(function (entry) {
+    var candidates = records.slice(0, SECTION_RECORD_LIMIT).map(function (entry) {
       var source = Object.assign({ domain: entry.domain || section.domain }, entry.source || {});
       source.citation = citationForSource(source, appendix);
       source.dataSnapshotAt = source.snapshotAt || facts && facts.collectedAt || '';
       source.originalUrl = source.url || '';
-      return { record: compactRecord(entry.record), source: source };
+      return {
+        domain: entry.domain || section.domain,
+        record: compactRecord(entry.record),
+        source: { citation: source.citation, dataSnapshotAt: source.dataSnapshotAt }
+      };
     });
-    var citationCatalog = uniq(payload.map(function (entry) { return entry.source.citation; })).map(function (citation) {
-      return appendix.find(function (source) { return source.citation === citation; });
-    }).filter(Boolean);
+    function compactCitation(source) {
+      return {
+        citation: source.citation,
+        source: source.source,
+        url: source.url,
+        date: source.date,
+        verificationStatus: source.verificationStatus,
+        sourceKind: source.sourceKind,
+        sourceType: source.sourceType,
+        recordId: source.recordId,
+        dataSnapshotAt: source.dataSnapshotAt
+      };
+    }
+    var payload = [];
+    var citationCatalog = [];
+    var citationSet = {};
+    var customText = text(custom).slice(0, SECTION_CUSTOM_PROMPT_LIMIT);
+    function promptBody(nextFacts, nextCatalog) {
+      return {
+        section: { id: section.id, title: section.title, domain: section.domain },
+        scope: facts && facts.scope,
+        dataSnapshotAt: facts && facts.collectedAt || '',
+        citationCatalog: nextCatalog,
+        facts: nextFacts,
+        financial: section.domain === 'financial' ? financial : undefined,
+        custom: customText
+      };
+    }
+    candidates.forEach(function (candidate) {
+      var nextCatalog = citationCatalog;
+      var citation = candidate.source.citation;
+      if (citation && !citationSet[citation]) {
+        var appendixSource = appendix.find(function (source) { return source.citation === citation; });
+        if (appendixSource) nextCatalog = citationCatalog.concat([compactCitation(appendixSource)]);
+      }
+      var nextPayload = payload.concat([candidate]);
+      if (JSON.stringify(promptBody(nextPayload, nextCatalog)).length > SECTION_USER_PROMPT_LIMIT) return;
+      payload = nextPayload;
+      if (nextCatalog !== citationCatalog) {
+        citationCatalog = nextCatalog;
+        citationSet[citation] = true;
+      }
+    });
     var instruction = '你是报告章节分析员，只能根据结构化事实和来源写作。禁止补写未提供的税率、销量、市场规模、价格、利润、排名或平台规则。没有事实时必须写“待补充”，不得使用其他国家、平台或全球排名。税收或准入事实缺失时，只能说明“尚未接入/待补充”，禁止输出确定性税率、费用、认证或合规结论。每个来源已分配唯一编号；所有基于事实的句子及每个关键数字必须在句末保留一个或多个原始编号，例如 [S001]。只能使用 citationCatalog 中存在的编号，不得改写、猜测或创建引用编号。程序化财务结果必须引用其输入数据对应的来源编号。';
-    var user = JSON.stringify({
-      section: { id: section.id, title: section.title, domain: section.domain },
-      scope: facts && facts.scope,
-      dataSnapshotAt: facts && facts.collectedAt || '',
-      citationCatalog: citationCatalog,
-      facts: payload,
-      financial: section.domain === 'financial' ? financial : undefined,
-      custom: custom || ''
-    });
+    var user = JSON.stringify(promptBody(payload, citationCatalog));
     return { system: instruction, user: user, sourceAppendix: citationCatalog };
   }
 

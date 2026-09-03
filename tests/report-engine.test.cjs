@@ -89,6 +89,50 @@ test('section prompts assign stable source citations and snapshot metadata', () 
   assert.match(prompt.system, /关键数字必须.*\[S001\]/);
 });
 
+test('cross-domain section prompts stay below the production size limit and keep balanced evidence', () => {
+  const records = {};
+  const sources = [];
+  for (const domain of ['market', 'policy', 'platform', 'rule']) {
+    records[domain] = Array.from({ length: 90 }, (_, index) => {
+      const sourceRecord = {
+        domain,
+        source: `${domain}-source`,
+        url: `https://example.gov/${domain}/${index}`,
+        recordId: `${domain}-${index}`,
+        verificationStatus: 'verified',
+        snapshotAt: '2026-09-03T00:00:00Z',
+      };
+      sources.push(sourceRecord);
+      return {
+        domain,
+        record: {
+          id: `${domain}-${index}`,
+          title: `English ${domain} ${index}`,
+          title_zh: `${domain} 中文标题 ${index}`,
+          summary: 'source language '.repeat(100),
+          summary_zh: `中文核验摘要 ${index} ` + '有效事实 '.repeat(100),
+        },
+        source: sourceRecord,
+      };
+    });
+  }
+  const prompt = engine.buildSectionPrompt({}, { id: 'executive_summary', title: '执行摘要', domain: 'summary' }, {
+    scope: { marketCodes: ['US'], platformKeys: ['amazon'] },
+    records,
+    sources,
+    collectedAt: '2026-09-03T00:00:00Z',
+  }, null, '自定义要求'.repeat(1000));
+  const payload = JSON.parse(prompt.user);
+  assert.ok(prompt.user.length <= 24_000);
+  assert.ok(payload.facts.length > 0);
+  assert.deepEqual(Array.from(new Set(payload.facts.slice(0, 4).map((entry) => entry.domain))), ['market', 'policy', 'platform', 'rule']);
+  assert.ok(payload.facts.every((entry) => entry.source.citation));
+  assert.ok(payload.citationCatalog.length > 0);
+  assert.ok(payload.custom.length <= 2_000);
+  assert.equal(Object.prototype.hasOwnProperty.call(payload.facts[0].record, 'title'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(payload.facts[0].record, 'summary'), false);
+});
+
 test('citation audit rejects unknown citations and uncited key numbers', () => {
   const appendix = [{ citation: 'S001' }];
   const result = engine.auditCitations([
