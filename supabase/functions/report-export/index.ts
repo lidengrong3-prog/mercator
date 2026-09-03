@@ -175,6 +175,8 @@ Deno.serve(async (request) => {
     body: JSON.stringify({ user_id: user.id, report_id: reportId, format: 'pdf', status: 'queued', parent_export_id: parentExportId, attempt, request_id: requestId, idempotency_key: idempotencyKey, metadata: { function: 'report-export', content_source: 'persisted_report', data_snapshot_at: storedContent.data_snapshot_at || null, source_record_ids: storedContent.source_record_ids || [] } }),
   });
   if (!jobCreate.ok) {
+    const failure = await jobCreate.text();
+    if (failure.includes('EXPORT_QUOTA_EXCEEDED')) return jsonResponse({ error: 'EXPORT_QUOTA_EXCEEDED' }, 429, origin);
     if (jobCreate.status === 409) return jsonResponse({ error: 'REPORT_EXPORT_IN_PROGRESS' }, 409, origin);
     return jsonResponse({ error: 'REPORT_EXPORT_RECORD_FAILED' }, 502, origin);
   }
