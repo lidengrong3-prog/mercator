@@ -780,6 +780,8 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(workflow, /Validate formal production origin/);
   assert.match(workflow, /Verify remote migration head/);
   assert.match(workflow, /python scripts\/sync_to_supabase\.py/);
+  assert.match(workflow, /Upload browser acceptance diagnostics/);
+  assert.match(workflow, /browser-acceptance-diagnostics-/);
   assert.match(workflow, /SUPABASE_SERVICE_KEY/);
   assert.match(workflow, /SUPABASE_URL: \$\{\{ format\('https:\/\/\{0\}\.supabase\.co', secrets\.SUPABASE_PROJECT_ID\) \}\}/);
   assert.match(workflow, /migration list --linked/);
