@@ -167,7 +167,12 @@ test('citation audit treats a date-only table lead as presentation metadata', ()
 });
 
 test('citation audit treats the generated data-as-of label as presentation metadata', () => {
-  const result = engine.auditCitations([{ id: 'platform_research', text: '**市场范围：美国 | 品类：宠物用品 | 数据截至：2026年9月3日**' }], []);
+  const result = engine.auditCitations([{ id: 'platform_research', text: [
+    '**市场范围：美国 | 品类：宠物用品 | 数据截至：2026年9月3日**',
+    '基于截至2026年9月3日已核实的平台官方政策信息，AliExpress 与 eBay 暂无已核实的政策事实。',
+    '**市场范围：美国 | 品类：宠物用品 | 数据时间：2026年9月3日**',
+    '截至本快照时间（2026-09-03T06:02:19.566Z），当前没有可引用的平台事实。',
+  ].join('\n') }], []);
   assert.equal(result.ok, true);
   assert.equal(result.missingNumericCitations.length, 0);
 });
@@ -200,6 +205,18 @@ test('deterministic citation repair can combine traceable facts for a dated summ
   const result = engine.repairSectionCitations(text, citationFacts, appendix);
   assert.equal(result.repairedCount, 1);
   assert.match(result.text, /\[S001\]\[S002\]$/);
+  assert.equal(result.audit.ok, true);
+});
+
+test('deterministic citation repair ignores a Markdown heading ordinal', () => {
+  const appendix = [{ citation: 'S001' }];
+  const citationFacts = [{
+    record: { title: '亚马逊FBA费用全面上调：超龄库存附加费最高13倍', summary: '超365天库存附加费最高达月仓储费13倍。', platform: 'Amazon' },
+    source: { citation: 'S001' },
+  }];
+  const result = engine.repairSectionCitations('**1. FBA 费用全面上调，超龄库存附加费最高达月仓储费13倍**', citationFacts, appendix);
+  assert.equal(result.repairedCount, 1);
+  assert.match(result.text, /\[S001\]$/);
   assert.equal(result.audit.ok, true);
 });
 
