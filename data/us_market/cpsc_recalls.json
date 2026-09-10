@@ -2,10 +2,10 @@
   "meta": {
     "source": "CPSC / SaferProducts Recall API",
     "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
-    "generated_at": "2026-09-03T02:52:27.878363+00:00",
-    "query_start": "2026-05-06",
-    "total_recalls": 197,
-    "china_related_count": 156,
+    "generated_at": "2026-09-10T10:43:45.840412+00:00",
+    "query_start": "2026-05-13",
+    "total_recalls": 221,
+    "china_related_count": 170,
     "categories_count": 8
   },
   "recalls": [
@@ -6121,6 +6121,724 @@
       "verified_at": "2026-08-31T21:30:22.250980+00:00",
       "evidence_hash": "c01c1e7a176ce58256ef35c55261854a723e25cc46f838dddebf7ba9e4097b1a",
       "retrieved_at": "2026-08-31T21:30:22.250980+00:00"
+    },
+    {
+      "id": "cpsc-4ec227f2",
+      "recall_number": "26733",
+      "title": "Adult Portable Bed Rails Recalled Due to Risk of Serious Injury or Death from Entrapment and Asphyxiation; Violate Mandatory Standard for Adult Portable Bed Rails; Sold on Amazon by Loyoda Direct and Loyoda",
+      "description": "This recall involves Loyoda-branded adult portable bed rails. The bed rail comes in silver, measures 13.38 inches wide by 17.71 inches tall and can be extended to 20.47 inches tall. “Loyoda” and the model “FBL140202” are both printed on labels on the product. Only bed rails  manufactured before December 15, 2025 are included in this recall. The manufacture date in YYYY-MM-DD format and model number are printed on the product packaging.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Adult-Portable-Bed-Rails-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-and-Asphyxiation-Violate-Mandatory-Standard-for-Adult-Portable-Bed-Rails-Sold-on-Amazon-by-Loyoda-Direct-and-Loyoda",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Loyoda Adult Portable Bed Rails"
+      ],
+      "hazards": [
+        "The recalled bed rails violate the mandatory standard for adult portable bed rails because users can become entrapped within the bed rail or between the bed rail and the side of the mattress, posing a serious entrapment hazard and risk of death by asphyxiation. The bed rails also do not meet retention strap requirements, posing a fall hazard. The bed rails’ push pins and push pin holes are incorrectly sized, posing a laceration hazard. In addition, the bed rails do not bear the required hazard warning labels."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Adult-Portable-Bed-Rails-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-and-Asphyxiation-Violate-Mandatory-Standard-for-Adult-Portable-Bed-Rails-Sold-on-Amazon-by-Loyoda-Direct-and-Loyoda",
+      "source_record_id": "8c592e553b1ed58f08622270",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "f99d777f4ca12c75278b6816e79ad747f07cc80ba84eaba1d4023cccde9a3382"
+    },
+    {
+      "id": "cpsc-eac189cd",
+      "recall_number": "26731",
+      "title": "Audio Partnership Recalls Cambridge Audio Yoyo (M) Portable Bluetooth Speakers Due to Fire Hazard",
+      "description": "This recall involves the Cambridge Audio Yoyo (M) Bluetooth Speaker sold in light gray, dark gray and blue colors. The recalled speakers can be identified by the unit's product name – \"Yoyo (M)\" – and the following FD numbers which are visible on the underside of the Bluetooth speakers (sold in pairs).",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Audio-Partnership-Recalls-Cambridge-Audio-Yoyo-M-Portable-Bluetooth-Speakers-Due-to-Fire-Hazard",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Cambridge Audio Yoyo (M) Portable Bluetooth Speakers"
+      ],
+      "hazards": [
+        "The lithium-ion batteries in the Cambridge Audio Yoyo (M) Portable Bluetooth Speaker can overheat, posing a fire hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Audio-Partnership-Recalls-Cambridge-Audio-Yoyo-M-Portable-Bluetooth-Speakers-Due-to-Fire-Hazard",
+      "source_record_id": "c0c878f253413a870e698f87",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "f6a75357c3b11970b69f170ba672f3ba20186907b74124bb011c0c4423e5df46"
+    },
+    {
+      "id": "cpsc-83d8be72",
+      "recall_number": "26735",
+      "title": "Branch Recalls Ergonomic Chairs Due to Fall Hazard",
+      "description": "This recall involves height-adjustable ergonomic chairs and only applies to chairs with backrest anchors that were incorrectly installed at the time of manufacture. The recalled chairs were manufactured between September 10, 2025 and April 22, 2026. The dates of manufacture can be found on the label located underneath the chair’s seat cushion. The following SKUs are included in the recall and are located on the side of the product packaging:",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Branch-Recalls-Ergonomic-Chairs-Due-to-Fall-Hazard",
+      "category": "electronics",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "Thailand"
+      ],
+      "products": [
+        "Ergonomic Chairs"
+      ],
+      "hazards": [
+        "The backrests of the chairs can detach, posing a fall hazard to consumers."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Branch-Recalls-Ergonomic-Chairs-Due-to-Fall-Hazard",
+      "source_record_id": "483f944d01c64168ada53a9e",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "44718035786e133e41d12ef587bffee8cc50edd38d72637c9559819a1daf93c4"
+    },
+    {
+      "id": "cpsc-aed50f03",
+      "recall_number": "26741",
+      "title": "Clorox Puerto Rico Recalls 6 Million Scented Mistolin and Lestoil Multi-Purpose Cleaners Due to Risk of Exposure to Bacteria",
+      "description": "This recall only includes Mistolin and Lestoil products sold in Puerto Rico and the U.S. Virgin Islands. The recall involves scented Mistolin Dilutable Cleaners in Alegra tu Día, Espíritu Play, Flores de Primavera, Fresco Despertar, Frescura de Lavanda, Frescura Tropical, Manzana y Canela, Pino y Especias and Sólo para Ti scents and scented Lestoil Heavy Duty Multi-Purpose Cleaners in Energía del Yunque, Fuerza de Lavanda Tropical, Intenso Limon Boricua and Olas de Rincón scents, with date codes",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Clorox-Puerto-Rico-Recalls-6-Million-Scented-Mistolin-and-Lestoil-Multi-Purpose-Cleaners-Due-to-Risk-of-Exposure-to-Bacteria",
+      "category": "health",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "Puerto Rico"
+      ],
+      "products": [
+        "Scented Mistolin® Dilutable Cleaners and Lestoil® Heavy Duty Multi-Purpose Cleaners sold in Puerto Rico and the U.S. Virgin Islands."
+      ],
+      "hazards": [
+        "The recalled products may contain bacteria, including Pseudomonas aeruginosa, which is an environmental organism found widely in soil and water. People with weakened immune systems or external medical devices who are exposed to Pseudomonas aeruginosa face a risk of serious infection that may require medical treatment. The bacteria can enter the body if inhaled, through the eyes, or through a break in the skin. People with healthy immune systems are usually not affected by the bacteria."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Clorox-Puerto-Rico-Recalls-6-Million-Scented-Mistolin-and-Lestoil-Multi-Purpose-Cleaners-Due-to-Risk-of-Exposure-to-Bacteria",
+      "source_record_id": "552f37227a6df9f8f96d2805",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "32a6b39e85160e833db22b08f14958a901ac81d9d02aa06b886ac59ba2b334a2"
+    },
+    {
+      "id": "cpsc-88186ae4",
+      "recall_number": "26734",
+      "title": "Daikin Comfort Technologies Manufacturing Recalls Amana Through-The-Wall Air Conditioners and Heat Pumps Due to Risk of Serious Injury from Fire",
+      "description": "This recall involves certain Amana brand Through the Wall (TTW) air conditioners or heat pumps. These products are white and the brand name is printed on most of the units’ control covers. The units are used to provide room climate control. They most often are installed at hotels, apartment buildings, and commercial spaces.   \n\nThe model number and serial number are located on the front of the unit on the front edge of the base pan on a white sticker.  Recalled units have a model number beginnin",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Daikin-Comfort-Technologies-Manufacturing-Recalls-Amana-Through-The-Wall-Air-Conditioners-and-Heat-Pumps-Due-to-Risk-of-Serious-Injury-from-Fire",
+      "category": "electronics",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "India"
+      ],
+      "products": [
+        "Amana Through the Wall (TTW) air conditioners or heat pumps"
+      ],
+      "hazards": [
+        "The snubber circuit can emit flames if it shorts, posing a risk of serious injury due to fire hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Daikin-Comfort-Technologies-Manufacturing-Recalls-Amana-Through-The-Wall-Air-Conditioners-and-Heat-Pumps-Due-to-Risk-of-Serious-Injury-from-Fire",
+      "source_record_id": "79df14511bf76ab630058bdf",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "c9b7ab69a1453af151353e1bb2810be3b44734c795596cf7a81429511f5d8855"
+    },
+    {
+      "id": "cpsc-423e44c6",
+      "recall_number": "26738",
+      "title": "GIHNJSI Squeezy Dumplings Toys Recalled Due to Serious Ingestion, Choking and Obstruction Hazards; Sold on Amazon by Chenyuanhui",
+      "description": "This recall involves GIHNJSI Squeezy Dumplings toys. The toys are translucent round squishy balls with cartoon faces and glitter-like particles and water beads on the inside. The Squeezy Dumplings come in a tan plastic container shaped like a bamboo steamer. “SQUEEZY DUMPLINGS” and “SQUEEZE ME” are printed on a removable label. There are no markings on the product.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/GIHNJSI-Squeezy-Dumplings-Toys-Recalled-Due-to-Serious-Ingestion-Choking-and-Obstruction-Hazards-Sold-on-Amazon-by-Chenyuanhui",
+      "category": "home",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Squeezy Dumplings"
+      ],
+      "hazards": [
+        "The squeezy toys contain water beads. If ingested, water beads expand and can pose deadly ingestion, choking, and intestinal obstruction hazards inside a child’s body, resulting in severe discomfort, vomiting, dehydration, and a risk of death to a child."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/GIHNJSI-Squeezy-Dumplings-Toys-Recalled-Due-to-Serious-Ingestion-Choking-and-Obstruction-Hazards-Sold-on-Amazon-by-Chenyuanhui",
+      "source_record_id": "97d5d25d2c5bf53675e45725",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "669b514d1aa200c0a77c00b3f5c5b53737962b43cb82221f2ac27b4b36920025"
+    },
+    {
+      "id": "cpsc-42831652",
+      "recall_number": "26736",
+      "title": "Gizoon Direct Recalls Six-Drawer Double Dressers Due to Risk of Serious Injury or Death from Tip-Over and Entrapment Hazards; Violates Mandatory Standard for Clothing Storage Units",
+      "description": "This recall involves Gizoon-branded six-drawer double wood dressers. They were sold in white and black, measure about 47.3 inches wide, 15.7 inches long, 31.5 inches tall and weigh about 88.2 pounds. “AP47-W” or “AP47-B” is printed on the product packaging.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Gizoon-Direct-Recalls-Six-Drawer-Double-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violates-Mandatory-Standard-for-Clothing-Storage-Units",
+      "category": "apparel",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [],
+      "products": [
+        "Gizoon Six-Drawer Double Dressers"
+      ],
+      "hazards": [
+        "The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards that can result in risks of serious injuries or death to children. The dressers violate the mandatory safety standards as required by the STURDY Act."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Gizoon-Direct-Recalls-Six-Drawer-Double-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violates-Mandatory-Standard-for-Clothing-Storage-Units",
+      "source_record_id": "ddf80a3e0bd4b754da48d5a1",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "a418f43245c3cba727a074336daf426938a98504232618d79a96b5df2c105b72"
+    },
+    {
+      "id": "cpsc-a3171cc0",
+      "recall_number": "26746",
+      "title": "MONDRAKER USA Recalls Mountain Bicycles Equipped with ONOFF S9 Carbon MTB Handlebars Due to Risk of Serious Injury or Death from Fall Hazard",
+      "description": "This recall involves Certain Mondraker mountain bicycles equipped with ONOFF S9 Carbon MTB handlebars. The ONOFF S9 Carbon MTB handlebar is used as a steering and control component on the bicycle. Bicycles with model numbers CRAFTY CARBON RR S (MY2026), CRAFTY CARBON XR (MY2025-MY2026), CRAFTY CARBON RR SL (MY2025-MY2026), CRAFTY UNLIMITED GULF (MY2026), DUNE CARBON XR (MY2025), FOXY CARBON RR (MY2025-MY2026), LEVEL XR (MY2026), NEAT RR SL (MY2025), ZENDIT R (MY2027), ZENDIT RR (MY2027), ZENDIT ",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/MONDRAKER-USA-Recalls-Mountain-Bicycles-Equipped-with-ONOFF-S9-Carbon-MTB-Handlebars-Due-to-Risk-of-Serious-Injury-or-Death-from-Fall-Hazard",
+      "category": "sports",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "Taiwan"
+      ],
+      "products": [
+        "Mondraker mountain bicycles equipped with ONOFF S9 Carbon MTB handlebars."
+      ],
+      "hazards": [
+        "The affected handlebars may crack or fracture during use, which can lead to loss of control, posing a risk of serious injury or death from fall hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/MONDRAKER-USA-Recalls-Mountain-Bicycles-Equipped-with-ONOFF-S9-Carbon-MTB-Handlebars-Due-to-Risk-of-Serious-Injury-or-Death-from-Fall-Hazard",
+      "source_record_id": "6b20046a567c50d1d484a0ac",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "6429e320998925639192f69c52905cbc15bebf2a331e568f8bcc6c9743dde14c"
+    },
+    {
+      "id": "cpsc-17ebb8c3",
+      "recall_number": "26730",
+      "title": "Nanjing Wu Hai Smart Home Appliance Store Recalls Alanca 6-Drawer Dressers Due to Risk of Serious Injury or Death from Tip-Over and Entrapment Hazards; Violate Mandatory Standard for Clothing Storage Units",
+      "description": "This recall involves Alanca-branded 6-Drawer Wood Dressers. The wooden dressers were sold in brown and white and have six drawers. The dressers measure about 15.75 inches wide, 57 inches long and 31.5 inches tall and weigh about 55 pounds. “WH-DS02-6W” or “WH-DS02-6GE” is printed on the product packaging.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Nanjing-Wu-Hai-Smart-Home-Appliance-Store-Recalls-Alanca-6-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Alanca 6-Drawer Dressers"
+      ],
+      "hazards": [
+        "The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards that can result in risks of serious injuries or death to children. The dressers violate the mandatory safety standards as required by the STURDY Act."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Nanjing-Wu-Hai-Smart-Home-Appliance-Store-Recalls-Alanca-6-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+      "source_record_id": "142e6b170b69f37fa6431afb",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "6ebef2350c071845753fc32b0090be4e74ebbf22b5474cb20628bbd6a8f258ab"
+    },
+    {
+      "id": "cpsc-89f927c7",
+      "recall_number": "26737",
+      "title": "OKK Trading Recalls Rainbow Mystery Squishy Bun Toys Due to Risk of Serious Injury or Death from Water Bead Ingestion; Violate Mandatory Standard for Toys",
+      "description": "This recall involves Rainbow Mystery Squishy Bun Toys, Model D08004.  The squishy bun toys are a translucent pink color, containing glitter and water beads. The toys have a cartoon face and are packaged in a tan plastic container shaped like a bamboo steamer. “Rainbow MYSTERY” and “SUGAR EDITION” are printed on the front of the removable package labeling. There are no markings on the product, other than the cartoon face.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/OKK-Trading-Recalls-Rainbow-Mystery-Squishy-Bun-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Water-Bead-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "category": "home",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Rainbow Mystery Squishy Bun Toys"
+      ],
+      "hazards": [
+        "The squishy bun toys violate the mandatory safety standard for toys because the water beads inside the dumplings expand larger than permitted, posing a deadly ingestion hazard. If a water bead is ingested, it can pose ingestion, choking, and intestinal obstruction hazards inside a child’s body, resulting in severe discomfort, vomiting, dehydration and a risk of death to a child."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/OKK-Trading-Recalls-Rainbow-Mystery-Squishy-Bun-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Water-Bead-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "source_record_id": "9ee2aa8481dd19bcc5e263a2",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "5e4e41265ae09c9cf649c700d48524ee8f6d3d7e97d98264195a74292fe96652"
+    },
+    {
+      "id": "cpsc-f3cd0298",
+      "recall_number": "26732",
+      "title": "SHEIN Distribution Corporation Recalls Spiral Toys Due to Risk of Serious Injury or Death from Choking Hazard; Violate Small Ball Ban",
+      "description": "This recall involves the Spiral Toy (spinning toy). The toy comes with various colored platforms (three, five, or seven, depending on the model) that can be stacked and several yellow plastic balls with a bear head and a basket at the top. One model comes with a basket and a bull head. The packaging lists the manufacturer, manufacturer’s address and email, product name, batch code and various warnings on a sticker label. A separate sticker label has the SKU code “sl25013088678574868” with a bar ",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/SHEIN-Distribution-Corporation-Recalls-Spiral-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard-Violate-Small-Ball-Ban",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Spiral Toy"
+      ],
+      "hazards": [
+        "The toys violate the small ball ban because they contain small balls and are intended for children under three years of age, posing a deadly choking hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/SHEIN-Distribution-Corporation-Recalls-Spiral-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard-Violate-Small-Ball-Ban",
+      "source_record_id": "fbf6ca51a57dacb46eba05ba",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "eb0af75af4f271c5f1e993ee1ee3376a5ff7b28808914c3fb0d1103652d0355e"
+    },
+    {
+      "id": "cpsc-d841da80",
+      "recall_number": "26739",
+      "title": "Skip Hop Recalls Baby Sesame Street Elmo Silicone Teethers Due to Risk of Serious Injury or Death from Choking Hazard",
+      "description": "This recall involves the Skip Hop Baby Sesame Street Elmo Silicone Teether. The product is in the shape of Elmo’s face (red, orange, and white, with black eyes) and includes a textured key (blue) and fabric crayon box (beige, blue, green, yellow, orange, red). The model number for the Baby Sesame Street Elmo Silicone Teether is 9R263210. A red tag with the Skip Hop brand name and teether model number is attached to the side of the crayon box.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Skip-Hop-Recalls-Baby-Sesame-Street-Elmo-Silicone-Teethers-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Baby Sesame Street Elmo Silicone Teethers"
+      ],
+      "hazards": [
+        "The black eyes can detach from the recalled teether if frozen, posing a risk of serious injury or death from a choking hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Skip-Hop-Recalls-Baby-Sesame-Street-Elmo-Silicone-Teethers-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard",
+      "source_record_id": "59162848f1136c64a6862613",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "d19f0df30e1d29a8c61795b3fd80fe651ca9f47ec9bae25b6e43f06ed80a5578"
+    },
+    {
+      "id": "cpsc-96fa5da1",
+      "recall_number": "26740",
+      "title": "Truststone Group Recalls XO Poppy Power Trip Magnetic Wireless Power Banks Due to Fire and Burn Hazards; Sold Exclusively at TJX and Marshalls Stores",
+      "description": "This recall involves XO Poppy Power Trip Magnetic Wireless Power Banks with model number PYPBK5M. The power banks come in three colors and can be identified by their appearance and packaging: cream colored (PY-PBK5M-CR2); cream with pink bow print (PY-PBK5M-BW8); and black with teddy bear print (PY-PBK5M-TB2). Specific model numbers can be found printed on the bottom of the original packaging, directly above the barcode.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Truststone-Group-Recalls-XO-Poppy-Power-Trip-Magnetic-Wireless-Power-Banks-Due-to-Fire-and-Burn-Hazards-Sold-Exclusively-at-TJX-and-Marshalls-Stores",
+      "category": "electronics",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "Vietnam"
+      ],
+      "products": [
+        "XO Poppy Power Trip Magnetic Wireless Power Banks"
+      ],
+      "hazards": [
+        "The lithium-ion battery in the recalled power banks can overheat and ignite, posing fire and burn hazards to consumers."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Truststone-Group-Recalls-XO-Poppy-Power-Trip-Magnetic-Wireless-Power-Banks-Due-to-Fire-and-Burn-Hazards-Sold-Exclusively-at-TJX-and-Marshalls-Stores",
+      "source_record_id": "5579b36dde0c4dd38e995967",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "808aff4a8e59eda6fb78c46896cd0e74c536b1365586e99cd7ce2d853c6c1bc4"
+    },
+    {
+      "id": "cpsc-24ed200d",
+      "recall_number": "26720",
+      "title": "AudioLineOut Recalls Studio Six Headphone Amplifiers Due to Risk of Serious Injury or Death from Electrocution Hazard",
+      "description": "This recall involves Studio Six Headphone Amplifiers with model ST6. The amplifiers are black or silver. The amplifiers measure 15-3/4 inches high by 12 inches wide. The height for the lower level of the unit, top to bottom, is 5-3/4 inches; the height from the top of the upper level to bottom of the unit is 20-3/4 inches. In the front of the unit, there are four audio connectors for headphones. In the back, there are three sets (L and R) of RCA inputs. Also in the back is a connector for an aux",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/AudioLineOut-Recalls-Studio-Six-Headphone-Amplifiers-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-Hazard",
+      "category": "electronics",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "United States"
+      ],
+      "products": [
+        "Studio Six Headphone Amplifiers"
+      ],
+      "hazards": [
+        "When the amplifiers are used with aftermarket metal base tubes, the bare metal can become electrified, posing a risk of serious injury or death from electrocution."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/AudioLineOut-Recalls-Studio-Six-Headphone-Amplifiers-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-Hazard",
+      "source_record_id": "253774deb03c25e22a4f7c99",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "e186f53d081d8d46903680de9a13459eb00cd4518e3162ef6150e5ce66ae90a6"
+    },
+    {
+      "id": "cpsc-d73421d9",
+      "recall_number": "26717",
+      "title": "Conair Expands Recall of Cuisinart Grill Brushes Due to Ingestion Hazard; Over 3.6 Million Brushes Now Recalled",
+      "description": "This recall expansion involves Cuisinart metal wire bristle grill brushes. The brushes have black plastic, stainless steel, and wood handles. The following model numbers were previously recalled and can be found on the product packaging: CCB-100, CCB-4125, CCB-5014, CCB-6450, CCB-8012, CCB-4114, CCB-W2, and CSBS-777. The following model numbers are part of this recall expansion: CGWM-024, CGWM-059, FCB-501, CGS-W18, CCB-134, CGWM-061, CB-395, CCB-3001, CGWM-077, CGWM-058, CCB-012/021, CGWM-060, ",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Conair-Expands-Recall-of-Cuisinart-Grill-Brushes-Due-to-Ingestion-Hazard-Over-3-6-Million-Brushes-Now-Recalled",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Metal Wire Bristle Grill Brushes"
+      ],
+      "hazards": [
+        "Small metal wire bristles can detach from the brushes and stick to the grill or food, posing an ingestion hazard and risk of serious internal injuries that could require surgery."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Conair-Expands-Recall-of-Cuisinart-Grill-Brushes-Due-to-Ingestion-Hazard-Over-3-6-Million-Brushes-Now-Recalled",
+      "source_record_id": "44e99d1055e9a57b3a5b20bf",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "7d8b62557d8f7c7173a74a08d668b1be40a6072f8f88c862ffc76aa279bf2d98"
+    },
+    {
+      "id": "cpsc-e704bb84",
+      "recall_number": "26718",
+      "title": "Diamond Wipes International Recalls MD Wipe Outz Numbing Tattoo Wipes Due to Risk of Serious Injury or Death from Child Poisoning; Violate Mandatory Standard for Child-Resistant Packaging",
+      "description": "This recall involves MD Wipe Outz Numbing Tattoo Wipes. The pain-relieving wipes were sold in individually wrapped 3 x 4 inches foil packets in boxes of 5, 10, 25, and 250. The Wipe Outz logo, “NUMB” and “Lidocaine Infused” is printed on the front of the packet.",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Diamond-Wipes-International-Recalls-MD-Wipe-Outz-Numbing-Tattoo-Wipes-Due-to-Risk-of-Serious-Injury-or-Death-from-Child-Poisoning-Violate-Mandatory-Standard-for-Child-Resistant-Packaging?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "category": "electronics",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "United States"
+      ],
+      "products": [
+        "MD Wipe Outz Numbing Tattoo Wipes"
+      ],
+      "hazards": [
+        "The recalled numbing wipes contain lidocaine, which must be in child-resistant packaging, as required by the Poison Prevention Packaging Act. The packaging of the wipes is not child-resistant, posing a risk of serious injury or death from poisoning if the contents of the wipes are ingested by young children."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Diamond-Wipes-International-Recalls-MD-Wipe-Outz-Numbing-Tattoo-Wipes-Due-to-Risk-of-Serious-Injury-or-Death-from-Child-Poisoning-Violate-Mandatory-Standard-for-Child-Resistant-Packaging?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "source_record_id": "476aa030dcfe97eea0fff488",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "4bb305dc298dacfd9824731967f56b3ce9a967dae9abb070c6cd20c8fb0d0a18"
+    },
+    {
+      "id": "cpsc-61012619",
+      "recall_number": "26722",
+      "title": "Excel Industries Recalls Accessory LED Light Kits Due to Risk of Serious Injury from Fire Hazard",
+      "description": "This recall involves an accessory LED Light Kit containing two LED Light Bars and kit components. These accessory products are used on Hustler or BigDog ride-on mowers as an accessory light at the front of the mower. A black or yellow steel mounting bracket attaches to the mower footrest at the front of the mower and holds two LED Light Bars as headlights. The LED Light Bars are clear plastic with a white and a black wire and an orange plug at the end. They measure 6 inches wide and ¾ of an inch",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Excel-Industries-Recalls-Accessory-LED-Light-Kits-Due-to-Risk-of-Serious-Injury-from-Fire-Hazard",
+      "category": "electronics",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "United States"
+      ],
+      "products": [
+        "Accessory LED Light Kits used with certain ride-on mowers"
+      ],
+      "hazards": [
+        "The light bars can overheat or produce flames, posing a risk of serious injury from a fire hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Excel-Industries-Recalls-Accessory-LED-Light-Kits-Due-to-Risk-of-Serious-Injury-from-Fire-Hazard",
+      "source_record_id": "0d06a80396233f07c5c3aaae",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "c9ecef5855100261e6fe735ad35c88e78ee325380269ed2775cb01d6f3cdc5f7"
+    },
+    {
+      "id": "cpsc-58977814",
+      "recall_number": "26719",
+      "title": "HABA USA Recalls Rainbow Rattle Grasping and Teething Toys Due to Risk of Serious Injury or Death from Choking and Ingestion Hazards",
+      "description": "This recall involves HABA Rainbow Rattle Grasping and Teething Toy item number 2012261001 and batch code 0925. The rattle grasping and teething toy features plastic rattling rings that produce sound when moved. Constructed from wood with multiple materials and colorful components, designed for infant grasping, sensory exploration and early play. Each HABA Rainbow Rattle Grasping and Teething Toy can be identified by the product batch code in black on one of the natural wooden hemisphere pieces a",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/HABA-USA-Recalls-Rainbow-Rattle-Grasping-and-Teething-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-and-Ingestion-Hazards?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "HABA Rainbow Rattle Grasping and Teething Toy"
+      ],
+      "hazards": [
+        "The glued knot on the elastic cord can become untied on the recalled product, allowing young children access to the small wooden and plastic pieces, posing a risk of serious injury or death from choking and ingestion hazards."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/HABA-USA-Recalls-Rainbow-Rattle-Grasping-and-Teething-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-and-Ingestion-Hazards?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "source_record_id": "0f59f9cd8797a22ab5f3af9d",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "28f5226cfad734743d423f81d4e5beb1c45fff21e84397156ba1bf58e5dbe8f7"
+    },
+    {
+      "id": "cpsc-a16b5a3c",
+      "recall_number": "26721",
+      "title": "Kmaier Recalls Infant Walkers Due to Risk of Serious Injury or Death from Fall Hazard; Violate Mandatory Standard for Infant Walkers",
+      "description": "This recall involves Kmaier-branded infant walkers. The pink, green or white walkers have a tray, a fabric seat and a round base with six-wheels. The walkers can be adjusted to nine different height levels. “Model No.: RV001” is printed on a label located under the walker’s seat.",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Kmaier-Recalls-Infant-Walkers-Due-to-Risk-of-Serious-Injury-or-Death-from-Fall-Hazard-Violate-Mandatory-Standard-for-Infant-Walkers?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Kmaier Infant Walkers"
+      ],
+      "hazards": [
+        "The recalled walkers violate the mandatory standard for infant walkers because they can fit through a standard doorway and fail to stop at the edge of a step, posing a deadly fall hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Kmaier-Recalls-Infant-Walkers-Due-to-Risk-of-Serious-Injury-or-Death-from-Fall-Hazard-Violate-Mandatory-Standard-for-Infant-Walkers?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "source_record_id": "595275268f1eb102380a135e",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "fca103b6733c8d4b3d0fe086e297b7c51cf7868a3138b9d44d7ac9cec34644c4"
+    },
+    {
+      "id": "cpsc-80e0aac7",
+      "recall_number": "26724",
+      "title": "Little Loves & Co. Recalls Youth Clothing with Drawstrings Due to Risk of Serious Injury or Death from Entrapment Hazard",
+      "description": "This recall involves youth daywear sets and boy short sets with waist drawstrings. The daywear sets were sold with a crew neck shirt and joggers. The boy short sets were sold with a short sleeve shirt and shorts. The products were sold in sizes 12/18 months through youth 9/10 and were sold in a variety of colors and collage style designs. The model number and date code are printed on the neck tag. The following model numbers and date codes are included in the recall:",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Little-Loves-Co-Recalls-Youth-Clothing-with-Drawstrings-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-Hazard",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Little Loves & Co. Youth Clothing with Drawstrings"
+      ],
+      "hazards": [
+        "The drawstrings in the recalled clothing can get caught on objects and cause death or serious injury to children due to an entrapment hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Little-Loves-Co-Recalls-Youth-Clothing-with-Drawstrings-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-Hazard",
+      "source_record_id": "7836d23abe475d05c3958f77",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "f554a40a5d03ea189089a4ec80f5b7f9bc385a4fe3eb4482a401f119442eb127"
+    },
+    {
+      "id": "cpsc-a4376b1e",
+      "recall_number": "26727",
+      "title": "Montessori Baby Toy Sets Recalled Due to Risk of Serious Injury or Death from Choking; Violate Mandatory Standard for Toys; Sold on Amazon by Chillife Official",
+      "description": "This recall involves the Chillife 5-in-1 Montessori Baby Toy Sets. The set comes with a pull string teether toy, circular stacking blocks, a sensory toy, a shape sorting cube with blocks and a suction cup spinner. The violative pull string teething toy has an off-white disc shape with a blue ball in the middle and six long, silicone pull strings of various colors running through the ball. There are also three free-spinning rings and soft push buttons on the disc. “Model: CHILLIFE01” is printed o",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Montessori-Baby-Toy-Sets-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Violate-Mandatory-Standard-for-Toys-Sold-on-Amazon-by-Chillife-Official?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "category": "toys",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Chillife 5-in-1 Montessori Baby Toy Sets"
+      ],
+      "hazards": [
+        "The recalled baby toy sets contain a pull string teething toy that violates the mandatory standard for toys because the silicone strings are smaller and longer than permitted. The silicone strings can reach the back of children’s throat and become lodged, posing a risk of respiratory distress and deadly choking hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Montessori-Baby-Toy-Sets-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Violate-Mandatory-Standard-for-Toys-Sold-on-Amazon-by-Chillife-Official?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "source_record_id": "2235e948a0ce9798b5e098c4",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "9c0f9d5dbc5fdcc1842167d95e754da67d11bfb4f0953b76b5ed31b74b1a4da7"
+    },
+    {
+      "id": "cpsc-9a65d8f6",
+      "recall_number": "26725",
+      "title": "Pressure Washers Recalled Due to Serious Risk of Injury or Death from Shock and Electrocution Hazards; Sold on Amazon by YERYORK",
+      "description": "This recall involves YERYORK-branded pressure washers. The recalled, 2.5 GPM electric pressure washers are green with black, and measure about 10.24 inches deep, 16.14 inches wide and 12.01 inches high. The pressure washers come with a 500 ml foam cannon, four quick disconnect nozzles, a 32.81-foot hose and four lockable wheels. Only power washers without a GFCI are included in this recall. The brand is printed at the front of the power washer and model number YE-006 on a label on top of the uni",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Pressure-Washers-Recalled-Due-to-Serious-Risk-of-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-YERYORK",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "YERYORK Pressure Washers"
+      ],
+      "hazards": [
+        "The recalled pressure washers lack an integral ground-fault circuit-interrupter (GFCI) and an adequate-length power cord, posing serious risks of injury or death from shock and electrocution hazards."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Pressure-Washers-Recalled-Due-to-Serious-Risk-of-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-YERYORK",
+      "source_record_id": "078496ace5ef6a3d6c33b4e5",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "563cbdae4e4a099fe03c57e12c907a90a7119a08bbf9146947ccdefd8b930511"
+    },
+    {
+      "id": "cpsc-254025c5",
+      "recall_number": "26723",
+      "title": "Steelite Pressure Washers Recalled Due to Risk of Serious Injury or Death from Shock and Electrocution Hazards; Sold on Amazon by Longer 3D",
+      "description": "This recall involves Steelite-branded pressure washers. They are red and black and measure about 30 inches high, 10 inches wide and 12 inches deep. The 2.5 gpm, electric pressure washers have a foam cannon, four quick connect nozzles and a 20-foot hose. Model “AZ6041VC” is printed on a label on the back of the pressure washer.",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Steelite-Pressure-Washers-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-Longer-3D",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Steelite Electric Pressure Washers"
+      ],
+      "hazards": [
+        "The recalled pressure washers lack an integral ground-fault circuit-interrupter (GFCI) and an adequate-length power cord, posing a risk of serious injury or death from shock and electrocution hazards."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Steelite-Pressure-Washers-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-Longer-3D",
+      "source_record_id": "2ce84328ad7958696029f242",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "8c7e2a917cbd636f8c74dd063e83d0b9726353018d72ad48d68811ea227903ad"
+    },
+    {
+      "id": "cpsc-f9c8da87",
+      "recall_number": "26726",
+      "title": "Walmart Reannounces Recall of Mainstays Nine-Drawer Fabric Dressers Due to Risk of Serious Injury or Death from Tip-Over and Entrapment Hazards; Walmart Distributed Recalled Dressers Post-Recall; Sold to Consumers Through Liquidators",
+      "description": "This recall involves Mainstays-branded dressers. The fabric dressers have a black metal frame and nine brown or black fabric drawers with handles. The dressers measure about 40 inches long, 13.75 inches wide and 45 inches tall and weigh 32 pounds and were manufactured from September 2023 through December 2025. The Tracking/Lot and the manufacture date in MM/YYYY format are printed on a label under the dresser’s top panel of the dresser. “Mainstays 9-Drawer Fabric Dresser” is printed on the produ",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Walmart-Reannounces-Recall-of-Mainstays-Nine-Drawer-Fabric-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Walmart-Distributed-Recalled-Dressers-Post-Recall-Sold-to-Consumers-Through-Liquidators",
+      "category": "apparel",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "Vietnam"
+      ],
+      "products": [
+        "Mainstays 9-Drawer Fabric Dressers"
+      ],
+      "hazards": [
+        "The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards that can result in risk of serious injuries or death to children. The dressers violate the mandatory safety standard as required by the STURDY Act."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Walmart-Reannounces-Recall-of-Mainstays-Nine-Drawer-Fabric-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Walmart-Distributed-Recalled-Dressers-Post-Recall-Sold-to-Consumers-Through-Liquidators",
+      "source_record_id": "fdf61af107dd5a0db742bf49",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "3bd23714c16db70c90a9fa95058ae7abe5a077f4aa555240efb66eb7a6b43126"
     }
   ],
   "china_related": [
@@ -10966,6 +11684,426 @@
       "verified_at": "2026-08-31T21:30:22.250980+00:00",
       "evidence_hash": "c01c1e7a176ce58256ef35c55261854a723e25cc46f838dddebf7ba9e4097b1a",
       "retrieved_at": "2026-08-31T21:30:22.250980+00:00"
+    },
+    {
+      "id": "cpsc-4ec227f2",
+      "recall_number": "26733",
+      "title": "Adult Portable Bed Rails Recalled Due to Risk of Serious Injury or Death from Entrapment and Asphyxiation; Violate Mandatory Standard for Adult Portable Bed Rails; Sold on Amazon by Loyoda Direct and Loyoda",
+      "description": "This recall involves Loyoda-branded adult portable bed rails. The bed rail comes in silver, measures 13.38 inches wide by 17.71 inches tall and can be extended to 20.47 inches tall. “Loyoda” and the model “FBL140202” are both printed on labels on the product. Only bed rails  manufactured before December 15, 2025 are included in this recall. The manufacture date in YYYY-MM-DD format and model number are printed on the product packaging.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Adult-Portable-Bed-Rails-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-and-Asphyxiation-Violate-Mandatory-Standard-for-Adult-Portable-Bed-Rails-Sold-on-Amazon-by-Loyoda-Direct-and-Loyoda",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Loyoda Adult Portable Bed Rails"
+      ],
+      "hazards": [
+        "The recalled bed rails violate the mandatory standard for adult portable bed rails because users can become entrapped within the bed rail or between the bed rail and the side of the mattress, posing a serious entrapment hazard and risk of death by asphyxiation. The bed rails also do not meet retention strap requirements, posing a fall hazard. The bed rails’ push pins and push pin holes are incorrectly sized, posing a laceration hazard. In addition, the bed rails do not bear the required hazard warning labels."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Adult-Portable-Bed-Rails-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-and-Asphyxiation-Violate-Mandatory-Standard-for-Adult-Portable-Bed-Rails-Sold-on-Amazon-by-Loyoda-Direct-and-Loyoda",
+      "source_record_id": "8c592e553b1ed58f08622270",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "f99d777f4ca12c75278b6816e79ad747f07cc80ba84eaba1d4023cccde9a3382"
+    },
+    {
+      "id": "cpsc-eac189cd",
+      "recall_number": "26731",
+      "title": "Audio Partnership Recalls Cambridge Audio Yoyo (M) Portable Bluetooth Speakers Due to Fire Hazard",
+      "description": "This recall involves the Cambridge Audio Yoyo (M) Bluetooth Speaker sold in light gray, dark gray and blue colors. The recalled speakers can be identified by the unit's product name – \"Yoyo (M)\" – and the following FD numbers which are visible on the underside of the Bluetooth speakers (sold in pairs).",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Audio-Partnership-Recalls-Cambridge-Audio-Yoyo-M-Portable-Bluetooth-Speakers-Due-to-Fire-Hazard",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Cambridge Audio Yoyo (M) Portable Bluetooth Speakers"
+      ],
+      "hazards": [
+        "The lithium-ion batteries in the Cambridge Audio Yoyo (M) Portable Bluetooth Speaker can overheat, posing a fire hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Audio-Partnership-Recalls-Cambridge-Audio-Yoyo-M-Portable-Bluetooth-Speakers-Due-to-Fire-Hazard",
+      "source_record_id": "c0c878f253413a870e698f87",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "f6a75357c3b11970b69f170ba672f3ba20186907b74124bb011c0c4423e5df46"
+    },
+    {
+      "id": "cpsc-423e44c6",
+      "recall_number": "26738",
+      "title": "GIHNJSI Squeezy Dumplings Toys Recalled Due to Serious Ingestion, Choking and Obstruction Hazards; Sold on Amazon by Chenyuanhui",
+      "description": "This recall involves GIHNJSI Squeezy Dumplings toys. The toys are translucent round squishy balls with cartoon faces and glitter-like particles and water beads on the inside. The Squeezy Dumplings come in a tan plastic container shaped like a bamboo steamer. “SQUEEZY DUMPLINGS” and “SQUEEZE ME” are printed on a removable label. There are no markings on the product.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/GIHNJSI-Squeezy-Dumplings-Toys-Recalled-Due-to-Serious-Ingestion-Choking-and-Obstruction-Hazards-Sold-on-Amazon-by-Chenyuanhui",
+      "category": "home",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Squeezy Dumplings"
+      ],
+      "hazards": [
+        "The squeezy toys contain water beads. If ingested, water beads expand and can pose deadly ingestion, choking, and intestinal obstruction hazards inside a child’s body, resulting in severe discomfort, vomiting, dehydration, and a risk of death to a child."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/GIHNJSI-Squeezy-Dumplings-Toys-Recalled-Due-to-Serious-Ingestion-Choking-and-Obstruction-Hazards-Sold-on-Amazon-by-Chenyuanhui",
+      "source_record_id": "97d5d25d2c5bf53675e45725",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "669b514d1aa200c0a77c00b3f5c5b53737962b43cb82221f2ac27b4b36920025"
+    },
+    {
+      "id": "cpsc-17ebb8c3",
+      "recall_number": "26730",
+      "title": "Nanjing Wu Hai Smart Home Appliance Store Recalls Alanca 6-Drawer Dressers Due to Risk of Serious Injury or Death from Tip-Over and Entrapment Hazards; Violate Mandatory Standard for Clothing Storage Units",
+      "description": "This recall involves Alanca-branded 6-Drawer Wood Dressers. The wooden dressers were sold in brown and white and have six drawers. The dressers measure about 15.75 inches wide, 57 inches long and 31.5 inches tall and weigh about 55 pounds. “WH-DS02-6W” or “WH-DS02-6GE” is printed on the product packaging.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Nanjing-Wu-Hai-Smart-Home-Appliance-Store-Recalls-Alanca-6-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Alanca 6-Drawer Dressers"
+      ],
+      "hazards": [
+        "The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards that can result in risks of serious injuries or death to children. The dressers violate the mandatory safety standards as required by the STURDY Act."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Nanjing-Wu-Hai-Smart-Home-Appliance-Store-Recalls-Alanca-6-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+      "source_record_id": "142e6b170b69f37fa6431afb",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "6ebef2350c071845753fc32b0090be4e74ebbf22b5474cb20628bbd6a8f258ab"
+    },
+    {
+      "id": "cpsc-89f927c7",
+      "recall_number": "26737",
+      "title": "OKK Trading Recalls Rainbow Mystery Squishy Bun Toys Due to Risk of Serious Injury or Death from Water Bead Ingestion; Violate Mandatory Standard for Toys",
+      "description": "This recall involves Rainbow Mystery Squishy Bun Toys, Model D08004.  The squishy bun toys are a translucent pink color, containing glitter and water beads. The toys have a cartoon face and are packaged in a tan plastic container shaped like a bamboo steamer. “Rainbow MYSTERY” and “SUGAR EDITION” are printed on the front of the removable package labeling. There are no markings on the product, other than the cartoon face.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/OKK-Trading-Recalls-Rainbow-Mystery-Squishy-Bun-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Water-Bead-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "category": "home",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Rainbow Mystery Squishy Bun Toys"
+      ],
+      "hazards": [
+        "The squishy bun toys violate the mandatory safety standard for toys because the water beads inside the dumplings expand larger than permitted, posing a deadly ingestion hazard. If a water bead is ingested, it can pose ingestion, choking, and intestinal obstruction hazards inside a child’s body, resulting in severe discomfort, vomiting, dehydration and a risk of death to a child."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/OKK-Trading-Recalls-Rainbow-Mystery-Squishy-Bun-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Water-Bead-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "source_record_id": "9ee2aa8481dd19bcc5e263a2",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "5e4e41265ae09c9cf649c700d48524ee8f6d3d7e97d98264195a74292fe96652"
+    },
+    {
+      "id": "cpsc-f3cd0298",
+      "recall_number": "26732",
+      "title": "SHEIN Distribution Corporation Recalls Spiral Toys Due to Risk of Serious Injury or Death from Choking Hazard; Violate Small Ball Ban",
+      "description": "This recall involves the Spiral Toy (spinning toy). The toy comes with various colored platforms (three, five, or seven, depending on the model) that can be stacked and several yellow plastic balls with a bear head and a basket at the top. One model comes with a basket and a bull head. The packaging lists the manufacturer, manufacturer’s address and email, product name, batch code and various warnings on a sticker label. A separate sticker label has the SKU code “sl25013088678574868” with a bar ",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/SHEIN-Distribution-Corporation-Recalls-Spiral-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard-Violate-Small-Ball-Ban",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Spiral Toy"
+      ],
+      "hazards": [
+        "The toys violate the small ball ban because they contain small balls and are intended for children under three years of age, posing a deadly choking hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/SHEIN-Distribution-Corporation-Recalls-Spiral-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard-Violate-Small-Ball-Ban",
+      "source_record_id": "fbf6ca51a57dacb46eba05ba",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "eb0af75af4f271c5f1e993ee1ee3376a5ff7b28808914c3fb0d1103652d0355e"
+    },
+    {
+      "id": "cpsc-d841da80",
+      "recall_number": "26739",
+      "title": "Skip Hop Recalls Baby Sesame Street Elmo Silicone Teethers Due to Risk of Serious Injury or Death from Choking Hazard",
+      "description": "This recall involves the Skip Hop Baby Sesame Street Elmo Silicone Teether. The product is in the shape of Elmo’s face (red, orange, and white, with black eyes) and includes a textured key (blue) and fabric crayon box (beige, blue, green, yellow, orange, red). The model number for the Baby Sesame Street Elmo Silicone Teether is 9R263210. A red tag with the Skip Hop brand name and teether model number is attached to the side of the crayon box.",
+      "date": "2026-09-03",
+      "url": "https://cpsc.gov/Recalls/2026/Skip-Hop-Recalls-Baby-Sesame-Street-Elmo-Silicone-Teethers-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Baby Sesame Street Elmo Silicone Teethers"
+      ],
+      "hazards": [
+        "The black eyes can detach from the recalled teether if frozen, posing a risk of serious injury or death from a choking hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Skip-Hop-Recalls-Baby-Sesame-Street-Elmo-Silicone-Teethers-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard",
+      "source_record_id": "59162848f1136c64a6862613",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "d19f0df30e1d29a8c61795b3fd80fe651ca9f47ec9bae25b6e43f06ed80a5578"
+    },
+    {
+      "id": "cpsc-d73421d9",
+      "recall_number": "26717",
+      "title": "Conair Expands Recall of Cuisinart Grill Brushes Due to Ingestion Hazard; Over 3.6 Million Brushes Now Recalled",
+      "description": "This recall expansion involves Cuisinart metal wire bristle grill brushes. The brushes have black plastic, stainless steel, and wood handles. The following model numbers were previously recalled and can be found on the product packaging: CCB-100, CCB-4125, CCB-5014, CCB-6450, CCB-8012, CCB-4114, CCB-W2, and CSBS-777. The following model numbers are part of this recall expansion: CGWM-024, CGWM-059, FCB-501, CGS-W18, CCB-134, CGWM-061, CB-395, CCB-3001, CGWM-077, CGWM-058, CCB-012/021, CGWM-060, ",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Conair-Expands-Recall-of-Cuisinart-Grill-Brushes-Due-to-Ingestion-Hazard-Over-3-6-Million-Brushes-Now-Recalled",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Metal Wire Bristle Grill Brushes"
+      ],
+      "hazards": [
+        "Small metal wire bristles can detach from the brushes and stick to the grill or food, posing an ingestion hazard and risk of serious internal injuries that could require surgery."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Conair-Expands-Recall-of-Cuisinart-Grill-Brushes-Due-to-Ingestion-Hazard-Over-3-6-Million-Brushes-Now-Recalled",
+      "source_record_id": "44e99d1055e9a57b3a5b20bf",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "7d8b62557d8f7c7173a74a08d668b1be40a6072f8f88c862ffc76aa279bf2d98"
+    },
+    {
+      "id": "cpsc-58977814",
+      "recall_number": "26719",
+      "title": "HABA USA Recalls Rainbow Rattle Grasping and Teething Toys Due to Risk of Serious Injury or Death from Choking and Ingestion Hazards",
+      "description": "This recall involves HABA Rainbow Rattle Grasping and Teething Toy item number 2012261001 and batch code 0925. The rattle grasping and teething toy features plastic rattling rings that produce sound when moved. Constructed from wood with multiple materials and colorful components, designed for infant grasping, sensory exploration and early play. Each HABA Rainbow Rattle Grasping and Teething Toy can be identified by the product batch code in black on one of the natural wooden hemisphere pieces a",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/HABA-USA-Recalls-Rainbow-Rattle-Grasping-and-Teething-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-and-Ingestion-Hazards?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "HABA Rainbow Rattle Grasping and Teething Toy"
+      ],
+      "hazards": [
+        "The glued knot on the elastic cord can become untied on the recalled product, allowing young children access to the small wooden and plastic pieces, posing a risk of serious injury or death from choking and ingestion hazards."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/HABA-USA-Recalls-Rainbow-Rattle-Grasping-and-Teething-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-and-Ingestion-Hazards?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "source_record_id": "0f59f9cd8797a22ab5f3af9d",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "28f5226cfad734743d423f81d4e5beb1c45fff21e84397156ba1bf58e5dbe8f7"
+    },
+    {
+      "id": "cpsc-a16b5a3c",
+      "recall_number": "26721",
+      "title": "Kmaier Recalls Infant Walkers Due to Risk of Serious Injury or Death from Fall Hazard; Violate Mandatory Standard for Infant Walkers",
+      "description": "This recall involves Kmaier-branded infant walkers. The pink, green or white walkers have a tray, a fabric seat and a round base with six-wheels. The walkers can be adjusted to nine different height levels. “Model No.: RV001” is printed on a label located under the walker’s seat.",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Kmaier-Recalls-Infant-Walkers-Due-to-Risk-of-Serious-Injury-or-Death-from-Fall-Hazard-Violate-Mandatory-Standard-for-Infant-Walkers?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Kmaier Infant Walkers"
+      ],
+      "hazards": [
+        "The recalled walkers violate the mandatory standard for infant walkers because they can fit through a standard doorway and fail to stop at the edge of a step, posing a deadly fall hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Kmaier-Recalls-Infant-Walkers-Due-to-Risk-of-Serious-Injury-or-Death-from-Fall-Hazard-Violate-Mandatory-Standard-for-Infant-Walkers?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "source_record_id": "595275268f1eb102380a135e",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "fca103b6733c8d4b3d0fe086e297b7c51cf7868a3138b9d44d7ac9cec34644c4"
+    },
+    {
+      "id": "cpsc-80e0aac7",
+      "recall_number": "26724",
+      "title": "Little Loves & Co. Recalls Youth Clothing with Drawstrings Due to Risk of Serious Injury or Death from Entrapment Hazard",
+      "description": "This recall involves youth daywear sets and boy short sets with waist drawstrings. The daywear sets were sold with a crew neck shirt and joggers. The boy short sets were sold with a short sleeve shirt and shorts. The products were sold in sizes 12/18 months through youth 9/10 and were sold in a variety of colors and collage style designs. The model number and date code are printed on the neck tag. The following model numbers and date codes are included in the recall:",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Little-Loves-Co-Recalls-Youth-Clothing-with-Drawstrings-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-Hazard",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Little Loves & Co. Youth Clothing with Drawstrings"
+      ],
+      "hazards": [
+        "The drawstrings in the recalled clothing can get caught on objects and cause death or serious injury to children due to an entrapment hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Little-Loves-Co-Recalls-Youth-Clothing-with-Drawstrings-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-Hazard",
+      "source_record_id": "7836d23abe475d05c3958f77",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "f554a40a5d03ea189089a4ec80f5b7f9bc385a4fe3eb4482a401f119442eb127"
+    },
+    {
+      "id": "cpsc-a4376b1e",
+      "recall_number": "26727",
+      "title": "Montessori Baby Toy Sets Recalled Due to Risk of Serious Injury or Death from Choking; Violate Mandatory Standard for Toys; Sold on Amazon by Chillife Official",
+      "description": "This recall involves the Chillife 5-in-1 Montessori Baby Toy Sets. The set comes with a pull string teether toy, circular stacking blocks, a sensory toy, a shape sorting cube with blocks and a suction cup spinner. The violative pull string teething toy has an off-white disc shape with a blue ball in the middle and six long, silicone pull strings of various colors running through the ball. There are also three free-spinning rings and soft push buttons on the disc. “Model: CHILLIFE01” is printed o",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Montessori-Baby-Toy-Sets-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Violate-Mandatory-Standard-for-Toys-Sold-on-Amazon-by-Chillife-Official?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "category": "toys",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Chillife 5-in-1 Montessori Baby Toy Sets"
+      ],
+      "hazards": [
+        "The recalled baby toy sets contain a pull string teething toy that violates the mandatory standard for toys because the silicone strings are smaller and longer than permitted. The silicone strings can reach the back of children’s throat and become lodged, posing a risk of respiratory distress and deadly choking hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Montessori-Baby-Toy-Sets-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Violate-Mandatory-Standard-for-Toys-Sold-on-Amazon-by-Chillife-Official?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+      "source_record_id": "2235e948a0ce9798b5e098c4",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "9c0f9d5dbc5fdcc1842167d95e754da67d11bfb4f0953b76b5ed31b74b1a4da7"
+    },
+    {
+      "id": "cpsc-9a65d8f6",
+      "recall_number": "26725",
+      "title": "Pressure Washers Recalled Due to Serious Risk of Injury or Death from Shock and Electrocution Hazards; Sold on Amazon by YERYORK",
+      "description": "This recall involves YERYORK-branded pressure washers. The recalled, 2.5 GPM electric pressure washers are green with black, and measure about 10.24 inches deep, 16.14 inches wide and 12.01 inches high. The pressure washers come with a 500 ml foam cannon, four quick disconnect nozzles, a 32.81-foot hose and four lockable wheels. Only power washers without a GFCI are included in this recall. The brand is printed at the front of the power washer and model number YE-006 on a label on top of the uni",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Pressure-Washers-Recalled-Due-to-Serious-Risk-of-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-YERYORK",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "YERYORK Pressure Washers"
+      ],
+      "hazards": [
+        "The recalled pressure washers lack an integral ground-fault circuit-interrupter (GFCI) and an adequate-length power cord, posing serious risks of injury or death from shock and electrocution hazards."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Pressure-Washers-Recalled-Due-to-Serious-Risk-of-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-YERYORK",
+      "source_record_id": "078496ace5ef6a3d6c33b4e5",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "563cbdae4e4a099fe03c57e12c907a90a7119a08bbf9146947ccdefd8b930511"
+    },
+    {
+      "id": "cpsc-254025c5",
+      "recall_number": "26723",
+      "title": "Steelite Pressure Washers Recalled Due to Risk of Serious Injury or Death from Shock and Electrocution Hazards; Sold on Amazon by Longer 3D",
+      "description": "This recall involves Steelite-branded pressure washers. They are red and black and measure about 30 inches high, 10 inches wide and 12 inches deep. The 2.5 gpm, electric pressure washers have a foam cannon, four quick connect nozzles and a 20-foot hose. Model “AZ6041VC” is printed on a label on the back of the pressure washer.",
+      "date": "2026-08-27",
+      "url": "https://cpsc.gov/Recalls/2026/Steelite-Pressure-Washers-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-Longer-3D",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Steelite Electric Pressure Washers"
+      ],
+      "hazards": [
+        "The recalled pressure washers lack an integral ground-fault circuit-interrupter (GFCI) and an adequate-length power cord, posing a risk of serious injury or death from shock and electrocution hazards."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://cpsc.gov/Recalls/2026/Steelite-Pressure-Washers-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-Longer-3D",
+      "source_record_id": "2ce84328ad7958696029f242",
+      "verification_status": "verified",
+      "collected_at": "2026-09-10T18:43:45.554945+08:00",
+      "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+      "verified_at": "2026-09-10T18:43:45.554945+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "8c7e2a917cbd636f8c74dd063e83d0b9726353018d72ad48d68811ea227903ad"
     }
   ],
   "by_category": {
@@ -15053,6 +16191,426 @@
         "published_at": "2026-04-30",
         "verified_at": "2026-08-31T21:30:22.250980+00:00",
         "evidence_hash": "c01c1e7a176ce58256ef35c55261854a723e25cc46f838dddebf7ba9e4097b1a"
+      },
+      {
+        "id": "cpsc-4ec227f2",
+        "recall_number": "26733",
+        "title": "Adult Portable Bed Rails Recalled Due to Risk of Serious Injury or Death from Entrapment and Asphyxiation; Violate Mandatory Standard for Adult Portable Bed Rails; Sold on Amazon by Loyoda Direct and Loyoda",
+        "description": "This recall involves Loyoda-branded adult portable bed rails. The bed rail comes in silver, measures 13.38 inches wide by 17.71 inches tall and can be extended to 20.47 inches tall. “Loyoda” and the model “FBL140202” are both printed on labels on the product. Only bed rails  manufactured before December 15, 2025 are included in this recall. The manufacture date in YYYY-MM-DD format and model number are printed on the product packaging.",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/Adult-Portable-Bed-Rails-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-and-Asphyxiation-Violate-Mandatory-Standard-for-Adult-Portable-Bed-Rails-Sold-on-Amazon-by-Loyoda-Direct-and-Loyoda",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Loyoda Adult Portable Bed Rails"
+        ],
+        "hazards": [
+          "The recalled bed rails violate the mandatory standard for adult portable bed rails because users can become entrapped within the bed rail or between the bed rail and the side of the mattress, posing a serious entrapment hazard and risk of death by asphyxiation. The bed rails also do not meet retention strap requirements, posing a fall hazard. The bed rails’ push pins and push pin holes are incorrectly sized, posing a laceration hazard. In addition, the bed rails do not bear the required hazard warning labels."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Adult-Portable-Bed-Rails-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-and-Asphyxiation-Violate-Mandatory-Standard-for-Adult-Portable-Bed-Rails-Sold-on-Amazon-by-Loyoda-Direct-and-Loyoda",
+        "source_record_id": "8c592e553b1ed58f08622270",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "f99d777f4ca12c75278b6816e79ad747f07cc80ba84eaba1d4023cccde9a3382"
+      },
+      {
+        "id": "cpsc-eac189cd",
+        "recall_number": "26731",
+        "title": "Audio Partnership Recalls Cambridge Audio Yoyo (M) Portable Bluetooth Speakers Due to Fire Hazard",
+        "description": "This recall involves the Cambridge Audio Yoyo (M) Bluetooth Speaker sold in light gray, dark gray and blue colors. The recalled speakers can be identified by the unit's product name – \"Yoyo (M)\" – and the following FD numbers which are visible on the underside of the Bluetooth speakers (sold in pairs).",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/Audio-Partnership-Recalls-Cambridge-Audio-Yoyo-M-Portable-Bluetooth-Speakers-Due-to-Fire-Hazard",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Cambridge Audio Yoyo (M) Portable Bluetooth Speakers"
+        ],
+        "hazards": [
+          "The lithium-ion batteries in the Cambridge Audio Yoyo (M) Portable Bluetooth Speaker can overheat, posing a fire hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Audio-Partnership-Recalls-Cambridge-Audio-Yoyo-M-Portable-Bluetooth-Speakers-Due-to-Fire-Hazard",
+        "source_record_id": "c0c878f253413a870e698f87",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "f6a75357c3b11970b69f170ba672f3ba20186907b74124bb011c0c4423e5df46"
+      },
+      {
+        "id": "cpsc-83d8be72",
+        "recall_number": "26735",
+        "title": "Branch Recalls Ergonomic Chairs Due to Fall Hazard",
+        "description": "This recall involves height-adjustable ergonomic chairs and only applies to chairs with backrest anchors that were incorrectly installed at the time of manufacture. The recalled chairs were manufactured between September 10, 2025 and April 22, 2026. The dates of manufacture can be found on the label located underneath the chair’s seat cushion. The following SKUs are included in the recall and are located on the side of the product packaging:",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/Branch-Recalls-Ergonomic-Chairs-Due-to-Fall-Hazard",
+        "category": "electronics",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "Thailand"
+        ],
+        "products": [
+          "Ergonomic Chairs"
+        ],
+        "hazards": [
+          "The backrests of the chairs can detach, posing a fall hazard to consumers."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Branch-Recalls-Ergonomic-Chairs-Due-to-Fall-Hazard",
+        "source_record_id": "483f944d01c64168ada53a9e",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "44718035786e133e41d12ef587bffee8cc50edd38d72637c9559819a1daf93c4"
+      },
+      {
+        "id": "cpsc-88186ae4",
+        "recall_number": "26734",
+        "title": "Daikin Comfort Technologies Manufacturing Recalls Amana Through-The-Wall Air Conditioners and Heat Pumps Due to Risk of Serious Injury from Fire",
+        "description": "This recall involves certain Amana brand Through the Wall (TTW) air conditioners or heat pumps. These products are white and the brand name is printed on most of the units’ control covers. The units are used to provide room climate control. They most often are installed at hotels, apartment buildings, and commercial spaces.   \n\nThe model number and serial number are located on the front of the unit on the front edge of the base pan on a white sticker.  Recalled units have a model number beginnin",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/Daikin-Comfort-Technologies-Manufacturing-Recalls-Amana-Through-The-Wall-Air-Conditioners-and-Heat-Pumps-Due-to-Risk-of-Serious-Injury-from-Fire",
+        "category": "electronics",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "India"
+        ],
+        "products": [
+          "Amana Through the Wall (TTW) air conditioners or heat pumps"
+        ],
+        "hazards": [
+          "The snubber circuit can emit flames if it shorts, posing a risk of serious injury due to fire hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Daikin-Comfort-Technologies-Manufacturing-Recalls-Amana-Through-The-Wall-Air-Conditioners-and-Heat-Pumps-Due-to-Risk-of-Serious-Injury-from-Fire",
+        "source_record_id": "79df14511bf76ab630058bdf",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "c9b7ab69a1453af151353e1bb2810be3b44734c795596cf7a81429511f5d8855"
+      },
+      {
+        "id": "cpsc-d841da80",
+        "recall_number": "26739",
+        "title": "Skip Hop Recalls Baby Sesame Street Elmo Silicone Teethers Due to Risk of Serious Injury or Death from Choking Hazard",
+        "description": "This recall involves the Skip Hop Baby Sesame Street Elmo Silicone Teether. The product is in the shape of Elmo’s face (red, orange, and white, with black eyes) and includes a textured key (blue) and fabric crayon box (beige, blue, green, yellow, orange, red). The model number for the Baby Sesame Street Elmo Silicone Teether is 9R263210. A red tag with the Skip Hop brand name and teether model number is attached to the side of the crayon box.",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/Skip-Hop-Recalls-Baby-Sesame-Street-Elmo-Silicone-Teethers-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Baby Sesame Street Elmo Silicone Teethers"
+        ],
+        "hazards": [
+          "The black eyes can detach from the recalled teether if frozen, posing a risk of serious injury or death from a choking hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Skip-Hop-Recalls-Baby-Sesame-Street-Elmo-Silicone-Teethers-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard",
+        "source_record_id": "59162848f1136c64a6862613",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "d19f0df30e1d29a8c61795b3fd80fe651ca9f47ec9bae25b6e43f06ed80a5578"
+      },
+      {
+        "id": "cpsc-96fa5da1",
+        "recall_number": "26740",
+        "title": "Truststone Group Recalls XO Poppy Power Trip Magnetic Wireless Power Banks Due to Fire and Burn Hazards; Sold Exclusively at TJX and Marshalls Stores",
+        "description": "This recall involves XO Poppy Power Trip Magnetic Wireless Power Banks with model number PYPBK5M. The power banks come in three colors and can be identified by their appearance and packaging: cream colored (PY-PBK5M-CR2); cream with pink bow print (PY-PBK5M-BW8); and black with teddy bear print (PY-PBK5M-TB2). Specific model numbers can be found printed on the bottom of the original packaging, directly above the barcode.",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/Truststone-Group-Recalls-XO-Poppy-Power-Trip-Magnetic-Wireless-Power-Banks-Due-to-Fire-and-Burn-Hazards-Sold-Exclusively-at-TJX-and-Marshalls-Stores",
+        "category": "electronics",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "Vietnam"
+        ],
+        "products": [
+          "XO Poppy Power Trip Magnetic Wireless Power Banks"
+        ],
+        "hazards": [
+          "The lithium-ion battery in the recalled power banks can overheat and ignite, posing fire and burn hazards to consumers."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Truststone-Group-Recalls-XO-Poppy-Power-Trip-Magnetic-Wireless-Power-Banks-Due-to-Fire-and-Burn-Hazards-Sold-Exclusively-at-TJX-and-Marshalls-Stores",
+        "source_record_id": "5579b36dde0c4dd38e995967",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "808aff4a8e59eda6fb78c46896cd0e74c536b1365586e99cd7ce2d853c6c1bc4"
+      },
+      {
+        "id": "cpsc-24ed200d",
+        "recall_number": "26720",
+        "title": "AudioLineOut Recalls Studio Six Headphone Amplifiers Due to Risk of Serious Injury or Death from Electrocution Hazard",
+        "description": "This recall involves Studio Six Headphone Amplifiers with model ST6. The amplifiers are black or silver. The amplifiers measure 15-3/4 inches high by 12 inches wide. The height for the lower level of the unit, top to bottom, is 5-3/4 inches; the height from the top of the upper level to bottom of the unit is 20-3/4 inches. In the front of the unit, there are four audio connectors for headphones. In the back, there are three sets (L and R) of RCA inputs. Also in the back is a connector for an aux",
+        "date": "2026-08-27",
+        "url": "https://cpsc.gov/Recalls/2026/AudioLineOut-Recalls-Studio-Six-Headphone-Amplifiers-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-Hazard",
+        "category": "electronics",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "United States"
+        ],
+        "products": [
+          "Studio Six Headphone Amplifiers"
+        ],
+        "hazards": [
+          "When the amplifiers are used with aftermarket metal base tubes, the bare metal can become electrified, posing a risk of serious injury or death from electrocution."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/AudioLineOut-Recalls-Studio-Six-Headphone-Amplifiers-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-Hazard",
+        "source_record_id": "253774deb03c25e22a4f7c99",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "e186f53d081d8d46903680de9a13459eb00cd4518e3162ef6150e5ce66ae90a6"
+      },
+      {
+        "id": "cpsc-d73421d9",
+        "recall_number": "26717",
+        "title": "Conair Expands Recall of Cuisinart Grill Brushes Due to Ingestion Hazard; Over 3.6 Million Brushes Now Recalled",
+        "description": "This recall expansion involves Cuisinart metal wire bristle grill brushes. The brushes have black plastic, stainless steel, and wood handles. The following model numbers were previously recalled and can be found on the product packaging: CCB-100, CCB-4125, CCB-5014, CCB-6450, CCB-8012, CCB-4114, CCB-W2, and CSBS-777. The following model numbers are part of this recall expansion: CGWM-024, CGWM-059, FCB-501, CGS-W18, CCB-134, CGWM-061, CB-395, CCB-3001, CGWM-077, CGWM-058, CCB-012/021, CGWM-060, ",
+        "date": "2026-08-27",
+        "url": "https://cpsc.gov/Recalls/2026/Conair-Expands-Recall-of-Cuisinart-Grill-Brushes-Due-to-Ingestion-Hazard-Over-3-6-Million-Brushes-Now-Recalled",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Metal Wire Bristle Grill Brushes"
+        ],
+        "hazards": [
+          "Small metal wire bristles can detach from the brushes and stick to the grill or food, posing an ingestion hazard and risk of serious internal injuries that could require surgery."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Conair-Expands-Recall-of-Cuisinart-Grill-Brushes-Due-to-Ingestion-Hazard-Over-3-6-Million-Brushes-Now-Recalled",
+        "source_record_id": "44e99d1055e9a57b3a5b20bf",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "7d8b62557d8f7c7173a74a08d668b1be40a6072f8f88c862ffc76aa279bf2d98"
+      },
+      {
+        "id": "cpsc-e704bb84",
+        "recall_number": "26718",
+        "title": "Diamond Wipes International Recalls MD Wipe Outz Numbing Tattoo Wipes Due to Risk of Serious Injury or Death from Child Poisoning; Violate Mandatory Standard for Child-Resistant Packaging",
+        "description": "This recall involves MD Wipe Outz Numbing Tattoo Wipes. The pain-relieving wipes were sold in individually wrapped 3 x 4 inches foil packets in boxes of 5, 10, 25, and 250. The Wipe Outz logo, “NUMB” and “Lidocaine Infused” is printed on the front of the packet.",
+        "date": "2026-08-27",
+        "url": "https://cpsc.gov/Recalls/2026/Diamond-Wipes-International-Recalls-MD-Wipe-Outz-Numbing-Tattoo-Wipes-Due-to-Risk-of-Serious-Injury-or-Death-from-Child-Poisoning-Violate-Mandatory-Standard-for-Child-Resistant-Packaging?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+        "category": "electronics",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "United States"
+        ],
+        "products": [
+          "MD Wipe Outz Numbing Tattoo Wipes"
+        ],
+        "hazards": [
+          "The recalled numbing wipes contain lidocaine, which must be in child-resistant packaging, as required by the Poison Prevention Packaging Act. The packaging of the wipes is not child-resistant, posing a risk of serious injury or death from poisoning if the contents of the wipes are ingested by young children."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Diamond-Wipes-International-Recalls-MD-Wipe-Outz-Numbing-Tattoo-Wipes-Due-to-Risk-of-Serious-Injury-or-Death-from-Child-Poisoning-Violate-Mandatory-Standard-for-Child-Resistant-Packaging?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+        "source_record_id": "476aa030dcfe97eea0fff488",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "4bb305dc298dacfd9824731967f56b3ce9a967dae9abb070c6cd20c8fb0d0a18"
+      },
+      {
+        "id": "cpsc-61012619",
+        "recall_number": "26722",
+        "title": "Excel Industries Recalls Accessory LED Light Kits Due to Risk of Serious Injury from Fire Hazard",
+        "description": "This recall involves an accessory LED Light Kit containing two LED Light Bars and kit components. These accessory products are used on Hustler or BigDog ride-on mowers as an accessory light at the front of the mower. A black or yellow steel mounting bracket attaches to the mower footrest at the front of the mower and holds two LED Light Bars as headlights. The LED Light Bars are clear plastic with a white and a black wire and an orange plug at the end. They measure 6 inches wide and ¾ of an inch",
+        "date": "2026-08-27",
+        "url": "https://cpsc.gov/Recalls/2026/Excel-Industries-Recalls-Accessory-LED-Light-Kits-Due-to-Risk-of-Serious-Injury-from-Fire-Hazard",
+        "category": "electronics",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "United States"
+        ],
+        "products": [
+          "Accessory LED Light Kits used with certain ride-on mowers"
+        ],
+        "hazards": [
+          "The light bars can overheat or produce flames, posing a risk of serious injury from a fire hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Excel-Industries-Recalls-Accessory-LED-Light-Kits-Due-to-Risk-of-Serious-Injury-from-Fire-Hazard",
+        "source_record_id": "0d06a80396233f07c5c3aaae",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "c9ecef5855100261e6fe735ad35c88e78ee325380269ed2775cb01d6f3cdc5f7"
+      },
+      {
+        "id": "cpsc-58977814",
+        "recall_number": "26719",
+        "title": "HABA USA Recalls Rainbow Rattle Grasping and Teething Toys Due to Risk of Serious Injury or Death from Choking and Ingestion Hazards",
+        "description": "This recall involves HABA Rainbow Rattle Grasping and Teething Toy item number 2012261001 and batch code 0925. The rattle grasping and teething toy features plastic rattling rings that produce sound when moved. Constructed from wood with multiple materials and colorful components, designed for infant grasping, sensory exploration and early play. Each HABA Rainbow Rattle Grasping and Teething Toy can be identified by the product batch code in black on one of the natural wooden hemisphere pieces a",
+        "date": "2026-08-27",
+        "url": "https://cpsc.gov/Recalls/2026/HABA-USA-Recalls-Rainbow-Rattle-Grasping-and-Teething-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-and-Ingestion-Hazards?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "HABA Rainbow Rattle Grasping and Teething Toy"
+        ],
+        "hazards": [
+          "The glued knot on the elastic cord can become untied on the recalled product, allowing young children access to the small wooden and plastic pieces, posing a risk of serious injury or death from choking and ingestion hazards."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/HABA-USA-Recalls-Rainbow-Rattle-Grasping-and-Teething-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-and-Ingestion-Hazards?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+        "source_record_id": "0f59f9cd8797a22ab5f3af9d",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "28f5226cfad734743d423f81d4e5beb1c45fff21e84397156ba1bf58e5dbe8f7"
+      },
+      {
+        "id": "cpsc-a16b5a3c",
+        "recall_number": "26721",
+        "title": "Kmaier Recalls Infant Walkers Due to Risk of Serious Injury or Death from Fall Hazard; Violate Mandatory Standard for Infant Walkers",
+        "description": "This recall involves Kmaier-branded infant walkers. The pink, green or white walkers have a tray, a fabric seat and a round base with six-wheels. The walkers can be adjusted to nine different height levels. “Model No.: RV001” is printed on a label located under the walker’s seat.",
+        "date": "2026-08-27",
+        "url": "https://cpsc.gov/Recalls/2026/Kmaier-Recalls-Infant-Walkers-Due-to-Risk-of-Serious-Injury-or-Death-from-Fall-Hazard-Violate-Mandatory-Standard-for-Infant-Walkers?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Kmaier Infant Walkers"
+        ],
+        "hazards": [
+          "The recalled walkers violate the mandatory standard for infant walkers because they can fit through a standard doorway and fail to stop at the edge of a step, posing a deadly fall hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Kmaier-Recalls-Infant-Walkers-Due-to-Risk-of-Serious-Injury-or-Death-from-Fall-Hazard-Violate-Mandatory-Standard-for-Infant-Walkers?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+        "source_record_id": "595275268f1eb102380a135e",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "fca103b6733c8d4b3d0fe086e297b7c51cf7868a3138b9d44d7ac9cec34644c4"
+      },
+      {
+        "id": "cpsc-9a65d8f6",
+        "recall_number": "26725",
+        "title": "Pressure Washers Recalled Due to Serious Risk of Injury or Death from Shock and Electrocution Hazards; Sold on Amazon by YERYORK",
+        "description": "This recall involves YERYORK-branded pressure washers. The recalled, 2.5 GPM electric pressure washers are green with black, and measure about 10.24 inches deep, 16.14 inches wide and 12.01 inches high. The pressure washers come with a 500 ml foam cannon, four quick disconnect nozzles, a 32.81-foot hose and four lockable wheels. Only power washers without a GFCI are included in this recall. The brand is printed at the front of the power washer and model number YE-006 on a label on top of the uni",
+        "date": "2026-08-27",
+        "url": "https://cpsc.gov/Recalls/2026/Pressure-Washers-Recalled-Due-to-Serious-Risk-of-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-YERYORK",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "YERYORK Pressure Washers"
+        ],
+        "hazards": [
+          "The recalled pressure washers lack an integral ground-fault circuit-interrupter (GFCI) and an adequate-length power cord, posing serious risks of injury or death from shock and electrocution hazards."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Pressure-Washers-Recalled-Due-to-Serious-Risk-of-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-YERYORK",
+        "source_record_id": "078496ace5ef6a3d6c33b4e5",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "563cbdae4e4a099fe03c57e12c907a90a7119a08bbf9146947ccdefd8b930511"
+      },
+      {
+        "id": "cpsc-254025c5",
+        "recall_number": "26723",
+        "title": "Steelite Pressure Washers Recalled Due to Risk of Serious Injury or Death from Shock and Electrocution Hazards; Sold on Amazon by Longer 3D",
+        "description": "This recall involves Steelite-branded pressure washers. They are red and black and measure about 30 inches high, 10 inches wide and 12 inches deep. The 2.5 gpm, electric pressure washers have a foam cannon, four quick connect nozzles and a 20-foot hose. Model “AZ6041VC” is printed on a label on the back of the pressure washer.",
+        "date": "2026-08-27",
+        "url": "https://cpsc.gov/Recalls/2026/Steelite-Pressure-Washers-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-Longer-3D",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Steelite Electric Pressure Washers"
+        ],
+        "hazards": [
+          "The recalled pressure washers lack an integral ground-fault circuit-interrupter (GFCI) and an adequate-length power cord, posing a risk of serious injury or death from shock and electrocution hazards."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Steelite-Pressure-Washers-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Shock-and-Electrocution-Hazards-Sold-on-Amazon-by-Longer-3D",
+        "source_record_id": "2ce84328ad7958696029f242",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "8c7e2a917cbd636f8c74dd063e83d0b9726353018d72ad48d68811ea227903ad"
       }
     ],
     "auto": [
@@ -15477,6 +17035,66 @@
         "published_at": "2026-04-30",
         "verified_at": "2026-08-31T21:30:22.250980+00:00",
         "evidence_hash": "8923cdbf9911c6649c2376db50d608aefd42d27528970869d9053907a917b453"
+      },
+      {
+        "id": "cpsc-423e44c6",
+        "recall_number": "26738",
+        "title": "GIHNJSI Squeezy Dumplings Toys Recalled Due to Serious Ingestion, Choking and Obstruction Hazards; Sold on Amazon by Chenyuanhui",
+        "description": "This recall involves GIHNJSI Squeezy Dumplings toys. The toys are translucent round squishy balls with cartoon faces and glitter-like particles and water beads on the inside. The Squeezy Dumplings come in a tan plastic container shaped like a bamboo steamer. “SQUEEZY DUMPLINGS” and “SQUEEZE ME” are printed on a removable label. There are no markings on the product.",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/GIHNJSI-Squeezy-Dumplings-Toys-Recalled-Due-to-Serious-Ingestion-Choking-and-Obstruction-Hazards-Sold-on-Amazon-by-Chenyuanhui",
+        "category": "home",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Squeezy Dumplings"
+        ],
+        "hazards": [
+          "The squeezy toys contain water beads. If ingested, water beads expand and can pose deadly ingestion, choking, and intestinal obstruction hazards inside a child’s body, resulting in severe discomfort, vomiting, dehydration, and a risk of death to a child."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/GIHNJSI-Squeezy-Dumplings-Toys-Recalled-Due-to-Serious-Ingestion-Choking-and-Obstruction-Hazards-Sold-on-Amazon-by-Chenyuanhui",
+        "source_record_id": "97d5d25d2c5bf53675e45725",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "669b514d1aa200c0a77c00b3f5c5b53737962b43cb82221f2ac27b4b36920025"
+      },
+      {
+        "id": "cpsc-89f927c7",
+        "recall_number": "26737",
+        "title": "OKK Trading Recalls Rainbow Mystery Squishy Bun Toys Due to Risk of Serious Injury or Death from Water Bead Ingestion; Violate Mandatory Standard for Toys",
+        "description": "This recall involves Rainbow Mystery Squishy Bun Toys, Model D08004.  The squishy bun toys are a translucent pink color, containing glitter and water beads. The toys have a cartoon face and are packaged in a tan plastic container shaped like a bamboo steamer. “Rainbow MYSTERY” and “SUGAR EDITION” are printed on the front of the removable package labeling. There are no markings on the product, other than the cartoon face.",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/OKK-Trading-Recalls-Rainbow-Mystery-Squishy-Bun-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Water-Bead-Ingestion-Violate-Mandatory-Standard-for-Toys",
+        "category": "home",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Rainbow Mystery Squishy Bun Toys"
+        ],
+        "hazards": [
+          "The squishy bun toys violate the mandatory safety standard for toys because the water beads inside the dumplings expand larger than permitted, posing a deadly ingestion hazard. If a water bead is ingested, it can pose ingestion, choking, and intestinal obstruction hazards inside a child’s body, resulting in severe discomfort, vomiting, dehydration and a risk of death to a child."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/OKK-Trading-Recalls-Rainbow-Mystery-Squishy-Bun-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Water-Bead-Ingestion-Violate-Mandatory-Standard-for-Toys",
+        "source_record_id": "9ee2aa8481dd19bcc5e263a2",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "5e4e41265ae09c9cf649c700d48524ee8f6d3d7e97d98264195a74292fe96652"
       }
     ],
     "toys": [
@@ -15629,6 +17247,36 @@
         "published_at": "2026-05-14",
         "verified_at": "2026-08-31T21:30:22.250980+00:00",
         "evidence_hash": "6f10a9d390d3d4c1a81100b99189570ef3063330c3455e8fb9b89b4f48153880"
+      },
+      {
+        "id": "cpsc-a4376b1e",
+        "recall_number": "26727",
+        "title": "Montessori Baby Toy Sets Recalled Due to Risk of Serious Injury or Death from Choking; Violate Mandatory Standard for Toys; Sold on Amazon by Chillife Official",
+        "description": "This recall involves the Chillife 5-in-1 Montessori Baby Toy Sets. The set comes with a pull string teether toy, circular stacking blocks, a sensory toy, a shape sorting cube with blocks and a suction cup spinner. The violative pull string teething toy has an off-white disc shape with a blue ball in the middle and six long, silicone pull strings of various colors running through the ball. There are also three free-spinning rings and soft push buttons on the disc. “Model: CHILLIFE01” is printed o",
+        "date": "2026-08-27",
+        "url": "https://cpsc.gov/Recalls/2026/Montessori-Baby-Toy-Sets-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Violate-Mandatory-Standard-for-Toys-Sold-on-Amazon-by-Chillife-Official?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+        "category": "toys",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Chillife 5-in-1 Montessori Baby Toy Sets"
+        ],
+        "hazards": [
+          "The recalled baby toy sets contain a pull string teething toy that violates the mandatory standard for toys because the silicone strings are smaller and longer than permitted. The silicone strings can reach the back of children’s throat and become lodged, posing a risk of respiratory distress and deadly choking hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Montessori-Baby-Toy-Sets-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Violate-Mandatory-Standard-for-Toys-Sold-on-Amazon-by-Chillife-Official?utm_campaign=&utm_content=&utm_medium=email&utm_source=govdelivery&utm_term=20260827",
+        "source_record_id": "2235e948a0ce9798b5e098c4",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "9c0f9d5dbc5fdcc1842167d95e754da67d11bfb4f0953b76b5ed31b74b1a4da7"
       }
     ],
     "apparel": [
@@ -16623,6 +18271,154 @@
         "published_at": "2026-04-30",
         "verified_at": "2026-08-31T21:30:22.250980+00:00",
         "evidence_hash": "387f3fb633a729378b55c15bc2b293fb50491c5c0d0ed33d46380e1eec226da6"
+      },
+      {
+        "id": "cpsc-42831652",
+        "recall_number": "26736",
+        "title": "Gizoon Direct Recalls Six-Drawer Double Dressers Due to Risk of Serious Injury or Death from Tip-Over and Entrapment Hazards; Violates Mandatory Standard for Clothing Storage Units",
+        "description": "This recall involves Gizoon-branded six-drawer double wood dressers. They were sold in white and black, measure about 47.3 inches wide, 15.7 inches long, 31.5 inches tall and weigh about 88.2 pounds. “AP47-W” or “AP47-B” is printed on the product packaging.",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/Gizoon-Direct-Recalls-Six-Drawer-Double-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violates-Mandatory-Standard-for-Clothing-Storage-Units",
+        "category": "apparel",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [],
+        "products": [
+          "Gizoon Six-Drawer Double Dressers"
+        ],
+        "hazards": [
+          "The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards that can result in risks of serious injuries or death to children. The dressers violate the mandatory safety standards as required by the STURDY Act."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Gizoon-Direct-Recalls-Six-Drawer-Double-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violates-Mandatory-Standard-for-Clothing-Storage-Units",
+        "source_record_id": "ddf80a3e0bd4b754da48d5a1",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "a418f43245c3cba727a074336daf426938a98504232618d79a96b5df2c105b72"
+      },
+      {
+        "id": "cpsc-17ebb8c3",
+        "recall_number": "26730",
+        "title": "Nanjing Wu Hai Smart Home Appliance Store Recalls Alanca 6-Drawer Dressers Due to Risk of Serious Injury or Death from Tip-Over and Entrapment Hazards; Violate Mandatory Standard for Clothing Storage Units",
+        "description": "This recall involves Alanca-branded 6-Drawer Wood Dressers. The wooden dressers were sold in brown and white and have six drawers. The dressers measure about 15.75 inches wide, 57 inches long and 31.5 inches tall and weigh about 55 pounds. “WH-DS02-6W” or “WH-DS02-6GE” is printed on the product packaging.",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/Nanjing-Wu-Hai-Smart-Home-Appliance-Store-Recalls-Alanca-6-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+        "category": "apparel",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Alanca 6-Drawer Dressers"
+        ],
+        "hazards": [
+          "The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards that can result in risks of serious injuries or death to children. The dressers violate the mandatory safety standards as required by the STURDY Act."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Nanjing-Wu-Hai-Smart-Home-Appliance-Store-Recalls-Alanca-6-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+        "source_record_id": "142e6b170b69f37fa6431afb",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "6ebef2350c071845753fc32b0090be4e74ebbf22b5474cb20628bbd6a8f258ab"
+      },
+      {
+        "id": "cpsc-f3cd0298",
+        "recall_number": "26732",
+        "title": "SHEIN Distribution Corporation Recalls Spiral Toys Due to Risk of Serious Injury or Death from Choking Hazard; Violate Small Ball Ban",
+        "description": "This recall involves the Spiral Toy (spinning toy). The toy comes with various colored platforms (three, five, or seven, depending on the model) that can be stacked and several yellow plastic balls with a bear head and a basket at the top. One model comes with a basket and a bull head. The packaging lists the manufacturer, manufacturer’s address and email, product name, batch code and various warnings on a sticker label. A separate sticker label has the SKU code “sl25013088678574868” with a bar ",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/SHEIN-Distribution-Corporation-Recalls-Spiral-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard-Violate-Small-Ball-Ban",
+        "category": "apparel",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Spiral Toy"
+        ],
+        "hazards": [
+          "The toys violate the small ball ban because they contain small balls and are intended for children under three years of age, posing a deadly choking hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/SHEIN-Distribution-Corporation-Recalls-Spiral-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard-Violate-Small-Ball-Ban",
+        "source_record_id": "fbf6ca51a57dacb46eba05ba",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "eb0af75af4f271c5f1e993ee1ee3376a5ff7b28808914c3fb0d1103652d0355e"
+      },
+      {
+        "id": "cpsc-80e0aac7",
+        "recall_number": "26724",
+        "title": "Little Loves & Co. Recalls Youth Clothing with Drawstrings Due to Risk of Serious Injury or Death from Entrapment Hazard",
+        "description": "This recall involves youth daywear sets and boy short sets with waist drawstrings. The daywear sets were sold with a crew neck shirt and joggers. The boy short sets were sold with a short sleeve shirt and shorts. The products were sold in sizes 12/18 months through youth 9/10 and were sold in a variety of colors and collage style designs. The model number and date code are printed on the neck tag. The following model numbers and date codes are included in the recall:",
+        "date": "2026-08-27",
+        "url": "https://cpsc.gov/Recalls/2026/Little-Loves-Co-Recalls-Youth-Clothing-with-Drawstrings-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-Hazard",
+        "category": "apparel",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Little Loves & Co. Youth Clothing with Drawstrings"
+        ],
+        "hazards": [
+          "The drawstrings in the recalled clothing can get caught on objects and cause death or serious injury to children due to an entrapment hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Little-Loves-Co-Recalls-Youth-Clothing-with-Drawstrings-Due-to-Risk-of-Serious-Injury-or-Death-from-Entrapment-Hazard",
+        "source_record_id": "7836d23abe475d05c3958f77",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "f554a40a5d03ea189089a4ec80f5b7f9bc385a4fe3eb4482a401f119442eb127"
+      },
+      {
+        "id": "cpsc-f9c8da87",
+        "recall_number": "26726",
+        "title": "Walmart Reannounces Recall of Mainstays Nine-Drawer Fabric Dressers Due to Risk of Serious Injury or Death from Tip-Over and Entrapment Hazards; Walmart Distributed Recalled Dressers Post-Recall; Sold to Consumers Through Liquidators",
+        "description": "This recall involves Mainstays-branded dressers. The fabric dressers have a black metal frame and nine brown or black fabric drawers with handles. The dressers measure about 40 inches long, 13.75 inches wide and 45 inches tall and weigh 32 pounds and were manufactured from September 2023 through December 2025. The Tracking/Lot and the manufacture date in MM/YYYY format are printed on a label under the dresser’s top panel of the dresser. “Mainstays 9-Drawer Fabric Dresser” is printed on the produ",
+        "date": "2026-08-27",
+        "url": "https://cpsc.gov/Recalls/2026/Walmart-Reannounces-Recall-of-Mainstays-Nine-Drawer-Fabric-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Walmart-Distributed-Recalled-Dressers-Post-Recall-Sold-to-Consumers-Through-Liquidators",
+        "category": "apparel",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "Vietnam"
+        ],
+        "products": [
+          "Mainstays 9-Drawer Fabric Dressers"
+        ],
+        "hazards": [
+          "The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards that can result in risk of serious injuries or death to children. The dressers violate the mandatory safety standard as required by the STURDY Act."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Walmart-Reannounces-Recall-of-Mainstays-Nine-Drawer-Fabric-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Walmart-Distributed-Recalled-Dressers-Post-Recall-Sold-to-Consumers-Through-Liquidators",
+        "source_record_id": "fdf61af107dd5a0db742bf49",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "3bd23714c16db70c90a9fa95058ae7abe5a077f4aa555240efb66eb7a6b43126"
       }
     ],
     "sports": [
@@ -16775,6 +18571,36 @@
         "published_at": "2026-04-30",
         "verified_at": "2026-08-31T21:30:22.250980+00:00",
         "evidence_hash": "39c50d11327e651610f5df4e4299ed63f313f736bd6b9acad28a4fc96677dabf"
+      },
+      {
+        "id": "cpsc-a3171cc0",
+        "recall_number": "26746",
+        "title": "MONDRAKER USA Recalls Mountain Bicycles Equipped with ONOFF S9 Carbon MTB Handlebars Due to Risk of Serious Injury or Death from Fall Hazard",
+        "description": "This recall involves Certain Mondraker mountain bicycles equipped with ONOFF S9 Carbon MTB handlebars. The ONOFF S9 Carbon MTB handlebar is used as a steering and control component on the bicycle. Bicycles with model numbers CRAFTY CARBON RR S (MY2026), CRAFTY CARBON XR (MY2025-MY2026), CRAFTY CARBON RR SL (MY2025-MY2026), CRAFTY UNLIMITED GULF (MY2026), DUNE CARBON XR (MY2025), FOXY CARBON RR (MY2025-MY2026), LEVEL XR (MY2026), NEAT RR SL (MY2025), ZENDIT R (MY2027), ZENDIT RR (MY2027), ZENDIT ",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/MONDRAKER-USA-Recalls-Mountain-Bicycles-Equipped-with-ONOFF-S9-Carbon-MTB-Handlebars-Due-to-Risk-of-Serious-Injury-or-Death-from-Fall-Hazard",
+        "category": "sports",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "Taiwan"
+        ],
+        "products": [
+          "Mondraker mountain bicycles equipped with ONOFF S9 Carbon MTB handlebars."
+        ],
+        "hazards": [
+          "The affected handlebars may crack or fracture during use, which can lead to loss of control, posing a risk of serious injury or death from fall hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/MONDRAKER-USA-Recalls-Mountain-Bicycles-Equipped-with-ONOFF-S9-Carbon-MTB-Handlebars-Due-to-Risk-of-Serious-Injury-or-Death-from-Fall-Hazard",
+        "source_record_id": "6b20046a567c50d1d484a0ac",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "6429e320998925639192f69c52905cbc15bebf2a331e568f8bcc6c9743dde14c"
       }
     ],
     "other": [
@@ -16899,6 +18725,36 @@
         "published_at": "2026-07-02",
         "verified_at": "2026-08-31T21:30:22.250980+00:00",
         "evidence_hash": "67e66c6d81e17c890bfb0823f0742b08221516d6b12f27d1bba035a565490f25"
+      },
+      {
+        "id": "cpsc-aed50f03",
+        "recall_number": "26741",
+        "title": "Clorox Puerto Rico Recalls 6 Million Scented Mistolin and Lestoil Multi-Purpose Cleaners Due to Risk of Exposure to Bacteria",
+        "description": "This recall only includes Mistolin and Lestoil products sold in Puerto Rico and the U.S. Virgin Islands. The recall involves scented Mistolin Dilutable Cleaners in Alegra tu Día, Espíritu Play, Flores de Primavera, Fresco Despertar, Frescura de Lavanda, Frescura Tropical, Manzana y Canela, Pino y Especias and Sólo para Ti scents and scented Lestoil Heavy Duty Multi-Purpose Cleaners in Energía del Yunque, Fuerza de Lavanda Tropical, Intenso Limon Boricua and Olas de Rincón scents, with date codes",
+        "date": "2026-09-03",
+        "url": "https://cpsc.gov/Recalls/2026/Clorox-Puerto-Rico-Recalls-6-Million-Scented-Mistolin-and-Lestoil-Multi-Purpose-Cleaners-Due-to-Risk-of-Exposure-to-Bacteria",
+        "category": "health",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "Puerto Rico"
+        ],
+        "products": [
+          "Scented Mistolin® Dilutable Cleaners and Lestoil® Heavy Duty Multi-Purpose Cleaners sold in Puerto Rico and the U.S. Virgin Islands."
+        ],
+        "hazards": [
+          "The recalled products may contain bacteria, including Pseudomonas aeruginosa, which is an environmental organism found widely in soil and water. People with weakened immune systems or external medical devices who are exposed to Pseudomonas aeruginosa face a risk of serious infection that may require medical treatment. The bacteria can enter the body if inhaled, through the eyes, or through a break in the skin. People with healthy immune systems are usually not affected by the bacteria."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://cpsc.gov/Recalls/2026/Clorox-Puerto-Rico-Recalls-6-Million-Scented-Mistolin-and-Lestoil-Multi-Purpose-Cleaners-Due-to-Risk-of-Exposure-to-Bacteria",
+        "source_record_id": "552f37227a6df9f8f96d2805",
+        "verification_status": "verified",
+        "collected_at": "2026-09-10T18:43:45.554945+08:00",
+        "retrieved_at": "2026-09-10T18:43:45.554945+08:00",
+        "verified_at": "2026-09-10T18:43:45.554945+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "32a6b39e85160e833db22b08f14958a901ac81d9d02aa06b886ac59ba2b334a2"
       }
     ]
   }

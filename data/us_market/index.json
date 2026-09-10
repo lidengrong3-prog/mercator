@@ -1,6 +1,7 @@
 {
-  "generated_at": "2026-09-03T02:52:27.083808+00:00",
-  "as_of": "2026-09-03",
+  "generated_at": "2026-09-10T10:43:43.779268+00:00",
+  "as_of": "2026-09-10",
+  "last_attempted_at": "2026-09-10T10:43:34.305388+00:00",
   "categories": [
     {
       "key": "electronics",
@@ -10,8 +11,12 @@
       "file": "electronics.json",
       "market_size": "US$ 2,616 亿 (2026E)",
       "cagr": "CAGR 4.8% (2026-2031)",
-      "policy_count": 16,
-      "alert_count": 7
+      "policy_count": 19,
+      "alert_count": 7,
+      "collection_status": "succeeded",
+      "content_updated_at": "2026-09-10T10:43:34.305496+00:00",
+      "last_checked_at": "2026-09-10T10:43:34.305496+00:00",
+      "cache_used": false
     },
     {
       "key": "apparel",
@@ -22,7 +27,11 @@
       "market_size": "US$ 3,730 亿 (2026E，服饰)",
       "cagr": "CAGR 1.83% (2026-2031)",
       "policy_count": 8,
-      "alert_count": 5
+      "alert_count": 5,
+      "collection_status": "succeeded",
+      "content_updated_at": "2026-09-03T02:52:36.365337+00:00",
+      "last_checked_at": "2026-09-10T10:43:35.940022+00:00",
+      "cache_used": false
     },
     {
       "key": "home",
@@ -33,7 +42,11 @@
       "market_size": "厨具 US$ 60.8 亿 (2026E)；家居耐用品 ≈ $418 亿",
       "cagr": "厨具 CAGR 2.26% (2026-2031)",
       "policy_count": 11,
-      "alert_count": 8
+      "alert_count": 8,
+      "collection_status": "succeeded",
+      "content_updated_at": "2026-09-03T02:52:41.017942+00:00",
+      "last_checked_at": "2026-09-10T10:43:37.394644+00:00",
+      "cache_used": false
     },
     {
       "key": "beauty",
@@ -44,7 +57,11 @@
       "market_size": "US$ 1,067.6 亿 (2026E)",
       "cagr": "CAGR 2.44% (2026-2031)",
       "policy_count": 24,
-      "alert_count": 6
+      "alert_count": 13,
+      "collection_status": "succeeded",
+      "content_updated_at": "2026-09-10T10:43:38.837117+00:00",
+      "last_checked_at": "2026-09-10T10:43:38.837117+00:00",
+      "cache_used": false
     },
     {
       "key": "toys",
@@ -54,8 +71,12 @@
       "file": "toys.json",
       "market_size": "玩具 US$ 387 亿 (2026E)；玩具游戏合计 ≈ $820.9 亿",
       "cagr": "玩具 CAGR 3.8% (2026-2031)",
-      "policy_count": 22,
-      "alert_count": 19
+      "policy_count": 24,
+      "alert_count": 19,
+      "collection_status": "succeeded",
+      "content_updated_at": "2026-09-10T10:43:39.766452+00:00",
+      "last_checked_at": "2026-09-10T10:43:39.766452+00:00",
+      "cache_used": false
     },
     {
       "key": "sports",
@@ -65,8 +86,12 @@
       "file": "sports.json",
       "market_size": "运动用品 US$ 339 亿 (2026E)；户外装备全球 ≈ $652.8 亿",
       "cagr": "运动用品 CAGR 6% (2026-2031)",
-      "policy_count": 11,
-      "alert_count": 6
+      "policy_count": 12,
+      "alert_count": 7,
+      "collection_status": "succeeded",
+      "content_updated_at": "2026-09-10T10:43:41.230457+00:00",
+      "last_checked_at": "2026-09-10T10:43:41.230457+00:00",
+      "cache_used": false
     },
     {
       "key": "auto",
@@ -77,7 +102,11 @@
       "market_size": "US$ 2,387.5 亿 (2026E)",
       "cagr": "CAGR 4.12% (2026-2031)",
       "policy_count": 24,
-      "alert_count": 14
+      "alert_count": 16,
+      "collection_status": "succeeded",
+      "content_updated_at": "2026-09-10T10:43:42.742607+00:00",
+      "last_checked_at": "2026-09-10T10:43:42.742607+00:00",
+      "cache_used": false
     },
     {
       "key": "supplements",
@@ -88,7 +117,13 @@
       "market_size": "US$ 773.7 亿 (2026E)",
       "cagr": "CAGR 7.9% (2026-2031)",
       "policy_count": 24,
-      "alert_count": 4
+      "alert_count": 4,
+      "collection_status": "succeeded",
+      "content_updated_at": "2026-09-10T10:43:43.779268+00:00",
+      "last_checked_at": "2026-09-10T10:43:43.779268+00:00",
+      "cache_used": false
     }
-  ]
+  ],
+  "collection_status": "succeeded",
+  "last_checked_at": "2026-09-10T10:43:34.305388+00:00"
 }

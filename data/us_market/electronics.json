@@ -2,9 +2,26 @@
   "meta": {
     "market": "美国消费电子 (US Consumer Electronics)",
     "cat_key": "electronics",
-    "generated_at": "2026-09-03T02:52:31.828437+00:00",
-    "as_of": "2026-09-03",
+    "generated_at": "2026-09-10T10:43:34.305496+00:00",
+    "content_updated_at": "2026-09-10T10:43:34.305496+00:00",
+    "as_of": "2026-09-10",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
+    "collection_status": "succeeded",
+    "last_attempted_at": "2026-09-10T10:43:34.305895+00:00",
+    "last_checked_at": "2026-09-10T10:43:34.305496+00:00",
+    "cache_used": false,
+    "cached_sections": [],
+    "collection": {
+      "source": "federal_register",
+      "status": "succeeded",
+      "attempted_at": "2026-09-10T10:43:34.305895+00:00",
+      "request_count": 5,
+      "successful_requests": 5,
+      "failed_requests": 0,
+      "records_collected": 25,
+      "cache_used": false,
+      "cached_sections": []
+    },
     "sections": [
       "country",
       "platforms",
@@ -16,7 +33,7 @@
       "country": 1,
       "platforms": 7,
       "rules": 5,
-      "policies": 16,
+      "policies": 19,
       "alerts": 7
     }
   },
@@ -109,7 +126,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-09-03"
+    "as_of": "2026-09-10"
   },
   "findings": [
     "美国是全球最大单一电商市场（2026E ≈ $1.6 万亿），消费电子高频高复购，是工厂出海首选试水品类。",
@@ -130,7 +147,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
       "hotCats": [
         "手机配件",
         "智能穿戴",
@@ -149,7 +166,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
       "hotCats": [
         "蓝牙耳机",
         "手机壳",
@@ -168,7 +185,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
       "hotCats": [
         "家电配件",
         "电脑外设",
@@ -186,7 +203,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
       "hotCats": [
         "二手电子",
         "收藏机型",
@@ -204,7 +221,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
       "hotCats": [
         "手工电子饰品",
         "定制外壳"
@@ -221,7 +238,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
       "hotCats": [
         "品牌官网",
         "订阅制配件"
@@ -238,7 +255,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
       "hotCats": [
         "低价配件",
         "合金/塑料外壳"
@@ -304,7 +321,7 @@
       "severity": "high",
       "source": "FCC",
       "source_url": "https://www.fcc.gov/engineering-technology/laboratory-division/general/equipment-authorization",
-      "as_of": "2026-09-03"
+      "as_of": "2026-09-10"
     },
     {
       "platform": "CPSC（美国消费品安全委员会）",
@@ -313,7 +330,7 @@
       "severity": "high",
       "source": "CPSC",
       "source_url": "https://www.cpsc.gov/",
-      "as_of": "2026-09-03"
+      "as_of": "2026-09-10"
     },
     {
       "platform": "EPA / 加州",
@@ -322,7 +339,7 @@
       "severity": "medium",
       "source": "EPA / California",
       "source_url": "https://www.energystar.gov/",
-      "as_of": "2026-09-03"
+      "as_of": "2026-09-10"
     },
     {
       "platform": "Amazon",
@@ -331,7 +348,7 @@
       "severity": "medium",
       "source": "Amazon Seller Central",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-09-03"
+      "as_of": "2026-09-10"
     },
     {
       "platform": "TikTok Shop（美国）",
@@ -340,10 +357,70 @@
       "severity": "high",
       "source": "TikTok Shop 卖家中心",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-09-03"
+      "as_of": "2026-09-10"
     }
   ],
   "policies": [
+    {
+      "title": "Foreign-Trade Zone (FTZ) 183, Notification of Proposed Production Activity; Dongjin Semichem Texas, Inc.; (Semiconductor-Grade Photoresist Thinner); Killeen, Texas",
+      "date": "2026-09-10",
+      "agency": "Commerce Department",
+      "summary": "",
+      "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18490/foreign-trade-zone-ftz-183-notification-of-proposed-production-activity-dongjin-semichem-texas-inc",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
+      "live": true
+    },
+    {
+      "title": "Improving the Effectiveness of the Robocall Mitigation Database; Call Authentication Trust Anchor; Advanced Methods To Target and Eliminate Unlawful Robocalls",
+      "date": "2026-09-09",
+      "agency": "Federal Communications Commission",
+      "summary": "In this document, the Federal Communications Commission (Commission) proposes steps to strengthen the reliability, integrity, and effectiveness of the Robocall Mitigation Database (RMD or Database) as a core component of its illegal-call prevention framework. The Commission propo…",
+      "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18366/improving-the-effectiveness-of-the-robocall-mitigation-database-call-authentication-trust-anchor",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
+      "live": true
+    },
+    {
+      "title": "Certain Foreign-Fabricated Semiconductor Devices, Products Containing the Same, and Components Thereof; Notice of a Commission Determination Not To Review an Initial Determination Granting a Joint Motion To Terminate the Investigation",
+      "date": "2026-09-08",
+      "agency": "International Trade Commission",
+      "summary": "Notice is hereby given that the U.S. International Trade Commission has determined not to review an initial determination (\"ID\") (Order No. 77) of the presiding administrative law judge (\"ALJ\") granting a joint motion to terminate the investigation in its entirety based on settle…",
+      "url": "https://www.federalregister.gov/documents/2026/09/08/2026-18260/certain-foreign-fabricated-semiconductor-devices-products-containing-the-same-and-components-thereof",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
+      "live": true
+    },
+    {
+      "title": "Unleashing Unlicensed Spectrum for Direct-to-Device",
+      "date": "2026-09-08",
+      "agency": "Federal Communications Commission",
+      "summary": "The Federal Communications Commission (Commission or FCC) issues a Notice of Proposed Rulemaking proposes to expand opportunities for direct-to-device (D2D) communications by permitting certain unlicensed devices to communicate with satellites on a non-interference basis. Buildin…",
+      "url": "https://www.federalregister.gov/documents/2026/09/08/2026-18282/unleashing-unlicensed-spectrum-for-direct-to-device",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
+      "live": true
+    },
+    {
+      "title": "Certain Mobile Electronic Devices; Notice of a Commission Determination To Review in Part a Final Initial Determination Finding a Violation of Section 337; Request for Written Submissions on the Issues Under Review and on Remedy, The Public Interest, and Bonding",
+      "date": "2026-09-03",
+      "agency": "International Trade Commission",
+      "summary": "Notice is hereby given that the U.S. International Trade Commission has determined to review in part a final initial determination (\"FID\") issued by the presiding Administrative Law Judge (\"ALJ\"), finding a violation of section 337 as to a certain asserted patent and no violation…",
+      "url": "https://www.federalregister.gov/documents/2026/09/03/2026-18027/certain-mobile-electronic-devices-notice-of-a-commission-determination-to-review-in-part-a-final",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
+      "live": true
+    },
     {
       "title": "Certain Mobile Devices With Hardware and Software for Exchanging Electronic Content; Institution of Investigation",
       "date": "2026-09-01",
@@ -352,7 +429,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/01/2026-17864/certain-mobile-devices-with-hardware-and-software-for-exchanging-electronic-content-institution-of",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -363,7 +441,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17516/information-collection-being-reviewed-by-the-federal-communications-commission",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -374,7 +453,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/26/2026-17358/foreign-trade-zone-ftz-126-notification-of-proposed-production-activity-panasonic-energy-corporation",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -385,7 +465,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17241/foreign-trade-zone-ftz-183-notification-of-proposed-production-activity-ichor-systems-inc",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -396,7 +477,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-17011/notice-of-receipt-of-complaint-solicitation-of-comments-relating-to-the-public-interest",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -407,7 +489,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-17046/certain-wireless-communications-devices-and-components-thereof-notice-of-request-for-submissions-on",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -418,7 +501,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16503/empowering-broadband-consumers-through-transparency",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -429,7 +513,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/04/2026-15823/hazardous-materials-reducing-burdens-on-domestic-companies-using-battery-powered-equipment-in-trades",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -440,7 +525,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/03/2026-15733/sunshine-act-open-commission-meeting-thursday-august-6-2026",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -451,7 +537,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15585/requirements-for-interference-tolerant-radio-altimeter-systems",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -462,7 +549,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15601/modernization-of-the-nations-alerting-systems-protecting-the-nations-communications-systems-from",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -473,29 +561,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15600/wireless-emergency-alerts-the-emergency-alert-system-modernization-of-the-nations-alerting-systems",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
-      "live": true
-    },
-    {
-      "title": "Upper C-Band (3.98-4.2 GHz); Expanding Flexible Use of the 3.7 to 4.2 GHz Band",
-      "date": "2026-07-31",
-      "agency": "Federal Communications Commission",
-      "summary": "In this document, the Federal Communications Commission (Commission) adopted a Report and Order, Order of Proposed Modification, and Order on Reconsideration (Order), that expands the ecosystem for next-generation wireless services in the 3.7-4.2 GHz band (C-band) by making 160 m…",
-      "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15598/upper-c-band-398-42-ghz-expanding-flexible-use-of-the-37-to-42-ghz-band",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
-      "live": true
-    },
-    {
-      "title": "Review of Submarine Cable Landing License Rules and Procedures To Assess Evolving National Security, Law Enforcement, Foreign Policy, and Trade Policy Risks",
-      "date": "2026-07-27",
-      "agency": "Federal Communications Commission",
-      "summary": "In this document, the Federal Communications Commission (Commission or FCC) adopted a Second Report and Order that promotes the deployment of submarine cables while strengthening national security interests in connection with their modern capabilities. The Second Report and Order…",
-      "url": "https://www.federalregister.gov/documents/2026/07/27/2026-15123/review-of-submarine-cable-landing-license-rules-and-procedures-to-assess-evolving-national-security",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -506,7 +573,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/15/2026-14227/notice-of-receipt-of-complaint-solicitation-of-comments-relating-to-the-public-interest",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -517,7 +585,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/08/2026-13811/certain-mobile-electronic-devices-notice-of-request-for-submissions-on-the-public-interest",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     }
   ],
@@ -528,11 +597,24 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 8471(计算机)/8517(通信设备)/8507(电池)/8528(显示器)/8543(电子装置) 等广泛受 Section 301 约束；2024 四年期复审已调整税率，2026 强迫劳动提案对部分经济体加征附加税。精确附加税率须用 USTR 产品检索或 CBP 裁定确认。",
-      "date": "2026-09-03",
+      "date": "2026-09-10",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
       "live": false
+    },
+    {
+      "level": "high",
+      "title": "Unleashing Unlicensed Spectrum for Direct-to-Device",
+      "market": "美国",
+      "platform": "Federal Communications Commission",
+      "detail": "The Federal Communications Commission (Commission or FCC) issues a Notice of Proposed Rulemaking proposes to expand opportunities for direct-to-device (D2D) communications by permitting certain unlice…",
+      "date": "2026-09-08",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/09/08/2026-18282/unleashing-unlicensed-spectrum-for-direct-to-device",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
+      "live": true
     },
     {
       "level": "high",
@@ -543,7 +625,8 @@
       "date": "2026-09-01",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/01/2026-17864/certain-mobile-devices-with-hardware-and-software-for-exchanging-electronic-content-institution-of",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -555,7 +638,8 @@
       "date": "2026-08-13",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16503/empowering-broadband-consumers-through-transparency",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -567,7 +651,8 @@
       "date": "2026-08-03",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/03/2026-15733/sunshine-act-open-commission-meeting-thursday-august-6-2026",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -579,7 +664,8 @@
       "date": "2026-07-31",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15585/requirements-for-interference-tolerant-radio-altimeter-systems",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     },
     {
@@ -591,19 +677,8 @@
       "date": "2026-07-31",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15600/wireless-emergency-alerts-the-emergency-alert-system-modernization-of-the-nations-alerting-systems",
-      "as_of": "2026-09-03",
-      "live": true
-    },
-    {
-      "level": "high",
-      "title": "Upper C-Band (3.98-4.2 GHz); Expanding Flexible Use of the 3.7 to 4.2 GHz Band",
-      "market": "美国",
-      "platform": "Federal Communications Commission",
-      "detail": "In this document, the Federal Communications Commission (Commission) adopted a Report and Order, Order of Proposed Modification, and Order on Reconsideration (Order), that expands the ecosystem for ne…",
-      "date": "2026-07-31",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15598/upper-c-band-398-42-ghz-expanding-flexible-use-of-the-37-to-42-ghz-band",
-      "as_of": "2026-09-03",
+      "as_of": "2026-09-10",
+      "collected_at": "2026-09-10T10:43:34.305895+00:00",
       "live": true
     }
   ]
