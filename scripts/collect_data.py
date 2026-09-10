@@ -195,9 +195,9 @@ def set_collection_scope_count(key, count):
         COLLECTION_SOURCES[key]['records_in_scope'] = max(int(count), 0)
 
 
-def collection_source_succeeded(key):
+def collection_source_checked(key):
     source = COLLECTION_SOURCES.get(key)
-    return bool(source) and _source_status(source) == 'succeeded'
+    return bool(source) and _source_status(source) in {'succeeded', 'degraded'}
 
 
 def build_collection_report():
@@ -1593,9 +1593,9 @@ def main():
     policies_data, p_added = merge_data(policies_file, all_policies, baseline_kind='policies')
     rules_data, r_added = merge_data(rules_file, all_rules, baseline_kind='rules')
     policy_source_keys = ['federal_register'] if 'US' in scope['market_codes'] else []
-    if policy_source_keys and all(collection_source_succeeded(key) for key in policy_source_keys):
+    if policy_source_keys and all(collection_source_checked(key) for key in policy_source_keys):
         policies_data['last_checked_at'] = NOW_ISO
-    if rule_source_keys and all(collection_source_succeeded(key) for key in rule_source_keys):
+    if rule_source_keys and all(collection_source_checked(key) for key in rule_source_keys):
         rules_data['last_checked_at'] = NOW_ISO
     policies_data['source_checks'] = {
         key: _source_status(COLLECTION_SOURCES[key])
