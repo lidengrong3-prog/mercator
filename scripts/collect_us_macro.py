@@ -304,6 +304,15 @@ def update_countries_json(macro_data, countries_file):
         
         us["macro"] = macro_rows + non_fred
         us["macro_updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        metadata = countries.setdefault("_metadata", {})
+        metadata["last_updated"] = (
+            macro_data.get("meta", {}).get("generated_at")
+            or datetime.now(timezone.utc).isoformat()
+        )
+        updated_countries = list(metadata.get("updated_countries") or [])
+        if "us" not in updated_countries:
+            updated_countries.append("us")
+        metadata["updated_countries"] = updated_countries
         
         with open(countries_file, "w", encoding="utf-8") as f:
             json.dump(countries, f, ensure_ascii=False, indent=2)

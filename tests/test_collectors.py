@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 import collect_cpsc  # noqa: E402
 import collect_data  # noqa: E402
+import collect_us_macro  # noqa: E402
 from quarantine_unverified_baseline import is_unverified  # noqa: E402
 
 
@@ -73,6 +74,53 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(source["request_count"], 1)
         self.assertEqual(source["failed_requests"], 1)
         self.assertGreaterEqual(source["duration_ms"], 0)
+
+    def test_partial_source_success_advances_check_but_total_failure_does_not(self):
+        collect_data.reset_collection_telemetry({"market_codes": ["US"]})
+        partial = collect_data.register_collection_source(
+            "partial", "Partial official source", "rule", core=True
+        )
+        partial["collector_status"] = "succeeded"
+        collect_data._record_http_result(partial, success=True, duration_ms=1)
+        collect_data._record_http_result(
+            partial, success=False, duration_ms=1, error="secondary endpoint unavailable"
+        )
+        failed = collect_data.register_collection_source(
+            "failed", "Failed official source", "rule", core=True
+        )
+        failed["collector_status"] = "succeeded"
+        collect_data._record_http_result(
+            failed, success=False, duration_ms=1, error="offline"
+        )
+
+        self.assertTrue(collect_data.collection_source_checked("partial"))
+        self.assertFalse(collect_data.collection_source_checked("failed"))
+
+    def test_country_catalog_timestamp_advances_after_real_macro_update(self):
+        generated_at = "2026-09-10T10:30:00+00:00"
+        macro_data = {
+            "meta": {"generated_at": generated_at},
+            "indicators": {
+                "UNRATE": {
+                    "date": "2026-08-01", "value": "4.2", "unit": "%",
+                    "source": "FRED", "source_url": "https://fred.stlouisfed.org/series/UNRATE",
+                },
+            },
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = os.path.join(directory, "countries.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump({
+                    "us": {"macro": []},
+                    "_metadata": {"last_updated": "2026-08-01T00:00:00+00:00", "updated_countries": []},
+                }, handle)
+            self.assertTrue(collect_us_macro.update_countries_json(macro_data, path))
+            with open(path, encoding="utf-8") as handle:
+                countries = json.load(handle)
+
+        self.assertEqual(countries["_metadata"]["last_updated"], generated_at)
+        self.assertIn("us", countries["_metadata"]["updated_countries"])
+        self.assertTrue(countries["us"]["macro"])
 
     def test_main_uses_only_configured_scope_and_skips_legacy_global_writes(self):
         manifest = {
