@@ -24,6 +24,7 @@ import json
 import csv
 import io
 import os
+import time
 import sys
 import urllib.request
 import urllib.parse
@@ -32,6 +33,7 @@ import ssl
 from datetime import datetime, timezone, timedelta
 
 from collect_data import annotate_provenance
+from collection_telemetry import append_collection_source
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -327,6 +329,7 @@ def main():
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
     
     # Collect
+    started = time.perf_counter()
     data = collect_all(fred_key=args.fred_key, census_key=args.census_key)
     
     # Save
@@ -335,6 +338,20 @@ def main():
     
     print(f"\n[MACRO] Output: {args.output}")
     print(f"[MACRO] Indicators fetched: {data['meta']['fetched']}, failed: {data['meta']['failed']}")
+    expected_requests = len(FRED_SERIES) + len(BLS_SERIES)
+    fetched = int(data["meta"].get("fetched") or 0)
+    failed = int(data["meta"].get("failed") or 0)
+    append_collection_source({
+        "key": "fred_bls_macro", "label": "FRED / BLS 宏观指标", "domain": "market",
+        "core": False,
+        "status": "succeeded" if failed == 0 else ("degraded" if fetched else "failed"),
+        "market_codes": ["US"], "request_count": expected_requests,
+        "successful_requests": fetched, "failed_requests": failed,
+        "records_collected": fetched, "records_in_scope": fetched,
+        "duration_ms": int((time.perf_counter() - started) * 1000),
+        "content_updated_at": data.get("meta", {}).get("generated_at"),
+        "last_checked_at": data.get("meta", {}).get("generated_at") if failed == 0 else None,
+    })
     
     # Update countries.json if requested
     if args.update_countries and data["meta"]["fetched"] > 0:

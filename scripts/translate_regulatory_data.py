@@ -16,6 +16,7 @@ import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 
@@ -81,6 +82,21 @@ def api_config() -> tuple[str, str, str]:
         or os.getenv("DEEPSEEK_MODEL")
         or "deepseek-chat"
     ).strip()
+    return key, url, model
+
+
+def validate_api_config() -> tuple[str, str, str]:
+    key, url, model = api_config()
+    missing = []
+    if not key:
+        missing.append("API key")
+    if not model:
+        missing.append("model")
+    if missing:
+        raise RuntimeError("regulatory translation configuration is missing: " + ", ".join(missing))
+    parsed = urlparse(url)
+    if parsed.scheme != "https" or not parsed.hostname:
+        raise RuntimeError("regulatory translation API URL must be an absolute HTTPS URL")
     return key, url, model
 
 
@@ -257,10 +273,19 @@ def translate_file(
 def main() -> int:
     parser = argparse.ArgumentParser(description="Translate regulatory display fields to Simplified Chinese")
     parser.add_argument("--require-config", action="store_true", help="fail when untranslated records exist and no API is configured")
+    parser.add_argument("--check-config", action="store_true", help="validate API configuration without reading or changing data")
     parser.add_argument("--limit", type=int, default=None, help="maximum API-translated records per run")
     parser.add_argument("--provider", choices=("api", "argos"), default="api", help="translation provider")
     parser.add_argument("--check", action="store_true", help="do not translate; fail when any display translation is missing or stale")
     args = parser.parse_args()
+    if args.check_config:
+        try:
+            _, url, model = validate_api_config()
+        except RuntimeError as error:
+            print(f"[translation] configuration invalid: {error}", file=sys.stderr)
+            return 1
+        print(f"[translation] configuration valid: host={urlparse(url).hostname} model={model}")
+        return 0
     total_pending = 0
     for filename in DATASETS:
         path = DATA_DIR / filename

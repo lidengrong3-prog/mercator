@@ -28,13 +28,25 @@ Deno.serve(async (request) => {
   if (plan !== 'pro') return jsonResponse({ error: 'BILLING_CONTACT_REQUIRED' }, 400, origin);
 
   const subscriptionResponse = await fetch(
-    `${config.url}/rest/v1/user_subscriptions?user_id=eq.${encodeURIComponent(user.id)}&select=plan,status,provider_customer_id&limit=1`,
+    `${config.url}/rest/v1/user_subscriptions?user_id=eq.${encodeURIComponent(user.id)}&select=plan,status,provider,provider_customer_id,provider_subscription_id&limit=1`,
     { headers: serviceHeaders(config.serviceKey) },
   );
-  const subscriptionRows = subscriptionResponse.ok ? await subscriptionResponse.json() : [];
+  if (!subscriptionResponse.ok) return jsonResponse({ error: 'BILLING_STATUS_UNAVAILABLE' }, 503, origin);
+  const subscriptionRows = await subscriptionResponse.json();
   const current = subscriptionRows?.[0];
-  if (current?.plan === 'pro' && ['active', 'trialing'].includes(String(current.status))) {
+  const effectivePlanResponse = await fetch(`${config.url}/rest/v1/rpc/effective_billing_plan`, {
+    method: 'POST',
+    headers: serviceHeaders(config.serviceKey),
+    body: JSON.stringify({ p_user_id: user.id }),
+  });
+  if (!effectivePlanResponse.ok) return jsonResponse({ error: 'BILLING_ENTITLEMENTS_UNAVAILABLE' }, 503, origin);
+  const effectivePlan = String(await effectivePlanResponse.json() || 'free');
+  if (effectivePlan === 'pro') {
     return jsonResponse({ error: 'SUBSCRIPTION_ALREADY_ACTIVE' }, 409, origin);
+  }
+  if (current?.provider === 'stripe' && current?.provider_subscription_id
+    && !['cancelled', 'expired'].includes(String(current.status))) {
+    return jsonResponse({ error: 'SUBSCRIPTION_REQUIRES_MANAGEMENT' }, 409, origin);
   }
 
   const requestKey = String(payload.idempotency_key || request.headers.get('X-Request-Id') || crypto.randomUUID());

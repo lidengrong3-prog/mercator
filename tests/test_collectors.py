@@ -4,6 +4,7 @@ import os
 import sys
 import tempfile
 import unittest
+from urllib.parse import parse_qs, urlsplit
 from unittest.mock import patch
 
 
@@ -16,6 +17,116 @@ from quarantine_unverified_baseline import is_unverified  # noqa: E402
 
 
 class CollectorTests(unittest.TestCase):
+    def test_query_url_encodes_unicode_spaces_and_repeated_fields(self):
+        url = collect_data.build_query_url(
+            "https://example.test/search?existing=1",
+            [("q", "美国 电商"), ("fields[]", "title"), ("fields[]", "abstract")],
+        )
+        self.assertNotIn("美国", url)
+        self.assertNotIn(" ", url)
+        self.assertEqual(parse_qs(urlsplit(url).query), {
+            "existing": ["1"],
+            "q": ["美国 电商"],
+            "fields[]": ["title", "abstract"],
+        })
+
+    def test_configured_collection_scope_excludes_schema_only_markets(self):
+        scope = collect_data.configured_collection_scope({
+            "config_version": "test",
+            "markets": [
+                {"code": "US", "status": "active", "data_status": "configured"},
+                {"code": "ID", "status": "active", "data_status": "schema_only"},
+            ],
+            "platforms": [
+                {"key": "amazon", "name": "Amazon"},
+                {"key": "shopee", "name": "Shopee"},
+            ],
+            "market_platforms": [
+                {"market_code": "US", "platform_key": "amazon", "status": "active", "data_status": "configured"},
+                {"market_code": "ID", "platform_key": "shopee", "status": "active", "data_status": "schema_only"},
+            ],
+        })
+        self.assertEqual(scope["market_codes"], ["US"])
+        self.assertEqual(scope["platform_keys"], ["amazon"])
+        self.assertEqual(scope["platform_names"], ["Amazon"])
+
+    def test_core_source_http_failure_is_retained_in_collection_report(self):
+        collect_data.reset_collection_telemetry({"market_codes": ["US"]})
+        url = collect_data.build_query_url(
+            "https://example.test/search", {"q": "美国 电商"}
+        )
+        with patch.object(collect_data, "urlopen", side_effect=RuntimeError("offline")):
+            result = collect_data.fetch_json(
+                url,
+                source_key="official_policy",
+                source_label="Official policy source",
+                domain="policy",
+                core=True,
+                market_codes=["US"],
+            )
+        report = collect_data.build_collection_report()
+        self.assertIsNone(result)
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual(report["summary"]["core_failures"], ["official_policy"])
+        source = report["sources"][0]
+        self.assertEqual(source["status"], "failed")
+        self.assertEqual(source["request_count"], 1)
+        self.assertEqual(source["failed_requests"], 1)
+        self.assertGreaterEqual(source["duration_ms"], 0)
+
+    def test_main_uses_only_configured_scope_and_skips_legacy_global_writes(self):
+        manifest = {
+            "config_version": "test",
+            "markets": [
+                {"code": "US", "status": "active", "data_status": "configured"},
+                {"code": "ID", "status": "active", "data_status": "schema_only"},
+            ],
+            "platforms": [
+                {"key": "amazon", "name": "Amazon"},
+                {"key": "tiktok-shop", "name": "TikTok Shop"},
+                {"key": "aliexpress", "name": "AliExpress"},
+                {"key": "ebay", "name": "eBay"},
+                {"key": "shopee", "name": "Shopee"},
+            ],
+            "market_platforms": [
+                {"market_code": "US", "platform_key": key, "status": "active", "data_status": "configured"}
+                for key in ("amazon", "tiktok-shop", "aliexpress", "ebay")
+            ] + [
+                {"market_code": "ID", "platform_key": "shopee", "status": "active", "data_status": "schema_only"}
+            ],
+        }
+        policy = {
+            "id": "policy-1", "title": "US policy", "source": "Federal Register",
+            "summary": "Current policy summary.",
+            "source_url": "https://www.federalregister.gov/documents/1",
+            "published_at": collect_data.NOW_DATE,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            with open(os.path.join(directory, "market_scope.json"), "w", encoding="utf-8") as handle:
+                json.dump(manifest, handle)
+            with patch.object(collect_data, "DATA_DIR", directory), \
+                    patch.object(collect_data, "collect_federal_register", return_value=[policy]), \
+                    patch.object(collect_data, "collect_ustr", return_value=[]), \
+                    patch.object(collect_data, "collect_cn_news", return_value=[]), \
+                    patch.object(collect_data, "collect_amazon", return_value=[]), \
+                    patch.object(collect_data, "collect_tiktok_shop", return_value=[]):
+                self.assertEqual(collect_data.main(), 0)
+
+            with open(os.path.join(directory, "collection_run.json"), encoding="utf-8") as handle:
+                run = json.load(handle)
+            with open(os.path.join(directory, "policies.json"), encoding="utf-8") as handle:
+                policies = json.load(handle)
+        self.assertEqual(run["scope"]["market_codes"], ["US"])
+        self.assertEqual(
+            run["scope"]["platform_keys"],
+            ["amazon", "tiktok-shop", "aliexpress", "ebay"],
+        )
+        self.assertFalse(run["legacy_global_writes"])
+        self.assertNotIn("shopee", run["scope"]["platform_keys"])
+        self.assertEqual(policies["items"][0]["market_codes"], ["US"])
+        self.assertFalse(hasattr(collect_data, "collect_platform_updates"))
+        self.assertFalse(hasattr(collect_data, "collect_country_updates"))
+
     def test_industry_advisory_is_traceable_but_not_official(self):
         item = collect_data.annotate_industry_advisory({
             "title": "美国站新关税提醒",

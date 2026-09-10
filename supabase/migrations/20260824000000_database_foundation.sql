@@ -1,0 +1,262 @@
+-- Database foundation required by every later Mercator migration.
+-- This migration absorbs the objects that were previously created manually
+-- from schema.sql, phase2_schema.sql, monitored_shops.sql and add_indexes.sql.
+-- It is intentionally idempotent so an existing project can record the
+-- foundation without replacing its data.
+
+BEGIN;
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  display_name TEXT,
+  company TEXT,
+  tier TEXT NOT NULL DEFAULT 'free' CHECK (tier IN ('free', 'pro', 'enterprise')),
+  avatar_url TEXT,
+  watchlist JSONB DEFAULT '[]'::jsonb,
+  preferences JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  last_login_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Existing projects may have an early profiles table with fewer columns.
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS email TEXT,
+  ADD COLUMN IF NOT EXISTS display_name TEXT,
+  ADD COLUMN IF NOT EXISTS company TEXT,
+  ADD COLUMN IF NOT EXISTS tier TEXT NOT NULL DEFAULT 'free',
+  ADD COLUMN IF NOT EXISTS avatar_url TEXT,
+  ADD COLUMN IF NOT EXISTS watchlist JSONB DEFAULT '[]'::jsonb,
+  ADD COLUMN IF NOT EXISTS preferences JSONB DEFAULT '{}'::jsonb,
+  ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW(),
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW(),
+  ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMPTZ DEFAULT NOW();
+
+CREATE UNIQUE INDEX IF NOT EXISTS profiles_email_key ON public.profiles(email);
+
+CREATE TABLE IF NOT EXISTS public.query_history (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  query_type TEXT NOT NULL,
+  query_text TEXT,
+  result_summary TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.watchlist_items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  item_type TEXT NOT NULL,
+  item_id TEXT NOT NULL,
+  item_name TEXT,
+  item_data JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (user_id, item_type, item_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.reports (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  report_type TEXT NOT NULL,
+  title TEXT NOT NULL,
+  content JSONB,
+  file_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.feedback (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  subject TEXT NOT NULL,
+  message TEXT NOT NULL,
+  status TEXT DEFAULT 'open' CHECK (status IN ('open', 'in_progress', 'resolved')),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.market_data (
+  key TEXT PRIMARY KEY,
+  data JSONB NOT NULL,
+  meta JSONB DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.monitored_shops (
+  id TEXT PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  device_id TEXT NOT NULL,
+  shop_name TEXT NOT NULL,
+  platform TEXT,
+  market TEXT,
+  category TEXT,
+  tags TEXT,
+  status TEXT,
+  gmv TEXT,
+  growth TEXT,
+  source TEXT DEFAULT 'app',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_query_history_user
+  ON public.query_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_query_history_user_time
+  ON public.query_history(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_feedback_status
+  ON public.feedback(status);
+CREATE INDEX IF NOT EXISTS idx_feedback_user
+  ON public.feedback(user_id);
+CREATE INDEX IF NOT EXISTS idx_watchlist_items_user
+  ON public.watchlist_items(user_id);
+CREATE INDEX IF NOT EXISTS idx_watchlist_items_user_type
+  ON public.watchlist_items(user_id, item_type);
+CREATE INDEX IF NOT EXISTS idx_monitored_shops_device
+  ON public.monitored_shops(device_id);
+CREATE INDEX IF NOT EXISTS idx_monitored_shops_user
+  ON public.monitored_shops(user_id);
+
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.query_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.watchlist_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.feedback ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.market_data ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.monitored_shops ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS profiles_select_own ON public.profiles;
+DROP POLICY IF EXISTS profiles_insert_own ON public.profiles;
+DROP POLICY IF EXISTS profiles_update_own ON public.profiles;
+CREATE POLICY profiles_select_own ON public.profiles
+  FOR SELECT TO authenticated USING (auth.uid() = id);
+CREATE POLICY profiles_insert_own ON public.profiles
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
+CREATE POLICY profiles_update_own ON public.profiles
+  FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
+
+DROP POLICY IF EXISTS qh_select_own ON public.query_history;
+DROP POLICY IF EXISTS qh_insert_own ON public.query_history;
+CREATE POLICY qh_select_own ON public.query_history
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY qh_insert_own ON public.query_history
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS wl_select_own ON public.watchlist_items;
+DROP POLICY IF EXISTS wl_insert_own ON public.watchlist_items;
+DROP POLICY IF EXISTS wl_delete_own ON public.watchlist_items;
+CREATE POLICY wl_select_own ON public.watchlist_items
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY wl_insert_own ON public.watchlist_items
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY wl_delete_own ON public.watchlist_items
+  FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS rpt_select_own ON public.reports;
+DROP POLICY IF EXISTS rpt_insert_own ON public.reports;
+CREATE POLICY rpt_select_own ON public.reports
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY rpt_insert_own ON public.reports
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS fb_select_own ON public.feedback;
+DROP POLICY IF EXISTS fb_insert_own ON public.feedback;
+CREATE POLICY fb_select_own ON public.feedback
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY fb_insert_own ON public.feedback
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS market_data_select_all ON public.market_data;
+CREATE POLICY market_data_select_all ON public.market_data
+  FOR SELECT TO anon, authenticated USING (true);
+
+DROP POLICY IF EXISTS ms_anon_all ON public.monitored_shops;
+DROP POLICY IF EXISTS ms_user_select ON public.monitored_shops;
+DROP POLICY IF EXISTS ms_user_insert ON public.monitored_shops;
+DROP POLICY IF EXISTS ms_user_update ON public.monitored_shops;
+DROP POLICY IF EXISTS ms_user_delete ON public.monitored_shops;
+CREATE POLICY ms_user_select ON public.monitored_shops
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY ms_user_insert ON public.monitored_shops
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY ms_user_update ON public.monitored_shops
+  FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY ms_user_delete ON public.monitored_shops
+  FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+REVOKE ALL ON public.profiles, public.query_history, public.watchlist_items,
+  public.reports, public.feedback, public.market_data, public.monitored_shops
+  FROM anon, authenticated;
+GRANT SELECT, INSERT, UPDATE ON public.profiles TO authenticated;
+GRANT SELECT, INSERT ON public.query_history TO authenticated;
+GRANT SELECT, INSERT, DELETE ON public.watchlist_items TO authenticated;
+GRANT SELECT, INSERT ON public.reports TO authenticated;
+GRANT SELECT, INSERT ON public.feedback TO authenticated;
+GRANT SELECT ON public.market_data TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.monitored_shops TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, display_name)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'display_name', split_part(NEW.email, '@', 1))
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.update_updated_at()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.update_monitored_shops_updated_at()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+DROP TRIGGER IF EXISTS profiles_updated_at ON public.profiles;
+CREATE TRIGGER profiles_updated_at
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+DROP TRIGGER IF EXISTS market_data_updated_at ON public.market_data;
+CREATE TRIGGER market_data_updated_at
+  BEFORE UPDATE ON public.market_data
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+DROP TRIGGER IF EXISTS monitored_shops_updated_at ON public.monitored_shops;
+CREATE TRIGGER monitored_shops_updated_at
+  BEFORE UPDATE ON public.monitored_shops
+  FOR EACH ROW EXECUTE FUNCTION public.update_monitored_shops_updated_at();
+
+REVOKE ALL ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.update_updated_at() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.update_monitored_shops_updated_at() FROM PUBLIC, anon, authenticated;
+
+COMMIT;

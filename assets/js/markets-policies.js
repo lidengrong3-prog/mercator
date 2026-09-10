@@ -648,6 +648,92 @@ function plSourceLabel(p){
   return String(p && p.source || '官方来源');
 }
 
+// Keep provenance visible at the record level. This renderer only presents
+// metadata supplied by the collector; it never invents a collection time or
+// turns an evidence score into a probability of truth.
+function plFormatLineageTime(value){
+  var raw=String(value||'').trim();
+  if(!raw)return '尚未接入';
+  var date=new Date(raw);
+  if(isNaN(date.getTime()))return '尚未接入';
+  try{
+    return date.toLocaleString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+  }catch(e){return raw.replace('T',' ').substring(0,16);}
+}
+
+function plLineageSourceDomain(record){
+  var raw=record&&(record.source_url||record.sourceUrl||record.url)||'';
+  var safe=typeof jaySafeHttpsUrl==='function'?jaySafeHttpsUrl(raw):'';
+  if(!safe)return '';
+  try{return new URL(safe).hostname.toLowerCase();}catch(e){return '';}
+}
+
+function plLineageSourceKindLabel(kind){
+  return ({official:'官方来源',traceable:'可追溯来源',uploaded:'人工上传',derived:'派生记录',demo:'演示数据'})[kind]||'来源未分类';
+}
+
+function plLineageSourceTypeLabel(type){
+  return ({
+    government:'政府官方记录',regulator:'监管机构记录',platform:'平台官方记录',official_feed:'官方数据接口',
+    industry_association:'行业协会',licensed_provider:'授权资讯提供方',user_upload:'人工上传',
+    derived:'程序派生',demo:'演示数据',unknown:'来源类型未分类'
+  })[type]||'来源类型未分类';
+}
+
+function plLineageEvidenceLabel(record,evidence){
+  record=record||{}; evidence=evidence||{};
+  if(record._advisory)return '可追溯参考 · 非官方核验';
+  if(evidence.flag==='pass')return evidence.label||'已核验';
+  var status=String(record.verification_status||record.verificationStatus||'').toLowerCase();
+  if(status==='uploaded')return '人工上传 · 已接入';
+  if(status==='rejected')return '已拒绝 · 不可引用';
+  return '待核验 · 来源或记录不足';
+}
+
+function plRenderDataLineage(record,evidence,options){
+  record=record||{}; evidence=evidence||plAssessEvidence(record); options=options||{};
+  var normalized=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.normalizeDataRecord
+    ? window.JAY_MARKET_SCOPE_API.normalizeDataRecord(record,record.domain||plActiveDomain) : record;
+  var sourceKind=String(normalized.source_kind||record.source_kind||'').toLowerCase();
+  var sourceType=String(normalized.source_type||record.source_type||'').trim();
+  var rawSourceUrl=record.source_url||record.sourceUrl||record.url||'';
+  var safeUrl=typeof jaySafeHttpsUrl==='function'?jaySafeHttpsUrl(rawSourceUrl):'';
+  var domain=plLineageSourceDomain(record);
+  var sourceName=String(record.source||'').trim()||domain||'未提供来源';
+  var statusLabel=plLineageEvidenceLabel(record,evidence);
+  var statusClass=record._advisory?'advisory':evidence.flag==='pass'?'verified':evidence.flag==='fail'?'failed':'pending';
+  var tierLabel=sourceKind==='traceable'&&record._advisory?'可追溯参考':plLineageSourceKindLabel(sourceKind);
+  var sourceLink=safeUrl && !options.compact
+    ? '<a class="data-lineage-source-link" href="'+escapeHtml(safeUrl)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(sourceName)+'</a>'
+    : '<span class="data-lineage-source'+(safeUrl?'':'-missing')+'">'+escapeHtml(sourceName)+'</span>';
+  var recordId=String(record.source_record_id||record.sourceRecordId||'').trim();
+  var evidenceHash=String(record.evidence_hash||record.evidenceHash||'').trim();
+  var notes=String(record.verification_notes||record.verificationNotes||'').trim();
+  var verifiedAt=record.verified_at||record.verifiedAt||'';
+  var detail=options.compact?'':(
+    '<details class="data-lineage-detail"><summary>查看数据血缘</summary>'+
+      '<div class="data-lineage-detail-grid">'+
+        '<div><b>来源记录 ID</b><code>'+escapeHtml(recordId||'未提供')+'</code></div>'+
+        '<div><b>来源类型</b><span>'+escapeHtml(plLineageSourceTypeLabel(sourceType))+'</span></div>'+
+        '<div><b>来源分类</b><span>'+escapeHtml(tierLabel)+'</span></div>'+
+        '<div><b>核验时间</b><span>'+escapeHtml(plFormatLineageTime(verifiedAt))+'</span></div>'+
+        '<div class="data-lineage-detail-wide"><b>来源 URL</b>'+(safeUrl?'<a href="'+escapeHtml(safeUrl)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(safeUrl)+'</a>':'<span>尚未接入</span>')+'</div>'+
+        '<div class="data-lineage-detail-wide"><b>证据哈希</b><code title="'+escapeHtml(evidenceHash)+'">'+escapeHtml(evidenceHash||'未提供')+'</code></div>'+
+        (notes?'<div class="data-lineage-detail-wide"><b>核验说明</b><span>'+escapeHtml(notes)+'</span></div>':'')+
+      '</div>'+
+    '</details>'
+  );
+  return '<div class="data-lineage data-lineage-'+statusClass+'" data-lineage-status="'+escapeHtml(statusClass)+'">'+
+    '<div class="data-lineage-summary">'+
+      '<span class="data-lineage-badge">'+escapeHtml(statusLabel)+'</span>'+
+      '<span class="data-lineage-source">来源：'+sourceLink+(domain?' <small>('+escapeHtml(domain)+')</small>':'')+'</span>'+
+      '<span class="data-lineage-time">采集：'+escapeHtml(plFormatLineageTime(record.collected_at||record.collectedAt))+'</span>'+
+      '<span class="data-lineage-tier">证据等级：'+escapeHtml(tierLabel)+'</span>'+
+    '</div>'+detail+
+  '</div>';
+}
+window.plRenderDataLineage=plRenderDataLineage;
+
 // The source feed contains many US Federal Register notices unrelated to
 // cross-border selling. Keep the default view focused on records that can
 // affect import, export, customs, tariffs, product compliance, marketplaces,
@@ -867,7 +953,15 @@ function plInitFromJson() {
   var regionSelect=$('#pl-f-region');
   if(regionSelect && marketCodes.length===1)regionSelect.value=marketCodes[0]||'all';
   else if(regionSelect && marketCodes.length>1)regionSelect.value='all';
+  var policyContext=window.__CP_JAY_CTX&&window.__CP_JAY_CTX.policyFilter;
+  var pendingCategory=policyContext&&(policyContext.domain||'policy')===plActiveDomain
+    ? policyContext.category
+    : ($('#pl-f-category')&&$('#pl-f-category').value);
   plRefreshCategoryOptions();
+  var categorySelect=$('#pl-f-category');
+  if(categorySelect&&pendingCategory&&Array.from(categorySelect.options).some(function(option){return option.value===pendingCategory;})){
+    categorySelect.value=pendingCategory;
+  }
   // Update nav badge
   const navBadge = document.querySelector('a[data-page="policies"] b');
   if (navBadge) navBadge.textContent = items.length;
@@ -1109,6 +1203,7 @@ function renderPlList(){
           ${statusLabel?`<span style="color:${statusColor};border:1px solid ${statusColor};background:${statusColor}15;padding:1px 8px;border-radius:10px;font-size:12px">${escapeHtml(statusLabel)}</span>`:''}
           ${lbLabel?`<span title="法律依据分类" style="color:#6c3483;border:1px solid #6c3483;background:#f5eef8;padding:1px 8px;border-radius:10px;font-size:12px">${escapeHtml(lbLabel)}</span>`:''}
         </div>
+        ${plRenderDataLineage(p,evidence,{compact:true})}
         ${(effDate||expDate)?`<div class="pl-verify-row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:12px;color:#666">
            ${effDate?`<span>生效: <b style="color:#2c3e50">${escapeHtml(effDate)}</b></span>`:''}
            ${expDate?`<span>失效: <b style="color:#e74c3c">${escapeHtml(expDate)}</b></span>`:''}
@@ -1257,6 +1352,7 @@ function openPlDetail(idx){
         <div class="pl-detail-item"><b>失效日期：</b>${escapeHtml(effectiveTo||'尚未接入')}</div>
       </div>
       <p class="pl-domain-empty-note">核验依据：${escapeHtml(evidence.basis)}。中文译文不改变原始来源的验证结论。</p>
+      ${plRenderDataLineage(p,evidence)}
     </div>
     <div class="pl-detail-section"><h4>${escapeHtml(plDomainLabels[plActiveDomain].label)}字段</h4>${plDetailFacts(p,plActiveDomain)}</div>
     <div class="pl-detail-section"><h4>中文内容</h4><div class="pl-detail-item" style="line-height:1.8">${escapeHtml(summary||'中文摘要尚未接入')}</div></div>
@@ -1645,6 +1741,7 @@ function renderRlRules(){
     const isFuture=days>0;
     const safeSourceUrl=jaySafeHttpsUrl(r.source_url);
     const titleLink=safeSourceUrl?`<a href="${escapeHtml(safeSourceUrl)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none">${escapeHtml(r.title)}</a>`:escapeHtml(r.title);
+    const evidence=plAssessEvidence(r);
     return '<div class="rl-rule-card" data-idx="'+globalIdx+'">'
     +'<div class="rl-risk-bar rl-risk-'+riskLevel+'"></div>'
     +'<div class="rl-card-body">'
@@ -1653,6 +1750,7 @@ function renderRlRules(){
     +(isFuture?'<span class="rl-countdown '+(days<=7?(days<=3?'rl-countdown-urgent':'rl-countdown-warn'):'rl-countdown-ok')+'">'+days+'天后生效</span>':'<span class="rl-countdown rl-countdown-ok">已生效</span>')
     +'<span class="rl-rule-version" data-rule-version="'+escapeHtml(rlRuleVersionLabel(r))+'">版本：'+escapeHtml(rlRuleVersionLabel(r))+'</span>'
     +'</div>'
+    +plRenderDataLineage(r,evidence,{compact:true})
     +'<div class="rl-card-summary">'+escapeHtml((r.summary||'').substring(0,80))+((r.summary||'').length>80?'…':'')+'</div>'
     +'</div>'
     +'<div class="rl-card-actions">'
@@ -1778,6 +1876,7 @@ function openRlRuleDetail(idx){
   +'<div class="info-item"><div class="lbl">影响等级</div><div class="val" style="color:'+impactColor+'">'+(r.impact_level==='high'?'🔴 高':r.impact_level==='medium'?'🟡 中':'🔵 低')+'</div></div>'
   +'<div class="info-item"><div class="lbl">来源链接</div><div class="val">'+sourceLink+'</div></div>'
    +'</div></div>'
+   +plRenderDataLineage(r,plAssessEvidence(r))
    +'<div class="rl-detail-section"><h3>📌 平台规则字段</h3>'+rlRuleFieldsHtml(r)+'</div>'
     +'<div class="rl-detail-section"><h3>📝 规则详情</h3><p>'+escapeHtml(r.summary||r.title||'暂无详细摘要')+'</p></div>'
    +'<div class="rl-detail-section"><h3>🕘 版本与历史变化</h3>'+rlRuleVersionHistoryHtml(r)+'</div>'

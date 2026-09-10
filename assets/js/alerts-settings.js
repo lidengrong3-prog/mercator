@@ -90,6 +90,7 @@ function generateDynamicAlerts(){
       date: p.published_at || p.effective_date || '',
       read: false,
       source: p.source || '官方政策源',
+      sourceUrl: p.source_url || p.url || '',
       refId: p.id,
       category: p.category || 'regulation',
       categoryCodes: p.category_codes || p.categoryCodes || [],
@@ -117,7 +118,7 @@ function generateDynamicAlerts(){
         country:regionLabelMap[marketCode]||marketCode||'待补充市场',
         platform:record.platform||'-', detail:detail,
         date:record.effective_from||record.effective_date||record.published_at||'',
-        read:false, source:record.source||'可追溯法规来源', refId:record.id,
+        read:false, source:record.source||'可追溯法规来源', sourceUrl:record.source_url||record.url||'', refId:record.id,
         category:domain, categoryCodes:record.category_codes||record.categoryCodes||[], changeType:changeType
       });
     });
@@ -145,6 +146,7 @@ function generateDynamicAlerts(){
       date: r.effective_date || r.published_at || '',
       read: false,
       source: r.source || (r.platform ? r.platform + ' 官方公告' : '平台官方公告'),
+      sourceUrl: r.source_url || r.url || '',
       refId: r.id,
       category: r.category || 'regulation',
       categoryCodes: r.category_codes || r.categoryCodes || []
@@ -249,13 +251,18 @@ function getCombinedAlerts(){
     if(type==='rule'||type==='rules')return 'platform';
     if(type==='macro'||type==='country')return 'market';
     if(type==='tariff')return 'tax';
-    return type;
+    return ['shop','cat','policy','tax','access','market','platform'].indexOf(type)>=0?type:'policy';
+  }
+  function normalizedLevel(value){
+    var level=String(value||'low').toLowerCase();
+    if(level==='medium')level='mid';
+    return ['high','mid','low'].indexOf(level)>=0?level:'low';
   }
   // Convert array-format alertsFull entries to objects for unified handling.
   var base = alertsFull.filter(alertIsInConfiguredScope).filter(alertIsFormalRecord).map(function(a){
     if(!Array.isArray(a)){
       return {
-        id:a.id, type:normalizedType(a.type), level:a.level, title:a.title,
+        id:a.id, type:normalizedType(a.type), level:normalizedLevel(a.level), title:a.title,
         country:a.country||a.market||a.region||a.market_code||a.marketCode,
         marketCode:a.market_code||a.marketCode||'', platform:a.platform||a.platform_key||a.platformKey||'-',
         detail:a.detail||a.summary_zh||a.summary||'', date:a.date||a.published_at||a.effective_date||'',
@@ -265,7 +272,7 @@ function getCombinedAlerts(){
     }
     var metadata=a[9]&&typeof a[9]==='object'?a[9]:{};
     return {
-      id: a[0], type: normalizedType(a[1]), level: a[2], title: a[3],
+      id: a[0], type: normalizedType(a[1]), level: normalizedLevel(a[2]), title: a[3],
       country: a[4], platform: a[5], detail: a[6],
       date: a[7], read: a[8],
       source: metadata.source||'公开数据源', sourceUrl:metadata.source_url||'',
@@ -275,7 +282,7 @@ function getCombinedAlerts(){
   // Apply read-state map to dynamic alerts
   var dyn = dynamicAlerts.filter(alertIsInConfiguredScope).map(function(a){
     return {
-      id: a.id, type: normalizedType(a.type), level: a.level, title: a.title,
+      id: a.id, type: normalizedType(a.type), level: normalizedLevel(a.level), title: a.title,
       country: a.country, platform: a.platform, detail: a.detail,
       date: a.date,
       read: !!alDynReadMap[a.id],
@@ -499,7 +506,7 @@ function renderAlSummary(filtered){
   var el=document.getElementById('al-summary');
   el.innerHTML='<div class="al-summary-card sc-total"><div class="al-sc-label">筛选结果</div><div class="al-sc-val">'+total+'</div><div class="al-sc-sub">与当前列表一致</div></div>'
     +'<div class="al-summary-card sc-high"><div class="al-sc-label">高风险紧急</div><div class="al-sc-val">'+high+'</div><div class="al-sc-sub">需立即处理</div></div>'
-    +'<div class="al-summary-card sc-today"><div class="al-sc-label">最新批次</div><div class="al-sc-val">'+today+'</div><div class="al-sc-sub">'+(latestDate||'暂无数据')+'</div></div>'
+    +'<div class="al-summary-card sc-today"><div class="al-sc-label">最新批次</div><div class="al-sc-val">'+today+'</div><div class="al-sc-sub">'+escapeHtml(latestDate||'暂无数据')+'</div></div>'
     +'<div class="al-summary-card sc-done"><div class="al-sc-label">已处理归档</div><div class="al-sc-val">'+done+'</div><div class="al-sc-sub">累计已处理</div></div>';
   // Add dynamic alert count banner
   var bannerHtml = '<div class="al-dyn-banner">'
@@ -553,6 +560,7 @@ function renderAlList(filtered){
     var levelLabel=alLevelLabels[level]||level;
     var checked=alSelected.has(id)?'checked':'';
     var readCls=read?'read':'unread';
+    var safeSourceUrl=typeof jaySafeHttpsUrl==='function'?jaySafeHttpsUrl(a.sourceUrl):'';
     html+='<div class="al-card '+readCls+'" id="al-card-'+escapeHtml(id)+'">';
     html+='<div class="al-card-check"><input type="checkbox" '+checked+' onchange="alToggleSelect(\''+escInline(id)+'\',this.checked)"></div>';
     html+='<div class="al-card-icon type-'+type+'">'+icon+'</div>';
@@ -564,7 +572,8 @@ function renderAlList(filtered){
     if(country&&country!=='-')html+='<span>📍 '+escapeHtml(country)+'</span>';
     if(platform&&platform!=='-')html+='<span>🛒 '+escapeHtml(platform)+'</span>';
     if(a.source)html+='<span>来源：'+escapeHtml(a.source)+'</span>';
-    html+='<span>📅 '+jayFmtTime(date)+'</span>';
+    if(safeSourceUrl)html+='<a class="al-source-link" href="'+escapeHtml(safeSourceUrl)+'" target="_blank" rel="noopener noreferrer">原始来源</a>';
+    html+='<span>📅 '+escapeHtml(jayFmtTime(date))+'</span>';
     html+='</div>';
     html+='<div class="al-card-detail">'+parseDetail(detail)+'</div>';
     html+='</div>';
@@ -699,10 +708,113 @@ loadAlertsData();
 
 // ===== 设置与权限页面 =====
 
+var stNotificationChannelLabels={email:'邮件',wecom:'企业微信',feishu:'飞书'};
+var stNotificationChannelState=null;
+var stNotificationChannelLoading=false;
+
+function stRenderNotificationChannels(status){
+  status=status||{enabled:false,channels:{}};
+  stNotificationChannelState=status;
+  var note=document.getElementById('st-notification-service-note');
+  if(note){
+    note.textContent=status.enabled?'外部通知服务已连接；投递结果以服务端记录为准。':'外部通知服务尚未启用；当前只发送站内通知。';
+    note.className='st-inline-notice '+(status.enabled?'is-success':'');
+  }
+  ['email','wecom','feishu'].forEach(function(channel){
+    var item=status.channels&&status.channels[channel]||{};
+    var toggle=document.getElementById('st-channel-'+channel+'-enabled');
+    var state=document.getElementById('st-channel-'+channel+'-state');
+    var target=document.getElementById('st-channel-'+channel+'-target');
+    var dot=document.getElementById('st-channel-'+channel+'-dot');
+    var save=document.getElementById('st-channel-'+channel+'-save');
+    var test=document.getElementById('st-channel-'+channel+'-test');
+    var webhook=document.getElementById('st-channel-'+channel+'-url');
+    var available=status.enabled===true&&item.available===true&&!jayIsDemo;
+    var enabled=item.enabled===true;
+    if(toggle){toggle.checked=enabled;toggle.disabled=!available;}
+    if(save)save.disabled=!available;
+    if(test)test.disabled=!available||!enabled;
+    if(webhook){
+      webhook.disabled=!available;
+      webhook.value='';
+      webhook.placeholder=item.has_secret?'Webhook 已加密保存；留空保留':'填写机器人 Webhook';
+    }
+    if(target)target.textContent=item.target_hint||(channel==='email'?'登录邮箱':'机器人 Webhook');
+    var label='未启用';var color='#ca8a04';
+    if(!status.enabled){label='服务端未启用';color='#94a3b8';}
+    else if(item.available!==true){label=channel==='email'?'邮件供应商未配置':'加密服务未配置';color='#94a3b8';}
+    else if(enabled){label='已启用';color='#16a34a';}
+    if(enabled&&item.last_test_status==='sent')label='已启用 · 最近测试成功';
+    if(enabled&&item.last_test_status==='failed'){label='已启用 · 最近测试失败';color='#dc2626';}
+    if(state){state.textContent=label;state.title=item.last_test_error||'';}
+    if(dot)dot.style.background=color;
+  });
+}
+
+async function stLoadNotificationChannels(){
+  if(stNotificationChannelLoading)return;
+  stNotificationChannelLoading=true;
+  try{
+    var status=typeof jayLoadNotificationChannelStatus==='function'?await jayLoadNotificationChannelStatus():null;
+    stRenderNotificationChannels(status);
+  }catch(error){
+    stRenderNotificationChannels({enabled:false,channels:{}});
+    var note=document.getElementById('st-notification-service-note');
+    if(note)note.textContent='通知渠道状态读取失败：'+(window.jayServiceErrorText?window.jayServiceErrorText(error):(error.message||'请稍后重试'));
+  }finally{stNotificationChannelLoading=false;}
+}
+
+async function stSaveNotificationChannel(channel){
+  if(!jayCanUseUserDb()){stToast('只读演示不保存通知渠道');return}
+  if(!stNotificationChannelLabels[channel])return;
+  var toggle=document.getElementById('st-channel-'+channel+'-enabled');
+  var webhook=document.getElementById('st-channel-'+channel+'-url');
+  var button=document.getElementById('st-channel-'+channel+'-save');
+  if(button){button.disabled=true;button.textContent='保存中…';}
+  try{
+    if(toggle&&toggle.checked&&typeof window.stPersistNotificationPreferences==='function'){
+      var preferences=await window.stPersistNotificationPreferences();
+      if(!preferences)throw new Error('NOTIFICATION_PREFERENCES_SAVE_FAILED');
+    }
+    await jayConfigureNotificationChannel(channel,!!(toggle&&toggle.checked),webhook&&webhook.value.trim());
+    await stLoadNotificationChannels();
+    stToast(stNotificationChannelLabels[channel]+'通知设置已保存');
+  }catch(error){
+    stToast('保存失败：'+(window.jayServiceErrorText?window.jayServiceErrorText(error):(error.message||'请稍后重试')));
+    await stLoadNotificationChannels();
+  }finally{
+    if(button)button.textContent='保存';
+    stRenderNotificationChannels(stNotificationChannelState);
+  }
+}
+
+async function stTestNotificationChannel(channel){
+  if(!jayCanUseUserDb()){stToast('请登录后测试通知渠道');return}
+  if(!stNotificationChannelLabels[channel])return;
+  var button=document.getElementById('st-channel-'+channel+'-test');
+  if(button){button.disabled=true;button.textContent='发送中…';}
+  try{
+    var result=await jayTestNotificationChannel(channel);
+    if(!result||result.status!=='sent')throw new Error('NOTIFICATION_TEST_FAILED');
+    stToast(stNotificationChannelLabels[channel]+'测试通知已发送');
+  }catch(error){
+    stToast('测试失败：'+(window.jayServiceErrorText?window.jayServiceErrorText(error):(error.message||'请稍后重试')));
+  }finally{
+    await stLoadNotificationChannels();
+    if(button)button.textContent='发送测试';
+    stRenderNotificationChannels(stNotificationChannelState);
+  }
+}
+
+window.stLoadNotificationChannels=stLoadNotificationChannels;
+window.stSaveNotificationChannel=stSaveNotificationChannel;
+window.stTestNotificationChannel=stTestNotificationChannel;
+
 function stInit(){
   stInitAccount();
   stLoadSubPref();
   stApplySettingsPrefs();
+  stLoadNotificationChannels();
   stInitTeam();
   stInitSystemStatus();
 }
@@ -715,7 +827,7 @@ function stSwitchTab(tab){
   var activeButton=document.querySelector('.st-side-btn[data-st-tab="'+tab+'"]');
   if(activeButton)activeButton.classList.add('active');
   if(tab==='account')stInitAccount();
-  if(tab==='alerts')stLoadSubPref();
+  if(tab==='alerts'){stLoadSubPref();stLoadNotificationChannels();}
   if(tab==='prefs')stApplySettingsPrefs();
   if(tab==='team')stInitTeam();
   if(tab==='system')stInitSystemStatus();
@@ -813,9 +925,10 @@ function stTeamDate(value){
   var d=new Date(value);return isFinite(d.getTime())?d.toLocaleDateString('zh-CN'): '-';
 }
 function stTeamError(error){
-  var map={AUTH_REQUIRED:'请先登录后管理工作区',WORKSPACE_FORBIDDEN:'当前账号没有工作区管理权限',WORKSPACE_NOT_FOUND:'暂未找到工作区，请联系管理员',INVITE_EMAIL_INVALID:'请输入有效的邮箱地址',WORKSPACE_NAME_INVALID:'工作区名称不能为空'};
+  var map={AUTH_REQUIRED:'请先登录后管理工作区',WORKSPACE_FORBIDDEN:'当前账号没有工作区管理权限',WORKSPACE_READ_ONLY:'当前工作区为只读权限',WORKSPACE_NOT_FOUND:'暂未找到工作区，请联系管理员',INVITE_EMAIL_INVALID:'请输入有效的邮箱地址',INVITE_SELF_NOT_ALLOWED:'不能邀请当前登录邮箱',INVITE_ALREADY_MEMBER:'该账号已是工作区成员',INVITE_MAIL_NOT_CONFIGURED:'邀请邮件服务尚未配置，请联系系统管理员',INVITE_DELIVERY_FAILED:'邀请邮件发送失败，可稍后使用同一邮箱重试',INVITE_SERVICE_FAILED:'邀请服务暂时不可用，请稍后重试',WORKSPACE_NAME_INVALID:'工作区名称不能为空'};
   return map[error&&error.message] || (error&&error.message) || '操作失败，请稍后重试';
 }
+function stTeamDeliveryLabel(status){return ({pending:'待发送',sending:'发送中',sent:'已发送',failed:'发送失败'})[status]||'待发送'}
 function stRenderTeam(){
   var ctx=window.jayWorkspaceContext||jayWorkspaceContext||{};
   var unavailable=document.getElementById('st-workspace-unavailable');
@@ -827,12 +940,18 @@ function stRenderTeam(){
     return;
   }
   content.style.display='block';if(unavailable)unavailable.style.display='none';
-  var ws=ctx.workspace||{};var role=ctx.membership&&ctx.membership.role||'';var manager=['owner','admin'].indexOf(role)>=0;
+  var ws=ctx.workspace||{};var role=ctx.membership&&ctx.membership.role||'';var manager=['owner','admin'].indexOf(role)>=0;var canEdit=['owner','admin','editor'].indexOf(role)>=0;
+  var workspaceSelect=document.getElementById('st-workspace-select');
+  if(workspaceSelect){
+    workspaceSelect.replaceChildren();
+    (ctx.workspaces||[]).forEach(function(item){var option=document.createElement('option');option.value=String(item.id||'');option.textContent=String(item.name||'未命名工作区')+' · '+jayWorkspaceRoleLabel(item.role);option.selected=item.id===ws.id;workspaceSelect.appendChild(option)});
+    workspaceSelect.disabled=(ctx.workspaces||[]).length<2;
+  }
   var name=document.getElementById('st-workspace-name');if(name)name.value=ws.name||'';
   var count=document.getElementById('st-workspace-member-count');if(count)count.value=String((ctx.members||[]).length);
   var roleEl=document.getElementById('st-workspace-role');if(roleEl){roleEl.textContent=jayWorkspaceRoleLabel(role);roleEl.className='st-role-pill '+(role==='owner'?'owner':role==='admin'?'admin':'member');}
   var meta=document.getElementById('st-workspace-meta');if(meta)meta.textContent='创建于 '+stTeamDate(ws.created_at)+' · ID '+String(ws.id||'').slice(0,8);
-  var hint=document.getElementById('st-workspace-permission-hint');if(hint)hint.textContent=manager?'你可以管理成员和邀请':'当前账号为只读成员';
+  var hint=document.getElementById('st-workspace-permission-hint');if(hint)hint.textContent=manager?'你可以管理成员、邀请和共享数据':(canEdit?'你可以编辑共享数据，不能管理成员':'查看者权限：只能查看共享数据');
   var save=document.getElementById('st-workspace-save');if(save)save.disabled=!manager;
   var inviteSection=document.getElementById('st-workspace-invite-section');if(inviteSection)inviteSection.style.display=manager?'':'none';
   var inviteHistory=document.getElementById('st-workspace-invites-section');if(inviteHistory)inviteHistory.style.display=manager?'':'none';
@@ -853,8 +972,10 @@ function stRenderTeam(){
       var action='-';
       if(i.status==='pending'&&manager)action='<button type="button" class="st-btn st-btn-outline st-btn-sm" onclick="stRevokeInvite(\''+stTeamEsc(i.id)+'\')">撤回</button>';
       else if(i.status==='pending'&&String(i.email||'').toLowerCase()===String(jayUser&&jayUser.email||'').toLowerCase())action='<button type="button" class="st-btn st-btn-primary st-btn-sm" onclick="stAcceptInvite(\''+stTeamEsc(i.id)+'\')">接受邀请</button>';
-      return '<tr><td>'+stTeamEsc(i.email)+'</td><td>'+stTeamEsc(jayWorkspaceRoleLabel(i.role))+'</td><td><span class="st-status-text '+(i.status==='pending'?'pending':i.status==='accepted'?'ok':'muted')+'">'+stTeamEsc(jayWorkspaceStatusLabel(i.status))+'</span></td><td>'+stTeamDate(i.expires_at)+'</td><td>'+action+'</td></tr>';
-    }).join(''):'<tr><td colspan="5" class="st-table-empty">暂无邀请记录</td></tr>';
+      var deliveryClass=i.delivery_status==='sent'?'ok':(i.delivery_status==='failed'?'muted':'pending');
+      var delivery='<span class="st-status-text '+deliveryClass+'">'+stTeamEsc(stTeamDeliveryLabel(i.delivery_status))+'</span>'+(i.delivery_error?'<small title="'+stTeamEsc(i.delivery_error)+'">'+stTeamEsc(i.delivery_error)+'</small>':'');
+      return '<tr><td>'+stTeamEsc(i.email)+'</td><td>'+stTeamEsc(jayWorkspaceRoleLabel(i.role))+'</td><td><span class="st-status-text '+(i.status==='pending'?'pending':i.status==='accepted'?'ok':'muted')+'">'+stTeamEsc(jayWorkspaceStatusLabel(i.status))+'</span></td><td>'+delivery+'</td><td>'+stTeamDate(i.expires_at)+'</td><td>'+action+'</td></tr>';
+    }).join(''):'<tr><td colspan="6" class="st-table-empty">暂无邀请记录</td></tr>';
   }
 }
 async function stInitTeam(){
@@ -863,19 +984,25 @@ async function stInitTeam(){
   try{await jayLoadWorkspaceContext();}catch(e){}
   stRenderTeam();
 }
+async function stSwitchWorkspace(workspaceId){
+  var select=document.getElementById('st-workspace-select');if(!workspaceId||typeof jaySetActiveWorkspace!=='function')return;if(select)select.disabled=true;
+  try{await jaySetActiveWorkspace(workspaceId);stRenderTeam();stInitSystemStatus();stToast('已切换工作区');}
+  catch(e){stToast(stTeamError(e));stRenderTeam();}
+  finally{if(select)select.disabled=(jayWorkspaceContext.workspaces||[]).length<2;}
+}
 async function stSaveWorkspaceName(){
   var input=document.getElementById('st-workspace-name');if(!input)return;
   var button=document.getElementById('st-workspace-save');if(button){button.disabled=true;button.textContent='保存中…';}
   try{await jayUpdateWorkspaceName(input.value);stRenderTeam();stToast('工作区名称已更新');}
-  catch(e){stToast(stTeamError(e));}
+  catch(e){stRenderTeam();stToast(stTeamError(e));}
   finally{if(button){button.disabled=false;button.textContent='保存工作区';stRenderTeam();}}
 }
 async function stCreateInvite(){
   var email=document.getElementById('st-invite-email');var role=document.getElementById('st-invite-role');var button=document.getElementById('st-invite-submit');
-  if(!email)return;if(button){button.disabled=true;button.textContent='创建中…';}
-  try{await jayCreateWorkspaceInvite(email.value,role&&role.value);email.value='';stRenderTeam();stToast('邀请记录已创建；邮件尚未发送');}
-  catch(e){stToast(stTeamError(e));}
-  finally{if(button){button.disabled=false;button.textContent='创建邀请记录';}}
+  if(!email)return;if(button){button.disabled=true;button.textContent='发送中…';}
+  try{await jayCreateWorkspaceInvite(email.value,role&&role.value);email.value='';stRenderTeam();stToast('邀请邮件已发送');}
+  catch(e){stRenderTeam();stToast(stTeamError(e));}
+  finally{if(button){button.disabled=false;button.textContent='发送邀请';}}
 }
 async function stRevokeInvite(id){
   if(!confirm('确定撤回这条邀请吗？'))return;
@@ -896,7 +1023,7 @@ function adminRenderRows(rows,type){
   return rows.map(function(row){
     if(type==='incident')return '<div class="admin-row"><strong>'+stTeamEsc(row.title||row.service||'系统事件')+'</strong><small>'+stTeamEsc((row.severity||'info')+' · '+(row.status||'-')+' · '+stTeamDate(row.started_at))+'</small></div>';
     if(type==='report')return '<div class="admin-row"><strong>'+stTeamEsc((row.status||'-')+' · '+(row.purpose||'报告')+' · '+(row.report_id||row.client_report_id||'-'))+'</strong><small>'+stTeamEsc('用户 '+(row.user_id||'-')+' · 数据 '+(row.data_version||'-')+' · '+(row.duration_ms==null?'耗时待记录':Math.round(Number(row.duration_ms)/1000)+' 秒')+(row.error_code?' · '+row.error_code:'')+' · '+stTeamDate(row.started_at))+'</small></div>';
-    if(type==='ai')return '<div class="admin-row"><strong>'+stTeamEsc((row.status||'-')+' · '+(row.operation||'AI 请求')+' · '+(row.model||'-'))+'</strong><small>'+stTeamEsc('用户 '+(row.user_id||'-')+' · '+Number(row.total_tokens||0)+' Token · $'+Number(row.estimated_cost_usd||0).toFixed(6)+' · '+Number(row.duration_ms||0)+' ms'+(row.error_code?' · '+row.error_code:'')+' · '+stTeamDate(row.created_at))+'</small></div>';
+    if(type==='ai')return '<div class="admin-row"><strong>'+stTeamEsc((row.status||'-')+' · '+(row.operation||'AI 请求')+' · '+(row.model||'-'))+'</strong><small>'+stTeamEsc('用户 '+(row.user_id||'-')+' · '+Number(row.total_tokens||0)+' Token · $'+Number(row.estimated_cost_usd||0).toFixed(6)+' · '+Number(row.duration_ms||0)+' ms'+(row.search_enabled?' · 联网检索':' · 未联网')+(row.error_code?' · '+row.error_code:'')+' · '+stTeamDate(row.created_at))+'</small></div>';
     return '<div class="admin-row"><strong>'+stTeamEsc((row.backup_type||'backup')+' · '+(row.status||'-'))+'</strong><small>'+stTeamEsc((row.location||'未记录位置')+' · '+stTeamDate(row.completed_at||row.started_at))+'</small></div>';
   }).join('');
 }
@@ -908,7 +1035,7 @@ async function adminLoad(){
     var data=await jayLoadAdminSummary();var counts=data.counts||{},metrics=data.metrics||{};
     if(note)note.style.display='none';if(content)content.style.display='block';
     adminSetText('admin-users',counts.users);adminSetText('admin-subs',counts.subscriptions);adminSetText('admin-workspaces',counts.workspaces);adminSetText('admin-incidents-count',counts.open_incidents);adminSetText('admin-deliveries',counts.pending_deliveries);
-    adminSetText('admin-report-failure',Math.round(Number(metrics.report_failure_rate||0)*100)+'%');adminSetText('admin-ai-tokens',Number(metrics.total_tokens||0).toLocaleString('zh-CN'));adminSetText('admin-ai-cost','$'+Number(metrics.estimated_ai_cost_usd||0).toFixed(4));adminSetText('admin-report-duration',Number(metrics.average_report_duration_ms||0)?Math.round(Number(metrics.average_report_duration_ms)/1000)+'秒':'--');adminSetText('admin-export-failures',metrics.failed_exports||0);
+    adminSetText('admin-report-failure',Math.round(Number(metrics.report_failure_rate||0)*100)+'%');adminSetText('admin-ai-tokens',Number(metrics.total_tokens||0).toLocaleString('zh-CN'));adminSetText('admin-ai-input-tokens',Number(metrics.input_tokens||0).toLocaleString('zh-CN'));adminSetText('admin-ai-output-tokens',Number(metrics.output_tokens||0).toLocaleString('zh-CN'));adminSetText('admin-ai-searches',Number(metrics.ai_search_requests||0).toLocaleString('zh-CN'));adminSetText('admin-ai-cost','$'+Number(metrics.estimated_ai_cost_usd||0).toFixed(4));adminSetText('admin-report-duration',Number(metrics.average_report_duration_ms||0)?Math.round(Number(metrics.average_report_duration_ms)/1000)+'秒':'--');adminSetText('admin-export-failures',metrics.failed_exports||0);
     var reportRuns=document.getElementById('admin-report-runs');if(reportRuns)reportRuns.innerHTML=adminRenderRows(data.report_runs,'report');
     var aiRequests=document.getElementById('admin-ai-requests');if(aiRequests)aiRequests.innerHTML=adminRenderRows(data.ai_requests,'ai');
     var incidents=document.getElementById('admin-incidents');if(incidents)incidents.innerHTML=adminRenderRows(data.incidents,'incident');
@@ -944,7 +1071,7 @@ function stToast(msg){
   var jayRefreshStarted=false, JAY_REFRESH_TIMERS={}, JAY_BACKFILL_TIMERS={};
   var JAY_REFRESH_LOG = jayLoadRefreshLog();
 
-  function jayLoadRefreshLog(){ try { return JSON.parse(localStorage.getItem('jay_refresh_log')||'[]'); } catch(e){ return []; } }
+  function jayLoadRefreshLog(){ try { var rows=JSON.parse(localStorage.getItem('jay_refresh_log')||'[]');return Array.isArray(rows)?rows:[]; } catch(e){ return []; } }
   function jaySaveRefreshLog(){ try { localStorage.setItem('jay_refresh_log', JSON.stringify(JAY_REFRESH_LOG.slice(-120))); } catch(e){} }
   function jayDataUrl(name){
     var base = document.querySelector('base') ? document.querySelector('base').href : location.pathname.replace(/[^/]*$/,'');
@@ -982,7 +1109,7 @@ function stToast(msg){
     } catch(e){} return 0;
   }
 
-  function jaySetStamp(def, txt){ if(!def.stampId)return; var el=document.getElementById(def.stampId); if(el) el.innerHTML=txt; }
+  function jaySetStamp(def, txt){ if(!def.stampId)return; var el=document.getElementById(def.stampId); if(el) el.textContent=txt; }
   function jayLog(entry){ entry.ts=jayNowStr(); JAY_REFRESH_LOG.push(entry); if(JAY_REFRESH_LOG.length>120) JAY_REFRESH_LOG=JAY_REFRESH_LOG.slice(-120); jaySaveRefreshLog(); jayRenderRefreshLog(); }
 
   // ---- 单次刷新（含重试） ----
@@ -1077,7 +1204,7 @@ function stToast(msg){
       var st=JAY_REFRESH_STATE[def.key];
       var dot = st.status==='ok'?'jrw-dot ok': st.status==='failed'?'jrw-dot fail': st.status==='running'?'jrw-dot run':'jrw-dot pend';
       var last = st.lastOk? st.lastOk : '尚未刷新';
-      html+='<div class="jrw-row"><span class="'+dot+'"></span><span class="jrw-name">'+def.label+'</span><span class="jrw-last">'+last+'</span></div>';
+      html+='<div class="jrw-row"><span class="'+dot+'"></span><span class="jrw-name">'+escapeHtml(def.label)+'</span><span class="jrw-last">'+escapeHtml(last)+'</span></div>';
     });
     el.innerHTML=html;
   }
@@ -1087,7 +1214,7 @@ function stToast(msg){
     var html='<table class="jrw-log"><tr><th>板块</th><th>时间</th><th>状态</th><th>变更条数</th><th>来源</th></tr>';
     JAY_REFRESH_LOG.slice().reverse().forEach(function(e){
       var stc=e.status==='ok'?'ok':'fail';
-      html+='<tr class="'+stc+'"><td>'+e.label+'</td><td>'+e.ts+'</td><td>'+(e.status==='ok'?'成功':'失败')+(e.error?'<br><span class="err">'+e.error+'</span>':'')+'</td><td>'+(e.changed!=null?e.changed:'-')+'</td><td>'+(e.source||'-')+'</td></tr>';
+      html+='<tr class="'+stc+'"><td>'+escapeHtml(e.label)+'</td><td>'+escapeHtml(e.ts)+'</td><td>'+(e.status==='ok'?'成功':'失败')+(e.error?'<br><span class="err">'+escapeHtml(e.error)+'</span>':'')+'</td><td>'+escapeHtml(e.changed!=null?e.changed:'-')+'</td><td>'+escapeHtml(e.source||'-')+'</td></tr>';
     });
     html+='</table>';
     b.innerHTML=html;

@@ -1,3 +1,5 @@
+-- LEGACY BOOTSTRAP SNAPSHOT. Do not apply this file to a new database.
+-- Its objects are covered by the ordered supabase/migrations chain.
 -- ============================================================
 -- Mercator Phase 2: Market Data Tables
 -- 将静态JSON数据迁移到PostgreSQL，支持实时查询和用户个性化

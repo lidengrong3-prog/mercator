@@ -1,9 +1,10 @@
+-- LEGACY BOOTSTRAP SNAPSHOT. Do not apply this file to a new database.
+-- monitored_shops is created by 20260824000000_database_foundation.sql.
 -- ============================================================
 -- JAY观海 · 用户监控店铺落库表（Supabase Auth 用户维度）
 -- 用途：把「店铺追踪」页面里用户添加的竞品店铺持久化到 Supabase，
 --       实现跨设备/换机不丢失，并由 RLS 保证用户只能访问自己的记录。
--- 适用：已存在 profiles 等表的存量项目，单独执行本文件即可。
--- 幂等：可重复执行（IF NOT EXISTS / DROP POLICY IF EXISTS）。
+-- 历史参考：正式结构以 supabase/migrations 为准。
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS public.monitored_shops (

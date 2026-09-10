@@ -20,6 +20,7 @@ DATA_DIR = os.path.join(ROOT, "data")
 DEFAULT_REPORT = os.path.join(DATA_DIR, "quality_report.json")
 SCOPE_MANIFEST = os.path.join(DATA_DIR, "market_scope.json")
 PROVENANCE_SCHEMA = os.path.join(DATA_DIR, "provenance_schema.json")
+COLLECTION_RUN = os.path.join(DATA_DIR, "collection_run.json")
 UTC = timezone.utc
 
 # Data provenance is deliberately kept small and explicit.  These values are
@@ -192,6 +193,7 @@ CPSC_MAX_AGE_HOURS = 72
 
 
 DATASET_LABELS = {
+    "collection_run": "采集运行状态",
     "policies": "政策动态",
     "taxes": "税收与关税",
     "access_requirements": "市场准入",
@@ -298,6 +300,120 @@ def valid_http_url(value: Any) -> bool:
     # Formal evidence links must be encrypted.  Plain HTTP is not accepted as
     # a publication source even when it has a valid host.
     return parsed.scheme == "https" and bool(parsed.netloc)
+
+
+def is_aggregate_alert(item: dict[str, Any]) -> bool:
+    if str(item.get("lineage_type") or "").strip().casefold() == "aggregate":
+        return True
+    if item.get("aggregate_count") not in (None, ""):
+        return True
+    display = "\n".join(str(item.get(key) or "") for key in ("title", "detail"))
+    return bool(re.search(r"(?:近|过去|窗口|统计)[^\n]{0,40}\d+\s*(?:起|条|项|次)", display))
+
+
+def alert_evidence_hash(item: dict[str, Any]) -> str:
+    payload = {
+        "id": item.get("id", ""),
+        "title": item.get("title", ""),
+        "detail": item.get("detail", ""),
+        "date": item.get("date", ""),
+        "source": item.get("source", ""),
+        "source_url": item.get("source_url", ""),
+        "source_record_id": item.get("source_record_id", ""),
+        "source_record_ids": item.get("source_record_ids", []),
+        "upstream_evidence_hash": item.get("upstream_evidence_hash", ""),
+        "upstream_evidence_hashes": item.get("upstream_evidence_hashes", []),
+        "source_record_evidence": item.get("source_record_evidence", []),
+        "published_at": item.get("published_at", ""),
+        "lineage_type": item.get("lineage_type", ""),
+        "input_dataset": item.get("input_dataset", ""),
+        "dataset_snapshot_id": item.get("dataset_snapshot_id", ""),
+        "dataset_snapshot_at": item.get("dataset_snapshot_at", ""),
+        "dataset_record_count": item.get("dataset_record_count"),
+        "window_start": item.get("window_start", ""),
+        "window_end": item.get("window_end", ""),
+        "input_record_count": item.get("input_record_count"),
+        "matched_record_count": item.get("matched_record_count"),
+        "aggregate_count": item.get("aggregate_count"),
+    }
+    return hashlib.sha256(
+        json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+
+
+def alert_lineage_issues(item: dict[str, Any]) -> list[str]:
+    required = (
+        "lineage_type", "input_dataset", "dataset_snapshot_id", "dataset_snapshot_at",
+        "dataset_record_count", "window_start", "window_end", "input_record_count",
+        "matched_record_count", "source_record_ids", "upstream_evidence_hashes",
+        "source_record_evidence",
+    )
+    issues = [field for field in required if item.get(field) in (None, "")]
+    lineage_type = str(item.get("lineage_type") or "").strip().casefold()
+    if lineage_type not in {"record", "aggregate"}:
+        issues.append("lineage_type")
+    if is_aggregate_alert(item) and lineage_type != "aggregate":
+        issues.append("aggregate.lineage_type")
+    if not re.fullmatch(r"[0-9a-fA-F]{64}", str(item.get("dataset_snapshot_id") or "")):
+        issues.append("dataset_snapshot_id")
+    if not parse_datetime(item.get("dataset_snapshot_at")):
+        issues.append("dataset_snapshot_at")
+    window_start = parse_datetime(item.get("window_start"))
+    window_end = parse_datetime(item.get("window_end"))
+    if not window_start:
+        issues.append("window_start")
+    if not window_end:
+        issues.append("window_end")
+    if window_start and window_end and window_start > window_end:
+        issues.append("window_range")
+    counts = {
+        key: item.get(key)
+        for key in ("dataset_record_count", "input_record_count", "matched_record_count")
+    }
+    for key, value in counts.items():
+        if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+            issues.append(key)
+    if all(isinstance(value, int) and not isinstance(value, bool) for value in counts.values()):
+        if not counts["dataset_record_count"] >= counts["input_record_count"] >= counts["matched_record_count"]:
+            issues.append("record_counts")
+    record_ids = item.get("source_record_ids")
+    hashes = item.get("upstream_evidence_hashes")
+    evidence = item.get("source_record_evidence")
+    matched_count = counts.get("matched_record_count")
+    if not isinstance(record_ids, list) or not record_ids:
+        issues.append("source_record_ids")
+        record_ids = []
+    if not isinstance(hashes, list) or not hashes:
+        issues.append("upstream_evidence_hashes")
+        hashes = []
+    if not isinstance(evidence, list) or not evidence:
+        issues.append("source_record_evidence")
+        evidence = []
+    if isinstance(matched_count, int) and not isinstance(matched_count, bool):
+        if len(record_ids) != matched_count or len(hashes) != matched_count or len(evidence) != matched_count:
+            issues.append("matched_record_count")
+    normalized_ids = [str(value or "").strip() for value in record_ids]
+    if any(not value for value in normalized_ids) or len(set(normalized_ids)) != len(normalized_ids):
+        issues.append("source_record_ids")
+    if any(not re.fullmatch(r"[0-9a-fA-F]{64}", str(value or "")) for value in hashes):
+        issues.append("upstream_evidence_hashes")
+    expected_evidence = [
+        {"source_record_id": record_id, "evidence_hash": str(evidence_hash or "")}
+        for record_id, evidence_hash in zip(normalized_ids, hashes)
+    ]
+    if evidence != expected_evidence:
+        issues.append("source_record_evidence")
+    if lineage_type == "record" and (
+        matched_count != 1 or not normalized_ids or str(item.get("source_record_id") or "").strip() != normalized_ids[0]
+    ):
+        issues.append("record_lineage")
+    if lineage_type == "aggregate":
+        aggregate_count = item.get("aggregate_count")
+        if isinstance(aggregate_count, bool) or not isinstance(aggregate_count, int) or aggregate_count != matched_count:
+            issues.append("aggregate_count")
+    if str(item.get("evidence_hash") or "").strip().casefold() != alert_evidence_hash(item):
+        issues.append("evidence_hash_mismatch")
+    return sorted(set(issues))
 
 
 def is_industry_advisory(item: dict[str, Any]) -> bool:
@@ -571,6 +687,13 @@ def record_quality(
             missing_fields.append("evidence_hash")
         if missing_fields:
             reasons.append("missing_provenance_fields")
+    if domain == "alert":
+        lineage_issues = alert_lineage_issues(item)
+        if lineage_issues:
+            reasons.append("invalid_alert_lineage")
+            missing_fields.extend(f"lineage.{field}" for field in lineage_issues)
+            if "missing_provenance_fields" not in reasons:
+                reasons.append("missing_provenance_fields")
     return {
         "formal": not reasons,
         "source_kind": source_kind,
@@ -911,18 +1034,20 @@ def validate_alerts(now: datetime) -> DatasetResult:
     result.records = len(data)
     malformed = sum(not isinstance(row, list) or len(row) < 10 or not isinstance(row[9], dict) for row in data)
     valid_rows = [row for row in data if isinstance(row, list) and len(row) >= 10 and isinstance(row[9], dict)]
-    alert_records = [
-        dict(row[9], **{
-            "id": row[0],
-            "title": row[3],
-            "market": row[4],
-            "platform": row[5],
-            "detail": row[6],
-            "published_at": row[7],
-            "collected_at": row[7],
-        })
-        for row in valid_rows
-    ]
+    alert_records = []
+    for row in valid_rows:
+        # Keep the record-level timestamps from the provenance envelope. The
+        # display date is the alert's publication/event date, not a collection
+        # timestamp; copying it here would make legacy rows appear freshly
+        # collected and would hide incomplete provenance.
+        record = dict(row[9])
+        record.setdefault("id", row[0])
+        record.setdefault("title", row[3])
+        record.setdefault("market", row[4])
+        record.setdefault("platform", row[5])
+        record.setdefault("detail", row[6])
+        record.setdefault("date", row[7])
+        alert_records.append(record)
     apply_record_quality_metrics(
         result,
         alert_records,
@@ -940,6 +1065,12 @@ def validate_alerts(now: datetime) -> DatasetResult:
         bool((parsed := parse_datetime(row[7])) and parsed > now + timedelta(days=1))
         for row in valid_rows
     )
+    invalid_lineage = [alert_lineage_issues(record) for record in alert_records]
+    invalid_lineage_records = sum(bool(issues) for issues in invalid_lineage)
+    invalid_aggregate_lineage = sum(
+        bool(issues) and is_aggregate_alert(record)
+        for record, issues in zip(alert_records, invalid_lineage)
+    )
     detail_path = os.path.join(DATA_DIR, "alerts_detailed.json")
     detail_result = DatasetResult("alerts", os.path.relpath(detail_path, ROOT))
     detail = load_json(detail_path, detail_result)
@@ -952,6 +1083,8 @@ def validate_alerts(now: datetime) -> DatasetResult:
         "missing_chinese_display": missing_chinese_display,
         "duplicate_ids": duplicate_ids,
         "future_dated_records": future_dates,
+        "invalid_lineage_records": invalid_lineage_records,
+        "invalid_aggregate_lineage_records": invalid_aggregate_lineage,
     })
     if malformed:
         result.errors.append(f"存在 {malformed} 条字段不足的预警")
@@ -961,6 +1094,8 @@ def validate_alerts(now: datetime) -> DatasetResult:
         result.errors.append(f"存在 {missing_titles} 条空标题")
     if missing_chinese_display:
         result.errors.append(f"存在 {missing_chinese_display} 条预警缺少中文标题或摘要")
+    if invalid_aggregate_lineage:
+        result.errors.append(f"存在 {invalid_aggregate_lineage} 条数量型或聚合型预警缺少完整计算血缘")
     if duplicate_ids:
         result.errors.append(f"存在 {duplicate_ids} 组重复 ID")
     if future_dates:
@@ -1065,12 +1200,18 @@ def validate_us_market(now: datetime) -> DatasetResult:
     result.records = len(categories)
     result.scoped_records = result.records
     result.formal_records = result.records
-    set_freshness(result, data.get("generated_at"), now, 36)
     if len(categories) < 8:
         result.errors.append(f"品类数不足：{len(categories)} < 8")
     duplicate_keys = duplicate_count(row.get("key") for row in categories if isinstance(row, dict))
     missing_files = 0
     invalid_sections = 0
+    failed_categories = []
+    degraded_categories = []
+    skipped_categories = []
+    succeeded_categories = []
+    cached_categories = []
+    missing_collection_status = []
+    freshness_candidates = []
     for row in categories:
         if not isinstance(row, dict):
             invalid_sections += 1
@@ -1085,10 +1226,56 @@ def validate_us_market(now: datetime) -> DatasetResult:
         required = ("country", "platforms", "rules", "policies", "alerts")
         if not isinstance(category, dict) or any(key not in category for key in required):
             invalid_sections += 1
+            continue
+        meta = category.get("meta") if isinstance(category.get("meta"), dict) else {}
+        category_key = str(row.get("key") or filename or "unknown")
+        collection_status = str(
+            meta.get("collection_status") or row.get("collection_status") or ""
+        ).strip()
+        if collection_status == "failed":
+            failed_categories.append(category_key)
+        elif collection_status == "degraded":
+            degraded_categories.append(category_key)
+        elif collection_status == "skipped":
+            skipped_categories.append(category_key)
+        elif collection_status == "succeeded":
+            succeeded_categories.append(category_key)
+        elif collection_status != "succeeded":
+            missing_collection_status.append(category_key)
+        if meta.get("cache_used") or row.get("cache_used"):
+            cached_categories.append(category_key)
+        freshness_value = (
+            meta.get("last_checked_at")
+            or meta.get("content_updated_at")
+            or meta.get("generated_at")
+            or row.get("last_checked_at")
+            or row.get("content_updated_at")
+        )
+        parsed_freshness = parse_datetime(freshness_value)
+        if parsed_freshness:
+            freshness_candidates.append(parsed_freshness)
+    if freshness_candidates:
+        # All eight category feeds are required. The oldest category therefore
+        # defines the freshness of the aggregate US-market dataset.
+        set_freshness(result, min(freshness_candidates).isoformat(), now, 36)
+        result.metrics["freshness_basis"] = "oldest_category_last_successful_check"
+    else:
+        set_freshness(result, data.get("last_checked_at") or data.get("generated_at"), now, 36)
+        result.metrics["freshness_basis"] = (
+            "index_last_checked_at" if data.get("last_checked_at") else "legacy_index_generated_at"
+        )
     result.metrics.update({
         "duplicate_category_keys": duplicate_keys,
         "missing_category_files": missing_files,
         "invalid_category_files": invalid_sections,
+        "collection_status_counts": {
+            "succeeded": len(succeeded_categories),
+            "degraded": len(degraded_categories),
+            "failed": len(failed_categories),
+            "skipped": len(skipped_categories),
+            "unknown": len(missing_collection_status),
+        },
+        "cached_categories": sorted(cached_categories),
     })
     if duplicate_keys:
         result.errors.append(f"存在 {duplicate_keys} 组重复品类 key")
@@ -1096,6 +1283,24 @@ def validate_us_market(now: datetime) -> DatasetResult:
         result.errors.append(f"缺少 {missing_files} 个品类文件")
     if invalid_sections:
         result.errors.append(f"存在 {invalid_sections} 个板块不完整的品类文件")
+    if failed_categories:
+        result.errors.append(
+            "美国品类核心来源全量采集失败：" + ", ".join(sorted(failed_categories))
+        )
+    if degraded_categories:
+        result.warnings.append(
+            "美国品类来源部分请求失败，数据降级：" + ", ".join(sorted(degraded_categories))
+        )
+    if skipped_categories:
+        result.errors.append(
+            "美国品类核心来源未执行，禁止发布离线重建结果："
+            + ", ".join(sorted(skipped_categories))
+        )
+    if missing_collection_status:
+        result.warnings.append(
+            "美国品类仍使用旧版采集元数据，尚无本轮来源状态："
+            + ", ".join(sorted(missing_collection_status))
+        )
     return result
 
 
@@ -1225,9 +1430,262 @@ def validate_cpsc(now: datetime) -> DatasetResult:
     return result
 
 
+def validate_collection_run(
+    now: datetime,
+    path: str | None = None,
+    manifest: dict[str, Any] | None = None,
+) -> DatasetResult:
+    """Validate source-level collector telemetry and its configured scope."""
+    path = path or COLLECTION_RUN
+    result = DatasetResult("collection_run", os.path.relpath(path, ROOT))
+    manifest = manifest if isinstance(manifest, dict) else SCOPE_MANIFEST_DATA
+    configured_markets = {
+        str(row.get("code") or "").strip().upper()
+        for row in manifest.get("markets", [])
+        if isinstance(row, dict)
+        and str(row.get("status") or "active").strip().casefold() == "active"
+        and str(row.get("data_status") or "").strip().casefold() == "configured"
+        and str(row.get("code") or "").strip()
+    }
+    if not os.path.exists(path):
+        result.connected = False
+        if configured_markets:
+            result.errors.append(
+                "缺少本轮结构化采集运行记录，禁止将未确认的数据发布到 Supabase"
+            )
+        else:
+            result.warnings.append("尚无结构化采集运行记录；当前没有已配置市场")
+        result.metrics["connection_status"] = "not_connected"
+        result.metrics["configured_market_codes"] = sorted(configured_markets)
+        return result
+    data = load_json(path, result)
+    if data is None:
+        return result
+    if not isinstance(data, dict) or not isinstance(data.get("sources"), list):
+        result.errors.append("根结构必须是包含 sources 数组的对象")
+        return result
+
+    result.connected = True
+    sources = [row for row in data["sources"] if isinstance(row, dict)]
+    result.records = len(data["sources"])
+    result.scoped_records = sum(
+        int(row.get("records_in_scope"))
+        for row in sources
+        if isinstance(row.get("records_in_scope"), int)
+        and not isinstance(row.get("records_in_scope"), bool)
+        and row.get("records_in_scope") >= 0
+    )
+    set_freshness(result, data.get("completed_at"), now, 12)
+
+    configured_platforms = {
+        str(row.get("platform_key") or "").strip().casefold()
+        for row in manifest.get("market_platforms", [])
+        if isinstance(row, dict)
+        and str(row.get("market_code") or "").strip().upper() in configured_markets
+        and str(row.get("status") or "active").strip().casefold() == "active"
+        and str(row.get("data_status") or "").strip().casefold() == "configured"
+        and str(row.get("platform_key") or "").strip()
+    }
+    scope = data.get("scope") if isinstance(data.get("scope"), dict) else {}
+    actual_markets = {
+        str(code).strip().upper() for code in scope.get("market_codes", [])
+        if str(code or "").strip()
+    }
+    actual_platforms = {
+        str(key).strip().casefold() for key in scope.get("platform_keys", [])
+        if str(key or "").strip()
+    }
+    if actual_markets != configured_markets:
+        result.errors.append(
+            "采集市场范围与目录不一致："
+            f"actual={sorted(actual_markets)} expected={sorted(configured_markets)}"
+        )
+    if actual_platforms != configured_platforms:
+        result.errors.append(
+            "采集平台范围与目录不一致："
+            f"actual={sorted(actual_platforms)} expected={sorted(configured_platforms)}"
+        )
+    if data.get("legacy_global_writes") is not False:
+        result.errors.append("采集运行未明确停用旧全球国家/平台回写")
+
+    try:
+        schema_version = int(data.get("schema_version") or 1)
+    except (TypeError, ValueError):
+        schema_version = 0
+    result.metrics["ledger_schema_version"] = schema_version
+    result.metrics["ledger_status"] = str(data.get("status") or "").strip().casefold()
+    result.metrics["ledger_completed_at"] = data.get("completed_at")
+    result.metrics["ledger_scope"] = {
+        "market_codes": sorted(actual_markets),
+        "platform_keys": sorted(actual_platforms),
+    }
+    if configured_markets and schema_version < 2:
+        result.errors.append(
+            "采集运行账本仍是旧版 schema_version，必须使用 v2 完整流水线格式"
+        )
+    if schema_version >= 2 and not data.get("started_at"):
+        result.errors.append("v2 采集运行缺少 started_at")
+    if schema_version >= 2 and not data.get("completed_at"):
+        result.errors.append("v2 采集运行缺少 completed_at")
+
+    required_fields = {
+        "key", "label", "domain", "core", "status", "duration_ms",
+        "request_count", "successful_requests", "failed_requests",
+        "records_collected", "records_in_scope",
+    }
+    malformed = len(data["sources"]) - len(sources)
+    missing_fields = 0
+    invalid_statuses = 0
+    invalid_metrics = 0
+    duplicate_keys = duplicate_count(row.get("key") for row in sources)
+    numeric_fields = {
+        "duration_ms", "request_count", "successful_requests",
+        "failed_requests", "records_collected", "records_in_scope",
+    }
+    for row in sources:
+        if any(field not in row for field in required_fields):
+            missing_fields += 1
+        if str(row.get("status") or "") not in {"succeeded", "degraded", "failed", "skipped"}:
+            invalid_statuses += 1
+        if any(
+            not isinstance(row.get(field), int)
+            or isinstance(row.get(field), bool)
+            or row.get(field) < 0
+            for field in numeric_fields
+            if field in row
+        ):
+            invalid_metrics += 1
+    if malformed:
+        result.errors.append(f"存在 {malformed} 条非对象来源记录")
+    if missing_fields:
+        result.errors.append(f"存在 {missing_fields} 条来源记录缺少运行字段")
+    if invalid_statuses:
+        result.errors.append(f"存在 {invalid_statuses} 条来源记录状态无效")
+    if invalid_metrics:
+        result.errors.append(f"存在 {invalid_metrics} 条来源记录计数或耗时无效")
+    if duplicate_keys:
+        result.errors.append(f"存在 {duplicate_keys} 组重复来源 key")
+    inconsistent_requests = sum(
+        int(row.get("request_count") or 0)
+        != int(row.get("successful_requests") or 0) + int(row.get("failed_requests") or 0)
+        for row in sources
+        if all(isinstance(row.get(field), int) and not isinstance(row.get(field), bool)
+               for field in ("request_count", "successful_requests", "failed_requests"))
+    )
+    if inconsistent_requests:
+        result.errors.append(f"存在 {inconsistent_requests} 条来源请求计数不一致")
+
+    source_by_key = {
+        str(row.get("key") or "").strip(): row for row in sources
+        if str(row.get("key") or "").strip()
+    }
+    expected_core = set()
+    required_pipeline_sources = set()
+    if "US" in configured_markets:
+        expected_core.add("federal_register")
+        if schema_version >= 2:
+            required_pipeline_sources.update({
+                "us_market_categories",
+                "cpsc_recalls",
+                "fred_bls_macro",
+            })
+    if "amazon" in configured_platforms:
+        expected_core.add("amazon_rules")
+    if "tiktok-shop" in configured_platforms:
+        expected_core.add("tiktok_shop_rules")
+    missing_pipeline_sources = sorted(required_pipeline_sources - set(source_by_key))
+    if missing_pipeline_sources:
+        result.errors.append(
+            "缺少完整流水线来源运行记录：" + ", ".join(missing_pipeline_sources)
+        )
+    missing_core = sorted(expected_core - set(source_by_key))
+    if missing_core:
+        result.errors.append("缺少核心来源运行记录：" + ", ".join(missing_core))
+
+    core_failures = sorted(
+        key for key, row in source_by_key.items()
+        if row.get("core") is True and row.get("status") == "failed"
+    )
+    if core_failures:
+        result.errors.append("核心来源采集失败：" + ", ".join(core_failures))
+    degraded_sources = sorted(
+        key for key, row in source_by_key.items()
+        if row.get("status") == "degraded"
+    )
+    non_core_failures = sorted(
+        key for key, row in source_by_key.items()
+        if row.get("core") is not True and row.get("status") == "failed"
+    )
+    if degraded_sources:
+        result.warnings.append("部分请求失败，来源降级：" + ", ".join(degraded_sources))
+    if non_core_failures:
+        result.warnings.append("非核心来源采集失败：" + ", ".join(non_core_failures))
+
+    expected_ledger_status = (
+        "failed" if core_failures
+        else ("degraded" if any(row.get("status") in {"failed", "degraded"} for row in sources) else "healthy")
+    )
+    actual_ledger_status = str(data.get("status") or "").strip().casefold()
+    if schema_version >= 2 and actual_ledger_status != expected_ledger_status:
+        result.errors.append(
+            "采集运行总状态与来源状态不一致："
+            f"actual={actual_ledger_status or 'missing'} expected={expected_ledger_status}"
+        )
+
+    ledger_summary = data.get("summary")
+    expected_summary = {
+        "sources": len(sources),
+        "succeeded": sum(row.get("status") == "succeeded" for row in sources),
+        "degraded": sum(row.get("status") == "degraded" for row in sources),
+        "failed": sum(row.get("status") == "failed" for row in sources),
+        "core_failures": core_failures,
+        "records_collected": sum(int(row.get("records_collected") or 0) for row in sources),
+        "records_in_scope": sum(int(row.get("records_in_scope") or 0) for row in sources),
+    }
+    if schema_version >= 2 and not isinstance(ledger_summary, dict):
+        result.errors.append("v2 采集运行缺少 summary 汇总")
+    elif schema_version >= 2:
+        summary_mismatches = [
+            key for key, expected in expected_summary.items()
+            if ledger_summary.get(key) != expected
+        ]
+        if summary_mismatches:
+            result.errors.append(
+                "采集运行 summary 与来源明细不一致：" + ", ".join(summary_mismatches)
+            )
+    unconnected_platforms = sorted({
+        str(key).strip().casefold()
+        for key in scope.get("unconnected_platform_keys", [])
+        if str(key or "").strip()
+    })
+    if unconnected_platforms:
+        result.warnings.append(
+            "当前目录平台尚无自动采集器：" + ", ".join(unconnected_platforms)
+        )
+
+    result.metrics.update({
+        "configured_market_codes": sorted(configured_markets),
+        "configured_platform_keys": sorted(configured_platforms),
+        "source_status_counts": {
+            status: sum(row.get("status") == status for row in sources)
+            for status in ("succeeded", "degraded", "failed", "skipped")
+        },
+        "core_sources": sorted(
+            key for key, row in source_by_key.items() if row.get("core") is True
+        ),
+        "core_failures": core_failures,
+        "pipeline_sources": sorted(required_pipeline_sources & set(source_by_key)),
+        "missing_pipeline_sources": missing_pipeline_sources,
+        "unconnected_platform_keys": unconnected_platforms,
+        "ledger_summary": expected_summary,
+    })
+    return result
+
+
 def validate_all(now: datetime | None = None) -> dict[str, Any]:
     now = (now or datetime.now(UTC)).astimezone(UTC)
     results = [
+        validate_collection_run(now),
         validate_items_dataset(
             "policies", os.path.join(DATA_DIR, "policies.json"), now,
             minimum=50, max_age_hours=36, require_chinese_display=True,
@@ -1257,6 +1715,19 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
     )
     warnings = sum(len(result.warnings) for result in results)
     statuses = [result.status for result in results]
+    collection_result = results[0]
+    collection_metrics = collection_result.metrics
+    collection_run = {
+        "quality_status": collection_result.status,
+        "ledger_schema_version": collection_metrics.get("ledger_schema_version"),
+        "ledger_status": collection_metrics.get("ledger_status"),
+        "completed_at": collection_metrics.get("ledger_completed_at"),
+        "scope": collection_metrics.get("ledger_scope", {}),
+        "source_count": collection_result.records,
+        "pipeline_sources": collection_metrics.get("pipeline_sources", []),
+        "missing_pipeline_sources": collection_metrics.get("missing_pipeline_sources", []),
+        "core_failures": collection_metrics.get("core_failures", []),
+    }
     if non_stale_errors:
         status = "failed"
     elif "stale" in statuses:
@@ -1302,6 +1773,7 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
         "generated_at": now.isoformat(),
         "status": status,
         "publishable": errors == 0,
+        "collection_run": collection_run,
         "summary": {
             "datasets": len(results),
             "raw_records": sum(result.records for result in results),
@@ -1318,6 +1790,13 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
             "failed": statuses.count("failed"),
             "errors": errors,
             "warnings": warnings,
+            "collection_run_status": collection_result.status,
+            "collection_ledger_status": collection_metrics.get("ledger_status"),
+            "collection_ledger_schema_version": collection_metrics.get("ledger_schema_version"),
+            "collection_sources": collection_result.records,
+            "pipeline_sources": collection_metrics.get("pipeline_sources", []),
+            "missing_pipeline_sources": collection_metrics.get("missing_pipeline_sources", []),
+            "collection_core_failures": collection_metrics.get("core_failures", []),
         },
         "datasets": {result.key: result.as_dict() for result in results},
     }

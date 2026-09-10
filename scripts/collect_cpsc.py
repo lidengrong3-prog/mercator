@@ -22,9 +22,11 @@ import urllib.parse
 import urllib.error
 import ssl
 import hashlib
+import time
 from datetime import datetime, timezone, timedelta
 
 from collect_data import annotate_provenance
+from collection_telemetry import append_collection_source
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -331,6 +333,7 @@ def main():
     args = parser.parse_args()
     
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
+    started = time.perf_counter()
     
     # Fetch
     raw_recalls = fetch_cpsc_recalls(args.days)
@@ -339,7 +342,23 @@ def main():
         existing = load_existing(args.output)
         if existing:
             print(f"[CPSC] Existing data has {len(existing.get('recalls', []))} recalls.")
+            append_collection_source({
+                "key": "cpsc_recalls", "label": "CPSC 产品召回 API", "domain": "alert",
+                "core": False, "status": "failed", "market_codes": ["US"],
+                "request_count": 1, "successful_requests": 0, "failed_requests": 1,
+                "records_collected": 0, "records_in_scope": len(existing.get("recalls", [])),
+                "duration_ms": int((time.perf_counter() - started) * 1000),
+                "cache_used": True, "errors": ["本轮官方 API 未返回有效数据，沿用已有召回缓存"],
+            })
             return 0
+        append_collection_source({
+            "key": "cpsc_recalls", "label": "CPSC 产品召回 API", "domain": "alert",
+            "core": False, "status": "failed", "market_codes": ["US"],
+            "request_count": 1, "successful_requests": 0, "failed_requests": 1,
+            "records_collected": 0, "records_in_scope": 0,
+            "duration_ms": int((time.perf_counter() - started) * 1000),
+            "errors": ["官方 API 未返回有效数据且没有可用缓存"],
+        })
         return 1
     
     # Process
@@ -361,6 +380,15 @@ def main():
     cats = len(results["by_category"])
     print(f"\n[CPSC] ✅ Done! Total: {total} recalls, China-related: {china}, Categories: {cats}")
     print(f"[CPSC] Output: {args.output}")
+    append_collection_source({
+        "key": "cpsc_recalls", "label": "CPSC 产品召回 API", "domain": "alert",
+        "core": False, "status": "succeeded", "market_codes": ["US"],
+        "request_count": 1, "successful_requests": 1, "failed_requests": 0,
+        "records_collected": len(raw_recalls), "records_in_scope": total,
+        "duration_ms": int((time.perf_counter() - started) * 1000),
+        "content_updated_at": results.get("meta", {}).get("generated_at"),
+        "last_checked_at": results.get("meta", {}).get("generated_at"),
+    })
     return 0
 
 

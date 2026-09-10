@@ -107,6 +107,14 @@ export async function stripeRequest(
   });
 }
 
+export async function stripeRetrieve(path: string): Promise<Response> {
+  const secret = Deno.env.get('STRIPE_SECRET_KEY') || '';
+  return fetch(`https://api.stripe.com/v1/${path.replace(/^\/+/, '')}`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${secret}` },
+  });
+}
+
 export function isoFromUnix(value: unknown): string | null {
   const seconds = Number(value || 0);
   return Number.isFinite(seconds) && seconds > 0 ? new Date(seconds * 1000).toISOString() : null;

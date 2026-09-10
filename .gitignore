@@ -18,6 +18,7 @@ supabase/.temp/
 # ============ Build / deploy copies ============
 dist/
 web/
+_site/
 
 # ============ Project memory (private, not for public repo) ============
 .workbuddy/
@@ -31,6 +32,7 @@ Thumbs.db
 
 # ============ Large binary assets ============
 image_*.png
+reports/us_market/*.pdf
 *.bak
 
 # ============ Logs ============

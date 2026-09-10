@@ -32,6 +32,7 @@ collect_us_market.py — 美国市场「全品类」单点情报采集器（参�
   python scripts/collect_us_market.py --validate     # 离线校验输出结构
 """
 
+import copy
 import json
 import os
 import sys
@@ -41,6 +42,8 @@ import urllib.parse
 import urllib.error
 from datetime import datetime, timezone, timedelta
 
+from collection_telemetry import append_collection_source
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DATA_DIR = os.path.join(ROOT, "data", "us_market")
@@ -49,6 +52,39 @@ INDEX_FILE = os.path.join(DATA_DIR, "index.json")
 FR_API = "https://www.federalregister.gov/api/v1/documents.json"
 AS_OF = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 UA = {"User-Agent": "Mozilla/5.0 (Mercator US-Market Collector; +https://github.com/lidengrong3-prog/mercator)"}
+
+
+def utc_now():
+    return datetime.now(timezone.utc)
+
+
+def iso_date(value):
+    return str(value or "")[:10]
+
+
+def _semantic_value(value):
+    """Remove collection clocks while retaining the factual payload."""
+    if isinstance(value, list):
+        return [_semantic_value(item) for item in value]
+    if not isinstance(value, dict):
+        return value
+    normalized = {}
+    is_static_alert = value.get("live") is False
+    for key, item in value.items():
+        if key in {"generated_at", "as_of", "collected_at", "retrieved_at"}:
+            continue
+        if is_static_alert and key == "date":
+            continue
+        normalized[key] = _semantic_value(item)
+    return normalized
+
+
+def content_signature(payload):
+    factual_sections = {
+        key: payload.get(key)
+        for key in ("country", "findings", "platforms", "matrix", "rules", "policies", "alerts")
+    }
+    return json.dumps(_semantic_value(factual_sections), ensure_ascii=False, sort_keys=True)
 
 # ---------------------------------------------------------------------------
 # 网络工具
@@ -834,7 +870,12 @@ def fetch_fr_policies(cat_key, limit=24):
     strong = cfg["fr_strong"]
     policies, alerts = [], []
     seen = set()
+    attempted_at = utc_now().isoformat()
+    request_count = 0
+    successful_requests = 0
+    failed_requests = 0
     for term in cfg["fr_terms"]:
+        request_count += 1
         data = http_get_json(FR_API, params={
             "conditions[term]": term,
             "per_page": 15,
@@ -842,8 +883,10 @@ def fetch_fr_policies(cat_key, limit=24):
             "fields[]": ["title", "abstract", "publication_date", "agencies",
                          "html_url", "document_number", "topics", "type"],
         })
-        if not data or "results" not in data:
+        if not isinstance(data, dict) or not isinstance(data.get("results"), list):
+            failed_requests += 1
             continue
+        successful_requests += 1
         for r in data["results"]:
             dn = r.get("document_number")
             if not dn or dn in seen:
@@ -864,6 +907,7 @@ def fetch_fr_policies(cat_key, limit=24):
                 "source": "Federal Register (美国联邦公报)",
                 "source_url": "https://www.federalregister.gov/",
                 "as_of": AS_OF,
+                "collected_at": attempted_at,
                 "live": True,
             }
             policies.append(entry)
@@ -886,13 +930,29 @@ def fetch_fr_policies(cat_key, limit=24):
                     "source": "Federal Register",
                     "url": r.get("html_url", ""),
                     "as_of": AS_OF,
+                    "collected_at": attempted_at,
                     "live": True,
                 })
         if len(policies) >= limit:
             break
     policies.sort(key=lambda x: x.get("date", ""), reverse=True)
     alerts.sort(key=lambda x: x.get("date", ""), reverse=True)
-    return policies[:limit], alerts[:18]
+    if successful_requests == request_count:
+        status = "succeeded"
+    elif successful_requests:
+        status = "degraded"
+    else:
+        status = "failed"
+    telemetry = {
+        "source": "federal_register",
+        "status": status,
+        "attempted_at": attempted_at,
+        "request_count": request_count,
+        "successful_requests": successful_requests,
+        "failed_requests": failed_requests,
+        "records_collected": len(policies) + len(alerts),
+    }
+    return policies[:limit], alerts[:18], telemetry
 
 
 # ---------------------------------------------------------------------------
@@ -945,40 +1005,89 @@ def build_rules(cat_key):
 # ---------------------------------------------------------------------------
 def collect_category(cat_key, no_network=False):
     cfg = CATEGORIES[cat_key]
+    run_at = utc_now().isoformat()
+    old = load_old(cat_key)
     print("[US-Market:%s] 构建国家板块 / 平台档案 / 规则（真实参考库）…" % cat_key)
     country = build_country(cat_key)
     platforms = build_platforms(cat_key)
     rules = build_rules(cat_key)
 
-    policies, alerts = [], []
+    policies, live_alerts = [], []
     if not no_network:
         print("[US-Market:%s] 实时拉取 Federal Register %s 公文…" % (cat_key, cfg["name"]))
-        policies, alerts = fetch_fr_policies(cat_key)
-        print("[US-Market:%s]   政策 %d 条 / 预警 %d 条（实时）" % (cat_key, len(policies), len(alerts)))
+        policies, live_alerts, collection = fetch_fr_policies(cat_key)
+        print("[US-Market:%s]   政策 %d 条 / 预警 %d 条（%s）" % (
+            cat_key, len(policies), len(live_alerts), collection["status"]
+        ))
+    else:
+        collection = {
+            "source": "federal_register",
+            "status": "skipped",
+            "attempted_at": run_at,
+            "request_count": 0,
+            "successful_requests": 0,
+            "failed_requests": 0,
+            "records_collected": 0,
+        }
+
+    collection_status = collection["status"]
+    old_meta = old.get("meta", {}) if isinstance(old, dict) else {}
+
+    # A total outage must leave the cached factual payload and its original
+    # timestamps untouched. Only the attempt status is allowed to advance.
+    if collection_status in {"failed", "skipped"} and old:
+        out = copy.deepcopy(old)
+        meta = out.setdefault("meta", {})
+        meta.setdefault("content_updated_at", meta.get("generated_at"))
+        meta["collection_status"] = collection_status
+        meta["last_attempted_at"] = collection.get("attempted_at") or run_at
+        meta["cache_used"] = True
+        meta["cached_sections"] = ["policies", "alerts"]
+        meta["collection"] = dict(collection, cache_used=True, cached_sections=["policies", "alerts"])
+        print("[US-Market:%s]   全量沿用本地缓存；内容时间保持 %s" % (
+            cat_key, meta.get("content_updated_at") or meta.get("generated_at") or "未知"
+        ))
+        return out
 
     # 关税专项预警（静态真实提示，非伪造）
     ta = dict(cfg["tariff_alert"])
     ta["live"] = False
-    alerts = [ta] + alerts
+    alerts = [ta] + live_alerts
 
-    # 若实时为空（网络失败），尝试沿用旧文件中的 live 条目
-    if not policies or len(alerts) <= 1:
-        old = load_old(cat_key)
-        if old:
-            if not policies:
-                policies = old.get("policies", [])
-                print("[US-Market:%s]   使用本地缓存 policies (%d)" % (cat_key, len(policies)))
-            if len(alerts) <= 1:
-                alerts = old.get("alerts", [])
-                print("[US-Market:%s]   使用本地缓存 alerts (%d)" % (cat_key, len(alerts)))
+    # A partial source response is incomplete. Keep missing live sections from
+    # cache, but expose that fact so the quality gate cannot call it healthy.
+    cached_sections = []
+    if collection_status == "degraded" and old:
+        if not policies:
+            policies = copy.deepcopy(old.get("policies", []))
+            cached_sections.append("policies")
+            print("[US-Market:%s]   部分失败，沿用缓存 policies (%d)" % (cat_key, len(policies)))
+        if not live_alerts:
+            cached_live_alerts = [
+                copy.deepcopy(item) for item in old.get("alerts", [])
+                if isinstance(item, dict) and item.get("live") is True
+            ]
+            if cached_live_alerts:
+                alerts = [ta] + cached_live_alerts
+                cached_sections.append("alerts")
+                print("[US-Market:%s]   部分失败，沿用缓存 live alerts (%d)" % (
+                    cat_key, len(cached_live_alerts)
+                ))
 
-    out = {
+    candidate = {
         "meta": {
             "market": "美国%s (US %s)" % (cfg["name"], cfg["name_en"]),
             "cat_key": cat_key,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": run_at,
+            "content_updated_at": run_at,
             "as_of": AS_OF,
             "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
+            "collection_status": collection_status,
+            "last_attempted_at": collection.get("attempted_at") or run_at,
+            "last_checked_at": run_at if collection_status == "succeeded" else old_meta.get("last_checked_at"),
+            "cache_used": bool(cached_sections),
+            "cached_sections": cached_sections,
+            "collection": dict(collection, cache_used=bool(cached_sections), cached_sections=cached_sections),
             "sections": ["country", "platforms", "rules", "policies", "alerts"],
             "counts": {
                 "country": 1, "platforms": len(platforms), "rules": len(rules),
@@ -993,7 +1102,19 @@ def collect_category(cat_key, no_network=False):
         "policies": policies,
         "alerts": alerts,
     }
-    return out
+    if old and content_signature(candidate) == content_signature(old):
+        out = copy.deepcopy(old)
+        meta = out.setdefault("meta", {})
+        meta.setdefault("content_updated_at", meta.get("generated_at"))
+        meta["collection_status"] = collection_status
+        meta["last_attempted_at"] = collection.get("attempted_at") or run_at
+        if collection_status == "succeeded":
+            meta["last_checked_at"] = run_at
+        meta["cache_used"] = bool(cached_sections)
+        meta["cached_sections"] = cached_sections
+        meta["collection"] = dict(collection, cache_used=bool(cached_sections), cached_sections=cached_sections)
+        return out
+    return candidate
 
 
 def out_file(cat_key):
@@ -1056,8 +1177,16 @@ def main():
                 all_ok = False
         sys.exit(0 if all_ok else 1)
 
-    index = {"generated_at": datetime.now(timezone.utc).isoformat(), "as_of": AS_OF,
-             "categories": []}
+    run_at = utc_now().isoformat()
+    try:
+        with open(INDEX_FILE, "r", encoding="utf-8") as f:
+            old_index = json.load(f)
+    except (OSError, ValueError):
+        old_index = {}
+    index = {"generated_at": old_index.get("generated_at"), "as_of": old_index.get("as_of"),
+             "last_attempted_at": run_at, "categories": []}
+    category_statuses = []
+    content_times = []
     for k in keys:
         out = collect_category(k, no_network=args.no_network)
         validate(out)
@@ -1065,6 +1194,10 @@ def main():
             json.dump(out, f, ensure_ascii=False, indent=2)
         print("[US-Market] 已写入 %s" % out_file(k))
         cfg = CATEGORIES[k]
+        meta = out.get("meta", {})
+        category_statuses.append(meta.get("collection_status", "failed"))
+        if meta.get("content_updated_at") or meta.get("generated_at"):
+            content_times.append(meta.get("content_updated_at") or meta.get("generated_at"))
         index["categories"].append({
             "key": k, "name": cfg["name"], "name_en": cfg["name_en"],
             "icon": cfg["icon"], "file": "%s.json" % k,
@@ -1072,8 +1205,61 @@ def main():
             "cagr": cfg["market"]["cagr"],
             "policy_count": out["meta"]["counts"]["policies"],
             "alert_count": out["meta"]["counts"]["alerts"],
-            "report": "reports/us_market/%s_report.pdf" % k,
+            "collection_status": meta.get("collection_status", "failed"),
+            "content_updated_at": meta.get("content_updated_at") or meta.get("generated_at"),
+            "last_checked_at": meta.get("last_checked_at"),
+            "cache_used": bool(meta.get("cache_used")),
         })
+
+    category_requests = 0
+    category_successes = 0
+    category_failures = 0
+    category_records = 0
+    category_cached = []
+    for k in keys:
+        category = load_old(k) or {}
+        meta = category.get("meta", {}) if isinstance(category, dict) else {}
+        collection = meta.get("collection", {}) if isinstance(meta.get("collection"), dict) else {}
+        category_requests += int(collection.get("request_count") or 0)
+        category_successes += int(collection.get("successful_requests") or 0)
+        category_failures += int(collection.get("failed_requests") or 0)
+        counts = meta.get("counts", {}) if isinstance(meta.get("counts"), dict) else {}
+        category_records += int(counts.get("policies") or 0) + int(counts.get("alerts") or 0)
+        if meta.get("cache_used"):
+            category_cached.append(k)
+    if any(status == "failed" for status in category_statuses):
+        index["collection_status"] = "failed"
+    elif any(status in {"degraded", "skipped"} for status in category_statuses):
+        index["collection_status"] = "degraded"
+    else:
+        index["collection_status"] = "succeeded"
+    if content_times:
+        index["generated_at"] = max(content_times)
+        index["as_of"] = iso_date(index["generated_at"])
+    if index["collection_status"] == "succeeded":
+        index["last_checked_at"] = run_at
+    elif old_index.get("last_checked_at"):
+        index["last_checked_at"] = old_index["last_checked_at"]
+
+    category_status = index["collection_status"]
+    append_collection_source({
+        "key": "us_market_categories",
+        "label": "美国品类情报 Federal Register",
+        "domain": "market_intelligence",
+        "core": True,
+        "status": "degraded" if category_status == "degraded" else ("failed" if category_status == "failed" else "succeeded"),
+        "market_codes": ["US"],
+        "platform_keys": ["amazon", "tiktok-shop", "aliexpress", "ebay"],
+        "request_count": category_requests,
+        "successful_requests": category_successes,
+        "failed_requests": category_failures,
+        "records_collected": category_records,
+        "records_in_scope": category_records,
+        "cache_used": bool(category_cached),
+        "cached_sections": category_cached,
+        "last_checked_at": index.get("last_checked_at"),
+        "content_updated_at": index.get("generated_at"),
+    })
 
     with open(INDEX_FILE, "w", encoding="utf-8") as f:
         json.dump(index, f, ensure_ascii=False, indent=2)

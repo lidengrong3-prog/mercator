@@ -4,6 +4,7 @@ import sys
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -12,6 +13,7 @@ sys.path.insert(0, os.path.join(ROOT, "scripts"))
 from validate_data import (  # noqa: E402
     CPSC_MAX_AGE_HOURS,
     DatasetResult,
+    alert_evidence_hash,
     count_scoped_items,
     is_scope_market,
     normalize_platform,
@@ -22,12 +24,159 @@ from validate_data import (  # noqa: E402
     record_quality,
     valid_http_url,
     validate_all,
+    validate_collection_run,
+    validate_alerts,
     validate_items_dataset,
     regulatory_source_hash,
 )
 
 
 class ValidateDataTests(unittest.TestCase):
+    def test_alert_quality_does_not_infer_collection_time_from_display_date(self):
+        now = datetime(2026, 9, 7, tzinfo=timezone.utc)
+        payload = [[
+            "alert-incomplete", "policy", "high", "来源不完整预警", "美国", "CPSC",
+            "缺少历史采集时间", "2026-09-01", False,
+            {
+                "source": "CPSC", "source_url": "https://www.cpsc.gov/Recalls/2026/alert-incomplete",
+                "source_kind": "derived", "source_type": "derived",
+                "source_record_id": "alert-incomplete", "verification_status": "verified",
+                "published_at": "2026-09-01", "verification_notes": "已核验",
+                "evidence_hash": "d" * 64,
+            },
+        ]]
+        with tempfile.TemporaryDirectory() as directory:
+            with open(os.path.join(directory, "alerts.json"), "w", encoding="utf-8") as handle:
+                json.dump(payload, handle)
+            with open(os.path.join(directory, "alerts_detailed.json"), "w", encoding="utf-8") as handle:
+                json.dump({"meta": {"generated_at": now.isoformat()}}, handle)
+            with patch("validate_data.DATA_DIR", directory):
+                result = validate_alerts(now)
+        self.assertEqual(result.formal_records, 0)
+        self.assertEqual(result.missing_source_records, 1)
+        self.assertIn("missing_provenance_fields", result.exclusion_reasons)
+
+    def test_aggregate_alert_without_one_to_one_lineage_blocks_quality_gate(self):
+        now = datetime(2026, 9, 7, tzinfo=timezone.utc)
+        payload = [[
+            "aggregate-alert", "policy", "high", "近90天3起召回", "美国", "CPSC",
+            "过去90天内共有3起召回。", "2026-09-06", False,
+            {
+                "source": "CPSC 数据分析", "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
+                "source_kind": "derived", "source_type": "derived", "source_record_id": "aggregate-source",
+                "verification_status": "verified", "published_at": "2026-09-06",
+                "collected_at": "2026-09-06T00:00:00Z", "verified_at": "2026-09-06T00:00:00Z",
+                "verification_notes": "由已核验来源生成", "evidence_hash": "f" * 64,
+                "lineage_type": "aggregate", "input_dataset": "data/us_market/cpsc_recalls.json",
+                "dataset_snapshot_id": "e" * 64, "dataset_snapshot_at": "2026-09-06T00:00:00Z",
+                "dataset_record_count": 10, "window_start": "2026-06-08", "window_end": "2026-09-06",
+                "input_record_count": 10, "matched_record_count": 3, "aggregate_count": 3,
+                "source_record_ids": ["a", "b", "c"],
+                "upstream_evidence_hashes": ["1" * 64, "2" * 64],
+                "source_record_evidence": [
+                    {"source_record_id": "a", "evidence_hash": "1" * 64},
+                    {"source_record_id": "b", "evidence_hash": "2" * 64},
+                ],
+            },
+        ]]
+        with tempfile.TemporaryDirectory() as directory:
+            with open(os.path.join(directory, "alerts.json"), "w", encoding="utf-8") as handle:
+                json.dump(payload, handle)
+            with open(os.path.join(directory, "alerts_detailed.json"), "w", encoding="utf-8") as handle:
+                json.dump({"meta": {"generated_at": now.isoformat()}}, handle)
+            with patch("validate_data.DATA_DIR", directory):
+                result = validate_alerts(now)
+        self.assertEqual(result.formal_records, 0)
+        self.assertEqual(result.metrics["invalid_aggregate_lineage_records"], 1)
+        self.assertTrue(any("聚合型预警缺少完整计算血缘" in error for error in result.errors))
+
+    def test_complete_aggregate_alert_lineage_is_formal(self):
+        now = datetime(2026, 9, 7, tzinfo=timezone.utc)
+        evidence = [
+            {"source_record_id": record_id, "evidence_hash": str(index) * 64}
+            for index, record_id in enumerate(["a", "b", "c"], start=1)
+        ]
+        meta = {
+            "source": "CPSC 数据分析", "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
+            "source_kind": "derived", "source_type": "derived", "source_record_id": "aggregate-source",
+            "verification_status": "verified", "published_at": "2026-09-06",
+            "collected_at": "2026-09-06T00:00:00Z", "verified_at": "2026-09-06T00:00:00Z",
+            "verification_notes": "由已核验来源生成", "evidence_hash": "f" * 64,
+            "lineage_type": "aggregate", "input_dataset": "data/us_market/cpsc_recalls.json",
+            "dataset_snapshot_id": "e" * 64, "dataset_snapshot_at": "2026-09-06T00:00:00Z",
+            "dataset_record_count": 10, "window_start": "2026-06-08", "window_end": "2026-09-06",
+            "input_record_count": 10, "matched_record_count": 3, "aggregate_count": 3,
+            "source_record_ids": [item["source_record_id"] for item in evidence],
+            "upstream_evidence_hashes": [item["evidence_hash"] for item in evidence],
+            "source_record_evidence": evidence,
+        }
+        meta["evidence_hash"] = alert_evidence_hash({
+            **meta,
+            "id": "aggregate-alert",
+            "title": "近90天3起召回",
+            "detail": "过去90天内共有3起召回。",
+            "date": "2026-09-06",
+        })
+        payload = [["aggregate-alert", "policy", "high", "近90天3起召回", "美国", "CPSC", "过去90天内共有3起召回。", "2026-09-06", False, meta]]
+        with tempfile.TemporaryDirectory() as directory:
+            with open(os.path.join(directory, "alerts.json"), "w", encoding="utf-8") as handle:
+                json.dump(payload, handle)
+            with open(os.path.join(directory, "alerts_detailed.json"), "w", encoding="utf-8") as handle:
+                json.dump({"meta": {"generated_at": now.isoformat()}}, handle)
+            with patch("validate_data.DATA_DIR", directory):
+                result = validate_alerts(now)
+        self.assertEqual(result.formal_records, 1)
+        self.assertEqual(result.metrics["invalid_aggregate_lineage_records"], 0)
+        self.assertEqual(result.errors, [])
+
+    def test_core_collection_failure_blocks_quality_gate(self):
+        now = datetime(2026, 9, 7, tzinfo=timezone.utc)
+        manifest = {
+            "markets": [
+                {"code": "US", "status": "active", "data_status": "configured"},
+                {"code": "ID", "status": "active", "data_status": "schema_only"},
+            ],
+            "market_platforms": [
+                {"market_code": "US", "platform_key": key, "status": "active", "data_status": "configured"}
+                for key in ("amazon", "tiktok-shop", "aliexpress", "ebay")
+            ],
+        }
+
+        def source(key, status, core=True):
+            return {
+                "key": key, "label": key, "domain": "policy", "core": core,
+                "status": status, "duration_ms": 10, "request_count": 1,
+                "successful_requests": int(status != "failed"),
+                "failed_requests": int(status == "failed"),
+                "records_collected": 1, "records_in_scope": 1,
+            }
+
+        payload = {
+            "schema_version": 1,
+            "completed_at": now.isoformat(),
+            "legacy_global_writes": False,
+            "scope": {
+                "market_codes": ["US"],
+                "platform_keys": ["amazon", "tiktok-shop", "aliexpress", "ebay"],
+                "unconnected_platform_keys": ["aliexpress", "ebay"],
+            },
+            "sources": [
+                source("federal_register", "failed"),
+                source("amazon_rules", "succeeded"),
+                source("tiktok_shop_rules", "succeeded"),
+            ],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = os.path.join(directory, "collection_run.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(payload, handle)
+            result = validate_collection_run(now, path=path, manifest=manifest)
+
+        self.assertEqual(result.status, "failed")
+        self.assertTrue(any("核心来源采集失败" in error for error in result.errors))
+        self.assertEqual(result.metrics["core_failures"], ["federal_register"])
+        self.assertTrue(any("aliexpress" in warning for warning in result.warnings))
+
     def test_cpsc_freshness_window_covers_weekends(self):
         self.assertEqual(CPSC_MAX_AGE_HOURS, 72)
 
@@ -142,6 +291,9 @@ class ValidateDataTests(unittest.TestCase):
         self.assertLess(report["datasets"]["rules"]["scoped_records"], report["datasets"]["rules"]["raw_records"])
         self.assertIn("taxes", report["datasets"])
         self.assertIn("access_requirements", report["datasets"])
+        self.assertIn("collection_run", report)
+        self.assertIn("collection_run_status", report["summary"])
+        self.assertIn("pipeline_sources", report["summary"])
 
     def test_regulatory_chinese_display_is_bound_to_source_text(self):
         record = {
