@@ -1468,13 +1468,7 @@ def validate_collection_run(
     result.connected = True
     sources = [row for row in data["sources"] if isinstance(row, dict)]
     result.records = len(data["sources"])
-    result.scoped_records = sum(
-        int(row.get("records_in_scope"))
-        for row in sources
-        if isinstance(row.get("records_in_scope"), int)
-        and not isinstance(row.get("records_in_scope"), bool)
-        and row.get("records_in_scope") >= 0
-    )
+    result.scoped_records = len(sources)
     set_freshness(result, data.get("completed_at"), now, 12)
 
     configured_platforms = {
