@@ -81,6 +81,7 @@ test('production deploy and retry worker include the notification service', () =
   assert.match(retry, /"action":"process_pending","limit":25/);
   assert.match(retry, /Authorization: Bearer \$SUPABASE_SERVICE_KEY/);
   assert.match(retry, /python scripts\/resolve_supabase_service_key\.py/);
+  assert.match(retry, /SUPABASE_URL: \$\{\{ format\('https:\/\/\{0\}\.supabase\.co', secrets\.SUPABASE_PROJECT_ID\) \}\}/);
   assert.doesNotMatch(retry, /SUPABASE_SERVICE_KEY:\s*\$\{\{\s*secrets\.SUPABASE_SERVICE_KEY/);
   assert.match(releaseCheck, /notification channel status probe/);
   assert.match(releaseCheck, /notification-dispatch/);

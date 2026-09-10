@@ -671,6 +671,8 @@ test('automated Supabase sync cannot silently pass', () => {
 test('scheduled data update can access and validates production translation secrets', () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'data-update.yml'), 'utf8');
   assert.match(workflow, /update-data:[\s\S]*environment: production/);
+  assert.match(workflow, /SUPABASE_URL: \$\{\{ format\('https:\/\/\{0\}\.supabase\.co', secrets\.SUPABASE_PROJECT_ID\) \}\}/);
+  assert.doesNotMatch(workflow, /SUPABASE_URL:\s*\$\{\{\s*secrets\.SUPABASE_URL/);
   assert.match(workflow, /REGULATORY_TRANSLATION_API_KEY:.*secrets\.REGULATORY_TRANSLATION_API_KEY \|\| secrets\.DEEPSEEK_API_KEY/);
   assert.match(workflow, /REGULATORY_TRANSLATION_MODEL:.*secrets\.REGULATORY_TRANSLATION_MODEL \|\| secrets\.DEEPSEEK_MODEL/);
   const preflightAt = workflow.indexOf('name: Validate regulatory translation configuration');
