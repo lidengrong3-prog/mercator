@@ -1,9 +1,12 @@
+-- LEGACY INDEX SNAPSHOT. Do not apply this file to a new database.
+-- Equivalent or stronger indexes live in the ordered migration chain and
+-- are checked by scripts/validate_migration_chain.py.
 -- ============================================================
 -- Mercator 性能优化：补齐高频查询索引
 -- 修复审查问题 P1-3：user_watchlist / user_activity / query_history
 --           / reports / feedback 等表缺失索引导致用户量增长后
 --           查询性能急剧下降。
--- 在 Supabase SQL Editor 中执行此脚本（可重复执行，幂等）。
+-- 历史参考：正式索引以 supabase/migrations 为准。
 -- ============================================================
 
 -- 1. user_watchlist：按用户查询 + 组合查询（用户+类型）

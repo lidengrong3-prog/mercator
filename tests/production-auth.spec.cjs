@@ -1,4 +1,5 @@
 const { test, expect } = require('@playwright/test');
+const fs = require('node:fs');
 
 const baseUrl = process.env.JAY_PLAYWRIGHT_BASE_URL || process.env.PRODUCTION_SITE_URL || '';
 const credentials = {
@@ -22,7 +23,7 @@ test.describe('production authenticated browser acceptance', () => {
     await page.locator('#auth-submit-btn').click();
     await expect(page.locator('#mainApp')).toHaveClass(/active/, { timeout: 30_000 });
     await page.waitForFunction(() => window.jayUser && !window.jayIsDemo, null, { timeout: 30_000 });
-    await page.waitForFunction(() => !window.jayWorkspaceHydration && window.jayHydratedUserId === window.jayUser.id, null, { timeout: 30_000 });
+    await page.waitForFunction(() => !window.jayWorkspaceHydration && String(window.jayHydratedUserId || '').startsWith(window.jayUser.id + ':'), null, { timeout: 30_000 });
   }
 
   async function signOut(page) {
@@ -117,11 +118,61 @@ test.describe('production authenticated browser acceptance', () => {
     const runId = Date.now();
     const uploadedFileName = `production-browser-acceptance-${runId}.json`;
     const importedProductTitle = `生产浏览验收商品-${runId}`;
-    const browserTopic = `生产浏览器验收宠物用品-${runId}`;
+    const browserTopic = `生产浏览器验收通用品类-${runId}`;
     const browserReportTitle = `《${browserTopic}》美国市场调研报告`;
     page.on('popup', (popup) => popup.close().catch(() => {}));
 
     await login(page, credentials.a);
+    const workspaceA = await page.evaluate(() => window.jayActiveWorkspaceId());
+
+    const recoveryRequestId = `production-browser-network-recovery:${runId}`;
+    let recoveryAttempts = 0;
+    const recoveryRoute = async (route) => {
+      if (route.request().headers()['x-request-id'] !== recoveryRequestId) {
+        await route.continue();
+        return;
+      }
+      recoveryAttempts += 1;
+      if (recoveryAttempts === 1) {
+        await route.abort('internetdisconnected');
+        return;
+      }
+      await route.continue();
+    };
+    await page.route('**/functions/v1/billing-status', recoveryRoute);
+    const recoveredBilling = await page.evaluate((requestId) => window.jayFunctionRequest(
+      'billing-status',
+      {},
+      { timeout: 15_000, retryOnNetwork: true, requestId },
+    ), recoveryRequestId);
+    await page.unroute('**/functions/v1/billing-status', recoveryRoute);
+    expect(recoveryAttempts).toBe(2);
+    expect(recoveredBilling).toMatchObject({ billing_enabled: expect.any(Boolean) });
+
+    const forgedClientId = `production-browser-forged-${runId}`;
+    const forgedWrite = await page.evaluate(async ({ clientId, workspaceId }) => {
+      const userId = window.jayUser.id;
+      return window.supabaseClient.from('generated_reports').insert({
+        user_id: userId,
+        workspace_id: workspaceId,
+        client_id: clientId,
+        report_type: 'market',
+        title: '客户端伪造正式报告',
+        content: { text: '不得保存', publishable: true },
+        status: 'completed',
+        generation_status: 'completed',
+        save_status: 'saved',
+        publication_status: 'formal',
+      }).select('id');
+    }, { clientId: forgedClientId, workspaceId: workspaceA });
+    expect(forgedWrite.error).toBeTruthy();
+    expect(await rows(page, 'generated_reports', { client_id: forgedClientId })).toEqual([]);
+
+    await page.evaluate(() => {
+      window.JAY_MARKET_SCOPE_API.setActiveMarket('US');
+      window.JAY_MARKET_SCOPE_API.setActivePlatforms(['amazon']);
+      window.JAY_MARKET_SCOPE_API.setActiveCategories(['generic']);
+    });
 
     await page.evaluate(() => {
       window.__productionAcceptanceToasts = [];
@@ -178,13 +229,16 @@ test.describe('production authenticated browser acceptance', () => {
     await page.locator('#rp-panel-step2 button[onclick="rpV2Questionnaire()"]')
       .click();
     await expect(page.locator('#rp-questionnaire')).toHaveClass(/show/);
-    await page.locator('#rp-q-category').fill('宠物用品');
+    await page.locator('#rp-q-category').fill('通用');
     await page.locator('#rp-questionnaire .rp-q-go').click();
     await waitForReportPreview(page);
     await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端', { timeout: 60_000 });
 
     const reportRow = await waitForRow(page, 'generated_reports', { title: browserReportTitle }, (row) => row.save_status === 'saved');
     expect(reportRow.generation_status).toBe('completed');
+    expect(reportRow.publication_status).toBe('formal');
+    expect(reportRow.server_validation_version).toBeTruthy();
+    expect(reportRow.server_validation?.ok).toBe(true);
     expect(reportRow.user_id).toBe(await page.evaluate(() => window.jayUser.id));
     const reportId = reportRow.id;
     const reportItem = page.locator('#rp-v2-recent-list .rp-v2-recent-item').filter({ hasText: browserReportTitle }).first();
@@ -207,7 +261,7 @@ test.describe('production authenticated browser acceptance', () => {
     // A full reload must hydrate the same account from Supabase, not memory.
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => window.jayUser && !window.jayIsDemo, null, { timeout: 30_000 });
-    await page.waitForFunction(() => !window.jayWorkspaceHydration && window.jayHydratedUserId === window.jayUser.id, null, { timeout: 30_000 });
+    await page.waitForFunction(() => !window.jayWorkspaceHydration && String(window.jayHydratedUserId || '').startsWith(window.jayUser.id + ':'), null, { timeout: 30_000 });
     await page.evaluate(() => window.switchPage('report'));
     await expect(page.locator('#rp-v2-recent-list')).toContainText(browserReportTitle, { timeout: 30_000 });
     await page.locator('#rp-v2-recent-list .rp-v2-recent-item').filter({ hasText: browserReportTitle }).first().click();
@@ -222,22 +276,108 @@ test.describe('production authenticated browser acceptance', () => {
     await page.locator('#rp-v2-recent-list .rp-v2-recent-item').filter({ hasText: browserReportTitle }).first().click();
     await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
 
-    await signOut(page);
-    await login(page, credentials.b);
+    const contextB = await browser.newContext({ acceptDownloads: true });
+    const pageB = await contextB.newPage();
+    await login(pageB, credentials.b);
+    const userB = await pageB.evaluate(() => window.jayUser.id);
+    const workspaceB = await pageB.evaluate(() => {
+      const owned = (window.jayWorkspaceContext.workspaces || []).find((workspace) => workspace.role === 'owner');
+      return owned?.id || window.jayActiveWorkspaceId();
+    });
+    expect(workspaceB).not.toBe(workspaceA);
 
-    // Account B may have its own data, but A's uploaded material/report/export
-    // must never appear in either the UI or authenticated table queries.
-    await page.evaluate(() => window.switchPage('products'));
-    const bImports = await rows(page, 'saved_workspace_items', { item_type: 'product_catalog_import', client_id: 'default' });
+    // Recover from an interrupted previous run, then prove the two owner
+    // workspaces are isolated before creating this run's invitation.
+    const cleanup = await page.evaluate(async ({ workspaceId, collaboratorId }) => {
+      const found = await window.supabaseClient.from('workspace_members').select('id').eq('workspace_id', workspaceId).eq('user_id', collaboratorId);
+      if (found.error) return { error: found.error.message };
+      for (const member of found.data || []) {
+        const removed = await window.supabaseClient.from('workspace_members').delete().eq('id', member.id);
+        if (removed.error) return { error: removed.error.message };
+      }
+      return { removed: (found.data || []).length };
+    }, { workspaceId: workspaceA, collaboratorId: userB });
+    expect(cleanup.error).toBeFalsy();
+    await pageB.reload({ waitUntil: 'domcontentloaded' });
+    await pageB.waitForFunction(() => window.jayUser && !window.jayIsDemo && !window.jayWorkspaceHydration, null, { timeout: 30_000 });
+
+    await pageB.evaluate(() => window.switchPage('products'));
+    const bImports = await rows(pageB, 'saved_workspace_items', { item_type: 'product_catalog_import', client_id: 'default' });
     expect(bImports.some((row) => row.content?.meta?.fileName === uploadedFileName)).toBe(false);
-    await expect(page.locator('#pr-table-body')).not.toContainText(importedProductTitle);
+    await expect(pageB.locator('#pr-table-body')).not.toContainText(importedProductTitle);
 
-    await page.evaluate(() => window.switchPage('report'));
-    await expect(page.locator('#rp-v2-recent-list')).not.toContainText(browserReportTitle);
-    expect(await rows(page, 'report_materials', { title: importedProductTitle })).toEqual([]);
-    expect(await rows(page, 'generated_reports', { id: reportId })).toEqual([]);
-    expect(await rows(page, 'report_exports', { report_id: reportId })).toEqual([]);
+    await pageB.evaluate(() => window.switchPage('report'));
+    await expect(pageB.locator('#rp-v2-recent-list')).not.toContainText(browserReportTitle);
+    expect(await rows(pageB, 'report_materials', { title: importedProductTitle })).toEqual([]);
+    expect(await rows(pageB, 'generated_reports', { id: reportId })).toEqual([]);
+    expect(await rows(pageB, 'report_exports', { report_id: reportId })).toEqual([]);
 
+    await page.evaluate(async () => {
+      await window.jayLoadWorkspaceContext();
+      window.switchPage('settings');
+      window.stSwitchTab('team');
+    });
+    await page.locator('#st-invite-email').fill(credentials.b.email);
+    await page.locator('#st-invite-role').selectOption('editor');
+    await page.locator('#st-invite-submit').click();
+    await expect.poll(async () => (await page.evaluate(() => window.__productionAcceptanceToasts || [])).some((message) => message.includes('邀请邮件已发送')), { timeout: 30_000 }).toBe(true);
+    const invitation = await waitForRow(page, 'workspace_invites', { workspace_id: workspaceA, email: credentials.b.email.toLowerCase() }, (row) => row.status === 'pending' && row.delivery_status === 'sent');
+
+    await pageB.evaluate(async (inviteId) => {
+      window.__productionAcceptanceToasts = [];
+      const originalToast = window.toast;
+      window.toast = function productionAcceptanceToast(message) {
+        window.__productionAcceptanceToasts.push(String(message || ''));
+        return originalToast.apply(this, arguments);
+      };
+      await window.jayAcceptWorkspaceInvite(inviteId);
+    }, invitation.id);
+    await expect.poll(() => pageB.evaluate(() => window.jayActiveWorkspaceId())).toBe(workspaceA);
+    expect((await rows(pageB, 'report_materials', { title: importedProductTitle })).length).toBeGreaterThan(0);
+    expect((await rows(pageB, 'generated_reports', { id: reportId })).length).toBe(1);
+    await pageB.evaluate(() => { window.switchPage('settings'); window.stSwitchTab('team'); });
+    await expect(pageB.locator('#st-workspace-select option')).toHaveCount(2);
+
+    const editorWrite = await pageB.evaluate(() => window.addToWatchlist('country', 'US', '美国', '美国市场'));
+    expect(editorWrite).toBe(true);
+    const sharedExport = await pageB.evaluate((sharedReportId) => window.jayFunctionRequest('report-export', {
+      report_id: sharedReportId,
+      idempotency_key: `production-browser-shared:${sharedReportId}:pdf`,
+    }, { timeout: 90_000, requestId: `production-browser-shared:${sharedReportId}` }), reportId);
+    expect(sharedExport.status).toBe('completed');
+
+    const membership = await waitForRow(page, 'workspace_members', { workspace_id: workspaceA, user_id: userB }, (row) => row.status === 'active');
+    await page.evaluate((membershipId) => window.jayUpdateWorkspaceMember(membershipId, 'viewer'), membership.id);
+    await pageB.evaluate((workspaceId) => window.jayLoadWorkspaceContext(workspaceId), workspaceA);
+    expect(await pageB.evaluate(() => window.jayWorkspaceRole())).toBe('viewer');
+    const viewerWrite = await pageB.evaluate(() => window.addToWatchlist('country', 'ID', '印度尼西亚', 'viewer denied'));
+    expect(viewerWrite).toBe(false);
+    expect(await pageB.evaluate(() => window.__productionAcceptanceToasts.some((message) => message.includes('只读权限')))).toBe(true);
+
+    await page.evaluate((membershipId) => window.jayRemoveWorkspaceMember(membershipId), membership.id);
+    await pageB.reload({ waitUntil: 'domcontentloaded' });
+    await pageB.waitForFunction(() => window.jayUser && !window.jayIsDemo && !window.jayWorkspaceHydration, null, { timeout: 30_000 });
+    expect(await pageB.evaluate(() => window.jayActiveWorkspaceId())).toBe(workspaceB);
+    expect(await rows(pageB, 'generated_reports', { id: reportId })).toEqual([]);
+    expect(await rows(pageB, 'report_materials', { title: importedProductTitle })).toEqual([]);
+
+    await contextB.close();
     await context.close();
+
+    const outputPath = process.env.PRODUCTION_BROWSER_ACCEPTANCE_OUTPUT || '';
+    if (outputPath) {
+      fs.writeFileSync(outputPath, JSON.stringify({
+        status: 'passed',
+        site: baseUrl,
+        network_recovery: {
+          function: 'billing-status',
+          first_request: 'internetdisconnected',
+          attempts: recoveryAttempts,
+          recovered_with_production_response: true,
+        },
+        report_id: reportId,
+        exports: { pdf: pdfExport.id, docx: docxExport.id },
+      }, null, 2));
+    }
   });
 });

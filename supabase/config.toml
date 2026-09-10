@@ -7,6 +7,12 @@ verify_jwt = true
 [functions.report-docx]
 verify_jwt = true
 
+[functions.report-save]
+verify_jwt = true
+
+[functions.workspace-invite]
+verify_jwt = true
+
 [functions.billing-checkout]
 verify_jwt = true
 
@@ -21,3 +27,6 @@ verify_jwt = false
 
 [functions.admin-summary]
 verify_jwt = true
+
+[functions.notification-dispatch]
+verify_jwt = false

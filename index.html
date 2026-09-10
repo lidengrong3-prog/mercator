@@ -16,6 +16,7 @@
 <script src="assets/app-shell.js" defer></script>
 <script src="assets/js/market-scope.js" defer></script>
 <script src="assets/js/catalog.js" defer></script>
+<script src="assets/js/report-quality.js" defer></script>
 <script src="assets/js/report-engine.js" defer></script>
 <script src="assets/js/products-shops.js" defer></script>
 <script src="assets/js/markets-policies.js" defer></script>
@@ -898,6 +899,8 @@
 
           <section class="rp-v2-preview-panel" id="rp-panel-step3" style="display:none">
             <div class="rp-v2-preview-toolbar"><div class="rp-v2-preview-toolbar-left"><i data-lucide="file-chart-column"></i><h4 id="rp-v2-preview-title">报告预览</h4><span id="rp-v2-publish-status" class="rp-v2-publish-status">未生成</span><span id="rp-v2-save-status" class="rp-v2-save-status" aria-live="polite"></span></div><div class="rp-v2-preview-toolbar-right"><button type="button" onclick="rpV2GoStep(2)">修改</button><button type="button" onclick="rpV2CopyReport()">复制</button><button type="button" onclick="rpV2Export('md')">导出 MD</button><button type="button" onclick="rpV2Export('pdf')">导出 PDF</button><button type="button" onclick="rpV2Export('docx')">导出 DOCX</button></div></div>
+            <div id="rp-v2-quality-gate" class="rp-v2-quality-gate" aria-live="polite"></div>
+            <div id="rp-v2-content-quality" class="rp-v2-content-quality" aria-live="polite"></div>
             <div class="rp-v2-preview-body rp-empty-preview" id="rp-v2-preview-body"><i class="rp-empty-icon" data-lucide="file-clock"></i><p>报告生成后显示在这里</p></div>
           </section>
         </div>
@@ -1150,7 +1153,7 @@
         <div class="admin-head"><div><span class="section-label">OPERATIONS CONSOLE</span><h2>管理与运维后台</h2><p id="admin-generated">仅平台管理员可读取；权限由服务端校验。</p></div><button type="button" class="st-btn st-btn-outline" onclick="adminLoad()">刷新</button></div>
         <div class="st-inline-notice" id="admin-access-note">正在校验管理员权限…</div>
         <div id="admin-content" style="display:none">
-          <div class="admin-metrics"><article><span>注册用户</span><b id="admin-users">--</b></article><article><span>有效订阅</span><b id="admin-subs">--</b></article><article><span>工作区</span><b id="admin-workspaces">--</b></article><article><span>近100次报告失败率</span><b id="admin-report-failure">--</b></article><article><span>近500次 AI Token</span><b id="admin-ai-tokens">--</b></article><article><span>近500次 AI 估算成本</span><b id="admin-ai-cost">--</b></article><article><span>近100次平均报告耗时</span><b id="admin-report-duration">--</b></article><article><span>近100次导出失败</span><b id="admin-export-failures">--</b></article><article><span>未解决事件</span><b id="admin-incidents-count">--</b></article><article><span>待处理投递</span><b id="admin-deliveries">--</b></article></div>
+        <div class="admin-metrics"><article><span>注册用户</span><b id="admin-users">--</b></article><article><span>有效订阅</span><b id="admin-subs">--</b></article><article><span>工作区</span><b id="admin-workspaces">--</b></article><article><span>近100次报告失败率</span><b id="admin-report-failure">--</b></article><article><span>近500次 AI Token</span><b id="admin-ai-tokens">--</b></article><article><span>近500次 AI 输入 Token</span><b id="admin-ai-input-tokens">--</b></article><article><span>近500次 AI 输出 Token</span><b id="admin-ai-output-tokens">--</b></article><article><span>近500次联网检索</span><b id="admin-ai-searches">--</b></article><article><span>近500次 AI 估算成本</span><b id="admin-ai-cost">--</b></article><article><span>近100次平均报告耗时</span><b id="admin-report-duration">--</b></article><article><span>近100次导出失败</span><b id="admin-export-failures">--</b></article><article><span>未解决事件</span><b id="admin-incidents-count">--</b></article><article><span>待处理投递</span><b id="admin-deliveries">--</b></article></div>
           <div class="admin-grid"><article class="admin-card"><h3>最近报告运行</h3><div id="admin-report-runs" class="admin-list"></div></article><article class="admin-card"><h3>最近 AI 请求</h3><div id="admin-ai-requests" class="admin-list"></div></article><article class="admin-card"><h3>系统事件</h3><div id="admin-incidents" class="admin-list"></div></article><article class="admin-card"><h3>备份运行</h3><div id="admin-backups" class="admin-list"></div></article></div>
         </div>
       </div>

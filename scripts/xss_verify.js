@@ -7,6 +7,16 @@ const path = require('path');
 
 const catalogPath = path.join(__dirname, '..', 'assets', 'js', 'catalog.js');
 const catalog = fs.readFileSync(catalogPath, 'utf8');
+const reportsPath = path.join(__dirname, '..', 'assets', 'js', 'reports-decisions.js');
+const reports = fs.readFileSync(reportsPath, 'utf8');
+const contentPath = path.join(__dirname, '..', 'assets', 'js', 'content-overview.js');
+const content = fs.readFileSync(contentPath, 'utf8');
+const productsPath = path.join(__dirname, '..', 'assets', 'js', 'products-shops.js');
+const products = fs.readFileSync(productsPath, 'utf8');
+const alertsPath = path.join(__dirname, '..', 'assets', 'js', 'alerts-settings.js');
+const alerts = fs.readFileSync(alertsPath, 'utf8');
+const enhancementsPath = path.join(__dirname, '..', 'assets', 'js', 'product-enhancements.js');
+const enhancements = fs.readFileSync(enhancementsPath, 'utf8');
 
 function extractSimpleFunction(source, marker) {
   const start = source.indexOf(marker);
@@ -53,6 +63,51 @@ check('saved template name is text-only',
 check('inline string remains escaped',
   /[<>]/.test(escInline("x');alert(1);//")),
   false);
+check('persisted watchlist values use textContent',
+  /function wlTextElement[\s\S]*?node\.textContent=wlSafeText\(value\)/.test(reports),
+  true);
+check('watchlist cards replace DOM children safely',
+  /function renderWatchCards[\s\S]*?grid\.replaceChildren\(fragment\)/.test(reports),
+  true);
+check('watchlist search replaces DOM children safely',
+  /function doModalSearch[\s\S]*?results\.replaceChildren\(fragment\)/.test(reports),
+  true);
+check('stored names are not interpolated into card HTML',
+  /class=["']wc-name["'][^\n]*\+d\.name/.test(reports),
+  false);
+check('stored search names are not interpolated into result HTML',
+  /class=["']wl-search-result["'][^\n]*\+r\.name/.test(reports),
+  false);
+check('persisted report titles are encoded in local print documents',
+  /var safeTitle=escapeHtml\(title\)[\s\S]*?<title>'\+safeTitle\+'<\/title>[\s\S]*?<h1>'\+safeTitle\+'<\/h1>/.test(reports),
+  true);
+check('persisted comparison names use DOM event listeners',
+  /function cmpRenderSchemes[\s\S]*?data-scheme-name[\s\S]*?addEventListener\('click'/.test(reports),
+  true);
+check('persisted favorite item titles are encoded',
+  /function ctRenderFavItems[\s\S]*?escapeHtml\(item\.title\)/.test(content),
+  true);
+check('content cards encode imported record fields',
+  /function ctRenderCards[\s\S]*?escapeHtml\(c\[7\]\)[\s\S]*?escapeHtml\(c\[13\]\)/.test(content),
+  true);
+check('uploaded shop comparison options are encoded',
+  /function opts\(o,all\)[^\n]*escapeHtml\(k\)/.test(products),
+  true);
+check('alert source links pass through HTTPS validation',
+  /function renderAlList[\s\S]*?jaySafeHttpsUrl\(a\.sourceUrl\)/.test(alerts),
+  true);
+check('persisted refresh log fields are encoded',
+  /function jayRenderRefreshLog[\s\S]*?escapeHtml\(e\.label\)[\s\S]*?escapeHtml\(e\.error\)/.test(alerts),
+  true);
+check('database notifications render as text nodes',
+  /function jayRenderBell[\s\S]*?document\.createTextNode\(String\(it\.text\|\|''\)\)/.test(enhancements),
+  true);
+check('server export URLs pass through HTTPS validation',
+  /jaySafeHttpsUrl\(result\.file_url\)/.test(reports),
+  true);
+check('billing redirects pass through HTTPS validation',
+  /jaySafeHttpsUrl\(portal\.url\)[\s\S]*?jaySafeHttpsUrl\(result\.url\)/.test(reports),
+  true);
 
 console.log('=== HTTPS source URL assertions ===');
 check('empty source URL rejected', jaySafeHttpsUrl(''), '');

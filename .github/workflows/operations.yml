@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 jobs:
-  health-check:
+  code-health:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -29,9 +29,63 @@ jobs:
           python-version: '3.11'
       - run: npm ci
       - run: npm test
-      - run: python scripts/validate_data.py
-      - name: Verify production site
-        run: curl --fail --silent --show-error --location --retry 3 --max-time 30 https://lidengrong3-prog.github.io/mercator/ > /dev/null
+
+  data-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python scripts/validate_data.py --report operations-data-quality-result.json
+      - name: Publish data quality result
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: operations-data-quality-${{ github.run_id }}
+          path: operations-data-quality-result.json
+          if-no-files-found: error
+          retention-days: 30
+
+  availability-monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL || format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      PROD_TEST_USER_A_EMAIL: ${{ secrets.PROD_TEST_USER_A_EMAIL }}
+      PROD_TEST_USER_A_PASSWORD: ${{ secrets.PROD_TEST_USER_A_PASSWORD }}
+      EXPECTED_RELEASE_SHA: ${{ github.sha }}
+      PRODUCTION_HEALTH_OUTPUT: production-health-result.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Resolve ephemeral Supabase service key
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
+      - name: Probe production components independently
+        run: python scripts/production_health_check.py
+      - name: Publish production health result
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-health-${{ github.run_id }}
+          path: production-health-result.json
+          if-no-files-found: error
+          retention-days: 30
 
   encrypted-backup:
     if: github.event_name == 'workflow_dispatch' && inputs.run_encrypted_backup == true

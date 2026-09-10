@@ -11,9 +11,10 @@ import re
 import sys
 import hashlib
 import traceback
+import time
 from datetime import datetime, timezone, timedelta
 from urllib.request import urlopen, Request
-from urllib.error import URLError, HTTPError
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from html import unescape
 from html.parser import HTMLParser
 
@@ -23,10 +24,231 @@ BJT = timezone(timedelta(hours=8))
 NOW = datetime.now(BJT)
 NOW_ISO = NOW.isoformat()
 NOW_DATE = NOW.strftime('%Y-%m-%d')
+COLLECTION_STARTED_AT = None
+COLLECTION_SCOPE = {}
+COLLECTION_SOURCES = {}
 
 def gen_id(prefix, title):
     h = hashlib.md5(title.encode()).hexdigest()[:8]
     return f"{prefix}{NOW.strftime('%Y%m%d')}-{h}"
+
+
+def build_query_url(base_url, params):
+    """Build a URL with UTF-8 encoded query values and repeated keys."""
+    parts = urlsplit(str(base_url or '').strip())
+    if parts.scheme not in {'http', 'https'} or not parts.netloc:
+        raise ValueError('base_url must be an absolute HTTP(S) URL')
+    existing = parse_qsl(parts.query, keep_blank_values=True)
+    additions = list(params.items()) if isinstance(params, dict) else list(params or [])
+    query = urlencode(existing + additions, doseq=True)
+    return urlunsplit((parts.scheme, parts.netloc, parts.path, query, parts.fragment))
+
+
+def _load_market_scope_manifest():
+    path = os.path.join(DATA_DIR, 'market_scope.json')
+    try:
+        with open(path, encoding='utf-8') as handle:
+            data = json.load(handle)
+        return data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def configured_collection_scope(manifest=None):
+    """Return only active markets with a configured data connection."""
+    manifest = manifest if isinstance(manifest, dict) else _load_market_scope_manifest()
+    markets = [
+        item for item in manifest.get('markets', [])
+        if isinstance(item, dict)
+        and str(item.get('status') or 'active').strip().lower() == 'active'
+        and str(item.get('data_status') or '').strip().lower() == 'configured'
+        and str(item.get('code') or '').strip()
+    ]
+    market_codes = {str(item.get('code')).strip().upper() for item in markets}
+    platform_map = {
+        str(item.get('key') or '').strip().casefold(): item
+        for item in manifest.get('platforms', [])
+        if isinstance(item, dict) and str(item.get('key') or '').strip()
+    }
+    market_platforms = [
+        item for item in manifest.get('market_platforms', [])
+        if isinstance(item, dict)
+        and str(item.get('market_code') or '').strip().upper() in market_codes
+        and str(item.get('status') or 'active').strip().lower() == 'active'
+        and str(item.get('data_status') or '').strip().lower() == 'configured'
+    ]
+    platform_keys = list(dict.fromkeys(
+        str(item.get('platform_key') or '').strip().casefold()
+        for item in market_platforms
+        if str(item.get('platform_key') or '').strip().casefold() in platform_map
+    ))
+    return {
+        'config_version': str(manifest.get('config_version') or ''),
+        'market_codes': sorted(market_codes),
+        'platform_keys': platform_keys,
+        'platform_names': [
+            str(platform_map[key].get('name') or key).strip()
+            for key in platform_keys
+        ],
+    }
+
+
+def reset_collection_telemetry(scope=None):
+    global COLLECTION_STARTED_AT, COLLECTION_SCOPE, COLLECTION_SOURCES
+    COLLECTION_STARTED_AT = datetime.now(timezone.utc)
+    COLLECTION_SCOPE = dict(scope or {})
+    COLLECTION_SOURCES = {}
+
+
+def register_collection_source(
+    key, label, domain, *, core=False, market_codes=None, platform_keys=None
+):
+    source = COLLECTION_SOURCES.setdefault(str(key), {
+        'key': str(key),
+        'label': str(label),
+        'domain': str(domain),
+        'core': bool(core),
+        'market_codes': list(dict.fromkeys(market_codes or [])),
+        'platform_keys': list(dict.fromkeys(platform_keys or [])),
+        'collector_status': 'pending',
+        'request_count': 0,
+        'successful_requests': 0,
+        'failed_requests': 0,
+        'request_duration_ms': 0,
+        'duration_ms': 0,
+        'records_collected': 0,
+        'records_in_scope': 0,
+        'errors': [],
+    })
+    source['core'] = source['core'] or bool(core)
+    source['market_codes'] = list(dict.fromkeys(source['market_codes'] + list(market_codes or [])))
+    source['platform_keys'] = list(dict.fromkeys(source['platform_keys'] + list(platform_keys or [])))
+    return source
+
+
+def _record_http_result(source, *, success, duration_ms, error=None):
+    source['request_count'] += 1
+    source['request_duration_ms'] += max(int(duration_ms), 0)
+    counter = 'successful_requests' if success else 'failed_requests'
+    source[counter] += 1
+    if error:
+        message = re.sub(r'\s+', ' ', str(error)).strip()[:300]
+        if message and message not in source['errors']:
+            source['errors'].append(message)
+
+
+def _source_status(source):
+    if source.get('collector_status') == 'failed':
+        return 'failed'
+    if source.get('request_count', 0) and not source.get('successful_requests', 0):
+        return 'failed'
+    if source.get('failed_requests', 0):
+        return 'degraded'
+    if source.get('collector_status') == 'skipped':
+        return 'skipped'
+    return 'succeeded'
+
+
+def run_collection_source(
+    key, label, domain, collector, *, core=False, market_codes=None,
+    platform_keys=None, assign_scope=True
+):
+    """Run one logical source and retain its outcome even after a failure."""
+    source = register_collection_source(
+        key, label, domain, core=core,
+        market_codes=market_codes, platform_keys=platform_keys,
+    )
+    started = time.perf_counter()
+    try:
+        result = collector()
+        items = result[0] if isinstance(result, tuple) else result
+        items = items if isinstance(items, list) else []
+        source['collector_status'] = 'succeeded'
+    except Exception as error:
+        source['collector_status'] = 'failed'
+        message = re.sub(r'\s+', ' ', str(error)).strip()[:300]
+        if message and message not in source['errors']:
+            source['errors'].append(message)
+        print(f"  [ERROR] {label}: {error}")
+        traceback.print_exc()
+        items = []
+    source['duration_ms'] = max(int((time.perf_counter() - started) * 1000), 0)
+    source['records_collected'] = len(items)
+    source['records_in_scope'] = len(items)
+    if assign_scope:
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            if market_codes:
+                item['market_codes'] = list(market_codes)
+            if len(market_codes or []) == 1:
+                item['market'] = list(market_codes)[0]
+            if platform_keys:
+                item['platform_keys'] = list(platform_keys)
+            if len(platform_keys or []) == 1:
+                item['platform_key'] = list(platform_keys)[0]
+    return items
+
+
+def set_collection_scope_count(key, count):
+    if key in COLLECTION_SOURCES:
+        COLLECTION_SOURCES[key]['records_in_scope'] = max(int(count), 0)
+
+
+def collection_source_succeeded(key):
+    source = COLLECTION_SOURCES.get(key)
+    return bool(source) and _source_status(source) == 'succeeded'
+
+
+def build_collection_report():
+    completed_at = datetime.now(timezone.utc)
+    sources = []
+    for source in COLLECTION_SOURCES.values():
+        row = dict(source)
+        row['status'] = _source_status(source)
+        row['duration_ms'] = max(row['duration_ms'], row['request_duration_ms'])
+        row.pop('collector_status', None)
+        sources.append(row)
+    core_failures = [row['key'] for row in sources if row['core'] and row['status'] == 'failed']
+    failed_sources = [row['key'] for row in sources if row['status'] == 'failed']
+    degraded_sources = [row['key'] for row in sources if row['status'] == 'degraded']
+    return {
+        # v2 is the full-pipeline contract. The US category, CPSC and
+        # FRED/BLS collectors append their source rows after this process.
+        # Starting at v2 prevents a partially executed workflow from being
+        # accepted as a legacy, complete collection run.
+        'schema_version': 2,
+        'started_at': (COLLECTION_STARTED_AT or completed_at).isoformat(),
+        'completed_at': completed_at.isoformat(),
+        'duration_ms': max(int((completed_at - (COLLECTION_STARTED_AT or completed_at)).total_seconds() * 1000), 0),
+        'status': 'failed' if core_failures else ('degraded' if failed_sources or degraded_sources else 'healthy'),
+        'scope': dict(COLLECTION_SCOPE),
+        'legacy_global_writes': False,
+        'sources': sources,
+        'summary': {
+            'sources': len(sources),
+            'succeeded': sum(row['status'] == 'succeeded' for row in sources),
+            'degraded': len(degraded_sources),
+            'failed': len(failed_sources),
+            'core_failures': core_failures,
+            'records_collected': sum(row['records_collected'] for row in sources),
+            'records_in_scope': sum(row['records_in_scope'] for row in sources),
+        },
+    }
+
+
+def write_collection_report(path=None):
+    path = path or os.path.join(DATA_DIR, 'collection_run.json')
+    report = build_collection_report()
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as handle:
+        json.dump(report, handle, ensure_ascii=False, indent=2)
+        handle.write('\n')
+    print(
+        f"[Collection Report] status={report['status']} "
+        f"sources={report['summary']['sources']} core_failures={len(report['summary']['core_failures'])}"
+    )
+    return report
 
 
 SOURCE_KINDS = ('official', 'traceable', 'uploaded', 'derived', 'demo')
@@ -93,12 +315,7 @@ def _industry_market_alias_pattern(values):
 
 def _industry_market_catalog():
     """Read configured market aliases without making the feed depend on them."""
-    path = os.path.join(DATA_DIR, 'market_scope.json')
-    try:
-        with open(path, encoding='utf-8') as handle:
-            data = json.load(handle)
-    except (OSError, json.JSONDecodeError):
-        return []
+    data = _load_market_scope_manifest()
     return [item for item in data.get('markets', []) if isinstance(item, dict) and item.get('code')]
 
 
@@ -276,20 +493,46 @@ def annotate_industry_advisory(item):
     return record
 
 # ---- HTTP helpers ----
-def fetch_json(url, headers=None):
+def fetch_json(
+    url, headers=None, *, source_key=None, source_label=None, domain='supporting',
+    core=False, market_codes=None, platform_keys=None, track=True
+):
     """Fetch URL and parse JSON response."""
     hdrs = {'User-Agent': 'MercatorBot/1.0 (GitHub Actions)'}
     if headers:
         hdrs.update(headers)
-    req = Request(url, headers=hdrs)
+    host = _source_host(url) or 'unknown-source'
+    source = None
+    if track:
+        source = register_collection_source(
+            source_key or host.replace('.', '_'), source_label or host, domain,
+            core=core, market_codes=market_codes, platform_keys=platform_keys,
+        )
+    started = time.perf_counter()
     try:
+        req = Request(url, headers=hdrs)
         with urlopen(req, timeout=30) as resp:
-            return json.loads(resp.read().decode('utf-8'))
+            result = json.loads(resp.read().decode('utf-8'))
+        if source:
+            _record_http_result(
+                source, success=True,
+                duration_ms=(time.perf_counter() - started) * 1000,
+            )
+        return result
     except Exception as e:
+        if source:
+            _record_http_result(
+                source, success=False,
+                duration_ms=(time.perf_counter() - started) * 1000,
+                error=e,
+            )
         print(f"  [WARN] fetch_json failed for {url}: {e}")
         return None
 
-def fetch_html(url, headers=None):
+def fetch_html(
+    url, headers=None, *, source_key=None, source_label=None, domain='supporting',
+    core=False, market_codes=None, platform_keys=None, track=True
+):
     """Fetch URL and return HTML text."""
     hdrs = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -298,20 +541,46 @@ def fetch_html(url, headers=None):
     }
     if headers:
         hdrs.update(headers)
-    req = Request(url, headers=hdrs)
+    host = _source_host(url) or 'unknown-source'
+    source = None
+    if track:
+        source = register_collection_source(
+            source_key or host.replace('.', '_'), source_label or host, domain,
+            core=core, market_codes=market_codes, platform_keys=platform_keys,
+        )
+    started = time.perf_counter()
     try:
+        req = Request(url, headers=hdrs)
         with urlopen(req, timeout=30) as resp:
             data = resp.read()
             # Try utf-8 first, then fall back
             for enc in ['utf-8', 'gbk', 'gb2312', 'latin-1']:
                 try:
-                    return data.decode(enc)
+                    result = data.decode(enc)
+                    if source:
+                        _record_http_result(
+                            source, success=True,
+                            duration_ms=(time.perf_counter() - started) * 1000,
+                        )
+                    return result
                 except UnicodeDecodeError:
                     continue
                 except LookupError:
                     continue
-            return data.decode('utf-8', errors='replace')
+            result = data.decode('utf-8', errors='replace')
+            if source:
+                _record_http_result(
+                    source, success=True,
+                    duration_ms=(time.perf_counter() - started) * 1000,
+                )
+            return result
     except Exception as e:
+        if source:
+            _record_http_result(
+                source, success=False,
+                duration_ms=(time.perf_counter() - started) * 1000,
+                error=e,
+            )
         print(f"  [WARN] fetch_html failed for {url}: {e}")
         return None
 
@@ -335,14 +604,28 @@ def collect_federal_register():
     ]
     
     for agency in agencies:
-        url = (
-            f"https://www.federalregister.gov/api/v1/documents.json?"
-            f"filter[conditions][agencies][]={agency}"
-            f"&filter[conditions][type]=RULE"
-            f"&per_page=10&order=newest&fields[]=title&fields[]=abstract"
-            f"&fields[]=publication_date&fields[]=html_url&fields[]=type"
+        url = build_query_url(
+            'https://www.federalregister.gov/api/v1/documents.json',
+            [
+                ('filter[conditions][agencies][]', agency),
+                ('filter[conditions][type]', 'RULE'),
+                ('per_page', 10),
+                ('order', 'newest'),
+                ('fields[]', 'title'),
+                ('fields[]', 'abstract'),
+                ('fields[]', 'publication_date'),
+                ('fields[]', 'html_url'),
+                ('fields[]', 'type'),
+            ],
         )
-        data = fetch_json(url)
+        data = fetch_json(
+            url,
+            source_key='federal_register',
+            source_label='US Federal Register',
+            domain='policy',
+            core=True,
+            market_codes=['US'],
+        )
         if not data or 'results' not in data:
             continue
             
@@ -392,9 +675,16 @@ def collect_ustr():
     print("[2/6] Collecting USTR press releases...")
     items = []
     
-    html = fetch_html('https://ustr.gov/news-events/press-releases')
+    source_options = {
+        'source_key': 'ustr',
+        'source_label': 'US Trade Representative',
+        'domain': 'policy',
+        'core': False,
+        'market_codes': ['US'],
+    }
+    html = fetch_html('https://ustr.gov/news-events/press-releases', **source_options)
     if not html:
-        html = fetch_html('https://ustr.gov/news-events')
+        html = fetch_html('https://ustr.gov/news-events', **source_options)
     if not html:
         # Fallback: use Federal Register with USTR-specific filter
         print("  [INFO] USTR site unreachable, skipping (covered by Federal Register)")
@@ -444,12 +734,21 @@ def collect_tiktok_shop(include_status=False):
     source_checked = False
     
     # TikTok Shop seller academy policy page
-    urls = [
-        'https://seller.tiktokshopglobalselling.com/university/new-policies?identity=1&module_id=latest_policies',
-    ]
+    urls = [build_query_url(
+        'https://seller.tiktokshopglobalselling.com/university/new-policies',
+        {'identity': 1, 'module_id': 'latest_policies'},
+    )]
     
     for url in urls:
-        html = fetch_html(url)
+        html = fetch_html(
+            url,
+            source_key='tiktok_shop_rules',
+            source_label='TikTok Shop Seller Center',
+            domain='rule',
+            core=True,
+            market_codes=['US'],
+            platform_keys=['tiktok-shop'],
+        )
         if not html:
             continue
         source_checked = True
@@ -473,7 +772,9 @@ def collect_tiktok_shop(include_status=False):
                     'title': title,
                     'summary': '',
                     'platform': 'TikTok Shop',
-                    'market': 'SEA/US',
+                    'market': 'US',
+                    'market_codes': ['US'],
+                    'platform_key': 'tiktok-shop',
                     'category': 'policy',
                     'impact_level': 'medium',
                     'effective_date': NOW_DATE,
@@ -494,9 +795,17 @@ def collect_amazon(include_status=False):
     print("[4/6] Collecting Amazon Seller Central announcements...")
     items = []
     
-    html = fetch_html('https://sellercentral.amazon.com/news')
+    source_options = {
+        'source_key': 'amazon_rules',
+        'source_label': 'Amazon Seller Central',
+        'domain': 'rule',
+        'core': True,
+        'market_codes': ['US'],
+        'platform_keys': ['amazon'],
+    }
+    html = fetch_html('https://sellercentral.amazon.com/news', **source_options)
     if not html:
-        html = fetch_html('https://sellercentral.amazon.com/gp/help/news')
+        html = fetch_html('https://sellercentral.amazon.com/gp/help/news', **source_options)
     if not html:
         print("  [WARN] Could not fetch Amazon Seller Central news")
         return (items, False) if include_status else items
@@ -528,8 +837,10 @@ def collect_amazon(include_status=False):
                 'id': gen_id('r', title),
                 'title': title,
                 'summary': '',
-                'platform': 'Amazon',
-                'market': 'US',
+                    'platform': 'Amazon',
+                    'market': 'US',
+                    'market_codes': ['US'],
+                    'platform_key': 'amazon',
                 'category': 'policy',
                 'impact_level': impact,
                 'effective_date': NOW_DATE,
@@ -553,7 +864,14 @@ def collect_cn_news():
     items = []
     
     # 雨果网 - cross-border e-commerce news
-    html = fetch_html('https://www.cifnews.com/')
+    html = fetch_html(
+        'https://www.cifnews.com/',
+        source_key='cifnews',
+        source_label='雨果网',
+        domain='industry_advisory',
+        core=False,
+        market_codes=COLLECTION_SCOPE.get('market_codes') or [],
+    )
     if html:
         # Find article links with titles
         pattern = r'<a[^>]+href="(https?://[^"]*cifnews[^"]*)"[^>]*>([^<]{10,100})</a>'
@@ -584,7 +902,14 @@ def collect_cn_news():
                 break
     
     # AMZ123
-    html2 = fetch_html('https://www.amz123.com/')
+    html2 = fetch_html(
+        'https://www.amz123.com/',
+        source_key='amz123',
+        source_label='AMZ123',
+        domain='industry_advisory',
+        core=False,
+        market_codes=COLLECTION_SCOPE.get('market_codes') or [],
+    )
     if html2:
         pattern = r'<a[^>]+href="((?:https?://(?:www\.)?amz123\.com)?/t/[^"]+)"[^>]*>(.*?)</a>'
         matches = re.findall(pattern, html2, flags=re.IGNORECASE | re.DOTALL)
@@ -622,109 +947,6 @@ def collect_cn_news():
                 break
     
     print(f"  Found {len(items)} items from CN news sources")
-    return items
-
-# ---- Source: China MOFCOM ----
-def collect_mofcom():
-    """Collect China Ministry of Commerce trade policy updates."""
-    print("[6/7] Collecting China MOFCOM...")
-    items = []
-    
-    # MOFCOM policy release page
-    urls = [
-        'http://www.mofcom.gov.cn/article/aecc/agreement/',
-        'http://www.mofcom.gov.cn/article/zcfb/',
-    ]
-    
-    for url in urls:
-        html = fetch_html(url)
-        if not html:
-            continue
-        
-        # Find article links
-        pattern = r'<a[^>]+href="([^"]+)"[^>]*>([^<]{10,100})</a>'
-        matches = re.findall(pattern, html)
-        seen = set()
-        for link, title in matches:
-            title = title.strip()
-            if title in seen or len(title) < 10:
-                continue
-            # Filter for trade-related content
-            trade_kw = ['贸易', '出口', '进口', '关税', '合作', '协定', '跨境', '电商', 'WTO', 'RCEP']
-            if not any(kw in title for kw in trade_kw):
-                continue
-            seen.add(title)
-            
-            full_url = link if link.startswith('http') else f"http://www.mofcom.gov.cn{link}"
-            items.append({
-                'id': gen_id('p', title),
-                'title': title,
-                'summary': '',
-                'source': '中国商务部',
-                'source_url': full_url,
-                'region': 'CN',
-                'category': 'trade_agreement' if any(kw in title for kw in ['协定', '合作', 'RCEP']) else 'regulation',
-                'impact_level': 'medium',
-                'published_at': NOW_DATE,
-                'collected_at': NOW_ISO
-            })
-            if len(items) >= 8:
-                break
-        if items:
-            break
-    
-    print(f"  Found {len(items)} items from MOFCOM")
-    return items
-
-# ---- Source: EU Trade ----
-def collect_eu_trade():
-    """Collect EU trade policy updates."""
-    print("[6/6] Collecting EU trade policy updates...")
-    items = []
-    
-    url = "https://policy.trade.ec.europa.eu/news_en"
-    html = fetch_html(url)
-    if not html:
-        url = "https://trade.ec.europa.eu/news_en"
-        html = fetch_html(url)
-    if not html:
-        print("  [WARN] Could not fetch EU trade page")
-        return items
-    
-    # Find news items
-    patterns = [
-        r'<a[^>]+href="([^"]*)"[^>]*class="[^"]*news[^"]*"[^>]*>([^<]{10,150})</a>',
-        r'<h[23][^>]*>\s*<a[^>]+href="([^"]*)"[^>]*>([^<]{10,150})</a>',
-    ]
-    
-    seen = set()
-    for pat in patterns:
-        matches = re.findall(pat, html)
-        for url_path, title in matches:
-            title = title.strip()
-            if title in seen or len(title) < 10:
-                continue
-            seen.add(title)
-            
-            full_url = url_path if url_path.startswith('http') else f"https://policy.trade.ec.europa.eu{url_path}"
-            items.append({
-                'id': gen_id('p', title),
-                'title': title,
-                'summary': '',
-                'source': 'EU Trade',
-                'source_url': full_url,
-                'region': 'EU',
-                'category': 'regulation',
-                'impact_level': 'medium',
-                'published_at': NOW_DATE,
-                'collected_at': NOW_ISO
-            })
-            if len(items) >= 8:
-                break
-        if len(items) >= 8:
-            break
-    
-    print(f"  Found {len(items)} items from EU Trade")
     return items
 
 # ---- Article Extraction ----
@@ -808,7 +1030,7 @@ def extract_article_summary(url):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml',
         'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8'
-    })
+    }, track=False)
     if not html:
         return ''
 
@@ -1031,521 +1253,6 @@ def merge_data(existing_file, new_items, key_fields=['title'], baseline_kind=Non
 
     return existing, added
 
-# ---- Platform Updates Collector ----
-
-# Platform name aliases for news search
-PLATFORM_ALIASES = {
-    'Amazon': ['Amazon', '亚马逊'],
-    'TikTok Shop': ['TikTok Shop', 'TikTok电商'],
-    'Shopee': ['Shopee', '虾皮'],
-    'Temu': ['Temu', '拼多多跨境'],
-    'SHEIN Marketplace': ['SHEIN', '希音'],
-    'AliExpress 速卖通': ['AliExpress', '速卖通'],
-    'eBay': ['eBay'],
-    'Lazada': ['Lazada', '来赞达'],
-    'Tokopedia': ['Tokopedia'],
-    'MercadoLibre 美客多': ['MercadoLibre', '美客多'],
-    'Ozon': ['Ozon'],
-    'Wildberries': ['Wildberries'],
-    'Coupang': ['Coupang', '酷澎'],
-    'Jumia': ['Jumia'],
-    'Walmart Marketplace': ['Walmart Marketplace', '沃尔玛电商'],
-    'Etsy': ['Etsy'],
-    'Zalando': ['Zalando'],
-    'Rakuten 乐天': ['Rakuten', '乐天'],
-    'Mercari 煤炉': ['Mercari', '煤炉'],
-    'Cdiscount': ['Cdiscount'],
-    'ASOS': ['ASOS'],
-    'Qoo10': ['Qoo10'],
-    'Instagram Shop / Facebook Shop': ['Instagram Shop', 'Facebook Shop', 'Meta电商'],
-    'YouTube Shopping': ['YouTube Shopping', 'YouTube购物'],
-    'Pinterest Shop': ['Pinterest Shop'],
-}
-
-# Federal Register search terms per platform
-PLATFORM_FR_TERMS = {
-    'Amazon': 'amazon ecommerce',
-    'TikTok Shop': 'tiktok shop social commerce',
-    'Temu': 'temu ecommerce',
-    'SHEIN Marketplace': 'shein fast fashion',
-    'AliExpress 速卖通': 'aliexpress cross-border ecommerce',
-    'Shopee': 'shopee ecommerce',
-    'eBay': 'ebay marketplace',
-    'Walmart Marketplace': 'walmart ecommerce',
-    'Lazada': 'lazada alibaba ecommerce',
-    'MercadoLibre 美客多': 'mercadolibre latin america ecommerce',
-}
-
-
-def _extract_title(m):
-    """从正则匹配结果（str 或 tuple）中提取标题文本。"""
-    if isinstance(m, tuple):
-        for part in reversed(m):
-            if isinstance(part, str) and part.strip():
-                return part.strip()
-        return ''
-    return m.strip() if isinstance(m, str) else str(m).strip()
-
-
-def _search_html_site(platform_name, aliases, url_fn, patterns_fn, max_alias=2):
-    """通用站点搜索（修复 P2-5 重复代码）。
-
-    遍历别名生成 URL，多正则提取标题并去重。
-    url_fn(alias) 返回请求 URL；patterns_fn(alias) 返回该别名对应的正则列表。
-    """
-    items = []
-    for alias in aliases[:max_alias]:
-        url = url_fn(alias)
-        html = fetch_html(url)
-        if not html:
-            continue
-        patterns = patterns_fn(alias)
-        seen = set()
-        for pat in patterns:
-            try:
-                matches = re.findall(pat, html, re.IGNORECASE)
-            except re.error:
-                continue
-            for m in matches:
-                title = _extract_title(m)
-                if len(title) < 8 or title in seen:
-                    continue
-                seen.add(title)
-                items.append(title)
-        if items:
-            break
-    return items
-
-
-def _search_amz123(platform_name, aliases):
-    """Search AMZ123 for platform news."""
-    def url_fn(alias):
-        return f'https://www.amz123.com/search?q={alias}'
-    def patterns_fn(alias):
-        esc = re.escape(alias)
-        return [
-            r'<a[^>]+href="(/[^"]+)"[^>]*>([^<]*' + esc + r'[^<]*)</a>',
-            r'<h[234][^>]*>([^<]*' + esc + r'[^<]*)</h[234]>',
-            r'"title":"([^"]*' + esc + r'[^"]*)"',
-        ]
-    return _search_html_site(platform_name, aliases, url_fn, patterns_fn)
-
-
-def _search_cifnews(platform_name, aliases):
-    """Search 雨果网 for platform news."""
-    def url_fn(alias):
-        return f'https://www.cifnews.com/search?keyword={alias}'
-    def patterns_fn(alias):
-        esc = re.escape(alias)
-        return [
-            r'<a[^>]+href="(https?://[^"]*cifnews[^"]*)"[^>]*>([^<]*' + esc + r'[^<]*)</a>',
-            r'"title":"([^"]*' + esc + r'[^"]*)"',
-            r'<h[234][^>]*>\s*<a[^>]+>([^<]*' + esc + r'[^<]*)</a>',
-        ]
-    return _search_html_site(platform_name, aliases, url_fn, patterns_fn)
-
-
-def _search_federal_register(platform_name, term):
-    """Search Federal Register for platform-related policy changes."""
-    items = []
-    url = (
-        f"https://www.federalregister.gov/api/v1/documents.json?"
-        f"filter[conditions][term]={term}"
-        f"&per_page=5&order=newest"
-        f"&fields[]=title&fields[]=abstract"
-    )
-    data = fetch_json(url)
-    if data and 'results' in data:
-        for doc in data['results']:
-            title = doc.get('title', '').strip()
-            if title and len(title) > 5:
-                items.append(title)
-    return items
-
-
-def collect_platform_updates():
-    """Collect latest updates for each platform and merge into data/platforms.json."""
-    print("\n[Platform Updates] Collecting platform dynamics...")
-    
-    platforms_file = os.path.join(DATA_DIR, 'platforms.json')
-    if not os.path.exists(platforms_file):
-        print("  [WARN] data/platforms.json not found, skipping platform updates")
-        return
-    
-    with open(platforms_file, 'r', encoding='utf-8') as f:
-        platforms = json.load(f)
-    
-    print(f"  Loaded {len(platforms)} platforms")
-    
-    # Limit to 10 platforms per run to avoid timeout
-    MAX_UPDATES_PER_RUN = 10
-    updated_count = 0
-    
-    for platform in platforms:
-        if updated_count >= MAX_UPDATES_PER_RUN:
-            break
-        
-        pname = platform.get('name', '')
-        if not pname:
-            continue
-        
-        # Get aliases for search
-        aliases = PLATFORM_ALIASES.get(pname, [pname])
-        fr_term = PLATFORM_FR_TERMS.get(pname, pname.lower())
-        
-        new_titles = []
-        
-        # 1. Search AMZ123
-        try:
-            amz_titles = _search_amz123(pname, aliases)
-            new_titles.extend(amz_titles[:3])
-        except Exception as e:
-            print(f"  [WARN] AMZ123 search failed for {pname}: {e}")
-        
-        # 2. Search 雨果网
-        try:
-            cif_titles = _search_cifnews(pname, aliases)
-            new_titles.extend(cif_titles[:3])
-        except Exception as e:
-            print(f"  [WARN] cifnews search failed for {pname}: {e}")
-        
-        # 3. Federal Register (US platforms)
-        if fr_term and pname in PLATFORM_FR_TERMS:
-            try:
-                fr_titles = _search_federal_register(pname, fr_term)
-                new_titles.extend(fr_titles[:2])
-            except Exception as e:
-                print(f"  [WARN] Federal Register search failed for {pname}: {e}")
-        
-        if new_titles:
-            # Deduplicate against existing updates
-            existing_updates = platform.get('updates', '')
-            existing_parts = [u.strip() for u in existing_updates.split(';') if u.strip()]
-            
-            added = 0
-            for title in new_titles:
-                # Skip if similar to existing
-                title_clean = title.strip()
-                if not title_clean or len(title_clean) < 8:
-                    continue
-                is_dup = False
-                for ep in existing_parts:
-                    # Simple overlap check
-                    if any(w in ep for w in title_clean.split() if len(w) > 3):
-                        is_dup = True
-                        break
-                if not is_dup:
-                    existing_parts.append(title_clean[:100])
-                    added += 1
-            
-            if added > 0:
-                # Keep only latest 8 updates
-                platform['updates'] = ';'.join(existing_parts[-8:])
-                updated_count += 1
-                print(f"  [{updated_count}/{MAX_UPDATES_PER_RUN}] {pname}: +{added} new updates")
-    
-    if updated_count > 0:
-        # Add metadata
-        with open(platforms_file, 'w', encoding='utf-8') as f:
-            json.dump(platforms, f, ensure_ascii=False, indent=2)
-        print(f"  Updated {updated_count} platforms in platforms.json")
-    else:
-        print("  No new platform updates found")
-
-
-# ---- Country Profile Updates ----
-COUNTRY_CONFIG = {
-    # Southeast Asia
-    'id': {'name': '印度尼西亚', 'en': 'Indonesia', 'search_terms': ['Indonesia', '印尼', '印尼电商']},
-    'th': {'name': '泰国', 'en': 'Thailand', 'search_terms': ['Thailand', '泰国', '泰国电商']},
-    'my': {'name': '马来西亚', 'en': 'Malaysia', 'search_terms': ['Malaysia', '马来西亚', '马来电商']},
-    'vn': {'name': '越南', 'en': 'Vietnam', 'search_terms': ['Vietnam', '越南', '越南电商']},
-    'ph': {'name': '菲律宾', 'en': 'Philippines', 'search_terms': ['Philippines', '菲律宾', '菲律宾电商']},
-    'sg': {'name': '新加坡', 'en': 'Singapore', 'search_terms': ['Singapore', '新加坡', '新加坡电商']},
-    # Americas
-    'us': {'name': '美国', 'en': 'United States', 'search_terms': ['US tariff', 'China tariff', '美国关税', '美国电商']},
-    'br': {'name': '巴西', 'en': 'Brazil', 'search_terms': ['Brazil', '巴西', '巴西电商', 'Remessa Conforme']},
-    'ca': {'name': '加拿大', 'en': 'Canada', 'search_terms': ['Canada', '加拿大', '加拿大电商']},
-    'mx': {'name': '墨西哥', 'en': 'Mexico', 'search_terms': ['Mexico', '墨西哥', '墨西哥电商']},
-    'ar': {'name': '阿根廷', 'en': 'Argentina', 'search_terms': ['Argentina', '阿根廷', '阿根廷电商']},
-    'co': {'name': '哥伦比亚', 'en': 'Colombia', 'search_terms': ['Colombia', '哥伦比亚', '哥伦比亚电商']},
-    'cl': {'name': '智利', 'en': 'Chile', 'search_terms': ['Chile', '智利', '智利电商']},
-    # Europe
-    'gb': {'name': '英国', 'en': 'United Kingdom', 'search_terms': ['UK', '英国', '英国电商']},
-    'de': {'name': '德国', 'en': 'Germany', 'search_terms': ['Germany', '德国', '德国电商']},
-    'fr': {'name': '法国', 'en': 'France', 'search_terms': ['France', '法国', '法国电商']},
-    'it': {'name': '意大利', 'en': 'Italy', 'search_terms': ['Italy', '意大利', '意大利电商']},
-    'es': {'name': '西班牙', 'en': 'Spain', 'search_terms': ['Spain', '西班牙', '西班牙电商']},
-    'nl': {'name': '荷兰', 'en': 'Netherlands', 'search_terms': ['Netherlands', '荷兰', '荷兰电商']},
-    'pl': {'name': '波兰', 'en': 'Poland', 'search_terms': ['Poland', '波兰', '波兰电商']},
-    'se': {'name': '瑞典', 'en': 'Sweden', 'search_terms': ['Sweden', '瑞典', '瑞典电商']},
-    'be': {'name': '比利时', 'en': 'Belgium', 'search_terms': ['Belgium', '比利时', '比利时电商']},
-    # Middle East & Africa
-    'sa': {'name': '沙特阿拉伯', 'en': 'Saudi Arabia', 'search_terms': ['Saudi Arabia', '沙特', '中东电商']},
-    'ae': {'name': '阿联酋', 'en': 'UAE', 'search_terms': ['UAE', '阿联酋', '迪拜电商']},
-    'eg': {'name': '埃及', 'en': 'Egypt', 'search_terms': ['Egypt', '埃及', '埃及电商']},
-    'tr': {'name': '土耳其', 'en': 'Turkey', 'search_terms': ['Turkey', '土耳其', '土耳其电商']},
-    'il': {'name': '以色列', 'en': 'Israel', 'search_terms': ['Israel', '以色列', '以色列电商']},
-    'ng': {'name': '尼日利亚', 'en': 'Nigeria', 'search_terms': ['Nigeria', '尼日利亚', '尼日利亚电商']},
-    'za': {'name': '南非', 'en': 'South Africa', 'search_terms': ['South Africa', '南非', '南非电商']},
-    'ke': {'name': '肯尼亚', 'en': 'Kenya', 'search_terms': ['Kenya', '肯尼亚', '肯尼亚电商']},
-    'ma': {'name': '摩洛哥', 'en': 'Morocco', 'search_terms': ['Morocco', '摩洛哥', '摩洛哥电商']},
-    # Asia Pacific
-    'jp': {'name': '日本', 'en': 'Japan', 'search_terms': ['Japan', '日本', '日本电商']},
-    'kr': {'name': '韩国', 'en': 'South Korea', 'search_terms': ['South Korea', '韩国', '韩国电商']},
-    'au': {'name': '澳大利亚', 'en': 'Australia', 'search_terms': ['Australia', '澳大利亚', '澳洲电商']},
-    'in': {'name': '印度', 'en': 'India', 'search_terms': ['India', '印度', '印度电商']},
-    'pk': {'name': '巴基斯坦', 'en': 'Pakistan', 'search_terms': ['Pakistan', '巴基斯坦', '巴基斯坦电商']},
-    # CIS
-    'ru': {'name': '俄罗斯', 'en': 'Russia', 'search_terms': ['Russia', '俄罗斯', '俄罗斯电商']},
-    'ua': {'name': '乌克兰', 'en': 'Ukraine', 'search_terms': ['Ukraine', '乌克兰', '乌克兰电商']},
-    'kz': {'name': '哈萨克斯坦', 'en': 'Kazakhstan', 'search_terms': ['Kazakhstan', '哈萨克斯坦', '哈萨克电商']},
-}
-
-def _search_country_federal_register(country_key, country_en):
-    """Search Federal Register for trade policies related to a specific country."""
-    items = []
-    # Build search terms for Federal Register
-    terms = [country_en, f'{country_en} tariff', f'{country_en} trade']
-    if country_key == 'us':
-        terms = ['China tariff', 'China trade', 'Section 301', 'de minimis']
-    
-    for term in terms[:3]:
-        url = (
-            f"https://www.federalregister.gov/api/v1/documents.json?"
-            f"conditions[term]={term}"
-            f"&conditions[type]=RULE"
-            f"&per_page=5&order=newest"
-            f"&fields[]=title&fields[]=abstract&fields[]=publication_date&fields[]=html_url"
-        )
-        data = fetch_json(url)
-        if not data or 'results' not in data:
-            continue
-        for doc in data['results']:
-            title = doc.get('title', '').strip()
-            abstract = doc.get('abstract', '') or ''
-            abstract = re.sub(r'<[^>]+>', '', abstract).strip()
-            pub_date = doc.get('publication_date', NOW_DATE)
-            html_url = doc.get('html_url', '')
-            if not title:
-                continue
-            # Check relevance - must mention country or trade keywords
-            lower_title = title.lower()
-            relevant = False
-            if country_key == 'us':
-                relevant = any(kw in lower_title for kw in ['china', 'tariff', 'duty', 'trade', 'import', 'export', 'sanction'])
-            else:
-                relevant = country_en.lower() in lower_title or any(
-                    kw in lower_title for kw in ['tariff', 'trade', 'sanction', 'import', 'export']
-                )
-            if not relevant:
-                continue
-            
-            # Determine impact level
-            impact = 'mid'
-            high_kw = ['tariff', 'duty', 'sanction', 'embargo', 'quota', 'ban', 'prohibit']
-            if any(kw in lower_title for kw in high_kw):
-                impact = 'high'
-            
-            items.append({
-                'impact': impact,
-                'title': title,
-                'date': pub_date,
-                'source': 'Federal Register',
-                'source_url': html_url,
-                'description': abstract[:200] if abstract else title,
-            })
-        if items:
-            break
-    return items
-
-
-def _search_country_news(country_key, search_terms):
-    """Search Chinese e-commerce news sites for country-related news."""
-    items = []
-    # Search AMZ123
-    for term in search_terms[:2]:
-        url = f'https://www.amz123.com/search?q={term}'
-        html = fetch_html(url)
-        if not html:
-            continue
-        patterns = [
-            r'<a[^>]+href="(/[^"]+)"[^>]*>([^<]*' + re.escape(term) + r'[^<]*)</a>',
-            r'"title":"([^"]*' + re.escape(term) + r'[^"]*)"',
-            r'<h[234][^>]*>([^<]*' + re.escape(term) + r'[^<]*)</h[234]>',
-        ]
-        seen = set()
-        for pat in patterns:
-            matches = re.findall(pat, html, re.IGNORECASE)
-            for m in matches:
-                title = m.strip() if isinstance(m, str) else str(m).strip()
-                if len(title) < 8 or title in seen:
-                    continue
-                seen.add(title)
-                items.append({
-                    'title': title[:100],
-                    'source': 'AMZ123',
-                })
-        if items:
-            break
-    
-    # Search 雨果网
-    for term in search_terms[:2]:
-        url = f'https://www.cifnews.com/search?keyword={term}'
-        html = fetch_html(url)
-        if not html:
-            continue
-        patterns = [
-            r'"title":"([^"]*' + re.escape(term) + r'[^"]*)"',
-            r'<a[^>]+href="(https?://[^"]*cifnews[^"]*)"[^>]*>([^<]*' + re.escape(term) + r'[^<]*)</a>',
-            r'<h[234][^>]*>\s*<a[^>]+>([^<]*' + re.escape(term) + r'[^<]*)</a>',
-        ]
-        seen = set()
-        for pat in patterns:
-            matches = re.findall(pat, html, re.IGNORECASE)
-            for m in matches:
-                title = m.strip() if isinstance(m, str) else str(m).strip()
-                if isinstance(title, str) and len(title) < 8:
-                    continue
-                if title in seen:
-                    continue
-                seen.add(title)
-                items.append({
-                    'title': title[:100],
-                    'source': '雨果网',
-                })
-        if items:
-            break
-    
-    return items
-
-
-def collect_country_updates():
-    """Collect latest trade policy updates for each country profile.
-    Rotates through 4 countries per run to avoid timeout.
-    Updates ai.risks and comp.policies in data/countries.json.
-    """
-    print("\n[Country Updates] Collecting country profile dynamics...")
-    
-    countries_file = os.path.join(DATA_DIR, 'countries.json')
-    if not os.path.exists(countries_file):
-        print("  [WARN] data/countries.json not found, skipping country updates")
-        return
-    
-    with open(countries_file, 'r', encoding='utf-8') as f:
-        countries = json.load(f)
-    
-    print(f"  Loaded {len(countries)} country profiles")
-    
-    # Rotate: update 8 countries per run based on date
-    # With 39 countries and 4-hour intervals, all countries cycle in ~2 days
-    all_keys = list(COUNTRY_CONFIG.keys())
-    day_of_year = NOW.timetuple().tm_yday
-    hour = NOW.hour
-    start_idx = (day_of_year * 6 + hour // 4) % len(all_keys)
-    # Pick 8 consecutive countries in rotation
-    rotate_keys = []
-    for i in range(8):
-        rotate_keys.append(all_keys[(start_idx + i) % len(all_keys)])
-    
-    print(f"  Rotating: updating {rotate_keys}")
-    
-    updated_count = 0
-    for country_key in rotate_keys:
-        if country_key not in countries:
-            continue
-        
-        config = COUNTRY_CONFIG[country_key]
-        country_data = countries[country_key]
-        print(f"\n  [{country_key}] {config['name']} ({config['en']})")
-        
-        has_update = False
-        
-        # 1. Search Federal Register for trade policies
-        fr_items = []
-        try:
-            fr_items = _search_country_federal_register(country_key, config['en'])
-            print(f"    Federal Register: {len(fr_items)} relevant items")
-        except Exception as e:
-            print(f"    [WARN] Federal Register search failed: {e}")
-        
-        # 2. Search Chinese e-commerce news
-        news_items = []
-        try:
-            news_items = _search_country_news(country_key, config['search_terms'])
-            print(f"    News sources: {len(news_items)} items")
-        except Exception as e:
-            print(f"    [WARN] News search failed: {e}")
-        
-        # Update ai.risks - add new risk warnings from Federal Register
-        if fr_items:
-            existing_risks = country_data.get('ai', {}).get('risks', [])
-            for item in fr_items[:2]:  # Add at most 2 new risks
-                risk_text = f"⚠️ {item['title'][:60]}（{item.get('source', '')} {item.get('date', '')}）"
-                # Check if similar risk already exists
-                is_dup = any(
-                    item['title'][:20].lower() in r.lower()
-                    for r in existing_risks
-                )
-                if not is_dup:
-                    # Insert after existing warnings (keep max 5)
-                    existing_risks.insert(0, risk_text)
-                    has_update = True
-                    print(f"    + Risk: {risk_text[:60]}...")
-            # Keep max 5 risks
-            country_data['ai']['risks'] = existing_risks[:5]
-        
-        # Update comp.policies - add high-impact policies from news
-        if news_items:
-            existing_policies = country_data.get('comp', {}).get('policies', [])
-            for item in news_items[:2]:  # Add at most 2 new policy items
-                policy_title = item['title'][:50]
-                # Check if similar policy already exists
-                is_dup = any(
-                    policy_title[:15].lower() in p[1].lower() if len(p) > 1 else False
-                    for p in existing_policies
-                )
-                if not is_dup:
-                    # Determine impact level
-                    impact = 'low'
-                    high_kw = ['关税', '制裁', '禁止', '新规', '强制', 'ban', 'tariff', 'sanction']
-                    mid_kw = ['监管', '合规', '认证', '税务', 'tax', 'regulation']
-                    if any(kw in policy_title.lower() for kw in high_kw):
-                        impact = 'high'
-                    elif any(kw in policy_title.lower() for kw in mid_kw):
-                        impact = 'mid'
-                    
-                    # Format: [level, policy_name, date, category, platform, description]
-                    new_policy = [
-                        impact,
-                        policy_title,
-                        NOW_DATE,
-                        '全品类',
-                        '全平台',
-                        f"来源: {item.get('source', '网络')}"
-                    ]
-                    existing_policies.insert(0, new_policy)
-                    has_update = True
-                    print(f"    + Policy: {policy_title}")
-            # Keep max 6 policies (high priority first)
-            country_data['comp']['policies'] = existing_policies[:6]
-        
-        if has_update:
-            updated_count += 1
-    
-    if updated_count > 0:
-        # Add metadata
-        countries['_metadata'] = {
-            'last_updated': NOW_ISO,
-            'updated_countries': rotate_keys,
-        }
-        with open(countries_file, 'w', encoding='utf-8') as f:
-            json.dump(countries, f, ensure_ascii=False, indent=2)
-        print(f"\n  Updated {updated_count} country profiles in countries.json")
-    else:
-        print("  No new country updates found")
-
-
 # ---- Supabase Sync ----
 def sync_to_supabase(policies_data, rules_data):
     """Sync collected data to Supabase PostgreSQL database.
@@ -1739,65 +1446,92 @@ def main():
     print(f"Time: {NOW_ISO}")
     print(f"Data dir: {DATA_DIR}")
     print()
-    
-    # Collect from all sources
+
+    manifest = _load_market_scope_manifest()
+    scope = configured_collection_scope(manifest)
+    implemented_platform_collectors = {
+        'amazon': ('amazon_rules', 'Amazon Seller Central', collect_amazon),
+        'tiktok-shop': ('tiktok_shop_rules', 'TikTok Shop Seller Center', collect_tiktok_shop),
+    }
+    scope['unconnected_platform_keys'] = [
+        key for key in scope['platform_keys'] if key not in implemented_platform_collectors
+    ]
+    reset_collection_telemetry(scope)
+    print(
+        "Configured collection scope: "
+        f"markets={scope['market_codes']} platforms={scope['platform_keys']}"
+    )
+    if not scope['market_codes']:
+        source = register_collection_source(
+            'market_scope', 'Market scope catalog', 'configuration', core=True
+        )
+        source['collector_status'] = 'failed'
+        source['errors'].append('No active market has data_status=configured')
+        write_collection_report()
+        return 0
+
     all_policies = []
     all_rules = []
-    rule_source_checked = False
-    
-    # Policy sources
-    try:
-        all_policies.extend(collect_federal_register())
-    except Exception as e:
-        print(f"  [ERROR] Federal Register: {e}")
-        traceback.print_exc()
-    
-    try:
-        all_policies.extend(collect_ustr())
-    except Exception as e:
-        print(f"  [ERROR] USTR: {e}")
-        traceback.print_exc()
-    
-    try:
-        all_policies.extend(collect_eu_trade())
-    except Exception as e:
-        print(f"  [ERROR] EU Trade: {e}")
-        traceback.print_exc()
-    
-    try:
-        all_policies.extend(collect_mofcom())
-    except Exception as e:
-        print(f"  [ERROR] MOFCOM: {e}")
-        traceback.print_exc()
-    
-    try:
-        cn_items = collect_cn_news()
-        # Keep third-party news in the advisory policy feed regardless of
-        # whether an article mentions a platform. Platform-specific articles
-        # are still not official platform rules and must not enter the formal
-        # rules projection.
-        for item in cn_items:
-            all_policies.append(item)
-    except Exception as e:
-        print(f"  [ERROR] CN News: {e}")
-        traceback.print_exc()
-    
-    # Rule sources
-    try:
-        items, checked = collect_tiktok_shop(include_status=True)
-        all_rules.extend(items)
-        rule_source_checked = rule_source_checked or checked
-    except Exception as e:
-        print(f"  [ERROR] TikTok Shop: {e}")
-        traceback.print_exc()
-    
-    try:
-        items, checked = collect_amazon(include_status=True)
-        all_rules.extend(items)
-        rule_source_checked = rule_source_checked or checked
-    except Exception as e:
-        print(f"  [ERROR] Amazon: {e}")
-        traceback.print_exc()
+
+    if 'US' in scope['market_codes']:
+        all_policies.extend(run_collection_source(
+            'federal_register', 'US Federal Register', 'policy',
+            collect_federal_register, core=True, market_codes=['US'],
+        ))
+        all_policies.extend(run_collection_source(
+            'ustr', 'US Trade Representative', 'policy',
+            collect_ustr, core=False, market_codes=['US'],
+        ))
+
+    advisory_items = run_collection_source(
+        'industry_advisories', '雨果网 / AMZ123', 'industry_advisory',
+        collect_cn_news, core=False, market_codes=scope['market_codes'],
+        assign_scope=False,
+    )
+    scope_codes = set(scope['market_codes'])
+    scoped_advisories = [
+        item for item in advisory_items
+        if isinstance(item, dict)
+        and scope_codes.intersection(
+            str(code).strip().upper() for code in (item.get('market_codes') or [])
+        )
+    ]
+    set_collection_scope_count('industry_advisories', len(scoped_advisories))
+    for source_key, source_name in (('cifnews', '雨果网'), ('amz123', 'AMZ123')):
+        source = COLLECTION_SOURCES.get(source_key)
+        if not source:
+            continue
+        source['records_collected'] = sum(
+            isinstance(item, dict) and item.get('source') == source_name
+            for item in advisory_items
+        )
+        source['records_in_scope'] = sum(
+            isinstance(item, dict) and item.get('source') == source_name
+            for item in scoped_advisories
+        )
+    all_policies.extend(scoped_advisories)
+
+    rule_source_keys = []
+    for platform_key in scope['platform_keys']:
+        spec = implemented_platform_collectors.get(platform_key)
+        if not spec:
+            continue
+        source_key, label, collector = spec
+        rule_source_keys.append(source_key)
+        market_codes = [
+            code for code in scope['market_codes']
+            if any(
+                str(row.get('market_code') or '').strip().upper() == code
+                and str(row.get('platform_key') or '').strip().casefold() == platform_key
+                and str(row.get('data_status') or '').strip().lower() == 'configured'
+                for row in manifest.get('market_platforms', [])
+                if isinstance(row, dict)
+            )
+        ]
+        all_rules.extend(run_collection_source(
+            source_key, label, 'rule', collector, core=True,
+            market_codes=market_codes, platform_keys=[platform_key],
+        ))
     
     print(f"\n--- Article Extraction ---")
     
@@ -1858,8 +1592,20 @@ def main():
     
     policies_data, p_added = merge_data(policies_file, all_policies, baseline_kind='policies')
     rules_data, r_added = merge_data(rules_file, all_rules, baseline_kind='rules')
-    if rule_source_checked:
+    policy_source_keys = ['federal_register'] if 'US' in scope['market_codes'] else []
+    if policy_source_keys and all(collection_source_succeeded(key) for key in policy_source_keys):
+        policies_data['last_checked_at'] = NOW_ISO
+    if rule_source_keys and all(collection_source_succeeded(key) for key in rule_source_keys):
         rules_data['last_checked_at'] = NOW_ISO
+    policies_data['source_checks'] = {
+        key: _source_status(COLLECTION_SOURCES[key])
+        for key in ('federal_register', 'ustr', 'industry_advisories')
+        if key in COLLECTION_SOURCES
+    }
+    rules_data['source_checks'] = {
+        key: _source_status(COLLECTION_SOURCES[key])
+        for key in rule_source_keys if key in COLLECTION_SOURCES
+    }
     
     # Save
     os.makedirs(DATA_DIR, exist_ok=True)
@@ -1871,19 +1617,12 @@ def main():
     print(f"Policies: {len(policies_data['items'])} total, +{p_added} new")
     print(f"Rules: {len(rules_data['items'])} total, +{r_added} new")
     
-    # Update platform dynamics
-    try:
-        collect_platform_updates()
-    except Exception as e:
-        print(f"  [ERROR] Platform updates: {e}")
-        traceback.print_exc()
-    
-    # Update country profiles
-    try:
-        collect_country_updates()
-    except Exception as e:
-        print(f"  [ERROR] Country updates: {e}")
-        traceback.print_exc()
+    report = write_collection_report()
+    if report['summary']['core_failures']:
+        print(
+            "  [ERROR] Core collection sources failed: "
+            + ', '.join(report['summary']['core_failures'])
+        )
     
     print(f"\n=== Collection complete ===")
     print("Publish is deferred until scripts/validate_data.py passes.")

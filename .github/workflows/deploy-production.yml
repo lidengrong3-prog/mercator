@@ -27,11 +27,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
       - name: Verify release ref, worktree and migration ordering
         run: python scripts/release_preflight.py
       - run: npm ci
       - name: Validate code, data contracts and report engine
         run: npm test
+      - name: Validate Edge Functions
+        run: |
+          deno check supabase/functions/_shared/report-document.ts supabase/functions/_shared/report-pdf.ts supabase/functions/_shared/report-docx.ts supabase/functions/_shared/report-validation.ts supabase/functions/report-save/index.ts supabase/functions/report-export/index.ts supabase/functions/report-docx/index.ts supabase/functions/workspace-invite/index.ts
+          deno check supabase/functions/ai-proxy/index.ts supabase/functions/billing-checkout/index.ts supabase/functions/billing-status/index.ts supabase/functions/billing-portal/index.ts supabase/functions/billing-webhook/index.ts
+          deno test --allow-env supabase/functions/_shared/report-export.test.ts supabase/functions/_shared/report-quality.test.ts supabase/functions/_shared/report-validation.test.ts supabase/functions/workspace-invite/index.test.ts
       - name: Reject stale or non-publishable data
         run: python scripts/validate_data.py
       - name: Validate Python syntax
@@ -51,12 +59,12 @@ jobs:
       SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
       SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
-      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       DEEPSEEK_API_URL: ${{ secrets.DEEPSEEK_API_URL }}
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       DEEPSEEK_MODEL: ${{ secrets.DEEPSEEK_MODEL }}
       ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
       PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
+      APP_PUBLIC_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
       RELEASE_SHA: ${{ github.sha }}
       AI_REQUESTS_PER_MINUTE: ${{ secrets.AI_REQUESTS_PER_MINUTE }}
       AI_MONTHLY_TOKEN_LIMIT: ${{ secrets.AI_MONTHLY_TOKEN_LIMIT }}
@@ -67,6 +75,12 @@ jobs:
       STRIPE_PRICE_PRO_MONTHLY: ${{ secrets.STRIPE_PRICE_PRO_MONTHLY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       STRIPE_WEBHOOK_TOLERANCE_SECONDS: ${{ secrets.STRIPE_WEBHOOK_TOLERANCE_SECONDS }}
+      NOTIFICATION_CHANNELS_ENABLED: ${{ vars.NOTIFICATION_CHANNELS_ENABLED || secrets.NOTIFICATION_CHANNELS_ENABLED || 'false' }}
+      NOTIFICATION_CONFIG_ENCRYPTION_KEY: ${{ secrets.NOTIFICATION_CONFIG_ENCRYPTION_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      NOTIFICATION_FROM_EMAIL: ${{ secrets.NOTIFICATION_FROM_EMAIL }}
+      WORKSPACE_INVITE_FROM_EMAIL: ${{ secrets.WORKSPACE_INVITE_FROM_EMAIL || secrets.NOTIFICATION_FROM_EMAIL }}
+      NOTIFICATION_ALERT_MAX_AGE_DAYS: ${{ vars.NOTIFICATION_ALERT_MAX_AGE_DAYS || secrets.NOTIFICATION_ALERT_MAX_AGE_DAYS || '7' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -79,9 +93,20 @@ jobs:
         shell: bash
         run: |
           set -eu
-          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID SUPABASE_DB_PASSWORD SUPABASE_URL SUPABASE_SERVICE_KEY DEEPSEEK_API_KEY DEEPSEEK_MODEL ALLOWED_ORIGINS; do
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID SUPABASE_DB_PASSWORD SUPABASE_URL DEEPSEEK_API_KEY DEEPSEEK_MODEL ALLOWED_ORIGINS APP_PUBLIC_URL RESEND_API_KEY WORKSPACE_INVITE_FROM_EMAIL; do
             test -n "${!name:-}" || { echo "Missing production secret: $name" >&2; exit 1; }
           done
+          [[ "$APP_PUBLIC_URL" == https://* ]] || { echo "APP_PUBLIC_URL must use https" >&2; exit 1; }
+          [[ "$WORKSPACE_INVITE_FROM_EMAIL" == *@* ]] || { echo "WORKSPACE_INVITE_FROM_EMAIL must be a valid Resend sender" >&2; exit 1; }
+      - name: Resolve ephemeral Supabase service key
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
       - name: Validate formal production origin
         run: python scripts/release_preflight.py --origin-only
       - name: Validate optional production billing configuration
@@ -99,6 +124,22 @@ jobs:
               ;;
             false) ;;
             *) echo "BILLING_ENABLED must be true or false" >&2; exit 1 ;;
+          esac
+      - name: Validate optional external notification configuration
+        shell: bash
+        run: |
+          set -eu
+          case "$NOTIFICATION_CHANNELS_ENABLED" in
+            true)
+              for name in NOTIFICATION_CONFIG_ENCRYPTION_KEY RESEND_API_KEY NOTIFICATION_FROM_EMAIL; do
+                test -n "${!name:-}" || { echo "External notifications are enabled but $name is missing" >&2; exit 1; }
+              done
+              test "${#NOTIFICATION_CONFIG_ENCRYPTION_KEY}" -ge 24 || { echo "NOTIFICATION_CONFIG_ENCRYPTION_KEY must contain at least 24 characters" >&2; exit 1; }
+              [[ "$NOTIFICATION_FROM_EMAIL" == *@* ]] || { echo "NOTIFICATION_FROM_EMAIL must be a valid Resend sender" >&2; exit 1; }
+              [[ "$NOTIFICATION_ALERT_MAX_AGE_DAYS" =~ ^[0-9]+$ ]] && [ "$NOTIFICATION_ALERT_MAX_AGE_DAYS" -ge 1 ] && [ "$NOTIFICATION_ALERT_MAX_AGE_DAYS" -le 30 ] || { echo "NOTIFICATION_ALERT_MAX_AGE_DAYS must be between 1 and 30" >&2; exit 1; }
+              ;;
+            false) ;;
+            *) echo "NOTIFICATION_CHANNELS_ENABLED must be true or false" >&2; exit 1 ;;
           esac
       - name: Resolve release migration head
         shell: bash
@@ -141,6 +182,11 @@ jobs:
             "BILLING_ENABLED=$BILLING_ENABLED"
             "STRIPE_ALLOW_TEST_EVENTS=false"
             "PRODUCTION_SITE_URL=$PRODUCTION_SITE_URL"
+            "APP_PUBLIC_URL=$APP_PUBLIC_URL"
+            "RESEND_API_KEY=$RESEND_API_KEY"
+            "WORKSPACE_INVITE_FROM_EMAIL=$WORKSPACE_INVITE_FROM_EMAIL"
+            "NOTIFICATION_CHANNELS_ENABLED=$NOTIFICATION_CHANNELS_ENABLED"
+            "NOTIFICATION_ALERT_MAX_AGE_DAYS=$NOTIFICATION_ALERT_MAX_AGE_DAYS"
           )
           if [ "$BILLING_ENABLED" = true ]; then
             args+=(
@@ -150,16 +196,24 @@ jobs:
               "STRIPE_WEBHOOK_TOLERANCE_SECONDS=${STRIPE_WEBHOOK_TOLERANCE_SECONDS:-300}"
             )
           fi
+          if [ "$NOTIFICATION_CHANNELS_ENABLED" = true ]; then
+            args+=(
+              "NOTIFICATION_CONFIG_ENCRYPTION_KEY=$NOTIFICATION_CONFIG_ENCRYPTION_KEY"
+              "NOTIFICATION_FROM_EMAIL=$NOTIFICATION_FROM_EMAIL"
+            )
+          fi
           npx --yes supabase@2.39.2 secrets set --project-ref "$SUPABASE_PROJECT_ID" "${args[@]}"
       - name: Deploy JWT-protected Edge Functions
         shell: bash
         run: |
           set -eu
-          for function_name in ai-proxy report-export report-docx billing-checkout billing-status billing-portal admin-summary; do
+          for function_name in ai-proxy report-save report-export report-docx workspace-invite billing-checkout billing-status billing-portal admin-summary; do
             npx --yes supabase@2.39.2 functions deploy "$function_name" --project-ref "$SUPABASE_PROJECT_ID"
           done
       - name: Deploy Stripe webhook without Supabase JWT verification
         run: npx --yes supabase@2.39.2 functions deploy billing-webhook --project-ref "$SUPABASE_PROJECT_ID" --no-verify-jwt
+      - name: Deploy notification dispatcher with application-level authentication
+        run: npx --yes supabase@2.39.2 functions deploy notification-dispatch --project-ref "$SUPABASE_PROJECT_ID" --no-verify-jwt
 
   authenticated-acceptance:
     needs: deploy-backend
@@ -170,6 +224,8 @@ jobs:
       PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
       SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
       SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
       PROD_TEST_USER_A_EMAIL: ${{ secrets.PROD_TEST_USER_A_EMAIL }}
       PROD_TEST_USER_A_PASSWORD: ${{ secrets.PROD_TEST_USER_A_PASSWORD }}
       PROD_TEST_USER_B_EMAIL: ${{ secrets.PROD_TEST_USER_B_EMAIL }}
@@ -181,6 +237,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Resolve ephemeral Supabase service key
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
       - name: Run two-account production report acceptance
         run: python scripts/production_acceptance.py
       - name: Publish backend acceptance result
@@ -207,12 +272,7 @@ jobs:
           python-version: '3.11'
       - uses: actions/configure-pages@v5
       - name: Assemble static site after backend acceptance
-        shell: bash
-        run: |
-          mkdir _site
-          cp index.html .nojekyll _site/
-          cp -R assets data _site/
-          if [ -d reports ]; then cp -R reports _site/; fi
+        run: python scripts/build_public_site.py --output _site
       - name: Write release manifest
         shell: bash
         run: |
@@ -256,6 +316,7 @@ jobs:
       PROD_TEST_USER_B_EMAIL: ${{ secrets.PROD_TEST_USER_B_EMAIL }}
       PROD_TEST_USER_B_PASSWORD: ${{ secrets.PROD_TEST_USER_B_PASSWORD }}
       RUN_PRODUCTION_ACCEPTANCE: '1'
+      PRODUCTION_BROWSER_ACCEPTANCE_OUTPUT: production-browser-acceptance-result.json
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -264,8 +325,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - name: Run real browser account-isolation acceptance
+      - name: Run real browser exception and account-isolation acceptance
         run: JAY_PLAYWRIGHT_BASE_URL="$PRODUCTION_SITE_URL" npm run test:browser:production
+      - name: Publish browser exception acceptance result
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-browser-acceptance-result-${{ github.run_id }}
+          path: production-browser-acceptance-result.json
+          if-no-files-found: error
       - name: Upload browser acceptance diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
@@ -288,6 +355,8 @@ jobs:
       PROD_TEST_USER_A_PASSWORD: ${{ secrets.PROD_TEST_USER_A_PASSWORD }}
       EXPECTED_RELEASE_SHA: ${{ github.sha }}
       ACCEPTANCE_RESULT_FILE: production-acceptance-result.json
+      BROWSER_ACCEPTANCE_RESULT_FILE: production-browser-acceptance-result.json
+      NOTIFICATION_CHANNELS_ENABLED: ${{ vars.NOTIFICATION_CHANNELS_ENABLED || secrets.NOTIFICATION_CHANNELS_ENABLED || 'false' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -297,6 +366,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: production-acceptance-result-${{ github.run_id }}
+      - name: Download browser exception acceptance result
+        uses: actions/download-artifact@v4
+        with:
+          name: production-browser-acceptance-result-${{ github.run_id }}
       - name: Resolve expected migration head
         shell: bash
         run: |

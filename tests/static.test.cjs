@@ -57,6 +57,24 @@ test('browser source contains no plaintext account store or provider secret flow
   assert.match(browserSource, /functions\/v1\/ai-proxy/);
 });
 
+test('legacy US category PDFs are not regenerated or included in GitHub Pages', () => {
+  const dataWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'data-update.yml'), 'utf8');
+  const deployWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'deploy-production.yml'), 'utf8');
+  const collector = fs.readFileSync(path.join(root, 'scripts', 'collect_us_market.py'), 'utf8');
+  const categoryIndex = JSON.parse(fs.readFileSync(path.join(root, 'data', 'us_market', 'index.json'), 'utf8'));
+  const legacyReportDir = path.join(root, 'reports', 'us_market');
+  const legacyPdfs = fs.existsSync(legacyReportDir)
+    ? fs.readdirSync(legacyReportDir).filter((name) => name.endsWith('_report.pdf'))
+    : [];
+
+  assert.deepEqual(legacyPdfs, []);
+  assert.equal(fs.existsSync(path.join(root, 'scripts', 'gen_us_market_report.py')), false);
+  assert.doesNotMatch(dataWorkflow, /gen_us_market_report|reports\//);
+  assert.doesNotMatch(deployWorkflow, /cp\s+-R\s+reports|_site\/reports/);
+  assert.doesNotMatch(collector, /reports\/us_market|_report\.pdf/);
+  assert.ok(categoryIndex.categories.every((category) => !Object.hasOwn(category, 'report')));
+});
+
 test('frontend assets are externalized and loaded in dependency order', () => {
   const expectedStyles = [
     'assets/styles/legacy-foundation.css',
@@ -68,6 +86,7 @@ test('frontend assets are externalized and loaded in dependency order', () => {
   const expectedModules = [
     'assets/js/market-scope.js',
     'assets/js/catalog.js',
+    'assets/js/report-quality.js',
     'assets/js/report-engine.js',
     'assets/js/products-shops.js',
     'assets/js/markets-policies.js',
@@ -460,21 +479,28 @@ test('team workspace foundation is real and protected by RLS', () => {
   assert.match(migration, /workspace owner membership cannot be removed or downgraded/);
   assert.match(browserSource, /workspace_members/);
   assert.match(browserSource, /stCreateInvite/);
-  assert.match(browserSource, /邀请记录已创建；邮件尚未发送/);
+  assert.match(browserSource, /邀请邮件已发送/);
 });
 
-test('notification events are persisted without claiming external delivery', () => {
-  const migration = fs.readFileSync(
+test('notification events queue configured external delivery without exposing channel secrets', () => {
+  const baseMigration = fs.readFileSync(
     path.join(root, 'supabase', 'migrations', '20260826020000_notifications.sql'),
     'utf8',
   );
-  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.notification_events/);
-  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.notification_deliveries/);
-  assert.match(migration, /notification_deliveries_queue/);
-  assert.match(migration, /create_in_app_notification_delivery/);
-  assert.match(migration, /REVOKE ALL ON public\.notification_events, public\.notification_deliveries FROM anon/);
+  const channelMigration = fs.readFileSync(
+    path.join(root, 'supabase', 'migrations', '20260908000000_notification_channels.sql'),
+    'utf8',
+  );
+  assert.match(baseMigration, /CREATE TABLE IF NOT EXISTS public\.notification_events/);
+  assert.match(baseMigration, /CREATE TABLE IF NOT EXISTS public\.notification_deliveries/);
+  assert.match(baseMigration, /notification_deliveries_queue/);
+  assert.match(baseMigration, /REVOKE ALL ON public\.notification_events, public\.notification_deliveries FROM anon/);
+  assert.match(channelMigration, /notification_channel_configs/);
+  assert.match(channelMigration, /claim_notification_deliveries/);
+  assert.match(channelMigration, /FOR UPDATE SKIP LOCKED/);
   assert.match(browserSource, /jayCreateNotification/);
-  assert.match(browserSource, /外部渠道尚未发送/);
+  assert.match(browserSource, /jayConfigureNotificationChannel/);
+  assert.doesNotMatch(browserSource, /外部渠道尚未发送/);
 });
 
 test('report PDF export has a server-side job ledger and honest fallback', () => {
@@ -491,7 +517,7 @@ test('report PDF export has a server-side job ledger and honest fallback', () =>
   assert.match(migration, /public\.report_exports ENABLE ROW LEVEL SECURITY/);
   assert.match(edge, /SUPABASE_SERVICE_ROLE_KEY/);
   assert.match(edge, /REPORT_STORAGE_UPLOAD_FAILED/);
-  assert.match(edge, /select=id,title,content,save_status/);
+  assert.match(edge, /select=id,workspace_id,title,content,save_status/);
   assert.match(edge, /report\.save_status !== 'saved'/);
   assert.match(edge, /content_source: 'persisted_report'/);
   assert.match(browserSource, /正在生成服务端 PDF/);
@@ -523,7 +549,7 @@ test('report output lifecycle separates save state, snapshots and export formats
   assert.match(docx, /application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document/);
   assert.match(docx, /format: 'docx'/);
   assert.match(docx, /REPORT_STORAGE_UPLOAD_FAILED/);
-  assert.match(docx, /select=id,title,content,save_status/);
+  assert.match(docx, /select=id,workspace_id,title,content,save_status/);
   assert.match(docx, /report\.save_status !== 'saved'/);
   assert.match(docx, /content_source: 'persisted_report'/);
   assert.match(browserSource, /data-report-citation/);
@@ -536,6 +562,67 @@ test('report output lifecycle separates save state, snapshots and export formats
   assert.doesNotMatch(browserSource, /window\.jayExportReport/);
   assert.equal(document.querySelector('#export'), null);
   assert.equal(document.querySelector('#export-modal-overlay'), null);
+});
+
+test('global quality gate blocks formal report persistence and server exports', () => {
+  const qualityIndex = localScriptSources.indexOf('assets/js/report-quality.js');
+  const engineIndex = localScriptSources.indexOf('assets/js/report-engine.js');
+  assert.ok(qualityIndex >= 0 && qualityIndex < engineIndex);
+  assert.ok(document.querySelector('#rp-v2-quality-gate'));
+
+  const qualitySource = fs.readFileSync(path.join(root, 'assets', 'js', 'report-quality.js'), 'utf8');
+  const authSource = fs.readFileSync(path.join(root, 'assets', 'js', 'auth-data.js'), 'utf8');
+  const decisionsSource = fs.readFileSync(path.join(root, 'assets', 'js', 'reports-decisions.js'), 'utf8');
+  const shared = fs.readFileSync(path.join(root, 'supabase', 'functions', '_shared', 'report-quality.ts'), 'utf8');
+  const pdf = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-export', 'index.ts'), 'utf8');
+  const docx = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-docx', 'index.ts'), 'utf8');
+
+  assert.match(qualitySource, /QUALITY_REPORT_STALE/);
+  assert.match(qualitySource, /allowsStoredReport/);
+  assert.match(authSource, /jayCurrentReportQualityGate/);
+  assert.match(authSource, /REPORT_QUALITY_GATE_BLOCKED/);
+  assert.match(authSource, /quality_gate/);
+  assert.match(authSource, /quality_snapshot/);
+  assert.match(decisionsSource, /未保存草稿/);
+  assert.match(decisionsSource, /不能创建正式 PDF/);
+  assert.match(decisionsSource, /不能创建正式 DOCX/);
+  assert.match(shared, /reportContentAllowsFormalOutput/);
+  assert.match(shared, /market_data\?key=eq\.quality_report/);
+  for (const source of [pdf, docx]) {
+    assert.match(source, /\.\.\/_shared\/report-quality\.ts/);
+    assert.match(source, /REPORT_QUALITY_GATE_BLOCKED/);
+    assert.match(source, /REPORT_QUALITY_STATUS_UNAVAILABLE/);
+    assert.match(source, /fetchCurrentQualityGate/);
+  }
+});
+
+test('content quality and observability contracts are wired end to end', () => {
+  const qualitySource = fs.readFileSync(path.join(root, 'assets', 'js', 'report-quality.js'), 'utf8');
+  const engineSource = fs.readFileSync(path.join(root, 'assets', 'js', 'report-engine.js'), 'utf8');
+  const reportSource = fs.readFileSync(path.join(root, 'assets', 'js', 'reports-decisions.js'), 'utf8');
+  const authSource = fs.readFileSync(path.join(root, 'assets', 'js', 'auth-data.js'), 'utf8');
+  const adminSource = fs.readFileSync(path.join(root, 'assets', 'js', 'alerts-settings.js'), 'utf8');
+  const migration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20260908020000_observability_rollups.sql'), 'utf8');
+  const validation = fs.readFileSync(path.join(root, 'supabase', 'functions', '_shared', 'report-validation.ts'), 'utf8');
+  const save = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-save', 'index.ts'), 'utf8');
+  const proxy = fs.readFileSync(path.join(root, 'supabase', 'functions', 'ai-proxy', 'index.ts'), 'utf8');
+  const adminSummary = fs.readFileSync(path.join(root, 'supabase', 'functions', 'admin-summary', 'index.ts'), 'utf8');
+
+  for (const dimension of ['accuracy', 'completeness', 'executability', 'sourceCoverage']) assert.match(qualitySource, new RegExp(dimension));
+  assert.match(engineSource, /contentQuality\.ok/);
+  assert.match(reportSource, /rpV2RenderContentQuality/);
+  assert.match(authSource, /content_quality/);
+  assert.match(validation, /CONTENT_QUALITY_BLOCKED/);
+  assert.match(save, /content_quality: validation\.content_quality/);
+  for (const field of ['input_tokens', 'output_tokens', 'total_tokens', 'estimated_cost_usd', 'ai_request_count', 'failed_request_count', 'search_request_count', 'save_status', 'publication_status']) {
+    assert.match(migration, new RegExp(field));
+  }
+  assert.match(migration, /rollup_report_run_ai_usage/);
+  assert.match(proxy, /search_enabled: Boolean/);
+  assert.match(adminSummary, /ai_search_requests/);
+  assert.match(adminSource, /admin-ai-input-tokens/);
+  assert.match(adminSource, /admin-ai-output-tokens/);
+  assert.match(adminSource, /admin-ai-searches/);
 });
 
 test('billing is server-controlled and never upgrades a browser tier directly', () => {
@@ -581,6 +668,42 @@ test('automated Supabase sync cannot silently pass', () => {
   assert.match(syncScript, /incomplete Supabase sync/);
 });
 
+test('scheduled data update can access and validates production translation secrets', () => {
+  const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'data-update.yml'), 'utf8');
+  assert.match(workflow, /update-data:[\s\S]*environment: production/);
+  assert.match(workflow, /REGULATORY_TRANSLATION_API_KEY:.*secrets\.REGULATORY_TRANSLATION_API_KEY \|\| secrets\.DEEPSEEK_API_KEY/);
+  assert.match(workflow, /REGULATORY_TRANSLATION_MODEL:.*secrets\.REGULATORY_TRANSLATION_MODEL \|\| secrets\.DEEPSEEK_MODEL/);
+  const preflightAt = workflow.indexOf('name: Validate regulatory translation configuration');
+  const collectorAt = workflow.indexOf('name: Run configured market data collector');
+  assert.ok(preflightAt > 0);
+  assert.ok(collectorAt > preflightAt);
+  assert.match(workflow.slice(preflightAt, collectorAt), /translate_regulatory_data\.py --check-config/);
+});
+
+test('scheduled collection is scoped and core source failures are published to the quality gate', () => {
+  const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'data-update.yml'), 'utf8');
+  assert.match(workflow, /data\/collection_run\.json/);
+
+  const collector = fs.readFileSync(path.join(root, 'scripts', 'collect_data.py'), 'utf8');
+  assert.match(collector, /def build_query_url\(/);
+  assert.match(collector, /urlencode\(existing \+ additions, doseq=True\)/);
+  assert.match(collector, /def configured_collection_scope\(/);
+  assert.match(collector, /data_status.*configured/);
+  assert.match(collector, /write_collection_report\(\)/);
+  assert.equal(collector.includes('def collect_platform_updates('), false);
+  assert.equal(collector.includes('def collect_country_updates('), false);
+  assert.equal(collector.includes('def collect_eu_trade('), false);
+  assert.equal(collector.includes('def collect_mofcom('), false);
+  assert.equal(collector.includes('COUNTRY_CONFIG ='), false);
+
+  const validator = fs.readFileSync(path.join(root, 'scripts', 'validate_data.py'), 'utf8');
+  assert.match(validator, /def validate_collection_run\(/);
+  assert.match(validator, /核心来源采集失败/);
+  assert.match(validator, /validate_collection_run\(now\)/);
+  assert.match(validator, /missing_pipeline_sources/);
+  assert.match(validator, /collection_run = \{/);
+});
+
 test('data publication is gated and exposes its quality report', () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'data-update.yml'), 'utf8');
   const validateAt = workflow.indexOf('name: Validate data quality before publishing');
@@ -593,6 +716,7 @@ test('data publication is gated and exposes its quality report', () => {
   assert.equal(mainBody.includes('sync_to_supabase('), false);
 
   const syncScript = fs.readFileSync(path.join(root, 'scripts', 'sync_to_supabase.py'), 'utf8');
+  assert.match(syncScript, /collection run metadata is missing/);
   assert.match(syncScript, /refusing to publish/);
   assert.match(syncScript, /"key": "quality_report"/);
   assert.match(syncScript, /Legacy table fan-out disabled/);
@@ -677,6 +801,19 @@ test('formal pages do not retain retired mock render paths', () => {
   const generatorSource = fs.readFileSync(path.join(root, 'scripts', 'generate_alerts.py'), 'utf8');
   assert.equal(generatorSource.includes('def generate_from_us_market()'), false);
   assert.match(generatorSource, /source_record_id/);
+  assert.match(generatorSource, /GENERATOR_VERSION\s*=\s*["']2026\.09\.08\.1["']/);
+  assert.match(generatorSource, /source_record_evidence/);
+  assert.match(generatorSource, /dataset_snapshot_id/);
+  assert.match(generatorSource, /matched_record_count/);
+  assert.match(generatorSource, /def serialize_alert\(alert\)/);
+  assert.match(generatorSource, /def normalize_existing_alert\(alert\)/);
+  assert.match(generatorSource, /evidence_hash/);
+  assert.match(generatorSource, /row = serialize_alert\(a\)/);
+  assert.match(generatorSource, /normalized := normalize_existing_alert\(alert\)/);
+  const validatorSource = fs.readFileSync(path.join(root, 'scripts', 'validate_data.py'), 'utf8');
+  assert.match(validatorSource, /display date is the alert's publication\/event date/);
+  assert.match(validatorSource, /invalid_aggregate_lineage_records/);
+  assert.doesNotMatch(validatorSource, /"collected_at": row\[7\]/);
   const alertRows = JSON.parse(fs.readFileSync(path.join(root, 'data', 'alerts.json'), 'utf8'));
   assert.equal(alertRows.some((row) => Array.isArray(row) && /^(a\d+|usm-)/i.test(String(row[0] || ''))), false);
   assert.equal(alertRows.every((row) => /[\u3400-\u9fff]/.test(String(row[3])) && /[\u3400-\u9fff]/.test(String(row[6]))), true);
@@ -698,6 +835,14 @@ test('formal pages do not retain retired mock render paths', () => {
   assert.doesNotMatch(searchSource, /\.innerHTML\s*=/);
   assert.match(policySource, /jaySafeHttpsUrl\(p\.source_url\)/);
   assert.match(policySource, /jaySafeHttpsUrl\(r\.source_url\)/);
+  assert.match(policySource, /function plRenderDataLineage\(record,evidence,options\)/);
+  assert.match(policySource, /plFormatLineageTime\(record\.collected_at\|\|record\.collectedAt\)/);
+  assert.match(policySource, /source_record_id\|\|record\.sourceRecordId/);
+  assert.match(policySource, /evidence_hash\|\|record\.evidenceHash/);
+  assert.match(policySource, /plRenderDataLineage\(p,evidence/);
+  assert.match(policySource, /plRenderDataLineage\(r,evidence/);
+  assert.match(policySource, /plRenderDataLineage\(r,plAssessEvidence\(r\)/);
+  assert.doesNotMatch(policySource, /可信度\s*[:：]\s*40%/);
   assert.doesNotMatch(policySource, /href="\$\{r\.source_url\}/);
   assert.match(catalogSource, /let platformsData=\[\];/);
   assert.match(catalogSource, /let pfExtData=\{\};/);
@@ -759,8 +904,10 @@ test('production hardening isolates user data and records idempotent operations'
 
 test('production release deploys database and functions before the frontend', () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'deploy-production.yml'), 'utf8');
+  const operationsWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'operations.yml'), 'utf8');
   const preflight = fs.readFileSync(path.join(root, 'scripts', 'release_preflight.py'), 'utf8');
   const releaseCheck = fs.readFileSync(path.join(root, 'scripts', 'production_release_check.py'), 'utf8');
+  const healthCheck = fs.readFileSync(path.join(root, 'scripts', 'production_health_check.py'), 'utf8');
   assert.match(preflight, /production release must run from main/);
   assert.match(preflight, /worktree is dirty/);
   assert.match(preflight, /ALLOWED_ORIGINS must contain only the production origin/);
@@ -794,6 +941,8 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(workflow, /Upload browser acceptance diagnostics/);
   assert.match(workflow, /browser-acceptance-diagnostics-/);
   assert.match(workflow, /SUPABASE_SERVICE_KEY/);
+  assert.doesNotMatch(workflow, /SUPABASE_SERVICE_KEY:\s*\$\{\{\s*secrets\.SUPABASE_SERVICE_KEY/);
+  assert.doesNotMatch(operationsWorkflow, /SUPABASE_SERVICE_KEY:\s*\$\{\{\s*secrets\.SUPABASE_SERVICE_KEY/);
   assert.match(workflow, /SUPABASE_URL: \$\{\{ format\('https:\/\/\{0\}\.supabase\.co', secrets\.SUPABASE_PROJECT_ID\) \}\}/);
   assert.match(workflow, /migration list --linked/);
   assert.match(workflow, /RELEASE_SHA/);
@@ -805,6 +954,21 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(releaseCheck, /market_catalog/);
   assert.match(releaseCheck, /market_data_applicability/);
   assert.doesNotMatch(workflow, /rest\/v1\/market_data\?select=id&limit=1/);
+  assert.match(operationsWorkflow, /code-health:/);
+  assert.match(operationsWorkflow, /data-quality:/);
+  assert.match(operationsWorkflow, /validate_data\.py --report operations-data-quality-result\.json/);
+  assert.match(operationsWorkflow, /availability-monitor:/);
+  assert.match(operationsWorkflow, /if: \$\{\{ always\(\) \}\}/);
+  assert.match(operationsWorkflow, /python scripts\/production_health_check\.py/);
+  assert.match(operationsWorkflow, /production-health-result\.json/);
+  const availabilityJob = operationsWorkflow.slice(operationsWorkflow.indexOf('  availability-monitor:'), operationsWorkflow.indexOf('  encrypted-backup:'));
+  assert.doesNotMatch(availabilityJob, /\n\s+needs:/);
+  assert.doesNotMatch(healthCheck, /probe_data_quality/);
+  assert.match(healthCheck, /"frontend": probe_frontend/);
+  assert.match(healthCheck, /"database": probe_database/);
+  assert.match(healthCheck, /"storage": probe_storage/);
+  assert.match(healthCheck, /"edge_functions": probe_edge_functions/);
+  assert.match(healthCheck, /Keep every remaining availability probe running/);
 
   const acceptance = fs.readFileSync(path.join(root, 'scripts', 'production_acceptance.py'), 'utf8');
   assert.match(acceptance, /account B can read account A report/);
@@ -814,16 +978,35 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(acceptance, /saved report did not recover after re-login/);
   assert.match(acceptance, /report-export/);
   assert.match(acceptance, /report-docx/);
+  assert.match(acceptance, /report-save/);
+  assert.match(acceptance, /direct formal report write was not rejected/);
   assert.match(acceptance, /storage_bucket/);
   assert.match(acceptance, /PRODUCTION_ACCEPTANCE_OUTPUT/);
   assert.match(acceptance, /acceptance_run_id/);
   assert.match(acceptance, /reusable_export_key/);
   assert.match(acceptance, /idempotency_key.*not\.is\.null/);
+  assert.match(acceptance, /acceptance_fault_headers/);
+  assert.match(acceptance, /AI_PROVIDER_TIMEOUT/);
+  assert.match(acceptance, /AI_QUOTA_EXCEEDED/);
+  assert.match(acceptance, /AI_RATE_LIMITED/);
+  assert.match(acceptance, /ThreadPoolExecutor/);
+  assert.match(acceptance, /duplicate_generation/);
+  assert.match(acceptance, /duplicate_exports/);
 
   const pdfExportFunction = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-export', 'index.ts'), 'utf8');
   const docxExportFunction = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-docx', 'index.ts'), 'utf8');
   assert.match(pdfExportFunction, /EXPORT_QUOTA_EXCEEDED[\s\S]*429/);
   assert.match(docxExportFunction, /EXPORT_QUOTA_EXCEEDED[\s\S]*429/);
+  assert.match(pdfExportFunction, /resolution=ignore-duplicates,return=representation/);
+  assert.match(docxExportFunction, /resolution=ignore-duplicates,return=representation/);
+  assert.match(pdfExportFunction, /on_conflict.*user_id,idempotency_key/);
+  assert.match(docxExportFunction, /on_conflict.*user_id,idempotency_key/);
+
+  const aiProxyFunction = fs.readFileSync(path.join(root, 'supabase', 'functions', 'ai-proxy', 'index.ts'), 'utf8');
+  assert.match(aiProxyFunction, /verifyProductionAcceptanceFault/);
+  assert.match(aiProxyFunction, /acceptanceScenario === 'provider_timeout'/);
+  assert.match(aiProxyFunction, /acceptanceScenario === 'quota'/);
+  assert.match(aiProxyFunction, /acceptanceScenario === 'rate_limit'/);
 
   const browserAcceptance = fs.readFileSync(path.join(root, 'tests', 'production-auth.spec.cjs'), 'utf8');
   assert.match(browserAcceptance, /RUN_PRODUCTION_ACCEPTANCE/);
@@ -833,20 +1016,25 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(browserAcceptance, /rpV2Export\([^)]*pdf[^)]*\)/);
   assert.match(browserAcceptance, /rpV2Export\([^)]*docx[^)]*\)/);
   assert.match(browserAcceptance, /report_exports/);
+  assert.match(browserAcceptance, /internetdisconnected/);
+  assert.match(browserAcceptance, /recovered_with_production_response/);
   const browserJobAt = workflow.indexOf('browser-authenticated-acceptance:');
-  const browserRunAt = workflow.indexOf('Run real browser account-isolation acceptance');
+  const browserRunAt = workflow.indexOf('Run real browser exception and account-isolation acceptance');
   const smokeAt = workflow.indexOf('production-smoke:');
   assert.ok(browserJobAt > frontendAt);
   assert.ok(browserRunAt > browserJobAt);
   assert.ok(smokeAt > browserJobAt);
   assert.match(workflow, /needs: browser-authenticated-acceptance/);
+  assert.match(workflow, /BROWSER_ACCEPTANCE_RESULT_FILE/);
+  assert.match(workflow, /production-browser-acceptance-result-/);
 
   const config = fs.readFileSync(path.join(root, 'supabase', 'config.toml'), 'utf8');
   assert.match(config, /\[functions\.report-docx\][\s\S]*verify_jwt = true/);
+  assert.match(config, /\[functions\.report-save\][\s\S]*verify_jwt = true/);
   assert.match(config, /\[functions\.billing-status\][\s\S]*verify_jwt = true/);
   assert.match(config, /\[functions\.billing-portal\][\s\S]*verify_jwt = true/);
   assert.match(config, /\[functions\.billing-webhook\][\s\S]*verify_jwt = false/);
-  for (const functionName of ['ai-proxy', 'report-export', 'report-docx', 'admin-summary']) {
+  for (const functionName of ['ai-proxy', 'report-save', 'report-export', 'report-docx', 'admin-summary']) {
     const functionSource = fs.readFileSync(path.join(root, 'supabase', 'functions', functionName, 'index.ts'), 'utf8');
     assert.match(functionSource, /X-JAY-Release/);
     assert.match(functionSource, /RELEASE_SHA/);
@@ -858,6 +1046,26 @@ test('production release deploys database and functions before the frontend', ()
     const functionSource = fs.readFileSync(path.join(root, 'supabase', 'functions', functionName, 'index.ts'), 'utf8');
     assert.match(functionSource, /\.\.\/_shared\/billing\.ts/);
   }
+});
+
+test('formal report publication is server validated and client writes stay draft-only', () => {
+  const validation = fs.readFileSync(path.join(root, 'supabase', 'functions', '_shared', 'report-validation.ts'), 'utf8');
+  const save = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-save', 'index.ts'), 'utf8');
+  const pdf = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-export', 'index.ts'), 'utf8');
+  const docx = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-docx', 'index.ts'), 'utf8');
+  const migration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20260908010000_report_server_validation.sql'), 'utf8');
+  const authData = fs.readFileSync(path.join(root, 'assets', 'js', 'auth-data.js'), 'utf8');
+  assert.match(validation, /validateFormalReportWithServerData/);
+  assert.match(validation, /COVERAGE_EVIDENCE_MISSING/);
+  assert.match(validation, /REPORT_TEXT_MISMATCH/);
+  assert.match(save, /REPORT_VALIDATION_VERSION/);
+  assert.match(save, /publication_status:\s*'formal'/);
+  assert.match(pdf, /validateFormalReportWithServerData/);
+  assert.match(docx, /validateFormalReportWithServerData/);
+  assert.match(migration, /generated_reports_insert_draft_own/);
+  assert.match(migration, /COALESCE\(content->'publishable'/);
+  assert.match(authData, /jayFunctionRequest\('report-save'/);
+  assert.doesNotMatch(authData.match(/async function jayPersistGeneratedReport[\s\S]*?\n\}/)?.[0] || '', /jayDbUpsert\('generated_reports'/);
 });
 
 test('report generation retries a chapter that fails inline citation validation', () => {

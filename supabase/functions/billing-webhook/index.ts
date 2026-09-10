@@ -1,22 +1,21 @@
 import {
-  isoFromUnix,
   jsonResponse,
   serviceHeaders,
+  stripeRetrieve,
   supabaseServiceConfig,
 } from '../_shared/billing.ts';
+import {
+  buildBillingSubscriptionPatch,
+  billingMetadata,
+  isSupportedBillingEvent,
+  isoFromUnix,
+  objectValue,
+  stringId,
+  subscriptionId,
+} from '../_shared/billing-lifecycle.mjs';
 import { verifyStripeSignature } from '../_shared/stripe-signature.mjs';
 
 type JsonRecord = Record<string, unknown>;
-
-function objectValue(value: unknown): JsonRecord {
-  return value && typeof value === 'object' && !Array.isArray(value) ? value as JsonRecord : {};
-}
-
-function stringId(value: unknown): string | null {
-  if (typeof value === 'string' && value) return value;
-  const record = objectValue(value);
-  return typeof record.id === 'string' && record.id ? record.id : null;
-}
 
 function uuid(value: unknown): string | null {
   const candidate = typeof value === 'string' ? value : '';
@@ -37,26 +36,9 @@ function eventSummary(event: JsonRecord): JsonRecord {
       subscription: subscriptionId(object),
       status: object.status || null,
       payment_status: object.payment_status || null,
-      metadata: objectValue(object.metadata),
+      metadata: billingMetadata(object),
     },
   };
-}
-
-function subscriptionId(object: JsonRecord): string | null {
-  const direct = stringId(object.subscription);
-  if (direct) return direct;
-  const parent = objectValue(object.parent);
-  return stringId(objectValue(parent.subscription_details).subscription);
-}
-
-function subscriptionStatus(value: unknown, deleted = false): string {
-  if (deleted) return 'cancelled';
-  const status = String(value || 'active');
-  if (status === 'trialing') return 'trialing';
-  if (status === 'active') return 'active';
-  if (['past_due', 'unpaid', 'incomplete'].includes(status)) return 'past_due';
-  if (status === 'canceled') return 'cancelled';
-  return 'expired';
 }
 
 Deno.serve(async (request) => {
@@ -113,8 +95,31 @@ Deno.serve(async (request) => {
   };
 
   try {
-    const object = objectValue(objectValue(event.data).object);
-    const metadata = objectValue(object.metadata);
+    if (!isSupportedBillingEvent(eventType)) {
+      await finalize('ignored', 'EVENT_TYPE_NOT_USED');
+      return jsonResponse({ received: true, ignored: true }, 200, null);
+    }
+    if (event.livemode !== true && Deno.env.get('STRIPE_ALLOW_TEST_EVENTS') !== 'true') {
+      await finalize('ignored', 'TEST_EVENT_REJECTED_IN_LIVE_MODE');
+      return jsonResponse({ received: true, ignored: true }, 200, null);
+    }
+
+    let object = objectValue(objectValue(event.data).object) as JsonRecord;
+    if (eventType === 'refund.updated') {
+      const chargeId = stringId(object.charge);
+      if (!chargeId) throw new Error('REFUND_CHARGE_ID_MISSING');
+      const chargeResponse = await stripeRetrieve(`charges/${encodeURIComponent(chargeId)}`);
+      if (!chargeResponse.ok) throw new Error(`REFUND_CHARGE_LOOKUP_FAILED:${chargeResponse.status}`);
+      const charge = objectValue(await chargeResponse.json()) as JsonRecord;
+      object = {
+        ...object,
+        customer: charge.customer || null,
+        charge_details: charge,
+        refund_details: object,
+      };
+    }
+
+    const metadata = billingMetadata(object);
     const objectSubscriptionId = subscriptionId(object);
     const customerId = stringId(object.customer);
     resolvedUserId = uuid(metadata.user_id) || uuid(object.client_reference_id);
@@ -141,20 +146,6 @@ Deno.serve(async (request) => {
       existing = rows?.[0] || null;
     }
 
-    const supported = new Set([
-      'checkout.session.completed', 'checkout.session.async_payment_succeeded', 'checkout.session.async_payment_failed',
-      'customer.subscription.created', 'customer.subscription.updated', 'customer.subscription.deleted',
-      'invoice.paid', 'invoice.payment_failed', 'invoice.payment_action_required', 'invoice.marked_uncollectible',
-      'charge.refunded', 'refund.updated',
-    ]);
-    if (!supported.has(eventType)) {
-      await finalize('ignored', 'EVENT_TYPE_NOT_USED');
-      return jsonResponse({ received: true, ignored: true }, 200, null);
-    }
-    if (event.livemode !== true && Deno.env.get('STRIPE_ALLOW_TEST_EVENTS') !== 'true') {
-      await finalize('ignored', 'TEST_EVENT_REJECTED_IN_LIVE_MODE');
-      return jsonResponse({ received: true, ignored: true }, 200, null);
-    }
     if (!resolvedUserId) {
       await finalize('ignored', 'USER_NOT_RESOLVED');
       return jsonResponse({ received: true, ignored: true }, 200, null);
@@ -166,65 +157,14 @@ Deno.serve(async (request) => {
       return jsonResponse({ received: true, stale: true }, 200, null);
     }
 
-    const subscriptionItem = objectValue((objectValue(object.items).data as unknown[] || [])[0]);
-    const eventPriceId = stringId(objectValue(subscriptionItem.price));
-    const configuredProPrice = Deno.env.get('STRIPE_PRICE_PRO_MONTHLY') || '';
-    const inferredPlan = eventPriceId && eventPriceId === configuredProPrice ? 'pro' : existing?.plan || 'free';
-    const plan = String(metadata.plan || inferredPlan);
-    const safePlan = ['free', 'pro', 'enterprise'].includes(plan) ? plan : String(inferredPlan);
-    const patch: JsonRecord = {
-      user_id: resolvedUserId,
-      plan: safePlan,
-      provider: 'stripe',
-      provider_customer_id: customerId || existing?.provider_customer_id || null,
-      provider_subscription_id: objectSubscriptionId || existing?.provider_subscription_id || null,
-      provider_updated_at: eventCreatedAt,
-      last_event_type: eventType,
-    };
-
-    if (eventType.startsWith('customer.subscription.')) {
-      const price = objectValue(subscriptionItem.price);
-      patch.status = subscriptionStatus(object.status, eventType === 'customer.subscription.deleted');
-      patch.provider_price_id = stringId(price) || existing?.provider_price_id || null;
-      patch.current_period_start = isoFromUnix(object.current_period_start || subscriptionItem.current_period_start);
-      patch.current_period_end = isoFromUnix(object.current_period_end || subscriptionItem.current_period_end);
-      patch.cancel_at_period_end = object.cancel_at_period_end === true;
-      patch.canceled_at = isoFromUnix(object.canceled_at);
-      patch.ended_at = isoFromUnix(object.ended_at);
-      if (patch.status === 'active' || patch.status === 'trialing') {
-        patch.last_payment_error = null;
-        patch.last_payment_failed_at = null;
-      }
-    } else if (eventType === 'checkout.session.completed' || eventType === 'checkout.session.async_payment_succeeded') {
-      patch.status = object.payment_status === 'unpaid' ? 'past_due' : 'active';
-      patch.latest_payment_status = String(object.payment_status || 'paid');
-      patch.last_payment_error = null;
-      patch.last_payment_failed_at = null;
-    } else if (eventType === 'checkout.session.async_payment_failed') {
-      patch.status = 'past_due';
-      patch.latest_payment_status = 'failed';
-      patch.last_payment_error = 'checkout_async_payment_failed';
-      patch.last_payment_failed_at = eventCreatedAt;
-    } else if (eventType === 'invoice.paid') {
-      patch.status = ['cancelled', 'expired'].includes(String(existing?.status)) ? existing?.status : 'active';
-      patch.latest_invoice_id = stringId(object.id);
-      patch.latest_payment_status = 'paid';
-      patch.last_payment_error = null;
-      patch.last_payment_failed_at = null;
-      patch.current_period_start = isoFromUnix(object.period_start) || existing?.current_period_start || null;
-      patch.current_period_end = isoFromUnix(object.period_end) || existing?.current_period_end || null;
-    } else if (['invoice.payment_failed', 'invoice.payment_action_required', 'invoice.marked_uncollectible'].includes(eventType)) {
-      patch.status = ['cancelled', 'expired'].includes(String(existing?.status))
-        ? existing?.status
-        : (eventType === 'invoice.marked_uncollectible' ? 'expired' : 'past_due');
-      patch.latest_invoice_id = stringId(object.id);
-      patch.latest_payment_status = eventType.replace('invoice.', '');
-      patch.last_payment_error = String(objectValue(object.last_finalization_error).message || eventType).slice(0, 500);
-      patch.last_payment_failed_at = eventCreatedAt;
-    } else if (eventType === 'charge.refunded' || eventType === 'refund.updated') {
-      patch.latest_payment_status = 'refunded';
-      patch.refunded_at = eventCreatedAt;
-    }
+    const patch = buildBillingSubscriptionPatch({
+      eventType,
+      object,
+      existing: existing || {},
+      eventCreatedAt,
+      configuredProPrice: Deno.env.get('STRIPE_PRICE_PRO_MONTHLY') || '',
+      userId: resolvedUserId,
+    }) as JsonRecord;
 
     const upsert = await fetch(`${config.url}/rest/v1/user_subscriptions?on_conflict=user_id`, {
       method: 'POST',

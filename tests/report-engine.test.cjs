@@ -28,6 +28,30 @@ test('report engine blocks incomplete financial inputs', () => {
   assert.deepEqual(Array.from(result.missing), ['logisticsCost', 'platformFeeRate']);
 });
 
+test('report assembly becomes an explicit draft when the global quality gate is blocked', () => {
+  const gate = {
+    ok: false,
+    status: 'stale',
+    stale: true,
+    publishable: true,
+    reasons: [{ code: 'QUALITY_REPORT_STALE', message: '质量报告已过期' }],
+    snapshot: { effective_status: 'stale', publishable: true, stale: true },
+  };
+  const report = engine.assemble(
+    { sections: [] },
+    [{ id: 'summary', title: '摘要', domain: 'summary', text: '当前没有可发布结论。', claims: [] }],
+    { scope: {}, records: {}, sources: [], collectedAt: '2026-09-08T00:00:00Z' },
+    { ok: true, missing: [] },
+    { status: 'not_available' },
+    gate,
+  );
+  assert.equal(report.publishable, false);
+  assert.equal(report.qualityGate.status, 'stale');
+  assert.equal(report.qualitySnapshot.stale, true);
+  assert.match(report.text, /未发布草稿/);
+  assert.deepEqual(Array.from(report.publicationBlocks, (item) => item.code), ['QUALITY_REPORT_STALE']);
+});
+
 test('multi-market plan creates per-market, platform, and category chapters', () => {
   window.JAY_MARKET_SCOPE_API = {
     getMarket: (code) => ({ US: { code: 'US', name: '美国' }, DE: { code: 'DE', name: '德国' } }[code]),
@@ -59,7 +83,31 @@ test('report data check blocks a scope with missing required evidence', () => {
   const result = engine.checkData(plan, { scope: plan.scope, records: {} });
   assert.equal(result.ok, false);
   assert.ok(result.missing.length > 0);
-  assert.ok(result.missing.every((item) => item.reason === '当前范围没有已核验记录'));
+  assert.ok(result.missing.every((item) => item.reason === '该范围格没有已核验记录'));
+});
+
+test('coverage matrix blocks a second market without evidence', () => {
+  const plan = { requiredDomains: ['market'], scope: { marketCodes: ['US', 'ID'], platformKeys: ['amazon'], categoryCodes: ['generic'] } };
+  const facts = { scope: plan.scope, records: { market: [{ record: { market_code: 'US' }, source: { recordId: 'market-us' } }] } };
+  const result = engine.checkData(plan, facts);
+  assert.equal(result.ok, false);
+  assert.ok(result.coverageMatrix.missingCells.some((cell) => cell.id === 'ID|amazon|generic|market'));
+});
+
+test('coverage matrix does not reuse one platform rule for another platform', () => {
+  const plan = { requiredDomains: ['rule'], scope: { marketCodes: ['US'], platformKeys: ['amazon', 'tiktok-shop'], categoryCodes: ['generic'] } };
+  const facts = { scope: plan.scope, records: { rule: [{ record: { market_code: 'US', platform_key: 'amazon' }, source: { recordId: 'rule-amazon' } }] } };
+  const result = engine.checkData(plan, facts);
+  assert.equal(result.ok, false);
+  assert.ok(result.coverageMatrix.missingCells.some((cell) => cell.id === 'US|tiktok-shop|generic|rule'));
+});
+
+test('coverage matrix keeps uploaded product evidence category-specific', () => {
+  const plan = { requiredDomains: ['product'], scope: { marketCodes: ['US'], platformKeys: ['amazon'], categoryCodes: ['beauty', 'electronics'] } };
+  const facts = { scope: plan.scope, records: { product: [{ record: { market_code: 'US', platform_key: 'amazon', category_code: 'beauty' }, source: { recordId: 'product-beauty' } }] } };
+  const result = engine.checkData(plan, facts);
+  assert.equal(result.ok, false);
+  assert.ok(result.coverageMatrix.missingCells.some((cell) => cell.id === 'US|amazon|electronics|product'));
 });
 
 test('report data check marks empty tax and access domains as non-deterministic', () => {

@@ -65,6 +65,44 @@ test('first load initializes country data without a dependency race', async ({ p
   expect(countryLoadErrors).toEqual([]);
 });
 
+test('team settings switch workspaces and expose viewer read-only state', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => {
+    window.switchPage('settings');
+    window.jayIsDemo = false;
+    window.jayUser = { id: 'user-viewer', email: 'viewer@example.test' };
+    window.jayWorkspaceContext = {
+      available: true,
+      workspace: { id: 'workspace-a', name: '美国项目组', created_at: '2026-09-01T00:00:00Z' },
+      membership: { workspace_id: 'workspace-a', role: 'viewer', status: 'active' },
+      workspaces: [
+        { id: 'workspace-a', name: '美国项目组', role: 'viewer' },
+        { id: 'workspace-b', name: '印尼项目组', role: 'editor' },
+      ],
+      members: [{ id: 'member-a', user_id: 'user-viewer', role: 'viewer', status: 'active', joined_at: '2026-09-01T00:00:00Z', profiles: { email: 'viewer@example.test' } }],
+      invites: [],
+    };
+    window.__workspaceSwitches = [];
+    window.jaySetActiveWorkspace = async (id) => {
+      window.__workspaceSwitches.push(id);
+      window.jayWorkspaceContext.workspace = { id, name: '印尼项目组', created_at: '2026-09-02T00:00:00Z' };
+      window.jayWorkspaceContext.membership = { workspace_id: id, role: 'editor', status: 'active' };
+      return window.jayWorkspaceContext;
+    };
+    window.jayLoadWorkspaceContext = async () => window.jayWorkspaceContext;
+  });
+
+  await page.getByRole('button', { name: '团队与权限' }).click();
+  await expect(page.locator('#st-tab-team')).toHaveClass(/active/);
+  await expect(page.locator('#st-workspace-select option')).toHaveCount(2);
+  await expect(page.locator('#st-workspace-permission-hint')).toContainText('只能查看共享数据');
+  await page.locator('#st-workspace-select').selectOption('workspace-b');
+  await expect.poll(() => page.evaluate(() => window.__workspaceSwitches)).toEqual(['workspace-b']);
+  await expect(page.locator('#st-workspace-name')).toHaveValue('印尼项目组');
+  await expect(page.locator('#st-workspace-permission-hint')).toContainText('可以编辑共享数据');
+});
+
 test('report inline citations open a traceable source snapshot', async ({ page }) => {
   const pageErrors = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
@@ -615,6 +653,51 @@ test('report and operating tools stay within the configured US scope', async ({ 
   });
 });
 
+test('failed global quality permits only a local draft and blocks formal output', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.waitForFunction(() => window.JAY_QUALITY_REPORT && window.JAY_REPORT_QUALITY);
+  await page.evaluate(() => {
+    window.switchPage('report');
+    window.rpV2GoStep(2);
+  });
+  await expect(page.locator('#rp-v2-quality-gate')).toHaveClass(/is-blocked/);
+  await expect(page.locator('#rp-v2-quality-gate')).toContainText('仅可生成未保存草稿');
+
+  const result = await page.evaluate(async () => {
+    const gate = window.jayCurrentReportQualityGate();
+    let persistRequests = 0;
+    let exportRequests = 0;
+    window.jayCanUseUserDb = () => true;
+    window.jayPersistGeneratedReport = async () => { persistRequests += 1; return { id: 'should-not-save' }; };
+    window.jayGenerateReportPdf = async () => { exportRequests += 1; return { status: 'completed' }; };
+    const model = {
+      publishable: false,
+      qualityGate: gate,
+      qualitySnapshot: gate.snapshot,
+      publicationBlocks: gate.reasons,
+      sourceAppendix: [],
+      text: '> **未发布草稿**：质量门禁未通过。',
+      engineVersion: '3.2',
+      revision: 1,
+    };
+    const snapshot = {
+      templateVersion: '1', dataVersion: 'test', qualityReportVersion: gate.snapshot && gate.snapshot.quality_report_version,
+      dataSnapshotAt: new Date().toISOString(), materialSnapshotIds: [], sourceRecordIds: [], scopeSnapshot: {},
+      qualityGate: gate, qualitySnapshot: gate.snapshot,
+    };
+    const draft = await window.rpV2SaveReport('质量阻断草稿', 0, { model, text: model.text, items: [], snapshot, clientReportId: 'quality-blocked-draft' });
+    const preview = document.getElementById('rp-v2-preview-body');
+    preview.classList.remove('rp-empty-preview');
+    preview.textContent = model.text;
+    window.rpLastReportRecord = draft;
+    await window.rpV2ExportPdfWithLogo();
+    return { gateOk: gate.ok, saveStatus: draft && draft.saveStatus, persistRequests, exportRequests };
+  });
+  expect(result).toEqual({ gateOk: false, saveStatus: 'blocked', persistRequests: 0, exportRequests: 0 });
+  await expect(page.locator('#rp-v2-save-status')).toContainText('未保存草稿');
+});
+
 test('platform rules are filtered to the US market and supported platforms', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
@@ -634,6 +717,10 @@ test('platform rules are filtered to the US market and supported platforms', asy
 
   const rules = page.locator('#rl-rules-list .rl-rule-card');
   await expect(rules).toHaveCount(5);
+  await expect(rules.locator('.data-lineage')).toHaveCount(5);
+  await expect(rules.first().locator('.data-lineage')).toContainText('来源：');
+  await expect(rules.first().locator('.data-lineage')).toContainText('采集：');
+  await expect(rules.first().locator('.data-lineage')).toContainText('证据等级：');
   const ruleRows = await rules.evaluateAll((cards) => cards.map((card) => ({
     text: card.textContent,
     platform: card.querySelector('.rl-card-meta span:nth-child(3)')?.textContent.trim(),
@@ -660,6 +747,9 @@ test('platform rules are filtered to the US market and supported platforms', asy
   await expect(ruleDetail).toContainText('处罚');
   await expect(ruleDetail).toContainText('版本与历史变化');
   await expect(ruleDetail).toContainText('暂无已验证历史版本记录');
+  await expect(ruleDetail.locator('.data-lineage-detail')).toContainText('来源记录 ID');
+  await expect(ruleDetail.locator('.data-lineage-detail')).toContainText('证据哈希');
+  await expect(ruleDetail.locator('.data-lineage-detail')).toContainText('核验时间');
   await ruleDetail.locator('.close-btn').click();
 });
 
@@ -693,6 +783,10 @@ test('policy dynamics are constrained to the configured US market', async ({ pag
   await expect(page.locator('#pl-list')).not.toContainText('示意性数据');
   await expect(page.locator('#pl-list')).not.toContainText('40 · 低可信');
   await expect(page.locator('#pl-list .pl-verify-badge.pass').first()).toBeVisible();
+  await expect(policyCards.locator('.data-lineage')).toHaveCount(10);
+  await expect(policyCards.first().locator('.data-lineage')).toContainText('已核验 · 官方来源');
+  await expect(policyCards.first().locator('.data-lineage')).toContainText('采集：');
+  await expect(policyCards.first().locator('.data-lineage')).toContainText('证据等级：官方来源');
   await expect(page.locator('#pl-list .pl-translation-badge')).toHaveCount(10);
   await expect(page.locator('#pl-list .pl-relevance-tag').first()).toContainText(/跨境|贸易/);
   await expect(page.locator('#pl-list .pl-relevance-tag').first()).toHaveAttribute('title', /相关性判断/);
@@ -700,6 +794,13 @@ test('policy dynamics are constrained to the configured US market', async ({ pag
   await expect(page.locator('#pl-verify-bar')).toContainText('依据：记录链接 + 验证状态 + 日期');
   await expect(page.locator('#pl-verify-bar small')).toHaveAttribute('title', /官方或已复核可追溯记录/);
   expect(await page.locator('#pl-verify-bar').evaluate((node) => node.getBoundingClientRect().height)).toBeLessThan(70);
+
+  await policyCards.first().getByRole('button', { name: '查看详情' }).click();
+  const policyDetail = page.locator('#pl-detail-overlay');
+  await expect(policyDetail.locator('.data-lineage-detail')).toContainText('来源记录 ID');
+  await expect(policyDetail.locator('.data-lineage-detail')).toContainText('证据哈希');
+  await expect(policyDetail.locator('.data-lineage-detail')).toContainText('来源 URL');
+  await policyDetail.locator('.pl-detail-close').click();
 
   const policyState = await page.evaluate(() => ({
     sourceCount: window.plGetJsonItems().length,
@@ -807,6 +908,8 @@ test('third-party industry news is visible as traceable reference only', async (
   expect(state.formalHasAdvisory).toBe(false);
   await expect(page.locator('#pl-list .pl-card')).toHaveCount(Math.min(10, state.count));
   await expect(page.locator('#pl-list')).toContainText('可追溯参考');
+  await expect(page.locator('#pl-list .data-lineage-advisory').first()).toContainText('非官方核验');
+  await expect(page.locator('#pl-list .data-lineage-advisory').first()).toContainText('采集：');
   await expect(page.locator('#pl-list')).toContainText('第三方行业资讯');
   await expect(page.locator('#pl-list')).not.toContainText('40 · 低可信');
   await expect(page.locator('#pl-stats-row')).toContainText('可追溯参考，不纳入正式政策统计');
@@ -908,6 +1011,11 @@ test('settings exposes only real account, preference, and service states', async
   await expect(page.locator('#st-tab-account')).toContainText('Supabase Auth');
   await expect(page.locator('#settings')).not.toContainText('MacBook Pro');
   await expect(page.locator('#settings')).not.toContainText('演示账户体系');
+  await page.locator('.st-side-btn[data-st-tab="alerts"]').click();
+  await expect(page.locator('#st-notification-service-note')).toContainText('当前只发送站内通知');
+  await expect(page.locator('#st-channel-email-save')).toBeDisabled();
+  await expect(page.locator('#st-channel-wecom-url')).toBeDisabled();
+  await expect(page.locator('#st-channel-feishu-test')).toBeDisabled();
   await page.locator('.st-side-btn[data-st-tab="team"]').click();
   await expect(page.locator('#st-workspace-unavailable')).toContainText('只读演示模式不加载团队数据');
   await page.locator('.st-side-btn[data-st-tab="system"]').click();
@@ -921,6 +1029,113 @@ test('settings exposes only real account, preference, and service states', async
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
   await expect(page.locator('#st-tab-system .st-status-item').last()).toBeVisible();
   await page.screenshot({ path: path.join(os.tmpdir(), 'jay-settings-real-mobile.png'), fullPage: true });
+});
+
+test('notification channels save scoped preferences and expose only masked server state', async ({ page }) => {
+  const requests = [];
+  const consoleMessages = [];
+  let enabled = false;
+  let lastTestStatus = null;
+  let failTest = false;
+  page.on('console', (message) => consoleMessages.push(message.text()));
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.route('**/functions/v1/notification-dispatch', async (route) => {
+    const payload = route.request().postDataJSON() || {};
+    requests.push(payload);
+    if (payload.action === 'configure') {
+      enabled = payload.enabled === true;
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ status: 'saved', configured: enabled }) });
+      return;
+    }
+    if (payload.action === 'test') {
+      lastTestStatus = failTest ? 'failed' : 'sent';
+      await route.fulfill({
+        status: failTest ? 504 : 200,
+        contentType: 'application/json',
+        body: JSON.stringify(failTest ? { error: 'ENTERPRISE_PROVIDER_TIMEOUT' } : { status: 'sent', results: [{ channel: 'wecom', status: 'sent' }] }),
+      });
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        enabled: true,
+        workspace_id: '22222222-2222-4222-8222-222222222222',
+        channels: {
+          email: { available: true, configured: false, enabled: false, target_hint: 't***@example.com' },
+          wecom: { available: true, configured: enabled, enabled, has_secret: enabled, target_hint: enabled ? 'qyapi.weixin.qq.com/...' : null, last_test_status: lastTestStatus },
+          feishu: { available: true, configured: false, enabled: false, target_hint: null },
+        },
+      }),
+    });
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => {
+    const workspaceContext = {
+      available: true,
+      loading: false,
+      workspace: { id: '22222222-2222-4222-8222-222222222222', name: '测试工作区' },
+      membership: { role: 'owner', status: 'active' },
+      members: [],
+      invites: [],
+      error: null,
+    };
+    window.jayIsDemo = false;
+    window.jayUser = { id: '11111111-1111-4111-8111-111111111111', email: 'test@example.com' };
+    window.jayWorkspaceContext = workspaceContext;
+    window.jayLoadWorkspaceContext = async () => {
+      window.jayWorkspaceContext = workspaceContext;
+      return workspaceContext;
+    };
+    window.supabaseClient = { auth: { getSession: async () => ({ data: { session: { access_token: 'notification-token' } } }) } };
+    window.saveUserPreferences = async (prefs) => {
+      window.__savedNotificationPreferences = prefs.notification_prefs;
+      window.jayPreferenceCache = Object.assign({}, window.jayPreferenceCache, prefs);
+      return true;
+    };
+  });
+  await page.evaluate(() => window.switchPage('settings'));
+  await page.locator('.st-side-btn[data-st-tab="alerts"]').click();
+  await expect(page.locator('#st-notification-service-note')).toContainText('外部通知服务已连接');
+
+  const webhook = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=browser-secret-key';
+  await page.locator('#st-channel-wecom-enabled').check();
+  await page.locator('#st-channel-wecom-url').fill(webhook);
+  await page.locator('#st-channel-wecom-save').click();
+  await expect(page.locator('#st-channel-wecom-state')).toContainText('已启用');
+  await expect(page.locator('#st-channel-wecom-url')).toHaveValue('');
+  await expect(page.locator('#st-channel-wecom-target')).toHaveText('qyapi.weixin.qq.com/...');
+  await page.screenshot({ path: path.join(os.tmpdir(), 'jay-notification-channels.png'), fullPage: true });
+
+  const saved = await page.evaluate(() => ({
+    preferences: window.__savedNotificationPreferences,
+    storage: Object.keys(localStorage).map((key) => `${key}:${localStorage.getItem(key)}`).join('\n'),
+    html: document.documentElement.innerHTML,
+  }));
+  expect(saved.preferences.subscriptions_configured).toBe(true);
+  expect(saved.preferences.alert_scope.market_codes).toEqual(['US']);
+  expect(saved.preferences.alert_scope.platform_keys).toEqual(expect.arrayContaining(['amazon', 'tiktok-shop']));
+  expect(saved.storage).not.toContain('browser-secret-key');
+  expect(saved.html).not.toContain('browser-secret-key');
+  const configure = requests.find((payload) => payload.action === 'configure');
+  expect(configure.workspace_id).toBe('22222222-2222-4222-8222-222222222222');
+  expect(configure.webhook_url).toBe(webhook);
+
+  await page.locator('#st-channel-wecom-test').click();
+  await expect(page.locator('#toast')).toContainText('企业微信测试通知已发送');
+  failTest = true;
+  await page.locator('#st-channel-wecom-test').click();
+  await expect(page.locator('#toast')).toContainText('企业通知服务响应超时');
+  await expect(page.locator('#st-channel-wecom-state')).toContainText('最近测试失败');
+  expect(consoleMessages.join('\n')).not.toContain('browser-secret-key');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(350);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(1);
+  await expect(page.locator('#st-channel-feishu-test')).toBeVisible();
+  await page.screenshot({ path: path.join(os.tmpdir(), 'jay-notification-channels-mobile.png'), fullPage: true });
 });
 
 test('authenticated user data writes use the session token', async ({ page }) => {
@@ -997,6 +1212,12 @@ test('workspace assets validate payloads, stay read-only in demo, and serialize 
   const result = await page.evaluate(async () => {
     window.jayIsDemo = false;
     window.jayUser = { id: '11111111-1111-4111-8111-111111111111', email: 'test@example.com' };
+    window.jayWorkspaceContext = {
+      available: true,
+      workspace: { id: '22222222-2222-4222-8222-222222222222', name: '验收工作区' },
+      membership: { workspace_id: '22222222-2222-4222-8222-222222222222', role: 'editor', status: 'active' },
+      workspaces: [], memberships: [], members: [], invites: [], error: null,
+    };
     window.supabaseClient = {
       auth: {
         getSession: async () => ({ data: { session: { access_token: 'workspace-token' } } }),
@@ -1009,7 +1230,7 @@ test('workspace assets validate payloads, stay read-only in demo, and serialize 
       invalid,
       saved: await Promise.all([first, second]),
       cached: window.jayGetWorkspaceAsset('product_filter_templates', []),
-      pending: localStorage.getItem(`jay_workspace_assets_pending_${window.jayUser.id}`),
+      pending: localStorage.getItem(`jay_workspace_assets_pending_${window.jayUser.id}_22222222-2222-4222-8222-222222222222`),
     };
   });
 
@@ -1024,6 +1245,7 @@ test('workspace assets validate payloads, stay read-only in demo, and serialize 
     expect(request.method).toBe('POST');
     expect(request.headers.authorization).toBe('Bearer workspace-token');
     expect(request.body.user_id).toBe('11111111-1111-4111-8111-111111111111');
+    expect(request.body.workspace_id).toBe('22222222-2222-4222-8222-222222222222');
     expect(request.body.item_type).toBe('product_filter_templates');
     expect(request.body.client_id).toBe('default');
   }
@@ -1229,7 +1451,7 @@ test('uploaded catalog cache is account-scoped and service errors are explicit',
   expect(state.purgedOnSignOut).toBe(true);
 });
 
-test('pricing remains disabled by default and renders payment failures as text', async ({ page }) => {
+test('pricing remains disabled by default and renders payment and refund states as text', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
   await page.evaluate(() => window.switchPage('pricing'));
@@ -1240,9 +1462,11 @@ test('pricing remains disabled by default and renders payment failures as text',
     window.jayIsDemo = false;
     window.jayUser = { id: '00000000-0000-4000-8000-000000000001', email: 'billing@example.com' };
     window.supabaseClient = { auth: { getSession: async () => ({ data: { session: { access_token: 'test-token' } } }) } };
+    window.JAY_QUALITY_REPORT = { schema_version: 1, generated_at: new Date().toISOString(), status: 'healthy', publishable: true, datasets: {} };
     window.jayBillingStatusCache = {
       billing_enabled: true,
       effective_plan: 'free',
+      access_state: 'past_due',
       subscription: {
         plan: 'pro', status: 'past_due', provider: '<img src=x onerror=alert(1)>',
         provider_customer_id: 'cus_test', updated_at: '2026-09-03T00:00:00Z',
@@ -1257,6 +1481,34 @@ test('pricing remains disabled by default and renders payment failures as text',
   await expect(page.locator('#prc-current-tier')).toContainText('<img src=x onerror=alert(1)>');
   await expect(page.locator('#prc-current-tier img')).toHaveCount(0);
   await expect(page.locator('#prc-manage-billing')).toBeDisabled();
+
+  await page.evaluate(async () => {
+    window.jayBillingStatusCache = {
+      billing_enabled: true,
+      effective_plan: 'free',
+      access_state: 'refunded',
+      subscription: {
+        plan: 'pro', status: 'active', provider: 'stripe', provider_customer_id: 'cus_test',
+        provider_subscription_id: 'sub_test', refund_status: 'full', entitlement_revoke_reason: 'full_refund',
+      },
+      entitlement: { monthly_ai_token_limit: 100000, monthly_report_limit: 5, monthly_export_limit: 10 },
+      usage: { ai_tokens: 25000, ai_tokens_reserved: 0, reports: 2, exports: 3 },
+    };
+    await window.jayRenderPricingTier();
+  });
+  await expect(page.locator('#prc-billing-notice')).toContainText('全额退款已确认');
+  await expect(page.locator('#prc-current-tier')).toContainText('免费版');
+  await expect(page.locator('#prc-manage-billing')).toBeEnabled();
+
+  await page.evaluate(async () => {
+    window.jayBillingStatusCache.effective_plan = 'pro';
+    window.jayBillingStatusCache.access_state = 'active';
+    window.jayBillingStatusCache.subscription.refund_status = 'partial';
+    window.jayBillingStatusCache.subscription.entitlement_revoke_reason = null;
+    await window.jayRenderPricingTier();
+  });
+  await expect(page.locator('#prc-billing-notice')).toContainText('部分退款已同步');
+  await expect(page.locator('#prc-current-tier')).toContainText('Pro 专业版');
 });
 
 test('authenticated function errors and network recovery use the real request wrapper', async ({ page }) => {
@@ -1312,6 +1564,8 @@ test('authenticated function errors and network recovery use the real request wr
   expect(limited).toMatchObject({ ok: false, status: 429, code: 'AI_RATE_LIMITED', retryAfter: '60' });
   const quota = await invoke('quota');
   expect(quota).toMatchObject({ ok: false, status: 402, code: 'AI_QUOTA_EXCEEDED' });
+  const databaseQuota = await page.evaluate(() => window.jayServiceErrorText({ code: 'P0001', message: 'REPORT_QUOTA_EXCEEDED', details: { message: 'REPORT_QUOTA_EXCEEDED' } }));
+  expect(databaseQuota).toContain('报告生成额度已用完');
   const failed = await invoke('failed');
   expect(failed.text).toContain('服务暂时不可用');
   const timeout = await invoke('timeout', { timeout: 1000 });
@@ -1354,7 +1608,15 @@ test('duplicate checkout, report generation and export actions collapse to one o
     await Promise.all([firstGeneration, secondGeneration]);
 
     let exportStarts = 0;
-    window.rpLastReportRecord = { dbId: '00000000-0000-4000-8000-000000000010', saveStatus: 'saved', cloudSaved: true, name: '测试报告', text: '正文' };
+    window.JAY_QUALITY_REPORT = {
+      schema_version: 'test-quality-v1',
+      generated_at: new Date().toISOString(),
+      status: 'healthy',
+      publishable: true,
+      datasets: {},
+    };
+    const exportGate = window.JAY_REPORT_QUALITY.evaluate(window.JAY_QUALITY_REPORT);
+    window.rpLastReportRecord = { dbId: '00000000-0000-4000-8000-000000000010', saveStatus: 'saved', cloudSaved: true, publishable: true, qualityGate: exportGate, qualitySnapshot: exportGate.snapshot, name: '测试报告', text: '正文' };
     const preview = document.getElementById('rp-v2-preview-body');
     preview.classList.remove('rp-empty-preview');
     preview.textContent = '正文';
@@ -1546,6 +1808,12 @@ test('category rules, provenance gates, and report snapshots stay explicit', asy
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
   const result = await page.evaluate(() => {
+    window.jayWorkspaceContext = {
+      available: true,
+      workspace: { id: '33333333-3333-4333-8333-333333333333', name: '快照验收工作区' },
+      membership: { workspace_id: '33333333-3333-4333-8333-333333333333', role: 'viewer', status: 'active' },
+      workspaces: [], memberships: [], members: [], invites: [], error: null,
+    };
     const valid = ['标题', 'TikTok Shop', '美国', '短视频', '100', '1000', '2026-08-31', '达人', '商品', '2.1', '美妆', '测评', '50', 'US Store', '上升'];
     valid.source_kind = 'uploaded';
     valid.source_type = 'user_upload';
@@ -1571,6 +1839,7 @@ test('category rules, provenance gates, and report snapshots stay explicit', asy
       ruleStatus: product._categoryRule.status,
       ruleMissing: product._categoryRule.missingFields,
       snapshotSource: snapshot.source,
+      snapshotWorkspace: materialRow.workspace_id,
       snapshotCategory: materialRow.snapshot_category,
       snapshotPersisted: materialRow.snapshot_data.row[1],
     };
@@ -1581,6 +1850,7 @@ test('category rules, provenance gates, and report snapshots stay explicit', asy
   expect(result.ruleStatus).toBe('complete');
   expect(result.ruleMissing).toEqual([]);
   expect(result.snapshotSource).toBe('用户导入文件');
+  expect(result.snapshotWorkspace).toBe('33333333-3333-4333-8333-333333333333');
   expect(result.snapshotCategory).toBe('电子产品');
   expect(result.snapshotPersisted).toBe('电子产品样本');
 });

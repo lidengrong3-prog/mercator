@@ -44,14 +44,17 @@ Deno.serve(async (request) => {
     count('system_incidents', 'status=neq.resolved'), count('notification_deliveries', 'status=in.(pending,failed)'),
     rows('system_incidents', 'select=id,service,severity,status,title,started_at,resolved_at&order=started_at.desc&limit=10'),
     rows('backup_runs', 'select=id,backup_type,status,location,size_bytes,started_at,completed_at,error_message&order=created_at.desc&limit=10'),
-    rows('report_runs', 'select=id,user_id,report_id,client_report_id,purpose,status,market_codes,platform_keys,category_codes,data_version,model,section_count,duration_ms,failed_section,error_code,error_message,started_at,completed_at,created_at&order=created_at.desc&limit=100'),
-    rows('ai_request_logs', 'select=id,user_id,report_run_id,report_id,request_id,operation,status,provider,model,input_tokens,output_tokens,total_tokens,estimated_cost_usd,duration_ms,http_status,error_code,data_version,created_at&order=created_at.desc&limit=500'),
+    rows('report_runs', 'select=id,user_id,report_id,client_report_id,purpose,status,save_status,publication_status,market_codes,platform_keys,category_codes,data_version,model,section_count,duration_ms,input_tokens,output_tokens,total_tokens,estimated_cost_usd,ai_request_count,failed_request_count,search_request_count,failed_section,error_code,error_message,started_at,completed_at,created_at&order=created_at.desc&limit=100'),
+    rows('ai_request_logs', 'select=id,user_id,report_run_id,report_id,request_id,operation,status,provider,model,input_tokens,output_tokens,total_tokens,estimated_cost_usd,duration_ms,http_status,error_code,data_version,search_enabled,created_at&order=created_at.desc&limit=500'),
     rows('report_exports', 'select=id,user_id,report_id,format,status,request_id,duration_ms,error_message,created_at,completed_at&order=created_at.desc&limit=100'),
   ]);
   const completedRuns = reportRuns.filter((row: any) => row.status === 'completed');
   const failedRuns = reportRuns.filter((row: any) => row.status === 'failed');
   const measuredRuns = reportRuns.filter((row: any) => Number.isFinite(Number(row.duration_ms)));
   const aiFailures = aiRequests.filter((row: any) => row.status === 'failed');
+  const searchRequests = aiRequests.filter((row: any) => row.search_enabled === true);
+  const inputTokens = aiRequests.reduce((sum: number, row: any) => sum + Number(row.input_tokens || 0), 0);
+  const outputTokens = aiRequests.reduce((sum: number, row: any) => sum + Number(row.output_tokens || 0), 0);
   const totalTokens = aiRequests.reduce((sum: number, row: any) => sum + Number(row.total_tokens || 0), 0);
   const totalCost = aiRequests.reduce((sum: number, row: any) => sum + Number(row.estimated_cost_usd || 0), 0);
   const metrics = {
@@ -62,11 +65,14 @@ Deno.serve(async (request) => {
     average_report_duration_ms: measuredRuns.length ? Math.round(measuredRuns.reduce((sum: number, row: any) => sum + Number(row.duration_ms || 0), 0) / measuredRuns.length) : 0,
     ai_requests: aiRequests.length,
     ai_failure_rate: aiRequests.length ? Number((aiFailures.length / aiRequests.length).toFixed(4)) : 0,
+    ai_search_requests: searchRequests.length,
+    input_tokens: inputTokens,
+    output_tokens: outputTokens,
     total_tokens: totalTokens,
     estimated_ai_cost_usd: Number(totalCost.toFixed(6)),
     export_jobs: exportJobs.length,
     failed_exports: exportJobs.filter((row: any) => row.status === 'failed').length,
   };
   await fetch(`${supabaseUrl}/rest/v1/admin_audit_log`, { method: 'POST', headers, body: JSON.stringify({ actor_id: user.id, action: 'admin.dashboard.view', target_type: 'system', metadata: { origin } }) });
-  return json({ role: adminRows[0].role, counts: { users, subscriptions, workspaces, open_incidents: openIncidents, pending_deliveries: pendingDeliveries }, metrics, report_runs: reportRuns.slice(0, 30), ai_requests: aiRequests.slice(0, 50), export_jobs: exportJobs.slice(0, 30), incidents, backups, generated_at: new Date().toISOString() }, 200, origin);
+  return json({ role: adminRows[0].role, observability_version: '2026.09.08.2', counts: { users, subscriptions, workspaces, open_incidents: openIncidents, pending_deliveries: pendingDeliveries }, metrics, report_runs: reportRuns.slice(0, 30), ai_requests: aiRequests.slice(0, 50), export_jobs: exportJobs.slice(0, 30), incidents, backups, generated_at: new Date().toISOString() }, 200, origin);
 });

@@ -54,6 +54,26 @@ class SyncTests(unittest.TestCase):
             else:
                 os.environ["SUPABASE_SYNC_LEGACY_TABLES"] = old
 
+    def test_sync_refuses_to_publish_without_collection_run_metadata(self):
+        report = {"status": "healthy", "publishable": True, "datasets": {}}
+        with patch.object(sync_to_supabase, "validate_all", return_value=report), \
+                patch.object(sync_to_supabase, "write_report"), \
+                patch.object(sync_to_supabase.sys, "argv", ["sync_to_supabase.py", "--dry-run"]):
+            self.assertEqual(sync_to_supabase.main(), 3)
+
+    def test_sync_refuses_to_publish_when_pipeline_sources_are_missing(self):
+        report = {
+            "status": "healthy", "publishable": True, "datasets": {},
+            "collection_run": {
+                "missing_pipeline_sources": ["cpsc_recalls"],
+                "core_failures": [],
+            },
+        }
+        with patch.object(sync_to_supabase, "validate_all", return_value=report), \
+                patch.object(sync_to_supabase, "write_report"), \
+                patch.object(sync_to_supabase.sys, "argv", ["sync_to_supabase.py", "--dry-run"]):
+            self.assertEqual(sync_to_supabase.main(), 3)
+
     def test_raw_provenance_rows_keep_source_and_evidence_fields(self):
         rows = sync_to_supabase.build_raw_record_rows({"datasets": {}})
         self.assertGreater(len(rows), 0)
@@ -113,7 +133,7 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(raw[0]["source_class"], "industry_advisory")
         self.assertEqual(formal, [])
 
-    def test_public_policy_bundle_marks_legacy_industry_articles_as_pending(self):
+    def test_public_policy_bundle_excludes_legacy_industry_articles(self):
         source = {
             "updated_at": "2026-08-30T00:00:00+00:00",
             "items": [{
@@ -131,15 +151,10 @@ class SyncTests(unittest.TestCase):
             }],
         }
         public = sync_to_supabase.public_market_data_payload("policies", source)
-        item = public["items"][0]
-        self.assertEqual(item["source_class"], "industry_advisory")
-        self.assertEqual(item["source_kind"], "traceable")
-        self.assertEqual(item["source_type"], "licensed_provider")
-        self.assertEqual(item["verification_status"], "pending")
-        self.assertEqual(item["market_codes"], ["US"])
+        self.assertEqual(public["items"], [])
         self.assertNotIn("source_class", source["items"][0])
 
-    def test_public_policy_bundle_preserves_declared_industry_scope(self):
+    def test_public_policy_bundle_excludes_declared_industry_scope(self):
         source = {
             "updated_at": "2026-08-30T00:00:00+00:00",
             "items": [{
@@ -158,7 +173,7 @@ class SyncTests(unittest.TestCase):
             }],
         }
         public = sync_to_supabase.public_market_data_payload("policies", source)
-        self.assertEqual(public["items"][0]["market_codes"], ["US"])
+        self.assertEqual(public["items"], [])
 
     def test_applicability_projection_expands_declared_platforms_categories_and_jurisdictions(self):
         manifest = {

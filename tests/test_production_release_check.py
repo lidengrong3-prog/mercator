@@ -1,8 +1,16 @@
+import json
+from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 
 from scripts import production_release_check
-from scripts.production_release_check import ReleaseCheckError, validate_webhook_probe
+from scripts.production_release_check import (
+    PRIVATE_PAGE_DATA_PATHS,
+    PUBLIC_PAGE_DATA_PATHS,
+    ReleaseCheckError,
+    validate_webhook_probe,
+)
 
 
 class ProductionReleaseCheckTests(unittest.TestCase):
@@ -25,6 +33,15 @@ class ProductionReleaseCheckTests(unittest.TestCase):
             requests.append((method, url))
             if url.endswith("/release.json"):
                 return 200, b'{"release_sha":"sha","migration_head":"migration","production_origin":"https://example.com"}', {}
+            if url.endswith("/public-data-manifest.json"):
+                return 200, json.dumps({
+                    "policy": "explicit-allowlist-formal-projection",
+                    "data_files": list(PUBLIC_PAGE_DATA_PATHS),
+                }).encode(), {}
+            if any(url.endswith("/" + path) for path in PUBLIC_PAGE_DATA_PATHS):
+                return 200, b"{}", {}
+            if any(url.endswith("/" + path) for path in PRIVATE_PAGE_DATA_PATHS):
+                return 404, b"not found", {}
             if url == "https://example.com/":
                 return 200, b"JAY", {}
             if url.endswith("/assets/js/catalog.js"):
@@ -41,28 +58,69 @@ class ProductionReleaseCheckTests(unittest.TestCase):
                 return 401, b'{"error":"UNAUTHORIZED"}', {}
             if url.endswith("/functions/v1/billing-status"):
                 return 200, b'{"billing_enabled":false,"entitlement":{"plan":"free"}}', {}
+            if url.endswith("/functions/v1/notification-dispatch"):
+                return 200, b'{"enabled":false,"channels":{"email":{"available":false},"wecom":{"available":false},"feishu":{"available":false}}}', {}
             if url.endswith("/functions/v1/billing-webhook"):
                 return 503, b'{"error":"BILLING_WEBHOOK_NOT_CONFIGURED"}', {}
             raise AssertionError(f"unexpected request: {method} {url}")
 
-        acceptance = b'{"status":"passed","release_sha":"sha","checks":{"database":true,"storage_bucket":true,"storage_policy":true,"edge_functions":true}}'
-        with patch.dict("os.environ", {
-            "PRODUCTION_SITE_URL": "https://example.com/",
-            "SUPABASE_URL": "https://project.supabase.co",
-            "SUPABASE_ANON_KEY": "anon",
-            "EXPECTED_RELEASE_SHA": "sha",
-            "EXPECTED_MIGRATION_HEAD": "migration",
-            "ACCEPTANCE_RESULT_FILE": "acceptance.json",
-            "PROD_TEST_USER_A_EMAIL": "a@example.com",
-            "PROD_TEST_USER_A_PASSWORD": "password",
-        }, clear=True), patch.object(production_release_check.Path, "read_bytes", return_value=acceptance), patch.object(
-            production_release_check, "request", side_effect=fake_request
-        ):
-            self.assertEqual(production_release_check.main(), 0)
+        acceptance = {
+            "status": "passed",
+            "release_sha": "sha",
+            "checks": {
+                "database": True,
+                "storage_bucket": True,
+                "storage_policy": True,
+                "edge_functions": True,
+                "production_exceptions": True,
+            },
+            "production_exceptions": {
+                "unauthorized": {"status": 401},
+                "forbidden": {"status": 403, "error": "ORIGIN_NOT_ALLOWED"},
+                "rate_limit": {"status": 429, "error": "AI_RATE_LIMITED", "logged": True},
+                "provider_timeout": {"status": 504, "error": "AI_PROVIDER_TIMEOUT", "logged": True},
+                "quota": {"status": 402, "error": "AI_QUOTA_EXCEEDED", "logged": True},
+                "duplicate_generation": {"run_id": "run", "row_count": 1},
+                "duplicate_exports": {
+                    "pdf": {"id": "pdf", "row_count": 1, "duplicate_response": True},
+                    "docx": {"id": "docx", "row_count": 1, "duplicate_response": True},
+                },
+            },
+        }
+        browser_acceptance = {
+            "status": "passed",
+            "network_recovery": {
+                "first_request": "internetdisconnected",
+                "attempts": 2,
+                "recovered_with_production_response": True,
+            },
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            acceptance_path = Path(temp_dir) / "acceptance.json"
+            browser_acceptance_path = Path(temp_dir) / "browser-acceptance.json"
+            acceptance_path.write_text(json.dumps(acceptance), encoding="utf-8")
+            browser_acceptance_path.write_text(json.dumps(browser_acceptance), encoding="utf-8")
+            with patch.dict("os.environ", {
+                "PRODUCTION_SITE_URL": "https://example.com/",
+                "SUPABASE_URL": "https://project.supabase.co",
+                "SUPABASE_ANON_KEY": "anon",
+                "EXPECTED_RELEASE_SHA": "sha",
+                "EXPECTED_MIGRATION_HEAD": "migration",
+                "ACCEPTANCE_RESULT_FILE": str(acceptance_path),
+                "BROWSER_ACCEPTANCE_RESULT_FILE": str(browser_acceptance_path),
+                "PROD_TEST_USER_A_EMAIL": "a@example.com",
+                "PROD_TEST_USER_A_PASSWORD": "password",
+                "NOTIFICATION_CHANNELS_ENABLED": "false",
+            }, clear=True), patch.object(
+                production_release_check, "request", side_effect=fake_request
+            ):
+                self.assertEqual(production_release_check.main(), 0)
 
         urls = [url for _, url in requests]
         self.assertIn("https://project.supabase.co/rest/v1/market_catalog?select=code&limit=1", urls)
         self.assertIn("https://project.supabase.co/rest/v1/market_data_applicability?select=id&limit=1", urls)
+        for path in PRIVATE_PAGE_DATA_PATHS:
+            self.assertIn("https://example.com/" + path, urls)
 
 
 if __name__ == "__main__":

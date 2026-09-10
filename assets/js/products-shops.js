@@ -808,7 +808,7 @@ function shRenderCompareTab(){
   var el=document.getElementById('sh-compare-panel'); if(!el) return;
   var cats={},markets={},plats={};
   prScopedShops().forEach(function(x){if(prText(x[6]))cats[x[6]]=1;if(prText(x[2]))markets[x[2]]=1;if(prText(x[1]))plats[x[1]]=1;});
-  function opts(o,all){return '<option value="">'+all+'</option>'+Object.keys(o).map(function(k){return '<option>'+k+'</option>';}).join('');}
+  function opts(o,all){return '<option value="">'+escapeHtml(all)+'</option>'+Object.keys(o).map(function(k){return '<option>'+escapeHtml(k)+'</option>';}).join('');}
   var html='';
   html+='<div style="border:1px solid var(--wave);background:var(--sea-soft);border-radius:8px;padding:14px;margin-bottom:14px">';
   html+='<p style="margin:0 0 10px;font-size:13px;color:var(--ink)"><b>竞品对标</b><span style="color:var(--muted);font-weight:400"> · 仅基于已导入店铺记录</span></p>';
@@ -1051,7 +1051,7 @@ function shBatchAddReport() {
   var pool = rpGetPool();
   shSelected.forEach(function(idx) {
     var s = shops[idx];
-    if(s&&prIsInCurrentScope(s))pool.push({id:Date.now()+'_'+idx,type:'shop',title:s[0]+' ('+s[1]+')',source:s[2],summary:'月GMV '+s[3]+' 增速'+s[4]+' 主营'+s[6],addedAt:new Date().toISOString(),selected:true,source_kind:'derived',source_type:'derived',source_record_id:String(idx),verification_status:'verified',verification_notes:'由当前范围内已导入店铺记录生成',snapshot_type:'shop',snapshot_data:prShopSnapshot(s),snapshot_source:s._source||'用户导入文件',snapshot_at:new Date().toISOString(),snapshot_market:s[2],snapshot_platform:s[1],snapshot_category:s[6]});
+    if(s&&prIsInCurrentScope(s))pool.push({id:Date.now()+'_'+idx,type:'shop',title:s[0]+' ('+s[1]+')',source:s[2],summary:'月GMV '+s[3]+' 增速'+s[4]+' 主营'+s[6],addedAt:new Date().toISOString(),selected:true,source_kind:'uploaded',source_type:'user_upload',source_record_id:String(idx),verification_status:'uploaded',verification_notes:'由当前账号导入的店铺文件生成',snapshot_type:'shop',snapshot_data:prShopSnapshot(s),snapshot_source:s._source||'用户导入文件',snapshot_at:new Date().toISOString(),snapshot_market:s[2],snapshot_platform:s[1],snapshot_category:s[6]});
   });
   rpSavePool(pool);
   toast('已批量加入 ' + shSelected.size + ' 家店铺到报告素材');

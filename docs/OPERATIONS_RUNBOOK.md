@@ -4,11 +4,13 @@
 
 `.github/workflows/operations.yml` 每 6 小时执行：
 
-- 前端、数据和安全静态测试；
-- 数据质量发布闸门；
-- 正式 GitHub Pages 站点 HTTP 可用性检查。
+- `code-health`：前端语法、安全、Python 和 Node 自动化测试；
+- `data-quality`：独立执行数据质量发布闸门，并保存本次运行专用的 `operations-data-quality-result.json`；
+- `availability-monitor`：独立检查正式 GitHub Pages、发布清单、数据库、`reports` Storage、所有 Edge Functions 和真实账号认证。
 
-任何步骤失败都会让 GitHub Actions 工作流失败，不会静默标记成功。
+三个任务互不依赖并行运行。代码或数据质量失败不会阻止生产可用性探针，生产组件失败也不会吞掉数据质量结果。任何失败仍会让整个 GitHub Actions 工作流显示失败，不会静默标记成功。
+
+`availability-monitor` 会始终执行全部组件探针；单个数据库表或 Edge Function 请求异常时，也会继续检查其余目标。结果写入 `production-health-result.json`，包含总状态、失败组件、逐组件耗时、HTTP 状态和发布 SHA，并作为 `production-health-<run_id>` Artifact 保留 30 天。数据质量结果使用独立的 `operations-data-quality-<run_id>` Artifact，不能用“网站可访问”代替“数据可发布”，也不能用“数据质量失败”推断生产服务宕机。
 
 ## 备份
 

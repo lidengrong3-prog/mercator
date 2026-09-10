@@ -43,12 +43,16 @@ import hashlib
 from datetime import datetime, timezone
 
 from validate_data import (
+    DEFAULT_SCOPE_PLATFORMS,
     DEFAULT_REPORT,
+    PROVENANCE_REQUIRED_DOMAINS,
     SOURCE_TYPES,
     infer_source_kind,
     infer_verification_status,
     effective_source_type,
+    is_current_scope_market,
     normalize_source_type,
+    normalize_platform,
     record_quality,
     record_scope_codes,
     source_record_id_for,
@@ -236,31 +240,113 @@ def explicit_industry_market_codes(record):
 
 
 def public_market_data_payload(key, data):
-    """Return a public copy with explicit advisory provenance metadata."""
-    if key != "policies" or not isinstance(data, dict) or not isinstance(data.get("items"), list):
-        return data
-    payload = dict(data)
-    payload["items"] = []
-    for item in data["items"]:
-        if not isinstance(item, dict):
-            payload["items"].append(item)
-            continue
-        copy = dict(item)
-        if is_industry_advisory(copy):
-            copy["source_kind"] = "traceable"
-            copy["source_type"] = "licensed_provider"
-            copy["source_class"] = "industry_advisory"
-            copy["verification_status"] = "pending"
-            copy["verified_at"] = None
-            copy["verification_notes"] = "第三方行业资讯：仅作可追溯参考，未完成官方记录级核验。"
-            detected = list(dict.fromkeys(explicit_industry_market_codes(copy) + infer_industry_market_codes(copy)))
-            if detected:
-                copy["market_codes"] = detected
-                copy["market_scope_status"] = "identified"
-            else:
-                copy["market_scope_status"] = "unscoped"
-        payload["items"].append(copy)
-    return payload
+    """Build the current-scope formal payload exposed to anonymous clients."""
+    item_domains = {
+        "policies": "policy",
+        "taxes": "tax",
+        "access_requirements": "access",
+        "rules": "rule",
+    }
+    if key in item_domains:
+        if not isinstance(data, dict) or not isinstance(data.get("items"), list):
+            return data
+        domain = item_domains[key]
+        payload = dict(data)
+        payload["items"] = [
+            item for item in data["items"]
+            if _is_public_formal_record(key, domain, item)
+        ]
+        payload["source_count"] = len({
+            str(item.get("source") or item.get("platform") or source_url_for(item) or "").strip()
+            for item in payload["items"]
+            if str(item.get("source") or item.get("platform") or source_url_for(item) or "").strip()
+        })
+        return payload
+    if key == "alerts" and isinstance(data, list):
+        return [row for row in data if _is_public_alert(row)]
+    if key == "countries" and isinstance(data, dict):
+        return {
+            name: value for name, value in data.items()
+            if not name.startswith("_")
+            and isinstance(value, dict)
+            and (
+                is_current_scope_market(name)
+                or is_current_scope_market(value.get("code"))
+                or is_current_scope_market(value.get("name"))
+            )
+        }
+    if key == "platforms" and isinstance(data, list):
+        return [
+            row for row in data
+            if isinstance(row, dict)
+            and normalize_platform(row.get("name")) in DEFAULT_SCOPE_PLATFORMS
+        ]
+    if key == "macro" and isinstance(data, dict) and isinstance(data.get("indicators"), dict):
+        payload = dict(data)
+        generated_at = data.get("meta", {}).get("generated_at") if isinstance(data.get("meta"), dict) else None
+        payload["indicators"] = {
+            indicator_key: value
+            for indicator_key, value in data["indicators"].items()
+            if _is_public_macro_indicator(indicator_key, value, generated_at)
+        }
+        if isinstance(payload.get("meta"), dict):
+            payload["meta"] = dict(payload["meta"])
+            payload["meta"]["total_indicators"] = len(payload["indicators"])
+        return payload
+    return data
+
+
+def _is_public_formal_record(dataset_key, domain, item):
+    if not isinstance(item, dict) or is_industry_advisory(item):
+        return False
+    market = item.get("region") or item.get("market") or item.get("country")
+    if not is_current_scope_market(market):
+        return False
+    if dataset_key == "rules" and normalize_platform(item.get("platform")) not in DEFAULT_SCOPE_PLATFORMS:
+        return False
+    return record_quality(
+        item,
+        require_scope=True,
+        domain=domain,
+        require_provenance=domain in PROVENANCE_REQUIRED_DOMAINS,
+    ).get("formal", False)
+
+
+def _alert_record(row):
+    if not isinstance(row, list) or len(row) < 10 or not isinstance(row[9], dict):
+        return None
+    record = dict(row[9])
+    for field, index in (("id", 0), ("title", 3), ("market", 4), ("platform", 5), ("detail", 6), ("date", 7)):
+        record.setdefault(field, row[index])
+    return record
+
+
+def _is_public_alert(row):
+    record = _alert_record(row)
+    return bool(
+        record
+        and is_current_scope_market(record.get("market"))
+        and record_quality(
+            record,
+            require_scope=True,
+            domain="alert",
+            require_provenance=True,
+        ).get("formal", False)
+    )
+
+
+def _is_public_macro_indicator(indicator_key, value, generated_at):
+    if not isinstance(value, dict):
+        return False
+    record = dict(
+        value,
+        id=value.get("id") or indicator_key,
+        market="US",
+        source_type=value.get("source_type") or "official_feed",
+        published_at=value.get("published_at") or value.get("date"),
+        collected_at=value.get("collected_at") or generated_at,
+    )
+    return record_quality(record, require_scope=True, domain="market").get("formal", False)
 
 
 def iter_provenance_records(only="all"):
@@ -952,6 +1038,13 @@ def main():
     if not quality_report.get("publishable"):
         print(f"[SYNC] ERROR: data quality gate is {quality_report.get('status')}; refusing to publish")
         return 3
+    collection_run = quality_report.get("collection_run")
+    if not isinstance(collection_run, dict):
+        print("[SYNC] ERROR: collection run metadata is missing; refusing to publish")
+        return 3
+    if collection_run.get("missing_pipeline_sources") or collection_run.get("core_failures"):
+        print("[SYNC] ERROR: collection pipeline is incomplete; refusing to publish")
+        return 3
     
     supa_url, supa_key = get_config()
     
@@ -968,6 +1061,8 @@ def main():
     summary = {
         "synced_at": datetime.now(timezone.utc).isoformat(),
         "dry_run": args.dry_run,
+        "collection_run": collection_run,
+        "quality_report_generated_at": quality_report.get("generated_at"),
         "results": {},
     }
     failures = []

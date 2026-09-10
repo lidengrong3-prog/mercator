@@ -14,6 +14,11 @@ import sys
 from pathlib import Path
 from urllib.parse import urlparse
 
+try:
+    from validate_migration_chain import MigrationChainError, validate_migration_chain
+except ModuleNotFoundError:  # Imported as scripts.release_preflight in tests/tools.
+    from scripts.validate_migration_chain import MigrationChainError, validate_migration_chain
+
 
 ROOT = Path(__file__).resolve().parents[1]
 MIGRATIONS = ROOT / "supabase" / "migrations"
@@ -77,6 +82,12 @@ def validate_migrations() -> str:
     source = report_migration.read_text(encoding="utf-8")
     if "INSERT INTO storage.buckets" not in source or "report_files_select_own" not in source:
         raise ReleasePreflightError("report Storage bucket or owner policy is missing from migrations")
+    try:
+        rebuild = validate_migration_chain(MIGRATIONS)
+    except MigrationChainError as error:
+        raise ReleasePreflightError(str(error)) from error
+    if rebuild["migration_head"] != Path(files[-1]).stem:
+        raise ReleasePreflightError("migration rebuild audit disagrees with migration head")
     return Path(files[-1]).stem
 
 

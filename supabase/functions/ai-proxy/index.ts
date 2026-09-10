@@ -1,3 +1,5 @@
+import { verifyProductionAcceptanceFault } from '../_shared/production-acceptance.mjs';
+
 const defaultOrigins = [
   'https://lidengrong3-prog.github.io',
   'http://localhost:8000', 'http://127.0.0.1:8000',
@@ -63,7 +65,8 @@ Deno.serve(async (request) => {
 
   let payload: Record<string, unknown>;
   try { payload = await request.json(); } catch { return jsonResponse({ error: 'INVALID_JSON' }, 400, origin); }
-  const requestId = String(payload.request_id || request.headers.get('X-Request-Id') || crypto.randomUUID()).slice(0, 240);
+  const requestIdCandidate = String(payload.request_id || request.headers.get('X-Request-Id') || crypto.randomUUID()).slice(0, 240);
+  const requestId = /^[A-Za-z0-9._:-]{8,240}$/.test(requestIdCandidate) ? requestIdCandidate : crypto.randomUUID();
   const operation = String(payload.operation || 'analysis').slice(0, 120);
   const model = Deno.env.get('DEEPSEEK_MODEL') || 'deepseek-chat';
   const dataVersion = payload.data_version ? String(payload.data_version).slice(0, 240) : null;
@@ -79,6 +82,14 @@ Deno.serve(async (request) => {
     totalLength += content.length;
   }
   if (totalLength > 30_000) return jsonResponse({ error: 'PROMPT_TOO_LARGE' }, 413, origin);
+
+  const acceptance = await verifyProductionAcceptanceFault(request.headers, {
+    serviceKey,
+    userId: String(user.id || ''),
+    requestId,
+  });
+  if (acceptance.error) return jsonResponse({ error: acceptance.error }, 403, origin);
+  const acceptanceScenario = acceptance.scenario;
 
   const temperature = Math.max(0, Math.min(1.5, Number(payload.temperature ?? 0.5)));
   const maxTokens = Math.max(128, Math.min(3_000, Number(payload.max_tokens ?? 1_500)));
@@ -99,17 +110,21 @@ Deno.serve(async (request) => {
       body: JSON.stringify({
         user_id: user.id, report_run_id: reportRunId, report_id: reportId, request_id: requestId,
         operation, provider: 'deepseek', model, data_version: dataVersion,
-        duration_ms: Date.now() - startedAt, metadata: { client_report_id: String(payload.client_report_id || '').slice(0, 180) },
+        search_enabled: Boolean(payload.web_search || payload.plugins),
+        duration_ms: Date.now() - startedAt, metadata: {
+          client_report_id: String(payload.client_report_id || '').slice(0, 180),
+          acceptance_scenario: acceptanceScenario,
+        },
         ...values,
       }),
     });
   };
 
-  const subscriptionResponse = await fetch(`${supabaseUrl}/rest/v1/user_subscriptions?user_id=eq.${encodeURIComponent(user.id)}&select=plan,status&limit=1`, { headers: serviceHeaders });
-  if (!subscriptionResponse.ok) return jsonResponse({ error: 'BILLING_ENTITLEMENTS_UNAVAILABLE' }, 503, origin);
-  const subscriptionRows = await subscriptionResponse.json();
-  const subscription = subscriptionRows?.[0] || { plan: 'free', status: 'active' };
-  const effectivePlan = ['active', 'trialing'].includes(String(subscription.status)) ? String(subscription.plan || 'free') : 'free';
+  const effectivePlanResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/effective_billing_plan`, {
+    method: 'POST', headers: serviceHeaders, body: JSON.stringify({ p_user_id: user.id }),
+  });
+  if (!effectivePlanResponse.ok) return jsonResponse({ error: 'BILLING_ENTITLEMENTS_UNAVAILABLE' }, 503, origin);
+  const effectivePlan = String(await effectivePlanResponse.json() || 'free');
   const entitlementResponse = await fetch(`${supabaseUrl}/rest/v1/billing_plan_entitlements?plan=eq.${encodeURIComponent(effectivePlan)}&active=eq.true&select=monthly_ai_token_limit,ai_requests_per_minute&limit=1`, { headers: serviceHeaders });
   if (!entitlementResponse.ok) return jsonResponse({ error: 'BILLING_ENTITLEMENTS_UNAVAILABLE' }, 503, origin);
   const entitlementRows = await entitlementResponse.json();
@@ -120,15 +135,6 @@ Deno.serve(async (request) => {
   const planMinuteLimit = Math.max(1, Number(entitlement.ai_requests_per_minute || 1));
   const perMinuteLimit = configuredMinuteCap > 0 ? Math.min(planMinuteLimit, configuredMinuteCap) : planMinuteLimit;
   const configuredMonthlyCap = Math.max(0, Number(Deno.env.get('AI_MONTHLY_TOKEN_LIMIT') || 0));
-  const planMonthlyLimit = Math.max(0, Number(entitlement.monthly_ai_token_limit || 0));
-  const monthlyLimit = configuredMonthlyCap > 0 ? Math.min(planMonthlyLimit, configuredMonthlyCap) : planMonthlyLimit;
-  const usageResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/get_user_billing_usage`, {
-    method: 'POST', headers: serviceHeaders, body: JSON.stringify({ p_user_id: user.id }),
-  });
-  if (!usageResponse.ok) return jsonResponse({ error: 'BILLING_USAGE_UNAVAILABLE' }, 503, origin);
-  const billingUsage = await usageResponse.json();
-  const usedTokens = Math.max(0, Number(billingUsage?.ai_tokens || 0));
-  const quotaResetAt = String(billingUsage?.period_end || '');
 
   const minuteStart = new Date(Date.now() - 60_000).toISOString();
   const rateResponse = await fetch(`${supabaseUrl}/rest/v1/ai_request_logs?user_id=eq.${encodeURIComponent(user.id)}&created_at=gte.${encodeURIComponent(minuteStart)}&select=id`, {
@@ -136,27 +142,63 @@ Deno.serve(async (request) => {
   });
   if (!rateResponse.ok) return jsonResponse({ error: 'AI_RATE_LIMIT_CHECK_FAILED' }, 503, origin);
   const recentCount = Number((rateResponse.headers.get('content-range') || '0/0').split('/')[1] || 0);
-  if (recentCount >= perMinuteLimit) {
+  if (acceptanceScenario === 'rate_limit' || recentCount >= perMinuteLimit) {
     await logRequest({ status: 'failed', input_tokens: 0, output_tokens: 0, total_tokens: 0, estimated_cost_usd: 0, http_status: 429, error_code: 'AI_RATE_LIMITED' });
     return jsonResponse({ error: 'AI_RATE_LIMITED', plan: effectivePlan, limit: perMinuteLimit, retry_after: 60 }, 429, origin, { 'Retry-After': '60' });
   }
 
-  const estimatedInputTokens = Math.ceil(totalLength / 4);
+  const estimatedInputTokens = Math.max(1, totalLength);
   const requestedTokens = estimatedInputTokens + maxTokens;
-  if (monthlyLimit === 0 || usedTokens + requestedTokens > monthlyLimit) {
+  const reservationResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/reserve_ai_token_quota`, {
+    method: 'POST',
+    headers: serviceHeaders,
+    body: JSON.stringify({
+      p_user_id: user.id,
+      p_request_id: requestId,
+      p_requested_tokens: requestedTokens,
+      p_limit_override: acceptanceScenario === 'quota' ? 1 : (configuredMonthlyCap > 0 ? configuredMonthlyCap : null),
+    }),
+  });
+  if (!reservationResponse.ok) return jsonResponse({ error: 'BILLING_USAGE_UNAVAILABLE' }, 503, origin);
+  const reservation = await reservationResponse.json();
+  if (reservation?.allowed !== true) {
+    const reservationError = String(reservation?.error || 'AI_QUOTA_EXCEEDED');
+    if (reservationError === 'AI_REQUEST_IN_PROGRESS' || reservationError === 'AI_REQUEST_ALREADY_COMPLETED') {
+      return jsonResponse({ error: reservationError }, 409, origin);
+    }
     await logRequest({ status: 'failed', input_tokens: 0, output_tokens: 0, total_tokens: 0, estimated_cost_usd: 0, http_status: 402, error_code: 'AI_QUOTA_EXCEEDED' });
     return jsonResponse({
-      error: 'AI_QUOTA_EXCEEDED', plan: effectivePlan, used_tokens: usedTokens,
-      limit: monthlyLimit, remaining_tokens: Math.max(0, monthlyLimit - usedTokens), reset_at: quotaResetAt,
+      error: 'AI_QUOTA_EXCEEDED', plan: effectivePlan,
+      used_tokens: Number(reservation?.used_tokens || 0),
+      reserved_tokens: Number(reservation?.reserved_tokens || 0),
+      limit: Number(reservation?.limit || 0),
+      remaining_tokens: Number(reservation?.remaining_tokens || 0),
+      reset_at: String(reservation?.reset_at || ''),
     }, 402, origin);
   }
+
+  const finalizeReservation = async (status: 'completed' | 'released', actualTokens = 0) => {
+    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/finalize_ai_token_reservation`, {
+      method: 'POST',
+      headers: serviceHeaders,
+      body: JSON.stringify({
+        p_user_id: user.id,
+        p_request_id: requestId,
+        p_status: status,
+        p_actual_tokens: Math.max(0, Math.floor(actualTokens)),
+      }),
+    });
+    return response.ok;
+  };
   const upstreamBody: Record<string, unknown> = { model, messages, temperature, max_tokens: maxTokens, stream: false };
   if (payload.web_search) upstreamBody.web_search = { type: 'enabled' };
   if (payload.plugins) upstreamBody.plugins = ['web_search'];
 
   const baseUrl = (Deno.env.get('DEEPSEEK_API_URL') || 'https://api.deepseek.com').replace(/\/$/, '');
   const controller = new AbortController();
-  const providerTimeout = Math.max(5_000, Math.min(55_000, Number(Deno.env.get('AI_PROVIDER_TIMEOUT_MS') || 50_000)));
+  const providerTimeout = acceptanceScenario === 'provider_timeout'
+    ? 1
+    : Math.max(5_000, Math.min(55_000, Number(Deno.env.get('AI_PROVIDER_TIMEOUT_MS') || 50_000)));
   const timer = setTimeout(() => controller.abort(), providerTimeout);
   let upstream: Response;
   try {
@@ -165,9 +207,11 @@ Deno.serve(async (request) => {
       body: JSON.stringify(upstreamBody), signal: controller.signal,
     });
   } catch (error) {
-    const code = error instanceof DOMException && error.name === 'AbortError' ? 'AI_PROVIDER_TIMEOUT' : 'AI_PROVIDER_UNREACHABLE';
+    const aborted = controller.signal.aborted || (error instanceof DOMException && error.name === 'AbortError');
+    const code = aborted ? 'AI_PROVIDER_TIMEOUT' : 'AI_PROVIDER_UNREACHABLE';
     const status = code === 'AI_PROVIDER_TIMEOUT' ? 504 : 502;
     await logRequest({ status: 'failed', input_tokens: 0, output_tokens: 0, total_tokens: 0, estimated_cost_usd: 0, http_status: status, error_code: code });
+    await finalizeReservation('released');
     return jsonResponse({ error: code }, status, origin);
   } finally { clearTimeout(timer); }
 
@@ -175,22 +219,38 @@ Deno.serve(async (request) => {
     const code = upstream.status === 429 ? 'AI_RATE_LIMITED' : ([402, 403].includes(upstream.status) ? 'AI_QUOTA_EXCEEDED' : 'AI_PROVIDER_ERROR');
     const status = code === 'AI_RATE_LIMITED' ? 429 : (code === 'AI_QUOTA_EXCEEDED' ? 402 : (upstream.status >= 500 ? 502 : 400));
     await logRequest({ status: 'failed', input_tokens: 0, output_tokens: 0, total_tokens: 0, estimated_cost_usd: 0, http_status: upstream.status, error_code: code });
+    await finalizeReservation('released');
     return jsonResponse({ error: code, provider_status: upstream.status }, status, origin, upstream.status === 429 ? { 'Retry-After': upstream.headers.get('retry-after') || '60' } : {});
   }
 
-  const result = await upstream.json();
-  const usage = result && typeof result.usage === 'object' ? result.usage : {};
+  let result: Record<string, unknown>;
+  try {
+    result = await upstream.json();
+  } catch {
+    await logRequest({ status: 'failed', input_tokens: 0, output_tokens: 0, total_tokens: 0, estimated_cost_usd: 0, http_status: 502, error_code: 'AI_PROVIDER_INVALID_RESPONSE' });
+    await finalizeReservation('released');
+    return jsonResponse({ error: 'AI_PROVIDER_INVALID_RESPONSE' }, 502, origin);
+  }
+  const usage = result && typeof result.usage === 'object' ? result.usage as Record<string, unknown> : {};
   const inputTokens = Math.max(0, Number(usage.prompt_tokens || usage.input_tokens || 0));
   const outputTokens = Math.max(0, Number(usage.completion_tokens || usage.output_tokens || 0));
-  const totalTokens = Math.max(inputTokens + outputTokens, Number(usage.total_tokens || 0));
+  const totalTokens = Math.max(1, inputTokens + outputTokens, Number(usage.total_tokens || 0), estimatedInputTokens);
+  if (!await finalizeReservation('completed', totalTokens)) {
+    await logRequest({ status: 'failed', input_tokens: inputTokens, output_tokens: outputTokens, total_tokens: totalTokens, estimated_cost_usd: estimateCost(inputTokens, outputTokens), http_status: 503, error_code: 'AI_USAGE_FINALIZATION_FAILED' });
+    return jsonResponse({ error: 'AI_USAGE_FINALIZATION_FAILED' }, 503, origin);
+  }
   await logRequest({ status: 'completed', input_tokens: inputTokens, output_tokens: outputTokens, total_tokens: totalTokens, estimated_cost_usd: estimateCost(inputTokens, outputTokens), http_status: 200, error_code: null });
   if (result && typeof result === 'object') {
+    const quotaLimit = Math.max(0, Number(reservation?.limit || 0));
+    const usedAfter = Math.max(0, Number(reservation?.used_tokens || 0)) + totalTokens;
+    const otherReserved = Math.max(0, Number(reservation?.reserved_tokens || 0) - requestedTokens);
     result.jay_quota = {
       plan: effectivePlan,
-      used_tokens: usedTokens + totalTokens,
-      limit: monthlyLimit,
-      remaining_tokens: Math.max(0, monthlyLimit - usedTokens - totalTokens),
-      reset_at: quotaResetAt,
+      used_tokens: usedAfter,
+      reserved_tokens: otherReserved,
+      limit: quotaLimit,
+      remaining_tokens: Math.max(0, quotaLimit - usedAfter - otherReserved),
+      reset_at: String(reservation?.reset_at || ''),
     };
   }
   return jsonResponse(result, 200, origin);

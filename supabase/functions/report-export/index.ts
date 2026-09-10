@@ -1,3 +1,7 @@
+import { fetchCurrentQualityGate, reportContentAllowsFormalOutput } from '../_shared/report-quality.ts';
+import { REPORT_VALIDATION_VERSION, validateFormalReportWithServerData } from '../_shared/report-validation.ts';
+import { buildReportPdf } from '../_shared/report-pdf.ts';
+
 const defaultOrigins = [
   'https://lidengrong3-prog.github.io',
   'http://localhost:8000',
@@ -30,84 +34,6 @@ function jsonResponse(body: Record<string, unknown>, status: number, origin: str
   });
 }
 
-function pdfHex(value: string): string {
-  let result = '';
-  for (let i = 0; i < value.length; i += 1) {
-    const code = value.charCodeAt(i);
-    result += code.toString(16).padStart(4, '0');
-  }
-  return result;
-}
-
-function wrapText(value: string, width = 42): string[] {
-  const lines: string[] = [];
-  String(value || '').replace(/\r/g, '').split('\n').forEach((source) => {
-    if (!source) { lines.push(''); return; }
-    let current = '';
-    for (const char of source) {
-      current += char;
-      if (current.length >= width) { lines.push(current); current = ''; }
-    }
-    if (current) lines.push(current);
-  });
-  return lines.length ? lines : [''];
-}
-
-function buildPdf(title: string, text: string): Uint8Array {
-  const sourceLines = `${title}\n\n${text}`.replace(/\r/g, '').split('\n');
-  const lines: Array<{ text: string; size: number }> = [];
-  let chartMode = false;
-  sourceLines.forEach((source) => {
-    const value = source.trim();
-    if (value === '```chart') { chartMode = true; lines.push({ text: '[图表]', size: 11 }); return; }
-    if (chartMode) { if (value === '```') chartMode = false; return; }
-    const size = value === title ? 20 : (/^##\s+/.test(value) ? 16 : (/^###\s+/.test(value) ? 14 : (/^\|/.test(value) ? 10 : 12)));
-    const clean = value.replace(/^#{1,3}\s+/, '');
-    wrapText(clean, size <= 10 ? 52 : 42).forEach((line) => lines.push({ text: line, size }));
-  });
-  const pageLines = 38;
-  const pages: Array<Array<{ text: string; size: number }>> = [];
-  for (let i = 0; i < lines.length; i += pageLines) pages.push(lines.slice(i, i + pageLines));
-  if (!pages.length) pages.push([{ text: '', size: 12 }]);
-
-  const objects: string[] = [];
-  objects[1] = '<< /Type /Catalog /Pages 2 0 R >>';
-  objects[3] = '<< /Type /Font /Subtype /Type0 /BaseFont /STSong-Light /Encoding /UniGB-UCS2-H /DescendantFonts [4 0 R] >>';
-  objects[4] = '<< /Type /Font /Subtype /CIDFontType0 /BaseFont /STSong-Light /CIDSystemInfo << /Registry (Adobe) /Ordering (GB1) /Supplement 4 >> /DW 1000 >>';
-  const kids: number[] = [];
-  let nextObject = 5;
-  pages.forEach((page) => {
-    const contentNumber = nextObject;
-    const pageNumber = nextObject + 1;
-    nextObject += 2;
-    const commands = ['BT', '50 790 Td'];
-    page.forEach((line, index) => {
-      if (index > 0) commands.push('0 -19 Td');
-      commands.push(`/F1 ${line.size} Tf`);
-      commands.push(`<${pdfHex(line.text)}> Tj`);
-    });
-    commands.push('ET');
-    const stream = commands.join('\n');
-    objects[contentNumber] = `<< /Length ${new TextEncoder().encode(stream).length} >>\nstream\n${stream}\nendstream`;
-    objects[pageNumber] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentNumber} 0 R >>`;
-    kids.push(pageNumber);
-  });
-  objects[2] = `<< /Type /Pages /Kids [${kids.map((n) => `${n} 0 R`).join(' ')}] /Count ${kids.length} >>`;
-
-  let output = '%PDF-1.4\n%JAYG\n';
-  const offsets: number[] = [0];
-  objects.forEach((object, index) => {
-    if (index === 0 || !object) return;
-    offsets[index] = new TextEncoder().encode(output).length;
-    output += `${index} 0 obj\n${object}\nendobj\n`;
-  });
-  const xrefOffset = new TextEncoder().encode(output).length;
-  output += `xref\n0 ${objects.length}\n0000000000 65535 f \n`;
-  for (let i = 1; i < objects.length; i += 1) output += `${String(offsets[i] || 0).padStart(10, '0')} 00000 n \n`;
-  output += `trailer\n<< /Size ${objects.length} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`;
-  return new TextEncoder().encode(output);
-}
-
 async function authenticatedUser(request: Request, supabaseUrl: string, anonKey: string): Promise<{ id: string; email?: string } | null> {
   const authorization = request.headers.get('Authorization') || '';
   if (!authorization.startsWith('Bearer ')) return null;
@@ -138,12 +64,27 @@ Deno.serve(async (request) => {
   const serviceHeaders = { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey, 'Content-Type': 'application/json' };
   const reportId = typeof payload.report_id === 'string' && /^[0-9a-f-]{36}$/i.test(payload.report_id) ? payload.report_id : null;
   if (!reportId) return jsonResponse({ error: 'REPORT_ID_REQUIRED' }, 400, origin);
-  const reportResponse = await fetch(`${supabaseUrl}/rest/v1/generated_reports?id=eq.${encodeURIComponent(reportId)}&user_id=eq.${encodeURIComponent(user.id)}&select=id,title,content,save_status&limit=1`, { headers: serviceHeaders });
+  const reportResponse = await fetch(`${supabaseUrl}/rest/v1/generated_reports?id=eq.${encodeURIComponent(reportId)}&select=id,workspace_id,title,content,save_status,publication_status,server_validation_version,server_validated_at,server_validation&limit=1`, { headers: serviceHeaders });
   const reportRows = reportResponse.ok ? await reportResponse.json() : [];
-  const report = reportRows?.[0] as { title?: unknown; content?: unknown; save_status?: unknown } | undefined;
+  const report = reportRows?.[0] as { workspace_id?: unknown; title?: unknown; content?: unknown; save_status?: unknown; publication_status?: unknown; server_validation_version?: unknown; server_validated_at?: unknown; server_validation?: unknown } | undefined;
   if (!report) return jsonResponse({ error: 'REPORT_NOT_FOUND' }, 404, origin);
+  const workspaceId = String(report.workspace_id || '');
+  const membershipResponse = await fetch(`${supabaseUrl}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&select=id&limit=1`, { headers: serviceHeaders });
+  const memberships = membershipResponse.ok ? await membershipResponse.json() : [];
+  if (!workspaceId || !memberships?.length) return jsonResponse({ error: 'REPORT_NOT_FOUND' }, 404, origin);
   if (report.save_status !== 'saved') return jsonResponse({ error: 'REPORT_NOT_SAVED' }, 409, origin);
   const storedContent = report.content && typeof report.content === 'object' ? report.content as Record<string, unknown> : {};
+  if (!reportContentAllowsFormalOutput(storedContent)) return jsonResponse({ error: 'REPORT_QUALITY_GATE_BLOCKED' }, 409, origin);
+  const storedServerValidation = report.server_validation && typeof report.server_validation === 'object' ? report.server_validation as Record<string, unknown> : null;
+  const contentServerValidation = storedContent.server_validation && typeof storedContent.server_validation === 'object' ? storedContent.server_validation as Record<string, unknown> : null;
+  if (report.publication_status !== 'formal' || report.server_validation_version !== REPORT_VALIDATION_VERSION || !report.server_validated_at || storedServerValidation?.ok !== true || contentServerValidation?.ok !== true || storedServerValidation.version !== contentServerValidation.version) {
+    return jsonResponse({ error: 'REPORT_SERVER_VALIDATION_REQUIRED' }, 409, origin);
+  }
+  const currentQuality = await fetchCurrentQualityGate(supabaseUrl, serviceHeaders);
+  if (!currentQuality.snapshot) return jsonResponse({ error: 'REPORT_QUALITY_STATUS_UNAVAILABLE', reasons: currentQuality.reasons }, 503, origin);
+  if (!currentQuality.ok) return jsonResponse({ error: 'REPORT_QUALITY_GATE_BLOCKED', reasons: currentQuality.reasons }, 409, origin);
+  const validation = await validateFormalReportWithServerData(supabaseUrl, serviceHeaders, workspaceId, storedContent, currentQuality, { requireCurrentQualityVersion: true });
+  if (!validation.ok) return jsonResponse({ error: validation.unavailable ? 'REPORT_VALIDATION_UNAVAILABLE' : 'REPORT_SERVER_VALIDATION_FAILED', validation }, validation.unavailable ? 503 : 409, origin);
   const title = String(report.title || 'JAY观海市场决策报告').trim().slice(0, 160);
   const text = String(storedContent.text || '').trim();
   if (!text) return jsonResponse({ error: 'REPORT_CONTENT_REQUIRED' }, 400, origin);
@@ -153,10 +94,12 @@ Deno.serve(async (request) => {
   const attempt = Math.max(1, Math.min(100, Number(payload.attempt || 1)) || 1);
   const requestId = String(payload.request_id || request.headers.get('X-Request-Id') || crypto.randomUUID()).slice(0, 240);
   const idempotencyKey = String(payload.idempotency_key || `report-export:${reportId}:pdf:current`).slice(0, 240);
-  const existingResponse = await fetch(`${jobsUrl}?user_id=eq.${encodeURIComponent(user.id)}&idempotency_key=eq.${encodeURIComponent(idempotencyKey)}&select=id,status,file_path,error_message,created_at&limit=1`, { headers: serviceHeaders });
-  const existingRows = existingResponse.ok ? await existingResponse.json() : [];
-  const existing = existingRows?.[0];
-  if (existing && existing.status !== 'failed') {
+  const readExistingJob = async () => {
+    const response = await fetch(`${jobsUrl}?user_id=eq.${encodeURIComponent(user.id)}&idempotency_key=eq.${encodeURIComponent(idempotencyKey)}&select=id,status,file_path,error_message,created_at&limit=1`, { headers: serviceHeaders });
+    const rows = response.ok ? await response.json() : [];
+    return rows?.[0] || null;
+  };
+  const duplicateJobResponse = async (existing: Record<string, unknown>): Promise<Response> => {
     if (existing.status === 'completed' && existing.file_path) {
       const existingPath = String(existing.file_path).split('/').map(encodeURIComponent).join('/');
       const signedExisting = await fetch(`${supabaseUrl}/storage/v1/object/sign/reports/${existingPath}`, { method: 'POST', headers: serviceHeaders, body: JSON.stringify({ expiresIn: 3600 }) });
@@ -167,21 +110,33 @@ Deno.serve(async (request) => {
         return jsonResponse({ id: existing.id, status: 'completed', duplicate: true, file_url: fileUrl, expires_in: 3600 }, 200, origin);
       }
     }
-    return jsonResponse({ id: existing.id, status: existing.status, duplicate: true }, 202, origin);
-  }
-  const jobCreate = await fetch(jobsUrl, {
+    const responseStatus = existing.status === 'failed' ? 409 : 202;
+    return jsonResponse({ id: existing.id, status: existing.status, duplicate: true, error: existing.error_message || null }, responseStatus, origin);
+  };
+
+  const existing = await readExistingJob();
+  if (existing) return await duplicateJobResponse(existing);
+
+  const conflictQuery = new URLSearchParams({ on_conflict: 'user_id,idempotency_key' });
+  const jobCreate = await fetch(`${jobsUrl}?${conflictQuery.toString()}`, {
     method: 'POST',
-    headers: { ...serviceHeaders, Prefer: 'return=representation' },
-    body: JSON.stringify({ user_id: user.id, report_id: reportId, format: 'pdf', status: 'queued', parent_export_id: parentExportId, attempt, request_id: requestId, idempotency_key: idempotencyKey, metadata: { function: 'report-export', content_source: 'persisted_report', data_snapshot_at: storedContent.data_snapshot_at || null, source_record_ids: storedContent.source_record_ids || [] } }),
+    headers: { ...serviceHeaders, Prefer: 'resolution=ignore-duplicates,return=representation' },
+    body: JSON.stringify({ user_id: user.id, report_id: reportId, format: 'pdf', status: 'queued', parent_export_id: parentExportId, attempt, request_id: requestId, idempotency_key: idempotencyKey, metadata: { function: 'report-export', content_source: 'persisted_report', data_snapshot_at: storedContent.data_snapshot_at || null, quality_report_version: currentQuality.snapshot.quality_report_version || null, source_record_ids: storedContent.source_record_ids || [] } }),
   });
   if (!jobCreate.ok) {
     const failure = await jobCreate.text();
+    if (failure.includes('EXPORT_FEATURE_NOT_AVAILABLE')) return jsonResponse({ error: 'EXPORT_FEATURE_NOT_AVAILABLE' }, 403, origin);
     if (failure.includes('EXPORT_QUOTA_EXCEEDED')) return jsonResponse({ error: 'EXPORT_QUOTA_EXCEEDED' }, 429, origin);
     if (jobCreate.status === 409) return jsonResponse({ error: 'REPORT_EXPORT_IN_PROGRESS' }, 409, origin);
     return jsonResponse({ error: 'REPORT_EXPORT_RECORD_FAILED' }, 502, origin);
   }
   const jobRows = await jobCreate.json();
   const jobId = jobRows?.[0]?.id;
+  if (!jobId) {
+    const racedJob = await readExistingJob();
+    if (racedJob) return await duplicateJobResponse(racedJob);
+    return jsonResponse({ error: 'REPORT_EXPORT_RECORD_FAILED' }, 502, origin);
+  }
   const updateJob = async (values: Record<string, unknown>) => {
     if (!jobId) return;
     await fetch(`${jobsUrl}?id=eq.${encodeURIComponent(jobId)}`, {
@@ -197,7 +152,7 @@ Deno.serve(async (request) => {
   const upload = await fetch(`${supabaseUrl}/storage/v1/object/reports/${encodedPath}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey, 'Content-Type': 'application/pdf', 'x-upsert': 'false' },
-    body: buildPdf(title, text),
+    body: buildReportPdf(title, text, storedContent) as unknown as BodyInit,
   });
   if (!upload.ok) {
     await updateJob({ status: 'failed', error_message: 'REPORT_STORAGE_UPLOAD_FAILED', duration_ms: Date.now() - startedAt, completed_at: new Date().toISOString() });

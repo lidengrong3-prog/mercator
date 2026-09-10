@@ -9,19 +9,20 @@ on:
 permissions:
   contents: write
 
-env:
-  FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-  CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
-  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-  SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-  REGULATORY_TRANSLATION_API_URL: ${{ secrets.REGULATORY_TRANSLATION_API_URL }}
-  REGULATORY_TRANSLATION_API_KEY: ${{ secrets.REGULATORY_TRANSLATION_API_KEY }}
-  REGULATORY_TRANSLATION_MODEL: ${{ secrets.REGULATORY_TRANSLATION_MODEL }}
-
 jobs:
   update-data:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    environment: production
+    env:
+      FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+      CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      REGULATORY_TRANSLATION_API_URL: ${{ secrets.REGULATORY_TRANSLATION_API_URL || secrets.DEEPSEEK_API_URL || 'https://api.deepseek.com/chat/completions' }}
+      REGULATORY_TRANSLATION_API_KEY: ${{ secrets.REGULATORY_TRANSLATION_API_KEY || secrets.DEEPSEEK_API_KEY }}
+      REGULATORY_TRANSLATION_MODEL: ${{ secrets.REGULATORY_TRANSLATION_MODEL || secrets.DEEPSEEK_MODEL || 'deepseek-chat' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,8 +32,21 @@ jobs:
         with:
           python-version: '3.11'
 
-      # ---- Step 1: Federal Register 政策采集 (原有) ----
-      - name: Run global data collector (Federal Register)
+      - name: Resolve ephemeral Supabase service key
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
+
+      - name: Validate regulatory translation configuration
+        run: python scripts/translate_regulatory_data.py --check-config
+
+      # ---- Step 1: 按市场目录采集政策与平台规则 ----
+      - name: Run configured market data collector
         run: python scripts/collect_data.py
 
       - name: Translate policy, tax and access records to Simplified Chinese
@@ -63,7 +77,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mercator-data-quality-${{ github.run_id }}
-          path: data/quality_report.json
+          path: |
+            data/quality_report.json
+            data/collection_run.json
           if-no-files-found: error
           retention-days: 30
 
@@ -71,21 +87,14 @@ jobs:
       - name: Sync data to Supabase
         run: python scripts/sync_to_supabase.py
 
-      # ---- Step 8: 生成 PDF 报告 ----
-      - name: Install report deps
-        run: pip install --quiet reportlab pypdf
-
-      - name: Generate US market reports (PDF)
-        run: python scripts/gen_us_market_report.py
-
-      # ---- Step 9: 提交已通过校验的数据与质量报告 ----
+      # ---- Step 8: 提交已通过校验的数据与质量报告 ----
       - id: git-check
-        run: git diff --quiet data/ reports/ || echo "changed=true" >> $GITHUB_OUTPUT
+        run: git diff --quiet data/ || echo "changed=true" >> $GITHUB_OUTPUT
 
       - if: steps.git-check.outputs.changed == 'true'
         run: |
           git config user.name "Mercator Bot"
           git config user.email "mercator-bot@users.noreply.github.com"
-          git add data/ reports/
+          git add data/
           git commit -m "chore: auto-update data pipeline (policies + CPSC + macro + alerts) $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           git push

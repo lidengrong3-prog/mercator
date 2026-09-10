@@ -10,7 +10,7 @@
 (function (root) {
   'use strict';
 
-  var ENGINE_VERSION = '3.1';
+  var ENGINE_VERSION = '3.2';
   var SECTION_USER_PROMPT_LIMIT = 24000;
   var SECTION_CUSTOM_PROMPT_LIMIT = 2000;
   var SECTION_RECORD_LIMIT = 80;
@@ -203,6 +203,9 @@
     return {
       source: text(source), url: text(url), date: text(date), verificationStatus: text(status), sourceKind: text(kind),
       sourceType: text(record && (record.source_type || record.sourceType || '')),
+      marketCodes: recordMarketCodes(record),
+      platformKeys: recordPlatformKeys(record),
+      categoryCodes: recordCategoryCodes(record, domainForType(record && (record.type || record.item_type))),
       verifiedAt: text(record && (record.verified_at || record.verifiedAt || '')),
       collectedAt: text(record && (record.collected_at || record.collectedAt || '')),
       publishedAt: text(record && (record.published_at || record.publishedAt || '')),
@@ -211,6 +214,24 @@
       snapshotId: text(record && (record.snapshot_id || record.snapshotId || record.source_record_id || record.sourceRecordId || record.id || '')),
       snapshotAt: text(record && (record.snapshot_at || record.snapshotAt || record.collected_at || record.collectedAt || ''))
     };
+  }
+
+  function recordMarketCodes(record) {
+    return uniq(list(record && (record.market_codes || record.marketCodes || record.market_code || record.market || record.region || record.snapshot_market)).map(function (item) {
+      return api().normalizeMarketCode ? api().normalizeMarketCode(item && item.code || item) : upperCode(item && item.code || item);
+    }).filter(Boolean));
+  }
+
+  function recordPlatformKeys(record) {
+    return uniq(list(record && (record.platform_keys || record.platformKeys || record.platform_key || record.platform || record.snapshot_platform)).map(function (item) {
+      return api().normalizePlatformKey ? api().normalizePlatformKey(item && item.key || item) : lower(item && item.key || item);
+    }).filter(Boolean));
+  }
+
+  function recordCategoryCodes(record, domain) {
+    return uniq(recordScopeCategories(record || {}, domain || '').map(function (item) {
+      return api().normalizeCategoryCode ? api().normalizeCategoryCode(item && item.code || item) : lower(item && item.code || item);
+    }).filter(Boolean));
   }
   function compactRecord(record) {
     record = record || {};
@@ -263,10 +284,104 @@
       var rulePlatform = api().normalizePlatformKey ? api().normalizePlatformKey(item.platform || item.platform_key) : lower(item.platform || item.platform_key);
       if (rulePlatform && scope.platformKeys.indexOf(rulePlatform) >= 0) addRecord(records, 'platform', Object.assign({}, item, { platform_key: rulePlatform }), '平台规则数据集');
     });
-    var financial = financialFromFacts({ records: records });
-    if (financial.status === 'complete') addRecord(records, 'financial', financial, '程序化财务计算');
+    list(records.product).forEach(function (entry) {
+      var financial = calculateFinancialModel(materialFinancialInput(entry.record));
+      if (financial.status !== 'complete') return;
+      var source = entry.source || {};
+      addRecord(records, 'financial', Object.assign({}, financial, {
+        market_codes: recordMarketCodes(entry.record),
+        platform_keys: recordPlatformKeys(entry.record),
+        category_codes: recordCategoryCodes(entry.record, 'product'),
+        source: source.source,
+        source_url: source.url,
+        source_record_id: source.recordId,
+        source_kind: source.sourceKind,
+        source_type: source.sourceType,
+        verification_status: source.verificationStatus,
+        verified_at: source.verifiedAt,
+        collected_at: source.collectedAt,
+        published_at: source.publishedAt,
+        evidence_hash: source.evidenceHash,
+        snapshot_at: source.snapshotAt
+      }), '程序化财务计算');
+    });
     Object.keys(records).forEach(function (domain) { records[domain].forEach(function (entry) { sources.push(Object.assign({ domain: domain }, entry.source)); }); });
     return { scope: scope, records: records, sources: sources, collectedAt: isoNow() };
+  }
+
+  function coveragePairs(scope) {
+    var pairs = [];
+    var selectedPlatforms = list(scope.platformKeys);
+    list(scope.marketCodes).forEach(function (marketCode) {
+      var platforms = [];
+      if (api().getMarketPlatforms) {
+        platforms = api().getMarketPlatforms(marketCode).map(function (item) { return item.key; });
+      }
+      if (!platforms.length) platforms = selectedPlatforms.slice();
+      platforms = uniq(platforms.filter(function (key) { return !selectedPlatforms.length || selectedPlatforms.indexOf(key) >= 0; }));
+      if (!platforms.length) pairs.push({ marketCode: marketCode, platformKey: null });
+      else platforms.forEach(function (platformKey) { pairs.push({ marketCode: marketCode, platformKey: platformKey }); });
+    });
+    return pairs;
+  }
+
+  function entryCoversCell(entry, domain, cell) {
+    var record = entry && entry.record || {};
+    var markets = recordMarketCodes(record);
+    var platforms = recordPlatformKeys(record);
+    var categories = recordCategoryCodes(record, domain);
+    if (!markets.length || markets.indexOf(cell.marketCode) < 0) return false;
+    if (platforms.length && (!cell.platformKey || platforms.indexOf(cell.platformKey) < 0)) return false;
+    if (['platform', 'rule'].indexOf(domain) >= 0 && cell.platformKey && platforms.indexOf(cell.platformKey) < 0) return false;
+    if (categories.length && (!cell.categoryCode || categories.indexOf(cell.categoryCode) < 0)) return false;
+    if (['category', 'product', 'competitor', 'content', 'financial'].indexOf(domain) >= 0 && cell.categoryCode && categories.indexOf(cell.categoryCode) < 0) return false;
+    return true;
+  }
+
+  function coverageCellLabel(cell) {
+    var market = api().getMarket && api().getMarket(cell.marketCode);
+    var platform = cell.platformKey && api().getPlatform && api().getPlatform(cell.platformKey);
+    var category = cell.categoryCode && api().getCategoryProfile && api().getCategoryProfile(cell.categoryCode);
+    return [market && (market.name || market.label) || cell.marketCode, platform && (platform.name || platform.label) || cell.platformKey, category && (category.name || category.label) || cell.categoryCode, (MODULES[cell.domain] && MODULES[cell.domain].title) || cell.domain].filter(Boolean).join(' / ');
+  }
+
+  function buildCoverageMatrix(plan, facts) {
+    plan = plan || {}; facts = facts || {};
+    var scope = facts.scope || plan.scope || {};
+    var records = facts.records || {};
+    var requiredDomains = uniq(plan.requiredDomains || []);
+    var categories = list(scope.categoryCodes);
+    if (!categories.length) categories = [null];
+    var cells = [];
+    coveragePairs(scope).forEach(function (pair) {
+      categories.forEach(function (categoryCode) {
+        requiredDomains.forEach(function (domain) {
+          var cell = { marketCode: pair.marketCode, platformKey: pair.platformKey, categoryCode: categoryCode, domain: domain };
+          var evidence = list(records[domain]).filter(function (entry) { return entryCoversCell(entry, domain, cell); });
+          var sourceRecordIds = uniq(evidence.map(function (entry) { return entry && entry.source && entry.source.recordId; }).filter(Boolean));
+          cells.push(Object.assign(cell, {
+            id: [pair.marketCode, pair.platformKey || '*', categoryCode || '*', domain].join('|'),
+            label: coverageCellLabel(cell), required: true, covered: evidence.length > 0,
+            recordCount: evidence.length, sourceRecordIds: sourceRecordIds
+          }));
+        });
+      });
+    });
+    var missingCells = cells.filter(function (cell) { return !cell.covered; });
+    var coveredCells = cells.length - missingCells.length;
+    return {
+      version: '1.0', requiredDomains: requiredDomains,
+      dimensions: {
+        marketCodes: list(scope.marketCodes).slice(),
+        platformKeys: list(scope.platformKeys).slice(),
+        categoryCodes: list(scope.categoryCodes).slice(),
+        marketPlatformPairs: coveragePairs(scope)
+      },
+      cells: cells, missingCells: missingCells, totalCells: cells.length, coveredCells: coveredCells,
+      coveragePercent: cells.length ? Math.round(coveredCells / cells.length * 100) : 0,
+      ok: cells.length > 0 && missingCells.length === 0,
+      checkedAt: isoNow()
+    };
   }
 
   function checkData(plan, facts) {
@@ -275,8 +390,13 @@
     var missing = [];
     var warnings = [];
     var blockedDomains = [];
-    uniq(plan.requiredDomains || []).forEach(function (domain) {
-      if (!list(records[domain]).length) missing.push({ domain: domain, label: (MODULES[domain] && MODULES[domain].title) || domain, reason: '当前范围没有已核验记录' });
+    var coverageMatrix = buildCoverageMatrix(plan, facts);
+    coverageMatrix.missingCells.forEach(function (cell) {
+      missing.push({
+        domain: cell.domain, label: cell.label,
+        marketCode: cell.marketCode, platformKey: cell.platformKey, categoryCode: cell.categoryCode,
+        coverageCellId: cell.id, reason: '该范围格没有已核验记录'
+      });
     });
     ['tax', 'access'].forEach(function (domain) {
       if (!list(records[domain]).length) {
@@ -293,7 +413,11 @@
       });
     });
     var total = Object.keys(records).reduce(function (sum, domain) { return sum + records[domain].length; }, 0);
-    return { ok: missing.length === 0, missing: missing, warnings: warnings, blockedDomains: blockedDomains, recordCount: total, requiredCount: uniq(plan.requiredDomains || []).length, checkedAt: isoNow() };
+    return {
+      ok: missing.length === 0, missing: missing, warnings: warnings, blockedDomains: blockedDomains,
+      coverageMatrix: coverageMatrix, recordCount: total, requiredCount: coverageMatrix.totalCells,
+      requiredDomainCount: uniq(plan.requiredDomains || []).length, checkedAt: isoNow()
+    };
   }
 
   function calculateFinancialModel(input) {
@@ -381,7 +505,6 @@
     var missingNumericCitations = [];
     list(sections).forEach(function (section) {
       var sectionId = section && section.id || '';
-      var exempt = ['methodology', 'scope', 'sources'].indexOf(sectionId) >= 0;
       text(section && section.text).split(/\r?\n/).forEach(function (line) {
         var citations = [];
         line.replace(/\[(S\d{3})\]/g, function (_, citation) { citations.push(citation); return _; });
@@ -389,7 +512,7 @@
           if (valid.indexOf(citation) < 0) invalid.push({ section: sectionId, citation: citation });
           else used.push(citation);
         });
-        if (exempt || !line.trim() || /^\s*(?:#{1,4}\s+|\|?\s*:?-{2,})/.test(line)) return;
+        if (!line.trim() || /^\s*(?:#{1,4}\s+|\|?\s*:?-{2,})/.test(line)) return;
         var auditLine = line;
         var dateOnlyTableLead = /(?:(?:数据|指标|统计).*(?:如下|见下)|(?:方面|概览|情况)\s*[（(]?\s*\d{4}\s*年\s*\d{1,2}\s*月\s*[）)]?)[：:]?\s*$/.test(auditLine);
         if (/数据快照(?:时间)?|数据截至|数据时间|生成日期|当前日期|本快照时间|截至\s*[（(]?\d{4}/.test(auditLine) || dateOnlyTableLead) {
@@ -701,7 +824,7 @@
     return { system: instruction, user: user, sourceAppendix: citationCatalog, citationFacts: payload };
   }
 
-  function assemble(plan, results, facts, check, financial) {
+  function assemble(plan, results, facts, check, financial, qualityGate) {
     var appendix = buildSourceAppendix(facts).map(function (source) {
       var chapterDomains = [source.domain];
       if (['policy', 'tax', 'access', 'rule', 'alert'].indexOf(source.domain) >= 0) chapterDomains = chapterDomains.concat(['risk', 'summary', 'action']);
@@ -712,7 +835,15 @@
     var citationAudit = auditCitations(results, appendix);
     var scopeCheck = results.reduce(function (state, section) { var current = checkScope(section.text, facts.scope); state.violations = state.violations.concat(current.violations); return state; }, { violations: [] });
     scopeCheck.violations = uniq(scopeCheck.violations); scopeCheck.ok = scopeCheck.violations.length === 0;
+    var contentQuality = root.JAY_REPORT_QUALITY && typeof root.JAY_REPORT_QUALITY.assessContent === 'function'
+      ? root.JAY_REPORT_QUALITY.assessContent({ sections: results, source_appendix: appendix, citation_audit: citationAudit, reconciliation: reconciliation, scope_check: scopeCheck })
+      : { version: 'content-quality-unavailable', ok: true, status: 'not_assessed', overall: null, dimensions: {}, reasons: [] };
     var textParts = results.map(function (section) { return '## ' + section.title + '\n\n' + text(section.text).trim(); });
+    var qualityGateProvided = !!(qualityGate && typeof qualityGate === 'object');
+    var qualityGatePassed = !qualityGateProvided || qualityGate.ok === true;
+    if (!qualityGatePassed) {
+      textParts.unshift('> **未发布草稿**：全局数据质量门禁未通过，本报告不得作为正式报告或正式导出文件。');
+    }
     textParts.push('## 来源与核验附录\n\n' + (appendix.length ? appendix.map(function (source) { return '- [' + source.citation + '] ' + (source.source || '未命名来源') + ' · ' + (source.date || '日期未提供') + ' · ' + (source.verificationStatus || '待核验') + (source.recordId ? ' · 原始记录：' + source.recordId : '') + (source.dataSnapshotAt ? ' · 数据快照：' + source.dataSnapshotAt : '') + (source.url ? ' · ' + source.url : '') + (source.chapters && source.chapters.length ? ' · 引用章节：' + source.chapters.join('、') : ''); }).join('\n') : '暂无可发布来源记录。'));
     var sourceRecordIds = uniq(appendix.map(function (source) { return source.recordId; }).filter(Boolean));
     var scopeSnapshot = Object.assign({}, facts && facts.scope || {}, { capturedAt: isoNow() });
@@ -721,7 +852,13 @@
       sourceAppendix: appendix, sourceRecordIds: sourceRecordIds,
       dataSnapshotAt: facts && facts.collectedAt || isoNow(), scopeSnapshot: scopeSnapshot,
       completeness: completeness, reconciliation: reconciliation, scopeCheck: scopeCheck, citationAudit: citationAudit,
-      publishable: !!check.ok && scopeCheck.ok && reconciliation.ok && citationAudit.ok, generatedAt: isoNow()
+      contentQuality: contentQuality,
+      coverageMatrix: check && check.coverageMatrix || null,
+      qualityGate: qualityGateProvided ? qualityGate : null,
+      qualitySnapshot: qualityGateProvided ? qualityGate.snapshot || null : null,
+      publicationBlocks: (qualityGateProvided && !qualityGatePassed ? list(qualityGate.reasons) : []).concat(contentQuality.ok ? [] : list(contentQuality.reasons).map(function (reason) { return { code: 'CONTENT_QUALITY_' + contentQuality.status.toUpperCase(), message: reason }; })),
+      publishable: !!check.ok && scopeCheck.ok && reconciliation.ok && citationAudit.ok && contentQuality.ok && qualityGatePassed,
+      generatedAt: isoNow()
     };
   }
 
@@ -732,7 +869,7 @@
     return Object.assign({}, report, { engineVersion: ENGINE_VERSION, seriesId: seriesId, revision: revision, version: revision, parentId: prior.id || prior.parentId || null, action: action || 'generate', versionCreatedAt: isoNow() });
   }
 
-  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, auditCitations: auditCitations, repairSectionCitations: repairSectionCitations, pruneUncitedNumericLines: pruneUncitedNumericLines, repairSectionScope: repairSectionScope, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
+  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, buildCoverageMatrix: buildCoverageMatrix, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, auditCitations: auditCitations, repairSectionCitations: repairSectionCitations, pruneUncitedNumericLines: pruneUncitedNumericLines, repairSectionScope: repairSectionScope, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
   root.rpBuildReportPlan = buildPlan;
   root.rpCollectReportFacts = collectFacts;
   root.rpCheckReportData = checkData;

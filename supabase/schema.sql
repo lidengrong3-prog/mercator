@@ -1,6 +1,9 @@
+-- LEGACY BOOTSTRAP SNAPSHOT. Do not apply this file to a new database.
+-- Use the ordered supabase/migrations chain; its foundation migration owns
+-- these objects and is validated by scripts/validate_migration_chain.py.
 -- ============================================================
 -- Mercator SaaS - Supabase Database Schema
--- 在 Supabase SQL Editor 中执行此脚本即可创建所有表
+-- 历史参考：正式结构以 supabase/migrations 为准
 -- ============================================================
 
 -- 1. 用户档案表（扩展 auth.users）

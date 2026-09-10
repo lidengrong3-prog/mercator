@@ -16,6 +16,34 @@ class ReleaseCheckError(RuntimeError):
     pass
 
 
+PUBLIC_PAGE_DATA_PATHS = (
+    "data/access_requirements.json",
+    "data/alerts.json",
+    "data/countries.json",
+    "data/market_scope.json",
+    "data/platforms.json",
+    "data/policies.json",
+    "data/quality_report.json",
+    "data/rules.json",
+    "data/taxes.json",
+    "data/us_market/macro_indicators.json",
+)
+
+PRIVATE_PAGE_DATA_PATHS = (
+    "data/_cfd_part1.json",
+    "data/_ext_part1.json",
+    "data/alerts_detailed.json",
+    "data/macro_raw.json",
+    "data/policies_baseline.json",
+    "data/quarantine_future_records.json",
+    "data/rules_baseline.json",
+    "data/_sync_logs/sync_20260819_092403.json",
+    "data/us_market/cpsc_recalls.json",
+    "data/us_market/electronics.json",
+    "data/us_market/index.json",
+)
+
+
 def required(name: str) -> str:
     value = os.environ.get(name, "").strip()
     if not value:
@@ -53,6 +81,13 @@ def production_origin(site_url: str) -> str:
     return f"https://{parsed.netloc}"
 
 
+def required_bool(name: str) -> bool:
+    value = required(name).lower()
+    if value not in {"true", "false"}:
+        raise ReleaseCheckError(f"{name} must be true or false")
+    return value == "true"
+
+
 def validate_webhook_probe(status: int, raw: bytes, billing_enabled: bool) -> str:
     payload = parse_json(raw, "billing webhook signature probe")
     error = payload.get("error") if isinstance(payload, dict) else None
@@ -75,8 +110,10 @@ def main() -> int:
     expected_sha = required("EXPECTED_RELEASE_SHA")
     expected_migration = required("EXPECTED_MIGRATION_HEAD")
     acceptance_file = Path(required("ACCEPTANCE_RESULT_FILE"))
+    browser_acceptance_file = Path(required("BROWSER_ACCEPTANCE_RESULT_FILE"))
     test_email = required("PROD_TEST_USER_A_EMAIL")
     test_password = required("PROD_TEST_USER_A_PASSWORD")
+    notification_expected = required_bool("NOTIFICATION_CHANNELS_ENABLED")
 
     expected_origin = production_origin(site)
     acceptance = parse_json(acceptance_file.read_bytes(), "authenticated acceptance result")
@@ -85,9 +122,44 @@ def main() -> int:
     if acceptance.get("release_sha") != expected_sha:
         raise ReleaseCheckError("backend acceptance result does not match the triggering commit")
     checks = acceptance.get("checks") or {}
-    for key in ("database", "storage_bucket", "storage_policy", "edge_functions"):
+    for key in ("database", "storage_bucket", "storage_policy", "edge_functions", "production_exceptions"):
         if not checks.get(key):
             raise ReleaseCheckError(f"authenticated acceptance did not verify {key}")
+
+    exception_checks = acceptance.get("production_exceptions") or {}
+    expected_exceptions = {
+        "unauthorized": (401, None),
+        "forbidden": (403, "ORIGIN_NOT_ALLOWED"),
+        "rate_limit": (429, "AI_RATE_LIMITED"),
+        "provider_timeout": (504, "AI_PROVIDER_TIMEOUT"),
+        "quota": (402, "AI_QUOTA_EXCEEDED"),
+    }
+    for name, (expected_status, expected_error) in expected_exceptions.items():
+        evidence = exception_checks.get(name) or {}
+        if evidence.get("status") != expected_status:
+            raise ReleaseCheckError(f"production exception acceptance did not verify {name}")
+        if expected_error and evidence.get("error") != expected_error:
+            raise ReleaseCheckError(f"production exception acceptance has the wrong {name} error code")
+        if name in ("rate_limit", "provider_timeout", "quota") and evidence.get("logged") is not True:
+            raise ReleaseCheckError(f"production exception acceptance did not log {name}")
+
+    duplicate_generation = exception_checks.get("duplicate_generation") or {}
+    if duplicate_generation.get("row_count") != 1 or not duplicate_generation.get("run_id"):
+        raise ReleaseCheckError("duplicate report generation did not collapse to one run")
+    duplicate_exports = exception_checks.get("duplicate_exports") or {}
+    for export_format in ("pdf", "docx"):
+        evidence = duplicate_exports.get(export_format) or {}
+        if evidence.get("row_count") != 1 or evidence.get("duplicate_response") is not True or not evidence.get("id"):
+            raise ReleaseCheckError(f"duplicate {export_format} export did not collapse to one job")
+
+    browser_acceptance = parse_json(browser_acceptance_file.read_bytes(), "browser exception acceptance result")
+    if browser_acceptance.get("status") != "passed":
+        raise ReleaseCheckError("browser exception acceptance did not pass")
+    network_recovery = browser_acceptance.get("network_recovery") or {}
+    if (network_recovery.get("first_request") != "internetdisconnected"
+            or network_recovery.get("attempts") != 2
+            or network_recovery.get("recovered_with_production_response") is not True):
+        raise ReleaseCheckError("production browser did not recover from the simulated disconnect")
 
     status, raw, _ = request("GET", site + "release.json")
     if status != 200:
@@ -101,6 +173,24 @@ def main() -> int:
         raise ReleaseCheckError("frontend migration head does not match the checked-out source")
     if manifest.get("production_origin") != expected_origin:
         raise ReleaseCheckError("frontend production origin does not match the configured site")
+
+    status, raw, _ = request("GET", site + "public-data-manifest.json")
+    if status != 200:
+        raise ReleaseCheckError(f"public data manifest unavailable: HTTP {status}")
+    public_data_manifest = parse_json(raw, "public data manifest")
+    if public_data_manifest.get("policy") != "explicit-allowlist-formal-projection":
+        raise ReleaseCheckError("frontend public data policy is missing or invalid")
+    if set(public_data_manifest.get("data_files") or []) != set(PUBLIC_PAGE_DATA_PATHS):
+        raise ReleaseCheckError("frontend public data allowlist does not match the release contract")
+    for path in PUBLIC_PAGE_DATA_PATHS:
+        status, raw, _ = request("GET", site + path)
+        if status != 200:
+            raise ReleaseCheckError(f"allowlisted frontend data is unavailable: {path} HTTP {status}")
+        parse_json(raw, f"allowlisted frontend data {path}")
+    for path in PRIVATE_PAGE_DATA_PATHS:
+        status, _, _ = request("GET", site + path)
+        if status != 404:
+            raise ReleaseCheckError(f"private data path is publicly reachable: {path} HTTP {status}")
 
     status, raw, _ = request("GET", site)
     if status != 200 or "JAY" not in raw.decode("utf-8", "replace"):
@@ -141,8 +231,9 @@ def main() -> int:
     # A missing function route returns 404. The deployed functions may return
     # 405 (method guard) or 401/403 before a real authenticated call.
     for function_name in (
-        "ai-proxy", "report-export", "report-docx", "billing-checkout",
+        "ai-proxy", "report-save", "report-export", "report-docx", "billing-checkout",
         "billing-status", "billing-portal", "billing-webhook", "admin-summary",
+        "notification-dispatch", "workspace-invite",
     ):
         status, _, response_headers = request("GET", f"{supabase}/functions/v1/{function_name}", headers=headers)
         if status == 404 or status >= 500:
@@ -179,6 +270,24 @@ def main() -> int:
     billing_enabled = billing_status.get("billing_enabled") is True
 
     status, raw, _ = request(
+        "POST", f"{supabase}/functions/v1/notification-dispatch",
+        headers={**headers, "Origin": expected_origin}, body={"action": "status"},
+    )
+    notification_status = parse_json(raw, "notification channel status probe")
+    if status != 200 or notification_status.get("enabled") is not notification_expected:
+        raise ReleaseCheckError(
+            f"notification status expected enabled={notification_expected}, got HTTP {status} "
+            f"enabled={notification_status.get('enabled')}"
+        )
+    channel_statuses = notification_status.get("channels") or {}
+    if set(channel_statuses) != {"email", "wecom", "feishu"}:
+        raise ReleaseCheckError("notification status did not return all supported channels")
+    if any("secret_ciphertext" in value or "webhook_url" in value for value in channel_statuses.values()):
+        raise ReleaseCheckError("notification status exposed a channel credential")
+    if notification_expected and not all(value.get("available") is True for value in channel_statuses.values()):
+        raise ReleaseCheckError("external notifications are enabled but a provider is unavailable")
+
+    status, raw, _ = request(
         "POST", f"{supabase}/functions/v1/billing-webhook",
         headers={"apikey": anon_key, "Stripe-Signature": "t=0,v1=invalid"}, body={},
     )
@@ -193,8 +302,12 @@ def main() -> int:
         "storage": True,
         "edge_functions": True,
         "auth_error_contracts": True,
+        "production_exceptions": True,
+        "network_recovery": True,
         "billing_status": "enabled" if billing_enabled else "disabled",
+        "notification_channels": "enabled" if notification_expected else "disabled",
         "webhook_signature_guard": webhook_guard,
+        "public_data_isolated": True,
         "frontend": True,
     }, ensure_ascii=False, indent=2))
     return 0

@@ -4,26 +4,17 @@
 
 ## 1. 初始化数据库
 
-新项目按以下顺序在 Supabase SQL Editor 中各执行一次：
+数据库只有一个结构来源：按文件名排序的 `supabase/migrations/*.sql`。不要再在 SQL Editor 中预先执行 `schema.sql`、`phase2_schema.sql`、`monitored_shops.sql` 或 `add_indexes.sql`；这些旧入口的对象已经由 `20260824000000_database_foundation.sql` 和后续迁移覆盖。
 
-1. `supabase/schema.sql`
-2. `supabase/phase2_schema.sql`
-3. `supabase/monitored_shops.sql`
-4. `supabase/migrations/20260825000000_unify_user_data.sql`
-5. `supabase/migrations/20260826010000_workspaces.sql`
-6. `supabase/migrations/20260826020000_notifications.sql`
-7. `supabase/migrations/20260826030000_report_exports.sql`
-8. `supabase/migrations/20260826040000_billing_admin.sql`
-9. `supabase/migrations/20260830000000_market_catalog.sql`
-10. `supabase/migrations/20260830010000_data_provenance.sql`
-11. `supabase/migrations/20260831000000_platform_rule_versions.sql`
-12. `supabase/migrations/20260831010000_regulatory_domains.sql`
-13. `supabase/migrations/20260831020000_industry_advisory.sql`
-14. `supabase/migrations/20260831030000_report_material_snapshots.sql`
-15. `supabase/migrations/20260901000000_report_output_lifecycle.sql`
-16. `supabase/migrations/20260901010000_production_hardening.sql`
+本地新库执行：
 
-已有项目只需执行尚未应用的脚本。上述迁移均可重复执行；统一迁移会保留旧表并迁移已有收藏、报告和偏好，不会删除兼容数据。工作区迁移会为现有 profile 补齐默认工作区。
+```bash
+python scripts/validate_migration_chain.py
+npx supabase start
+npx supabase db reset
+```
+
+`db reset` 会清空本地 Supabase 数据库并从完整迁移链重建，不能对生产库使用。已有远端项目通过正式发布工作流运行 `supabase db push --linked --include-all`；基础迁移可重复执行，会保留旧表和数据，并把原先手工创建的对象纳入迁移历史。工作区迁移会为现有 profile 补齐默认工作区。
 
 执行后在 Table Editor 中确认以下正式用户表存在：
 
@@ -157,7 +148,9 @@ python -m compileall -q scripts tests data supabase
 6. 数据底座显示最新质量报告，校验失败时发布工作流被阻断。
 7. 团队权限：所有者不能被删除或降级，非管理员无法创建邀请；受邀邮箱只能由匹配邮箱的登录用户接受。
 8. PDF/DOCX：登录用户调用服务端生成函数并收到私有签名 URL；另一账号不能读取导出记录或重新签发文件 URL。
-9. 重复点击生成或导出不会创建重复运行或导出任务。
-10. 管理后台能按用户、报告 ID 和数据版本查询报告耗时、模型、Token、成本及失败原因。
+9. 真实请求验证 401、403、429、AI 供应商超时和 Token 额度不足；失败日志与额度预占释放状态一致。
+10. 浏览器首次请求断网后只重试一次，并以第二次真实生产响应恢复。
+11. 两次并发生成或 PDF/DOCX 导出只创建一条运行或导出记录，并返回同一任务 ID。
+12. 管理后台能按用户、报告 ID 和数据版本查询报告耗时、模型、Token、成本及失败原因。
 
 使用 `.github/workflows/deploy-production.yml` 发布，确保数据库迁移、函数和双账号验收先于前端。完整配置见 `docs/PRODUCTION_ACCEPTANCE.md`。

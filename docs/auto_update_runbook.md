@@ -1,6 +1,6 @@
 # JAY观海 · 数据自动更新运行手册
 
-目标：让 `scripts/collect_data.py`（真实数据源采集 → Supabase `market_data` 全 5 key 落库）**真正自动、周期性运行**，无需人工介入。
+目标：让 `scripts/collect_data.py` 按市场目录执行真实来源采集，并在统一质量闸门通过后同步到 Supabase，整个过程自动、周期性运行。
 
 三种方案任选其一（推荐顺序：A → B → C）。
 
@@ -26,7 +26,7 @@
 > cd D:/AI工具/mercator-main
 > python scripts/collect_data.py --sync-only   # 只上传本地 JSON，不联网采集
 > python scripts/collect_data.py --validate     # 离线校验 5 个数据文件结构
-> python scripts/collect_data.py                # 全量采集 + 落库
+> python scripts/collect_data.py                # 按 configured 市场/平台采集并生成来源运行记录
 > ```
 
 ---
@@ -37,12 +37,15 @@
 
 ### 启用步骤
 1. 把本仓库推到 GitHub（见下方「推送命令」）。
-2. 仓库 → **Settings → Secrets and variables → Actions → New repository secret**，添加：
+2. 仓库 → **Settings → Environments → production → Environment secrets**，添加：
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_KEY`
-   - （可选）`AI_API_KEY` / `AI_API_URL` / `AI_MODEL`
-3. 首次手动触发一次：仓库 → **Actions → Mercator Data Update → Run workflow**。
+   - 法规翻译可直接复用 `DEEPSEEK_API_KEY` / `DEEPSEEK_API_URL` / `DEEPSEEK_MODEL`
+   - 如需使用独立翻译服务，再添加 `REGULATORY_TRANSLATION_API_KEY` / `REGULATORY_TRANSLATION_API_URL` / `REGULATORY_TRANSLATION_MODEL`；独立配置优先
+3. 首次手动触发一次：仓库 → **Actions → Mercator Data Update → Run workflow**。确认 `Validate regulatory translation configuration` 在任何采集步骤之前通过，并下载质量工件检查 `quality_report.json` 与 `collection_run.json`。
 4. 之后每 4 小时自动跑；调度时间为 UTC `15 */4 * * *`（即北京 03:15 / 07:15 / 11:15 / 15:15 / 19:15 / 23:15）。
+
+“每 4 小时运行”表示每 4 小时尝试检查，不等于数据一定刷新。美国品类文件中的 `last_attempted_at` 可随运行推进；只有完整成功才推进 `last_checked_at`，只有事实内容变化才推进 `content_updated_at`/`generated_at`。若使用缓存，检查 `collection_status` 与 `cached_sections`；`failed` 或 `skipped` 会阻断发布，`degraded` 会进入质量告警。
 
 ### 推送命令（仓库初始化已完成，仅差 remote）
 ```bash
@@ -54,8 +57,10 @@ git push -u origin main
 > 若使用 GitHub 连接器：在左侧连接器面板连接 GitHub 后，可用 `gh` 创建仓库并推送；当前环境 `gh` 未安装、连接器断开，故需你提供仓库 URL 或先连接。
 
 ### 说明
-- workflow 仅采集 `policies` / `rules` 并重新合并（countries/platforms/alerts 由本地 JSON 直接同步），最终 5 个 key 全部 upsert 到 `market_data`。
-- 若 `data/` 有变化会自动 commit 回仓库；Supabase 落库在采集脚本内完成。
+- 政策与规则采集只使用 `market_scope.json` 中 `data_status=configured` 的市场和市场平台关系；`schema_only` 不会发起采集。
+- 采集结果只进入统一政策/规则事实记录，不再轮询旧39国目录、66个平台，也不再把搜索标题写回国家/平台档案。
+- `collection_run.json` 逐来源记录成功、失败和耗时；核心来源失败后 `validate_data.py` 返回非零状态并阻止同步。
+- 若 `data/` 有变化会在全部质量检查通过后自动提交回仓库；Supabase 同步由独立的门禁步骤执行。
 
 ---
 
@@ -158,6 +163,10 @@ select cron.schedule(
 ## 校验清单
 
 - [ ] `python scripts/collect_data.py --validate` 通过（5 文件结构 OK）
+- [ ] `data/collection_run.json` 为 v2，市场/平台范围与目录一致，顶层 `status` 与 `summary` 和来源明细一致，`summary.core_failures` 为空
+- [ ] `data/collection_run.json` 同时包含 `us_market_categories`、`cpsc_recalls` 和 `fred_bls_macro`，而不是只包含政策/规则来源
+- [ ] 质量工件同时包含 `data/quality_report.json` 和 `data/collection_run.json`
+- [ ] `quality_report.json.collection_run` 与账本的版本、完成时间、范围和缺失来源一致
 - [ ] `python scripts/collect_data.py --sync-only` 后，线上 `market_data` 含 5 个 key（countries/platforms/policies/rules/alerts）
 - [ ] 定时触发后，Supabase `market_data.updated_at` 出现新时间戳
 - [ ] SPA 中 `JAY_REFRESH_DEMO` 在生产环境设为 `false`，使 2h 周期刷新真正套用实时数据
