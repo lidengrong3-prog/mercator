@@ -151,6 +151,9 @@ class CollectionTelemetryTests(unittest.TestCase):
             result = validate_data.validate_collection_run(now, path=path, manifest=manifest)
 
         self.assertEqual(result.status, "healthy")
+        self.assertEqual(result.records, 4)
+        self.assertEqual(result.scoped_records, 4)
+        self.assertEqual(result.metrics["ledger_summary"]["records_in_scope"], 8)
         self.assertEqual(
             result.metrics["pipeline_sources"],
             ["cpsc_recalls", "fred_bls_macro", "us_market_categories"],

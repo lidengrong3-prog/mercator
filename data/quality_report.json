@@ -49,7 +49,7 @@
     "manifest": "data/market_scope.json"
   },
   "provenance_schema": "data/provenance_schema.json",
-  "generated_at": "2026-09-10T10:43:55.586295+00:00",
+  "generated_at": "2026-09-10T10:47:43.373345+00:00",
   "status": "degraded",
   "publishable": true,
   "collection_run": {
@@ -80,7 +80,7 @@
   "summary": {
     "datasets": 11,
     "raw_records": 724,
-    "scoped_records": 1039,
+    "scoped_records": 539,
     "formal_records": 526,
     "demo_records": 0,
     "unverified_records": 81,
@@ -113,7 +113,7 @@
       "path": "data/collection_run.json",
       "records": 10,
       "raw_records": 10,
-      "scoped_records": 510,
+      "scoped_records": 10,
       "formal_records": 0,
       "demo_records": 0,
       "unverified_records": 0,
@@ -121,7 +121,7 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-10T10:43:53.889946+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0.1,
       "connected": true,
       "errors": [],
       "warnings": [
@@ -206,7 +206,7 @@
         "out_of_scope": 38
       },
       "updated_at": "2026-09-10T10:43:19.745399+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0.1,
       "connected": null,
       "errors": [],
       "warnings": [
@@ -426,7 +426,7 @@
         "out_of_scope": 47
       },
       "updated_at": "2026-09-10T10:43:19.745399+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0.1,
       "connected": null,
       "errors": [],
       "warnings": [
@@ -502,7 +502,7 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-10T10:43:53.950544+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0.1,
       "connected": null,
       "errors": [],
       "warnings": [],
@@ -566,7 +566,7 @@
       "excluded_records": 38,
       "exclusion_reasons": {},
       "updated_at": "2026-09-10T10:43:53.889020+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0.1,
       "connected": null,
       "errors": [],
       "warnings": [],
@@ -618,7 +618,7 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-10T10:43:34.305496+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0.1,
       "connected": null,
       "errors": [],
       "warnings": [],
@@ -652,7 +652,7 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-10T10:43:53.889020+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0.1,
       "connected": null,
       "errors": [],
       "warnings": [],
@@ -713,7 +713,7 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-10T10:43:45.840412+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0.1,
       "connected": null,
       "errors": [],
       "warnings": [],
