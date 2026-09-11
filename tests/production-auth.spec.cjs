@@ -320,7 +320,7 @@ test.describe('production authenticated browser acceptance', () => {
     await page.locator('#st-invite-email').fill(credentials.b.email);
     await page.locator('#st-invite-role').selectOption('editor');
     await page.locator('#st-invite-submit').click();
-    await expect.poll(async () => (await page.evaluate(() => window.__productionAcceptanceToasts || [])).some((message) => message.includes('邀请邮件已发送')), { timeout: 30_000 }).toBe(true);
+    await expect(page.locator('#toast')).toContainText('邀请邮件已发送', { timeout: 30_000 });
     const invitation = await waitForRow(page, 'workspace_invites', { workspace_id: workspaceA, email: credentials.b.email.toLowerCase() }, (row) => row.status === 'pending' && row.delivery_status === 'sent');
 
     await pageB.evaluate(async (inviteId) => {
