@@ -92,6 +92,36 @@ def upsert(table: str, token: str, body: dict, conflict: str):
     return value[0]
 
 
+def ensure_export_entitlement(user_id: str) -> dict:
+    """Give dedicated CI accounts a non-Stripe Pro entitlement for export checks."""
+    rows = service_select_rows("user_subscriptions", {
+        "select": "id,plan,status,provider",
+        "user_id": f"eq.{user_id}", "limit": "1",
+    })
+    if rows and rows[0].get("plan") == "pro" and rows[0].get("status") in ("active", "trialing"):
+        return rows[0]
+    query = urllib.parse.urlencode({"on_conflict": "user_id"})
+    status, value, _ = request(
+        "POST",
+        f"{SUPABASE_URL}/rest/v1/user_subscriptions?{query}",
+        token=SERVICE_KEY,
+        body={
+            "user_id": user_id,
+            "plan": "pro",
+            "status": "active",
+            "provider": "manual",
+            "provider_customer_id": None,
+            "provider_subscription_id": None,
+            "current_period_start": None,
+            "current_period_end": None,
+            "cancel_at_period_end": False,
+        },
+        headers={"apikey": SERVICE_KEY, "Prefer": "resolution=merge-duplicates,return=representation"},
+    )
+    expect(status in (200, 201) and isinstance(value, list) and value, f"ensure export entitlement failed: {status} {value}")
+    return value[0]
+
+
 def function(name: str, token: str | None, body: dict, *, headers=None, timeout=120):
     final_headers = {"X-Request-Id": str(body.get("request_id", ""))}
     final_headers.update(headers or {})
@@ -360,6 +390,11 @@ def main() -> int:
     expect(user_a != user_b, "test accounts resolved to the same user id")
     workspace_a, workspace_b = owned_workspace(token_a, user_a), owned_workspace(token_b, user_b)
     expect(workspace_a != workspace_b, "production test accounts must retain separate owner workspaces")
+    # Free plans intentionally cannot export formal PDF/DOCX. The two
+    # dedicated CI accounts need a non-Stripe Pro entitlement to exercise the
+    # complete export and collaboration path without enabling billing.
+    ensure_export_entitlement(user_a)
+    ensure_export_entitlement(user_b)
 
     # Recover from an interrupted previous acceptance run before checking the
     # initial isolation boundary. The owner can remove only a non-owner member.
