@@ -84,7 +84,7 @@ Deno.serve(async (request) => {
   if (totalLength > 30_000) return jsonResponse({ error: 'PROMPT_TOO_LARGE' }, 413, origin);
 
   const acceptance = await verifyProductionAcceptanceFault(request.headers, {
-    serviceKey,
+    serviceKey: Deno.env.get('ACCEPTANCE_HMAC_SECRET') || serviceKey,
     userId: String(user.id || ''),
     requestId,
   });
