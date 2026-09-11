@@ -715,6 +715,16 @@ def main() -> int:
         "role": "editor",
         "request_id": f"workspace-invite:{acceptance_run_id}",
     })
+    if invite_status != 200 or invitation.get("invitation", {}).get("delivery_status") != "sent":
+        invite_id = str(invitation.get("invite_id") or "")
+        delivery_rows = service_select_rows("workspace_invites", {
+            "select": "delivery_status,delivery_provider,delivery_error",
+            "id": f"eq.{invite_id}", "limit": "1",
+        }) if invite_id else []
+        raise AcceptanceError(
+            f"workspace invitation email was not confirmed: {invite_status} {invitation}; "
+            f"delivery={delivery_rows[:1]}"
+        )
     expect(invite_status == 200 and invitation.get("invitation", {}).get("delivery_status") == "sent",
            f"workspace invitation email was not confirmed: {invite_status} {invitation}")
     invite_id = invitation["invitation"]["id"]
