@@ -1052,6 +1052,7 @@ test('production release deploys database and functions before the frontend', ()
 
 test('formal report publication is server validated and client writes stay draft-only', () => {
   const validation = fs.readFileSync(path.join(root, 'supabase', 'functions', '_shared', 'report-validation.ts'), 'utf8');
+  const marketPolicySource = fs.readFileSync(path.join(root, 'assets', 'js', 'markets-policies.js'), 'utf8');
   const save = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-save', 'index.ts'), 'utf8');
   const pdf = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-export', 'index.ts'), 'utf8');
   const docx = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-docx', 'index.ts'), 'utf8');
@@ -1060,6 +1061,9 @@ test('formal report publication is server validated and client writes stay draft
   assert.match(validation, /validateFormalReportWithServerData/);
   assert.match(validation, /COVERAGE_EVIDENCE_MISSING/);
   assert.match(validation, /REPORT_TEXT_MISMATCH/);
+  for (const field of ['source_record_id', 'evidence_hash', 'source_kind', 'source_type']) {
+    assert.match(marketPolicySource, new RegExp(`${field}:normalized\\.${field}`));
+  }
   assert.match(save, /REPORT_VALIDATION_VERSION/);
   assert.match(save, /publication_status:\s*'formal'/);
   assert.match(pdf, /validateFormalReportWithServerData/);

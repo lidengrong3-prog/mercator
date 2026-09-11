@@ -123,6 +123,48 @@ Deno.test('server validation accepts a complete server-backed coverage matrix', 
   if (!result.ok) throw new Error(result.reasons.map((reason) => reason.code).join(','));
 });
 
+Deno.test('server validation accepts a traceable subset of eligible evidence', () => {
+  const selectedEvidence = [
+    { domain: 'market', market_code: 'US', source_record_id: 'market-1', source_url: 'https://example.test/market-1', verification_status: 'verified', payload: { status: 'ready' } },
+  ];
+  const serverEvidence = selectedEvidence.concat([
+    { domain: 'market', market_code: 'US', source_record_id: 'market-2', source_url: 'https://example.test/market-2', verification_status: 'verified', payload: { status: 'ready' } },
+  ]);
+  const report = content({ domains: ['market'], evidence: selectedEvidence });
+  const result = validateFormalReportContent(report, quality, context({ domains: ['market'], evidence: serverEvidence }), { now });
+  if (!result.ok) throw new Error(result.reasons.map((reason) => reason.code).join(','));
+});
+
+Deno.test('server validation rejects an unknown source in a coverage cell', () => {
+  const evidence = [
+    { domain: 'market', market_code: 'US', source_record_id: 'market-1', source_url: 'https://example.test/market-1', verification_status: 'verified', payload: { status: 'ready' } },
+  ];
+  const report = content({ domains: ['market'], evidence });
+  const matrix = report.coverage_matrix as Row;
+  const cells = matrix.cells as Row[];
+  cells[0].sourceRecordIds = ['forged-source'];
+  const result = validateFormalReportContent(report, quality, context({ domains: ['market'], evidence }), { now });
+  assertReason(result, 'COVERAGE_CELL_EVIDENCE_MISMATCH');
+});
+
+Deno.test('generic category scope permits category examples and date-only context', () => {
+  const evidence = [
+    { domain: 'market', market_code: 'US', source_record_id: 'market-1', source_url: 'https://example.test/market-1', verification_status: 'verified', payload: { status: 'ready' } },
+  ];
+  const report = content({ domains: ['market'], evidence });
+  const model = report.model as Row;
+  const sections = model.sections as Row[];
+  sections[0].text = '截至 2026 年 9 月 11 日，电子产品作为通用市场示例，暂无额外数字。 [S001]';
+  report.text = canonicalReportText(report);
+  const result = validateFormalReportContent(
+    report,
+    quality,
+    context({ categories: ['generic', 'electronics'], domains: ['market'], evidence }),
+    { now },
+  );
+  if (!result.ok) throw new Error(result.reasons.map((reason) => reason.code).join(','));
+});
+
 Deno.test('one covered market cannot hide a missing second market cell', () => {
   const evidence = [{ domain: 'market', market_code: 'US', source_record_id: 'market-us', source_url: 'https://example.test/us', verification_status: 'verified', payload: {} }];
   const result = validateFormalReportContent(
