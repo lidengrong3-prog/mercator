@@ -345,8 +345,25 @@ test.describe('production authenticated browser acceptance', () => {
     await pageB.evaluate(() => { window.switchPage('settings'); window.stSwitchTab('team'); });
     await expect(pageB.locator('#st-workspace-select option')).toHaveCount(2);
 
+    const staleWatchlistCleanup = await pageB.evaluate(async (workspaceId) => {
+      const result = await window.supabaseClient
+        .from('user_watchlist')
+        .delete()
+        .eq('workspace_id', workspaceId)
+        .eq('item_type', 'country')
+        .eq('item_id', 'US');
+      return result.error ? result.error.message : '';
+    }, workspaceA);
+    expect(staleWatchlistCleanup).toBe('');
     const editorWrite = await pageB.evaluate(() => window.addToWatchlist('country', 'US', '美国', '美国市场'));
     expect(editorWrite).toBe(true);
+    const editorWatchlist = await waitForRow(
+      pageB,
+      'user_watchlist',
+      { workspace_id: workspaceA, item_type: 'country', item_id: 'US' },
+      (row) => row.user_id === userB
+    );
+    expect(editorWatchlist.user_id).toBe(userB);
     const sharedExport = await pageB.evaluate((sharedReportId) => window.jayFunctionRequest('report-export', {
       report_id: sharedReportId,
       idempotency_key: `production-browser-shared:${sharedReportId}:pdf`,
@@ -361,6 +378,16 @@ test.describe('production authenticated browser acceptance', () => {
     expect(viewerWrite).toBe(false);
     expect(await pageB.evaluate(() => window.__productionAcceptanceToasts.some((message) => message.includes('只读权限')))).toBe(true);
 
+    const watchlistCleanup = await page.evaluate(async (workspaceId) => {
+      const result = await window.supabaseClient
+        .from('user_watchlist')
+        .delete()
+        .eq('workspace_id', workspaceId)
+        .eq('item_type', 'country')
+        .eq('item_id', 'US');
+      return result.error ? result.error.message : '';
+    }, workspaceA);
+    expect(watchlistCleanup).toBe('');
     await page.evaluate((membershipId) => window.jayRemoveWorkspaceMember(membershipId), membership.id);
     await pageB.reload({ waitUntil: 'domcontentloaded' });
     await pageB.waitForFunction(
