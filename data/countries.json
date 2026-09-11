@@ -339,8 +339,8 @@
         "https://fred.stlouisfed.org/series/FEDFUNDS"
       ],
       [
-        "CPI(2026-07-01)",
-        "332.813 指数(1982-84=100)",
+        "CPI(2026-08-01)",
+        "334.131 指数(1982-84=100)",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/CPIAUCSL"
       ],
@@ -357,8 +357,8 @@
         "https://fred.stlouisfed.org/series/RSAFS"
       ],
       [
-        "10Y国债收益率(2026-09-09)",
-        "4.83 %",
+        "10Y国债收益率(2026-09-10)",
+        "4.95 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/DGS10"
       ],
@@ -652,7 +652,7 @@
         ]
       ]
     },
-    "macro_updated": "2026-09-11 12:50 UTC"
+    "macro_updated": "2026-09-11 22:36 UTC"
   },
   "jp": {
     "flag": "🇯🇵",
@@ -11843,7 +11843,7 @@
     }
   },
   "_metadata": {
-    "last_updated": "2026-09-11T12:50:25.090147+00:00",
+    "last_updated": "2026-09-11T22:36:16.646324+00:00",
     "updated_countries": [
       "ph",
       "sg",
