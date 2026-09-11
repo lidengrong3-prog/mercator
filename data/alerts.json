@@ -1,5 +1,729 @@
 [
   [
+    "cpsc-cat-20260911-72e3850a",
+    "policy",
+    "high",
+    "⚠️ 消费电子品类: 近90天82起中国产品召回",
+    "美国",
+    "CPSC",
+    "过去90天内，消费电子品类有82起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
+    "2026-09-11",
+    false,
+    {
+      "source": "CPSC 数据分析",
+      "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
+      "source_kind": "derived",
+      "source_type": "derived",
+      "source_record_id": "cpsc-cat-source-20260911-72e3850a",
+      "verification_status": "verified",
+      "published_at": "2026-09-10",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由已核验来源生成的动态预警；正文事实应回溯到 source_record_id。",
+      "category_codes": [
+        "electronics"
+      ],
+      "source_record_ids": [
+        "3464c7f6054b36ddb7858115",
+        "5eaa8ebd75f0af42835aa056",
+        "6493bd1e6db29f259678c37b",
+        "acb4092508129245026d4abe",
+        "16a755692f7ca8940dbf4504",
+        "8c592e553b1ed58f08622270",
+        "c0c878f253413a870e698f87",
+        "59162848f1136c64a6862613",
+        "44e99d1055e9a57b3a5b20bf",
+        "0f59f9cd8797a22ab5f3af9d",
+        "595275268f1eb102380a135e",
+        "078496ace5ef6a3d6c33b4e5",
+        "2ce84328ad7958696029f242",
+        "cpsc-4815717d",
+        "cpsc-621937d0",
+        "cpsc-ab443396",
+        "cpsc-36bf351d",
+        "cpsc-2d564b42",
+        "cpsc-75397798",
+        "cpsc-408c43f7",
+        "cpsc-60ab18c5",
+        "cpsc-cf1974d0",
+        "cpsc-968d8656",
+        "cpsc-ff0a431a",
+        "cpsc-2e7f5354",
+        "cpsc-ffc7ad29",
+        "cpsc-99e20654",
+        "cpsc-24930a95",
+        "cpsc-26876a13",
+        "cpsc-b68e8a73",
+        "cpsc-86d3130a",
+        "cpsc-ceff40a7",
+        "cpsc-858ec5a3",
+        "cpsc-341b5fde",
+        "cpsc-01fedae7",
+        "cpsc-cc65a7dd",
+        "cpsc-bc27eb4a",
+        "cpsc-52ab28cb",
+        "cpsc-2f4d94b1",
+        "cpsc-31855831",
+        "cpsc-b2bad271",
+        "cpsc-d9236c0a",
+        "cpsc-715b66f8",
+        "cpsc-389c96d5",
+        "cpsc-8b2ced74",
+        "cpsc-4ed7fa9f",
+        "cpsc-79a00b87",
+        "cpsc-f1e57fc2",
+        "cpsc-47ff2df8",
+        "cpsc-f49da115",
+        "cpsc-27509720",
+        "cpsc-5d1d848d",
+        "cpsc-9664930a",
+        "cpsc-659d6880",
+        "cpsc-469825fb",
+        "cpsc-8009ab6a",
+        "cpsc-441694bc",
+        "cpsc-dd4378fa",
+        "cpsc-45d8a341",
+        "cpsc-df320a98",
+        "cpsc-64a9c037",
+        "cpsc-c5b14c33",
+        "cpsc-8550c831",
+        "cpsc-b8a20bf3",
+        "cpsc-958bb6bd",
+        "cpsc-022a50d5",
+        "cpsc-322e03b7",
+        "cpsc-dcf8ab53",
+        "cpsc-38abae70",
+        "cpsc-e273b4b4",
+        "cpsc-d1b4924d",
+        "cpsc-e93bbabc",
+        "cpsc-44ee402d",
+        "cpsc-b3caae68",
+        "cpsc-afbf26e5",
+        "cpsc-05d157c6",
+        "cpsc-38cca136",
+        "cpsc-fd98018b",
+        "cpsc-98c24736",
+        "cpsc-c82864f3",
+        "cpsc-cbf66d05",
+        "cpsc-8ddc98fe"
+      ],
+      "upstream_evidence_hash": "",
+      "upstream_evidence_hashes": [
+        "f45db6190b4ef24f2fae9031334aaa8c60898d61e3f1af23b8b3cb8620cd1d0d",
+        "607b6300c948ad3571be3731ef2a1b4b0f15e94799ba9e6106895256c67357a2",
+        "2ecce669e4487ed520086810ba39243bb8180ba02592fb3f39011f5204ff594f",
+        "4287c97ffe6662a2096b9bedcf98a2c89ca0e839062ae457e0753278794790a3",
+        "add0f21eafd011441211bac2e47765ed08fcb61a91d0843843b7736f8904c0d1",
+        "f99d777f4ca12c75278b6816e79ad747f07cc80ba84eaba1d4023cccde9a3382",
+        "f6a75357c3b11970b69f170ba672f3ba20186907b74124bb011c0c4423e5df46",
+        "d19f0df30e1d29a8c61795b3fd80fe651ca9f47ec9bae25b6e43f06ed80a5578",
+        "7d8b62557d8f7c7173a74a08d668b1be40a6072f8f88c862ffc76aa279bf2d98",
+        "28f5226cfad734743d423f81d4e5beb1c45fff21e84397156ba1bf58e5dbe8f7",
+        "fca103b6733c8d4b3d0fe086e297b7c51cf7868a3138b9d44d7ac9cec34644c4",
+        "563cbdae4e4a099fe03c57e12c907a90a7119a08bbf9146947ccdefd8b930511",
+        "8c7e2a917cbd636f8c74dd063e83d0b9726353018d72ad48d68811ea227903ad",
+        "50bfca97706eb7f079b7d67f3bf19effdc467406dbc1e9074d6d57c710a6cb56",
+        "ddbe4b09355a5eeb2d850a01ac31db869cdf2a60cce58c4d678a4abf586c48cd",
+        "9c0af0bbf03e946173decf22693f62b731bb061ddc2ad3df21ed6597cbbf63b4",
+        "39e3ae798591e35bb4c5176bfe4319925de31bc6bba079d7073e4ef62173916e",
+        "aa5ddbec9f3f342552333801af7e55d5afa2b32b2f3fcba134121f5f809b8bdc",
+        "5104e64d42453c104b0174425dfacd1043ef0667d6819d1304d8803cec7b295c",
+        "3a83ba83c0d789c8f6a3e2ce8563c663781c322c5a9056cd5510cc747d870ebc",
+        "c82324abbb81be2b9fbe33894c3551c89511f0e2bc518da2ff51e47f78963a8a",
+        "cff240a1465d3b0ac133193e8e4979f67da55222d3473c2b9b9e9781416f4672",
+        "bc54ddfad9e05a79ad94c9d0200dbc61baa0157fd24f55a944eeda2accf4535a",
+        "5281a20b0c10c89d447b0da79d13a85baab9dde278b0f45fed3f6bed4c1e333f",
+        "71eca29260c4dd403033da48b33640200b027b4fc4fc73fb229de4cb5885404f",
+        "91a0bf847989d24015b84dcce756f9822203f4813e3ca70a94575a331f0b8809",
+        "a513c564dc200195924ecc9c415289df8699fe74762a7c27b8720d8a2bb0a479",
+        "702384af59d2a2091f81590849e9137de41428c017f2a7b9be7f3a95a5d2bdd1",
+        "1061ef1bb27d3ab586069d587359a9787ca12a2805a12da3acd6d5c3648302e5",
+        "9e160dcc19ebd83b352f1caade146b1f1df12e7d7ad3ab0d7cf08b67711615ef",
+        "a6afb4bd8547bd589d5bbc37e0bff6f93cabf92b7aa65de925be7993b82d2a88",
+        "d8cc6e168111a7ef1d0bbbc2cf5c1b614d849fece21985f5e14e4ab17bb90d6d",
+        "fdb64f744442e8fce4cc3baba84245595562c0ee0d99ffe84b1af2077a70dccb",
+        "96e6cb5119ca813dc67b9aa5c3c954187b71285fcd036276a629fedf5c1e874a",
+        "8917a8f1c5427f49d3837c76a43b58111b63769ed857da0148b4ded67b987087",
+        "954b069fb371860ed483b680eecc636ee2e909cfbd20951540510f4777d2859b",
+        "0304d16e84c1dedc2bebe48a662b0ad0792d321c13c6da16575875aacf352e26",
+        "6f2bbe14236cba91d0e827ce0da8d10b6f4add1ec782f20cf1278b9e287c477c",
+        "9ebca4851f5691079598d7f65dc3bbf9d7e41a971f2ecbfaa649c44b6fa5886a",
+        "7b3c9afc6c6b2e4bd36d8bed5f3332825194870c3eaa7c97782b99b9ed0faade",
+        "0c7432622673ee76d83264d3bb3a4aecd56cbc25d22aebacce73aee186362c8d",
+        "f5dff7ca87edb5d3ed29a1b043513f5726d8cd1ee14396297e524a452522406e",
+        "4cc4cc36c92fce4551c38e2f84ca2fc66402449ad7b640bef4ce5744fe2e4bb4",
+        "3f1ce632bbf51563b730daea51a5fbf07a03e1d6d0e0fb1ba0c330a39cfd509b",
+        "763c91d6f76f01f10c7b7b45367b5220e50422a552b4de2775f0e8b0a0a06ff9",
+        "7ebc34c47fb567d75a99b575f0e53ac30c4ea372884f5d83645bd2e35a3f34ad",
+        "caf5bc4e485f31813516973252e3979f18c2131d8f4a7ef9e0d4767cb30f7f99",
+        "e53a47f781b6023c4af91e8923f8717ee6477b0796ea26ffafa43b066b5cf06a",
+        "95522ef08fb94898499b45f33452f7a940d750491b7a334fe5be9f53c608a2da",
+        "4b11fc96456555bbf0bb79b9fa10d385ae8fd82160d181d2b03471354b26cc82",
+        "94745dc70ae0833973b382a3d759e0a8bd510009ae99c30c1ad3d2c97c78fd85",
+        "0432dba50fe85a9e64661e7c5d79873d4a8d03958492aef2542e33d07a14c133",
+        "1b3e5d47a5713e2f1217ba8790332bbe76aa5ecf2911b4464970aa357929c3a1",
+        "c4fcd40177f996a7ef639077f69425a0bcc6114b6cb784cbc91df8470bf95149",
+        "c2eb9687524d4115a08843efc8602f74fd528c9e21cfa2898889a37672430582",
+        "f2ecf093191098ec71513be4127abf03cfaaae03b43ab64aa6c3679482286e66",
+        "825393b39a485513bdc92ea4da46f2950487d9c6a7aa107172c5d85f1b5cbdb2",
+        "c761e215ac7d61f5cb9f135e6acf1801ed6b1d73b0363923ea0b52eb9fbcded0",
+        "a7cb162373b6ecb94f0dd52aee0b554f8c6e5ea9e0af43750b858680041291d3",
+        "5d39a0e8d6b352df0fc97537ec6cd67c7cad9cef21057ab7f203e30082b61cb7",
+        "5cbaa5fbef6dc32642fb023dafb24ef9fb958eece54990c5bd61dd8a7ec8d316",
+        "9cbe312d0aa0ab2e213275f53d7234aa4310d653758ffc42f08040a317156ba2",
+        "7fc89ecb86022addb6844582951bcc0399b7f24d0619e0a07304f23f116bd8b3",
+        "2585732d447f6ce6fa94fae7ccceaf86d56a6e00f615bd3d5de1504711b8964d",
+        "54ed55828b64a9d189c3714d11d101ec3b2b92786a12e4256131e1eb1d4f08ce",
+        "52c7067f9f9ce207419ba06a4404b544ce61ea69b6b15754b7e6dd6338d527f0",
+        "5b428d4773a76a753b2cd54a1a8dff696f800d394566592e93c784e32fa08926",
+        "ddc6edfb3ac4acf3f6aeb21870454e178d489951f7ece175b0bd94fd7e4dd4a3",
+        "bcc9a89d1aa31ace380165090b5470b41d2d8efc1d0f89c78924483ba8e9f10c",
+        "03dc9e7de56c412e1653bcf658d180c14d927628d98baba1c10faf2709defb96",
+        "54adb39e99f0b6f23e5839f1798873e5360b60db71ee6b20e66f8f09ff0d33cc",
+        "a77a1ac86a78e4e7a5d5054ec01ac53a2cde720a7c028651a2baf88beba10846",
+        "8ee4e1b668350ba3b49f1c400c6459960a0bf9e4f266c092de8a824130d94361",
+        "8a700c262ef7f356ee29743a22ebef1e1b91f6c7746252aa0c59c3d298d5fc01",
+        "059c4dd6096c26bffc3300ca7963b0fd7971bf15509bcc96560d4d0dd699d003",
+        "0a7fcfc98365e713b4470ed4ca7436c295d7d6824dcb7775fd430fa71fce9971",
+        "c8772171a20e8226fd18659a5d022c20df66de5a09eb7f0b7cb6a513ed042cd3",
+        "18476bfcc9a210de837513a1916e7db1ce9f2869efeb002e9629ed87ee1ecf1d",
+        "50b5d3fe108aa0f371dc9804b987ddfc7023ac92f09ea9271d3ad657907e1555",
+        "9b1387bdc855a609519ca57c35b91606e29ca0b64d99f9ebd7d2996ca9eabc10",
+        "7c911c21218c5359b591a043bfef09c7e8a005f2d0df534a7a9efba29b59c535",
+        "a88e886d8faf03025ad7deedeaf6e780704455de206376c754b0415c40f95857"
+      ],
+      "source_record_evidence": [
+        {
+          "source_record_id": "3464c7f6054b36ddb7858115",
+          "evidence_hash": "f45db6190b4ef24f2fae9031334aaa8c60898d61e3f1af23b8b3cb8620cd1d0d"
+        },
+        {
+          "source_record_id": "5eaa8ebd75f0af42835aa056",
+          "evidence_hash": "607b6300c948ad3571be3731ef2a1b4b0f15e94799ba9e6106895256c67357a2"
+        },
+        {
+          "source_record_id": "6493bd1e6db29f259678c37b",
+          "evidence_hash": "2ecce669e4487ed520086810ba39243bb8180ba02592fb3f39011f5204ff594f"
+        },
+        {
+          "source_record_id": "acb4092508129245026d4abe",
+          "evidence_hash": "4287c97ffe6662a2096b9bedcf98a2c89ca0e839062ae457e0753278794790a3"
+        },
+        {
+          "source_record_id": "16a755692f7ca8940dbf4504",
+          "evidence_hash": "add0f21eafd011441211bac2e47765ed08fcb61a91d0843843b7736f8904c0d1"
+        },
+        {
+          "source_record_id": "8c592e553b1ed58f08622270",
+          "evidence_hash": "f99d777f4ca12c75278b6816e79ad747f07cc80ba84eaba1d4023cccde9a3382"
+        },
+        {
+          "source_record_id": "c0c878f253413a870e698f87",
+          "evidence_hash": "f6a75357c3b11970b69f170ba672f3ba20186907b74124bb011c0c4423e5df46"
+        },
+        {
+          "source_record_id": "59162848f1136c64a6862613",
+          "evidence_hash": "d19f0df30e1d29a8c61795b3fd80fe651ca9f47ec9bae25b6e43f06ed80a5578"
+        },
+        {
+          "source_record_id": "44e99d1055e9a57b3a5b20bf",
+          "evidence_hash": "7d8b62557d8f7c7173a74a08d668b1be40a6072f8f88c862ffc76aa279bf2d98"
+        },
+        {
+          "source_record_id": "0f59f9cd8797a22ab5f3af9d",
+          "evidence_hash": "28f5226cfad734743d423f81d4e5beb1c45fff21e84397156ba1bf58e5dbe8f7"
+        },
+        {
+          "source_record_id": "595275268f1eb102380a135e",
+          "evidence_hash": "fca103b6733c8d4b3d0fe086e297b7c51cf7868a3138b9d44d7ac9cec34644c4"
+        },
+        {
+          "source_record_id": "078496ace5ef6a3d6c33b4e5",
+          "evidence_hash": "563cbdae4e4a099fe03c57e12c907a90a7119a08bbf9146947ccdefd8b930511"
+        },
+        {
+          "source_record_id": "2ce84328ad7958696029f242",
+          "evidence_hash": "8c7e2a917cbd636f8c74dd063e83d0b9726353018d72ad48d68811ea227903ad"
+        },
+        {
+          "source_record_id": "cpsc-4815717d",
+          "evidence_hash": "50bfca97706eb7f079b7d67f3bf19effdc467406dbc1e9074d6d57c710a6cb56"
+        },
+        {
+          "source_record_id": "cpsc-621937d0",
+          "evidence_hash": "ddbe4b09355a5eeb2d850a01ac31db869cdf2a60cce58c4d678a4abf586c48cd"
+        },
+        {
+          "source_record_id": "cpsc-ab443396",
+          "evidence_hash": "9c0af0bbf03e946173decf22693f62b731bb061ddc2ad3df21ed6597cbbf63b4"
+        },
+        {
+          "source_record_id": "cpsc-36bf351d",
+          "evidence_hash": "39e3ae798591e35bb4c5176bfe4319925de31bc6bba079d7073e4ef62173916e"
+        },
+        {
+          "source_record_id": "cpsc-2d564b42",
+          "evidence_hash": "aa5ddbec9f3f342552333801af7e55d5afa2b32b2f3fcba134121f5f809b8bdc"
+        },
+        {
+          "source_record_id": "cpsc-75397798",
+          "evidence_hash": "5104e64d42453c104b0174425dfacd1043ef0667d6819d1304d8803cec7b295c"
+        },
+        {
+          "source_record_id": "cpsc-408c43f7",
+          "evidence_hash": "3a83ba83c0d789c8f6a3e2ce8563c663781c322c5a9056cd5510cc747d870ebc"
+        },
+        {
+          "source_record_id": "cpsc-60ab18c5",
+          "evidence_hash": "c82324abbb81be2b9fbe33894c3551c89511f0e2bc518da2ff51e47f78963a8a"
+        },
+        {
+          "source_record_id": "cpsc-cf1974d0",
+          "evidence_hash": "cff240a1465d3b0ac133193e8e4979f67da55222d3473c2b9b9e9781416f4672"
+        },
+        {
+          "source_record_id": "cpsc-968d8656",
+          "evidence_hash": "bc54ddfad9e05a79ad94c9d0200dbc61baa0157fd24f55a944eeda2accf4535a"
+        },
+        {
+          "source_record_id": "cpsc-ff0a431a",
+          "evidence_hash": "5281a20b0c10c89d447b0da79d13a85baab9dde278b0f45fed3f6bed4c1e333f"
+        },
+        {
+          "source_record_id": "cpsc-2e7f5354",
+          "evidence_hash": "71eca29260c4dd403033da48b33640200b027b4fc4fc73fb229de4cb5885404f"
+        },
+        {
+          "source_record_id": "cpsc-ffc7ad29",
+          "evidence_hash": "91a0bf847989d24015b84dcce756f9822203f4813e3ca70a94575a331f0b8809"
+        },
+        {
+          "source_record_id": "cpsc-99e20654",
+          "evidence_hash": "a513c564dc200195924ecc9c415289df8699fe74762a7c27b8720d8a2bb0a479"
+        },
+        {
+          "source_record_id": "cpsc-24930a95",
+          "evidence_hash": "702384af59d2a2091f81590849e9137de41428c017f2a7b9be7f3a95a5d2bdd1"
+        },
+        {
+          "source_record_id": "cpsc-26876a13",
+          "evidence_hash": "1061ef1bb27d3ab586069d587359a9787ca12a2805a12da3acd6d5c3648302e5"
+        },
+        {
+          "source_record_id": "cpsc-b68e8a73",
+          "evidence_hash": "9e160dcc19ebd83b352f1caade146b1f1df12e7d7ad3ab0d7cf08b67711615ef"
+        },
+        {
+          "source_record_id": "cpsc-86d3130a",
+          "evidence_hash": "a6afb4bd8547bd589d5bbc37e0bff6f93cabf92b7aa65de925be7993b82d2a88"
+        },
+        {
+          "source_record_id": "cpsc-ceff40a7",
+          "evidence_hash": "d8cc6e168111a7ef1d0bbbc2cf5c1b614d849fece21985f5e14e4ab17bb90d6d"
+        },
+        {
+          "source_record_id": "cpsc-858ec5a3",
+          "evidence_hash": "fdb64f744442e8fce4cc3baba84245595562c0ee0d99ffe84b1af2077a70dccb"
+        },
+        {
+          "source_record_id": "cpsc-341b5fde",
+          "evidence_hash": "96e6cb5119ca813dc67b9aa5c3c954187b71285fcd036276a629fedf5c1e874a"
+        },
+        {
+          "source_record_id": "cpsc-01fedae7",
+          "evidence_hash": "8917a8f1c5427f49d3837c76a43b58111b63769ed857da0148b4ded67b987087"
+        },
+        {
+          "source_record_id": "cpsc-cc65a7dd",
+          "evidence_hash": "954b069fb371860ed483b680eecc636ee2e909cfbd20951540510f4777d2859b"
+        },
+        {
+          "source_record_id": "cpsc-bc27eb4a",
+          "evidence_hash": "0304d16e84c1dedc2bebe48a662b0ad0792d321c13c6da16575875aacf352e26"
+        },
+        {
+          "source_record_id": "cpsc-52ab28cb",
+          "evidence_hash": "6f2bbe14236cba91d0e827ce0da8d10b6f4add1ec782f20cf1278b9e287c477c"
+        },
+        {
+          "source_record_id": "cpsc-2f4d94b1",
+          "evidence_hash": "9ebca4851f5691079598d7f65dc3bbf9d7e41a971f2ecbfaa649c44b6fa5886a"
+        },
+        {
+          "source_record_id": "cpsc-31855831",
+          "evidence_hash": "7b3c9afc6c6b2e4bd36d8bed5f3332825194870c3eaa7c97782b99b9ed0faade"
+        },
+        {
+          "source_record_id": "cpsc-b2bad271",
+          "evidence_hash": "0c7432622673ee76d83264d3bb3a4aecd56cbc25d22aebacce73aee186362c8d"
+        },
+        {
+          "source_record_id": "cpsc-d9236c0a",
+          "evidence_hash": "f5dff7ca87edb5d3ed29a1b043513f5726d8cd1ee14396297e524a452522406e"
+        },
+        {
+          "source_record_id": "cpsc-715b66f8",
+          "evidence_hash": "4cc4cc36c92fce4551c38e2f84ca2fc66402449ad7b640bef4ce5744fe2e4bb4"
+        },
+        {
+          "source_record_id": "cpsc-389c96d5",
+          "evidence_hash": "3f1ce632bbf51563b730daea51a5fbf07a03e1d6d0e0fb1ba0c330a39cfd509b"
+        },
+        {
+          "source_record_id": "cpsc-8b2ced74",
+          "evidence_hash": "763c91d6f76f01f10c7b7b45367b5220e50422a552b4de2775f0e8b0a0a06ff9"
+        },
+        {
+          "source_record_id": "cpsc-4ed7fa9f",
+          "evidence_hash": "7ebc34c47fb567d75a99b575f0e53ac30c4ea372884f5d83645bd2e35a3f34ad"
+        },
+        {
+          "source_record_id": "cpsc-79a00b87",
+          "evidence_hash": "caf5bc4e485f31813516973252e3979f18c2131d8f4a7ef9e0d4767cb30f7f99"
+        },
+        {
+          "source_record_id": "cpsc-f1e57fc2",
+          "evidence_hash": "e53a47f781b6023c4af91e8923f8717ee6477b0796ea26ffafa43b066b5cf06a"
+        },
+        {
+          "source_record_id": "cpsc-47ff2df8",
+          "evidence_hash": "95522ef08fb94898499b45f33452f7a940d750491b7a334fe5be9f53c608a2da"
+        },
+        {
+          "source_record_id": "cpsc-f49da115",
+          "evidence_hash": "4b11fc96456555bbf0bb79b9fa10d385ae8fd82160d181d2b03471354b26cc82"
+        },
+        {
+          "source_record_id": "cpsc-27509720",
+          "evidence_hash": "94745dc70ae0833973b382a3d759e0a8bd510009ae99c30c1ad3d2c97c78fd85"
+        },
+        {
+          "source_record_id": "cpsc-5d1d848d",
+          "evidence_hash": "0432dba50fe85a9e64661e7c5d79873d4a8d03958492aef2542e33d07a14c133"
+        },
+        {
+          "source_record_id": "cpsc-9664930a",
+          "evidence_hash": "1b3e5d47a5713e2f1217ba8790332bbe76aa5ecf2911b4464970aa357929c3a1"
+        },
+        {
+          "source_record_id": "cpsc-659d6880",
+          "evidence_hash": "c4fcd40177f996a7ef639077f69425a0bcc6114b6cb784cbc91df8470bf95149"
+        },
+        {
+          "source_record_id": "cpsc-469825fb",
+          "evidence_hash": "c2eb9687524d4115a08843efc8602f74fd528c9e21cfa2898889a37672430582"
+        },
+        {
+          "source_record_id": "cpsc-8009ab6a",
+          "evidence_hash": "f2ecf093191098ec71513be4127abf03cfaaae03b43ab64aa6c3679482286e66"
+        },
+        {
+          "source_record_id": "cpsc-441694bc",
+          "evidence_hash": "825393b39a485513bdc92ea4da46f2950487d9c6a7aa107172c5d85f1b5cbdb2"
+        },
+        {
+          "source_record_id": "cpsc-dd4378fa",
+          "evidence_hash": "c761e215ac7d61f5cb9f135e6acf1801ed6b1d73b0363923ea0b52eb9fbcded0"
+        },
+        {
+          "source_record_id": "cpsc-45d8a341",
+          "evidence_hash": "a7cb162373b6ecb94f0dd52aee0b554f8c6e5ea9e0af43750b858680041291d3"
+        },
+        {
+          "source_record_id": "cpsc-df320a98",
+          "evidence_hash": "5d39a0e8d6b352df0fc97537ec6cd67c7cad9cef21057ab7f203e30082b61cb7"
+        },
+        {
+          "source_record_id": "cpsc-64a9c037",
+          "evidence_hash": "5cbaa5fbef6dc32642fb023dafb24ef9fb958eece54990c5bd61dd8a7ec8d316"
+        },
+        {
+          "source_record_id": "cpsc-c5b14c33",
+          "evidence_hash": "9cbe312d0aa0ab2e213275f53d7234aa4310d653758ffc42f08040a317156ba2"
+        },
+        {
+          "source_record_id": "cpsc-8550c831",
+          "evidence_hash": "7fc89ecb86022addb6844582951bcc0399b7f24d0619e0a07304f23f116bd8b3"
+        },
+        {
+          "source_record_id": "cpsc-b8a20bf3",
+          "evidence_hash": "2585732d447f6ce6fa94fae7ccceaf86d56a6e00f615bd3d5de1504711b8964d"
+        },
+        {
+          "source_record_id": "cpsc-958bb6bd",
+          "evidence_hash": "54ed55828b64a9d189c3714d11d101ec3b2b92786a12e4256131e1eb1d4f08ce"
+        },
+        {
+          "source_record_id": "cpsc-022a50d5",
+          "evidence_hash": "52c7067f9f9ce207419ba06a4404b544ce61ea69b6b15754b7e6dd6338d527f0"
+        },
+        {
+          "source_record_id": "cpsc-322e03b7",
+          "evidence_hash": "5b428d4773a76a753b2cd54a1a8dff696f800d394566592e93c784e32fa08926"
+        },
+        {
+          "source_record_id": "cpsc-dcf8ab53",
+          "evidence_hash": "ddc6edfb3ac4acf3f6aeb21870454e178d489951f7ece175b0bd94fd7e4dd4a3"
+        },
+        {
+          "source_record_id": "cpsc-38abae70",
+          "evidence_hash": "bcc9a89d1aa31ace380165090b5470b41d2d8efc1d0f89c78924483ba8e9f10c"
+        },
+        {
+          "source_record_id": "cpsc-e273b4b4",
+          "evidence_hash": "03dc9e7de56c412e1653bcf658d180c14d927628d98baba1c10faf2709defb96"
+        },
+        {
+          "source_record_id": "cpsc-d1b4924d",
+          "evidence_hash": "54adb39e99f0b6f23e5839f1798873e5360b60db71ee6b20e66f8f09ff0d33cc"
+        },
+        {
+          "source_record_id": "cpsc-e93bbabc",
+          "evidence_hash": "a77a1ac86a78e4e7a5d5054ec01ac53a2cde720a7c028651a2baf88beba10846"
+        },
+        {
+          "source_record_id": "cpsc-44ee402d",
+          "evidence_hash": "8ee4e1b668350ba3b49f1c400c6459960a0bf9e4f266c092de8a824130d94361"
+        },
+        {
+          "source_record_id": "cpsc-b3caae68",
+          "evidence_hash": "8a700c262ef7f356ee29743a22ebef1e1b91f6c7746252aa0c59c3d298d5fc01"
+        },
+        {
+          "source_record_id": "cpsc-afbf26e5",
+          "evidence_hash": "059c4dd6096c26bffc3300ca7963b0fd7971bf15509bcc96560d4d0dd699d003"
+        },
+        {
+          "source_record_id": "cpsc-05d157c6",
+          "evidence_hash": "0a7fcfc98365e713b4470ed4ca7436c295d7d6824dcb7775fd430fa71fce9971"
+        },
+        {
+          "source_record_id": "cpsc-38cca136",
+          "evidence_hash": "c8772171a20e8226fd18659a5d022c20df66de5a09eb7f0b7cb6a513ed042cd3"
+        },
+        {
+          "source_record_id": "cpsc-fd98018b",
+          "evidence_hash": "18476bfcc9a210de837513a1916e7db1ce9f2869efeb002e9629ed87ee1ecf1d"
+        },
+        {
+          "source_record_id": "cpsc-98c24736",
+          "evidence_hash": "50b5d3fe108aa0f371dc9804b987ddfc7023ac92f09ea9271d3ad657907e1555"
+        },
+        {
+          "source_record_id": "cpsc-c82864f3",
+          "evidence_hash": "9b1387bdc855a609519ca57c35b91606e29ca0b64d99f9ebd7d2996ca9eabc10"
+        },
+        {
+          "source_record_id": "cpsc-cbf66d05",
+          "evidence_hash": "7c911c21218c5359b591a043bfef09c7e8a005f2d0df534a7a9efba29b59c535"
+        },
+        {
+          "source_record_id": "cpsc-8ddc98fe",
+          "evidence_hash": "a88e886d8faf03025ad7deedeaf6e780704455de206376c754b0415c40f95857"
+        }
+      ],
+      "lineage_type": "aggregate",
+      "input_dataset": "data/us_market/cpsc_recalls.json",
+      "dataset_snapshot_id": "021486eb0f1e36c4484aa46891b5c26ed4aeff156f4823b50753c85a48d2a324",
+      "dataset_snapshot_at": "2026-09-11T04:20:07.221661+00:00",
+      "dataset_record_count": 179,
+      "window_start": "2026-06-13",
+      "window_end": "2026-09-11",
+      "input_record_count": 119,
+      "matched_record_count": 82,
+      "aggregate_count": 82,
+      "schema_version": "2.1",
+      "display_locale": "zh-CN",
+      "generator_version": "2026.09.08.1",
+      "evidence_hash": "2ce0fd32ab24218e8e077e50474d7d1593cb1c37935afe2211c1e37bd3d0cc58"
+    }
+  ],
+  [
+    "cpsc-cat-20260911-91ffe69a",
+    "policy",
+    "high",
+    "⚠️ 服饰鞋包品类: 近90天23起中国产品召回",
+    "美国",
+    "CPSC",
+    "过去90天内，服饰鞋包品类有23起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
+    "2026-09-11",
+    false,
+    {
+      "source": "CPSC 数据分析",
+      "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
+      "source_kind": "derived",
+      "source_type": "derived",
+      "source_record_id": "cpsc-cat-source-20260911-91ffe69a",
+      "verification_status": "verified",
+      "published_at": "2026-09-10",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由已核验来源生成的动态预警；正文事实应回溯到 source_record_id。",
+      "category_codes": [
+        "apparel"
+      ],
+      "source_record_ids": [
+        "1520095e474cbce2e411bcc5",
+        "25cc730be7cc45d01f84257e",
+        "e04e62a034b378437c63417c",
+        "142e6b170b69f37fa6431afb",
+        "fbf6ca51a57dacb46eba05ba",
+        "7836d23abe475d05c3958f77",
+        "cpsc-005fa89d",
+        "cpsc-efdbf45b",
+        "cpsc-053aa79e",
+        "cpsc-85af7dbb",
+        "cpsc-a87935bb",
+        "cpsc-b395e787",
+        "cpsc-d95b6d57",
+        "cpsc-5fcc04ec",
+        "cpsc-c271fe4c",
+        "cpsc-72812062",
+        "cpsc-00fd113d",
+        "cpsc-43e9fffa",
+        "cpsc-d29359fd",
+        "cpsc-b62510e2",
+        "cpsc-1f6325d1",
+        "cpsc-9d381008",
+        "cpsc-d690d0cd"
+      ],
+      "upstream_evidence_hash": "",
+      "upstream_evidence_hashes": [
+        "ae3e0edbdbfffb57f82d29b85ad3497243103706869dda6c4a893106412e20d7",
+        "ebca844bc5d663ae5f9ab6c63e2c01f71904270da48691159aaae93eb96de627",
+        "ed5c43407750c5610327636d47d535f208e9d34e0d129749fa31cce552da3762",
+        "6ebef2350c071845753fc32b0090be4e74ebbf22b5474cb20628bbd6a8f258ab",
+        "eb0af75af4f271c5f1e993ee1ee3376a5ff7b28808914c3fb0d1103652d0355e",
+        "f554a40a5d03ea189089a4ec80f5b7f9bc385a4fe3eb4482a401f119442eb127",
+        "3c25437c91b7c2e1cb593cb551f9cf885a433ac1bebc60c3c600212a4806d0fd",
+        "f791d0947632d4e5536ae9643fadcd31b769d34f5ad9937cec9acbb8b4ae5478",
+        "24b2b7ddbcb7f2bec2408d1ade5847d841be1f153850e51fd76e1be2a88b6528",
+        "416ee7c72af881ae1680ad992e93882f37e82cd89e344fd9dc7de0ae76c6ba50",
+        "89947ee70b8b115ffd76f575370a11f912bcba84b7eb21a6a73f9163043022d8",
+        "29d6392cc690bcead8769889ffa2da47bab570f3e1683a95a1ecb351cfb87364",
+        "6dc8265d67b80d976758f659c56b585c7638aaad8e785c19f0af89d8b055cb3e",
+        "6d7fecfbcfb584d0922f616dac7510c901d042a3a51b46dc8bb695c1ebbd38a7",
+        "eff8324a75ae40f32b8eb9dc5d46603833640677411a43d931dbf8a3fd064bf6",
+        "b4859c6d841348b2d402fd7e7282dd739b4a6448e254e34b8fd25354c07399aa",
+        "87daa915ef2273def0c49707535d164fa5e8c42ea3f251baa2fdccb6fe147807",
+        "e8e93b26144053f7387c2ee361913f603581059b77cb6a3a23996b8f8f083837",
+        "3f28de8273505159fa2c021af915b5df94d7937124f18da6670bec1b29c40b07",
+        "4761c80c06c96a14a7cf690f7964c0f19c7724dabfb64d18c8f766cbdd1ea47f",
+        "16c92a07b0cb65583890570a5b93a453b9c0d055392194f2758598d367c7d6a2",
+        "b41bb9a330b9a22785cbbc517aac640de5de65dc1b17bfee9b1d0e96a9b1f04b",
+        "3faf406c08ac56a34827f881e229599700572f3c647214c22a2622222acde95f"
+      ],
+      "source_record_evidence": [
+        {
+          "source_record_id": "1520095e474cbce2e411bcc5",
+          "evidence_hash": "ae3e0edbdbfffb57f82d29b85ad3497243103706869dda6c4a893106412e20d7"
+        },
+        {
+          "source_record_id": "25cc730be7cc45d01f84257e",
+          "evidence_hash": "ebca844bc5d663ae5f9ab6c63e2c01f71904270da48691159aaae93eb96de627"
+        },
+        {
+          "source_record_id": "e04e62a034b378437c63417c",
+          "evidence_hash": "ed5c43407750c5610327636d47d535f208e9d34e0d129749fa31cce552da3762"
+        },
+        {
+          "source_record_id": "142e6b170b69f37fa6431afb",
+          "evidence_hash": "6ebef2350c071845753fc32b0090be4e74ebbf22b5474cb20628bbd6a8f258ab"
+        },
+        {
+          "source_record_id": "fbf6ca51a57dacb46eba05ba",
+          "evidence_hash": "eb0af75af4f271c5f1e993ee1ee3376a5ff7b28808914c3fb0d1103652d0355e"
+        },
+        {
+          "source_record_id": "7836d23abe475d05c3958f77",
+          "evidence_hash": "f554a40a5d03ea189089a4ec80f5b7f9bc385a4fe3eb4482a401f119442eb127"
+        },
+        {
+          "source_record_id": "cpsc-005fa89d",
+          "evidence_hash": "3c25437c91b7c2e1cb593cb551f9cf885a433ac1bebc60c3c600212a4806d0fd"
+        },
+        {
+          "source_record_id": "cpsc-efdbf45b",
+          "evidence_hash": "f791d0947632d4e5536ae9643fadcd31b769d34f5ad9937cec9acbb8b4ae5478"
+        },
+        {
+          "source_record_id": "cpsc-053aa79e",
+          "evidence_hash": "24b2b7ddbcb7f2bec2408d1ade5847d841be1f153850e51fd76e1be2a88b6528"
+        },
+        {
+          "source_record_id": "cpsc-85af7dbb",
+          "evidence_hash": "416ee7c72af881ae1680ad992e93882f37e82cd89e344fd9dc7de0ae76c6ba50"
+        },
+        {
+          "source_record_id": "cpsc-a87935bb",
+          "evidence_hash": "89947ee70b8b115ffd76f575370a11f912bcba84b7eb21a6a73f9163043022d8"
+        },
+        {
+          "source_record_id": "cpsc-b395e787",
+          "evidence_hash": "29d6392cc690bcead8769889ffa2da47bab570f3e1683a95a1ecb351cfb87364"
+        },
+        {
+          "source_record_id": "cpsc-d95b6d57",
+          "evidence_hash": "6dc8265d67b80d976758f659c56b585c7638aaad8e785c19f0af89d8b055cb3e"
+        },
+        {
+          "source_record_id": "cpsc-5fcc04ec",
+          "evidence_hash": "6d7fecfbcfb584d0922f616dac7510c901d042a3a51b46dc8bb695c1ebbd38a7"
+        },
+        {
+          "source_record_id": "cpsc-c271fe4c",
+          "evidence_hash": "eff8324a75ae40f32b8eb9dc5d46603833640677411a43d931dbf8a3fd064bf6"
+        },
+        {
+          "source_record_id": "cpsc-72812062",
+          "evidence_hash": "b4859c6d841348b2d402fd7e7282dd739b4a6448e254e34b8fd25354c07399aa"
+        },
+        {
+          "source_record_id": "cpsc-00fd113d",
+          "evidence_hash": "87daa915ef2273def0c49707535d164fa5e8c42ea3f251baa2fdccb6fe147807"
+        },
+        {
+          "source_record_id": "cpsc-43e9fffa",
+          "evidence_hash": "e8e93b26144053f7387c2ee361913f603581059b77cb6a3a23996b8f8f083837"
+        },
+        {
+          "source_record_id": "cpsc-d29359fd",
+          "evidence_hash": "3f28de8273505159fa2c021af915b5df94d7937124f18da6670bec1b29c40b07"
+        },
+        {
+          "source_record_id": "cpsc-b62510e2",
+          "evidence_hash": "4761c80c06c96a14a7cf690f7964c0f19c7724dabfb64d18c8f766cbdd1ea47f"
+        },
+        {
+          "source_record_id": "cpsc-1f6325d1",
+          "evidence_hash": "16c92a07b0cb65583890570a5b93a453b9c0d055392194f2758598d367c7d6a2"
+        },
+        {
+          "source_record_id": "cpsc-9d381008",
+          "evidence_hash": "b41bb9a330b9a22785cbbc517aac640de5de65dc1b17bfee9b1d0e96a9b1f04b"
+        },
+        {
+          "source_record_id": "cpsc-d690d0cd",
+          "evidence_hash": "3faf406c08ac56a34827f881e229599700572f3c647214c22a2622222acde95f"
+        }
+      ],
+      "lineage_type": "aggregate",
+      "input_dataset": "data/us_market/cpsc_recalls.json",
+      "dataset_snapshot_id": "021486eb0f1e36c4484aa46891b5c26ed4aeff156f4823b50753c85a48d2a324",
+      "dataset_snapshot_at": "2026-09-11T04:20:07.221661+00:00",
+      "dataset_record_count": 179,
+      "window_start": "2026-06-13",
+      "window_end": "2026-09-11",
+      "input_record_count": 119,
+      "matched_record_count": 23,
+      "aggregate_count": 23,
+      "schema_version": "2.1",
+      "display_locale": "zh-CN",
+      "generator_version": "2026.09.08.1",
+      "evidence_hash": "72d8bd28e8330646df65b7069c39cbc5be15ad22c6a13f49445a84722df1969c"
+    }
+  ],
+  [
     "cpsc-cat-20260910-d0253cb1",
     "policy",
     "high",
