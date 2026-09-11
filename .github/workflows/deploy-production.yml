@@ -149,15 +149,15 @@ jobs:
           test -n "$migration_head"
           echo "MIGRATION_HEAD=$migration_head" >> "$GITHUB_ENV"
       - name: Link Supabase project
-        run: npx --yes supabase@2.39.2 link --dns-resolver https --project-ref "$SUPABASE_PROJECT_ID" --password "$SUPABASE_DB_PASSWORD"
+        run: npx --yes supabase@2.39.2 link --project-ref "$SUPABASE_PROJECT_ID" --password "$SUPABASE_DB_PASSWORD" --dns-resolver https
       - name: Apply database migrations before functions
-        run: npx --yes supabase@2.39.2 db push --dns-resolver https --linked --include-all --password "$SUPABASE_DB_PASSWORD"
+        run: npx --yes supabase@2.39.2 db push --linked --include-all --password "$SUPABASE_DB_PASSWORD" --dns-resolver https
       - name: Verify remote migration head
         shell: bash
         run: |
           set -eu
           migration_version="${MIGRATION_HEAD%%_*}"
-          npx --yes supabase@2.39.2 migration list --dns-resolver https --linked --password "$SUPABASE_DB_PASSWORD" | tee migration-list.txt
+          npx --yes supabase@2.39.2 migration list --linked --password "$SUPABASE_DB_PASSWORD" --dns-resolver https | tee migration-list.txt
           awk -v version="$migration_version" '
             $1 == version && $2 == "|" && $3 == version { matched = 1 }
             END { exit matched ? 0 : 1 }
@@ -172,6 +172,8 @@ jobs:
             "DEEPSEEK_API_URL=${DEEPSEEK_API_URL:-https://api.deepseek.com}"
             "DEEPSEEK_API_KEY=$DEEPSEEK_API_KEY"
             "DEEPSEEK_MODEL=$DEEPSEEK_MODEL"
+            "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_KEY"
+            "ACCEPTANCE_HMAC_SECRET=$SUPABASE_SERVICE_KEY"
             "ALLOWED_ORIGINS=$ALLOWED_ORIGINS"
             "RELEASE_SHA=$RELEASE_SHA"
             "RELEASE_MIGRATION_HEAD=$MIGRATION_HEAD"
