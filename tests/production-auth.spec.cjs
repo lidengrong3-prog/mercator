@@ -299,7 +299,14 @@ test.describe('production authenticated browser acceptance', () => {
     }, { workspaceId: workspaceA, collaboratorId: userB });
     expect(cleanup.error).toBeFalsy();
     await pageB.reload({ waitUntil: 'domcontentloaded' });
-    await pageB.waitForFunction(() => window.jayUser && !window.jayIsDemo && !window.jayWorkspaceHydration, null, { timeout: 30_000 });
+    await pageB.waitForFunction(
+      () => window.jayUser
+        && !window.jayIsDemo
+        && !window.jayWorkspaceHydration
+        && String(window.jayHydratedUserId || '').startsWith(window.jayUser.id + ':'),
+      null,
+      { timeout: 30_000 }
+    );
 
     await pageB.evaluate(() => window.switchPage('products'));
     const bImports = await rows(pageB, 'saved_workspace_items', { item_type: 'product_catalog_import', client_id: 'default' });
@@ -356,7 +363,14 @@ test.describe('production authenticated browser acceptance', () => {
 
     await page.evaluate((membershipId) => window.jayRemoveWorkspaceMember(membershipId), membership.id);
     await pageB.reload({ waitUntil: 'domcontentloaded' });
-    await pageB.waitForFunction(() => window.jayUser && !window.jayIsDemo && !window.jayWorkspaceHydration, null, { timeout: 30_000 });
+    await pageB.waitForFunction(
+      () => window.jayUser
+        && !window.jayIsDemo
+        && !window.jayWorkspaceHydration
+        && String(window.jayHydratedUserId || '').startsWith(window.jayUser.id + ':'),
+      null,
+      { timeout: 30_000 }
+    );
     expect(await pageB.evaluate(() => window.jayActiveWorkspaceId())).toBe(workspaceB);
     expect(await rows(pageB, 'generated_reports', { id: reportId })).toEqual([]);
     expect(await rows(pageB, 'report_materials', { title: importedProductTitle })).toEqual([]);
