@@ -147,6 +147,13 @@ function jayCommerceRows(payload,market,sourceConfig){
       date:date,
       source:String(item.source||'原始来源'),
       sourceUrl:sourceUrl,
+      source_kind:normalized.source_kind,
+      source_type:normalized.source_type,
+      source_record_id:normalized.source_record_id,
+      evidence_hash:normalized.evidence_hash,
+      collected_at:normalized.collected_at,
+      published_at:normalized.published_at||date,
+      verified_at:normalized.verified_at,
       verificationStatus:normalized.verification_status||'verified',
     };
   }).filter(Boolean);
