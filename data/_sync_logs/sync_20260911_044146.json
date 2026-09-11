@@ -1,0 +1,42 @@
+{
+  "synced_at": "2026-09-11T04:41:34.430357+00:00",
+  "dry_run": false,
+  "collection_run": {
+    "quality_status": "degraded",
+    "ledger_schema_version": 2,
+    "ledger_status": "degraded",
+    "completed_at": "2026-09-11T04:41:32.699377+00:00",
+    "scope": {
+      "market_codes": [
+        "US"
+      ],
+      "platform_keys": [
+        "aliexpress",
+        "amazon",
+        "ebay",
+        "tiktok-shop"
+      ]
+    },
+    "source_count": 10,
+    "pipeline_sources": [
+      "cpsc_recalls",
+      "fred_bls_macro",
+      "us_market_categories"
+    ],
+    "missing_pipeline_sources": [],
+    "core_failures": []
+  },
+  "quality_report_generated_at": "2026-09-11T04:41:34.257176+00:00",
+  "results": {
+    "market_catalog": 2,
+    "platform_catalog": 6,
+    "market_platforms": 7,
+    "jurisdiction_catalog": 2,
+    "category_profiles": 7,
+    "report_template_catalog": 5,
+    "data_source_registry": 6,
+    "raw_data_records": 720,
+    "market_data_applicability": 527,
+    "market_data": 8
+  }
+}
