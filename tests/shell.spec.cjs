@@ -658,6 +658,11 @@ test('failed global quality permits only a local draft and blocks formal output'
   await page.getByRole('button', { name: '浏览只读演示' }).click();
   await page.waitForFunction(() => window.JAY_QUALITY_REPORT && window.JAY_REPORT_QUALITY);
   await page.evaluate(() => {
+    window.JAY_QUALITY_REPORT = Object.assign({}, window.JAY_QUALITY_REPORT, {
+      status: 'failed',
+      publishable: false,
+      generated_at: new Date().toISOString(),
+    });
     window.switchPage('report');
     window.rpV2GoStep(2);
   });
