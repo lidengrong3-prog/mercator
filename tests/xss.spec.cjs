@@ -164,6 +164,7 @@ test('persisted reports, collections, schemes, imports, content, alerts, and not
   page.on('pageerror', (error) => pageErrors.push(error.message));
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.waitForFunction(() => window.alertsDataLoaded === true && window.alertsDataState === 'ready');
 
   const result = await page.evaluate(async () => {
     window.__storedXss = 0;
