@@ -749,7 +749,7 @@ def main() -> int:
            "workspace editor cannot read shared workspace assets")
 
     shared_watch = upsert("user_watchlist", token_b, {
-        "user_id": user_b, "workspace_id": workspace_a, "item_type": "market",
+        "user_id": user_b, "workspace_id": workspace_a, "item_type": "country",
         "item_id": f"collaboration:{acceptance_run_id}", "item_name": "团队协作验收", "note": "editor write",
     }, "workspace_id,item_type,item_id")
     expect(select_rows("user_watchlist", token_a, {"select": "id", "id": f"eq.{shared_watch['id']}"}),
@@ -771,7 +771,7 @@ def main() -> int:
     expect(viewer_status == 200 and viewer_rows and viewer_rows[0].get("role") == "viewer",
            f"cannot change collaborator to viewer: {viewer_status} {viewer_rows}")
     viewer_write_status, _, _ = rest("POST", "user_watchlist", token_b, body={
-        "user_id": user_b, "workspace_id": workspace_a, "item_type": "market",
+        "user_id": user_b, "workspace_id": workspace_a, "item_type": "country",
         "item_id": f"viewer-denied:{acceptance_run_id}", "item_name": "不得写入",
     })
     expect(viewer_write_status in (401, 403), f"viewer write was not rejected: HTTP {viewer_write_status}")
