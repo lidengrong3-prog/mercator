@@ -2,10 +2,10 @@
   "meta": {
     "source": "CPSC / SaferProducts Recall API",
     "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
-    "generated_at": "2026-09-10T10:49:08.073322+00:00",
-    "query_start": "2026-05-13",
-    "total_recalls": 221,
-    "china_related_count": 170,
+    "generated_at": "2026-09-11T04:20:07.221661+00:00",
+    "query_start": "2026-05-14",
+    "total_recalls": 233,
+    "china_related_count": 179,
     "categories_count": 8
   },
   "recalls": [
@@ -6839,6 +6839,366 @@
       "verified_at": "2026-09-10T18:43:45.554945+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "3bd23714c16db70c90a9fa95058ae7abe5a077f4aa555240efb66eb7a6b43126"
+    },
+    {
+      "id": "cpsc-9978e9e9",
+      "recall_number": "26761",
+      "title": "Cade California Electronic Recalls Finger Light Toys Due to Risk of Serious Injury or Death from Battery Ingestion; Violate Mandatory Standard for Toys",
+      "description": "This recall involves California Cade Electronic Finger Lights which contain three button cells batteries. The finger lights come in 50 pieces in a box in white, blue, red and green. The finger lights have “California Cade Electronic” and “Finger Flashlights” printed on labels located on the front of the package.",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Cade-California-Electronic-Recalls-Finger-Light-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Cade California Electronic Projecting Finger Light Toys"
+      ],
+      "hazards": [
+        "The recalled finger lights violate the mandatory safety standard for toys because the toys contain button cell batteries that can be easily accessed by children. If button cell or coin batteries are swallowed, the ingested batteries can cause serious injuries, including internal chemical burns, and death."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Cade-California-Electronic-Recalls-Finger-Light-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "source_record_id": "3464c7f6054b36ddb7858115",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "f45db6190b4ef24f2fae9031334aaa8c60898d61e3f1af23b8b3cb8620cd1d0d"
+    },
+    {
+      "id": "cpsc-b6c4f99e",
+      "recall_number": "26756",
+      "title": "Dual Fuel Ranges Recalled Due to Risk of Serious Injury or Death from Fire or Explosion Hazards; Manufactured by AGA Rangemaster",
+      "description": "This recall involves freestanding AGA Elise and Mercury Series Dual Fuel Ranges, in 36- and 48-inch widths and freestanding La Cornue CornuFé Series Dual Fuel Ranges in 36- and 43-inch widths manufactured between March 19, 2025 and July 24, 2026. All units have gas surface burners, set for Natural or LP gas, with one to three electric ovens depending on size.  The products are sold in stainless steel, white and 13 other colors, which can be found at www.agarangeusa.com and www.lacornueusa.com. A",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Dual-Fuel-Ranges-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Fire-or-Explosion-Hazards-Manufactured-by-AGA-Rangemaster",
+      "category": "home",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "United Kingdom"
+      ],
+      "products": [
+        "AGA Elise and Mercury Series Freestanding Dual Fuel Ranges and La Cornue CornuFé 90 and CornuFé 110 Series Freestanding Dual Fuel Ranges"
+      ],
+      "hazards": [
+        "Dual Fuel Ranges with a missing cap from the gas test port can cause a gas leak,​ posing a risk of serious injury or death from fire or explosion hazards."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Dual-Fuel-Ranges-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Fire-or-Explosion-Hazards-Manufactured-by-AGA-Rangemaster",
+      "source_record_id": "9ee119477d19461edb644599",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "c8d16fcfbe57ce5bdd2b680061afcf51101cab331a2ed35ff2a220965a901425"
+    },
+    {
+      "id": "cpsc-ead3f24f",
+      "recall_number": "26754",
+      "title": "Guang Zhou Recalls Wantefully Hair Dryer Brushes Due to Risk of Serious Injury or Death from Electrocution, Shock and Burn Hazards; Violate Federal Regulations",
+      "description": "This recall involves Wantefully 2 in 1 Hair Dryer & Styler, One Step Hair Dryer Brush Straightner, and the Negative Ion Electric Hot Air Blow Dryer Comb, model number XR-8801. The hair dryers are black hot air dryer paddle brushes with a striped pink design and brush bristles. There are three heat settings on the hair dryers. XRUI and the model name XR-8801 are printed on the top of the product packaging.",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Guang-Zhou-Recalls-Wantefully-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-Shock-and-Burn-Hazards-Violate-Federal-Regulations",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Wantefully Hair Dryer Brushes"
+      ],
+      "hazards": [
+        "The recalled hair dryer brushes are in violation of federal regulations for hair dryers as they lack an integrated immersion protection device, which presents a substantial product hazard to consumers and  the risk of death or serious injury from electrocution or shock if the hair dryers fall into water while plugged in. In addition, the recalled hair dryer brushes can overheat, posing a burn hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Guang-Zhou-Recalls-Wantefully-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-Shock-and-Burn-Hazards-Violate-Federal-Regulations",
+      "source_record_id": "5eaa8ebd75f0af42835aa056",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "607b6300c948ad3571be3731ef2a1b4b0f15e94799ba9e6106895256c67357a2"
+    },
+    {
+      "id": "cpsc-aa40d567",
+      "recall_number": "26764",
+      "title": "https://www.cpsc.gov/Recalls/2026/FJTJBSI-Recalls-Six-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+      "description": "This recall involves the FJTJBSI-branded wood dressers. The black or white dressers measure about 15.1 inches long, 27.6 inches wide and 42.2 inches high, and weigh 68 pounds. The dressers have six drawers with silver or black handles. “LBS-XD-4-2-BLK-023” or “LBS-XD-4-2-WIT-024” is printed on a label on the product packaging.",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/FJTJBSI-Recalls-Six-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "FJTJBSI Six-drawer Dressers"
+      ],
+      "hazards": [
+        "The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards that can result in risks of serious injuries or death to children. The dressers violate the mandatory safety standards as required by the STURDY Act."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/FJTJBSI-Recalls-Six-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+      "source_record_id": "1520095e474cbce2e411bcc5",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "ae3e0edbdbfffb57f82d29b85ad3497243103706869dda6c4a893106412e20d7"
+    },
+    {
+      "id": "cpsc-10ce671d",
+      "recall_number": "26750",
+      "title": "Junkins Recalls DHASUWT Hair Dryer Brushes Due to Risk of Serious Injury or Death from Electrocution, and Shock Hazards; Violate Federal Regulations; Smoking and Fire Hazards",
+      "description": "This recall involves DHASUWT Hair Dryer and Blow Dryer Brush in 1, Negative Ion Hair Dryer Brush, 1Step Ionic Hair Straightener Brush Hair Dryer Hot Air Brush, Hair Styling Tool Straightening Dryer, with model number XR-8801. The hair dryers are black hot air dryer paddle brushes with a pink design and brush bristles. There are three heat settings on the hair dryers. The top of the product packaging is labeled XRUI with the model name XR-8801. ",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Junkins-Recalls-DHASUWT-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-and-Shock-Hazards-Violate-Federal-Regulations-Smoking-and-Fire-Hazards",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "DHASUWT Hair Dryer and Blow Dryer Brushes"
+      ],
+      "hazards": [
+        "The recalled hair dryer brushes lack an integrated immersion protection device, which presents a substantial product hazard to consumers, posing the risk of death or serious injury from electrocution or shock if the hair dryers fall into water while plugged in to an electrical source. The recalled hair dryer brushes also pose the risk of death or serious injury from smoking and fire hazards."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Junkins-Recalls-DHASUWT-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-and-Shock-Hazards-Violate-Federal-Regulations-Smoking-and-Fire-Hazards",
+      "source_record_id": "6493bd1e6db29f259678c37b",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "2ecce669e4487ed520086810ba39243bb8180ba02592fb3f39011f5204ff594f"
+    },
+    {
+      "id": "cpsc-b105ac0f",
+      "recall_number": "26755",
+      "title": "Prepared Hero Recalls Fire Spray Canisters Due to Risk of Serious Injury or Death from Fire and Burn Hazards",
+      "description": "This recall involves the Hero Fire Spray Fire Canisters. The canisters are either red and blue or red and have the company's logo on them with the name HERO Fire Spray on the front panel of the spray. Each canister contains 20 fluid ounces. The circular canisters are about 2.6 inches in diameter and 11.4 inches tall and weigh about 1.8 pounds. There is a black plastic release tab on the top of the canister. The affected batch is clearly marked on the base of the canister with the numbers \"09/202",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Prepared-Hero-Recalls-Fire-Spray-Canisters-Due-to-Risk-of-Serious-Injury-or-Death-from-Fire-and-Burn-Hazards",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Hero Fire Spray Canisters"
+      ],
+      "hazards": [
+        "The recalled fire spray canister can deteriorate overtime, causing it to rupture and fail to operate during a fire, posing the risk of serious injury or death from fire and burn hazards."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Prepared-Hero-Recalls-Fire-Spray-Canisters-Due-to-Risk-of-Serious-Injury-or-Death-from-Fire-and-Burn-Hazards",
+      "source_record_id": "acb4092508129245026d4abe",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "4287c97ffe6662a2096b9bedcf98a2c89ca0e839062ae457e0753278794790a3"
+    },
+    {
+      "id": "cpsc-8e638659",
+      "recall_number": "26748",
+      "title": "Ricky Joy Recalls More Than 2.3 Million Sour Crush Candy Bottles Due to Risk of Serious Injury or Death from Choking Hazard",
+      "description": "This recall involves Ricky Joy-branded Sour Crush Rolling Liquid Candy bottles. The bottles contain 1.85 fluid ounce of sour liquid candy intended to be applied through the bottle’s rollerball top. The plastic candy bottles were sold individually and in packs of three or 12 bottles per pack, and in the following colors/flavors: blue (blue raspberry), red (strawberry), green (green apple) and pink (watermelon). The Ricky Joy logo, “EXTREME SOUR, “SOUR CRUSH” and the flavor name are printed on the",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Ricky-Joy-Recalls-More-Than-2-3-Million-Sour-Crush-Candy-Bottles-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard",
+      "category": "electronics",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "Colombia"
+      ],
+      "products": [
+        "Ricky Joy Sour Crush Rolling Liquid Candy Bottles"
+      ],
+      "hazards": [
+        "The rolling ball on the recalled candy bottles can detach, posing a risk of serious injury or death from choking hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Ricky-Joy-Recalls-More-Than-2-3-Million-Sour-Crush-Candy-Bottles-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard",
+      "source_record_id": "374187eb065c0a9a7afcb6b0",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "73d1ae22c658ad1ad31d6678e0d1e446de88a0985ab85ec4b4fb64865cf67fda"
+    },
+    {
+      "id": "cpsc-8ad259d8",
+      "recall_number": "26753",
+      "title": "SQT Recalls Lontcs Busy Boards Due to Risk of Serious Injury from Lead Poisoning; Violate Federal Lead Paint Ban",
+      "description": "This recall involves the Lontcs Busy Board toys. The toys consist of a wood board and metal handle with multiple attached components including a black plastic buckle with cream colored straps; a brown zipper; a metal latch; a caster wheel; a white doorbell; a lock with keys; a music box with crank; a zig zag duck puzzle; an abacus with three rows of white; red and tan beads; and a white fidget spinner.",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/SQT-Recalls-Lontcs-Busy-Boards-Due-to-Risk-of-Serious-Injury-from-Lead-Poisoning-Violate-Federal-Lead-Paint-Ban",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Lontcs Busy Board"
+      ],
+      "hazards": [
+        "The toys’ zipper contains levels of lead that exceed the standard set in the federal lead paint ban. Lead is toxic if ingested by young children and can cause adverse health issues."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/SQT-Recalls-Lontcs-Busy-Boards-Due-to-Risk-of-Serious-Injury-from-Lead-Poisoning-Violate-Federal-Lead-Paint-Ban",
+      "source_record_id": "25cc730be7cc45d01f84257e",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "ebca844bc5d663ae5f9ab6c63e2c01f71904270da48691159aaae93eb96de627"
+    },
+    {
+      "id": "cpsc-f05fb18f",
+      "recall_number": "26752",
+      "title": "Sweet Cubby Recalls Children's Loungewear Sets Due to Risk of Serious Injury or Death from Burn Hazard; Violate Mandatory Standard for Children’s Sleepwear",
+      "description": "This recall involves all Sweet Cubby children’s loungewear sets. The recalled two-piece loungewear sets consist of a short-sleeved shirt and matching shorts. The sets were sold in various colors and in children’s sizes 5-6Y through 13-14Y. “Batch No.: 272779” and the size are printed on the sewn-in neck label and on the seam label. ",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Sweet-Cubby-Recalls-Childrens-Loungewear-Sets-Due-to-Risk-of-Serious-Injury-or-Death-from-Burn-Hazard-Violate-Mandatory-Standard-for-Childrens-Sleepwear",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Sweet Cubby Children’s Loungewear Sets"
+      ],
+      "hazards": [
+        "The recalled children’s loungewear sets violate the mandatory flammability standard for children’s sleepwear, posing a risk of serious burn injuries or death."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Sweet-Cubby-Recalls-Childrens-Loungewear-Sets-Due-to-Risk-of-Serious-Injury-or-Death-from-Burn-Hazard-Violate-Mandatory-Standard-for-Childrens-Sleepwear",
+      "source_record_id": "e04e62a034b378437c63417c",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "ed5c43407750c5610327636d47d535f208e9d34e0d129749fa31cce552da3762"
+    },
+    {
+      "id": "cpsc-f6968547",
+      "recall_number": "26763",
+      "title": "Triumph Motorcycles Recalls Closed Course Competition Motorcycles Due to Risk of Serious Injury or Death from Crash Hazard",
+      "description": "This recall involves 2025 and 2026 Triumph TF450 models Closed Course Competition Motorcycles. The motorcycles have a Jet Black/Pure White color scheme. Affected models are TF450-C, TF450-E, TF450-X and TF450RC Edition. The range of affected Vehicle Identification Numbers (VIN) is XXXXXXXXXXXCD4981 to and including XXXXXXXXXXXCP1597. The VIN is located on the vehicle identification plate on the left side of the steering head. Consumers can check if their VIN is included in this recall at https:/",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Triumph-Motorcycles-Recalls-Closed-Course-Competition-Motorcycles-Due-to-Risk-of-Serious-Injury-or-Death-from-Crash-Hazard",
+      "category": "auto",
+      "china_related": false,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "Thailand"
+      ],
+      "products": [
+        "2025 and 2026 Triumph TF450 models Closed Course Competition Motorcycles"
+      ],
+      "hazards": [
+        "The engine rocker arm on the recalled motorcycles can seize or stick and the exhaust valves can remain open or break, posing a risk of serious injury or death from a crash hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Triumph-Motorcycles-Recalls-Closed-Course-Competition-Motorcycles-Due-to-Risk-of-Serious-Injury-or-Death-from-Crash-Hazard",
+      "source_record_id": "0988c0a23124fcc85f32ba54",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "d97ed3fc68bc26cde82321d9418acfd627435bf5ec808c65ac702dc78a15f0e6"
+    },
+    {
+      "id": "cpsc-a66b4d41",
+      "recall_number": "26749",
+      "title": "Victgoal Recalls Bicycle Helmets Due to Risk of Serious Injury or Death from Head Injury; Violate Mandatory Standard for Bicycle Helmets",
+      "description": "This recall involves Victgoal-branded bicycle helmets. The red helmets were sold in size small (S), fitting a head circumference of about 19.68 to 21.25 inches. The helmets have red padding, black straps with a silver reflective pattern in the center, a black and red buckle and a black fit-adjusting knob at the back. Only helmets manufactured in November 2025 are included in this recall. “Model HT-006,” “Production: 2025/11” and “Ref/Lot# 2025A1101” are printed on a label on the inside of the he",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Victgoal-Recalls-Bicycle-Helmets-Due-to-Risk-of-Serious-Injury-or-Death-from-Head-Injury-Violate-Mandatory-Standard-for-Bicycle-Helmets",
+      "category": "sports",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Victgoal Children’s Bike Helmets"
+      ],
+      "hazards": [
+        "The recalled helmets violate the mandatory safety standard for bicycle helmets because the helmets do not comply with the retention system, positional stability and certification requirements. The helmets can fail to protect the user in the event of a crash, posing a serious risk of injury or death due to head injury."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Victgoal-Recalls-Bicycle-Helmets-Due-to-Risk-of-Serious-Injury-or-Death-from-Head-Injury-Violate-Mandatory-Standard-for-Bicycle-Helmets",
+      "source_record_id": "ddc57adac6ca7cc0ccb096fa",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "a94856c78339d67b7265f3d33e0361bbb03de37a7cdb721bb86e4ab116f1f2a9"
+    },
+    {
+      "id": "cpsc-7cb32e6b",
+      "recall_number": "26766",
+      "title": "ZMC Group Expands Recall of Light-Up Children’s Toys Due to Risk of Serious Injury or Death from Battery Ingestion; Violate Mandatory Standard for Toys",
+      "description": "This recall expansion involves ZMC Group battery-operated light-up toys including a Mexican flag theme foam stick, a Unicorn headband, assorted colors and transparent jelly rings and heart shaped balloon flowers. ",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/ZMC-Group-Expands-Recall-of-Light-Up-Childrens-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Light-Up Children’s Toys"
+      ],
+      "hazards": [
+        "The recalled light-up toys violate the mandatory safety standard for children’s toys because the toys contain button cell batteries that can be easily accessed by children. If button cell or coin batteries are swallowed, the ingested batteries can cause serious injuries, including internal chemical burns, and death."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/ZMC-Group-Expands-Recall-of-Light-Up-Childrens-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "source_record_id": "16a755692f7ca8940dbf4504",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "add0f21eafd011441211bac2e47765ed08fcb61a91d0843843b7736f8904c0d1"
     }
   ],
   "china_related": [
@@ -12104,6 +12464,276 @@
       "verified_at": "2026-09-10T18:43:45.554945+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "8c7e2a917cbd636f8c74dd063e83d0b9726353018d72ad48d68811ea227903ad"
+    },
+    {
+      "id": "cpsc-9978e9e9",
+      "recall_number": "26761",
+      "title": "Cade California Electronic Recalls Finger Light Toys Due to Risk of Serious Injury or Death from Battery Ingestion; Violate Mandatory Standard for Toys",
+      "description": "This recall involves California Cade Electronic Finger Lights which contain three button cells batteries. The finger lights come in 50 pieces in a box in white, blue, red and green. The finger lights have “California Cade Electronic” and “Finger Flashlights” printed on labels located on the front of the package.",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Cade-California-Electronic-Recalls-Finger-Light-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Cade California Electronic Projecting Finger Light Toys"
+      ],
+      "hazards": [
+        "The recalled finger lights violate the mandatory safety standard for toys because the toys contain button cell batteries that can be easily accessed by children. If button cell or coin batteries are swallowed, the ingested batteries can cause serious injuries, including internal chemical burns, and death."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Cade-California-Electronic-Recalls-Finger-Light-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "source_record_id": "3464c7f6054b36ddb7858115",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "f45db6190b4ef24f2fae9031334aaa8c60898d61e3f1af23b8b3cb8620cd1d0d"
+    },
+    {
+      "id": "cpsc-ead3f24f",
+      "recall_number": "26754",
+      "title": "Guang Zhou Recalls Wantefully Hair Dryer Brushes Due to Risk of Serious Injury or Death from Electrocution, Shock and Burn Hazards; Violate Federal Regulations",
+      "description": "This recall involves Wantefully 2 in 1 Hair Dryer & Styler, One Step Hair Dryer Brush Straightner, and the Negative Ion Electric Hot Air Blow Dryer Comb, model number XR-8801. The hair dryers are black hot air dryer paddle brushes with a striped pink design and brush bristles. There are three heat settings on the hair dryers. XRUI and the model name XR-8801 are printed on the top of the product packaging.",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Guang-Zhou-Recalls-Wantefully-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-Shock-and-Burn-Hazards-Violate-Federal-Regulations",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Wantefully Hair Dryer Brushes"
+      ],
+      "hazards": [
+        "The recalled hair dryer brushes are in violation of federal regulations for hair dryers as they lack an integrated immersion protection device, which presents a substantial product hazard to consumers and  the risk of death or serious injury from electrocution or shock if the hair dryers fall into water while plugged in. In addition, the recalled hair dryer brushes can overheat, posing a burn hazard."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Guang-Zhou-Recalls-Wantefully-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-Shock-and-Burn-Hazards-Violate-Federal-Regulations",
+      "source_record_id": "5eaa8ebd75f0af42835aa056",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "607b6300c948ad3571be3731ef2a1b4b0f15e94799ba9e6106895256c67357a2"
+    },
+    {
+      "id": "cpsc-aa40d567",
+      "recall_number": "26764",
+      "title": "https://www.cpsc.gov/Recalls/2026/FJTJBSI-Recalls-Six-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+      "description": "This recall involves the FJTJBSI-branded wood dressers. The black or white dressers measure about 15.1 inches long, 27.6 inches wide and 42.2 inches high, and weigh 68 pounds. The dressers have six drawers with silver or black handles. “LBS-XD-4-2-BLK-023” or “LBS-XD-4-2-WIT-024” is printed on a label on the product packaging.",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/FJTJBSI-Recalls-Six-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "FJTJBSI Six-drawer Dressers"
+      ],
+      "hazards": [
+        "The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards that can result in risks of serious injuries or death to children. The dressers violate the mandatory safety standards as required by the STURDY Act."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/FJTJBSI-Recalls-Six-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+      "source_record_id": "1520095e474cbce2e411bcc5",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "ae3e0edbdbfffb57f82d29b85ad3497243103706869dda6c4a893106412e20d7"
+    },
+    {
+      "id": "cpsc-10ce671d",
+      "recall_number": "26750",
+      "title": "Junkins Recalls DHASUWT Hair Dryer Brushes Due to Risk of Serious Injury or Death from Electrocution, and Shock Hazards; Violate Federal Regulations; Smoking and Fire Hazards",
+      "description": "This recall involves DHASUWT Hair Dryer and Blow Dryer Brush in 1, Negative Ion Hair Dryer Brush, 1Step Ionic Hair Straightener Brush Hair Dryer Hot Air Brush, Hair Styling Tool Straightening Dryer, with model number XR-8801. The hair dryers are black hot air dryer paddle brushes with a pink design and brush bristles. There are three heat settings on the hair dryers. The top of the product packaging is labeled XRUI with the model name XR-8801. ",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Junkins-Recalls-DHASUWT-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-and-Shock-Hazards-Violate-Federal-Regulations-Smoking-and-Fire-Hazards",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "DHASUWT Hair Dryer and Blow Dryer Brushes"
+      ],
+      "hazards": [
+        "The recalled hair dryer brushes lack an integrated immersion protection device, which presents a substantial product hazard to consumers, posing the risk of death or serious injury from electrocution or shock if the hair dryers fall into water while plugged in to an electrical source. The recalled hair dryer brushes also pose the risk of death or serious injury from smoking and fire hazards."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Junkins-Recalls-DHASUWT-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-and-Shock-Hazards-Violate-Federal-Regulations-Smoking-and-Fire-Hazards",
+      "source_record_id": "6493bd1e6db29f259678c37b",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "2ecce669e4487ed520086810ba39243bb8180ba02592fb3f39011f5204ff594f"
+    },
+    {
+      "id": "cpsc-b105ac0f",
+      "recall_number": "26755",
+      "title": "Prepared Hero Recalls Fire Spray Canisters Due to Risk of Serious Injury or Death from Fire and Burn Hazards",
+      "description": "This recall involves the Hero Fire Spray Fire Canisters. The canisters are either red and blue or red and have the company's logo on them with the name HERO Fire Spray on the front panel of the spray. Each canister contains 20 fluid ounces. The circular canisters are about 2.6 inches in diameter and 11.4 inches tall and weigh about 1.8 pounds. There is a black plastic release tab on the top of the canister. The affected batch is clearly marked on the base of the canister with the numbers \"09/202",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Prepared-Hero-Recalls-Fire-Spray-Canisters-Due-to-Risk-of-Serious-Injury-or-Death-from-Fire-and-Burn-Hazards",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Hero Fire Spray Canisters"
+      ],
+      "hazards": [
+        "The recalled fire spray canister can deteriorate overtime, causing it to rupture and fail to operate during a fire, posing the risk of serious injury or death from fire and burn hazards."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Prepared-Hero-Recalls-Fire-Spray-Canisters-Due-to-Risk-of-Serious-Injury-or-Death-from-Fire-and-Burn-Hazards",
+      "source_record_id": "acb4092508129245026d4abe",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "4287c97ffe6662a2096b9bedcf98a2c89ca0e839062ae457e0753278794790a3"
+    },
+    {
+      "id": "cpsc-8ad259d8",
+      "recall_number": "26753",
+      "title": "SQT Recalls Lontcs Busy Boards Due to Risk of Serious Injury from Lead Poisoning; Violate Federal Lead Paint Ban",
+      "description": "This recall involves the Lontcs Busy Board toys. The toys consist of a wood board and metal handle with multiple attached components including a black plastic buckle with cream colored straps; a brown zipper; a metal latch; a caster wheel; a white doorbell; a lock with keys; a music box with crank; a zig zag duck puzzle; an abacus with three rows of white; red and tan beads; and a white fidget spinner.",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/SQT-Recalls-Lontcs-Busy-Boards-Due-to-Risk-of-Serious-Injury-from-Lead-Poisoning-Violate-Federal-Lead-Paint-Ban",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Lontcs Busy Board"
+      ],
+      "hazards": [
+        "The toys’ zipper contains levels of lead that exceed the standard set in the federal lead paint ban. Lead is toxic if ingested by young children and can cause adverse health issues."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/SQT-Recalls-Lontcs-Busy-Boards-Due-to-Risk-of-Serious-Injury-from-Lead-Poisoning-Violate-Federal-Lead-Paint-Ban",
+      "source_record_id": "25cc730be7cc45d01f84257e",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "ebca844bc5d663ae5f9ab6c63e2c01f71904270da48691159aaae93eb96de627"
+    },
+    {
+      "id": "cpsc-f05fb18f",
+      "recall_number": "26752",
+      "title": "Sweet Cubby Recalls Children's Loungewear Sets Due to Risk of Serious Injury or Death from Burn Hazard; Violate Mandatory Standard for Children’s Sleepwear",
+      "description": "This recall involves all Sweet Cubby children’s loungewear sets. The recalled two-piece loungewear sets consist of a short-sleeved shirt and matching shorts. The sets were sold in various colors and in children’s sizes 5-6Y through 13-14Y. “Batch No.: 272779” and the size are printed on the sewn-in neck label and on the seam label. ",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Sweet-Cubby-Recalls-Childrens-Loungewear-Sets-Due-to-Risk-of-Serious-Injury-or-Death-from-Burn-Hazard-Violate-Mandatory-Standard-for-Childrens-Sleepwear",
+      "category": "apparel",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Sweet Cubby Children’s Loungewear Sets"
+      ],
+      "hazards": [
+        "The recalled children’s loungewear sets violate the mandatory flammability standard for children’s sleepwear, posing a risk of serious burn injuries or death."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Sweet-Cubby-Recalls-Childrens-Loungewear-Sets-Due-to-Risk-of-Serious-Injury-or-Death-from-Burn-Hazard-Violate-Mandatory-Standard-for-Childrens-Sleepwear",
+      "source_record_id": "e04e62a034b378437c63417c",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "ed5c43407750c5610327636d47d535f208e9d34e0d129749fa31cce552da3762"
+    },
+    {
+      "id": "cpsc-a66b4d41",
+      "recall_number": "26749",
+      "title": "Victgoal Recalls Bicycle Helmets Due to Risk of Serious Injury or Death from Head Injury; Violate Mandatory Standard for Bicycle Helmets",
+      "description": "This recall involves Victgoal-branded bicycle helmets. The red helmets were sold in size small (S), fitting a head circumference of about 19.68 to 21.25 inches. The helmets have red padding, black straps with a silver reflective pattern in the center, a black and red buckle and a black fit-adjusting knob at the back. Only helmets manufactured in November 2025 are included in this recall. “Model HT-006,” “Production: 2025/11” and “Ref/Lot# 2025A1101” are printed on a label on the inside of the he",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/Victgoal-Recalls-Bicycle-Helmets-Due-to-Risk-of-Serious-Injury-or-Death-from-Head-Injury-Violate-Mandatory-Standard-for-Bicycle-Helmets",
+      "category": "sports",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Victgoal Children’s Bike Helmets"
+      ],
+      "hazards": [
+        "The recalled helmets violate the mandatory safety standard for bicycle helmets because the helmets do not comply with the retention system, positional stability and certification requirements. The helmets can fail to protect the user in the event of a crash, posing a serious risk of injury or death due to head injury."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/Victgoal-Recalls-Bicycle-Helmets-Due-to-Risk-of-Serious-Injury-or-Death-from-Head-Injury-Violate-Mandatory-Standard-for-Bicycle-Helmets",
+      "source_record_id": "ddc57adac6ca7cc0ccb096fa",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "a94856c78339d67b7265f3d33e0361bbb03de37a7cdb721bb86e4ab116f1f2a9"
+    },
+    {
+      "id": "cpsc-7cb32e6b",
+      "recall_number": "26766",
+      "title": "ZMC Group Expands Recall of Light-Up Children’s Toys Due to Risk of Serious Injury or Death from Battery Ingestion; Violate Mandatory Standard for Toys",
+      "description": "This recall expansion involves ZMC Group battery-operated light-up toys including a Mexican flag theme foam stick, a Unicorn headband, assorted colors and transparent jelly rings and heart shaped balloon flowers. ",
+      "date": "2026-09-10",
+      "url": "https://www.cpsc.gov/Recalls/2026/ZMC-Group-Expands-Recall-of-Light-Up-Childrens-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "category": "electronics",
+      "china_related": true,
+      "source": "CPSC",
+      "manufacturer_countries": [
+        "China"
+      ],
+      "products": [
+        "Light-Up Children’s Toys"
+      ],
+      "hazards": [
+        "The recalled light-up toys violate the mandatory safety standard for children’s toys because the toys contain button cell batteries that can be easily accessed by children. If button cell or coin batteries are swallowed, the ingested batteries can cause serious injuries, including internal chemical burns, and death."
+      ],
+      "source_kind": "official",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Recalls/2026/ZMC-Group-Expands-Recall-of-Light-Up-Childrens-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+      "source_record_id": "16a755692f7ca8940dbf4504",
+      "verification_status": "verified",
+      "collected_at": "2026-09-11T12:20:07.008115+08:00",
+      "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+      "verified_at": "2026-09-11T12:20:07.008115+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "add0f21eafd011441211bac2e47765ed08fcb61a91d0843843b7736f8904c0d1"
     }
   ],
   "by_category": {
@@ -16611,6 +17241,186 @@
         "verified_at": "2026-09-10T18:43:45.554945+08:00",
         "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
         "evidence_hash": "8c7e2a917cbd636f8c74dd063e83d0b9726353018d72ad48d68811ea227903ad"
+      },
+      {
+        "id": "cpsc-9978e9e9",
+        "recall_number": "26761",
+        "title": "Cade California Electronic Recalls Finger Light Toys Due to Risk of Serious Injury or Death from Battery Ingestion; Violate Mandatory Standard for Toys",
+        "description": "This recall involves California Cade Electronic Finger Lights which contain three button cells batteries. The finger lights come in 50 pieces in a box in white, blue, red and green. The finger lights have “California Cade Electronic” and “Finger Flashlights” printed on labels located on the front of the package.",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/Cade-California-Electronic-Recalls-Finger-Light-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Cade California Electronic Projecting Finger Light Toys"
+        ],
+        "hazards": [
+          "The recalled finger lights violate the mandatory safety standard for toys because the toys contain button cell batteries that can be easily accessed by children. If button cell or coin batteries are swallowed, the ingested batteries can cause serious injuries, including internal chemical burns, and death."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/Cade-California-Electronic-Recalls-Finger-Light-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+        "source_record_id": "3464c7f6054b36ddb7858115",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "f45db6190b4ef24f2fae9031334aaa8c60898d61e3f1af23b8b3cb8620cd1d0d"
+      },
+      {
+        "id": "cpsc-ead3f24f",
+        "recall_number": "26754",
+        "title": "Guang Zhou Recalls Wantefully Hair Dryer Brushes Due to Risk of Serious Injury or Death from Electrocution, Shock and Burn Hazards; Violate Federal Regulations",
+        "description": "This recall involves Wantefully 2 in 1 Hair Dryer & Styler, One Step Hair Dryer Brush Straightner, and the Negative Ion Electric Hot Air Blow Dryer Comb, model number XR-8801. The hair dryers are black hot air dryer paddle brushes with a striped pink design and brush bristles. There are three heat settings on the hair dryers. XRUI and the model name XR-8801 are printed on the top of the product packaging.",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/Guang-Zhou-Recalls-Wantefully-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-Shock-and-Burn-Hazards-Violate-Federal-Regulations",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Wantefully Hair Dryer Brushes"
+        ],
+        "hazards": [
+          "The recalled hair dryer brushes are in violation of federal regulations for hair dryers as they lack an integrated immersion protection device, which presents a substantial product hazard to consumers and  the risk of death or serious injury from electrocution or shock if the hair dryers fall into water while plugged in. In addition, the recalled hair dryer brushes can overheat, posing a burn hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/Guang-Zhou-Recalls-Wantefully-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-Shock-and-Burn-Hazards-Violate-Federal-Regulations",
+        "source_record_id": "5eaa8ebd75f0af42835aa056",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "607b6300c948ad3571be3731ef2a1b4b0f15e94799ba9e6106895256c67357a2"
+      },
+      {
+        "id": "cpsc-10ce671d",
+        "recall_number": "26750",
+        "title": "Junkins Recalls DHASUWT Hair Dryer Brushes Due to Risk of Serious Injury or Death from Electrocution, and Shock Hazards; Violate Federal Regulations; Smoking and Fire Hazards",
+        "description": "This recall involves DHASUWT Hair Dryer and Blow Dryer Brush in 1, Negative Ion Hair Dryer Brush, 1Step Ionic Hair Straightener Brush Hair Dryer Hot Air Brush, Hair Styling Tool Straightening Dryer, with model number XR-8801. The hair dryers are black hot air dryer paddle brushes with a pink design and brush bristles. There are three heat settings on the hair dryers. The top of the product packaging is labeled XRUI with the model name XR-8801. ",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/Junkins-Recalls-DHASUWT-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-and-Shock-Hazards-Violate-Federal-Regulations-Smoking-and-Fire-Hazards",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "DHASUWT Hair Dryer and Blow Dryer Brushes"
+        ],
+        "hazards": [
+          "The recalled hair dryer brushes lack an integrated immersion protection device, which presents a substantial product hazard to consumers, posing the risk of death or serious injury from electrocution or shock if the hair dryers fall into water while plugged in to an electrical source. The recalled hair dryer brushes also pose the risk of death or serious injury from smoking and fire hazards."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/Junkins-Recalls-DHASUWT-Hair-Dryer-Brushes-Due-to-Risk-of-Serious-Injury-or-Death-from-Electrocution-and-Shock-Hazards-Violate-Federal-Regulations-Smoking-and-Fire-Hazards",
+        "source_record_id": "6493bd1e6db29f259678c37b",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "2ecce669e4487ed520086810ba39243bb8180ba02592fb3f39011f5204ff594f"
+      },
+      {
+        "id": "cpsc-b105ac0f",
+        "recall_number": "26755",
+        "title": "Prepared Hero Recalls Fire Spray Canisters Due to Risk of Serious Injury or Death from Fire and Burn Hazards",
+        "description": "This recall involves the Hero Fire Spray Fire Canisters. The canisters are either red and blue or red and have the company's logo on them with the name HERO Fire Spray on the front panel of the spray. Each canister contains 20 fluid ounces. The circular canisters are about 2.6 inches in diameter and 11.4 inches tall and weigh about 1.8 pounds. There is a black plastic release tab on the top of the canister. The affected batch is clearly marked on the base of the canister with the numbers \"09/202",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/Prepared-Hero-Recalls-Fire-Spray-Canisters-Due-to-Risk-of-Serious-Injury-or-Death-from-Fire-and-Burn-Hazards",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Hero Fire Spray Canisters"
+        ],
+        "hazards": [
+          "The recalled fire spray canister can deteriorate overtime, causing it to rupture and fail to operate during a fire, posing the risk of serious injury or death from fire and burn hazards."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/Prepared-Hero-Recalls-Fire-Spray-Canisters-Due-to-Risk-of-Serious-Injury-or-Death-from-Fire-and-Burn-Hazards",
+        "source_record_id": "acb4092508129245026d4abe",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "4287c97ffe6662a2096b9bedcf98a2c89ca0e839062ae457e0753278794790a3"
+      },
+      {
+        "id": "cpsc-8e638659",
+        "recall_number": "26748",
+        "title": "Ricky Joy Recalls More Than 2.3 Million Sour Crush Candy Bottles Due to Risk of Serious Injury or Death from Choking Hazard",
+        "description": "This recall involves Ricky Joy-branded Sour Crush Rolling Liquid Candy bottles. The bottles contain 1.85 fluid ounce of sour liquid candy intended to be applied through the bottle’s rollerball top. The plastic candy bottles were sold individually and in packs of three or 12 bottles per pack, and in the following colors/flavors: blue (blue raspberry), red (strawberry), green (green apple) and pink (watermelon). The Ricky Joy logo, “EXTREME SOUR, “SOUR CRUSH” and the flavor name are printed on the",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/Ricky-Joy-Recalls-More-Than-2-3-Million-Sour-Crush-Candy-Bottles-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard",
+        "category": "electronics",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "Colombia"
+        ],
+        "products": [
+          "Ricky Joy Sour Crush Rolling Liquid Candy Bottles"
+        ],
+        "hazards": [
+          "The rolling ball on the recalled candy bottles can detach, posing a risk of serious injury or death from choking hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/Ricky-Joy-Recalls-More-Than-2-3-Million-Sour-Crush-Candy-Bottles-Due-to-Risk-of-Serious-Injury-or-Death-from-Choking-Hazard",
+        "source_record_id": "374187eb065c0a9a7afcb6b0",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "73d1ae22c658ad1ad31d6678e0d1e446de88a0985ab85ec4b4fb64865cf67fda"
+      },
+      {
+        "id": "cpsc-7cb32e6b",
+        "recall_number": "26766",
+        "title": "ZMC Group Expands Recall of Light-Up Children’s Toys Due to Risk of Serious Injury or Death from Battery Ingestion; Violate Mandatory Standard for Toys",
+        "description": "This recall expansion involves ZMC Group battery-operated light-up toys including a Mexican flag theme foam stick, a Unicorn headband, assorted colors and transparent jelly rings and heart shaped balloon flowers. ",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/ZMC-Group-Expands-Recall-of-Light-Up-Childrens-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+        "category": "electronics",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Light-Up Children’s Toys"
+        ],
+        "hazards": [
+          "The recalled light-up toys violate the mandatory safety standard for children’s toys because the toys contain button cell batteries that can be easily accessed by children. If button cell or coin batteries are swallowed, the ingested batteries can cause serious injuries, including internal chemical burns, and death."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/ZMC-Group-Expands-Recall-of-Light-Up-Childrens-Toys-Due-to-Risk-of-Serious-Injury-or-Death-from-Battery-Ingestion-Violate-Mandatory-Standard-for-Toys",
+        "source_record_id": "16a755692f7ca8940dbf4504",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "add0f21eafd011441211bac2e47765ed08fcb61a91d0843843b7736f8904c0d1"
       }
     ],
     "auto": [
@@ -16853,6 +17663,36 @@
         "published_at": "2026-05-14",
         "verified_at": "2026-08-31T21:30:22.250980+00:00",
         "evidence_hash": "ce4a62572651f45fd3afc6245e553ffd0c05300e13ee5ede219f3a5976bb023b"
+      },
+      {
+        "id": "cpsc-f6968547",
+        "recall_number": "26763",
+        "title": "Triumph Motorcycles Recalls Closed Course Competition Motorcycles Due to Risk of Serious Injury or Death from Crash Hazard",
+        "description": "This recall involves 2025 and 2026 Triumph TF450 models Closed Course Competition Motorcycles. The motorcycles have a Jet Black/Pure White color scheme. Affected models are TF450-C, TF450-E, TF450-X and TF450RC Edition. The range of affected Vehicle Identification Numbers (VIN) is XXXXXXXXXXXCD4981 to and including XXXXXXXXXXXCP1597. The VIN is located on the vehicle identification plate on the left side of the steering head. Consumers can check if their VIN is included in this recall at https:/",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/Triumph-Motorcycles-Recalls-Closed-Course-Competition-Motorcycles-Due-to-Risk-of-Serious-Injury-or-Death-from-Crash-Hazard",
+        "category": "auto",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "Thailand"
+        ],
+        "products": [
+          "2025 and 2026 Triumph TF450 models Closed Course Competition Motorcycles"
+        ],
+        "hazards": [
+          "The engine rocker arm on the recalled motorcycles can seize or stick and the exhaust valves can remain open or break, posing a risk of serious injury or death from a crash hazard."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/Triumph-Motorcycles-Recalls-Closed-Course-Competition-Motorcycles-Due-to-Risk-of-Serious-Injury-or-Death-from-Crash-Hazard",
+        "source_record_id": "0988c0a23124fcc85f32ba54",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "d97ed3fc68bc26cde82321d9418acfd627435bf5ec808c65ac702dc78a15f0e6"
       }
     ],
     "home": [
@@ -17095,6 +17935,36 @@
         "verified_at": "2026-09-10T18:43:45.554945+08:00",
         "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
         "evidence_hash": "5e4e41265ae09c9cf649c700d48524ee8f6d3d7e97d98264195a74292fe96652"
+      },
+      {
+        "id": "cpsc-b6c4f99e",
+        "recall_number": "26756",
+        "title": "Dual Fuel Ranges Recalled Due to Risk of Serious Injury or Death from Fire or Explosion Hazards; Manufactured by AGA Rangemaster",
+        "description": "This recall involves freestanding AGA Elise and Mercury Series Dual Fuel Ranges, in 36- and 48-inch widths and freestanding La Cornue CornuFé Series Dual Fuel Ranges in 36- and 43-inch widths manufactured between March 19, 2025 and July 24, 2026. All units have gas surface burners, set for Natural or LP gas, with one to three electric ovens depending on size.  The products are sold in stainless steel, white and 13 other colors, which can be found at www.agarangeusa.com and www.lacornueusa.com. A",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/Dual-Fuel-Ranges-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Fire-or-Explosion-Hazards-Manufactured-by-AGA-Rangemaster",
+        "category": "home",
+        "china_related": false,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "United Kingdom"
+        ],
+        "products": [
+          "AGA Elise and Mercury Series Freestanding Dual Fuel Ranges and La Cornue CornuFé 90 and CornuFé 110 Series Freestanding Dual Fuel Ranges"
+        ],
+        "hazards": [
+          "Dual Fuel Ranges with a missing cap from the gas test port can cause a gas leak,​ posing a risk of serious injury or death from fire or explosion hazards."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/Dual-Fuel-Ranges-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-from-Fire-or-Explosion-Hazards-Manufactured-by-AGA-Rangemaster",
+        "source_record_id": "9ee119477d19461edb644599",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "c8d16fcfbe57ce5bdd2b680061afcf51101cab331a2ed35ff2a220965a901425"
       }
     ],
     "toys": [
@@ -18419,6 +19289,96 @@
         "verified_at": "2026-09-10T18:43:45.554945+08:00",
         "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
         "evidence_hash": "3bd23714c16db70c90a9fa95058ae7abe5a077f4aa555240efb66eb7a6b43126"
+      },
+      {
+        "id": "cpsc-aa40d567",
+        "recall_number": "26764",
+        "title": "https://www.cpsc.gov/Recalls/2026/FJTJBSI-Recalls-Six-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+        "description": "This recall involves the FJTJBSI-branded wood dressers. The black or white dressers measure about 15.1 inches long, 27.6 inches wide and 42.2 inches high, and weigh 68 pounds. The dressers have six drawers with silver or black handles. “LBS-XD-4-2-BLK-023” or “LBS-XD-4-2-WIT-024” is printed on a label on the product packaging.",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/FJTJBSI-Recalls-Six-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+        "category": "apparel",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "FJTJBSI Six-drawer Dressers"
+        ],
+        "hazards": [
+          "The recalled dressers are unstable if they are not anchored to the wall, posing tip-over and entrapment hazards that can result in risks of serious injuries or death to children. The dressers violate the mandatory safety standards as required by the STURDY Act."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/FJTJBSI-Recalls-Six-Drawer-Dressers-Due-to-Risk-of-Serious-Injury-or-Death-from-Tip-Over-and-Entrapment-Hazards-Violate-Mandatory-Standard-for-Clothing-Storage-Units",
+        "source_record_id": "1520095e474cbce2e411bcc5",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "ae3e0edbdbfffb57f82d29b85ad3497243103706869dda6c4a893106412e20d7"
+      },
+      {
+        "id": "cpsc-8ad259d8",
+        "recall_number": "26753",
+        "title": "SQT Recalls Lontcs Busy Boards Due to Risk of Serious Injury from Lead Poisoning; Violate Federal Lead Paint Ban",
+        "description": "This recall involves the Lontcs Busy Board toys. The toys consist of a wood board and metal handle with multiple attached components including a black plastic buckle with cream colored straps; a brown zipper; a metal latch; a caster wheel; a white doorbell; a lock with keys; a music box with crank; a zig zag duck puzzle; an abacus with three rows of white; red and tan beads; and a white fidget spinner.",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/SQT-Recalls-Lontcs-Busy-Boards-Due-to-Risk-of-Serious-Injury-from-Lead-Poisoning-Violate-Federal-Lead-Paint-Ban",
+        "category": "apparel",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Lontcs Busy Board"
+        ],
+        "hazards": [
+          "The toys’ zipper contains levels of lead that exceed the standard set in the federal lead paint ban. Lead is toxic if ingested by young children and can cause adverse health issues."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/SQT-Recalls-Lontcs-Busy-Boards-Due-to-Risk-of-Serious-Injury-from-Lead-Poisoning-Violate-Federal-Lead-Paint-Ban",
+        "source_record_id": "25cc730be7cc45d01f84257e",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "ebca844bc5d663ae5f9ab6c63e2c01f71904270da48691159aaae93eb96de627"
+      },
+      {
+        "id": "cpsc-f05fb18f",
+        "recall_number": "26752",
+        "title": "Sweet Cubby Recalls Children's Loungewear Sets Due to Risk of Serious Injury or Death from Burn Hazard; Violate Mandatory Standard for Children’s Sleepwear",
+        "description": "This recall involves all Sweet Cubby children’s loungewear sets. The recalled two-piece loungewear sets consist of a short-sleeved shirt and matching shorts. The sets were sold in various colors and in children’s sizes 5-6Y through 13-14Y. “Batch No.: 272779” and the size are printed on the sewn-in neck label and on the seam label. ",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/Sweet-Cubby-Recalls-Childrens-Loungewear-Sets-Due-to-Risk-of-Serious-Injury-or-Death-from-Burn-Hazard-Violate-Mandatory-Standard-for-Childrens-Sleepwear",
+        "category": "apparel",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Sweet Cubby Children’s Loungewear Sets"
+        ],
+        "hazards": [
+          "The recalled children’s loungewear sets violate the mandatory flammability standard for children’s sleepwear, posing a risk of serious burn injuries or death."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/Sweet-Cubby-Recalls-Childrens-Loungewear-Sets-Due-to-Risk-of-Serious-Injury-or-Death-from-Burn-Hazard-Violate-Mandatory-Standard-for-Childrens-Sleepwear",
+        "source_record_id": "e04e62a034b378437c63417c",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "ed5c43407750c5610327636d47d535f208e9d34e0d129749fa31cce552da3762"
       }
     ],
     "sports": [
@@ -18601,6 +19561,36 @@
         "verified_at": "2026-09-10T18:43:45.554945+08:00",
         "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
         "evidence_hash": "6429e320998925639192f69c52905cbc15bebf2a331e568f8bcc6c9743dde14c"
+      },
+      {
+        "id": "cpsc-a66b4d41",
+        "recall_number": "26749",
+        "title": "Victgoal Recalls Bicycle Helmets Due to Risk of Serious Injury or Death from Head Injury; Violate Mandatory Standard for Bicycle Helmets",
+        "description": "This recall involves Victgoal-branded bicycle helmets. The red helmets were sold in size small (S), fitting a head circumference of about 19.68 to 21.25 inches. The helmets have red padding, black straps with a silver reflective pattern in the center, a black and red buckle and a black fit-adjusting knob at the back. Only helmets manufactured in November 2025 are included in this recall. “Model HT-006,” “Production: 2025/11” and “Ref/Lot# 2025A1101” are printed on a label on the inside of the he",
+        "date": "2026-09-10",
+        "url": "https://www.cpsc.gov/Recalls/2026/Victgoal-Recalls-Bicycle-Helmets-Due-to-Risk-of-Serious-Injury-or-Death-from-Head-Injury-Violate-Mandatory-Standard-for-Bicycle-Helmets",
+        "category": "sports",
+        "china_related": true,
+        "source": "CPSC",
+        "manufacturer_countries": [
+          "China"
+        ],
+        "products": [
+          "Victgoal Children’s Bike Helmets"
+        ],
+        "hazards": [
+          "The recalled helmets violate the mandatory safety standard for bicycle helmets because the helmets do not comply with the retention system, positional stability and certification requirements. The helmets can fail to protect the user in the event of a crash, posing a serious risk of injury or death due to head injury."
+        ],
+        "source_kind": "official",
+        "source_type": "regulator",
+        "source_url": "https://www.cpsc.gov/Recalls/2026/Victgoal-Recalls-Bicycle-Helmets-Due-to-Risk-of-Serious-Injury-or-Death-from-Head-Injury-Violate-Mandatory-Standard-for-Bicycle-Helmets",
+        "source_record_id": "ddc57adac6ca7cc0ccb096fa",
+        "verification_status": "verified",
+        "collected_at": "2026-09-11T12:20:07.008115+08:00",
+        "retrieved_at": "2026-09-11T12:20:07.008115+08:00",
+        "verified_at": "2026-09-11T12:20:07.008115+08:00",
+        "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+        "evidence_hash": "a94856c78339d67b7265f3d33e0361bbb03de37a7cdb721bb86e4ab116f1f2a9"
       }
     ],
     "other": [
