@@ -110,6 +110,29 @@ test('coverage matrix keeps uploaded product evidence category-specific', () => 
   assert.ok(result.coverageMatrix.missingCells.some((cell) => cell.id === 'US|amazon|electronics|product'));
 });
 
+test('coverage matrix counts unique traceable source records', () => {
+  const plan = { requiredDomains: ['market'], scope: { marketCodes: ['US'], platformKeys: ['amazon'], categoryCodes: ['generic'] } };
+  const facts = { scope: plan.scope, records: { market: [
+    { record: { market_code: 'US' }, source: { recordId: 'market-us' } },
+    { record: { market_code: 'US' }, source: { recordId: 'market-us' } },
+  ] } };
+  const matrix = engine.buildCoverageMatrix(plan, facts);
+  assert.equal(matrix.cells[0].recordCount, 1);
+  assert.deepEqual(Array.from(matrix.cells[0].sourceRecordIds), ['market-us']);
+});
+
+test('scope check treats generic as an umbrella but enforces a selected category', () => {
+  window.JAY_MARKET_SCOPE_API = {
+    getConfig: () => ({ categoryProfiles: [
+      { code: 'generic', name: '通用品类', aliases: ['通用'] },
+      { code: 'electronics', name: '电子产品', aliases: ['电子'] },
+      { code: 'beauty', name: '美妆个护', aliases: ['美妆'] },
+    ] }),
+  };
+  assert.equal(engine.checkScope('电子产品作为市场示例', { categoryCodes: ['generic'] }).ok, true);
+  assert.equal(engine.checkScope('电子产品作为市场示例', { categoryCodes: ['beauty'] }).ok, false);
+});
+
 test('report data check marks empty tax and access domains as non-deterministic', () => {
   const plan = { requiredDomains: ['market'], sections: [] };
   const result = engine.checkData(plan, { scope: { marketCodes: ['US'], platformKeys: ['amazon'] }, records: {} });

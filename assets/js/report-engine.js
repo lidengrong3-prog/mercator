@@ -362,7 +362,7 @@
           cells.push(Object.assign(cell, {
             id: [pair.marketCode, pair.platformKey || '*', categoryCode || '*', domain].join('|'),
             label: coverageCellLabel(cell), required: true, covered: evidence.length > 0,
-            recordCount: evidence.length, sourceRecordIds: sourceRecordIds
+            recordCount: sourceRecordIds.length, sourceRecordIds: sourceRecordIds
           }));
         });
       });
@@ -692,6 +692,16 @@
       if (platformKeys.indexOf(platform.key) >= 0) return;
       platform.terms.forEach(function (value) { if (raw.indexOf(value) >= 0 && platformNames.indexOf(value) < 0) violations.push(value); });
     });
+    var categoryCodes = list(scope.categoryCodes).map(lower);
+    if (categoryCodes.indexOf('generic') < 0 && api().getConfig) {
+      list(api().getConfig().categoryProfiles).forEach(function (category) {
+        if (categoryCodes.indexOf(lower(category.code)) >= 0) return;
+        uniq([category.name, category.label].concat(list(category.aliases))).map(lower).forEach(function (value) {
+          if (!value || /^[a-z0-9]+$/i.test(value) && value.length <= 3) return;
+          if (raw.indexOf(value) >= 0) violations.push(value);
+        });
+      });
+    }
     return { ok: violations.length === 0, violations: uniq(violations) };
   }
 

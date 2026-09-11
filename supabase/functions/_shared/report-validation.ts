@@ -1,6 +1,6 @@
 import { assessReportContent, reportContentAllowsFormalOutput, type ContentQualityAssessment, type QualityGate } from './report-quality.ts';
 
-export const REPORT_VALIDATION_VERSION = '2026.09.08.1';
+export const REPORT_VALIDATION_VERSION = '2026.09.11.1';
 
 type Row = Record<string, unknown>;
 
@@ -129,7 +129,7 @@ function reportSections(content: Row): Row[] {
 
 function factualNumericTokens(line: string): string[] {
   let value = line;
-  if (/数据快照(?:时间)?|数据截至|数据时间|生成日期|当前日期|本快照时间/.test(value)) {
+  if (/数据快照(?:时间)?|数据截至|数据时间|生成日期|当前日期|本快照时间|截至\s*[（(]?\s*\d{4}/.test(value)) {
     value = value.replace(/\d{4}\s*年\s*\d{1,2}\s*月(?:\s*\d{1,2}\s*日)?/g, '').replace(/\d{4}-\d{2}-\d{2}(?:T[^\s]*)?/g, '');
   }
   return Array.from(value.matchAll(/(?:[$￥¥€£]\s*)?(\d+(?:[,.]\d+)*)(?:\s*(?:%|％|美元|美金|元|万|亿|百万|件|单|人|天|月|年|个|家|项|倍|bps|USD|CNY))|\d+\.\d+/gi))
@@ -273,7 +273,13 @@ export function validateFormalReportContent(
     if (submitted) {
       const serverSourceIds = strings(cell.evidence.map(sourceRecordId));
       const submittedSourceIds = strings(submitted.sourceRecordIds || submitted.source_record_ids);
-      if (submitted.covered !== true || Number(submitted.recordCount ?? submitted.record_count) !== cell.evidence.length || !sameSet(submittedSourceIds, serverSourceIds)) {
+      const unknownSourceIds = submittedSourceIds.filter((sourceId) => !serverSourceIds.includes(sourceId));
+      if (
+        submitted.covered !== true
+        || !submittedSourceIds.length
+        || Number(submitted.recordCount ?? submitted.record_count) !== submittedSourceIds.length
+        || unknownSourceIds.length
+      ) {
         addReason(reasons, { code: 'COVERAGE_CELL_EVIDENCE_MISMATCH', cell_id: cell.id, message: '覆盖格来源数量或来源编号与服务端记录不一致' });
       }
     }
@@ -342,10 +348,12 @@ export function validateFormalReportContent(
     if (selectedPlatforms.has(String(row.key || '').toLowerCase())) return;
     strings([row.name, ...array(row.aliases)]).forEach((term) => { if (textContainsTerm(sectionText, term)) addReason(reasons, { code: 'REPORT_SCOPE_TEXT_VIOLATION', value: term, message: '正文包含未选择平台' }); });
   });
-  context.categories.forEach((row) => {
-    if (selectedCategories.has(String(row.code || '').toLowerCase())) return;
-    strings([row.name, ...array(row.aliases)]).forEach((term) => { if (textContainsTerm(sectionText, term)) addReason(reasons, { code: 'REPORT_SCOPE_TEXT_VIOLATION', value: term, message: '正文包含未选择品类' }); });
-  });
+  if (!selectedCategories.has('generic')) {
+    context.categories.forEach((row) => {
+      if (selectedCategories.has(String(row.code || '').toLowerCase())) return;
+      strings([row.name, ...array(row.aliases)]).forEach((term) => { if (textContainsTerm(sectionText, term)) addReason(reasons, { code: 'REPORT_SCOPE_TEXT_VIOLATION', value: term, message: '正文包含未选择品类' }); });
+    });
+  }
 
   const missingCellIds = expectedCells.filter((cell) => !cell.evidence.length).map((cell) => cell.id);
   return {
