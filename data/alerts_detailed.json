@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generated_at": "2026-09-11T20:50:25.147802+08:00",
+    "generated_at": "2026-09-12T06:36:16.708546+08:00",
     "total": 12,
     "sources": {
       "cpsc": 5,
-      "policies": 2
+      "policies": 1
     }
   },
   "alerts": []
