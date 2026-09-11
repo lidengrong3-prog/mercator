@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-10T10:43:43.779268+00:00",
-  "as_of": "2026-09-10",
-  "last_attempted_at": "2026-09-11T04:41:12.753159+00:00",
+  "generated_at": "2026-09-11T12:50:14.030137+00:00",
+  "as_of": "2026-09-11",
+  "last_attempted_at": "2026-09-11T12:50:06.313318+00:00",
   "categories": [
     {
       "key": "electronics",
@@ -11,11 +11,11 @@
       "file": "electronics.json",
       "market_size": "US$ 2,616 亿 (2026E)",
       "cagr": "CAGR 4.8% (2026-2031)",
-      "policy_count": 19,
+      "policy_count": 20,
       "alert_count": 7,
       "collection_status": "succeeded",
-      "content_updated_at": "2026-09-10T10:43:34.305496+00:00",
-      "last_checked_at": "2026-09-11T04:41:12.753303+00:00",
+      "content_updated_at": "2026-09-11T12:50:06.313441+00:00",
+      "last_checked_at": "2026-09-11T12:50:06.313441+00:00",
       "cache_used": false
     },
     {
@@ -30,7 +30,7 @@
       "alert_count": 5,
       "collection_status": "succeeded",
       "content_updated_at": "2026-09-03T02:52:36.365337+00:00",
-      "last_checked_at": "2026-09-11T04:41:14.129261+00:00",
+      "last_checked_at": "2026-09-11T12:50:07.665385+00:00",
       "cache_used": false
     },
     {
@@ -45,7 +45,7 @@
       "alert_count": 8,
       "collection_status": "succeeded",
       "content_updated_at": "2026-09-03T02:52:41.017942+00:00",
-      "last_checked_at": "2026-09-11T04:41:15.340045+00:00",
+      "last_checked_at": "2026-09-11T12:50:08.918900+00:00",
       "cache_used": false
     },
     {
@@ -59,8 +59,8 @@
       "policy_count": 24,
       "alert_count": 13,
       "collection_status": "succeeded",
-      "content_updated_at": "2026-09-10T10:43:38.837117+00:00",
-      "last_checked_at": "2026-09-11T04:41:16.534993+00:00",
+      "content_updated_at": "2026-09-11T12:50:10.116630+00:00",
+      "last_checked_at": "2026-09-11T12:50:10.116630+00:00",
       "cache_used": false
     },
     {
@@ -75,7 +75,7 @@
       "alert_count": 19,
       "collection_status": "succeeded",
       "content_updated_at": "2026-09-10T10:43:39.766452+00:00",
-      "last_checked_at": "2026-09-11T04:41:17.260770+00:00",
+      "last_checked_at": "2026-09-11T12:50:10.876955+00:00",
       "cache_used": false
     },
     {
@@ -86,11 +86,11 @@
       "file": "sports.json",
       "market_size": "运动用品 US$ 339 亿 (2026E)；户外装备全球 ≈ $652.8 亿",
       "cagr": "运动用品 CAGR 6% (2026-2031)",
-      "policy_count": 12,
+      "policy_count": 13,
       "alert_count": 7,
       "collection_status": "succeeded",
-      "content_updated_at": "2026-09-10T10:43:41.230457+00:00",
-      "last_checked_at": "2026-09-11T04:41:18.490830+00:00",
+      "content_updated_at": "2026-09-11T12:50:12.028314+00:00",
+      "last_checked_at": "2026-09-11T12:50:12.028314+00:00",
       "cache_used": false
     },
     {
@@ -102,10 +102,10 @@
       "market_size": "US$ 2,387.5 亿 (2026E)",
       "cagr": "CAGR 4.12% (2026-2031)",
       "policy_count": 24,
-      "alert_count": 16,
+      "alert_count": 17,
       "collection_status": "succeeded",
-      "content_updated_at": "2026-09-10T10:43:42.742607+00:00",
-      "last_checked_at": "2026-09-11T04:41:19.736951+00:00",
+      "content_updated_at": "2026-09-11T12:50:13.328523+00:00",
+      "last_checked_at": "2026-09-11T12:50:13.328523+00:00",
       "cache_used": false
     },
     {
@@ -117,13 +117,13 @@
       "market_size": "US$ 773.7 亿 (2026E)",
       "cagr": "CAGR 7.9% (2026-2031)",
       "policy_count": 24,
-      "alert_count": 4,
+      "alert_count": 3,
       "collection_status": "succeeded",
-      "content_updated_at": "2026-09-10T10:43:43.779268+00:00",
-      "last_checked_at": "2026-09-11T04:41:20.477232+00:00",
+      "content_updated_at": "2026-09-11T12:50:14.030137+00:00",
+      "last_checked_at": "2026-09-11T12:50:14.030137+00:00",
       "cache_used": false
     }
   ],
   "collection_status": "succeeded",
-  "last_checked_at": "2026-09-11T04:41:12.753159+00:00"
+  "last_checked_at": "2026-09-11T12:50:06.313318+00:00"
 }

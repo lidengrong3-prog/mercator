@@ -2,23 +2,23 @@
   "meta": {
     "market": "美国汽车配件 (US Automotive Aftermarket)",
     "cat_key": "auto",
-    "generated_at": "2026-09-10T10:43:42.742607+00:00",
-    "content_updated_at": "2026-09-10T10:43:42.742607+00:00",
-    "as_of": "2026-09-10",
+    "generated_at": "2026-09-11T12:50:13.328523+00:00",
+    "content_updated_at": "2026-09-11T12:50:13.328523+00:00",
+    "as_of": "2026-09-11",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "collection_status": "succeeded",
-    "last_attempted_at": "2026-09-11T04:41:19.737712+00:00",
-    "last_checked_at": "2026-09-11T04:41:19.736951+00:00",
+    "last_attempted_at": "2026-09-11T12:50:13.329194+00:00",
+    "last_checked_at": "2026-09-11T12:50:13.328523+00:00",
     "cache_used": false,
     "cached_sections": [],
     "collection": {
       "source": "federal_register",
       "status": "succeeded",
-      "attempted_at": "2026-09-11T04:41:19.737712+00:00",
+      "attempted_at": "2026-09-11T12:50:13.329194+00:00",
       "request_count": 3,
       "successful_requests": 3,
       "failed_requests": 0,
-      "records_collected": 41,
+      "records_collected": 40,
       "cache_used": false,
       "cached_sections": []
     },
@@ -34,7 +34,7 @@
       "platforms": 7,
       "rules": 4,
       "policies": 24,
-      "alerts": 16
+      "alerts": 17
     }
   },
   "country": {
@@ -126,7 +126,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-09-10"
+    "as_of": "2026-09-11"
   },
   "findings": [
     "美国汽车后市场庞大刚需（2026E ≈ $2,387 亿），替换件/养护品高频复购。",
@@ -147,7 +147,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "替换件",
         "养护品",
@@ -166,7 +166,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "车载好物",
         "清洁护理",
@@ -184,7 +184,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "基础养护",
         "替换件"
@@ -201,7 +201,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "汽配长尾",
         "二手件",
@@ -219,7 +219,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "手工车饰",
         "定制"
@@ -236,7 +236,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "品牌官网",
         "车型适配",
@@ -254,7 +254,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "低价小配件",
         "合金/塑料"
@@ -320,7 +320,7 @@
       "severity": "high",
       "source": "NHTSA",
       "source_url": "https://www.nhtsa.gov/",
-      "as_of": "2026-09-10"
+      "as_of": "2026-09-11"
     },
     {
       "platform": "EPA / CARB",
@@ -329,7 +329,7 @@
       "severity": "high",
       "source": "EPA / CARB",
       "source_url": "https://ww2.arb.ca.gov/",
-      "as_of": "2026-09-10"
+      "as_of": "2026-09-11"
     },
     {
       "platform": "FCC",
@@ -338,7 +338,7 @@
       "severity": "medium",
       "source": "FCC",
       "source_url": "https://www.fcc.gov/",
-      "as_of": "2026-09-10"
+      "as_of": "2026-09-11"
     },
     {
       "platform": "Amazon / eBay",
@@ -347,10 +347,46 @@
       "severity": "medium",
       "source": "Amazon / eBay",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-09-10"
+      "as_of": "2026-09-11"
     }
   ],
   "policies": [
+    {
+      "title": "Eliminating the Discretionary 60-Day Grace Period",
+      "date": "2026-09-11",
+      "agency": "Homeland Security Department",
+      "summary": "The Department of Homeland Security (DHS) proposes to remove regulations at 8 CFR 214.1(l)(2) to restore its previous and long- standing policy of not providing aliens in certain nonimmigrant classifications (and their dependents) with an up to 60-day grace period upon cessation …",
+      "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18631/eliminating-the-discretionary-60-day-grace-period",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
+      "live": true
+    },
+    {
+      "title": "Route Designations-Vehicle Length, Width, and Weight Limitations",
+      "date": "2026-09-11",
+      "agency": "Transportation Department",
+      "summary": "This final rule makes the following changes to the National Network (NN) in Syracuse, New York: the de-designation of the segment of the NN from Interstate 81 (I-81) between the New York, Susquehanna, and Western Railway bridge and the I-81/I-690 interchange (I-81 Viaduct); and t…",
+      "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18548/route-designations-vehicle-length-width-and-weight-limitations",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
+      "live": true
+    },
+    {
+      "title": "General Motors, LLC, Receipt of Petition for Decision of Inconsequential Noncompliance",
+      "date": "2026-09-11",
+      "agency": "Transportation Department",
+      "summary": "General Motors, LLC (GM) has determined that certain model year (MY) 2024 Cadillac XT4, Chevrolet Colorado, and GMC Canyon motor vehicles do not fully comply with Federal Motor Vehicle Safety Standard (FMVSS) No. 108, Lamps, Reflective Devices, and Associated Equipment. GM filed …",
+      "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18546/general-motors-llc-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
+      "live": true
+    },
     {
       "title": "Qualification of Drivers; Exemption Applications; Epilepsy and Seizure Disorders",
       "date": "2026-09-10",
@@ -359,8 +395,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18445/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -371,8 +407,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18436/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -383,8 +419,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18380/federal-motor-vehicle-safety-standard-no-213a-child-restraint-systems-side-impact-protection-federal",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -395,8 +431,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18312/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -407,8 +443,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18311/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -419,8 +455,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18310/qualification-of-drivers-exemption-applications-hearing",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -431,8 +467,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18308/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -443,20 +479,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18307/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
-      "live": true
-    },
-    {
-      "title": "Qualification of Drivers; Exemption Applications; Epilepsy and Seizure Disorders",
-      "date": "2026-09-09",
-      "agency": "Transportation Department",
-      "summary": "FMCSA announces its decision to exempt 14 individuals from the requirement in the Federal Motor Carrier Safety Regulations (FMCSRs) that interstate commercial motor vehicle (CMV) drivers have \"no established medical history or clinical diagnosis of epilepsy or any other condition…",
-      "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18301/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -467,32 +491,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18290/air-plan-approval-reconsideration-and-repeal-of-air-plan-partial-approval-and-partial-disapproval-of",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
-      "live": true
-    },
-    {
-      "title": "U.S. Environmental Protection Agency (EPA) Contractor and Subcontractor Access to Confidential Business Information (CBI) Submitted Under Clean Air Act (CAA), Act To Prevent Pollution From Ships (APPS), and American Innovation and Manufacturing Act (AIM)",
-      "date": "2026-09-09",
-      "agency": "Environmental Protection Agency",
-      "summary": "The United States Environmental Protection Agency's (EPA's) Office of Enforcement and Compliance Assurance (OECA) intends to authorize a contractor and several subcontractors to access information that will be submitted to the EPA under the Clean Air Act (CAA), the Act to Prevent…",
-      "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18289/us-environmental-protection-agency-epa-contractor-and-subcontractor-access-to-confidential-business",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
-      "live": true
-    },
-    {
-      "title": "Agency Information Collection Activities; Renewal of an Approved Information Collection: Accident Recordkeeping Requirements",
-      "date": "2026-09-09",
-      "agency": "Transportation Department",
-      "summary": "In accordance with the Paperwork Reduction Act of 1995, FMCSA announces its plan to submit the Information Collection Request (ICR) described below to the Office of Management and Budget (OMB) for review and approval and invites public comment. FMCSA requests approval to renew th…",
-      "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18276/agency-information-collection-activities-renewal-of-an-approved-information-collection-accident",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -503,8 +503,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/08/2026-18219/car-loan-interest-deduction",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -515,8 +515,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/04/2026-18098/agency-information-collection-activities-submission-for-omb-review-comment-request-omb-control-no",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -527,8 +527,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17742/temporary-exemption-from-motor-vehicle-safety-and-bumper-standards-extension-of-comment-period",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -539,8 +539,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17741/av-framework-updates-and-request-for-comments-on-interim-guidance-extension-of-comment-period",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -551,8 +551,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17784/amendments-to-brake-system-maintenance-and-inspection-requirements",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -563,8 +563,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17749/van-type-trailers-and-subassemblies-thereof-from-the-peoples-republic-of-china-final-affirmative",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -575,8 +575,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/28/2026-17612/agency-information-collection-activities-submission-to-the-office-of-management-and-budget-for",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -587,32 +587,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17515/agency-information-collection-activities-submission-to-the-office-of-management-and-budget-for",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
-      "live": true
-    },
-    {
-      "title": "Air Plan Approval; Arkansas; Regional Haze State Implementation Plan for the Second Implementation Period",
-      "date": "2026-08-27",
-      "agency": "Environmental Protection Agency",
-      "summary": "Pursuant to the Clean Air Act (CAA or the Act), the U.S. Environmental Protection Agency (EPA) is finalizing approval of a State Implementation Plan (SIP) revision submitted by the State of Arkansas through the Division of Environmental Quality (DEQ) on August 8, 2022, clarified …",
-      "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17494/air-plan-approval-arkansas-regional-haze-state-implementation-plan-for-the-second-implementation",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
-      "live": true
-    },
-    {
-      "title": "Rescission of Executive Order 11246 Implementing Regulations",
-      "date": "2026-08-21",
-      "agency": "Labor Department",
-      "summary": "On January 21, 2025, President Trump issued Executive Order 14173, \"Ending Illegal Discrimination and Restoring Merit-Based Opportunity,\" which revoked Executive Order 11246. Accordingly, the U.S. Department of Labor publishes this final rule to rescind the implementing regulatio…",
-      "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17114/rescission-of-executive-order-11246-implementing-regulations",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -623,8 +599,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16859/amending-procedures-for-submissions-by-importers-of-automobiles-qualifying-for-preferential-tariff",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -635,8 +611,32 @@
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16753/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
+      "live": true
+    },
+    {
+      "title": "New Car Assessment Program (NCAP); Removal of Dynamic Rollover Resistance Test and Side Air Bag Out-of-Position Testing; Updates to NCAP's 10-Year Roadmap",
+      "date": "2026-08-17",
+      "agency": "Transportation Department",
+      "summary": "The National Highway Traffic Safety Administration (NHTSA) is requesting public comment on a proposal to remove two legacy test procedures from its signature consumer information program, the New Car Assessment Program (NCAP): the Dynamic Rollover Resistance Test (specifically, t…",
+      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16735/new-car-assessment-program-ncap-removal-of-dynamic-rollover-resistance-test-and-side-air-bag",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
+      "live": true
+    },
+    {
+      "title": "Department Regulatory and Deregulatory Agenda; Summary",
+      "date": "2026-08-14",
+      "agency": "Transportation Department",
+      "summary": "The Regulatory Agenda of the Department of Transportation (Department) is a summary of current, projected, and completed rulemakings, as well as reviews of existing regulations. The Regulatory Agenda provides the public with information about the Department's planned regulatory a…",
+      "url": "https://www.federalregister.gov/documents/2026/08/14/2026-16607/department-regulatory-and-deregulatory-agenda-summary",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     }
   ],
@@ -647,11 +647,37 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 8708(机动车辆零件/附件) 广泛受 Section 301 约束；2026 强迫劳动提案对部分经济体加征附加税。精确税率须用 USTR 检索或 CBP 裁定确认。",
-      "date": "2026-09-10",
+      "date": "2026-09-11",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "live": false
+    },
+    {
+      "level": "high",
+      "title": "Route Designations-Vehicle Length, Width, and Weight Limitations",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "This final rule makes the following changes to the National Network (NN) in Syracuse, New York: the de-designation of the segment of the NN from Interstate 81 (I-81) between the New York, Susquehanna,…",
+      "date": "2026-09-11",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18548/route-designations-vehicle-length-width-and-weight-limitations",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
+      "live": true
+    },
+    {
+      "level": "medium",
+      "title": "General Motors, LLC, Receipt of Petition for Decision of Inconsequential Noncompliance",
+      "market": "美国",
+      "platform": "Transportation Department",
+      "detail": "General Motors, LLC (GM) has determined that certain model year (MY) 2024 Cadillac XT4, Chevrolet Colorado, and GMC Canyon motor vehicles do not fully comply with Federal Motor Vehicle Safety Standard…",
+      "date": "2026-09-11",
+      "source": "Federal Register",
+      "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18546/general-motors-llc-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
+      "live": true
     },
     {
       "level": "medium",
@@ -662,8 +688,8 @@
       "date": "2026-09-10",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18445/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -675,8 +701,8 @@
       "date": "2026-09-10",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18436/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -688,8 +714,8 @@
       "date": "2026-09-09",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18380/federal-motor-vehicle-safety-standard-no-213a-child-restraint-systems-side-impact-protection-federal",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -701,8 +727,8 @@
       "date": "2026-09-09",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18312/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -714,8 +740,8 @@
       "date": "2026-09-09",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18311/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -727,8 +753,8 @@
       "date": "2026-09-09",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18310/qualification-of-drivers-exemption-applications-hearing",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -740,8 +766,8 @@
       "date": "2026-09-09",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18308/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -753,21 +779,8 @@
       "date": "2026-09-09",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18307/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
-      "live": true
-    },
-    {
-      "level": "medium",
-      "title": "Qualification of Drivers; Exemption Applications; Epilepsy and Seizure Disorders",
-      "market": "美国",
-      "platform": "Transportation Department",
-      "detail": "FMCSA announces its decision to exempt 14 individuals from the requirement in the Federal Motor Carrier Safety Regulations (FMCSRs) that interstate commercial motor vehicle (CMV) drivers have \"no esta…",
-      "date": "2026-09-09",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18301/qualification-of-drivers-exemption-applications-epilepsy-and-seizure-disorders",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -779,8 +792,8 @@
       "date": "2026-08-31",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17742/temporary-exemption-from-motor-vehicle-safety-and-bumper-standards-extension-of-comment-period",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -792,8 +805,8 @@
       "date": "2026-08-31",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17784/amendments-to-brake-system-maintenance-and-inspection-requirements",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -805,8 +818,8 @@
       "date": "2026-08-31",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/31/2026-17749/van-type-trailers-and-subassemblies-thereof-from-the-peoples-republic-of-china-final-affirmative",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -818,8 +831,8 @@
       "date": "2026-08-19",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/19/2026-16859/amending-procedures-for-submissions-by-importers-of-automobiles-qualifying-for-preferential-tariff",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -831,8 +844,8 @@
       "date": "2026-08-17",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16753/aluminum-extrusions-from-the-peoples-republic-of-china-final-results-of-antidumping-duty",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     },
     {
@@ -844,8 +857,8 @@
       "date": "2026-08-17",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16735/new-car-assessment-program-ncap-removal-of-dynamic-rollover-resistance-test-and-side-air-bag",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:42.743191+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:13.329194+00:00",
       "live": true
     }
   ]

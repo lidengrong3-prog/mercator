@@ -2,23 +2,23 @@
   "meta": {
     "market": "美国运动户外 (US Sports & Outdoor)",
     "cat_key": "sports",
-    "generated_at": "2026-09-10T10:43:41.230457+00:00",
-    "content_updated_at": "2026-09-10T10:43:41.230457+00:00",
-    "as_of": "2026-09-10",
+    "generated_at": "2026-09-11T12:50:12.028314+00:00",
+    "content_updated_at": "2026-09-11T12:50:12.028314+00:00",
+    "as_of": "2026-09-11",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "collection_status": "succeeded",
-    "last_attempted_at": "2026-09-11T04:41:18.491276+00:00",
-    "last_checked_at": "2026-09-11T04:41:18.490830+00:00",
+    "last_attempted_at": "2026-09-11T12:50:12.028688+00:00",
+    "last_checked_at": "2026-09-11T12:50:12.028314+00:00",
     "cache_used": false,
     "cached_sections": [],
     "collection": {
       "source": "federal_register",
       "status": "succeeded",
-      "attempted_at": "2026-09-11T04:41:18.491276+00:00",
+      "attempted_at": "2026-09-11T12:50:12.028688+00:00",
       "request_count": 5,
       "successful_requests": 5,
       "failed_requests": 0,
-      "records_collected": 18,
+      "records_collected": 19,
       "cache_used": false,
       "cached_sections": []
     },
@@ -33,7 +33,7 @@
       "country": 1,
       "platforms": 7,
       "rules": 4,
-      "policies": 12,
+      "policies": 13,
       "alerts": 7
     }
   },
@@ -126,7 +126,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-09-10"
+    "as_of": "2026-09-11"
   },
   "findings": [
     "运动户外受健康生活方式驱动高增长（CAGR ≈ 6%），健身/露营/骑行持续热。",
@@ -147,7 +147,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "健身器材",
         "露营",
@@ -166,7 +166,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "健身配件",
         "露营好物",
@@ -185,7 +185,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "家庭健身",
         "基础户外",
@@ -203,7 +203,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "二手器材",
         "收藏",
@@ -221,7 +221,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "手工运动饰品",
         "定制"
@@ -238,7 +238,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "品牌官网",
         "订阅",
@@ -256,7 +256,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "hotCats": [
         "低价配件",
         "合金/塑料"
@@ -322,7 +322,7 @@
       "severity": "high",
       "source": "CPSC",
       "source_url": "https://www.cpsc.gov/",
-      "as_of": "2026-09-10"
+      "as_of": "2026-09-11"
     },
     {
       "platform": "ASTM",
@@ -331,7 +331,7 @@
       "severity": "medium",
       "source": "ASTM International",
       "source_url": "https://www.astm.org/",
-      "as_of": "2026-09-10"
+      "as_of": "2026-09-11"
     },
     {
       "platform": "Amazon",
@@ -340,7 +340,7 @@
       "severity": "medium",
       "source": "Amazon Seller Central",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-09-10"
+      "as_of": "2026-09-11"
     },
     {
       "platform": "TikTok Shop（美国）",
@@ -349,10 +349,22 @@
       "severity": "high",
       "source": "TikTok Shop 卖家中心",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-09-10"
+      "as_of": "2026-09-11"
     }
   ],
   "policies": [
+    {
+      "title": "Notice of Final Federal Agency Actions on Proposed Transportation Project in California",
+      "date": "2026-09-11",
+      "agency": "Transportation Department",
+      "summary": "The FHWA, on behalf of the California Department of Transportation (Caltrans), is issuing this notice to announce actions taken by Caltrans that are final agency actions. These actions relate to the proposed Interstate 505 Vaca Valley Parkway Corridor Multimodal Improvement Proje…",
+      "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18549/notice-of-final-federal-agency-actions-on-proposed-transportation-project-in-california",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
+      "live": true
+    },
     {
       "title": "Certain Glow Fish Tape Systems, Safety Helmet Systems, and Components Thereof; Notice of a Commission Determination To Review in Part a Final Initial Determination Finding a Violation of Section 337; Request for Written Submissions on the Issues Under Review, Remedy, Bond, and the Public Interest",
       "date": "2026-09-09",
@@ -361,8 +373,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18302/certain-glow-fish-tape-systems-safety-helmet-systems-and-components-thereof-notice-of-a-commission",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -373,8 +385,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/01/2026-17904/national-environmental-policy-act-regulations",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -385,8 +397,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/01/2026-17902/bicycle-use-in-park-areas",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -397,8 +409,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17211/travel-management-national-forest-system-lands",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -409,8 +421,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16983/allwin-powersports-corp-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -421,8 +433,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/12/2026-16388/powered-micromobility-devices",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -433,8 +445,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15406/first-state-national-historical-park-bicycling",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -445,8 +457,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/23/2026-14934/removal-of-obsolete-or-unnecessary-requirements",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -457,8 +469,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/15/2026-14234/certain-glow-fish-tape-systems-safety-helmet-systems-and-components-thereof-notice-of-request-for",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -469,8 +481,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/06/2026-13609/counter-uas-authority-for-state-local-tribal-and-territorial-law-enforcement-and-correctional",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -481,8 +493,8 @@
       "url": "https://www.federalregister.gov/documents/2026/06/24/2026-12749/safety-standard-for-lithium-ion-batteries-used-in-micromobility-products-and-electrical-systems-of",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -493,8 +505,8 @@
       "url": "https://www.federalregister.gov/documents/2026/05/08/2026-09277/national-physical-fitness-and-sports-month-2026",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     }
   ],
@@ -505,10 +517,10 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 9506(运动器材)/8712(自行车) 等受 Section 301 约束；2026 强迫劳动提案对部分经济体加征附加税。精确税率须用 USTR 检索或 CBP 裁定确认。",
-      "date": "2026-09-10",
+      "date": "2026-09-11",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-11",
       "live": false
     },
     {
@@ -520,8 +532,8 @@
       "date": "2026-09-09",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18302/certain-glow-fish-tape-systems-safety-helmet-systems-and-components-thereof-notice-of-a-commission",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -533,8 +545,8 @@
       "date": "2026-08-24",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17211/travel-management-national-forest-system-lands",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -546,8 +558,8 @@
       "date": "2026-08-20",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-16983/allwin-powersports-corp-receipt-of-petition-for-decision-of-inconsequential-noncompliance",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -559,8 +571,8 @@
       "date": "2026-07-23",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/07/23/2026-14934/removal-of-obsolete-or-unnecessary-requirements",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -572,8 +584,8 @@
       "date": "2026-07-15",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/07/15/2026-14234/certain-glow-fish-tape-systems-safety-helmet-systems-and-components-thereof-notice-of-request-for",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     },
     {
@@ -585,8 +597,8 @@
       "date": "2026-06-24",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/06/24/2026-12749/safety-standard-for-lithium-ion-batteries-used-in-micromobility-products-and-electrical-systems-of",
-      "as_of": "2026-09-10",
-      "collected_at": "2026-09-10T10:43:41.230751+00:00",
+      "as_of": "2026-09-11",
+      "collected_at": "2026-09-11T12:50:12.028688+00:00",
       "live": true
     }
   ]
