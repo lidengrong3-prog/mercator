@@ -2,8 +2,8 @@
   "meta": {
     "source": "CPSC / SaferProducts Recall API",
     "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
-    "generated_at": "2026-09-11T22:36:09.278466+00:00",
-    "query_start": "2026-05-14",
+    "generated_at": "2026-09-12T04:35:18.257741+00:00",
+    "query_start": "2026-05-15",
     "total_recalls": 233,
     "china_related_count": 179,
     "categories_count": 8

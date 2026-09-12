@@ -1,7 +1,7 @@
 {
   "generated_at": "2026-09-11T12:50:14.030137+00:00",
   "as_of": "2026-09-11",
-  "last_attempted_at": "2026-09-11T22:35:52.350739+00:00",
+  "last_attempted_at": "2026-09-12T04:35:06.453996+00:00",
   "categories": [
     {
       "key": "electronics",
@@ -15,7 +15,7 @@
       "alert_count": 7,
       "collection_status": "succeeded",
       "content_updated_at": "2026-09-11T12:50:06.313441+00:00",
-      "last_checked_at": "2026-09-11T22:35:52.350853+00:00",
+      "last_checked_at": "2026-09-12T04:35:06.454119+00:00",
       "cache_used": false
     },
     {
@@ -30,7 +30,7 @@
       "alert_count": 5,
       "collection_status": "succeeded",
       "content_updated_at": "2026-09-03T02:52:36.365337+00:00",
-      "last_checked_at": "2026-09-11T22:35:53.835601+00:00",
+      "last_checked_at": "2026-09-12T04:35:08.010762+00:00",
       "cache_used": false
     },
     {
@@ -45,7 +45,7 @@
       "alert_count": 8,
       "collection_status": "succeeded",
       "content_updated_at": "2026-09-03T02:52:41.017942+00:00",
-      "last_checked_at": "2026-09-11T22:35:55.231518+00:00",
+      "last_checked_at": "2026-09-12T04:35:09.545929+00:00",
       "cache_used": false
     },
     {
@@ -60,7 +60,7 @@
       "alert_count": 13,
       "collection_status": "succeeded",
       "content_updated_at": "2026-09-11T12:50:10.116630+00:00",
-      "last_checked_at": "2026-09-11T22:35:56.596390+00:00",
+      "last_checked_at": "2026-09-12T04:35:10.926387+00:00",
       "cache_used": false
     },
     {
@@ -75,7 +75,7 @@
       "alert_count": 19,
       "collection_status": "succeeded",
       "content_updated_at": "2026-09-10T10:43:39.766452+00:00",
-      "last_checked_at": "2026-09-11T22:35:57.447152+00:00",
+      "last_checked_at": "2026-09-12T04:35:11.772556+00:00",
       "cache_used": false
     },
     {
@@ -90,7 +90,7 @@
       "alert_count": 7,
       "collection_status": "succeeded",
       "content_updated_at": "2026-09-11T12:50:12.028314+00:00",
-      "last_checked_at": "2026-09-11T22:35:58.793401+00:00",
+      "last_checked_at": "2026-09-12T04:35:13.359494+00:00",
       "cache_used": false
     },
     {
@@ -105,7 +105,7 @@
       "alert_count": 17,
       "collection_status": "succeeded",
       "content_updated_at": "2026-09-11T12:50:13.328523+00:00",
-      "last_checked_at": "2026-09-11T22:36:00.271061+00:00",
+      "last_checked_at": "2026-09-12T04:35:14.886155+00:00",
       "cache_used": false
     },
     {
@@ -120,10 +120,10 @@
       "alert_count": 3,
       "collection_status": "succeeded",
       "content_updated_at": "2026-09-11T12:50:14.030137+00:00",
-      "last_checked_at": "2026-09-11T22:36:01.107524+00:00",
+      "last_checked_at": "2026-09-12T04:35:15.776185+00:00",
       "cache_used": false
     }
   ],
   "collection_status": "succeeded",
-  "last_checked_at": "2026-09-11T22:35:52.350739+00:00"
+  "last_checked_at": "2026-09-12T04:35:06.453996+00:00"
 }
