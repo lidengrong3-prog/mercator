@@ -2,23 +2,23 @@
   "meta": {
     "market": "美国美妆个护 (US Beauty & Personal Care)",
     "cat_key": "beauty",
-    "generated_at": "2026-09-11T12:50:10.116630+00:00",
-    "content_updated_at": "2026-09-11T12:50:10.116630+00:00",
-    "as_of": "2026-09-11",
+    "generated_at": "2026-09-13T04:48:46.422178+00:00",
+    "content_updated_at": "2026-09-13T04:48:46.422178+00:00",
+    "as_of": "2026-09-13",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "collection_status": "succeeded",
-    "last_attempted_at": "2026-09-12T04:35:10.927034+00:00",
-    "last_checked_at": "2026-09-12T04:35:10.926387+00:00",
+    "last_attempted_at": "2026-09-13T04:48:46.423072+00:00",
+    "last_checked_at": "2026-09-13T04:48:46.422178+00:00",
     "cache_used": false,
     "cached_sections": [],
     "collection": {
       "source": "federal_register",
       "status": "succeeded",
-      "attempted_at": "2026-09-12T04:35:10.927034+00:00",
+      "attempted_at": "2026-09-13T04:48:46.423072+00:00",
       "request_count": 3,
       "successful_requests": 3,
       "failed_requests": 0,
-      "records_collected": 40,
+      "records_collected": 41,
       "cache_used": false,
       "cached_sections": []
     },
@@ -126,7 +126,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-09-11"
+    "as_of": "2026-09-13"
   },
   "findings": [
     "美妆个护高毛利、强内容驱动（线上 ≈ 60%，TikTok 占比最高品类之一）。",
@@ -146,7 +146,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "护肤",
         "彩妆",
@@ -165,7 +165,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "护肤爆款",
         "彩妆",
@@ -184,7 +184,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "家庭个护",
         "基础护肤",
@@ -202,7 +202,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "收藏香水",
         "二手",
@@ -220,7 +220,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "手工皂",
         "天然护肤",
@@ -238,7 +238,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "品牌官网",
         "订阅制",
@@ -256,7 +256,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "低价彩妆",
         "合金/塑料包装"
@@ -322,7 +322,7 @@
       "severity": "high",
       "source": "FDA MoCRA",
       "source_url": "https://www.fda.gov/cosmetics/cosmetics-laws-regulations/modernization-cosmetics-regulation-act-2022-mocra",
-      "as_of": "2026-09-11"
+      "as_of": "2026-09-13"
     },
     {
       "platform": "FTC",
@@ -331,7 +331,7 @@
       "severity": "high",
       "source": "FTC",
       "source_url": "https://www.ftc.gov/business-guidance/industry/cosmetics",
-      "as_of": "2026-09-11"
+      "as_of": "2026-09-13"
     },
     {
       "platform": "Amazon",
@@ -340,7 +340,7 @@
       "severity": "medium",
       "source": "Amazon Seller Central",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-09-11"
+      "as_of": "2026-09-13"
     },
     {
       "platform": "TikTok Shop（美国）",
@@ -349,10 +349,22 @@
       "severity": "high",
       "source": "TikTok Shop 卖家中心",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-09-11"
+      "as_of": "2026-09-13"
     }
   ],
   "policies": [
+    {
+      "title": "Agency Information Collection Activities; Submission for Office of Management and Budget Review; Comment Request; Customer/Partner Customer Service Satisfaction Surveys",
+      "date": "2026-09-14",
+      "agency": "Health and Human Services Department",
+      "summary": "The Food and Drug Administration (FDA) is announcing that a proposed collection of information has been submitted to the Office of Management and Budget (OMB) for review and clearance under the Paperwork Reduction Act of 1995.",
+      "url": "https://www.federalregister.gov/documents/2026/09/14/2026-18691/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
+      "live": true
+    },
     {
       "title": "Medical Devices; Cardiovascular Devices; Classification of the Cardiovascular Machine Learning-Based Notification Software",
       "date": "2026-09-11",
@@ -361,8 +373,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18612/medical-devices-cardiovascular-devices-classification-of-the-cardiovascular-machine-learning-based",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -373,8 +385,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18551/amending-over-the-counter-monograph-m020-sunscreen-drug-products-for-over-the-counter-human-use-and",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -385,8 +397,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18529/agency-information-collection-activities-proposed-collection-comment-request-medical-device-tracking",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -397,8 +409,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18528/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -409,8 +421,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18464/fee-rate-for-using-a-priority-review-voucher-in-fiscal-year-2027",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -421,8 +433,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18433/medical-devices-cardiovascular-devices-classification-of-the-mechanical-deviation-device-for",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -433,8 +445,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18432/medical-devices-cardiovascular-devices-classification-of-the-temperature-regulation-device-for",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -445,8 +457,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18431/medical-devices-cardiovascular-devices-classification-of-the-extravascular-support-for-an",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -457,8 +469,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18430/medical-devices-clinical-chemistry-and-clinical-toxicology-devices-classification-of-the-anti-tumor",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -469,8 +481,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18429/medical-devices-ear-nose-and-throat-devices-classification-of-the-cooperative-powered-surgical",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -481,8 +493,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18428/medical-devices-gastroenterology-urology-devices-classification-of-the-implanted-tibial-electrical",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -493,8 +505,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18427/medical-devices-radiology-devices-classification-of-the-vaginal-hydrogel-packing-system",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -505,8 +517,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18426/medical-devices-general-hospital-and-personal-use-devices-classification-of-the-whole-room-microbial",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -517,8 +529,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/17/2026-14434/agency-information-collection-activities-proposed-collection-comment-request-requirements-for",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -529,8 +541,8 @@
       "url": "https://www.federalregister.gov/documents/2026/01/22/2026-01159/fda-records-access-authority-for-cosmetics-draft-guidance-for-industry-availability",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -541,8 +553,8 @@
       "url": "https://www.federalregister.gov/documents/2025/12/18/2025-23249/questions-and-answers-regarding-mandatory-cosmetics-recalls-draft-guidance-for-industry-availability",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -553,8 +565,8 @@
       "url": "https://www.federalregister.gov/documents/2025/11/28/2025-21407/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -565,8 +577,8 @@
       "url": "https://www.federalregister.gov/documents/2025/06/25/2025-11605/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -577,8 +589,8 @@
       "url": "https://www.federalregister.gov/documents/2024/12/27/2024-30544/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -589,8 +601,8 @@
       "url": "https://www.federalregister.gov/documents/2024/12/12/2024-29237/registration-and-listing-of-cosmetic-product-facilities-and-products-guidance-for-industry",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -601,8 +613,8 @@
       "url": "https://www.federalregister.gov/documents/2024/06/03/2024-11893/statement-of-organization-functions-and-delegations-of-authority",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -613,8 +625,8 @@
       "url": "https://www.federalregister.gov/documents/2023/12/19/2023-27649/registration-and-listing-of-cosmetic-product-facilities-and-products-guidance-for-industry",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -625,20 +637,8 @@
       "url": "https://www.federalregister.gov/documents/2023/11/09/2023-24731/compliance-policy-for-cosmetic-product-facility-registration-and-cosmetic-product-listing-guidance",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
-      "live": true
-    },
-    {
-      "title": "Agency Information Collection Activities; Submission for Office of Management and Budget Review; Comment Request; Cosmetic Facility Registration, Product Listing, and Labeling Requirements",
-      "date": "2023-09-18",
-      "agency": "Health and Human Services Department",
-      "summary": "The Food and Drug Administration (FDA, Agency, or we) is announcing that a proposed collection of information has been submitted to the Office of Management and Budget (OMB) for review and clearance under the Paperwork Reduction Act of 1995.",
-      "url": "https://www.federalregister.gov/documents/2023/09/18/2023-20139/agency-information-collection-activities-submission-for-office-of-management-and-budget-review",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     }
   ],
@@ -649,10 +649,10 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 3304(化妆品)/3401(洗护) 多数基础关税为零，但灌装/生产设备及部分包材受 Section 301 附加税约束。出口须以 USTR 检索确认具体编码税率。",
-      "date": "2026-09-11",
+      "date": "2026-09-13",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "live": false
     },
     {
@@ -664,8 +664,8 @@
       "date": "2026-09-11",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18612/medical-devices-cardiovascular-devices-classification-of-the-cardiovascular-machine-learning-based",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -677,8 +677,8 @@
       "date": "2026-09-10",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18433/medical-devices-cardiovascular-devices-classification-of-the-mechanical-deviation-device-for",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -690,8 +690,8 @@
       "date": "2026-09-10",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18432/medical-devices-cardiovascular-devices-classification-of-the-temperature-regulation-device-for",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -703,8 +703,8 @@
       "date": "2026-09-10",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18431/medical-devices-cardiovascular-devices-classification-of-the-extravascular-support-for-an",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -716,8 +716,8 @@
       "date": "2026-09-10",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18430/medical-devices-clinical-chemistry-and-clinical-toxicology-devices-classification-of-the-anti-tumor",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -729,8 +729,8 @@
       "date": "2026-09-10",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18429/medical-devices-ear-nose-and-throat-devices-classification-of-the-cooperative-powered-surgical",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -742,8 +742,8 @@
       "date": "2026-09-10",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18428/medical-devices-gastroenterology-urology-devices-classification-of-the-implanted-tibial-electrical",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -755,8 +755,8 @@
       "date": "2026-09-10",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18427/medical-devices-radiology-devices-classification-of-the-vaginal-hydrogel-packing-system",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -768,8 +768,8 @@
       "date": "2026-09-10",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18426/medical-devices-general-hospital-and-personal-use-devices-classification-of-the-whole-room-microbial",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -781,8 +781,8 @@
       "date": "2025-12-18",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2025/12/18/2025-23249/questions-and-answers-regarding-mandatory-cosmetics-recalls-draft-guidance-for-industry-availability",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -794,8 +794,8 @@
       "date": "2025-11-28",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2025/11/28/2025-21407/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     },
     {
@@ -807,8 +807,8 @@
       "date": "2024-12-27",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2024/12/27/2024-30544/testing-methods-for-detecting-and-identifying-asbestos-in-talc-containing-cosmetic-products",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:10.117285+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:46.423072+00:00",
       "live": true
     }
   ]

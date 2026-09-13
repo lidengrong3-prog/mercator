@@ -2,23 +2,23 @@
   "meta": {
     "market": "美国消费电子 (US Consumer Electronics)",
     "cat_key": "electronics",
-    "generated_at": "2026-09-11T12:50:06.313441+00:00",
-    "content_updated_at": "2026-09-11T12:50:06.313441+00:00",
-    "as_of": "2026-09-11",
+    "generated_at": "2026-09-13T04:48:44.669659+00:00",
+    "content_updated_at": "2026-09-13T04:48:44.669659+00:00",
+    "as_of": "2026-09-13",
     "live_source": "Federal Register API (https://www.federalregister.gov/api/v1)",
     "collection_status": "succeeded",
-    "last_attempted_at": "2026-09-12T04:35:06.454620+00:00",
-    "last_checked_at": "2026-09-12T04:35:06.454119+00:00",
+    "last_attempted_at": "2026-09-13T04:48:44.670183+00:00",
+    "last_checked_at": "2026-09-13T04:48:44.669659+00:00",
     "cache_used": false,
     "cached_sections": [],
     "collection": {
       "source": "federal_register",
       "status": "succeeded",
-      "attempted_at": "2026-09-12T04:35:06.454620+00:00",
+      "attempted_at": "2026-09-13T04:48:44.670183+00:00",
       "request_count": 5,
       "successful_requests": 5,
       "failed_requests": 0,
-      "records_collected": 26,
+      "records_collected": 25,
       "cache_used": false,
       "cached_sections": []
     },
@@ -34,7 +34,7 @@
       "platforms": 7,
       "rules": 5,
       "policies": 20,
-      "alerts": 7
+      "alerts": 6
     }
   },
   "country": {
@@ -126,7 +126,7 @@
     ],
     "source": "Statista / eMarketer / US Census / USTR / 行业研究综合",
     "source_url": "https://www.statista.com/outlook/cmo/accessories/watches-jewelry/jewelry/worldwide",
-    "as_of": "2026-09-11"
+    "as_of": "2026-09-13"
   },
   "findings": [
     "美国是全球最大单一电商市场（2026E ≈ $1.6 万亿），消费电子高频高复购，是工厂出海首选试水品类。",
@@ -147,7 +147,7 @@
       "risk": "佣金高、价格战、账号合规风险",
       "source": "Amazon Seller Central 销售费用(2026)",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "手机配件",
         "智能穿戴",
@@ -166,7 +166,7 @@
       "risk": "内容合规严（90天违规窗口）、退货率、达人依赖",
       "source": "TikTok Shop 美国卖家中心(2026)",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "蓝牙耳机",
         "手机壳",
@@ -185,7 +185,7 @@
       "risk": "流量弱于 Amazon、品类受限",
       "source": "Walmart Marketplace 费用说明",
       "source_url": "https://marketplace.walmart.com/",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "家电配件",
         "电脑外设",
@@ -203,7 +203,7 @@
       "risk": "假货争议、价格透明压利润",
       "source": "eBay 费用说明（参考）",
       "source_url": "https://www.ebay.com/sellercenter",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "二手电子",
         "收藏机型",
@@ -221,7 +221,7 @@
       "risk": "流量小于综合平台、仿品管控",
       "source": "Etsy Seller Handbook（参考）",
       "source_url": "https://www.etsy.com/seller-handbook",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "手工电子饰品",
         "定制外壳"
@@ -238,7 +238,7 @@
       "risk": "获客成本高、运营重",
       "source": "Shopify 定价（参考）",
       "source_url": "https://www.shopify.com/pricing",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "品牌官网",
         "订阅制配件"
@@ -255,7 +255,7 @@
       "risk": "利润极低、品牌稀释、关税敏感",
       "source": "平台公开模式（参考）",
       "source_url": "https://www.temu.com/",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "hotCats": [
         "低价配件",
         "合金/塑料外壳"
@@ -321,7 +321,7 @@
       "severity": "high",
       "source": "FCC",
       "source_url": "https://www.fcc.gov/engineering-technology/laboratory-division/general/equipment-authorization",
-      "as_of": "2026-09-11"
+      "as_of": "2026-09-13"
     },
     {
       "platform": "CPSC（美国消费品安全委员会）",
@@ -330,7 +330,7 @@
       "severity": "high",
       "source": "CPSC",
       "source_url": "https://www.cpsc.gov/",
-      "as_of": "2026-09-11"
+      "as_of": "2026-09-13"
     },
     {
       "platform": "EPA / 加州",
@@ -339,7 +339,7 @@
       "severity": "medium",
       "source": "EPA / California",
       "source_url": "https://www.energystar.gov/",
-      "as_of": "2026-09-11"
+      "as_of": "2026-09-13"
     },
     {
       "platform": "Amazon",
@@ -348,7 +348,7 @@
       "severity": "medium",
       "source": "Amazon Seller Central",
       "source_url": "https://sell.amazon.com/pricing",
-      "as_of": "2026-09-11"
+      "as_of": "2026-09-13"
     },
     {
       "platform": "TikTok Shop（美国）",
@@ -357,20 +357,44 @@
       "severity": "high",
       "source": "TikTok Shop 卖家中心",
       "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795",
-      "as_of": "2026-09-11"
+      "as_of": "2026-09-13"
     }
   ],
   "policies": [
     {
-      "title": "Protecting Against National Security Threats to the Communications Supply Chain Through the Equipment Authorization Program",
-      "date": "2026-09-11",
-      "agency": "Federal Communications Commission",
-      "summary": "In this document, the Federal Communications Commission (Commission or FCC) takes further steps to strengthen its equipment authorization program against national security risks to the communications supply chain. The Commission closes a component-part loophole by prohibiting aut…",
-      "url": "https://www.federalregister.gov/documents/2026/09/11/2026-18535/protecting-against-national-security-threats-to-the-communications-supply-chain-through-the",
+      "title": "Request for Comments on Significant Foreign Trade Barriers for the 2027 National Trade Estimate Report",
+      "date": "2026-09-14",
+      "agency": "Trade Representative, Office of United States",
+      "summary": "The Office of the United States Trade Representative (USTR), through the Trade Policy Staff Committee (TPSC), publishes the National Trade Estimate Report on Foreign Trade Barriers (NTE Report) each year. USTR invites comments to assist it and the TPSC in identifying significant …",
+      "url": "https://www.federalregister.gov/documents/2026/09/14/2026-18775/request-for-comments-on-significant-foreign-trade-barriers-for-the-2027-national-trade-estimate",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
+      "live": true
+    },
+    {
+      "title": "Review of the Commission's Assessment and Collection of Regulatory Fees for Fiscal Year 2026",
+      "date": "2026-09-14",
+      "agency": "Federal Communications Commission",
+      "summary": "In this document, the Federal Communications Commission (Commission or FCC) adopts its regulatory fee schedule to assess and collect regulatory fees for Fiscal Year 2026 (FY 26).",
+      "url": "https://www.federalregister.gov/documents/2026/09/14/2026-18778/review-of-the-commissions-assessment-and-collection-of-regulatory-fees-for-fiscal-year-2026",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
+      "live": true
+    },
+    {
+      "title": "Information Collection Being Reviewed by the Federal Communications Commission",
+      "date": "2026-09-14",
+      "agency": "Federal Communications Commission",
+      "summary": "As part of its continuing effort to reduce paperwork burdens, and as required by the Paperwork Reduction Act (PRA) of 1995, the Federal Communications Commission (FCC or the Commission) invites the general public and other Federal agencies to take this opportunity to comment on t…",
+      "url": "https://www.federalregister.gov/documents/2026/09/14/2026-18774/information-collection-being-reviewed-by-the-federal-communications-commission",
+      "source": "Federal Register (美国联邦公报)",
+      "source_url": "https://www.federalregister.gov/",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -381,8 +405,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/10/2026-18490/foreign-trade-zone-ftz-183-notification-of-proposed-production-activity-dongjin-semichem-texas-inc",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -393,8 +417,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/09/2026-18366/improving-the-effectiveness-of-the-robocall-mitigation-database-call-authentication-trust-anchor",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -405,8 +429,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/08/2026-18260/certain-foreign-fabricated-semiconductor-devices-products-containing-the-same-and-components-thereof",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -417,8 +441,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/08/2026-18282/unleashing-unlicensed-spectrum-for-direct-to-device",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -429,8 +453,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/03/2026-18027/certain-mobile-electronic-devices-notice-of-a-commission-determination-to-review-in-part-a-final",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -441,8 +465,8 @@
       "url": "https://www.federalregister.gov/documents/2026/09/01/2026-17864/certain-mobile-devices-with-hardware-and-software-for-exchanging-electronic-content-institution-of",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -453,8 +477,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/27/2026-17516/information-collection-being-reviewed-by-the-federal-communications-commission",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -465,8 +489,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/26/2026-17358/foreign-trade-zone-ftz-126-notification-of-proposed-production-activity-panasonic-energy-corporation",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -477,8 +501,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/24/2026-17241/foreign-trade-zone-ftz-183-notification-of-proposed-production-activity-ichor-systems-inc",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -489,8 +513,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-17011/notice-of-receipt-of-complaint-solicitation-of-comments-relating-to-the-public-interest",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -501,8 +525,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/20/2026-17046/certain-wireless-communications-devices-and-components-thereof-notice-of-request-for-submissions-on",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -513,8 +537,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16503/empowering-broadband-consumers-through-transparency",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -525,8 +549,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/04/2026-15823/hazardous-materials-reducing-burdens-on-domestic-companies-using-battery-powered-equipment-in-trades",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -537,8 +561,8 @@
       "url": "https://www.federalregister.gov/documents/2026/08/03/2026-15733/sunshine-act-open-commission-meeting-thursday-august-6-2026",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -549,32 +573,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15585/requirements-for-interference-tolerant-radio-altimeter-systems",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
-      "live": true
-    },
-    {
-      "title": "Modernization of the Nation's Alerting Systems; Protecting the Nation's Communications Systems From Cybersecurity Threats",
-      "date": "2026-07-31",
-      "agency": "Federal Communications Commission",
-      "summary": "In the Report and Order, the Federal Communications Commission (the FCC or the Commission) seeks to preserve the public's trust in the Emergency Alert System (EAS) by requiring targeted cybersecurity improvements that will help protect against hijacking by cybercriminals and our …",
-      "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15601/modernization-of-the-nations-alerting-systems-protecting-the-nations-communications-systems-from",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
-      "live": true
-    },
-    {
-      "title": "Wireless Emergency Alerts; The Emergency Alert System; Modernization of the Nation's Alerting Systems",
-      "date": "2026-07-31",
-      "agency": "Federal Communications Commission",
-      "summary": "In this document, the Federal Communications Commission (\"FCC\" or \"Commission\") adopted a Further Notice of Proposed Rulemaking that seeks comment on proposed rules intended to make the Emergency Alert System (EAS) and Wireless Emergency Alerts (WEA) more resilient, flexible, and…",
-      "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15600/wireless-emergency-alerts-the-emergency-alert-system-modernization-of-the-nations-alerting-systems",
-      "source": "Federal Register (美国联邦公报)",
-      "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -585,8 +585,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/15/2026-14227/notice-of-receipt-of-complaint-solicitation-of-comments-relating-to-the-public-interest",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -597,8 +597,8 @@
       "url": "https://www.federalregister.gov/documents/2026/07/08/2026-13811/certain-mobile-electronic-devices-notice-of-request-for-submissions-on-the-public-interest",
       "source": "Federal Register (美国联邦公报)",
       "source_url": "https://www.federalregister.gov/",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     }
   ],
@@ -609,10 +609,10 @@
       "market": "美国",
       "platform": "USTR / CBP",
       "detail": "HTS 8471(计算机)/8517(通信设备)/8507(电池)/8528(显示器)/8543(电子装置) 等广泛受 Section 301 约束；2024 四年期复审已调整税率，2026 强迫劳动提案对部分经济体加征附加税。精确附加税率须用 USTR 产品检索或 CBP 裁定确认。",
-      "date": "2026-09-11",
+      "date": "2026-09-13",
       "source": "USTR Section 301",
       "url": "https://ustr.gov/node/9608",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-13",
       "live": false
     },
     {
@@ -624,8 +624,8 @@
       "date": "2026-09-08",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/08/2026-18282/unleashing-unlicensed-spectrum-for-direct-to-device",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -637,8 +637,8 @@
       "date": "2026-09-01",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/09/01/2026-17864/certain-mobile-devices-with-hardware-and-software-for-exchanging-electronic-content-institution-of",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -650,8 +650,8 @@
       "date": "2026-08-13",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/13/2026-16503/empowering-broadband-consumers-through-transparency",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -663,8 +663,8 @@
       "date": "2026-08-03",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/08/03/2026-15733/sunshine-act-open-commission-meeting-thursday-august-6-2026",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     },
     {
@@ -676,21 +676,8 @@
       "date": "2026-07-31",
       "source": "Federal Register",
       "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15585/requirements-for-interference-tolerant-radio-altimeter-systems",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
-      "live": true
-    },
-    {
-      "level": "medium",
-      "title": "Wireless Emergency Alerts; The Emergency Alert System; Modernization of the Nation's Alerting Systems",
-      "market": "美国",
-      "platform": "Federal Communications Commission",
-      "detail": "In this document, the Federal Communications Commission (\"FCC\" or \"Commission\") adopted a Further Notice of Proposed Rulemaking that seeks comment on proposed rules intended to make the Emergency Aler…",
-      "date": "2026-07-31",
-      "source": "Federal Register",
-      "url": "https://www.federalregister.gov/documents/2026/07/31/2026-15600/wireless-emergency-alerts-the-emergency-alert-system-modernization-of-the-nations-alerting-systems",
-      "as_of": "2026-09-11",
-      "collected_at": "2026-09-11T12:50:06.313882+00:00",
+      "as_of": "2026-09-13",
+      "collected_at": "2026-09-13T04:48:44.670183+00:00",
       "live": true
     }
   ]
