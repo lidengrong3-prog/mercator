@@ -1815,6 +1815,7 @@ function renderRlRules(){
   const start=(rlRulesPage-1)*RL_PAGE;
   const slice=filtered.slice(start,start+RL_PAGE);
   const list=$('#rl-rules-list');
+  $('#rl-count').textContent='规则 '+total+' 条 | 活动 '+getFilteredActs().length+' 条';
   if(!slice.length){list.innerHTML='<div class="empty-state"><p>暂无匹配规则</p><button onclick="resetRlFilters()" class="btn-primary">清除筛选</button></div>';$('#rl-rules-pagination').innerHTML='';return}
   list.innerHTML=slice.map((r,si)=>{
     const globalIdx=rlGetJsonItems().findIndex(item=>item.id===r.id);
@@ -1852,7 +1853,6 @@ function renderRlRules(){
   let pHtml='';
   for(let i=1;i<=pages;i++)pHtml+='<button class="'+(i===rlRulesPage?'active':'')+'" onclick="rlRulesPage='+i+';renderRlRules()">'+i+'</button>';
   $('#rl-rules-pagination').innerHTML=pHtml;
-  $('#rl-count').textContent='规则 '+getFilteredRules().length+' 条 | 活动 '+getFilteredActs().length+' 条';
 }
 
 // Activities list
