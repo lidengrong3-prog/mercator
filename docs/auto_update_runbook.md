@@ -1,6 +1,24 @@
 # JAY观海 · 数据自动更新运行手册
 
-目标：让 `scripts/collect_data.py` 按市场目录执行真实来源采集，并在统一质量闸门通过后同步到 Supabase，整个过程自动、周期性运行。
+目标：让独立 `scripts/collection_worker.py` 按队列执行真实来源采集、历史回填和第三方 API 调用，并在统一质量闸门通过后同步到 Supabase。GitHub Actions 不再承担高频采集。
+
+目标生产方案是独立 Worker。迁移期间旧 GitHub Actions 直采仍作为自动兜底，只有显式切换并检测到新 Worker 心跳后才停止当次旧采集。
+
+---
+
+## 当前生产方案：独立 Worker
+
+1. 按 [COLLECTION_WORKER.md](COLLECTION_WORKER.md) 配置一个或多个 Worker 实例。每个实例使用 `SUPABASE_SERVICE_KEY`，通过数据库租约领取任务。
+2. 使用 `python scripts/enqueue_collection_tasks.py` 或 GitHub Actions 的 `Mercator Emergency Collection Enqueue` 将任务放入 `collection_tasks`；不要在 Actions 中直接执行采集器。
+3. Worker 负责来源并发、超时、指数退避、熔断和 TikHub 每日 1000 次/25 USD 预算。重启后过期租约会自动回收，成功尝试会被幂等恢复。
+4. `collection-health.yml` 每 6 小时检查实例心跳、积压、租约、死信、熔断和预算，只上传摘要。
+5. 容器使用 `Dockerfile.worker`，把持久卷挂载到 `/app/data`。首次启动从私有 Storage 恢复完整状态并校验哈希，恢复失败时不会领取生产任务。
+
+`data-update.yml` 继续保留每 4 小时调度。默认执行旧直采；仅当 `COLLECTION_WORKER_CUTOVER=true` 且最近两分钟存在活跃 Worker 时改为入队。Worker 掉线后下一周期自动回退旧直采，避免新服务尚未可用就停止旧采集。
+
+---
+
+## 历史方案（仅本地开发/迁移参考）
 
 三种方案任选其一（推荐顺序：A → B → C）。
 
@@ -31,9 +49,9 @@
 
 ---
 
-## 方案 A：GitHub Actions（推荐，零运维）
+## 方案 A：GitHub Actions（已停用高频采集）
 
-文件已就绪：`.github/workflows/data-update.yml`（每 4 小时 + 手动 `workflow_dispatch`）。
+文件 `.github/workflows/data-update.yml` 现在只保留手动 `workflow_dispatch` 入队；高频执行请使用上面的独立 Worker。
 
 ### 启用步骤
 1. 把本仓库推到 GitHub（见下方「推送命令」）。
@@ -42,8 +60,8 @@
    - `SUPABASE_SERVICE_KEY`
    - 法规翻译可直接复用 `DEEPSEEK_API_KEY` / `DEEPSEEK_API_URL` / `DEEPSEEK_MODEL`
    - 如需使用独立翻译服务，再添加 `REGULATORY_TRANSLATION_API_KEY` / `REGULATORY_TRANSLATION_API_URL` / `REGULATORY_TRANSLATION_MODEL`；独立配置优先
-3. 首次手动触发一次：仓库 → **Actions → Mercator Data Update → Run workflow**。确认 `Validate regulatory translation configuration` 在任何采集步骤之前通过，并下载质量工件检查 `quality_report.json` 与 `collection_run.json`。
-4. 之后每 4 小时自动跑；调度时间为 UTC `15 */4 * * *`（即北京 03:15 / 07:15 / 11:15 / 15:15 / 19:15 / 23:15）。
+3. 需要紧急采集时，在 **Actions → Mercator Emergency Collection Enqueue → Run workflow** 选择采集器并提交；工作流只写入队列，不直接访问供应商 API。
+4. 观察 **Collection Worker Health** 工作流的摘要，确认任务被 Worker 领取和完成。
 
 “每 4 小时运行”表示每 4 小时尝试检查，不等于数据一定刷新。美国品类文件中的 `last_attempted_at` 可随运行推进；只有完整成功才推进 `last_checked_at`，只有事实内容变化才推进 `content_updated_at`/`generated_at`。若使用缓存，检查 `collection_status` 与 `cached_sections`；`failed` 或 `skipped` 会阻断发布，`degraded` 会进入质量告警。
 
@@ -60,7 +78,7 @@ git push -u origin main
 - 政策与规则采集只使用 `market_scope.json` 中 `data_status=configured` 的市场和市场平台关系；`schema_only` 不会发起采集。
 - 采集结果只进入统一政策/规则事实记录，不再轮询旧39国目录、66个平台，也不再把搜索标题写回国家/平台档案。
 - `collection_run.json` 逐来源记录成功、失败和耗时；核心来源失败后 `validate_data.py` 返回非零状态并阻止同步。
-- 若 `data/` 有变化会在全部质量检查通过后自动提交回仓库；Supabase 同步由独立的门禁步骤执行。
+- 若公开投影有变化，会在全部质量检查和私有同步通过后按显式白名单提交；原始响应、运行日志、隔离数据和美国品类源文件不会被 `git add`。
 
 ---
 
@@ -165,10 +183,12 @@ select cron.schedule(
 - [ ] `python scripts/collect_data.py --validate` 通过（5 文件结构 OK）
 - [ ] `data/collection_run.json` 为 v2，市场/平台范围与目录一致，顶层 `status` 与 `summary` 和来源明细一致，`summary.core_failures` 为空
 - [ ] `data/collection_run.json` 同时包含 `us_market_categories`、`cpsc_recalls` 和 `fred_bls_macro`，而不是只包含政策/规则来源
-- [ ] 质量工件同时包含 `data/quality_report.json` 和 `data/collection_run.json`
+- [ ] Actions 质量工件只包含 `data/quality_report.json`，且其 `collection_run` 字段为不含原始响应的诊断摘要
 - [ ] `quality_report.json.collection_run` 与账本的版本、完成时间、范围和缺失来源一致
 - [ ] `python scripts/collect_data.py --sync-only` 后，线上 `market_data` 含 5 个 key（countries/platforms/policies/rules/alerts）
 - [ ] 定时触发后，Supabase `market_data.updated_at` 出现新时间戳
+- [ ] `private_data_artifacts` 能查到本轮原始/隔离对象，匿名与普通登录用户无法读取该表或 `private-raw-data`
+- [ ] `python scripts/repository_privacy_check.py` 通过，Git 跟踪文件中不存在受限目录和供应商密钥
 - [ ] SPA 中 `JAY_REFRESH_DEMO` 在生产环境设为 `false`，使 2h 周期刷新真正套用实时数据
 
 ---
@@ -191,9 +211,9 @@ select cron.schedule(
 **背景**：采集器 `merge_data()` 是「合并去重」而非覆盖，但有条目上限，长期运行会把最早的人工整理条目挤出去。
 
 **机制**：
-- `data/policies_baseline.json`、`data/rules_baseline.json` 存放人工整理条目。
+- `data/policies_baseline.json`、`data/rules_baseline.json` 是本地/私有采集输入，已从公开 Git 跟踪中移除；正式环境应从私有 Storage 恢复后再运行采集。
 - 每次采集时自动并入（按标题去重），且**在裁剪时豁免**——基线条目不占用 `ITEM_CAP`（当前 400）额度。
-- 需要新增/修订人工条目，直接编辑这两个基线文件即可，不会被自动更新冲掉。
+- 需要新增/修订人工条目时只在受控环境编辑并上传私有 Storage，不得通过公共 Pull Request 分发。
 
 **命令**：
 ```bash

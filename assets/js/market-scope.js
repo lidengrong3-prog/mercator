@@ -374,6 +374,9 @@
     normalized.source_kind = sourceKind || (input.source_url || input.url ? 'traceable' : '');
     normalized.verification_status = verificationStatus || 'pending';
     normalized.source_type = sourceType || (normalized.source_kind === 'uploaded' ? 'user_upload' : normalized.source_kind === 'demo' ? 'demo' : 'unknown');
+    normalized.source_category = text(input.source_category || input.sourceCategory);
+    normalized.authorization_status = lower(input.authorization_status || input.authorizationStatus);
+    normalized.publication_status = lower(input.publication_status || input.publicationStatus);
     normalized.source_url = text(input.source_url || input.sourceUrl || input.url);
     normalized.source_record_id = text(input.source_record_id || input.sourceRecordId);
     normalized.verified_at = input.verified_at || input.verifiedAt || null;
@@ -402,6 +405,12 @@
     var quality = lower(normalized.data_quality);
     if (normalized.source_kind === 'demo' || ['demo', 'demonstration', 'mock', '演示', '示意'].indexOf(quality) >= 0) reasons.push('demo');
     if (isIndustryAdvisory(normalized)) reasons.push('industry_advisory');
+    if (['quarantined', 'blocked'].indexOf(normalized.publication_status) >= 0) reasons.push('source_quarantined');
+    if (['pending', 'expired', 'revoked'].indexOf(normalized.authorization_status) >= 0) reasons.push('source_authorization_unconfirmed');
+    if (['industry_media', 'third_party_provider'].indexOf(lower(normalized.source_category)) >= 0
+        && ['confirmed', 'not_required'].indexOf(normalized.authorization_status) < 0) reasons.push('source_authorization_unconfirmed');
+    if (['licensed_provider', 'industry_association'].indexOf(normalized.source_type) >= 0
+        && ['confirmed', 'not_required'].indexOf(normalized.authorization_status) < 0) reasons.push('source_authorization_unconfirmed');
     if (['verified', 'uploaded'].indexOf(normalized.verification_status) < 0) reasons.push('unverified');
     if (!normalized.source_kind) reasons.push('missing_source_kind');
     if (['official', 'traceable', 'derived'].indexOf(normalized.source_kind) >= 0 && !sourceEvidence(normalized)) reasons.push('missing_source');
@@ -417,6 +426,8 @@
     }
     return { formal: reasons.length === 0, reasons: reasons, missing_provenance_fields: missingProvenance, source_kind: normalized.source_kind,
       verification_status: normalized.verification_status, source_type: normalized.source_type,
+      source_category: normalized.source_category, authorization_status: normalized.authorization_status,
+      publication_status: normalized.publication_status,
       legacy_inferred: !hasExplicitProvenance(record) };
   }
 

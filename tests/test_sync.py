@@ -109,7 +109,10 @@ class SyncTests(unittest.TestCase):
         self.assertTrue(all(row["market_code"] == "US" for row in rows))
         self.assertTrue(all(row["verification_status"] in {"verified", "uploaded"} for row in rows))
         self.assertTrue(all(row["source_record_id"] and row["evidence_hash"] for row in rows))
-        self.assertEqual(sum(row["domain"] == "rule" for row in rows), 5)
+        rules = sync_to_supabase.load_json(os.path.join(sync_to_supabase.DATA_DIR, "rules.json"))
+        public_rules = sync_to_supabase.public_market_data_payload("rules", rules).get("items", [])
+        self.assertGreater(len(public_rules), 0)
+        self.assertEqual(sum(row["domain"] == "rule" for row in rows), len(public_rules))
 
     def test_industry_advisory_is_retained_raw_but_excluded_from_formal_projection(self):
         record = {

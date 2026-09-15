@@ -96,6 +96,7 @@ test('frontend assets are externalized and loaded in dependency order', () => {
     'assets/js/alerts-settings.js',
     'assets/js/unified-search.js',
     'assets/js/product-enhancements.js',
+    'assets/js/resource-center.js',
   ];
   assert.deepEqual(localStyleSources, expectedStyles);
   assert.deepEqual(localScriptSources.filter((source) => source.startsWith('assets/js/')), expectedModules);
@@ -170,6 +171,16 @@ test('platform rules consume the configured market scope', () => {
   assert.match(browserSource, /rlRuleFieldDefinitions/);
   assert.match(browserSource, /rule_version/);
   assert.match(browserSource, /function rlRuleVersionHistoryHtml/);
+  assert.ok(document.querySelector('#rl-topic'));
+  assert.ok(document.querySelector('#rl-date-start'));
+  assert.ok(document.querySelector('#rl-date-end'));
+  assert.ok(document.querySelector('#rl-version'));
+  assert.match(browserSource, /function rlComputePlatformCoverage/);
+  const collectorSource = fs.readFileSync(path.join(root, 'scripts', 'collect_data.py'), 'utf8');
+  assert.match(collectorSource, /def collect_aliexpress/);
+  assert.match(collectorSource, /def collect_ebay/);
+  assert.match(collectorSource, /def compare_rule_versions/);
+  assert.match(collectorSource, /platform_coverage/);
   const ruleData = JSON.parse(fs.readFileSync(path.join(root, 'data', 'rules.json'), 'utf8'));
   assert.deepEqual(ruleData.versioning, {
     identity_field: 'rule_key',
@@ -603,6 +614,7 @@ test('content quality and observability contracts are wired end to end', () => {
   const authSource = fs.readFileSync(path.join(root, 'assets', 'js', 'auth-data.js'), 'utf8');
   const adminSource = fs.readFileSync(path.join(root, 'assets', 'js', 'alerts-settings.js'), 'utf8');
   const migration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20260908020000_observability_rollups.sql'), 'utf8');
+  const gatewayMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20260912000000_ai_gateway_contract.sql'), 'utf8');
   const validation = fs.readFileSync(path.join(root, 'supabase', 'functions', '_shared', 'report-validation.ts'), 'utf8');
   const save = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-save', 'index.ts'), 'utf8');
   const proxy = fs.readFileSync(path.join(root, 'supabase', 'functions', 'ai-proxy', 'index.ts'), 'utf8');
@@ -619,6 +631,16 @@ test('content quality and observability contracts are wired end to end', () => {
   }
   assert.match(migration, /rollup_report_run_ai_usage/);
   assert.match(proxy, /search_enabled: Boolean/);
+  assert.match(proxy, /entryPoint/);
+  assert.match(proxy, /AI_EMPTY_RESPONSE/);
+  assert.match(proxy, /fallbackUsed/);
+  assert.match(proxy, /\[400, 403, 422\]/);
+  assert.match(proxy, /providerDeadline/);
+  assert.match(gatewayMigration, /entry_point TEXT NOT NULL/);
+  assert.match(gatewayMigration, /overview\.decision/);
+  assert.match(reportSource, /entryPoint:'report\.generation'/);
+  assert.match(reportSource, /requestDeadline/);
+  assert.match(authSource, /error\.requestId/);
   assert.match(adminSummary, /ai_search_requests/);
   assert.match(adminSource, /admin-ai-input-tokens/);
   assert.match(adminSource, /admin-ai-output-tokens/);
@@ -684,7 +706,8 @@ test('scheduled data update can access and validates production translation secr
 
 test('scheduled collection is scoped and core source failures are published to the quality gate', () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'data-update.yml'), 'utf8');
-  assert.match(workflow, /data\/collection_run\.json/);
+  assert.match(workflow, /repository_privacy_check\.py/);
+  assert.match(workflow, /prepare_public_repository_data\.py/);
 
   const collector = fs.readFileSync(path.join(root, 'scripts', 'collect_data.py'), 'utf8');
   assert.match(collector, /def build_query_url\(/);
@@ -772,7 +795,10 @@ test('formal pages do not retain retired mock render paths', () => {
   assert.equal(document.querySelectorAll('#countries .alert-sidebar .alert-item').length, 0);
   assert.equal(document.querySelectorAll('#platforms .platform-card[data-platform]').length, 4);
   assert.match(html, /平台经营指标未接入可信数据源/);
-  assert.match(html, /暂无已接入资源/);
+  assert.match(html, /data-resource-tab="market"/);
+  assert.match(html, /data-resource-tab="ai"/);
+  assert.match(html, /data-resource-tab="academy"/);
+  assert.ok(document.querySelector('#content #resource-list'));
   assert.equal(html.includes('部分经营模块含演示样本'), false);
   assert.ok(document.querySelector('#alerts #al-summary'));
   assert.ok(document.querySelector('#alerts #al-search-input'));
@@ -923,13 +949,11 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(releaseCheck, /X-JAY-Release/);
   assert.match(releaseCheck, /storage_bucket/);
   const migrationsAt = workflow.indexOf('Apply database migrations before functions');
-  const dataSyncAt = workflow.indexOf('Sync validated market data and provenance');
   const functionsAt = workflow.indexOf('Deploy JWT-protected Edge Functions');
   const acceptanceAt = workflow.indexOf('Run two-account production report acceptance');
   const frontendAt = workflow.indexOf('Assemble static site after backend acceptance');
   assert.ok(migrationsAt > 0);
-  assert.ok(dataSyncAt > migrationsAt);
-  assert.ok(functionsAt > dataSyncAt);
+  assert.ok(functionsAt > migrationsAt);
   assert.ok(acceptanceAt > functionsAt);
   assert.ok(frontendAt > acceptanceAt);
   assert.match(workflow, /needs: deploy-backend/);
@@ -939,8 +963,9 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(workflow, /Verify release ref, worktree and migration ordering/);
   assert.match(workflow, /Validate formal production origin/);
   assert.match(workflow, /Verify remote migration head/);
-  assert.match(workflow, /python scripts\/sync_to_supabase\.py/);
-  assert.match(workflow, /Upload browser acceptance diagnostics/);
+  assert.doesNotMatch(workflow, /python scripts\/sync_to_supabase\.py/);
+  assert.match(workflow, /validate_data\.py --public-projection/);
+  assert.match(workflow, /Summarize browser acceptance diagnostics without contents/);
   assert.match(workflow, /browser-acceptance-diagnostics-/);
   assert.match(workflow, /SUPABASE_SERVICE_KEY/);
   assert.doesNotMatch(workflow, /SUPABASE_SERVICE_KEY:\s*\$\{\{\s*secrets\.SUPABASE_SERVICE_KEY/);
@@ -958,7 +983,7 @@ test('production release deploys database and functions before the frontend', ()
   assert.doesNotMatch(workflow, /rest\/v1\/market_data\?select=id&limit=1/);
   assert.match(operationsWorkflow, /code-health:/);
   assert.match(operationsWorkflow, /data-quality:/);
-  assert.match(operationsWorkflow, /validate_data\.py --report operations-data-quality-result\.json/);
+  assert.match(operationsWorkflow, /validate_data\.py --public-projection --report operations-data-quality-result\.json/);
   assert.match(operationsWorkflow, /availability-monitor:/);
   assert.match(operationsWorkflow, /if: \$\{\{ always\(\) \}\}/);
   assert.match(operationsWorkflow, /python scripts\/production_health_check\.py/);
@@ -1026,7 +1051,7 @@ test('production release deploys database and functions before the frontend', ()
   assert.ok(browserJobAt > frontendAt);
   assert.ok(browserRunAt > browserJobAt);
   assert.ok(smokeAt > browserJobAt);
-  assert.match(workflow, /needs: browser-authenticated-acceptance/);
+  assert.match(workflow, /needs:[\s\S]*browser-authenticated-acceptance/);
   assert.match(workflow, /BROWSER_ACCEPTANCE_RESULT_FILE/);
   assert.match(workflow, /production-browser-acceptance-result-/);
 

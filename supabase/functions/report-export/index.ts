@@ -1,6 +1,7 @@
 import { fetchCurrentQualityGate, reportContentAllowsFormalOutput } from '../_shared/report-quality.ts';
 import { REPORT_VALIDATION_VERSION, validateFormalReportWithServerData } from '../_shared/report-validation.ts';
 import { buildReportPdf } from '../_shared/report-pdf.ts';
+import { enforceRateLimit, rateLimitResponse, requestId as securityRequestId } from '../_shared/security.ts';
 
 const defaultOrigins = [
   'https://lidengrong3-prog.github.io',
@@ -57,6 +58,14 @@ Deno.serve(async (request) => {
   if (!supabaseUrl || !anonKey || !serviceKey) return jsonResponse({ error: 'REPORT_SERVICE_NOT_CONFIGURED' }, 503, origin);
   const user = await authenticatedUser(request, supabaseUrl, anonKey);
   if (!user) return jsonResponse({ error: 'AUTH_REQUIRED' }, 401, origin);
+  const securityRequest = securityRequestId(request);
+  try {
+    const rate = await enforceRateLimit({ supabaseUrl, serviceKey, request, scope: 'export', userId: user.id });
+    if (!rate.allowed) return rateLimitResponse(rate, securityRequest, origin);
+  } catch (error) {
+    console.error('report export rate limiter unavailable', error);
+    return jsonResponse({ error: 'RATE_LIMIT_UNAVAILABLE', request_id: securityRequest }, 503, origin);
+  }
 
   let payload: Record<string, unknown>;
   try { payload = await request.json(); } catch { return jsonResponse({ error: 'INVALID_JSON' }, 400, origin); }
@@ -69,9 +78,10 @@ Deno.serve(async (request) => {
   const report = reportRows?.[0] as { workspace_id?: unknown; title?: unknown; content?: unknown; save_status?: unknown; publication_status?: unknown; server_validation_version?: unknown; server_validated_at?: unknown; server_validation?: unknown } | undefined;
   if (!report) return jsonResponse({ error: 'REPORT_NOT_FOUND' }, 404, origin);
   const workspaceId = String(report.workspace_id || '');
-  const membershipResponse = await fetch(`${supabaseUrl}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&select=id&limit=1`, { headers: serviceHeaders });
+  const membershipResponse = await fetch(`${supabaseUrl}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&select=role&limit=1`, { headers: serviceHeaders });
   const memberships = membershipResponse.ok ? await membershipResponse.json() : [];
   if (!workspaceId || !memberships?.length) return jsonResponse({ error: 'REPORT_NOT_FOUND' }, 404, origin);
+  if (!['owner', 'admin', 'editor'].includes(String(memberships[0]?.role || ''))) return jsonResponse({ error: 'WORKSPACE_READ_ONLY' }, 403, origin);
   if (report.save_status !== 'saved') return jsonResponse({ error: 'REPORT_NOT_SAVED' }, 409, origin);
   const storedContent = report.content && typeof report.content === 'object' ? report.content as Record<string, unknown> : {};
   if (!reportContentAllowsFormalOutput(storedContent)) return jsonResponse({ error: 'REPORT_QUALITY_GATE_BLOCKED' }, 409, origin);
@@ -91,11 +101,12 @@ Deno.serve(async (request) => {
   if (text.length > 80_000) return jsonResponse({ error: 'REPORT_TOO_LARGE' }, 413, origin);
   const jobsUrl = `${supabaseUrl}/rest/v1/report_exports`;
   const parentExportId = typeof payload.parent_export_id === 'string' && /^[0-9a-f-]{36}$/i.test(payload.parent_export_id) ? payload.parent_export_id : null;
+  const acceptanceRunId = typeof payload.acceptance_run_id === 'string' ? payload.acceptance_run_id.trim().slice(0, 160) : null;
   const attempt = Math.max(1, Math.min(100, Number(payload.attempt || 1)) || 1);
   const requestId = String(payload.request_id || request.headers.get('X-Request-Id') || crypto.randomUUID()).slice(0, 240);
   const idempotencyKey = String(payload.idempotency_key || `report-export:${reportId}:pdf:current`).slice(0, 240);
   const readExistingJob = async () => {
-    const response = await fetch(`${jobsUrl}?user_id=eq.${encodeURIComponent(user.id)}&idempotency_key=eq.${encodeURIComponent(idempotencyKey)}&select=id,status,file_path,error_message,created_at&limit=1`, { headers: serviceHeaders });
+    const response = await fetch(`${jobsUrl}?workspace_id=eq.${encodeURIComponent(workspaceId)}&idempotency_key=eq.${encodeURIComponent(idempotencyKey)}&select=id,status,file_path,error_message,created_at&limit=1`, { headers: serviceHeaders });
     const rows = response.ok ? await response.json() : [];
     return rows?.[0] || null;
   };
@@ -117,11 +128,12 @@ Deno.serve(async (request) => {
   const existing = await readExistingJob();
   if (existing) return await duplicateJobResponse(existing);
 
-  const conflictQuery = new URLSearchParams({ on_conflict: 'user_id,idempotency_key' });
+  // Legacy compatibility note: the previous contract used on_conflict user_id,idempotency_key.
+  const conflictQuery = new URLSearchParams({ on_conflict: 'workspace_id,idempotency_key' });
   const jobCreate = await fetch(`${jobsUrl}?${conflictQuery.toString()}`, {
     method: 'POST',
     headers: { ...serviceHeaders, Prefer: 'resolution=ignore-duplicates,return=representation' },
-    body: JSON.stringify({ user_id: user.id, report_id: reportId, format: 'pdf', status: 'queued', parent_export_id: parentExportId, attempt, request_id: requestId, idempotency_key: idempotencyKey, metadata: { function: 'report-export', content_source: 'persisted_report', data_snapshot_at: storedContent.data_snapshot_at || null, quality_report_version: currentQuality.snapshot.quality_report_version || null, source_record_ids: storedContent.source_record_ids || [] } }),
+    body: JSON.stringify({ user_id: user.id, workspace_id: workspaceId, report_id: reportId, format: 'pdf', status: 'queued', parent_export_id: parentExportId, attempt, request_id: requestId, idempotency_key: idempotencyKey, acceptance_run_id: acceptanceRunId, metadata: { function: 'report-export', content_source: 'persisted_report', data_snapshot_at: storedContent.data_snapshot_at || null, quality_report_version: currentQuality.snapshot.quality_report_version || null, source_record_ids: storedContent.source_record_ids || [], acceptance_run_id: acceptanceRunId } }),
   });
   if (!jobCreate.ok) {
     const failure = await jobCreate.text();
@@ -147,7 +159,7 @@ Deno.serve(async (request) => {
   };
   await updateJob({ status: 'processing', started_at: new Date().toISOString() });
 
-  const path = `${user.id}/${crypto.randomUUID()}.pdf`;
+  const path = acceptanceRunId ? `${user.id}/acceptance/${encodeURIComponent(acceptanceRunId)}/${crypto.randomUUID()}.pdf` : `${user.id}/${crypto.randomUUID()}.pdf`;
   const encodedPath = path.split('/').map(encodeURIComponent).join('/');
   const upload = await fetch(`${supabaseUrl}/storage/v1/object/reports/${encodedPath}`, {
     method: 'POST',

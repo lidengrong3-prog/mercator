@@ -193,6 +193,8 @@ CPSC_MAX_AGE_HOURS = 72
 
 
 DATASET_LABELS = {
+    "quality_report": "数据质量报告",
+    "market_scope": "公开市场范围",
     "collection_run": "采集运行状态",
     "policies": "政策动态",
     "taxes": "税收与关税",
@@ -204,6 +206,20 @@ DATASET_LABELS = {
     "us_market": "美国品类情报",
     "macro": "美国宏观指标",
     "cpsc": "CPSC 产品召回",
+    "industry_advisories": "行业资讯",
+}
+
+PUBLIC_PROJECTION_FILES = {
+    "market_scope": "market_scope.json",
+    "countries": "countries.json",
+    "platforms": "platforms.json",
+    "policies": "policies.json",
+    "rules": "rules.json",
+    "alerts": "alerts.json",
+    "taxes": "taxes.json",
+    "access_requirements": "access_requirements.json",
+    "industry_advisories": "industry_advisories.json",
+    "macro": os.path.join("us_market", "macro_indicators.json"),
 }
 
 
@@ -1598,7 +1614,7 @@ def validate_collection_run(
 
     core_failures = sorted(
         key for key, row in source_by_key.items()
-        if row.get("core") is True and row.get("status") == "failed"
+        if row.get("core") is True and row.get("status") in {"failed", "skipped"}
     )
     if core_failures:
         result.errors.append("核心来源采集失败：" + ", ".join(core_failures))
@@ -1796,6 +1812,533 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
     }
 
 
+def _public_projection_report(
+    results: list[DatasetResult],
+    source_report: dict[str, Any] | None,
+    now: datetime,
+) -> dict[str, Any]:
+    errors = sum(len(result.errors) for result in results)
+    warnings = sum(len(result.warnings) for result in results)
+    return {
+        "schema_version": 1,
+        "mode": "public_projection",
+        "generated_at": now.isoformat(),
+        "status": "failed" if errors else ("degraded" if warnings else "healthy"),
+        "publishable": errors == 0,
+        "source_quality_report": {
+            "schema_version": source_report.get("schema_version") if isinstance(source_report, dict) else None,
+            "data_contract_version": source_report.get("data_contract_version") if isinstance(source_report, dict) else None,
+            "generated_at": source_report.get("generated_at") if isinstance(source_report, dict) else None,
+            "status": source_report.get("status") if isinstance(source_report, dict) else None,
+            "publishable": source_report.get("publishable") if isinstance(source_report, dict) else None,
+        },
+        "summary": {
+            "datasets": len(results),
+            "records": sum(result.records for result in results if result.key not in {"quality_report", "market_scope"}),
+            "formal_records": sum(result.formal_records for result in results),
+            "excluded_records": sum(result.excluded_records for result in results),
+            "errors": errors,
+            "warnings": warnings,
+        },
+        "datasets": {result.key: result.as_dict() for result in results},
+    }
+
+
+def _projection_market_aliases(manifest: dict[str, Any]) -> dict[str, str]:
+    aliases: dict[str, str] = {}
+    for market in manifest.get("markets", []):
+        if not isinstance(market, dict):
+            continue
+        code = str(market.get("code") or "").strip().upper()
+        if not code:
+            continue
+        for value in (
+            market.get("code"), market.get("key"), market.get("name"), market.get("label"),
+            *(market.get("aliases") or []),
+        ):
+            normalized = str(value or "").strip().casefold()
+            if normalized:
+                aliases[normalized] = code
+    return aliases
+
+
+def _projection_record_market_codes(
+    item: dict[str, Any],
+    aliases: dict[str, str],
+) -> set[str]:
+    values: list[Any] = []
+    for field_name in (
+        "market_codes", "marketCodes", "markets", "market_code", "marketCode",
+        "market", "region", "country", "jurisdiction_code", "jurisdictionCode",
+        "jurisdiction",
+    ):
+        value = item.get(field_name)
+        if isinstance(value, (list, tuple, set)):
+            values.extend(value)
+        elif value not in (None, ""):
+            values.append(value)
+    return {
+        aliases.get(str(value).strip().casefold(), str(value).strip().upper())
+        for value in values
+        if str(value or "").strip()
+    }
+
+
+def _expected_public_count(
+    source_report: dict[str, Any],
+    key: str,
+    result: DatasetResult,
+) -> int | None:
+    dataset = source_report.get("datasets", {}).get(key)
+    expected = dataset.get("formal_records") if isinstance(dataset, dict) else None
+    if isinstance(expected, bool) or not isinstance(expected, int) or expected < 0:
+        result.errors.append("质量报告缺少有效的 formal_records 契约")
+        return None
+    if result.records != expected:
+        result.errors.append(
+            f"公开记录数与质量报告不一致：actual={result.records} expected={expected}"
+        )
+    result.metrics["expected_formal_records"] = expected
+    return expected
+
+
+def validate_public_projection(
+    now: datetime | None = None,
+    *,
+    data_dir: str | None = None,
+    quality_report_path: str | None = None,
+) -> dict[str, Any]:
+    """Validate the checked-in public projection without private collector inputs."""
+    now = (now or datetime.now(UTC)).astimezone(UTC)
+    public_dir = os.path.abspath(data_dir or DATA_DIR)
+    source_report_path = os.path.abspath(
+        quality_report_path or os.path.join(public_dir, "quality_report.json")
+    )
+    results: list[DatasetResult] = []
+
+    quality_result = DatasetResult(
+        "quality_report", os.path.relpath(source_report_path, ROOT)
+    )
+    source_report = load_json(source_report_path, quality_result)
+    results.append(quality_result)
+    if not isinstance(source_report, dict):
+        if source_report is not None:
+            quality_result.errors.append("根结构必须是对象")
+        return _public_projection_report(results, None, now)
+
+    quality_result.records = 1
+    quality_result.scoped_records = 1
+    gate_status = str(source_report.get("status") or "").strip().casefold()
+    summary = source_report.get("summary")
+    datasets = source_report.get("datasets")
+    if source_report.get("publishable") is not True:
+        quality_result.errors.append("原始质量报告未通过发布闸门：publishable 必须为 true")
+    if gate_status not in {"healthy", "degraded"}:
+        quality_result.errors.append(
+            f"原始质量报告状态不可发布：{gate_status or 'missing'}"
+        )
+    elif gate_status == "degraded":
+        quality_result.warnings.append("原始质量报告处于 degraded 状态")
+    if not isinstance(summary, dict) or summary.get("errors") != 0:
+        quality_result.errors.append("原始质量报告 summary.errors 必须为 0")
+    if not isinstance(datasets, dict):
+        quality_result.errors.append("原始质量报告缺少 datasets 对象")
+        datasets = {}
+    dataset_error_count = sum(
+        len(dataset.get("errors", []))
+        for dataset in datasets.values()
+        if isinstance(dataset, dict) and isinstance(dataset.get("errors", []), list)
+    )
+    if dataset_error_count:
+        quality_result.errors.append(
+            f"原始质量报告仍包含 {dataset_error_count} 个数据集错误"
+        )
+    if not parse_datetime(source_report.get("generated_at")):
+        quality_result.errors.append("原始质量报告缺少有效 generated_at")
+    quality_result.formal_records = 1 if not quality_result.errors else 0
+    quality_result.excluded_records = 1 - quality_result.formal_records
+    quality_result.metrics.update({
+        "gate_status": gate_status or None,
+        "reported_errors": summary.get("errors") if isinstance(summary, dict) else None,
+        "dataset_errors": dataset_error_count,
+    })
+
+    manifest_path = os.path.join(public_dir, PUBLIC_PROJECTION_FILES["market_scope"])
+    manifest_result = DatasetResult(
+        "market_scope", os.path.relpath(manifest_path, ROOT)
+    )
+    manifest = load_json(manifest_path, manifest_result)
+    results.append(manifest_result)
+    if not isinstance(manifest, dict):
+        if manifest is not None:
+            manifest_result.errors.append("根结构必须是对象")
+        return _public_projection_report(results, source_report, now)
+    markets = manifest.get("markets")
+    platforms = manifest.get("platforms")
+    market_platforms = manifest.get("market_platforms") or manifest.get("marketPlatforms")
+    if not isinstance(markets, list) or not isinstance(platforms, list) or not isinstance(market_platforms, list):
+        manifest_result.errors.append("范围清单必须包含 markets、platforms 和 market_platforms 数组")
+        return _public_projection_report(results, source_report, now)
+
+    allowed_market_codes = {
+        str(code).strip().upper()
+        for code in (manifest.get("default_market_codes") or [])
+        if str(code or "").strip()
+    }
+    market_aliases = _projection_market_aliases(manifest)
+    platform_names_by_key = {
+        str(item.get("key") or "").strip().casefold(): str(item.get("name") or "").strip()
+        for item in platforms
+        if isinstance(item, dict) and str(item.get("key") or "").strip() and str(item.get("name") or "").strip()
+    }
+    configured_platform_keys = {
+        str(item.get("platform_key") or item.get("platformKey") or "").strip().casefold()
+        for item in market_platforms
+        if isinstance(item, dict)
+        and str(item.get("market_code") or item.get("marketCode") or "").strip().upper() in allowed_market_codes
+        and str(item.get("data_status") or item.get("dataStatus") or "").strip().casefold() == "configured"
+    }
+    allowed_platform_names = {
+        platform_names_by_key[key]
+        for key in configured_platform_keys
+        if key in platform_names_by_key
+    }
+    reported_scope = source_report.get("scope") if isinstance(source_report.get("scope"), dict) else {}
+    reported_markets = {
+        str(code).strip().upper()
+        for code in (reported_scope.get("market_codes") or [])
+        if str(code or "").strip()
+    }
+    reported_platforms = {
+        str(name).strip()
+        for name in (reported_scope.get("platform_names") or [])
+        if str(name or "").strip()
+    }
+    if not allowed_market_codes:
+        manifest_result.errors.append("范围清单缺少 default_market_codes")
+    if reported_markets != allowed_market_codes:
+        manifest_result.errors.append("范围清单与质量报告的 market_codes 不一致")
+    if reported_platforms != allowed_platform_names:
+        manifest_result.errors.append("范围清单与质量报告的 platform_names 不一致")
+    manifest_result.records = len(allowed_market_codes) + len(allowed_platform_names)
+    manifest_result.scoped_records = manifest_result.records
+    manifest_result.formal_records = manifest_result.records if not manifest_result.errors else 0
+    manifest_result.excluded_records = manifest_result.records - manifest_result.formal_records
+    manifest_result.metrics.update({
+        "market_codes": sorted(allowed_market_codes),
+        "platform_names": sorted(allowed_platform_names),
+    })
+
+    def result_for(key: str) -> tuple[DatasetResult, Any]:
+        path = os.path.join(public_dir, PUBLIC_PROJECTION_FILES[key])
+        result = DatasetResult(key, os.path.relpath(path, ROOT))
+        data = load_json(path, result)
+        results.append(result)
+        return result, data
+
+    countries_result, countries = result_for("countries")
+    if isinstance(countries, dict):
+        country_rows = {
+            key: value for key, value in countries.items() if not str(key).startswith("_")
+        }
+        countries_result.records = len(country_rows)
+        malformed = sum(not isinstance(value, dict) for value in country_rows.values())
+        missing_names = sum(
+            isinstance(value, dict) and not str(value.get("name") or "").strip()
+            for value in country_rows.values()
+        )
+        out_of_scope = 0
+        names: list[str] = []
+        for key, value in country_rows.items():
+            if not isinstance(value, dict):
+                continue
+            names.append(str(value.get("name") or "").strip())
+            codes = _projection_record_market_codes(
+                {"markets": [key, value.get("code"), value.get("name")]}, market_aliases
+            )
+            if not codes & allowed_market_codes:
+                out_of_scope += 1
+        duplicates = duplicate_count(names)
+        countries_result.scoped_records = len(country_rows) - out_of_scope
+        countries_result.formal_records = max(
+            len(country_rows) - malformed - missing_names - out_of_scope, 0
+        )
+        countries_result.excluded_records = len(country_rows) - countries_result.formal_records
+        countries_result.metrics.update({
+            "malformed_records": malformed,
+            "missing_names": missing_names,
+            "duplicate_names": duplicates,
+            "out_of_scope_records": out_of_scope,
+        })
+        if malformed:
+            countries_result.errors.append(f"存在 {malformed} 个损坏的国家档案")
+        if missing_names:
+            countries_result.errors.append(f"存在 {missing_names} 个空国家名称")
+        if duplicates:
+            countries_result.errors.append(f"存在 {duplicates} 组重复国家名称")
+        if out_of_scope:
+            countries_result.errors.append(f"存在 {out_of_scope} 个范围外国家档案")
+        _expected_public_count(source_report, "countries", countries_result)
+    elif countries is not None:
+        countries_result.errors.append("根结构必须是对象")
+
+    platforms_result, public_platforms = result_for("platforms")
+    if isinstance(public_platforms, list):
+        platforms_result.records = len(public_platforms)
+        rows = [row for row in public_platforms if isinstance(row, dict)]
+        malformed = len(public_platforms) - len(rows)
+        names = [normalize_platform(row.get("name")) for row in rows]
+        missing_names = sum(not str(row.get("name") or "").strip() for row in rows)
+        out_of_scope = sum(name not in allowed_platform_names for name in names)
+        duplicates = duplicate_count(names)
+        platforms_result.scoped_records = len(rows) - out_of_scope
+        platforms_result.formal_records = max(
+            len(rows) - missing_names - out_of_scope, 0
+        )
+        platforms_result.excluded_records = len(public_platforms) - platforms_result.formal_records
+        platforms_result.metrics.update({
+            "malformed_records": malformed,
+            "missing_names": missing_names,
+            "duplicate_names": duplicates,
+            "out_of_scope_records": out_of_scope,
+        })
+        if malformed:
+            platforms_result.errors.append(f"存在 {malformed} 条非对象平台记录")
+        if missing_names:
+            platforms_result.errors.append(f"存在 {missing_names} 条空平台名称")
+        if duplicates:
+            platforms_result.errors.append(f"存在 {duplicates} 组重复平台名称")
+        if out_of_scope:
+            platforms_result.errors.append(f"存在 {out_of_scope} 条范围外平台记录")
+        _expected_public_count(source_report, "platforms", platforms_result)
+    elif public_platforms is not None:
+        platforms_result.errors.append("根结构必须是数组")
+
+    item_domains = {
+        "policies": "policy",
+        "rules": "rule",
+        "taxes": "tax",
+        "access_requirements": "access",
+    }
+    for key, domain in item_domains.items():
+        result, data = result_for(key)
+        if not isinstance(data, dict) or not isinstance(data.get("items") if isinstance(data, dict) else None, list):
+            if data is not None:
+                result.errors.append("根结构必须是包含 items 数组的对象")
+            continue
+        items = data["items"]
+        result.records = len(items)
+        rows = [item for item in items if isinstance(item, dict)]
+        malformed = len(items) - len(rows)
+        missing_ids = sum(not str(item.get("id") or "").strip() for item in rows)
+        missing_titles = sum(not str(item.get("title") or "").strip() for item in rows)
+        duplicates = duplicate_count(item.get("id") for item in rows)
+        invalid_urls = sum(not valid_http_url(item.get("source_url")) for item in rows)
+        out_of_scope = sum(
+            not (_projection_record_market_codes(item, market_aliases) & allowed_market_codes)
+            or (
+                key == "rules"
+                and normalize_platform(item.get("platform")) not in allowed_platform_names
+            )
+            for item in rows
+        )
+        invalid_quality = 0
+        for item in rows:
+            quality = record_quality(
+                item, require_scope=False, domain=domain, require_provenance=True
+            )
+            if not quality["formal"]:
+                invalid_quality += 1
+        result.scoped_records = len(rows) - out_of_scope
+        result.formal_records = max(
+            len(rows) - missing_ids - missing_titles - invalid_urls - out_of_scope - invalid_quality,
+            0,
+        )
+        result.excluded_records = len(items) - result.formal_records
+        result.metrics.update({
+            "malformed_records": malformed,
+            "missing_ids": missing_ids,
+            "missing_titles": missing_titles,
+            "duplicate_ids": duplicates,
+            "missing_or_invalid_urls": invalid_urls,
+            "out_of_scope_records": out_of_scope,
+            "non_formal_records": invalid_quality,
+        })
+        if malformed:
+            result.errors.append(f"存在 {malformed} 条非对象记录")
+        if missing_ids:
+            result.errors.append(f"存在 {missing_ids} 条空 ID")
+        if missing_titles:
+            result.errors.append(f"存在 {missing_titles} 条空标题")
+        if duplicates:
+            result.errors.append(f"存在 {duplicates} 组重复 ID")
+        if invalid_urls:
+            result.errors.append(f"存在 {invalid_urls} 条非 HTTPS 来源链接")
+        if out_of_scope:
+            result.errors.append(f"存在 {out_of_scope} 条范围外记录")
+        if invalid_quality:
+            result.errors.append(f"存在 {invalid_quality} 条非正式或 provenance 不完整记录")
+        _expected_public_count(source_report, key, result)
+
+    alerts_result, alerts = result_for("alerts")
+    if isinstance(alerts, list):
+        alerts_result.records = len(alerts)
+        valid_rows = [
+            row for row in alerts
+            if isinstance(row, list) and len(row) >= 10 and isinstance(row[9], dict)
+        ]
+        malformed = len(alerts) - len(valid_rows)
+        ids = [row[0] for row in valid_rows]
+        missing_ids = sum(not str(value or "").strip() for value in ids)
+        duplicates = duplicate_count(ids)
+        out_of_scope = invalid_urls = invalid_quality = 0
+        for row in valid_rows:
+            item = dict(row[9])
+            item.setdefault("id", row[0])
+            item.setdefault("title", row[3])
+            item.setdefault("market", row[4])
+            item.setdefault("platform", row[5])
+            item.setdefault("detail", row[6])
+            item.setdefault("date", row[7])
+            if not (_projection_record_market_codes(item, market_aliases) & allowed_market_codes):
+                out_of_scope += 1
+            if not valid_http_url(item.get("source_url")):
+                invalid_urls += 1
+            if not record_quality(
+                item, require_scope=False, domain="alert", require_provenance=True
+            )["formal"]:
+                invalid_quality += 1
+        alerts_result.scoped_records = len(valid_rows) - out_of_scope
+        alerts_result.formal_records = max(
+            len(valid_rows) - missing_ids - invalid_urls - out_of_scope - invalid_quality,
+            0,
+        )
+        alerts_result.excluded_records = len(alerts) - alerts_result.formal_records
+        alerts_result.metrics.update({
+            "malformed_records": malformed,
+            "missing_ids": missing_ids,
+            "duplicate_ids": duplicates,
+            "missing_or_invalid_urls": invalid_urls,
+            "out_of_scope_records": out_of_scope,
+            "non_formal_records": invalid_quality,
+        })
+        if malformed:
+            alerts_result.errors.append(f"存在 {malformed} 条字段不足的预警")
+        if missing_ids:
+            alerts_result.errors.append(f"存在 {missing_ids} 条空 ID")
+        if duplicates:
+            alerts_result.errors.append(f"存在 {duplicates} 组重复 ID")
+        if invalid_urls:
+            alerts_result.errors.append(f"存在 {invalid_urls} 条非 HTTPS 来源链接")
+        if out_of_scope:
+            alerts_result.errors.append(f"存在 {out_of_scope} 条范围外记录")
+        if invalid_quality:
+            alerts_result.errors.append(f"存在 {invalid_quality} 条非正式或 provenance 不完整记录")
+        _expected_public_count(source_report, "alerts", alerts_result)
+    elif alerts is not None:
+        alerts_result.errors.append("根结构必须是数组")
+
+    macro_result, macro = result_for("macro")
+    indicators = macro.get("indicators") if isinstance(macro, dict) else None
+    if isinstance(indicators, dict):
+        macro_result.records = len(indicators)
+        rows = [(key, value) for key, value in indicators.items() if isinstance(value, dict)]
+        malformed = len(indicators) - len(rows)
+        missing_names = sum(not str(item.get("name") or "").strip() for _, item in rows)
+        invalid_urls = sum(not valid_http_url(item.get("source_url")) for _, item in rows)
+        invalid_quality = 0
+        macro_market = next(iter(allowed_market_codes), "") if len(allowed_market_codes) == 1 else ""
+        generated_at = macro.get("meta", {}).get("generated_at") if isinstance(macro.get("meta"), dict) else None
+        for _, item in rows:
+            normalized = dict(
+                item,
+                market=item.get("market") or macro_market,
+                source_type=item.get("source_type") or "official_feed",
+                published_at=item.get("published_at") or item.get("date"),
+                collected_at=item.get("collected_at") or generated_at,
+            )
+            if not record_quality(
+                normalized, require_scope=False, domain="market", require_provenance=True
+            )["formal"]:
+                invalid_quality += 1
+        macro_result.scoped_records = len(rows)
+        macro_result.formal_records = max(
+            len(rows) - missing_names - invalid_urls - invalid_quality, 0
+        )
+        macro_result.excluded_records = len(indicators) - macro_result.formal_records
+        macro_result.metrics.update({
+            "malformed_records": malformed,
+            "missing_names": missing_names,
+            "missing_or_invalid_urls": invalid_urls,
+            "non_formal_records": invalid_quality,
+        })
+        if malformed:
+            macro_result.errors.append(f"存在 {malformed} 条损坏的宏观指标")
+        if missing_names:
+            macro_result.errors.append(f"存在 {missing_names} 条空指标名称")
+        if invalid_urls:
+            macro_result.errors.append(f"存在 {invalid_urls} 条非 HTTPS 来源链接")
+        if invalid_quality:
+            macro_result.errors.append(f"存在 {invalid_quality} 条非正式或 provenance 不完整记录")
+        _expected_public_count(source_report, "macro", macro_result)
+    elif macro is not None:
+        macro_result.errors.append("根结构必须包含 indicators 对象")
+
+    advisory_result, advisories = result_for("industry_advisories")
+    advisory_items = advisories.get("items") if isinstance(advisories, dict) else None
+    if isinstance(advisory_items, list):
+        advisory_result.records = len(advisory_items)
+        rows = [item for item in advisory_items if isinstance(item, dict)]
+        malformed = len(advisory_items) - len(rows)
+        missing_ids = sum(not str(item.get("id") or "").strip() for item in rows)
+        duplicates = duplicate_count(item.get("id") for item in rows)
+        invalid_urls = sum(not valid_http_url(item.get("source_url")) for item in rows)
+        out_of_scope = sum(
+            not (_projection_record_market_codes(item, market_aliases) & allowed_market_codes)
+            for item in rows
+        )
+        invalid_contract = sum(
+            not is_industry_advisory(item)
+            or normalize_source_kind(item.get("source_kind")) != "traceable"
+            or normalize_source_type(item.get("source_type")) != "licensed_provider"
+            or normalize_verification_status(item.get("verification_status")) != "pending"
+            for item in rows
+        )
+        advisory_result.scoped_records = len(rows) - out_of_scope
+        advisory_result.formal_records = 0
+        advisory_result.excluded_records = len(advisory_items)
+        advisory_result.metrics.update({
+            "malformed_records": malformed,
+            "missing_ids": missing_ids,
+            "duplicate_ids": duplicates,
+            "missing_or_invalid_urls": invalid_urls,
+            "out_of_scope_records": out_of_scope,
+            "invalid_advisory_contract_records": invalid_contract,
+            "formal_records": 0,
+        })
+        if malformed:
+            advisory_result.errors.append(f"存在 {malformed} 条非对象行业资讯")
+        if missing_ids:
+            advisory_result.errors.append(f"存在 {missing_ids} 条空 ID")
+        if duplicates:
+            advisory_result.errors.append(f"存在 {duplicates} 组重复 ID")
+        if invalid_urls:
+            advisory_result.errors.append(f"存在 {invalid_urls} 条非 HTTPS 来源链接")
+        if out_of_scope:
+            advisory_result.errors.append(f"存在 {out_of_scope} 条范围外记录")
+        if invalid_contract:
+            advisory_result.errors.append(
+                f"存在 {invalid_contract} 条行业资讯被错误标记为正式或官方数据"
+            )
+        reported_advisory = datasets.get("industry_advisories")
+        if isinstance(reported_advisory, dict) and reported_advisory.get("formal_records") not in (None, 0):
+            advisory_result.errors.append("行业资讯不能计入质量报告 formal_records")
+    elif advisories is not None:
+        advisory_result.errors.append("根结构必须是包含 items 数组的对象")
+
+    return _public_projection_report(results, source_report, now)
+
+
 def write_report(report: dict[str, Any], path: str) -> None:
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     with open(path, "w", encoding="utf-8") as handle:
@@ -1805,12 +2348,31 @@ def write_report(report: dict[str, Any], path: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate Mercator market data before publishing")
-    parser.add_argument("--report", default=DEFAULT_REPORT, help="Quality report output path")
+    parser.add_argument(
+        "--public-projection",
+        action="store_true",
+        help="Validate the checked-in public projection against its existing quality report",
+    )
+    parser.add_argument(
+        "--report",
+        default=None,
+        help="Validation report output path (full validation defaults to data/quality_report.json)",
+    )
     args = parser.parse_args()
-    report = validate_all()
-    write_report(report, args.report)
+    report_path = args.report
+    if args.public_projection:
+        report = validate_public_projection()
+        if report_path:
+            if os.path.abspath(report_path) == os.path.abspath(DEFAULT_REPORT):
+                parser.error("public projection audit cannot overwrite data/quality_report.json")
+            write_report(report, report_path)
+    else:
+        report = validate_all()
+        report_path = report_path or DEFAULT_REPORT
+        write_report(report, report_path)
 
-    print(f"[QUALITY] status={report['status']} publishable={report['publishable']}")
+    label = "PUBLIC PROJECTION" if args.public_projection else "QUALITY"
+    print(f"[{label}] status={report['status']} publishable={report['publishable']}")
     for dataset in report["datasets"].values():
         print(
             f"  {dataset['key']:<12} {dataset['status']:<9} "
@@ -1820,7 +2382,10 @@ def main() -> int:
             print(f"    ERROR: {message}")
         for message in dataset["warnings"]:
             print(f"    WARN: {message}")
-    print(f"[QUALITY] report={os.path.relpath(args.report, ROOT)}")
+    if report_path:
+        print(f"[{label}] report={os.path.relpath(report_path, ROOT)}")
+    elif args.public_projection:
+        print(f"[{label}] source_report={os.path.relpath(DEFAULT_REPORT, ROOT)} (read-only)")
     return 0 if report["publishable"] else 1
 
 

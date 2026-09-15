@@ -143,7 +143,7 @@ async function jayRefreshViaAI(key, label){
   var user = '【当前日期】' + jayNowHuman() + '。请联网检索并整理「' + catLabel + '」截至今日的最新'+scopeLabel+'动态；平台仅限 '+scopePlatforms.join('、')+'。';
   toast('正在联网检索最新' + catLabel + '数据...');
   try {
-    var brief = await callAI(sys, user, { temperature: 0.4, max_tokens: 2600, search: true });
+    var brief = await callAI(sys, user, { temperature: 0.4, max_tokens: 2600, search: true, entryPoint:'intelligence.refresh', operation:'intelligence.refresh', timeout:60000 });
     var ts = new Date().toISOString();
     try { localStorage.setItem('jay_ai_brief_' + key, JSON.stringify({ text: brief, ts: ts })); } catch(e){}
     toast(catLabel + ' AI 简报已生成');
@@ -282,6 +282,7 @@ var authMode = 'login';
 var jayReportPoolCache = [];
 var jayReportsCache = [];
 var jayReportExportsCache = [];
+var jayWorkspaceAssetCache = {};
 var jayPreferenceCache = { notification_prefs: {}, ui_prefs: {}, workspace_prefs: {} };
 var jayWorkspaceContext = {
   available: false,
@@ -308,6 +309,18 @@ var jayReportMaterialKnownIds = {};
 var jayWorkspaceHydration = null;
 var jayHydratedUserId = null;
 var jayReportPoolSyncTimer = null;
+var JAY_ACCEPTANCE_RUN_ID = String(window.__JAY_ACCEPTANCE_RUN_ID || '').trim().slice(0, 160);
+var JAY_ACCEPTANCE_TRACKED_TABLES = {
+  workspaces: true, workspace_members: true, workspace_invites: true,
+  user_activity: true,
+  report_materials: true, saved_workspace_items: true, generated_reports: true,
+  report_runs: true, report_exports: true, ai_request_logs: true,
+  ai_token_reservations: true, monitored_shops: true, user_watchlist: true
+};
+
+function jayAcceptanceRunId() {
+  return String(window.__JAY_ACCEPTANCE_RUN_ID || JAY_ACCEPTANCE_RUN_ID || '').trim().slice(0, 160);
+}
 
 function jayResetUserWorkspace(previousUserId) {
   if (jayReportPoolSyncTimer) clearTimeout(jayReportPoolSyncTimer);
@@ -337,6 +350,25 @@ function jayResetUserWorkspace(previousUserId) {
   } catch (e) {}
 }
 
+function jayClearWorkspaceData() {
+  if (jayReportPoolSyncTimer) clearTimeout(jayReportPoolSyncTimer);
+  jayReportPoolSyncTimer = null;
+  jayReportPoolCache = [];
+  jayReportsCache = [];
+  jayReportExportsCache = [];
+  jayWorkspaceAssetCache = {};
+  jayWorkspaceAssetCreators = {};
+  jayReportMaterialKnownIds = {};
+  jayWorkspaceAssetSaveQueues = {};
+  jayWorkspaceAssetSaveVersions = {};
+  jayWorkspaceHydration = null;
+  jayHydratedUserId = null;
+  jaySubscriptionCache = null;
+  jayBillingStatusCache = null;
+  try { if (typeof rpV2LoadRecent === 'function') rpV2LoadRecent(); } catch (e) {}
+  try { if (typeof rpV2RefreshPoolUI === 'function') rpV2RefreshPoolUI(); } catch (e) {}
+}
+
 function initJayAuth() {
   if (typeof supabase !== 'undefined' && JAY_SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
     supabaseClient = supabase.createClient(JAY_SUPABASE_URL, JAY_SUPABASE_KEY, {
@@ -353,7 +385,12 @@ function initJayAuth() {
         var signedOutUserId = jayUser && jayUser.id;
         jayUser = null; jayProfile = null; jayResetUserWorkspace(signedOutUserId); showLoginScreen();
       } else if (event === 'TOKEN_REFRESHED' && session) {
-        jayUser = session.user; // token 已自动刷新，无需额外操作
+        jayUser = session.user;
+        // Membership can change on another device while this token remains
+        // valid, so refresh the workspace boundary on token renewal.
+        if (!jayIsDemo && typeof jayHydrateUserWorkspace === 'function') {
+          jayHydrateUserWorkspace(true).catch(function(error){ console.warn('[JAY观海] workspace refresh after token renewal failed:', error); });
+        }
       } else if (event === 'USER_UPDATED') {
         loadJayProfile();
       }
@@ -510,7 +547,7 @@ function onAuthSuccess() {
   }
   if (!jayIsDemo && typeof jayLoadShopsFromCloud === 'function') jayLoadShopsFromCloud();
   if (!jayIsDemo && typeof jayHydrateUserWorkspace === 'function') {
-    jayHydrateUserWorkspace().then(function(){
+    jayHydrateUserWorkspace(true).then(function(){
       if (typeof loadWatchlistFromDb === 'function') loadWatchlistFromDb();
       if (typeof jayConsumeWorkspaceInviteFromUrl === 'function') jayConsumeWorkspaceInviteFromUrl();
     });
@@ -540,7 +577,10 @@ var JAY_USER_TABLES = {
   report_exports: true,
   report_runs: true,
   ai_request_logs: true,
-  user_subscriptions: true
+  user_subscriptions: true,
+  workspace_subscriptions: true,
+  workspace_usage_monthly: true,
+  monitoring_tasks: true
 };
 
 function jayCanUseUserDb() {
@@ -557,6 +597,20 @@ function jayWorkspaceCanManage() {
 
 function jayWorkspaceCanEdit() {
   return jayCanUseUserDb() && ['owner', 'admin', 'editor'].indexOf(jayWorkspaceRole()) >= 0;
+}
+
+function jayWorkspaceCapabilities() {
+  var role = jayWorkspaceRole();
+  var active = !!(jayWorkspaceContext.available && jayWorkspaceContext.membership && jayWorkspaceContext.membership.status === 'active');
+  var workspaceId = jayActiveWorkspaceId();
+  return {
+    role: role || '',
+    plan: workspaceId ? ((jayBillingStatusCache && jayBillingStatusCache.effective_plan) || 'free') : ((jayProfile && jayProfile.tier) || 'free'),
+    workspaceId: workspaceId,
+    canView: jayCanUseUserDb() && active,
+    canEdit: jayCanUseUserDb() && active && ['owner', 'admin', 'editor'].indexOf(role) >= 0,
+    canManageMembers: jayCanUseUserDb() && active && ['owner', 'admin'].indexOf(role) >= 0
+  };
 }
 
 function jayActiveWorkspaceId() {
@@ -611,6 +665,7 @@ async function jayLoadWorkspaceContext(preferredWorkspaceId) {
     try { localStorage.setItem('jay_active_workspace_' + jayUser.id, workspace.id); } catch (e) {}
   } catch (error) {
     jayWorkspaceContext = { available: false, loading: false, workspace: null, membership: null, workspaces: [], memberships: [], members: [], invites: [], error: error };
+    jayClearWorkspaceData();
     console.warn('[JAY观海] workspace context unavailable:', error);
   }
   return jayWorkspaceContext;
@@ -638,6 +693,10 @@ async function jaySetActiveWorkspace(workspaceId) {
   if (saved && saved[0]) jayPreferenceCache = saved[0];
   else jayPreferenceCache.workspace_prefs = workspacePrefs;
   await jayLoadWorkspaceContext(normalized);
+  jaySubscriptionCache = null;
+  jayBillingStatusCache = null;
+  if (jayProfile) { jayProfile.tier = 'free'; if (typeof updateSidebarUserInfo === 'function') updateSidebarUserInfo(); }
+  if (typeof jayLoadBillingStatus === 'function') await jayLoadBillingStatus().catch(function(){});
   jayHydratedUserId = null;
   jayReportPoolCache = [];
   jayReportsCache = [];
@@ -657,7 +716,8 @@ async function jayCreateWorkspaceInvite(email, role) {
   var normalizedEmail = String(email || '').trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) throw new Error('INVITE_EMAIL_INVALID');
   var allowedRoles = ['admin', 'editor', 'viewer'];
-  var normalizedRole = allowedRoles.indexOf(role) >= 0 ? role : 'viewer';
+  if (allowedRoles.indexOf(role) < 0) throw new Error('INVITE_ROLE_REQUIRED');
+  var normalizedRole = role;
   try {
     var result = await jayFunctionRequest('workspace-invite', {
       workspace_id: jayWorkspaceContext.workspace.id,
@@ -766,6 +826,15 @@ async function jayLoadNotifications() {
 async function jayLoadSubscription() {
   if (!jayCanUseUserDb()) { jaySubscriptionCache = null; return null; }
   try {
+    var workspaceId = jayActiveWorkspaceId();
+    if (workspaceId) {
+      var workspaceRows = await jayDbGet('workspace_subscriptions', 'select=id,workspace_id,plan,status,provider,provider_customer_id,provider_subscription_id,provider_price_id,current_period_start,current_period_end,cancel_at_period_end,latest_invoice_id,latest_payment_status,last_payment_error,last_payment_failed_at,canceled_at,ended_at,refunded_at,refund_status,refunded_amount_minor,refund_currency,entitlement_revoked_at,entitlement_revoke_reason,seat_limit,manual_reason,updated_at&workspace_id=eq.' + encodeURIComponent(workspaceId) + '&limit=1');
+      if (workspaceRows && workspaceRows[0]) { jaySubscriptionCache = workspaceRows[0]; return jaySubscriptionCache; }
+      // A selected workspace never inherits the user's legacy subscription;
+      // missing workspace billing data is deliberately fail-closed.
+      jaySubscriptionCache = { workspace_id: workspaceId, plan: 'free', status: 'active', provider: 'internal', seat_limit: 1 };
+      return jaySubscriptionCache;
+    }
     var rows = await jayDbGet('user_subscriptions', 'select=id,plan,status,provider,provider_customer_id,provider_subscription_id,provider_price_id,current_period_start,current_period_end,cancel_at_period_end,latest_invoice_id,latest_payment_status,last_payment_error,last_payment_failed_at,canceled_at,ended_at,refunded_at,refund_status,refunded_amount_minor,refund_currency,entitlement_revoked_at,entitlement_revoke_reason,updated_at&user_id=eq.' + encodeURIComponent(jayUser.id) + '&limit=1');
     jaySubscriptionCache = rows && rows[0] ? rows[0] : { plan: 'free', status: 'active', provider: 'internal' };
   } catch (error) {
@@ -778,7 +847,7 @@ async function jayLoadSubscription() {
 async function jayLoadBillingStatus() {
   if (!jayCanUseUserDb()) { jayBillingStatusCache = null; return null; }
   try {
-    var status = await jayFunctionRequest('billing-status', {}, { timeout: 15000, retryOnNetwork: true, requestId: 'billing-status-' + jayUser.id });
+    var status = await jayFunctionRequest('billing-status', { workspace_id: jayActiveWorkspaceId() }, { timeout: 15000, retryOnNetwork: true, requestId: 'billing-status-' + jayUser.id + '-' + (jayActiveWorkspaceId() || 'none') });
     jayBillingStatusCache = status || null;
     if (status && status.subscription) jaySubscriptionCache = status.subscription;
     if (status && status.effective_plan && jayProfile) {
@@ -788,6 +857,7 @@ async function jayLoadBillingStatus() {
     }
   } catch (error) {
     jayBillingStatusCache = null;
+    if (jayProfile) { jayProfile.tier = 'free'; if (typeof updateSidebarUserInfo === 'function') updateSidebarUserInfo(); }
     console.warn('[JAY观海] billing status unavailable:', error);
   }
   return jayBillingStatusCache;
@@ -846,6 +916,11 @@ async function jayFunctionRequest(functionName, payload, options) {
     throw sessionError;
   }
   var controller = new AbortController();
+  var requestPayload = payload || {};
+  var acceptanceId = jayAcceptanceRunId();
+  if (acceptanceId && requestPayload && typeof requestPayload === 'object' && !Array.isArray(requestPayload)) {
+    requestPayload = Object.assign({}, requestPayload, { acceptance_run_id: requestPayload.acceptance_run_id || acceptanceId });
+  }
   var timeoutMs = Math.max(1000, Number(options.timeout || 60000));
   var timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
   var response;
@@ -858,7 +933,7 @@ async function jayFunctionRequest(functionName, payload, options) {
         'Content-Type': 'application/json',
         'X-Request-Id': options.requestId || ''
       },
-      body: JSON.stringify(payload || {}),
+      body: JSON.stringify(requestPayload),
       signal: controller.signal
     });
   } catch (networkError) {
@@ -874,7 +949,7 @@ async function jayFunctionRequest(functionName, payload, options) {
     }
     if (requestError.code === 'NETWORK_ERROR' && options.retryOnNetwork && !options._networkRetried) {
       await jayWaitForOnline(Math.min(5000, timeoutMs));
-      return jayFunctionRequest(functionName, payload, Object.assign({}, options, { _networkRetried: true }));
+      return jayFunctionRequest(functionName, requestPayload, Object.assign({}, options, { _networkRetried: true }));
     }
     throw requestError;
   } finally {
@@ -885,16 +960,31 @@ async function jayFunctionRequest(functionName, payload, options) {
   if (raw) {
     try { result = JSON.parse(raw); } catch (e) { result = { message: raw.slice(0, 300) }; }
   }
+  if (!result || typeof result !== 'object') result = {};
   if (!response.ok) {
-    var error = new Error(result.error || result.message || ('HTTP ' + response.status));
-    error.code = result.error || result.code || 'SERVICE_ERROR';
+    var nestedError = result && result.ai_error && typeof result.ai_error === 'object' ? result.ai_error : (result && result.error && typeof result.error === 'object' ? result.error : null);
+    var responseCode = (nestedError && nestedError.code) || (typeof result.error === 'string' ? result.error : null) || result.code || 'SERVICE_ERROR';
+    var responseMessage = (nestedError && nestedError.message) || (typeof result.error === 'string' ? result.error : null) || result.message || ('HTTP ' + response.status);
+    var error = new Error(String(responseMessage));
+    error.code = String(responseCode);
     error.status = response.status;
     error.details = result;
+    error.requestId = result.request_id || (nestedError && nestedError.request_id) || options.requestId || null;
+    error.provider = result.provider || (nestedError && nestedError.provider) || null;
+    error.retryable = result.retryable != null ? Boolean(result.retryable) : Boolean(nestedError && nestedError.retryable);
+    error.suggestion = result.suggestion || (nestedError && nestedError.suggestion) || null;
     var retryAfter = response.headers.get('retry-after');
     if (retryAfter) error.retryAfter = retryAfter;
     throw error;
   }
   return result;
+}
+
+async function jaySecurityGate(scope,metadata){
+  if(!jayCanUseUserDb()||!jayUser||jayIsDemo)return {allowed:true,skipped:true};
+  var payload={scope:String(scope||'')};
+  if(metadata&&typeof metadata==='object')Object.keys(metadata).forEach(function(key){payload[key]=metadata[key];});
+  return jayFunctionRequest('security-gate',payload,{timeout:10000,retryOnNetwork:true,requestId:'security-gate-'+String(scope||'unknown')+'-'+Date.now()});
 }
 
 async function jayNotificationWorkspaceId(){
@@ -989,7 +1079,9 @@ async function jayGenerateReportDocx(_title, _text, reportId, exportOptions) {
 
 async function jayLoadReportExports(reportId) {
   if (!jayCanUseUserDb()) return [];
-  var query = 'select=id,report_id,format,status,file_path,file_url,error_message,attempt,parent_export_id,request_id,idempotency_key,duration_ms,metadata,created_at,updated_at,started_at,completed_at&user_id=eq.' + encodeURIComponent(jayUser.id) + '&order=created_at.desc&limit=100';
+  var workspaceId = jayActiveWorkspaceId();
+  if (!workspaceId) return [];
+  var query = 'select=id,workspace_id,user_id,report_id,format,status,file_path,file_url,error_message,attempt,parent_export_id,request_id,idempotency_key,duration_ms,metadata,created_at,updated_at,started_at,completed_at&workspace_id=eq.' + encodeURIComponent(workspaceId) + '&order=created_at.desc&limit=100';
   if (reportId) query += '&report_id=eq.' + encodeURIComponent(reportId);
   var rows = await jayDbGet('report_exports', query);
   jayReportExportsCache = Array.isArray(rows) ? rows : [];
@@ -1001,6 +1093,7 @@ async function jayCreateReportExportEvent(reportId, format, status, details) {
   if (!jayCanUseUserDb() || !reportId) return null;
   var payload = Object.assign({
     user_id: jayUser.id,
+    workspace_id: jayActiveWorkspaceId(),
     report_id: reportId,
     format: ['pdf', 'docx', 'md'].indexOf(format) >= 0 ? format : 'md',
     status: ['queued', 'processing', 'completed', 'failed'].indexOf(status) >= 0 ? status : 'queued',
@@ -1025,6 +1118,7 @@ async function jayCreateBillingCheckout(plan) {
   var requestId = 'billing_checkout_' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '_' + Math.random().toString(36).slice(2));
   jayBillingCheckoutPromise = jayFunctionRequest('billing-checkout', {
     plan: plan,
+    workspace_id: jayActiveWorkspaceId(),
     idempotency_key: requestId
   }, { timeout: 30000, retryOnNetwork: true, requestId: requestId });
   try { return await jayBillingCheckoutPromise; }
@@ -1034,7 +1128,7 @@ async function jayCreateBillingCheckout(plan) {
 async function jayOpenBillingPortal() {
   if (jayBillingPortalPromise) return jayBillingPortalPromise;
   var requestId = 'billing_portal_' + (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '_' + Math.random().toString(36).slice(2));
-  jayBillingPortalPromise = jayFunctionRequest('billing-portal', {}, { timeout: 30000, retryOnNetwork: true, requestId: requestId });
+  jayBillingPortalPromise = jayFunctionRequest('billing-portal', { workspace_id: jayActiveWorkspaceId() }, { timeout: 30000, retryOnNetwork: true, requestId: requestId });
   try { return await jayBillingPortalPromise; }
   finally { jayBillingPortalPromise = null; }
 }
@@ -1084,16 +1178,22 @@ var JAY_SERVICE_ERROR_MESSAGES = {
   INVITE_MAIL_NOT_CONFIGURED: '邀请邮件服务尚未完成生产配置',
   INVITE_DELIVERY_FAILED: '邀请邮件发送失败，请稍后重试',
   INVITE_SERVICE_FAILED: '邀请服务暂时不可用，请稍后重试',
+  WORKSPACE_SEAT_LIMIT_REACHED: '当前工作区席位已满，请升级套餐或释放现有席位后再邀请',
+  WORKSPACE_SEAT_CHECK_FAILED: '工作区席位状态暂时无法确认，请稍后重试',
+  WORKSPACE_BILLING_ADMIN_REQUIRED: '只有工作区所有者或管理员可以管理套餐',
   RATE_LIMITED: '请求过于频繁，请稍后重试',
   AI_RATE_LIMITED: 'AI 服务请求过于频繁，请稍后重试',
   AI_RATE_LIMIT_CHECK_FAILED: 'AI 限流状态暂时无法读取，请稍后重试',
   QUOTA_EXCEEDED: '当前服务额度不足，请联系管理员补充额度',
   AI_QUOTA_EXCEEDED: 'AI 服务额度不足，请联系管理员补充额度',
+  AI_DAILY_LIMIT_REACHED: '公开测试的今日 AI 额度已用完，请明日再试',
+  ROLLOUT_QUOTA_UNAVAILABLE: '公开测试额度服务暂时不可用，请稍后重试',
   REQUEST_TIMEOUT: '请求超时，请检查网络后重试',
   AI_PROVIDER_TIMEOUT: 'AI 服务响应超时，请稍后重试',
   NETWORK_ERROR: '网络连接失败，请检查网络后重试',
   AI_PROVIDER_UNREACHABLE: 'AI 服务暂时无法连接，请稍后重试',
   AI_PROVIDER_ERROR: 'AI 服务端处理失败，请稍后重试',
+  AI_PROVIDER_UNAVAILABLE: '当前 AI 供应商暂时不可用，系统会按策略尝试备用供应商',
   AI_SERVICE_NOT_CONFIGURED: 'AI 服务尚未完成生产配置',
   BILLING_NOT_ENABLED: '正式收费尚未启用，本次不会创建订单或扣款',
   BILLING_NOT_CONFIGURED: '支付服务尚未完成生产配置',
@@ -1123,6 +1223,10 @@ var JAY_SERVICE_ERROR_MESSAGES = {
   REPORT_SERVER_VALIDATION_REQUIRED: '该报告没有有效的服务端核验记录，不能正式导出',
   REPORT_SAVE_FAILED: '报告服务端保存失败，请稍后重试',
   REPORT_EXPORT_IN_PROGRESS: '相同报告正在导出，请勿重复提交',
+  INVITE_ROLE_REQUIRED: '请选择要授予的成员角色后再发送邀请',
+  INVITE_EMAIL_INVALID: '请输入有效的成员邮箱地址',
+  WORKSPACE_FORBIDDEN: '当前账号没有执行此操作的权限：已没有该工作区访问权限，请刷新工作区',
+  WORKSPACE_READ_ONLY: '当前工作区为查看者权限，不能执行写入操作',
   REPORT_STORAGE_UPLOAD_FAILED: '报告文件保存失败，请稍后重试',
   REPORT_SIGNED_URL_FAILED: '报告下载链接创建失败，请稍后重试',
   NOTIFICATION_SERVICE_NOT_CONFIGURED: '通知服务尚未完成生产配置',
@@ -1143,6 +1247,21 @@ var JAY_SERVICE_ERROR_MESSAGES = {
   ENTERPRISE_PROVIDER_TIMEOUT: '企业通知服务响应超时，系统稍后会自动重试',
   ENTERPRISE_PROVIDER_UNREACHABLE: '企业通知服务暂时无法连接，系统稍后会自动重试',
   INVALID_WORKSPACE_ID: '通知工作区参数无效',
+  UPLOAD_TOO_LARGE: '文件超过当前上传大小限制',
+  UPLOAD_FILE_TYPE_BLOCKED: '该文件类型存在安全风险，已阻止上传',
+  UPLOAD_FILE_TYPE_NOT_ALLOWED: '当前入口不支持该文件格式',
+  UPLOAD_MIME_MISMATCH: '文件类型与浏览器识别结果不一致',
+  UPLOAD_ACTIVE_CONTENT_BLOCKED: '文件包含可执行网页内容，已阻止上传',
+  UPLOAD_SIGNATURE_MISMATCH: '文件内容与扩展名不一致，已阻止上传',
+  RESOURCE_FILE_TOO_LARGE: '文件超过资源中心大小限制',
+  RESOURCE_FILE_MIME_INVALID: '资源文件 MIME 类型不符合要求',
+  AI_PROVIDER_NOT_CONFIGURED: '当前 AI 供应商尚未配置，请切换供应商或联系管理员',
+  AI_PROVIDER_AUTH_FAILED: 'AI 供应商密钥无效，请联系管理员检查配置',
+  AI_PROVIDER_FORBIDDEN: '当前 AI 供应商拒绝了请求，请检查账号权限或切换供应商',
+  AI_AGENT_DISABLED: '当前智能体已被管理员停用，请选择其他智能体',
+  AI_AGENT_TASK_NOT_ALLOWED: '当前智能体不支持此任务类型，请选择匹配的智能体',
+  AI_SEARCH_UNSUPPORTED: '当前供应商不支持联网检索，已回退到正式数据回答',
+  AI_EMPTY_RESPONSE: 'AI 返回空结果，请重试或换一种更具体的问题',
   SERVICE_UNAVAILABLE: '服务暂时不可用，请稍后重试'
 };
 
@@ -1182,12 +1301,19 @@ async function jayDbRequest(method, table, query, payload, prefer) {
   if (!JAY_USER_TABLES[table]) throw new Error('UNSUPPORTED_USER_TABLE');
   var headers = await jayUserHeaders(prefer);
   var url = JAY_API_URL + '/' + table + (query ? '?' + query : '');
+  var requestPayload = payload;
+  var acceptanceId = jayAcceptanceRunId();
+  if (acceptanceId && JAY_ACCEPTANCE_TRACKED_TABLES[table] && payload !== undefined) {
+    requestPayload = Array.isArray(payload)
+      ? payload.map(function(row){ return Object.assign({}, row, { acceptance_run_id: row.acceptance_run_id || acceptanceId }); })
+      : Object.assign({}, payload, { acceptance_run_id: payload.acceptance_run_id || acceptanceId });
+  }
   var response;
   try {
     response = await fetch(url, {
       method: method,
       headers: headers,
-      body: payload === undefined ? undefined : JSON.stringify(payload)
+      body: requestPayload === undefined ? undefined : JSON.stringify(requestPayload)
     });
   } catch (networkError) {
     networkError.status = 0;
@@ -1236,6 +1362,8 @@ async function jayStartReportRun(details) {
   if (!key) throw new Error('REPORT_RUN_IDEMPOTENCY_REQUIRED');
   var payload = {
     user_id: jayUser.id,
+    workspace_id: jayRequireActiveWorkspace(),
+    acceptance_run_id: jayAcceptanceRunId() || null,
     client_report_id: String(details.clientReportId || key).slice(0, 180),
     idempotency_key: key.slice(0, 240),
     purpose: String(details.purpose || 'market-research').slice(0, 80),
@@ -1256,7 +1384,7 @@ async function jayStartReportRun(details) {
     return created ? Object.assign({ duplicate: false }, created) : null;
   } catch (error) {
     if (error.code !== '23505' && error.status !== 409) throw error;
-    var existing = await jayDbGet('report_runs', 'select=*&user_id=eq.' + encodeURIComponent(jayUser.id) + '&idempotency_key=eq.' + encodeURIComponent(payload.idempotency_key) + '&limit=1');
+    var existing = await jayDbGet('report_runs', 'select=*&workspace_id=eq.' + encodeURIComponent(payload.workspace_id) + '&idempotency_key=eq.' + encodeURIComponent(payload.idempotency_key) + '&limit=1');
     var previous=existing&&existing[0];
     if(previous&&['failed','cancelled'].indexOf(previous.status)>=0){
       var retryPayload=Object.assign({},payload,{
@@ -1294,10 +1422,10 @@ async function jayFinishReportRun(runId, status, details) {
 
 async function jayLoadReportRunMetrics(reportId) {
   if (!jayCanUseUserDb()) return { runs: [], requests: [] };
-  var runQuery = 'select=*&user_id=eq.' + encodeURIComponent(jayUser.id) + '&order=created_at.desc&limit=100';
+  var runQuery = 'select=*&workspace_id=eq.' + encodeURIComponent(jayRequireActiveWorkspace()) + '&order=created_at.desc&limit=100';
   if (reportId) runQuery += '&report_id=eq.' + encodeURIComponent(reportId);
   var runs = await jayDbGet('report_runs', runQuery);
-  var requestQuery = 'select=id,report_run_id,report_id,request_id,operation,status,provider,model,input_tokens,output_tokens,total_tokens,estimated_cost_usd,duration_ms,http_status,error_code,data_version,created_at&user_id=eq.' + encodeURIComponent(jayUser.id) + '&order=created_at.desc&limit=500';
+  var requestQuery = 'select=id,workspace_id,user_id,report_run_id,report_id,request_id,entry_point,operation,task_type,agent_key,status,requested_provider,provider,model,input_tokens,output_tokens,total_tokens,estimated_cost_usd,duration_ms,http_status,error_code,data_version,fallback_used,retry_count,created_at&workspace_id=eq.' + encodeURIComponent(jayRequireActiveWorkspace()) + '&order=created_at.desc&limit=500';
   if (reportId) requestQuery += '&report_id=eq.' + encodeURIComponent(reportId);
   var requests = await jayDbGet('ai_request_logs', requestQuery);
   return { runs: runs || [], requests: requests || [] };
@@ -1367,6 +1495,7 @@ function jayMaterialToRow(item) {
   return {
     user_id: item.created_by || jayUser.id,
     workspace_id: jayRequireActiveWorkspace(),
+    acceptance_run_id: jayAcceptanceRunId() || null,
     client_id: String(item.id || jayStableClientId('material', item)),
     material_type: jayNormalizeMaterialType(item.type),
     title: String(item.title || item.text || item.q || '未命名素材'),
@@ -1496,6 +1625,9 @@ function jayReportFromRow(row) {
     reportRunId: row.report_run_id || content.report_run_id || null,
     workspaceId: row.workspace_id || '',
     createdBy: row.user_id || '',
+    createdByName: row.created_by_name || row.creator_name || '',
+    creatorEmail: row.creator_email || '',
+    workspaceName: row.workspace_name || (jayWorkspaceContext.workspace && jayWorkspaceContext.workspace.name) || '',
     cloudSaved: (row.save_status || content.save_status || (row.status === 'failed' ? 'failed' : 'saved')) === 'saved'
   };
 }
@@ -1522,6 +1654,7 @@ function jayReportToRow(report) {
   return {
     user_id: jayUser.id,
     workspace_id: jayRequireActiveWorkspace(),
+    acceptance_run_id: jayAcceptanceRunId() || null,
     client_id: String(report.id || jayStableClientId('report', report)),
     report_type: jayReportType(report.tpl),
     title: report.name || '未命名报告',
@@ -1686,7 +1819,21 @@ async function jayLoadGeneratedReports() {
   }
   try {
     var rows = await jayDbGet('generated_reports', 'select=*&workspace_id=eq.' + encodeURIComponent(workspaceId) + '&order=created_at.desc&limit=50');
-    var cloudReports = rows.map(jayReportFromRow);
+    var creatorIds = Array.from(new Set(rows.map(function(row){ return row.user_id; }).filter(Boolean)));
+    var creatorMap = {};
+    if (creatorIds.length && supabaseClient) {
+      try {
+        var profileResult = await supabaseClient.from('profiles').select('id,email,display_name').in('id', creatorIds);
+        if (!profileResult.error) (profileResult.data || []).forEach(function(profile){ creatorMap[profile.id] = profile; });
+      } catch (profileError) { console.warn('[JAY观海] report creator lookup failed:', profileError); }
+    }
+    var cloudReports = rows.map(function(row){
+      var profile = creatorMap[row.user_id] || {};
+      return jayReportFromRow(Object.assign({}, row, {
+        created_by_name: profile.display_name || profile.email || '',
+        creator_email: profile.email || ''
+      }));
+    });
     if (pendingRestoreFailed && Array.isArray(legacy)) {
       var cloudIds = {}; cloudReports.forEach(function(item){ cloudIds[item.id] = true; });
       jayReportsCache = blockedLegacy.concat(restorableLegacy.map(function(item){ return Object.assign({}, item, { saveStatus: 'failed', cloudSaved: false }); })).concat(cloudReports.filter(function(item){ return !cloudIds[item.id]; }));
@@ -1817,6 +1964,7 @@ async function jaySaveWorkspaceAsset(type, content) {
       await jayDbUpsert('saved_workspace_items', {
         user_id: userId,
         workspace_id: workspaceId,
+        acceptance_run_id: jayAcceptanceRunId() || null,
         item_type: type,
         client_id: 'default',
         name: type,
@@ -1924,7 +2072,7 @@ async function jayLoadWorkspaceAssets() {
   var needsSync = jayWorkspaceCanEdit() && (hasValidLegacy || validPendingCount > 0);
   if (needsSync) {
     var payload = Object.keys(merged).map(function(type){
-      return { user_id: jayWorkspaceAssetCreators[type] || jayUser.id, workspace_id: workspaceId, item_type: type, client_id: 'default', name: type, content: merged[type] };
+      return { user_id: jayWorkspaceAssetCreators[type] || jayUser.id, workspace_id: workspaceId, acceptance_run_id: jayAcceptanceRunId() || null, item_type: type, client_id: 'default', name: type, content: merged[type] };
     });
     if (payload.length) await jayDbUpsert('saved_workspace_items', payload, 'workspace_id,item_type,client_id');
     payload.forEach(function(row){ jayWorkspaceAssetCreators[row.item_type] = row.user_id; });
@@ -1937,11 +2085,19 @@ async function jayLoadWorkspaceAssets() {
   jayApplyWorkspaceAssets();
 }
 
-async function jayHydrateUserWorkspace() {
+async function jayHydrateUserWorkspace(force) {
   if (!jayCanUseUserDb()) return;
-  if (!jayActiveWorkspaceId()) await jayLoadWorkspaceContext();
+  // A forced hydration is used after token refresh, page re-entry, and report
+  // navigation. Re-read memberships even when the previous workspace ID is
+  // still cached so role changes and removals take effect across devices.
+  var knownWorkspaceId = jayActiveWorkspaceId();
+  if (force || !knownWorkspaceId) await jayLoadWorkspaceContext(knownWorkspaceId || undefined);
+  if (!jayActiveWorkspaceId()) {
+    jayClearWorkspaceData();
+    return false;
+  }
   var hydrationKey = jayUser.id + ':' + jayRequireActiveWorkspace();
-  if (jayHydratedUserId === hydrationKey && !jayWorkspaceHydration) return true;
+  if (!force && jayHydratedUserId === hydrationKey && !jayWorkspaceHydration) return true;
   if (jayWorkspaceHydration) return jayWorkspaceHydration;
   jayWorkspaceHydration = Promise.allSettled([
     jayLoadReportMaterials(),
@@ -1973,6 +2129,32 @@ async function loadUserWatchlist() {
     return null;
   }
 }
+
+async function jayLoadMonitoringTasks(){
+  if(!jayCanUseUserDb()||!jayActiveWorkspaceId())return [];
+  try{return await jayDbGet('monitoring_tasks','select=*&workspace_id=eq.'+encodeURIComponent(jayRequireActiveWorkspace())+'&order=created_at.desc&limit=200');}
+  catch(error){console.warn('[JAY观海] monitoring task load failed:',error);return [];}
+}
+async function jayCreateMonitoringTask(input){
+  if(!jayCanUseUserDb())throw new Error('AUTH_REQUIRED');
+  if(!jayWorkspaceCanEdit())throw new Error('WORKSPACE_READ_ONLY');
+  input=input&&typeof input==='object'?input:{};
+  var type=String(input.task_type||input.type||'').toLowerCase();
+  if(['keyword','product','shop'].indexOf(type)<0)throw new Error('INVALID_MONITORING_TYPE');
+  var market=String(input.market_code||'').trim().toUpperCase(),platform=String(input.platform_key||'').trim().toLowerCase();
+  if(!market||!platform)throw new Error('MONITORING_SCOPE_REQUIRED');
+  var payload={workspace_id:jayRequireActiveWorkspace(),created_by:jayUser.id,task_type:type,market_code:market,platform_key:platform,category_code:input.category_code||null,keyword:type==='keyword'?String(input.keyword||'').trim().slice(0,120):null,target_entity_id:type==='keyword'?null:(input.target_entity_id||null),target_external_id:type==='keyword'?null:(input.target_external_id||null),cadence_per_day:Math.min(4,Math.max(1,Number(input.cadence_per_day||1))),status:'active'};
+  if(type==='keyword'&&!payload.keyword)throw new Error('MONITORING_KEYWORD_REQUIRED');
+  if(type!=='keyword'&&!payload.target_entity_id&&!payload.target_external_id)throw new Error('MONITORING_TARGET_REQUIRED');
+  var rows=await jayDbInsert('monitoring_tasks',payload);return rows&&rows[0]||null;
+}
+async function jayUpdateMonitoringTask(taskId,patch){
+  if(!jayCanUseUserDb()||!jayWorkspaceCanEdit())throw new Error('WORKSPACE_READ_ONLY');
+  var allowed={status:true,cadence_per_day:true,next_run_at:true};var body={};Object.keys(patch||{}).forEach(function(key){if(allowed[key])body[key]=patch[key];});
+  if(!Object.keys(body).length)return null;
+  var rows=await jayDbPatch('monitoring_tasks','id=eq.'+encodeURIComponent(taskId)+'&workspace_id=eq.'+encodeURIComponent(jayRequireActiveWorkspace()),body);return rows&&rows[0]||null;
+}
+window.jayLoadMonitoringTasks=jayLoadMonitoringTasks;window.jayCreateMonitoringTask=jayCreateMonitoringTask;window.jayUpdateMonitoringTask=jayUpdateMonitoringTask;
 
 async function addToWatchlist(itemType, itemId, itemName, note) {
   if (!jayCanUseUserDb()) { toast('登录后可同步到工作区看板'); return false; }
@@ -2126,7 +2308,8 @@ function updateSidebarUserInfo() {
 
 function checkAccess(feature) {
   if (!jayProfile) return false;
-  var tier = jayProfile.tier;
+  var workspaceId = typeof jayActiveWorkspaceId === 'function' ? jayActiveWorkspaceId() : '';
+  var tier = workspaceId ? ((jayBillingStatusCache && jayBillingStatusCache.effective_plan) || 'free') : ((jayBillingStatusCache && jayBillingStatusCache.effective_plan) || jayProfile.tier || 'free');
   var map = { overview: true, country_basic: true, product_radar: true, policies: true, country_detail: tier!=='free', product_full: tier!=='free', rules: tier!=='free', reports: tier!=='free', alerts_full: tier!=='free', api_access: tier==='enterprise' };
   return map[feature] !== undefined ? map[feature] : (tier !== 'free');
 }

@@ -7,6 +7,7 @@ const defaultOrigins = [
   'http://localhost:4174',
   'http://127.0.0.1:4174',
 ];
+import { enforceRateLimit, rateLimitResponse, requestId as securityRequestId } from '../_shared/security.ts';
 
 type Json = Record<string, unknown>;
 
@@ -111,14 +112,24 @@ export async function handleWorkspaceInvite(request: Request): Promise<Response>
   if (!supabaseUrl || !anonKey || !serviceKey) return jsonResponse({ error: 'INVITE_SERVICE_NOT_CONFIGURED' }, 503, origin);
   const user = await authenticatedUser(request, supabaseUrl, anonKey);
   if (!user) return jsonResponse({ error: 'AUTH_REQUIRED' }, 401, origin);
+  const securityRequest = securityRequestId(request);
+  try {
+    const rate = await enforceRateLimit({ supabaseUrl, serviceKey, request, scope: 'invite', userId: String(user.id || '') });
+    if (!rate.allowed) return rateLimitResponse(rate, securityRequest, origin);
+  } catch (error) {
+    console.error('workspace invite rate limiter unavailable', error);
+    return jsonResponse({ error: 'RATE_LIMIT_UNAVAILABLE', request_id: securityRequest }, 503, origin);
+  }
 
   let payload: Json;
   try { payload = await request.json(); } catch { return jsonResponse({ error: 'INVALID_JSON' }, 400, origin); }
   const workspaceId = uuid(payload.workspace_id);
+  const acceptanceRunId = typeof payload.acceptance_run_id === 'string' ? payload.acceptance_run_id.trim().slice(0, 160) : null;
   const inviteEmail = email(payload.email);
-  const role = ['admin', 'editor', 'viewer'].includes(String(payload.role || '')) ? String(payload.role) : 'viewer';
+  const role = String(payload.role || '');
   if (!workspaceId) return jsonResponse({ error: 'WORKSPACE_REQUIRED' }, 400, origin);
   if (!inviteEmail) return jsonResponse({ error: 'INVITE_EMAIL_INVALID' }, 400, origin);
+  if (!['admin', 'editor', 'viewer'].includes(role)) return jsonResponse({ error: 'INVITE_ROLE_REQUIRED' }, 400, origin);
   if (inviteEmail === String(user.email || '').toLowerCase()) return jsonResponse({ error: 'INVITE_SELF_NOT_ALLOWED' }, 409, origin);
 
   const serviceHeaders = { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey, 'Content-Type': 'application/json' };
@@ -129,6 +140,17 @@ export async function handleWorkspaceInvite(request: Request): Promise<Response>
       `workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&role=in.(owner,admin)&select=id&limit=1`,
     ) as Json[];
     if (!memberships?.length) throw new HttpError('WORKSPACE_FORBIDDEN', 403);
+
+    const seatCheck = await fetch(`${supabaseUrl}/rest/v1/rpc/assert_workspace_seat_available`, {
+      method: 'POST',
+      headers: serviceHeaders,
+      body: JSON.stringify({ p_workspace_id: workspaceId, p_email: inviteEmail, p_user_id: user.id }),
+    });
+    if (!seatCheck.ok) {
+      const seatError = await seatCheck.text().catch(() => '');
+      if (seatError.includes('WORKSPACE_SEAT_LIMIT_REACHED')) throw new HttpError('WORKSPACE_SEAT_LIMIT_REACHED', 409);
+      throw new HttpError('WORKSPACE_SEAT_CHECK_FAILED', 503);
+    }
 
     const resendKey = Deno.env.get('RESEND_API_KEY') || '';
     const fromEmail = Deno.env.get('WORKSPACE_INVITE_FROM_EMAIL') || Deno.env.get('NOTIFICATION_FROM_EMAIL') || '';
@@ -180,6 +202,7 @@ export async function handleWorkspaceInvite(request: Request): Promise<Response>
             delivery_error: null,
             delivery_attempts: Number(pending[0].delivery_attempts || 0) + 1,
             last_delivery_at: now.toISOString(),
+            acceptance_run_id: acceptanceRunId,
           }),
         },
       ) as Json[];
@@ -199,6 +222,7 @@ export async function handleWorkspaceInvite(request: Request): Promise<Response>
           delivery_provider: 'resend',
           delivery_attempts: 1,
           last_delivery_at: now.toISOString(),
+          acceptance_run_id: acceptanceRunId,
         }),
       }) as Json[];
       invitation = inserted[0];

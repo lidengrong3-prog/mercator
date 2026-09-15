@@ -43,6 +43,7 @@ import urllib.error
 from datetime import datetime, timezone, timedelta
 
 from collection_telemetry import append_collection_source
+from source_governance import SourceGovernanceError, assert_source_collectable
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -865,7 +866,8 @@ def is_relevant(doc, strong):
             return False
     return True
 
-def fetch_fr_policies(cat_key, limit=24):
+def fetch_fr_policies(cat_key, limit=24, start_date=None, end_date=None, page=1, per_page=15):
+    """Fetch Federal Register records for a category and optional date window."""
     cfg = CATEGORIES[cat_key]
     strong = cfg["fr_strong"]
     policies, alerts = [], []
@@ -874,15 +876,34 @@ def fetch_fr_policies(cat_key, limit=24):
     request_count = 0
     successful_requests = 0
     failed_requests = 0
+    try:
+        assert_source_collectable("federal-register")
+    except SourceGovernanceError as error:
+        return policies, alerts, {
+            "source": "federal_register",
+            "status": "skipped",
+            "attempted_at": attempted_at,
+            "request_count": 0,
+            "successful_requests": 0,
+            "failed_requests": 0,
+            "records_collected": 0,
+            "errors": [str(error)],
+        }
     for term in cfg["fr_terms"]:
         request_count += 1
-        data = http_get_json(FR_API, params={
+        params = {
             "conditions[term]": term,
-            "per_page": 15,
-            "order": "newest",
+            "per_page": max(int(per_page), 1),
+            "page": max(int(page), 1),
+            "order": "oldest" if start_date else "newest",
             "fields[]": ["title", "abstract", "publication_date", "agencies",
                          "html_url", "document_number", "topics", "type"],
-        })
+        }
+        if start_date:
+            params["filter[publication_date][gte]"] = str(start_date)[:10]
+        if end_date:
+            params["filter[publication_date][lte]"] = str(end_date)[:10]
+        data = http_get_json(FR_API, params=params)
         if not isinstance(data, dict) or not isinstance(data.get("results"), list):
             failed_requests += 1
             continue

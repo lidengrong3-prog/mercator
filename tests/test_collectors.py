@@ -294,6 +294,136 @@ class CollectorTests(unittest.TestCase):
         self.assertTrue(is_unverified({"title": "Sample", "source_url": ""}))
         self.assertFalse(is_unverified({"title": "Real", "source_url": "https://example.gov/rule"}))
 
+    def test_platform_rule_parser_handles_links_and_json_ld_without_homepage_sources(self):
+        html = (
+            '<a href="/news/fee-update" data-date="2026-09-01">FBA fee update</a>'
+            '<a href="/ap/register?return=/help">创建您的亚马逊账户</a>'
+            '<script type="application/ld+json">'
+            '{"headline":"Seller penalty update","url":"https://sellercentral.amazon.com/news/penalty",'
+            '"datePublished":"2026-09-02"}</script>'
+        )
+        rows = collect_data._extract_platform_rule_records(
+            html, "https://sellercentral.amazon.com/news", "amazon", "Amazon"
+        )
+        self.assertEqual(len(rows), 2)
+        self.assertTrue(all(row["source_url"].startswith("https://") for row in rows))
+        self.assertTrue(all("/" in row["source_url"].split(".com", 1)[-1] for row in rows))
+        self.assertTrue(all(row["verification_status"] == "verified" for row in rows))
+
+    def test_ebay_rule_parser_rejects_navigation_and_uses_card_heading(self):
+        html = (
+            '<a href="/adchoice">AdChoice</a>'
+            '<a href="/help/home">Help &amp; Contact</a>'
+            '<a href="/mye/myebay/watchlist">Watchlist</a>'
+            '<a href="/help/policies/technical-issues/technical-issues?id=4220">'
+            '<h3>customer service page</h3></a>'
+            '<a href="/help/selling/getting-paid/getting-paid-items-youve-sold?id=4814">'
+            '<h3>Getting paid for items you have sold</h3><p>Account payout details.</p></a>'
+            '<a href="/help/policies/member-behaviour-policies/user-agreement?id=4259">'
+            '<h3>User Agreement</h3></a>'
+        )
+        rows = collect_data._extract_platform_rule_records(
+            html, "https://www.ebay.com/help/selling", "ebay", "eBay"
+        )
+        self.assertEqual(
+            [row["title"] for row in rows],
+            ["Getting paid for items you have sold", "User Agreement"],
+        )
+        self.assertTrue(all("/help/" in row["source_url"] for row in rows))
+
+    def test_browser_rule_normalization_adds_a_record_id(self):
+        row = collect_data.normalize_platform_rule({
+            "rule_key": "tiktok-shop:6061866251044609",
+            "title": "US policy update",
+            "source_url": (
+                "https://seller.tiktokshopglobalselling.com/university/essay"
+                "?knowledge_id=6061866251044609"
+            ),
+        }, platform_key="tiktok-shop", market_code="US")
+        self.assertRegex(row["id"], r"^r\d{8}-[0-9a-f]{8}$")
+        self.assertEqual(row["source_record_id"], "tiktok-shop:6061866251044609")
+
+    def test_rule_version_diff_and_stable_identity(self):
+        previous = collect_data.normalize_platform_rule({
+            "platform": "Amazon", "market": "US", "rule_key": "fees-1",
+            "title": "Fee", "fee": "$1", "source_url": "https://sellercentral.amazon.com/news/fee",
+            "verification_status": "verified", "verified_at": "2026-09-01T00:00:00Z",
+        })
+        current = collect_data.normalize_platform_rule({
+            "platform": "Amazon", "market": "US", "rule_key": "fees-1",
+            "title": "Fee", "fee": "$2", "source_url": "https://sellercentral.amazon.com/news/fee",
+            "verification_status": "verified", "verified_at": "2026-09-02T00:00:00Z",
+        })
+        diff = collect_data.compare_rule_versions(previous, current)
+        self.assertEqual(diff["changed_fields"], ["fee"])
+        self.assertEqual(collect_data._rule_identity(previous), collect_data._rule_identity(current))
+
+        original_by_url = collect_data.normalize_platform_rule({
+            "platform": "Amazon", "market": "US", "title": "Fee policy",
+            "fee": "$1", "source_url": "https://sellercentral.amazon.com/news/fee?locale=en_US",
+            "verification_status": "verified", "verified_at": "2026-09-01T00:00:00Z",
+        })
+        renamed = collect_data.normalize_platform_rule({
+            "platform": "Amazon", "market": "US", "title": "Fee policy revised",
+            "fee": "$3", "source_url": "https://sellercentral.amazon.com/news/fee?locale=en_US",
+            "verification_status": "verified", "verified_at": "2026-09-03T00:00:00Z",
+        })
+        self.assertEqual(collect_data._rule_identity(original_by_url), collect_data._rule_identity(renamed))
+
+    def test_platform_coverage_does_not_use_directory_configuration(self):
+        rows = [{
+            "platform": "Amazon", "platform_key": "amazon", "market": "US",
+            "rule_key": "r-1", "title": "Fee", "topic": "fee",
+            "source_url": "https://sellercentral.amazon.com/news/fee",
+            "verification_status": "verified", "verified_at": "2026-09-12T00:00:00Z",
+        }]
+        coverage = collect_data.build_platform_rule_coverage(
+            rows, ["amazon", "aliexpress"], now=collect_data.datetime(2026, 9, 13, tzinfo=collect_data.timezone.utc)
+        )
+        self.assertEqual(coverage["amazon"]["status"], "partial")
+        self.assertEqual(coverage["aliexpress"]["status"], "not_connected")
+
+    def test_optional_platform_collectors_are_explicitly_disabled_by_default(self):
+        with patch.dict(os.environ, {"ENABLE_OPTIONAL_PLATFORM_RULES": ""}, clear=False), \
+                patch.object(collect_data, "fetch_html") as fetch:
+            self.assertEqual(collect_data.collect_aliexpress(), [])
+            self.assertEqual(collect_data.collect_ebay(), [])
+            fetch.assert_not_called()
+
+    def test_browser_rule_fallback_is_opt_in_and_returns_bounded_records(self):
+        payload = [{
+            "rule_key": "tiktok-shop:123", "title": "US seller fee update",
+            "source_url": "https://seller.tiktokshopglobalselling.com/university/essay?knowledge_id=123",
+        }]
+        completed = type("Completed", (), {
+            "returncode": 0, "stdout": json.dumps(payload), "stderr": "",
+        })()
+        with patch.dict(os.environ, {
+            "ENABLE_BROWSER_PLATFORM_RULES": "true",
+            "PLATFORM_BROWSER_TIMEOUT_SECONDS": "30",
+        }, clear=False), patch.object(collect_data.subprocess, "run", return_value=completed) as run:
+            rows = collect_data._browser_rendered_platform_rules(
+                "tiktok-shop", "https://seller.tiktokshopglobalselling.com/university/new-policies"
+            )
+        self.assertEqual(rows, payload)
+        self.assertEqual(run.call_args.kwargs["timeout"], 30)
+        self.assertTrue(run.call_args.kwargs["capture_output"])
+
+    def test_empty_reachable_core_rule_page_is_degraded(self):
+        collect_data.reset_collection_telemetry({"market_codes": ["US"]})
+        with patch.dict(os.environ, {"ENABLE_BROWSER_PLATFORM_RULES": ""}, clear=False), \
+                patch.object(collect_data, "fetch_html", return_value="<html><body>app shell</body></html>"):
+            rows = collect_data.run_collection_source(
+                "tiktok_shop_rules", "TikTok Shop Seller Center", "rule",
+                collect_data.collect_tiktok_shop, core=True,
+                market_codes=["US"], platform_keys=["tiktok-shop"],
+            )
+        self.assertEqual(rows, [])
+        self.assertEqual(
+            collect_data._source_status(collect_data.COLLECTION_SOURCES["tiktok_shop_rules"]),
+            "degraded",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -3,6 +3,21 @@ var prTabConfig={burst:{title:'跨平台爆发爆款',filter:function(p){return 
 var prActiveTab='burst';
 var prSelectedIds=new Set();
 var prDataMeta={source:'none',fileName:'',importedAt:'',accepted:0,skipped:0};
+// System snapshots and workspace uploads share the UI but never share the
+// persistence lifecycle.  System rows are immutable projections identified by
+// publication/source IDs; uploads remain owned by the active workspace.
+var prSystemCollectedProducts=[];
+var prSystemCollectedShops=[];
+var prSystemSnapshotState={status:'idle',updatedAt:null,error:'',count:0,expired:0,missing:0};
+
+function prIsSystemRow(row){return !!(row&&row._sourceKind==='system');}
+function prIsUploadedRow(row){return !!(row&&!prIsSystemRow(row));}
+function prRowsWithoutSystem(rows){return (rows||[]).filter(prIsUploadedRow);}
+function prSnapshotFreshness(collectedAt){
+  if(!collectedAt)return 'missing';
+  var time=new Date(collectedAt).getTime();if(!Number.isFinite(time))return 'missing';
+  return Date.now()-time>3*86400000?'expired':'current';
+}
 
 var prFieldAliases={
   name:['商品名','商品名称','产品名','产品名称','product','product_name','productname','name','title'],
@@ -136,10 +151,10 @@ function prScopedShops(){return shops.filter(function(row){
   return context.marketCodes.indexOf(marketCode)>=0 && (!api.isAllowedPlatform||api.isAllowedPlatform(row[1],marketCode));
 });}
 function prProductSnapshot(row){
-  return {row:Array.prototype.slice.call(row||[]),raw:row&&row._rawRecord&&typeof row._rawRecord==='object'?JSON.parse(JSON.stringify(row._rawRecord)):null,categoryRule:row&&row._categoryRule?JSON.parse(JSON.stringify(row._categoryRule)):null,source:row&&row._source||'',market:row&&row[2]||'',platform:row&&row[3]||'',category:row&&row[4]||''};
+  return {row:Array.prototype.slice.call(row||[]),raw:row&&row._rawRecord&&typeof row._rawRecord==='object'?JSON.parse(JSON.stringify(row._rawRecord)):null,categoryRule:row&&row._categoryRule?JSON.parse(JSON.stringify(row._categoryRule)):null,source:row&&row._source||'',market:row&&row[2]||'',platform:row&&row[3]||'',category:row&&row[4]||'',provenance:row&&row._sourceMeta?JSON.parse(JSON.stringify(row._sourceMeta)):null,history:row&&row._history?JSON.parse(JSON.stringify(row._history)):[]};
 }
 function prShopSnapshot(row){
-  return {row:Array.prototype.slice.call(row||[]),raw:row&&row._rawRecord&&typeof row._rawRecord==='object'?JSON.parse(JSON.stringify(row._rawRecord)):null,categoryRule:row&&row._categoryRule?JSON.parse(JSON.stringify(row._categoryRule)):null,source:row&&row._source||'',market:row&&row[2]||'',platform:row&&row[1]||'',category:row&&row[6]||''};
+  return {row:Array.prototype.slice.call(row||[]),raw:row&&row._rawRecord&&typeof row._rawRecord==='object'?JSON.parse(JSON.stringify(row._rawRecord)):null,categoryRule:row&&row._categoryRule?JSON.parse(JSON.stringify(row._categoryRule)):null,source:row&&row._source||'',market:row&&row[2]||'',platform:row&&row[1]||'',category:row&&row[6]||'',provenance:row&&row._sourceMeta?JSON.parse(JSON.stringify(row._sourceMeta)):null,history:row&&row._history?JSON.parse(JSON.stringify(row._history)):[]};
 }
 function prArrayProvided(row){
   return {name:prText(row[1])!=='',market:prText(row[2])!=='',platform:prText(row[3])!=='',category:prText(row[4])!=='',subcategory:prText(row[5])!=='',price:prText(row[6])!=='',rmbPrice:prText(row[7])!=='',sales:prText(row[8])!=='',growth:prText(row[9])!=='',signal:prText(row[10])!=='',shop:prText(row[11])!=='',age:prText(row[12])!=='',updated:prText(row[13])!==''};
@@ -233,7 +248,7 @@ function prImportedDataOwner(){
 }
 function prImportedDataKey(){return 'jay_product_catalog_import_v2_'+prImportedDataOwner();}
 function prSerializeImportedData(){
-  return {meta:prDataMeta,products:products.map(function(p){return {row:Array.prototype.slice.call(p),raw:p._rawRecord||null,trend:p._trend,samePlatforms:p._samePlatforms,links:p._links,compliance:p._compliance,categoryRule:p._categoryRule||null};}),shops:shops.map(function(s){return {row:Array.prototype.slice.call(s),raw:s._rawRecord||null,categoryRule:s._categoryRule||null};})};
+  return {meta:prDataMeta,products:prRowsWithoutSystem(products).map(function(p){return {row:Array.prototype.slice.call(p),raw:p._rawRecord||null,trend:p._trend,samePlatforms:p._samePlatforms,links:p._links,compliance:p._compliance,categoryRule:p._categoryRule||null};}),shops:prRowsWithoutSystem(shops).map(function(s){return {row:Array.prototype.slice.call(s),raw:s._rawRecord||null,categoryRule:s._categoryRule||null};})};
 }
 function prPersistImportedData(){
   var payload=prSerializeImportedData();
@@ -250,7 +265,8 @@ function prPersistImportedData(){
 function prApplyImportedPayload(payload,options){
   options=options||{};
   if(!payload||!Array.isArray(payload.products))return false;
-  products.splice(0,products.length);shops.splice(0,shops.length);prSelectedIds.clear();
+  var systemProducts=products.filter(prIsSystemRow),systemShops=shops.filter(prIsSystemRow);
+  products.splice(0,products.length);shops.splice(0,shops.length);products.push.apply(products,systemProducts);shops.push.apply(shops,systemShops);prSelectedIds.clear();
   payload.products.forEach(function(item){var n=prNormalizeProduct(item&&item.row?item.row:item);if(n&&n.valid){if(item&&item.raw)n.row._rawRecord=item.raw;if(item&&item.trend!==undefined)n.row._trend=item.trend;if(item&&item.samePlatforms!==undefined)n.row._samePlatforms=item.samePlatforms;if(item&&item.links!==undefined)n.row._links=item.links;if(item&&item.compliance!==undefined)n.row._compliance=item.compliance;if(item&&item.categoryRule)n.row._categoryRule=item.categoryRule;products.push(n.row);}});
   (payload.shops||[]).forEach(function(item){var n=prNormalizeShop(item&&item.row?item.row:item);if(n&&n.valid){if(item&&item.raw)n.row._rawRecord=item.raw;if(item&&item.categoryRule)n.row._categoryRule=item.categoryRule;shops.push(n.row);}});
   prDataMeta=payload.meta||{source:options.source||'account-cache',fileName:'',importedAt:'',accepted:products.length+shops.length,skipped:0};
@@ -274,7 +290,8 @@ function prRestoreImportedData(){
   }catch(e){return false;}
 }
 function prResetImportedDataForAuthChange(){
-  products.splice(0,products.length);shops.splice(0,shops.length);prSelectedIds.clear();
+  var systemProducts=products.filter(prIsSystemRow),systemShops=shops.filter(prIsSystemRow);
+  products.splice(0,products.length);shops.splice(0,shops.length);products.push.apply(products,systemProducts);shops.push.apply(shops,systemShops);prSelectedIds.clear();
   prDataMeta={source:'none',fileName:'',importedAt:'',accepted:0,skipped:0};
 }
 function prPurgeImportedDataForUser(userId){
@@ -302,8 +319,9 @@ function prImportPayload(payload,fileName){
     if(shop&&shop.valid)acceptedShops.push(shop.row);else skipped++;
   });
   sourceShops.forEach(function(raw){var n=prNormalizeShop(raw);if(!n){skipped++;return;}if(n.valid)acceptedShops.push(n.row);else skipped++;});
-  products.splice(0,products.length);products.push.apply(products,acceptedProducts);
-  shops.splice(0,shops.length);shops.push.apply(shops,acceptedShops);
+  var systemProducts=products.filter(prIsSystemRow),systemShops=shops.filter(prIsSystemRow);
+  products.splice(0,products.length);products.push.apply(products,systemProducts);products.push.apply(products,acceptedProducts);
+  shops.splice(0,shops.length);shops.push.apply(shops,systemShops);shops.push.apply(shops,acceptedShops);
   prDataMeta={source:'user-file',fileName:fileName||'',importedAt:new Date().toISOString(),accepted:acceptedProducts.length+acceptedShops.length,skipped:skipped};
   prPersistImportedData();
   prInitFilters();
@@ -335,7 +353,8 @@ function prHandleFile(file){
   reader.readAsText(file,'UTF-8');
 }
 function prClearImportedData(){
-  products.splice(0,products.length);shops.splice(0,shops.length);prSelectedIds.clear();
+  var systemProducts=products.filter(prIsSystemRow),systemShops=shops.filter(prIsSystemRow);
+  products.splice(0,products.length);shops.splice(0,shops.length);products.push.apply(products,systemProducts);shops.push.apply(shops,systemShops);prSelectedIds.clear();
   prDataMeta={source:'none',fileName:'',importedAt:'',accepted:0,skipped:0};
   try{localStorage.removeItem(prImportedDataKey());localStorage.removeItem('jay_product_catalog_import_v1');}catch(e){}
   if(typeof jaySaveWorkspaceAsset==='function'&&typeof jayCanUseUserDb==='function'&&jayCanUseUserDb())jaySaveWorkspaceAsset('product_catalog_import',prSerializeImportedData());
@@ -348,6 +367,71 @@ function prClearImportedData(){
   if(typeof shInitFilters==='function')shInitFilters();if(typeof shRenderAI==='function')shRenderAI();if(typeof shApplyFilters==='function')shApplyFilters();
   if(typeof jayRebuildSearch==='function')jayRebuildSearch();
   toast('已清空导入数据');
+}
+
+function prSystemMarketName(code){
+  var api=window.JAY_MARKET_SCOPE_API;
+  var market=api&&api.getMarket?api.getMarket(code):null;
+  return market?(market.name||market.label||code):code;
+}
+function prSystemPlatformName(key){
+  var api=window.JAY_MARKET_SCOPE_API;
+  return api&&api.normalizePlatform?api.normalizePlatform(key):key;
+}
+function prSystemPayload(pub){return pub&&pub.public_payload&&typeof pub.public_payload==='object'?pub.public_payload:{};}
+function prSystemSourceMeta(pub,payload){
+  var sourceKey=String(pub&&pub.source_key||'').trim();
+  var sourceKind=sourceKey==='tikhub'?'traceable':(sourceKey==='user-upload'?'uploaded':'official');
+  var sourceType=sourceKey==='tikhub'?'licensed_provider':(sourceKey==='user-upload'?'user_upload':'official_feed');
+  var collected=pub&&pub.collected_at||null;
+  var freshness=prSnapshotFreshness(collected);
+  return {
+    source_kind:sourceKind,source_type:sourceType,source_category:sourceKey==='tikhub'?'third_party_provider':'official',platform_key:pub&&pub.platform_key||payload&&payload.platform_key||'',market_code:pub&&pub.market_code||payload&&payload.market_code||'',
+    source_key:sourceKey,source_record_id:pub&&pub.raw_source_record_id||pub&&pub.record_key||'',source_url:pub&&pub.source_url||'',
+    verification_status:'verified',publication_status:pub&&pub.status||'active',snapshot_at:collected,collected_at:collected,
+    evidence_hash:pub&&pub.evidence_hash||'',freshness:freshness,missing_fields:[],history_url:pub&&pub.id?'#search?record='+pub.id:''
+  };
+}
+function prSystemProductFromPublication(pub,history){
+  var payload=prSystemPayload(pub),meta=prSystemSourceMeta(pub,payload),market=prSystemMarketName(pub.market_code||payload.market_code||payload.market),platform=prSystemPlatformName(pub.platform_key||payload.platform_key||payload.platform);
+  var title=pub.title||payload.title||payload.name||pub.record_key||'未命名商品';
+  var row=['◈',String(title),market,platform,payload.category_code||pub.category_code||payload.category||'',payload.subcategory||'',payload.price??payload.selling_price??'',payload.rmb_price||'',payload.sales??payload.sold??'',payload.growth||'',payload.signal||'',payload.shop_name||payload.shop||'',payload.age_days||'',pub.collected_at||''];
+  row._rawRecord=payload;row._source='系统采集 · '+(pub.source_key||'正式数据');row._sourceKind='system';row._sourceMeta=meta;row._history=history||[pub];row._trend=(history||[]).map(function(item){var p=prSystemPayload(item);return p.sales??p.sold??'';}).filter(function(v){return v!=='';});
+  row._provided={};prAttachCategoryRule(row);return row;
+}
+function prSystemShopFromPublication(pub,history){
+  var payload=prSystemPayload(pub),meta=prSystemSourceMeta(pub,payload),market=prSystemMarketName(pub.market_code||payload.market_code||payload.market),platform=prSystemPlatformName(pub.platform_key||payload.platform_key||payload.platform);
+  var name=pub.title||payload.name||payload.shop_name||payload.seller_name||pub.record_key||'未命名店铺';
+  var row=[String(name),platform,market,payload.gmv??payload.GMV??'',payload.growth||'',payload.status||'已采集',payload.category_code||pub.category_code||payload.category||'',payload.product_count??'',payload.wave||'',payload.tags||'',payload.followers??payload.fans??'',payload.rating??'',pub.collected_at||''];
+  row._rawRecord=payload;row._source='系统采集 · '+(pub.source_key||'正式数据');row._sourceKind='system';row._sourceMeta=meta;row._history=history||[pub];row._trend=(history||[]).map(function(item){var p=prSystemPayload(item);return p.gmv??p.sales??'';}).filter(function(v){return v!=='';});
+  var productLike=['','','',platform,row[6]];productLike._rawRecord=payload;row._categoryRule=prAttachCategoryRule(productLike)._categoryRule;return row;
+}
+function prSystemStatusText(){
+  var state=prSystemSnapshotState,el=document.getElementById('pr-system-status');if(!el)return;
+  var label=state.status==='loading'?'正在读取正式系统采集数据':state.status==='error'?'系统采集暂不可用':state.status==='ready'?'系统采集 '+state.count+' 条':'系统采集未连接';
+  var suffix=state.expired?' · '+state.expired+' 条已过期':'';if(state.missing)suffix+=' · '+state.missing+' 条字段缺失';
+  el.textContent=label+suffix;el.className='pr-data-status '+(state.status==='ready'?'ok':state.status==='error'?'error':'');
+}
+async function jayLoadSystemSnapshots(force){
+  if(window._jaySystemSnapshotPromise&&!force)return window._jaySystemSnapshotPromise;
+  if(typeof JAY_API_URL==='undefined'||!JAY_API_URL){return false;}
+  prSystemSnapshotState.status='loading';prSystemStatusText();
+  window._jaySystemSnapshotPromise=fetch(JAY_API_URL+'/formal_publications?publication_type=in.(market_record,product_snapshot,shop_snapshot,content_snapshot)&status=eq.active&select=id,source_key,raw_source_record_id,publication_type,domain,record_key,market_code,platform_key,category_code,title,summary,source_url,published_at,collected_at,first_seen_at,last_seen_at,evidence_hash,public_payload&order=collected_at.desc&limit=1000',{headers:{apikey:JAY_ANON_KEY,Authorization:'Bearer '+JAY_ANON_KEY},cache:'no-store'})
+    .then(function(response){if(!response.ok)throw new Error('HTTP '+response.status);return response.json();})
+    .then(function(rows){
+      rows=Array.isArray(rows)?rows:[];var api=window.JAY_MARKET_SCOPE_API;var context=api&&api.getActiveContext?api.getActiveContext():{marketCodes:[]};
+      var scoped=rows.filter(function(pub){if(!pub||!pub.market_code)return false;if(context.marketCodes&&context.marketCodes.length&&context.marketCodes.indexOf(String(pub.market_code).toUpperCase())<0)return false;return !api||!api.isAllowedPlatform||api.isAllowedPlatform(pub.platform_key,pub.market_code);});
+      var groups={};scoped.forEach(function(pub){var payload=prSystemPayload(pub),kind=pub.publication_type==='product_snapshot'?'product':pub.publication_type==='shop_snapshot'?'shop':pub.publication_type==='content_snapshot'?'content':String(payload.snapshot_type||pub.domain||'').split('_')[0];if(['product','shop','content'].indexOf(kind)<0)return;var stable=payload.platform_product_id||payload.product_id||payload.platform_shop_id||payload.shop_id||payload.platform_content_id||payload.content_id||pub.record_key||pub.id;var key=kind+'|'+pub.market_code+'|'+pub.platform_key+'|'+stable;(groups[key]||(groups[key]=[])).push(Object.assign({snapshot_kind:kind},pub));});
+      prSystemCollectedProducts=[];prSystemCollectedShops=[];var systemContent=[];var expired=0,missing=0;
+      Object.keys(groups).forEach(function(key){var history=groups[key].slice().sort(function(a,b){return new Date(a.collected_at||0)-new Date(b.collected_at||0);}),latest=history[history.length-1],kind=latest.snapshot_kind,meta=prSystemSourceMeta(latest,prSystemPayload(latest));if(meta.freshness==='expired')expired++;var payload=prSystemPayload(latest);var required=kind==='product'?['title','price','sales']:kind==='shop'?['name','gmv','followers']:['title','views','likes'];missing+=required.filter(function(field){return payload[field]===undefined&&latest[field]===undefined;}).length;if(kind==='product')prSystemCollectedProducts.push(prSystemProductFromPublication(latest,history));else if(kind==='shop')prSystemCollectedShops.push(prSystemShopFromPublication(latest,history));else systemContent.push({publication:latest,history:history,payload:payload});});
+      products.splice(0,products.length, ...prSystemCollectedProducts.concat(prRowsWithoutSystem(products)));shops.splice(0,shops.length, ...prSystemCollectedShops.concat(prRowsWithoutSystem(shops)));
+      window.jaySystemCollectedContent=systemContent;prSystemSnapshotState={status:'ready',updatedAt:new Date().toISOString(),error:'',count:prSystemCollectedProducts.length+prSystemCollectedShops.length+systemContent.length,expired:expired,missing:missing};prSystemStatusText();
+      if(typeof jaySetSystemContentRecords==='function')jaySetSystemContentRecords(systemContent);
+      if(document.getElementById('pr-table-body')){prInitFilters();prRenderAI();prSwitchTab(prActiveTab);if(typeof shInitFilters==='function')shInitFilters();if(typeof shApplyFilters==='function')shApplyFilters();}
+      if(typeof jayRebuildSearch==='function')jayRebuildSearch();return true;
+    }).catch(function(error){prSystemSnapshotState={status:'error',updatedAt:null,error:String(error&&error.message||error),count:0,expired:0,missing:0};prSystemStatusText();return false;})
+    .finally(function(){window._jaySystemSnapshotPromise=null;});
+  return window._jaySystemSnapshotPromise;
 }
 
 function prParseNum(s){if(!s)return 0;return parseInt(String(s).replace(/[^0-9]/g,''))||0}
@@ -403,8 +487,23 @@ function prApplyFilters(){
   prRenderTable(list);
   toast('已显示 '+list.length+' 条数据');
 }
+async function prCreateKeywordMonitor(){
+  var input=document.getElementById('pr-f-keyword'),keyword=input&&input.value.trim();
+  if(!keyword){toast('请先输入要监控的关键词');return;}
+  var context=prScopedContext(),market=(context.marketCodes&&context.marketCodes[0])||'',platform=(context.platformKeys&&context.platformKeys[0])||'';
+  if(!platform){var scoped=prScopedProducts()[0];platform=scoped?prMarketCode(scoped[3]):'tiktok-shop';}
+  if(typeof jayCreateMonitoringTask!=='function'){toast('监控服务尚未连接');return;}
+  try{await jayCreateMonitoringTask({type:'keyword',keyword:keyword,market_code:market,platform_key:platform});toast('关键词监控已创建：'+keyword);}
+  catch(error){toast('创建关键词监控失败：'+(error.message||'请登录并使用可编辑工作区'));}
+}
 
 function prSignalClass(s){return s==='爆发'?'burst':s==='上升'?'rise':s==='关注'?'stable':'decline'}
+function prSourceBadge(row){
+  var system=prIsSystemRow(row),meta=row&&row._sourceMeta||{},fresh=meta.freshness||'current';
+  var label=system?'系统采集':'工作区上传',color=system?'#236b52':'#5b6472';
+  var state=system&&fresh==='expired'?' · 已过期':system&&(!meta.collected_at)?' · 时间缺失':'';
+  return '<span class="pr-source-badge" style="display:inline-block;margin-top:3px;font-size:10px;line-height:1.4;color:'+color+';border:1px solid '+color+';border-radius:3px;padding:0 4px">'+label+escapeHtml(state)+'</span>';
+}
 
 function prRenderTable(list){
   var tbody=$('#pr-table-body');
@@ -428,7 +527,7 @@ function prRenderTable(list){
       '<td><input type="checkbox" class="pr-chk" data-idx="'+idx+'" '+checked+'></td>'+
       '<td>'+(i+1)+'</td>'+
       '<td><div class="product-cell"><span class="product-thumb">'+escapeHtml(prDisplay(p[0]))+'</span><strong class="pr-prod-link" data-idx="'+idx+'" style="cursor:pointer" title="'+nameEsc+'">'+escapeHtml(prDisplay(p[1]))+'</strong></div></td>'+
-      '<td>'+escapeHtml(prDisplay(p[2]))+' · '+escapeHtml(prDisplay(p[3]))+'</td>'+
+      '<td>'+escapeHtml(prDisplay(p[2]))+' · '+escapeHtml(prDisplay(p[3]))+'<br>'+prSourceBadge(p)+'</td>'+
       '<td><div class="pr-dual-price"><span class="pr-local">'+escapeHtml(prDisplay(p[6]))+'</span><br><span class="pr-rmb">'+(prText(p[7])?'≈ ¥'+escapeHtml(p[7])+' RMB':'未提供人民币价格')+'</span></div></td>'+
       '<td><span style="font-size:11px;color:var(--muted)">'+escapeHtml(prDisplay(p[5]))+'</span></td>'+
       '<td><span class="pr-shop-link" data-shop="'+escapeHtml(prText(p[11]))+'">'+escapeHtml(prDisplay(p[11]))+'</span></td>'+
@@ -439,7 +538,8 @@ function prRenderTable(list){
       '<td><span class="pr-time-col">'+escapeHtml(prDisplay(p[13]))+'</span></td>'+
       '</tr>';
   }).join('');
-  $('#pr-count').textContent='● '+list.length+' / '+prScopedProducts().length+' 条已导入数据 · 当前范围';
+  var systemCount=prScopedProducts().filter(prIsSystemRow).length;
+  $('#pr-count').textContent='● '+list.length+' / '+prScopedProducts().length+' 条'+(systemCount?'系统采集/工作区数据 · 当前范围':'已导入数据');
   $('#pr-count').className='source-ok';
   prUpdateBatchBar();
 }
@@ -476,27 +576,35 @@ function prShowDetail(idx){
 
   $('#pr-modal-content').innerHTML=
     '<h3>'+escapeHtml(prDisplay(p[0]))+' '+escapeHtml(prDisplay(p[1]))+'</h3>'+
-    '<div class="pr-m-sub">'+escapeHtml(prDisplay(p[2]))+' · '+escapeHtml(prDisplay(p[3]))+' · '+escapeHtml(prDisplay(p[5]))+' · 更新时间: '+escapeHtml(prDisplay(p[13]))+'</div>'+
+    '<div class="pr-m-sub">'+escapeHtml(prDisplay(p[2]))+' · '+escapeHtml(prDisplay(p[3]))+' · '+escapeHtml(prDisplay(p[5]))+' · '+(prIsSystemRow(p)?'系统采集快照':'工作区上传')+' · 更新时间: '+escapeHtml(prDisplay(p[13]))+'</div>'+
     '<div class="pr-m-stats">'+
       '<div class="pr-m-stat"><b>'+escapeHtml(prDisplay(p[8]))+'</b><span>累计销量</span></div>'+
       '<div class="pr-m-stat"><b style="color:#3a6ea8">'+escapeHtml(prDisplay(p[9]))+'</b><span>增速</span></div>'+
       '<div class="pr-m-stat"><b>'+escapeHtml(prDisplay(p[6]))+'</b><span>售价区间</span></div>'+
       '<div class="pr-m-stat"><b>'+(isNaN(age)?'未提供':escapeHtml(String(age))+'天')+'</b><span>上架周期</span></div>'+
     '</div>'+
-    '<div class="pr-m-section"><h4>📈 30天销量趋势</h4>'+trendHtml+'</div>'+
+      '<div class="pr-m-section"><h4>📈 历史快照趋势</h4>'+trendHtml+(p._history&&p._history.length?'<p class="pr-empty-note">已保存 '+p._history.length+' 个历史快照，可在正式历史来源中按时间查看。</p>':'')+'</div>'+
     '<div class="pr-m-section"><h4>🏪 竞品店铺</h4><p>店铺: <strong>'+escapeHtml(prDisplay(p[11]))+'</strong> · <span style="color:var(--green);cursor:pointer;text-decoration:underline" id="pr-detail-shop">查看店铺详情 ↗</span></p></div>'+
     '<div class="pr-m-section"><h4>🌐 全网同款分布</h4><p>平台数量: <strong>'+escapeHtml(sameCount)+'</strong> · 链接数量: <strong>'+escapeHtml(linkCount)+'</strong></p></div>'+
     '<div class="pr-m-section"><h4>⚠️ 合规风险提示</h4><div class="pr-m-tags">'+compliance+'</div></div>'+
     categoryRuleHtml+
     '<div style="margin-top:16px;display:flex;gap:8px">'+
       '<button class="filter-button" style="padding:8px 18px" id="pr-detail-add">✦ 加入报告素材</button>'+
+      '<button style="background:none;border:1px solid var(--line);padding:8px 18px;border-radius:4px;font:12px Noto Sans SC;cursor:pointer" id="pr-detail-monitor">📡 创建商品监控</button>'+
       '<button style="background:none;border:1px solid var(--line);padding:8px 18px;border-radius:4px;font:12px Noto Sans SC;cursor:pointer" id="pr-detail-country">🌍 查看对应国家市场</button>'+
     '</div>';
 
   $('#pr-modal').classList.add('open');
   $('#pr-detail-shop').onclick=function(){switchPage('shops');toast('已跳转到店铺追踪')};
   $('#pr-detail-add').onclick=function(){rpAddMaterial('product',p[1],p[2]+' '+p[3],summaryStr,{snapshot:prProductSnapshot(p),snapshot_type:'product'});toast('已加入报告素材')};
+  $('#pr-detail-monitor').onclick=function(){prCreateProductMonitor(p)};
   $('#pr-detail-country').onclick=function(){switchPage('countries');toast('已跳转到国家市场')};
+}
+async function prCreateProductMonitor(row){
+  if(typeof jayCreateMonitoringTask!=='function'){toast('监控服务尚未连接');return;}
+  var meta=row&&row._sourceMeta||{},raw=row&&row._rawRecord||{};
+  try{await jayCreateMonitoringTask({type:'product',market_code:prMarketCode(row[2]),platform_key:meta.platform_key||raw.platform_key||raw.platform||row[3],category_code:row[4],target_external_id:raw.platform_product_id||raw.product_id||meta.source_record_id});toast('商品监控已创建');}
+  catch(error){toast('创建商品监控失败：'+(error.message||'请登录并使用可编辑工作区'));}
 }
 
 // AI Insights dual-tab
@@ -510,7 +618,7 @@ function prRenderAI(){
   var subLabel=prAiTab==='short'?'即时机会':'赛道规划';
   var poolType=prAiTab==='short'?'短期机会':'长期赛道';
   var html='<div class="ai-insight" style="padding:16px 18px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:16px">'+
-    '<div class="ai-insight-head"><span class="ai-icon">✨</span><h4>AI '+tabLabel+'</h4><small>仅基于用户导入文件中的字段</small></div>';
+    '<div class="ai-insight-head"><span class="ai-icon">✨</span><h4>AI '+tabLabel+'</h4><small>仅基于已核验系统快照和工作区上传字段</small></div>';
   items.forEach(function(item,idx){
     html+='<div class="pr-ai-item"><span class="pr-ai-text">'+escapeHtml(item.text)+'</span>';
     if(item.link)html+='<button class="pr-ai-jump" data-link="'+encodeURIComponent(item.link)+'">溯源 ↗</button>';
@@ -534,13 +642,13 @@ function prRenderAI(){
 
 function prBuildAIItems(tab){
   var scopedProducts=prScopedProducts();
-  if(!scopedProducts.length)return [{text:'暂无当前市场范围的已导入类目数据，上传 CSV 或 JSON 后才会生成机会判断（需提供对应市场记录）。',addable:false}];
-  var items=[],counts={};
+  if(!scopedProducts.length)return [{text:'暂无当前市场范围的系统采集或工作区类目数据；完成来源接入。上传 CSV 或 JSON 后才会生成机会判断。',addable:false}];
+  var items=[],counts={},systemCount=scopedProducts.filter(prIsSystemRow).length;
   scopedProducts.forEach(function(p){var c=prText(p[4])||'未提供类目';counts[c]=(counts[c]||0)+1;});
   var categories=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];});
   if(tab==='short'){
-    items.push({text:'当前范围文件共 '+scopedProducts.length+' 条商品记录，覆盖 '+categories.length+' 个类目。',addable:false});
-    if(categories[0])items.push({text:'文件中记录最多的类目是“'+categories[0]+'”（'+counts[categories[0]]+' 条），仅代表导入文件的样本分布，不等同于市场机会。',addable:false});
+     items.push({text:'当前范围共 '+scopedProducts.length+' 条'+(systemCount?'系统采集/工作区商品记录':'工作区导入商品记录')+'，覆盖 '+categories.length+' 个类目。',addable:false});
+     if(categories[0])items.push({text:'记录最多的类目是“'+categories[0]+'”（'+counts[categories[0]]+' 条），仅代表'+(systemCount?'当前已接入':'导入文件的')+'样本分布，不等同于市场机会。',addable:false});
     var growth=scopedProducts.filter(function(p){return prText(p[9])!=='';});
     items.push({text:growth.length?'文件提供了 '+growth.length+' 条增速字段，可在筛选器中按增速排序；系统不补算缺失增速。':'文件未提供增速字段，无法生成增长判断。',addable:false});
   }else{
@@ -665,6 +773,7 @@ function prExportPDF(){
     prRenderAI();
   }});
   $('#pr-apply-filter').onclick=prApplyFilters;
+  var keywordMonitor=document.getElementById('pr-keyword-monitor');if(keywordMonitor)keywordMonitor.onclick=prCreateKeywordMonitor;
   $('#pr-reset-filter').onclick=function(){
     $('#pr-f-country').value='all';$('#pr-f-platform').value='all';$('#pr-f-category').value='all';
     $('#pr-f-signal').value='all';$('#pr-f-age').value='all';$('#pr-f-price-min').value='';
@@ -703,7 +812,24 @@ function prExportPDF(){
     Array.from(prSelectedIds).forEach(function(i){var p=products[i];if(p&&prIsInCurrentScope(p))rpAddMaterial('product',p[1],p[2]+' '+p[3],'售价'+p[6]+',销量'+p[8]+',增速'+p[9],{snapshot:prProductSnapshot(p),snapshot_type:'product'});});
     toast(prSelectedIds.size+' 件商品已加入报告素材');
   };
-  $('#pr-batch-monitor').onclick=function(){toast('已将 '+prSelectedIds.size+' 个店铺加入监控');prSelectedIds.clear();prUpdateBatchBar()};
+  $('#pr-batch-monitor').onclick=async function(){
+    var selected=Array.from(prSelectedIds).map(function(i){return products[i];}).filter(function(p){return p&&prIsInCurrentScope(p);});
+    if(!selected.length){toast('请先选择要监控的商品');return;}
+    if(typeof jayCreateMonitoringTask!=='function'){toast('监控服务尚未连接');return;}
+    var ok=0,failed=0;
+    for(var i=0;i<selected.length;i++){
+      var row=selected[i],meta=row._sourceMeta||{},raw=row._rawRecord||{};
+      try{
+        await jayCreateMonitoringTask({type:'product',market_code:prMarketCode(row[2]),platform_key:meta.platform_key||raw.platform_key||raw.platform||row[3],category_code:row[4],target_external_id:raw.platform_product_id||raw.product_id||meta.source_record_id});
+        ok++;
+      }catch(error){failed++;}
+    }
+    toast('商品监控创建完成：成功 '+ok+' 个'+(failed?'，失败 '+failed+' 个':''));
+    prSelectedIds.clear();
+    $$('#pr-table-body .pr-chk').forEach(function(c){c.checked=false;});
+    $('#pr-check-all').checked=false;
+    prUpdateBatchBar();
+  };
   $('#pr-batch-export').onclick=prExportExcel;
   $('#pr-batch-clear').onclick=function(){prSelectedIds.clear();$$('#pr-table-body .pr-chk').forEach(function(c){c.checked=false});$('#pr-check-all').checked=false;prUpdateBatchBar()};
   $('#pr-export-excel').onclick=prExportExcel;
@@ -756,7 +882,7 @@ function shRenderAI() {
   var el = document.getElementById('sh-ai-content');
   if(!el) return;
   if(!prScopedShops().length){
-    el.innerHTML='<div class="pr-empty-note">暂无已导入的店铺数据，店铺洞察不会使用示例或推测指标。</div>';
+    el.innerHTML='<div class="pr-empty-note">暂无已导入的店铺数据，也暂无系统采集快照；店铺洞察不会使用示例或推测指标。</div>';
     return;
   }
   var list = shBuildAIItems(shActiveAI);
@@ -797,11 +923,12 @@ function shRenderAI() {
 function shBuildAIItems(tab){
   var provided=prScopedShops().filter(function(s){return s&&s._source;});
   if(!provided.length)return [{title:'暂无可用店铺洞察',desc:'当前页面只接受用户导入或已接入的店铺记录。',time:'状态'}];
+  var systemCount=provided.filter(prIsSystemRow).length;
   if(tab==='risk'){
     var riskCount=provided.filter(function(s){return prText(s[5])==='风险'||(prText(s[4])&&prText(s[4]).charAt(0)==='-');}).length;
     return [{title:'已导入店铺风险字段',desc:'文件中有 '+riskCount+' 条记录提供了风险状态或负增长字段。系统不会依据缺失数据推断异常。',time:'文件'}];
   }
-  return [{title:'已导入店铺记录',desc:'当前文件包含 '+provided.length+' 家店铺。请使用筛选器按市场、平台和类目查看，未提供的 GMV、增速、粉丝或评分字段保持为空。',time:'文件'}];
+  return [{title:systemCount?'已接入店铺记录':'已导入店铺记录',desc:(systemCount?'当前范围包含 ':'当前文件包含 ')+provided.length+' 家店铺，'+(systemCount?'系统采集与工作区上传记录会分别标注来源。':'仅汇总当前工作区上传记录。')+'请使用筛选器按市场、平台和类目查看，未提供的 GMV、增速、粉丝或评分字段保持为空。',time:systemCount?'快照':'文件'}];
 }
 
 function shRenderCompareTab(){
@@ -962,7 +1089,7 @@ function shRenderTable(list) {
     }
     return '<tr>' +
       '<td><input type="checkbox" class="sh-cb" data-idx="' + idx + '" ' + checked + ' onchange="shToggleOne(' + idx + ',this.checked)"></td>' +
-      '<td><strong style="cursor:pointer;color:var(--green)" class="sh-shop-link" data-idx="' + idx + '">' + escapeHtml(prDisplay(s[0])) + '</strong></td>' +
+      '<td><strong style="cursor:pointer;color:var(--green)" class="sh-shop-link" data-idx="' + idx + '">' + escapeHtml(prDisplay(s[0])) + '</strong><br>'+prSourceBadge(s)+'</td>' +
       '<td>' + escapeHtml(prDisplay(s[1])) + '</td>' +
       '<td>' + escapeHtml(prDisplay(s[2])) + '</td>' +
       '<td>' + escapeHtml(prDisplay(s[6])) + '</td>' +
@@ -1018,6 +1145,8 @@ function shShowDetail(idx) {
 
   // Imported/manual/cloud records only show fields that actually exist in the source.
   {
+    var history=s._history||[];
+    var historyHtml=history.length?'<div class="pr-m-chart">'+history.map(function(item){var p=prSystemPayload(item),n=Number(p.gmv??p.sales??0);return '<i title="'+escapeHtml(item.collected_at||'')+'" style="height:'+Math.max(8,Math.min(90,isNaN(n)?8:n))+'%;background:var(--green)"></i>';}).join('')+'</div><p class="pr-empty-note">已保存 '+history.length+' 个快照，最新值来自 '+escapeHtml(s[12]||'未提供')+'。</p>':'<p class="pr-empty-note">暂无可验证历史快照；未提供可验证的时间序列</p>';
     body.innerHTML='<div class="pr-empty-note" style="text-align:left;padding:0 0 14px">数据来源：'+escapeHtml(prDisplay(s._source))+'。以下空白字段表示源文件未提供，系统不会估算。</div>'+
       '<div class="pr-m-stats">'+
       '<div class="pr-m-stat"><b>'+escapeHtml(prDisplay(s[3]))+'</b><span>月 GMV</span></div>'+
@@ -1027,12 +1156,19 @@ function shShowDetail(idx) {
       '</div>'+
       '<div class="pr-m-section"><h4>店铺信息</h4><p>平台：'+escapeHtml(prDisplay(s[1]))+' · 市场：'+escapeHtml(prDisplay(s[2]))+' · 类目：'+escapeHtml(prDisplay(s[6]))+'</p><p>粉丝：'+escapeHtml(prDisplay(s[10]))+' · 评分：'+escapeHtml(prDisplay(s[11]))+' · 标签：'+escapeHtml(prDisplay(s[9]))+'</p></div>'+
       '<div class="pr-m-section"><h4>品类规则包</h4><p>'+escapeHtml(prCategoryRuleLabel(s._categoryRule))+'</p></div>'+
-      '<div class="pr-m-section"><h4>趋势与结构</h4><p>未提供可验证的时间序列、品类结构或流量结构字段。</p></div>'+
-      '<div style="display:flex;gap:8px;margin-top:16px"><button class="filter-button" style="padding:8px 18px" onclick="shAddToReport('+idx+')">加入报告素材</button></div>';
+      '<div class="pr-m-section"><h4>历史状态与趋势</h4>'+historyHtml+'</div>'+
+      '<div style="display:flex;gap:8px;margin-top:16px"><button class="filter-button" style="padding:8px 18px" onclick="shAddToReport('+idx+')">加入报告素材</button><button class="filter-button" style="padding:8px 18px" onclick="shCreateShopMonitor('+idx+')">📡 创建店铺监控</button></div>';
     document.getElementById('sh-modal-overlay').classList.add('show');
     return;
   }
 
+}
+
+async function shCreateShopMonitor(idx){
+  var row=shops[idx];if(!row||typeof jayCreateMonitoringTask!=='function'){toast('监控服务尚未连接');return;}
+  var meta=row._sourceMeta||{},raw=row._rawRecord||{};
+  try{await jayCreateMonitoringTask({type:'shop',market_code:prMarketCode(row[2]),platform_key:meta.platform_key||raw.platform_key||raw.platform||row[1],category_code:row[6],target_external_id:raw.platform_shop_id||raw.shop_id||meta.source_record_id});toast('店铺监控已创建');}
+  catch(error){toast('创建店铺监控失败：'+(error.message||'请登录并使用可编辑工作区'));}
 }
 
 function shCloseModal() {
@@ -1240,9 +1376,11 @@ function jayCollectShops() {
 async function jaySyncShopsToCloud() {
   try {
     if (typeof supabaseClient === 'undefined' || !supabaseClient || !jayUser || jayIsDemo) { toast('登录后可同步店铺到个人空间'); return; }
+    if(typeof jaySecurityGate==='function') await jaySecurityGate('upload');
     var rows = jayCollectShops().map(function(s){
       return {
         id: jayShopRowId(s), user_id: jayUser.id, device_id: jayDeviceId(),
+        acceptance_run_id: typeof jayAcceptanceRunId === 'function' ? (jayAcceptanceRunId() || null) : null,
         shop_name: s[0] || '', platform: s[1] || '', market: s[2] || '',
         gmv: s[3] || '', growth: s[4] || '', status: s[5] || '',
         category: s[6] || '', tags: s[9] || '', source: 'app', updated_at: new Date().toISOString()
@@ -1280,6 +1418,9 @@ async function jayLoadShopsFromCloud() {
   shRenderGroups();
   shRenderTplSelect();
   shApplyFilters();
+  // Public projections are safe to read anonymously; private raw evidence is
+  // never requested by this browser query.
+  if(typeof jayLoadSystemSnapshots==='function')jayLoadSystemSnapshots();
 })();
 
 if(window.addEventListener) window.addEventListener('jay:market-scope-change', function(){

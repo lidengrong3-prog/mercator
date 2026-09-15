@@ -1,6 +1,7 @@
 import { fetchCurrentQualityGate, reportContentAllowsFormalOutput } from '../_shared/report-quality.ts';
 import { REPORT_VALIDATION_VERSION, validateFormalReportWithServerData } from '../_shared/report-validation.ts';
 import { buildReportDocx } from '../_shared/report-docx.ts';
+import { enforceRateLimit, rateLimitResponse, requestId as securityRequestId } from '../_shared/security.ts';
 
 // JWT-protected DOCX export. The document is a real OOXML package rather
 // than a Markdown file with a .docx extension, so Word can open and edit it.
@@ -19,11 +20,20 @@ Deno.serve(async (request) => {
   const origin = request.headers.get('Origin'); if (origin && !allowedOrigins().includes(origin)) return jsonResponse({ error: 'ORIGIN_NOT_ALLOWED' }, 403, origin); if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(origin) }); if (request.method !== 'POST') return jsonResponse({ error: 'METHOD_NOT_ALLOWED' }, 405, origin);
   const supabaseUrl = Deno.env.get('SUPABASE_URL'); const anonKey = Deno.env.get('SUPABASE_ANON_KEY'); const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'); if (!supabaseUrl || !anonKey || !serviceKey) return jsonResponse({ error: 'REPORT_SERVICE_NOT_CONFIGURED' }, 503, origin);
   const user = await authenticatedUser(request, supabaseUrl, anonKey); if (!user) return jsonResponse({ error: 'AUTH_REQUIRED' }, 401, origin);
+  const securityRequest = securityRequestId(request);
+  try {
+    const rate = await enforceRateLimit({ supabaseUrl: supabaseUrl as string, serviceKey: serviceKey as string, request, scope: 'export', userId: user.id });
+    if (!rate.allowed) return rateLimitResponse(rate, securityRequest, origin);
+  } catch (error) {
+    console.error('report docx rate limiter unavailable', error);
+    return jsonResponse({ error: 'RATE_LIMIT_UNAVAILABLE', request_id: securityRequest }, 503, origin);
+  }
   let payload: Record<string, unknown>; try { payload = await request.json(); } catch { return jsonResponse({ error: 'INVALID_JSON' }, 400, origin); }
   const reportId = typeof payload.report_id === 'string' && /^[0-9a-f-]{36}$/i.test(payload.report_id) ? payload.report_id : null;
   const jobsUrl = `${supabaseUrl}/rest/v1/report_exports`;
   const headers = { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey, 'Content-Type': 'application/json' };
   const parentExportId = typeof payload.parent_export_id === 'string' && /^[0-9a-f-]{36}$/i.test(payload.parent_export_id) ? payload.parent_export_id : null;
+  const acceptanceRunId = typeof payload.acceptance_run_id === 'string' ? payload.acceptance_run_id.trim().slice(0, 160) : null;
   const attempt = Math.max(1, Math.min(100, Number(payload.attempt || 1)) || 1);
   const requestId = String(payload.request_id || request.headers.get('X-Request-Id') || crypto.randomUUID()).slice(0, 240);
   const idempotencyKey = String(payload.idempotency_key || `report-export:${reportId}:docx:current`).slice(0, 240);
@@ -33,9 +43,10 @@ Deno.serve(async (request) => {
   const report = reportRows?.[0] as { workspace_id?: unknown; title?: unknown; content?: unknown; save_status?: unknown; publication_status?: unknown; server_validation_version?: unknown; server_validated_at?: unknown; server_validation?: unknown } | undefined;
   if (!report) return jsonResponse({ error: 'REPORT_NOT_FOUND' }, 404, origin);
   const workspaceId = String(report.workspace_id || '');
-  const membershipResponse = await fetch(`${supabaseUrl}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&select=id&limit=1`, { headers });
+  const membershipResponse = await fetch(`${supabaseUrl}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&select=role&limit=1`, { headers });
   const memberships = membershipResponse.ok ? await membershipResponse.json() : [];
   if (!workspaceId || !memberships?.length) return jsonResponse({ error: 'REPORT_NOT_FOUND' }, 404, origin);
+  if (!['owner', 'admin', 'editor'].includes(String(memberships[0]?.role || ''))) return jsonResponse({ error: 'WORKSPACE_READ_ONLY' }, 403, origin);
   if (report.save_status !== 'saved') return jsonResponse({ error: 'REPORT_NOT_SAVED' }, 409, origin);
   const storedContent = report.content && typeof report.content === 'object' ? report.content as Record<string, unknown> : {};
   if (!reportContentAllowsFormalOutput(storedContent)) return jsonResponse({ error: 'REPORT_QUALITY_GATE_BLOCKED' }, 409, origin);
@@ -52,7 +63,7 @@ Deno.serve(async (request) => {
   if (!text) return jsonResponse({ error: 'REPORT_CONTENT_REQUIRED' }, 400, origin);
   if (text.length > 80000) return jsonResponse({ error: 'REPORT_TOO_LARGE' }, 413, origin);
   const readExistingJob = async () => {
-    const response = await fetch(`${jobsUrl}?user_id=eq.${encodeURIComponent(user.id)}&idempotency_key=eq.${encodeURIComponent(idempotencyKey)}&select=id,status,file_path,error_message,created_at&limit=1`, { headers });
+    const response = await fetch(`${jobsUrl}?workspace_id=eq.${encodeURIComponent(workspaceId)}&idempotency_key=eq.${encodeURIComponent(idempotencyKey)}&select=id,status,file_path,error_message,created_at&limit=1`, { headers });
     const rows = response.ok ? await response.json() : [];
     return rows?.[0] || null;
   };
@@ -74,11 +85,12 @@ Deno.serve(async (request) => {
   const existing = await readExistingJob();
   if (existing) return await duplicateJobResponse(existing);
 
-  const conflictQuery = new URLSearchParams({ on_conflict: 'user_id,idempotency_key' });
+  // Legacy compatibility note: the previous contract used on_conflict user_id,idempotency_key.
+  const conflictQuery = new URLSearchParams({ on_conflict: 'workspace_id,idempotency_key' });
   const created = await fetch(`${jobsUrl}?${conflictQuery.toString()}`, {
     method: 'POST',
     headers: { ...headers, Prefer: 'resolution=ignore-duplicates,return=representation' },
-    body: JSON.stringify({ user_id: user.id, report_id: reportId, format: 'docx', status: 'queued', parent_export_id: parentExportId, attempt, request_id: requestId, idempotency_key: idempotencyKey, metadata: { function: 'report-docx', content_source: 'persisted_report', data_snapshot_at: storedContent.data_snapshot_at || null, quality_report_version: currentQuality.snapshot.quality_report_version || null, source_record_ids: storedContent.source_record_ids || [] } }),
+    body: JSON.stringify({ user_id: user.id, workspace_id: workspaceId, report_id: reportId, format: 'docx', status: 'queued', parent_export_id: parentExportId, attempt, request_id: requestId, idempotency_key: idempotencyKey, acceptance_run_id: acceptanceRunId, metadata: { function: 'report-docx', content_source: 'persisted_report', data_snapshot_at: storedContent.data_snapshot_at || null, quality_report_version: currentQuality.snapshot.quality_report_version || null, source_record_ids: storedContent.source_record_ids || [], acceptance_run_id: acceptanceRunId } }),
   });
   if (!created.ok) {
     const failure = await created.text();
@@ -95,7 +107,7 @@ Deno.serve(async (request) => {
     return jsonResponse({ error: 'REPORT_EXPORT_RECORD_FAILED' }, 502, origin);
   }
   const update = async (values: Record<string, unknown>) => { if (jobId) await fetch(`${jobsUrl}?id=eq.${encodeURIComponent(jobId)}`, { method: 'PATCH', headers, body: JSON.stringify(values) }); }; await update({ status: 'processing', started_at: new Date().toISOString() });
-  const path = `${user.id}/${crypto.randomUUID()}.docx`; const encoded = path.split('/').map(encodeURIComponent).join('/'); const upload = await fetch(`${supabaseUrl}/storage/v1/object/reports/${encoded}`, { method: 'POST', headers: { ...headers, 'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'x-upsert': 'false' }, body: buildReportDocx(title, text, storedContent) as unknown as BodyInit }); if (!upload.ok) { await update({ status: 'failed', error_message: 'REPORT_STORAGE_UPLOAD_FAILED', duration_ms: Date.now() - startedAt, completed_at: new Date().toISOString() }); return jsonResponse({ error: 'REPORT_STORAGE_UPLOAD_FAILED', id: jobId }, 502, origin); }
+  const path = acceptanceRunId ? `${user.id}/acceptance/${encodeURIComponent(acceptanceRunId)}/${crypto.randomUUID()}.docx` : `${user.id}/${crypto.randomUUID()}.docx`; const encoded = path.split('/').map(encodeURIComponent).join('/'); const upload = await fetch(`${supabaseUrl}/storage/v1/object/reports/${encoded}`, { method: 'POST', headers: { ...headers, 'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'x-upsert': 'false' }, body: buildReportDocx(title, text, storedContent) as unknown as BodyInit }); if (!upload.ok) { await update({ status: 'failed', error_message: 'REPORT_STORAGE_UPLOAD_FAILED', duration_ms: Date.now() - startedAt, completed_at: new Date().toISOString() }); return jsonResponse({ error: 'REPORT_STORAGE_UPLOAD_FAILED', id: jobId }, 502, origin); }
   const signed = await fetch(`${supabaseUrl}/storage/v1/object/sign/reports/${encoded}`, { method: 'POST', headers, body: JSON.stringify({ expiresIn: 3600 }) }); if (!signed.ok) { await update({ status: 'failed', file_path: path, error_message: 'REPORT_SIGNED_URL_FAILED', duration_ms: Date.now() - startedAt, completed_at: new Date().toISOString() }); return jsonResponse({ error: 'REPORT_SIGNED_URL_FAILED', id: jobId }, 502, origin); } const signedBody = await signed.json(); const rawUrl = signedBody.signedURL || signedBody.signedUrl; if (!rawUrl) { await update({ status: 'failed', file_path: path, error_message: 'REPORT_SIGNED_URL_MISSING', duration_ms: Date.now() - startedAt, completed_at: new Date().toISOString() }); return jsonResponse({ error: 'REPORT_SIGNED_URL_MISSING', id: jobId }, 502, origin); }
   const fileUrl = String(rawUrl).startsWith('http') ? rawUrl : `${supabaseUrl}/storage/v1${rawUrl}`; await update({ status: 'completed', file_path: path, error_message: null, duration_ms: Date.now() - startedAt, completed_at: new Date().toISOString() }); return jsonResponse({ id: jobId || null, status: 'completed', file_url: fileUrl, expires_in: 3600 }, 200, origin);
 });

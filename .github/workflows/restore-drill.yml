@@ -1,0 +1,54 @@
+name: Monthly isolated restore drill
+
+on:
+  schedule:
+    - cron: '41 3 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: production
+    env:
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      RESTORE_DRILL_DB_URL: ${{ secrets.RESTORE_DRILL_DB_URL }}
+      BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Resolve ephemeral service key when not explicitly provided
+        shell: bash
+        run: |
+          set -eu
+          if [ -z "${SUPABASE_SERVICE_KEY:-}" ]; then
+            keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+            service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+            echo "::add-mask::$service_key"
+            echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
+          fi
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Restore newest encrypted backup in isolation
+        run: python scripts/restore_backup_drill.py --output backup-restore-drill-summary.json
+      - name: Publish sanitized drill result
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-restore-drill-${{ github.run_id }}
+          path: backup-restore-drill-summary.json
+          if-no-files-found: error
+          retention-days: 90

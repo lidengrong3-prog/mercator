@@ -4,6 +4,9 @@ type Scenario = {
   member?: boolean;
   mailStatus?: number;
   mailBody?: Record<string, unknown>;
+  rateAllowed?: boolean;
+  rateStatus?: number;
+  resendCalls?: string[];
 };
 
 const originalFetch = globalThis.fetch;
@@ -42,6 +45,19 @@ function installFetch(scenario: Scenario, patches: Record<string, unknown>[]) {
   globalThis.fetch = async (input: string | URL | Request, init?: RequestInit) => {
     const url = String(input instanceof Request ? input.url : input);
     if (url.endsWith('/auth/v1/user')) return Response.json({ id: '00000000-0000-4000-8000-000000000001', email: 'owner@example.test' });
+    if (url.endsWith('/rest/v1/rpc/consume_security_rate_limit')) {
+      const body = JSON.parse(String(init?.body || '{}'));
+      return Response.json({
+        allowed: scenario.rateAllowed !== false,
+        retry_after: scenario.rateAllowed === false ? 30 : 0,
+        limit: 10,
+        used: scenario.rateAllowed === false ? 10 : 1,
+        scope: body.p_scope,
+      }, { status: scenario.rateStatus || 200 });
+    }
+    if (url.endsWith('/rest/v1/rpc/assert_workspace_seat_available')) {
+      return Response.json({ available: true });
+    }
     if (url.includes('/workspace_members?')) return Response.json(scenario.member === false ? [] : [{ id: 'membership-1' }]);
     if (url.includes('/workspaces?')) return Response.json([{ id: '00000000-0000-4000-8000-000000000010', name: '测试团队' }]);
     if (url.includes('/profiles?')) return Response.json([]);
@@ -58,6 +74,7 @@ function installFetch(scenario: Scenario, patches: Record<string, unknown>[]) {
       return new Response(null, { status: 204 });
     }
     if (url === 'https://api.resend.com/emails') {
+      scenario.resendCalls?.push(url);
       return Response.json(scenario.mailBody || { id: 'resend-message-1' }, { status: scenario.mailStatus || 200 });
     }
     throw new Error(`unexpected fetch: ${init?.method || 'GET'} ${url}`);
@@ -106,5 +123,29 @@ Deno.test('workspace invitation checks manager permission before delivery', asyn
     const response = await handleWorkspaceInvite(request());
     const body = await response.json();
     if (response.status !== 403 || body.error !== 'WORKSPACE_FORBIDDEN') throw new Error(JSON.stringify(body));
+  });
+});
+
+Deno.test('workspace invitation returns 429 without sending mail when rate limited', async () => {
+  const scenario: Scenario = { rateAllowed: false, resendCalls: [] };
+  await withScenario(scenario, async (patches) => {
+    const response = await handleWorkspaceInvite(request());
+    const body = await response.json();
+    if (response.status !== 429 || body.error !== 'RATE_LIMITED') throw new Error(JSON.stringify(body));
+    if (!body.request_id || body.retry_after !== 30) throw new Error('rate-limit diagnostics are incomplete');
+    if (patches.length !== 0) throw new Error('rate-limited invitation must not be persisted');
+    if (scenario.resendCalls?.length) throw new Error('rate-limited invitation must not send mail');
+  });
+});
+
+Deno.test('workspace invitation fails closed without sending mail when rate limiter is unavailable', async () => {
+  const scenario: Scenario = { rateStatus: 503, resendCalls: [] };
+  await withScenario(scenario, async (patches) => {
+    const response = await handleWorkspaceInvite(request());
+    const body = await response.json();
+    if (response.status !== 503 || body.error !== 'RATE_LIMIT_UNAVAILABLE') throw new Error(JSON.stringify(body));
+    if (!body.request_id) throw new Error('rate-limit failure is missing request diagnostics');
+    if (patches.length !== 0) throw new Error('invitation must not be persisted without rate limiting');
+    if (scenario.resendCalls?.length) throw new Error('invitation must not send mail without rate limiting');
   });
 });

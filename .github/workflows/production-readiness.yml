@@ -1,0 +1,155 @@
+name: Production readiness and staged rollout
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Readiness operation
+        type: choice
+        required: true
+        options: [start, status, load, record, finalize, advance]
+      target_stage:
+        description: Next stage (start)
+        type: choice
+        options: [invite_beta, public_beta, general]
+      run_id:
+        description: Readiness run UUID
+        type: string
+        required: false
+      actor_id:
+        description: Platform administrator profile UUID
+        type: string
+        required: false
+      approval_reference:
+        description: Change ticket or written authorization reference
+        type: string
+        required: false
+      virtual_users:
+        description: Load profile (load)
+        type: choice
+        options: ['100', '500', '1000']
+      duration_seconds:
+        description: Load duration in seconds
+        type: number
+        default: 60
+      confirm_production_window:
+        description: Production owner approved this load-test window
+        type: boolean
+        default: false
+      test_key:
+        description: Evidence key (record)
+        type: string
+        required: false
+      passed:
+        description: Operator evidence passed (record)
+        type: boolean
+        default: false
+      metrics_json:
+        description: Non-sensitive evidence metrics JSON (record)
+        type: string
+        default: '{}'
+      registration_limit:
+        description: Public beta registration cap (advance)
+        type: number
+        default: 30
+      daily_ai_token_limit:
+        description: Per-user public beta daily AI token cap
+        type: number
+        default: 50000
+
+permissions:
+  contents: read
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 40
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL }}
+      RELEASE_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Resolve Supabase service key
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_ROLE_KEY=$service_key" >> "$GITHUB_ENV"
+      - name: Resolve load-test access token
+        if: inputs.action == 'load'
+        shell: bash
+        env:
+          TEST_EMAIL: ${{ secrets.PROD_TEST_USER_A_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.PROD_TEST_USER_A_PASSWORD }}
+        run: |
+          set -eu
+          response="$(curl --fail-with-body --silent --show-error "$SUPABASE_URL/auth/v1/token?grant_type=password" -H "apikey: $SUPABASE_ANON_KEY" -H 'Content-Type: application/json' --data "$(jq -nc --arg email "$TEST_EMAIL" --arg password "$TEST_PASSWORD" '{email:$email,password:$password}')")"
+          access_token="$(printf '%s' "$response" | jq -r '.access_token // empty')"
+          test -n "$access_token"
+          echo "::add-mask::$access_token"
+          echo "LOAD_TEST_ACCESS_TOKEN=$access_token" >> "$GITHUB_ENV"
+      - name: Run readiness operation
+        shell: bash
+        env:
+          ACTION: ${{ inputs.action }}
+          TARGET_STAGE: ${{ inputs.target_stage }}
+          RUN_ID: ${{ inputs.run_id }}
+          ACTOR_ID: ${{ inputs.actor_id }}
+          APPROVAL_REFERENCE: ${{ inputs.approval_reference }}
+          VIRTUAL_USERS: ${{ inputs.virtual_users }}
+          DURATION_SECONDS: ${{ inputs.duration_seconds }}
+          CONFIRM_WINDOW: ${{ inputs.confirm_production_window }}
+          TEST_KEY: ${{ inputs.test_key }}
+          PASSED: ${{ inputs.passed }}
+          METRICS_JSON: ${{ inputs.metrics_json }}
+          REGISTRATION_LIMIT: ${{ inputs.registration_limit }}
+          DAILY_AI_TOKEN_LIMIT: ${{ inputs.daily_ai_token_limit }}
+        run: |
+          set -eu
+          case "$ACTION" in
+            start)
+              test -n "$ACTOR_ID" && test -n "$APPROVAL_REFERENCE"
+              python scripts/production_readiness.py start --target-stage "$TARGET_STAGE" --actor-id "$ACTOR_ID" --approval-reference "$APPROVAL_REFERENCE" ;;
+            status) python scripts/production_readiness.py status --run-id "$RUN_ID" ;;
+            load)
+              [ "$CONFIRM_WINDOW" = true ] || { echo 'Load testing requires an approved production window' >&2; exit 1; }
+              confirm_arg=(); [ "$VIRTUAL_USERS" != 1000 ] || confirm_arg+=(--confirm-production-window)
+              set +e
+              node scripts/production_load_acceptance.mjs --virtual-users "$VIRTUAL_USERS" --duration-seconds "$DURATION_SECONDS" --site-url "$PRODUCTION_SITE_URL" --search-url "$SUPABASE_URL/functions/v1/history-search" --access-token "$LOAD_TEST_ACCESS_TOKEN" --anon-key "$SUPABASE_ANON_KEY" --output production-load-result.json "${confirm_arg[@]}"
+              load_status=$?
+              set -e
+              python scripts/production_readiness.py load --run-id "$RUN_ID" --artifact production-load-result.json
+              [ "$load_status" -eq 0 ] || exit "$load_status" ;;
+            record)
+              test -n "$TEST_KEY"
+              python scripts/production_readiness.py record --run-id "$RUN_ID" --test-key "$TEST_KEY" --passed "$PASSED" --source operator --metrics-json "$METRICS_JSON" ;;
+            finalize)
+              test -n "$ACTOR_ID" && test -n "$APPROVAL_REFERENCE"
+              python scripts/production_readiness.py finalize --run-id "$RUN_ID" --actor-id "$ACTOR_ID" --approval-reference "$APPROVAL_REFERENCE" ;;
+            advance)
+              test -n "$ACTOR_ID" && test -n "$APPROVAL_REFERENCE"
+              python scripts/production_readiness.py advance --run-id "$RUN_ID" --actor-id "$ACTOR_ID" --approval-reference "$APPROVAL_REFERENCE" --registration-limit "$REGISTRATION_LIMIT" --daily-ai-token-limit "$DAILY_AI_TOKEN_LIMIT" ;;
+          esac | tee production-readiness-result.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-readiness-${{ github.run_id }}
+          path: |
+            production-readiness-result.json
+            production-load-result.json
+          if-no-files-found: ignore
+          retention-days: 30

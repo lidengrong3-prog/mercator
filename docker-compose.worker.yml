@@ -1,0 +1,17 @@
+services:
+  collection-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    image: mercator-collection-worker:local
+    restart: unless-stopped
+    env_file:
+      - .env.worker
+    environment:
+      COLLECTION_WORKER_ID: mercator-compose-primary
+      COLLECTION_WORKER_DEPLOYMENT_ID: compose
+    volumes:
+      - mercator-worker-data:/app/data
+
+volumes:
+  mercator-worker-data:

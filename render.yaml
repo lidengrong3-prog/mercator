@@ -1,0 +1,42 @@
+services:
+  - type: worker
+    name: mercator-collection-worker
+    runtime: docker
+    dockerfilePath: ./Dockerfile.worker
+    dockerContext: .
+    plan: starter
+    numInstances: 1
+    autoDeploy: false
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: COLLECTION_WORKER_ID
+        value: mercator-render-primary
+      - key: COLLECTION_WORKER_DEPLOYMENT_ID
+        value: render
+      - key: COLLECTION_WORKER_RELEASE_ID
+        sync: false
+      - key: REGULATORY_TRANSLATION_PROVIDER
+        value: api
+      - key: REGULATORY_TRANSLATION_API_URL
+        sync: false
+      - key: REGULATORY_TRANSLATION_API_KEY
+        sync: false
+      - key: REGULATORY_TRANSLATION_MODEL
+        sync: false
+      - key: FRED_API_KEY
+        sync: false
+      - key: CENSUS_API_KEY
+        sync: false
+      - key: TIKHUB_API_KEY
+        sync: false
+      - key: ENABLE_BROWSER_PLATFORM_RULES
+        value: "true"
+      - key: ENABLE_OPTIONAL_PLATFORM_RULES
+        value: "true"
+    disk:
+      name: mercator-worker-data
+      mountPath: /app/data
+      sizeGB: 5

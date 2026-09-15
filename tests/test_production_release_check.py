@@ -52,6 +52,8 @@ class ProductionReleaseCheckTests(unittest.TestCase):
                 return 200, b"[]", {}
             if method == "GET" and "/functions/v1/" in url:
                 return 405, b'{"error":"METHOD_NOT_ALLOWED"}', {"X-JAY-Release": "sha"}
+            if url.endswith("/functions/v1/history-search"):
+                return 200, b'{"items":[],"counts":{"all":0},"total":0}', {}
             if url.endswith("/functions/v1/ai-proxy") and headers and "Origin" in headers:
                 return 403, b'{"error":"FORBIDDEN_ORIGIN"}', {}
             if url.endswith("/functions/v1/ai-proxy"):
@@ -66,6 +68,7 @@ class ProductionReleaseCheckTests(unittest.TestCase):
 
         acceptance = {
             "status": "passed",
+            "acceptance_run_id": "run-1",
             "release_sha": "sha",
             "checks": {
                 "database": True,
@@ -89,6 +92,7 @@ class ProductionReleaseCheckTests(unittest.TestCase):
         }
         browser_acceptance = {
             "status": "passed",
+            "acceptance_run_id": "run-1",
             "network_recovery": {
                 "first_request": "internetdisconnected",
                 "attempts": 2,

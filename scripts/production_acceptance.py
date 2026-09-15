@@ -6,6 +6,7 @@ nowhere: missing credentials are a failed production gate, not a passing test.
 
 from __future__ import annotations
 
+import atexit
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import hmac
@@ -36,6 +37,17 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "").strip().rstrip("/")
 ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "").strip()
 SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "").strip()
 SITE_URL = os.environ.get("PRODUCTION_SITE_URL", "").strip().rstrip("/")
+ACTIVE_ACCEPTANCE_RUN_ID = ""
+ACCEPTANCE_FINAL_STATE: dict = {}
+
+
+def _acceptance_payload(body):
+    """Attach the run marker without ever storing report text in the ledger."""
+    if not ACTIVE_ACCEPTANCE_RUN_ID or not isinstance(body, dict):
+        return body
+    result = dict(body)
+    result.setdefault("acceptance_run_id", ACTIVE_ACCEPTANCE_RUN_ID)
+    return result
 
 
 def request(method: str, url: str, *, token: str | None = None, body=None, headers=None, timeout=90):
@@ -87,7 +99,7 @@ def rest(method: str, table: str, token: str, *, query="", body=None, prefer="re
 
 def upsert(table: str, token: str, body: dict, conflict: str):
     query = urllib.parse.urlencode({"on_conflict": conflict})
-    status, value, _ = rest("POST", table, token, query=query, body=body, prefer="resolution=merge-duplicates,return=representation")
+    status, value, _ = rest("POST", table, token, query=query, body=_acceptance_payload(body), prefer="resolution=merge-duplicates,return=representation")
     expect(status in (200, 201) and isinstance(value, list) and value, f"upsert {table} failed: {status} {value}")
     return value[0]
 
@@ -129,10 +141,79 @@ def function(name: str, token: str | None, body: dict, *, headers=None, timeout=
         "POST",
         f"{SUPABASE_URL}/functions/v1/{name}",
         token=token,
-        body=body,
+        body=_acceptance_payload(body),
         headers=final_headers,
         timeout=timeout,
     )
+
+
+def service_rpc(name: str, body: dict) -> dict:
+    status, value, _ = request(
+        "POST",
+        f"{SUPABASE_URL}/rest/v1/rpc/{name}",
+        token=SERVICE_KEY,
+        body=body,
+        headers={"apikey": SERVICE_KEY},
+        timeout=60,
+    )
+    expect(status == 200 and isinstance(value, dict), f"service RPC {name} failed: {status} {value}")
+    return value
+
+
+def start_acceptance_run(acceptance_run_id: str, user_a: str, user_b: str) -> dict:
+    return service_rpc("start_production_acceptance_run", {
+        "p_acceptance_run_id": acceptance_run_id,
+        "p_api_owner_id": user_a,
+        "p_browser_owner_id": user_b,
+        "p_release_sha": os.environ.get("RELEASE_SHA", ""),
+    })
+
+
+def mark_acceptance_run(status: str, result_summary=None, error_summary=None) -> dict:
+    return service_rpc("mark_production_acceptance_run", {
+        "p_acceptance_run_id": ACTIVE_ACCEPTANCE_RUN_ID,
+        "p_status": status,
+        "p_result_summary": result_summary or {},
+        "p_error_summary": error_summary or {},
+    })
+
+
+def cleanup_acceptance_run(acceptance_run_id: str) -> dict:
+    return service_rpc("cleanup_production_acceptance_run", {
+        "p_acceptance_run_id": acceptance_run_id,
+    })
+
+
+def cleanup_expired_acceptance_runs(retention_days: int = 7) -> dict:
+    return service_rpc("cleanup_expired_production_acceptance_runs", {
+        "p_retention": f"{max(1, int(retention_days))} days",
+    })
+
+
+def _finalize_acceptance_run() -> None:
+    """Run on normal exit, exceptions and KeyboardInterrupt.
+
+    A successful API job may defer cleanup until the browser job completes;
+    failed and interrupted runs always attempt immediate compensation.
+    """
+    run_id = str(ACCEPTANCE_FINAL_STATE.get("acceptance_run_id") or "").strip()
+    if not run_id:
+        return
+    status = str(ACCEPTANCE_FINAL_STATE.get("status") or "failed")
+    try:
+        mark_acceptance_run(
+            status,
+            ACCEPTANCE_FINAL_STATE.get("result_summary") or {},
+            ACCEPTANCE_FINAL_STATE.get("error_summary") or {},
+        )
+    except Exception as error:
+        ACCEPTANCE_FINAL_STATE["error_summary"] = {"code": "MARK_RUN_FAILED", "message": str(error)[:500]}
+    if status == "passed" and os.environ.get("DEFER_ACCEPTANCE_CLEANUP", "") == "1":
+        return
+    try:
+        cleanup_acceptance_run(run_id)
+    except Exception as error:
+        ACCEPTANCE_FINAL_STATE["cleanup_error"] = str(error)[:500]
 
 
 def select_rows(table: str, token: str, query: dict) -> list[dict]:
@@ -329,6 +410,7 @@ def save_formal_report(token: str, user_id: str, workspace_id: str, client_id: s
     report = {
         "user_id": user_id,
         "workspace_id": workspace_id,
+        "acceptance_run_id": ACTIVE_ACCEPTANCE_RUN_ID or None,
         "client_id": client_id,
         "report_type": "market",
         "title": title,
@@ -369,6 +451,7 @@ def reusable_export_key(token: str, report_id: str, export_format: str) -> str |
 
 
 def main() -> int:
+    global ACTIVE_ACCEPTANCE_RUN_ID
     required("SUPABASE_URL")
     required("SUPABASE_ANON_KEY")
     required("SUPABASE_SERVICE_KEY")
@@ -378,7 +461,12 @@ def main() -> int:
     email_b = required("PROD_TEST_USER_B_EMAIL")
     password_b = required("PROD_TEST_USER_B_PASSWORD")
     expect(email_a.lower() != email_b.lower(), "production acceptance requires two different accounts")
-    acceptance_run_id = os.environ.get("GITHUB_RUN_ID", "").strip() or f"local-{int(time.time())}-{uuid.uuid4().hex[:8]}"
+    acceptance_run_id = os.environ.get("ACCEPTANCE_RUN_ID", "").strip()
+    if not acceptance_run_id:
+        github_run = os.environ.get("GITHUB_RUN_ID", "").strip()
+        github_attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "1").strip() or "1"
+        acceptance_run_id = f"{github_run}-{github_attempt}" if github_run else f"local-{int(time.time())}-{uuid.uuid4().hex[:8]}"
+    ACTIVE_ACCEPTANCE_RUN_ID = acceptance_run_id
 
     status, site_body, _ = request("GET", SITE_URL, headers={})
     expect(status == 200 and b"JAY" in site_body, f"production site is unavailable: {status}")
@@ -388,8 +476,16 @@ def main() -> int:
     token_a, token_b = session_a["access_token"], session_b["access_token"]
     user_a, user_b = session_a["user"]["id"], session_b["user"]["id"]
     expect(user_a != user_b, "test accounts resolved to the same user id")
-    workspace_a, workspace_b = owned_workspace(token_a, user_a), owned_workspace(token_b, user_b)
-    expect(workspace_a != workspace_b, "production test accounts must retain separate owner workspaces")
+    run_setup = start_acceptance_run(acceptance_run_id, user_a, user_b)
+    workspace_a = str(run_setup.get("api_workspace_id") or "")
+    workspace_b = str(run_setup.get("browser_workspace_id") or "")
+    expect(workspace_a and workspace_b and workspace_a != workspace_b, "dedicated acceptance workspaces were not created")
+    ACCEPTANCE_FINAL_STATE.update({
+        "acceptance_run_id": acceptance_run_id,
+        "status": "failed",
+        "result_summary": {"api_workspace_id": workspace_a, "browser_workspace_id": workspace_b},
+    })
+    atexit.register(_finalize_acceptance_run)
     # Free plans intentionally cannot export formal PDF/DOCX. The two
     # dedicated CI accounts need a non-Stripe Pro entitlement to exercise the
     # complete export and collaboration path without enabling billing.
@@ -794,8 +890,11 @@ def main() -> int:
     expect(status == 200 and logs and logs[0]["status"] == "completed", "AI observability record is missing")
 
     result = {
-        "status": "passed", "site": SITE_URL, "user_isolation": True, "workspace_collaboration": True, "report_id": report["id"],
-        "report_run_id": run["id"], "exports": exported, "shared_export_id": shared_export["id"], "reverse_export_id": b_export["id"], "ai_request_id": ai_request_id,
+        "status": "passed", "acceptance_run_id": acceptance_run_id, "site": SITE_URL,
+        "api_workspace_id": workspace_a, "browser_workspace_id": workspace_b,
+        "user_isolation": True, "workspace_collaboration": True, "report_id": report["id"],
+        "report_run_id": run["id"], "exports": exported, "invite_id": invite_id,
+        "shared_export_id": shared_export["id"], "reverse_export_id": b_export["id"], "ai_request_id": ai_request_id,
         "production_exceptions": {
             **exception_checks,
             "duplicate_generation": {"run_id": run["id"], "row_count": len(run_rows)},
@@ -810,6 +909,17 @@ def main() -> int:
             "edge_functions": ["ai-proxy", "report-save", "report-export", "report-docx", "workspace-invite"],
         },
     }
+    ACCEPTANCE_FINAL_STATE["status"] = "passed"
+    ACCEPTANCE_FINAL_STATE["result_summary"] = {
+        "acceptance_run_id": acceptance_run_id,
+        "api_workspace_id": workspace_a,
+        "browser_workspace_id": workspace_b,
+        "report_id": report["id"],
+        "report_run_id": run["id"],
+        "exports": exported,
+        "invite_id": invite_id,
+        "checks": result["checks"],
+    }
     output_path = os.environ.get("PRODUCTION_ACCEPTANCE_OUTPUT", "").strip()
     if output_path:
         Path(output_path).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -821,5 +931,7 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except AcceptanceError as error:
+        ACCEPTANCE_FINAL_STATE["status"] = "failed"
+        ACCEPTANCE_FINAL_STATE["error_summary"] = {"code": "ACCEPTANCE_FAILED", "message": str(error)[:500]}
         print(f"[PRODUCTION ACCEPTANCE] FAILED: {error}", file=sys.stderr)
         raise SystemExit(1)

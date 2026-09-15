@@ -288,7 +288,10 @@ class ValidateDataTests(unittest.TestCase):
         self.assertGreaterEqual(report["summary"]["raw_records"], report["summary"]["formal_records"])
         self.assertEqual(report["datasets"]["countries"]["scoped_records"], 1)
         self.assertEqual(report["datasets"]["platforms"]["scoped_records"], 4)
-        self.assertLess(report["datasets"]["rules"]["scoped_records"], report["datasets"]["rules"]["raw_records"])
+        # The public repository now stores only the formal projection. A
+        # private raw layer may contain more rows, but the checked-in public
+        # fixture is allowed to have equal raw and scoped counts.
+        self.assertLessEqual(report["datasets"]["rules"]["scoped_records"], report["datasets"]["rules"]["raw_records"])
         self.assertIn("taxes", report["datasets"])
         self.assertIn("access_requirements", report["datasets"])
         self.assertIn("collection_run", report)

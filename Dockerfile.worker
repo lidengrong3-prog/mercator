@@ -1,0 +1,31 @@
+FROM node:22-bookworm-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 ca-certificates tini \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci \
+    && npx playwright install --with-deps chromium \
+    && npm cache clean --force
+
+COPY . .
+RUN mkdir -p /opt/mercator-data-seed \
+    && cp -a /app/data/. /opt/mercator-data-seed/ \
+    && chmod +x /app/deploy/worker-entrypoint.sh
+
+ENV COLLECTION_WORKER_POLL_SECONDS=30 \
+    COLLECTION_WORKER_LEASE_SECONDS=900 \
+    ENABLE_BROWSER_PLATFORM_RULES=true \
+    ENABLE_OPTIONAL_PLATFORM_RULES=true \
+    REGULATORY_TRANSLATION_PROVIDER=api
+
+VOLUME ["/app/data"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/app/deploy/worker-entrypoint.sh"]
+CMD ["python3", "scripts/collection_worker.py", "--max-tasks", "1", "--poll-seconds", "30"]

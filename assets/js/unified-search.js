@@ -6,6 +6,11 @@
   var searchRecords = [];
   var searchState = defaultState();
   var initialized = false;
+  var serverPageCursors = { 1: null };
+  var serverSnapshotAt = '';
+  var serverQuerySignature = '';
+  var serverRenderSequence = 0;
+  var activeServerRecords = [];
 
   var TYPE_META = {
     all: { label: '全部结果' },
@@ -179,7 +184,17 @@
       targetId: text(input.targetId),
       targetIndex: Number.isInteger(input.targetIndex) ? input.targetIndex : -1,
       sourceLabel: text(input.sourceLabel),
-      verificationLabel: text(input.verificationLabel)
+      verificationLabel: text(input.verificationLabel),
+      verificationStatus: text(input.verificationStatus),
+      verificationLevel: text(input.verificationLevel),
+      categoryCode: text(input.categoryCode),
+      sourceKey: text(input.sourceKey),
+      sourceRecordId: text(input.sourceRecordId),
+      sourceUrl: text(input.sourceUrl),
+      historyUrl: text(input.historyUrl),
+      publicationId: text(input.publicationId),
+      versionLabel: text(input.versionLabel),
+      isServerRecord: input.isServerRecord === true
     };
     record._title = normalize(record.title);
     record._titleCompact = compact(record.title);
@@ -233,6 +248,19 @@
   }
 
   function recordSourceLabel(item) {
+    var category = text(item.source_category || item.sourceCategory).toLowerCase();
+    var categoryLabels = {
+      official_policy: '官方政策/监管记录',
+      official_statistics: '官方统计数据',
+      platform_announcement: '平台官方公告',
+      industry_media: '行业媒体/协会资讯',
+      third_party_provider: '第三方数据服务商',
+      user_upload: '工作区上传资料',
+      derived: '系统派生数据',
+      internal: '系统运行数据',
+      demo: '演示数据'
+    };
+    if (categoryLabels[category]) return categoryLabels[category];
     var kind = text(item.source_kind || item.sourceKind);
     if (kind === 'official') return '官方来源';
     if (kind === 'uploaded') return '人工上传';
@@ -279,8 +307,11 @@
         platformKeys: platforms,
         updatedAt: item.published_at || item.effective_from || item.collected_at,
         targetId: item.id || item.source_record_id,
+        categoryCode: item.category,
+        sourceKey: item.source_key,
         sourceLabel: recordSourceLabel(item),
-        verificationLabel: recordVerificationLabel(item)
+        verificationLabel: recordVerificationLabel(item),
+        verificationStatus: item.verification_status || item.verificationStatus
       });
     });
   }
@@ -304,8 +335,11 @@
         platformKeys: [key],
         updatedAt: item.published_at || item.effective_date || item.collected_at,
         targetId: item.id || item.source_record_id,
+        categoryCode: item.topic || item.category,
+        sourceKey: item.source_key,
         sourceLabel: recordSourceLabel(item),
-        verificationLabel: recordVerificationLabel(item)
+        verificationLabel: recordVerificationLabel(item),
+        verificationStatus: item.verification_status || item.verificationStatus
       });
     });
   }
@@ -327,8 +361,10 @@
         platformKeys: [key],
         updatedAt: row[13],
         targetIndex: index,
+        categoryCode: row[4],
         sourceLabel: text(row._source || '用户上传'),
-        verificationLabel: '人工上传'
+        verificationLabel: '人工上传',
+        verificationStatus: 'uploaded'
       });
     });
   }
@@ -350,8 +386,10 @@
         platformKeys: [key],
         updatedAt: row[12],
         targetIndex: index,
+        categoryCode: row[6],
         sourceLabel: text(row._source || '用户上传'),
-        verificationLabel: '人工上传'
+        verificationLabel: '人工上传',
+        verificationStatus: 'uploaded'
       });
     });
   }
@@ -386,8 +424,11 @@
         platformKeys: [key],
         updatedAt: row[6] || meta.collected_at || meta.collectedAt,
         targetIndex: index,
+        categoryCode: row[10],
+        sourceKey: meta.source_key || meta.sourceKey,
         sourceLabel: recordSourceLabel(meta),
-        verificationLabel: recordVerificationLabel(meta)
+        verificationLabel: recordVerificationLabel(meta),
+        verificationStatus: meta.verification_status || meta.verificationStatus || meta.verification
       });
     });
   }
@@ -437,7 +478,10 @@
   }
 
   function defaultState() {
-    return { q: '', type: 'all', market: '', platform: '', time: 'all', from: '', to: '', sort: 'relevance', page: 1 };
+    return {
+      q: '', type: 'all', market: '', platform: '', category: '', year: '', source: '',
+      verification: '', time: 'all', from: '', to: '', sort: 'relevance', page: 1, record: ''
+    };
   }
 
   function sanitizeState(input) {
@@ -447,10 +491,15 @@
     if (['relevance', 'newest', 'oldest', 'title'].indexOf(state.sort) < 0) state.sort = 'relevance';
     state.market = text(state.market).toUpperCase();
     state.platform = platformKey(state.platform);
+    state.category = text(state.category).toLowerCase().slice(0, 120);
+    state.year = /^\d{4}$/.test(text(state.year)) ? text(state.year) : '';
+    state.source = text(state.source).toLowerCase().slice(0, 120);
+    state.verification = ['verified', 'uploaded'].indexOf(text(state.verification).toLowerCase()) >= 0 ? text(state.verification).toLowerCase() : '';
     state.from = /^\d{4}-\d{2}-\d{2}$/.test(text(state.from)) ? text(state.from) : '';
     state.to = /^\d{4}-\d{2}-\d{2}$/.test(text(state.to)) ? text(state.to) : '';
     state.page = Math.max(1, parseInt(state.page, 10) || 1);
     state.q = text(state.q).slice(0, 200);
+    state.record = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(text(state.record)) ? text(state.record) : '';
     return state;
   }
 
@@ -459,7 +508,7 @@
     if (raw.split('?')[0] !== 'search') return null;
     var params = new URLSearchParams(raw.indexOf('?') >= 0 ? raw.slice(raw.indexOf('?') + 1) : '');
     var input = {};
-    ['q', 'type', 'market', 'platform', 'time', 'from', 'to', 'sort', 'page'].forEach(function (key) {
+    ['q', 'type', 'market', 'platform', 'category', 'year', 'source', 'verification', 'time', 'from', 'to', 'sort', 'page', 'record'].forEach(function (key) {
       if (params.has(key)) input[key] = params.get(key);
     });
     return sanitizeState(input);
@@ -467,7 +516,7 @@
 
   function stateHash(state) {
     var params = new URLSearchParams();
-    ['q', 'type', 'market', 'platform', 'time', 'from', 'to', 'sort'].forEach(function (key) {
+    ['q', 'type', 'market', 'platform', 'category', 'year', 'source', 'verification', 'time', 'from', 'to', 'sort', 'record'].forEach(function (key) {
       if (state[key] && !(key === 'type' && state[key] === 'all') && !(key === 'time' && state[key] === 'all') && !(key === 'sort' && state[key] === 'relevance')) params.set(key, state[key]);
     });
     if (state.page > 1) params.set('page', String(state.page));
@@ -507,6 +556,10 @@
       .filter(function (item) { return item.score > 0; })
       .filter(function (item) { return !state.market || item.record.marketCodes.indexOf(state.market) >= 0; })
       .filter(function (item) { return !state.platform || item.record.platformKeys.indexOf(state.platform) >= 0; })
+      .filter(function (item) { return !state.category || normalize(item.record.categoryCode) === normalize(state.category); })
+      .filter(function (item) { return !state.source || item.record.sourceKey === state.source; })
+      .filter(function (item) { return !state.verification || item.record.verificationStatus === state.verification; })
+      .filter(function (item) { return !state.year || (item.record.updatedAt && String(new Date(item.record.updatedAt).getFullYear()) === state.year); })
       .filter(function (item) { return matchesTime(item.record, state); });
     var counts = { all: scored.length };
     TYPE_ORDER.forEach(function (type) { counts[type] = scored.filter(function (item) { return item.record.type === type; }).length; });
@@ -520,6 +573,162 @@
     return { items: scored, counts: counts };
   }
 
+  function serverSearchAvailable() {
+    return typeof global.jayFunctionRequest === 'function'
+      && typeof global.jayCanUseUserDb === 'function'
+      && global.jayCanUseUserDb();
+  }
+
+  function resetServerPaging() {
+    serverPageCursors = { 1: null };
+    serverSnapshotAt = '';
+    serverQuerySignature = '';
+  }
+
+  function serverDateRange(state) {
+    var now = new Date();
+    var from = state.time === 'custom' ? state.from : '';
+    var to = state.time === 'custom' ? state.to : '';
+    if (state.time === '7d') from = new Date(now.getTime() - 7 * 86400000).toISOString().slice(0, 10);
+    if (state.time === '30d') from = new Date(now.getTime() - 30 * 86400000).toISOString().slice(0, 10);
+    if (state.time === '1y') from = new Date(now.getTime() - 365 * 86400000).toISOString().slice(0, 10);
+    if (state.time !== 'all') to = to || now.toISOString().slice(0, 10);
+    return { from: from || null, to: to || null };
+  }
+
+  function serverStateSignature(state) {
+    return JSON.stringify({
+      q: state.q, type: state.type, market: state.market, platform: state.platform,
+      category: state.category, year: state.year, source: state.source,
+      verification: state.verification, time: state.time, from: state.from,
+      to: state.to, sort: state.sort, record: state.record
+    });
+  }
+
+  function serverRecord(item) {
+    var type = TYPE_META[text(item.type)] ? text(item.type) : 'content';
+    var code = marketCode(item.market_code);
+    var key = platformKey(item.platform_key);
+    var verificationLabels = { verified: '已验证', uploaded: '人工上传' };
+    var levelLabels = { high: '高可信', medium: '中可信', low: '低可信', workspace: '工作区资料' };
+    var version = item.version_label || (item.version_number ? 'v' + item.version_number : '');
+    return makeRecord({
+      id: 'history:' + text(item.id),
+      type: type,
+      title: item.title || item.record_key || item.source_record_id,
+      subtitle: [code ? marketName(code) : '', key ? platformName(key) : '', item.category_code, version].filter(Boolean).join(' · '),
+      description: item.summary || item.content_excerpt,
+      aliases: [item.record_key, item.source_record_id, item.source_name, item.source_key],
+      marketCodes: code ? [code] : [],
+      platformKeys: key ? [key] : [],
+      updatedAt: item.published_at || item.effective_from || item.collected_at,
+      sourceLabel: item.source_name || item.source_key,
+      verificationLabel: verificationLabels[item.verification_status] || item.verification_status,
+      verificationLevel: levelLabels[item.verification_level] || item.verification_level,
+      categoryCode: item.category_code,
+      sourceKey: item.source_key,
+      sourceRecordId: item.source_record_id,
+      sourceUrl: item.source_url,
+      historyUrl: item.history_url,
+      publicationId: item.id,
+      targetId: item.source_record_id,
+      isServerRecord: true
+    });
+  }
+
+  async function runServerSearch(state) {
+    var signature = serverStateSignature(state);
+    if (signature !== serverQuerySignature) {
+      serverPageCursors = { 1: null };
+      serverSnapshotAt = '';
+      serverQuerySignature = signature;
+    }
+    if (state.page > 1 && !serverPageCursors[state.page]) {
+      state.page = 1;
+      writeState('replace');
+    }
+    var range = serverDateRange(state);
+    var requestId = 'history-search:' + Date.now() + ':' + Math.random().toString(36).slice(2, 9);
+    var response = await global.jayFunctionRequest('history-search', {
+      query: state.q,
+      type: state.type === 'all' ? null : state.type,
+      market_code: state.market || null,
+      platform_key: state.platform || null,
+      category_code: state.category || null,
+      year: state.year ? Number(state.year) : null,
+      source_key: state.source || null,
+      verification_status: state.verification || null,
+      from: range.from,
+      to: range.to,
+      sort: state.sort,
+      cursor: serverPageCursors[state.page] || null,
+      snapshot_at: serverSnapshotAt || null,
+      page_size: PAGE_SIZE,
+      record_id: state.record || null
+    }, { timeout: 30000, retryOnNetwork: true, requestId: requestId });
+    serverSnapshotAt = text(response.query_snapshot_at) || serverSnapshotAt;
+    if (response.has_more && response.next_cursor) serverPageCursors[state.page + 1] = response.next_cursor;
+    else delete serverPageCursors[state.page + 1];
+    var items = list(response.items).map(serverRecord).filter(Boolean).map(function (record) {
+      return { record: record, score: 1 };
+    });
+    return {
+      items: items,
+      counts: response.counts || { all: Number(response.total || 0) },
+      total: Number(response.total || 0),
+      facets: response.facets || {},
+      hasMore: response.has_more === true,
+      nextCursor: response.next_cursor || null,
+      requestId: response.request_id || requestId,
+      elapsedMs: Number(response.elapsed_ms || 0),
+      server: true
+    };
+  }
+
+  function renderSearchLoading() {
+    var container = document.getElementById('unified-search-results');
+    var total = document.getElementById('unified-search-total');
+    var description = document.getElementById('unified-search-description');
+    if (total) total.textContent = '正在检索';
+    if (description) description.textContent = '正在查询服务端历史情报库...';
+    if (!container) return;
+    container.replaceChildren();
+    var loading = document.createElement('div');
+    loading.className = 'unified-search-empty';
+    var heading = document.createElement('h3');
+    heading.textContent = '正在查询历史记录';
+    var message = document.createElement('p');
+    message.textContent = '政策、规则、商品和店铺记录将由服务端筛选并分页返回。';
+    loading.append(heading, message);
+    container.appendChild(loading);
+  }
+
+  function renderSearchError(error) {
+    var container = document.getElementById('unified-search-results');
+    var total = document.getElementById('unified-search-total');
+    var description = document.getElementById('unified-search-description');
+    var code = text(error && error.code || 'SEARCH_UNAVAILABLE');
+    var requestId = text(error && error.requestId || error && error.details && error.details.request_id);
+    if (total) total.textContent = '检索失败';
+    if (description) description.textContent = '服务端历史搜索未返回结果，本页没有回退为浏览器少量缓存。';
+    if (!container) return;
+    container.replaceChildren();
+    var panel = document.createElement('div');
+    panel.className = 'unified-search-empty unified-search-error';
+    var heading = document.createElement('h3');
+    heading.textContent = '历史搜索暂时不可用';
+    var message = document.createElement('p');
+    message.textContent = '错误类型：' + code + (requestId ? ' · 请求编号：' + requestId : '') + '。请稍后重试。';
+    var retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'unified-search-open';
+    retry.textContent = '重新检索';
+    retry.addEventListener('click', function () { renderPage({ fromHash: false }); });
+    panel.append(heading, message, retry);
+    container.appendChild(panel);
+    renderPagination(0, 1, { server: true, hasMore: false });
+  }
+
   function option(select, value, label) {
     var node = document.createElement('option');
     node.value = value;
@@ -527,7 +736,7 @@
     select.appendChild(node);
   }
 
-  function renderFilterOptions() {
+  function renderFilterOptions(facets) {
     var marketSelect = document.getElementById('unified-search-market');
     var platformSelect = document.getElementById('unified-search-platform');
     if (!marketSelect || !platformSelect) return;
@@ -546,6 +755,46 @@
     });
     if ([].some.call(platformSelect.options, function (item) { return item.value === searchState.platform; })) platformSelect.value = searchState.platform;
     else searchState.platform = '';
+
+    facets = facets || {};
+    var categorySelect = document.getElementById('unified-search-category');
+    var yearSelect = document.getElementById('unified-search-year');
+    var sourceSelect = document.getElementById('unified-search-source');
+    var verificationSelect = document.getElementById('unified-search-verification');
+    function refill(select, emptyLabel, values, selected, valueFor, labelFor) {
+      if (!select) return;
+      select.replaceChildren();
+      option(select, '', emptyLabel);
+      list(values).forEach(function (value) {
+        var key = text(valueFor ? valueFor(value) : value);
+        if (key) option(select, key, text(labelFor ? labelFor(value) : value) || key);
+      });
+      if (selected && ![].some.call(select.options, function (item) { return item.value === selected; })) option(select, selected, selected);
+      select.value = selected || '';
+    }
+    refill(categorySelect, '全部品类', facets.categories, searchState.category);
+    refill(yearSelect, '全部年份', facets.years, searchState.year);
+    refill(sourceSelect, '全部来源', facets.sources, searchState.source, function (item) { return item && item.key; }, function (item) { return item && (item.name || item.key); });
+    refill(verificationSelect, '全部核验状态', facets.verification_statuses || ['verified', 'uploaded'], searchState.verification, null, function (value) {
+      return ({ verified: '已验证', uploaded: '人工上传' })[value] || value;
+    });
+  }
+
+  function localFacets() {
+    var years = unique(searchRecords.map(function (record) {
+      return record.updatedAt ? String(new Date(record.updatedAt).getFullYear()) : '';
+    }).filter(Boolean)).sort().reverse();
+    var categories = unique(searchRecords.map(function (record) { return record.categoryCode; }).filter(Boolean)).sort();
+    var sourceMap = {};
+    searchRecords.forEach(function (record) {
+      if (record.sourceKey) sourceMap[record.sourceKey] = record.sourceLabel || record.sourceKey;
+    });
+    return {
+      years: years,
+      categories: categories,
+      sources: Object.keys(sourceMap).sort().map(function (key) { return { key: key, name: sourceMap[key] }; }),
+      verification_statuses: ['verified', 'uploaded']
+    };
   }
 
   function renderTypeTabs(counts) {
@@ -573,6 +822,8 @@
     if (record.updatedAt) parts.push(formatDate(record.updatedAt));
     if (record.sourceLabel) parts.push(record.sourceLabel);
     if (record.verificationLabel) parts.push(record.verificationLabel);
+    if (record.verificationLevel) parts.push(record.verificationLevel);
+    if (record.sourceRecordId) parts.push('来源 ID ' + record.sourceRecordId);
     return unique(parts).join(' · ');
   }
 
@@ -581,13 +832,19 @@
     var total = document.getElementById('unified-search-total');
     var description = document.getElementById('unified-search-description');
     if (!container || !total || !description) return;
-    var totalItems = result.items.length;
+    var totalItems = result.server ? Number(result.total || 0) : result.items.length;
     var pageCount = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-    if (searchState.page > pageCount) searchState.page = pageCount;
-    var start = (searchState.page - 1) * PAGE_SIZE;
-    var pageItems = result.items.slice(start, start + PAGE_SIZE);
+    if (!result.server && searchState.page > pageCount) searchState.page = pageCount;
+    var start = result.server ? 0 : (searchState.page - 1) * PAGE_SIZE;
+    var pageItems = result.server ? result.items : result.items.slice(start, start + PAGE_SIZE);
     total.textContent = totalItems + ' 条结果';
-    description.textContent = searchState.q ? '关键词“' + searchState.q + '”的当前筛选结果' : '显示当前可检索的真实记录与配置项';
+    if (result.server) {
+      description.textContent = searchState.record
+        ? '已定位正式历史记录 · 来源和核验信息来自服务端'
+        : (searchState.q ? '服务端历史库中关键词“' + searchState.q + '”的筛选结果' : '显示服务端正式历史投影中的可检索记录');
+    } else {
+      description.textContent = searchState.q ? '关键词“' + searchState.q + '”的本地演示筛选结果' : '只读演示使用浏览器内的有限公开记录';
+    }
     container.replaceChildren();
 
     if (!pageItems.length) {
@@ -627,24 +884,57 @@
       var meta = document.createElement('small');
       meta.textContent = resultMeta(record);
       if (meta.textContent) body.appendChild(meta);
+      var actions = document.createElement('div');
+      actions.className = 'unified-search-result-actions';
       var open = document.createElement('button');
       open.type = 'button';
       open.className = 'unified-search-open';
       open.dataset.recordId = record.id;
       open.setAttribute('aria-label', '打开' + record.title);
-      open.title = '打开结果';
-      open.textContent = '查看';
-      article.append(type, body, open);
+      open.title = record.isServerRecord ? '定位历史记录' : '打开结果';
+      open.textContent = record.isServerRecord ? '历史记录' : '查看';
+      actions.appendChild(open);
+      var safeSourceUrl = typeof global.jaySafeHttpsUrl === 'function' ? global.jaySafeHttpsUrl(record.sourceUrl) : '';
+      if (safeSourceUrl) {
+        var sourceLink = document.createElement('a');
+        sourceLink.className = 'unified-search-source-link';
+        sourceLink.href = safeSourceUrl;
+        sourceLink.target = '_blank';
+        sourceLink.rel = 'noopener noreferrer';
+        sourceLink.textContent = '原始来源';
+        actions.appendChild(sourceLink);
+      }
+      article.append(type, body, actions);
       container.appendChild(article);
     });
 
-    renderPagination(totalItems, pageCount);
+    renderPagination(totalItems, pageCount, result);
   }
 
-  function renderPagination(totalItems, pageCount) {
+  function renderPagination(totalItems, pageCount, result) {
     var container = document.getElementById('unified-search-pagination');
     if (!container) return;
     container.replaceChildren();
+    result = result || {};
+    if (result.server) {
+      if (searchState.page === 1 && !result.hasMore) return;
+      function cursorButton(label, page, disabled, direction) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = label;
+        button.dataset.page = String(page);
+        button.dataset.direction = direction;
+        button.disabled = !!disabled;
+        container.appendChild(button);
+      }
+      cursorButton('上一页', searchState.page - 1, searchState.page === 1, 'previous');
+      var status = document.createElement('span');
+      status.className = 'unified-search-page-status';
+      status.textContent = '第 ' + searchState.page + ' 页 · 共 ' + totalItems + ' 条';
+      container.appendChild(status);
+      cursorButton('下一页', searchState.page + 1, !result.hasMore, 'next');
+      return;
+    }
     if (totalItems <= PAGE_SIZE) return;
     function pageButton(label, page, disabled, active) {
       var button = document.createElement('button');
@@ -663,7 +953,7 @@
     pageButton('下一页', searchState.page + 1, searchState.page === pageCount, false);
   }
 
-  function renderPage(options) {
+  async function renderPage(options) {
     options = options || {};
     if (!document.getElementById('unified-search-results')) return;
     var hashState = options.fromHash === false ? null : stateFromHash();
@@ -686,8 +976,29 @@
     var custom = document.getElementById('unified-search-custom-time');
     if (custom) custom.hidden = searchState.time !== 'custom';
     var scope = document.getElementById('unified-search-scope');
-    if (scope) scope.textContent = searchState.market ? marketName(searchState.market) : '全部已配置市场';
-    var result = runSearch(searchState);
+    if (scope) scope.textContent = serverSearchAvailable()
+      ? (searchState.market ? marketName(searchState.market) + ' · 服务端历史库' : '服务端历史情报库')
+      : (searchState.market ? marketName(searchState.market) + ' · 本地演示' : '本地只读演示');
+    var result;
+    if (serverSearchAvailable()) {
+      var sequence = ++serverRenderSequence;
+      renderSearchLoading();
+      try {
+        result = await runServerSearch(searchState);
+      } catch (error) {
+        if (sequence !== serverRenderSequence) return;
+        renderSearchError(error);
+        persistState();
+        return;
+      }
+      if (sequence !== serverRenderSequence) return;
+      activeServerRecords = result.items.map(function (item) { return item.record; });
+      renderFilterOptions(result.facets);
+    } else {
+      activeServerRecords = [];
+      result = runSearch(searchState);
+      renderFilterOptions(localFacets());
+    }
     renderTypeTabs(result.counts);
     renderResults(result);
     persistState();
@@ -695,18 +1006,29 @@
   }
 
   function commitState(patch, mode) {
+    var affectsQuery = Object.keys(patch || {}).some(function (key) { return key !== 'page'; });
+    if (affectsQuery) resetServerPaging();
     searchState = sanitizeState(Object.assign({}, searchState, patch || {}));
     writeState(mode || 'replace');
     renderPage({ fromHash: false });
   }
 
   function findRecord(id) {
-    return searchRecords.find(function (record) { return record.id === id; }) || null;
+    return activeServerRecords.find(function (record) { return record.id === id; })
+      || searchRecords.find(function (record) { return record.id === id; }) || null;
   }
 
   function activateRecord(record) {
     if (!record) return;
     persistState();
+    if (record.isServerRecord && record.publicationId) {
+      resetServerPaging();
+      searchState = sanitizeState(Object.assign(defaultState(), { record: record.publicationId, page: 1 }));
+      writeState('push');
+      if (typeof global.switchPage === 'function') global.switchPage('search', { fromHash: true });
+      renderPage({ fromHash: false });
+      return;
+    }
     var api = scopeApi();
     var code = record.marketCodes[0] || '';
     var key = record.platformKeys[0] || '';
@@ -751,6 +1073,7 @@
   }
 
   function openUnifiedSearch(query, patch) {
+    resetServerPaging();
     searchState = sanitizeState(Object.assign(defaultState(), patch || {}, { q: text(query), page: 1 }));
     searchRecords = buildIndex();
     global.searchIndex = searchRecords;
@@ -814,6 +1137,10 @@
     var input = document.getElementById('unified-search-input');
     var market = document.getElementById('unified-search-market');
     var platform = document.getElementById('unified-search-platform');
+    var category = document.getElementById('unified-search-category');
+    var year = document.getElementById('unified-search-year');
+    var source = document.getElementById('unified-search-source');
+    var verification = document.getElementById('unified-search-verification');
     var time = document.getElementById('unified-search-time');
     var sort = document.getElementById('unified-search-sort');
     var from = document.getElementById('unified-search-from');
@@ -822,14 +1149,18 @@
     var types = document.getElementById('unified-search-types');
     var results = document.getElementById('unified-search-results');
     var pagination = document.getElementById('unified-search-pagination');
-    if (form) form.addEventListener('submit', function (event) { event.preventDefault(); commitState({ q: input.value, page: 1 }, 'push'); });
+    if (form) form.addEventListener('submit', function (event) { event.preventDefault(); commitState({ q: input.value, record: '', page: 1 }, 'push'); });
     if (market) market.addEventListener('change', function () { commitState({ market: market.value, platform: '', page: 1 }, 'replace'); });
     if (platform) platform.addEventListener('change', function () { commitState({ platform: platform.value, page: 1 }, 'replace'); });
+    if (category) category.addEventListener('change', function () { commitState({ category: category.value, page: 1 }, 'replace'); });
+    if (year) year.addEventListener('change', function () { commitState({ year: year.value, page: 1 }, 'replace'); });
+    if (source) source.addEventListener('change', function () { commitState({ source: source.value, page: 1 }, 'replace'); });
+    if (verification) verification.addEventListener('change', function () { commitState({ verification: verification.value, page: 1 }, 'replace'); });
     if (time) time.addEventListener('change', function () { commitState({ time: time.value, page: 1 }, 'replace'); });
     if (sort) sort.addEventListener('change', function () { commitState({ sort: sort.value, page: 1 }, 'replace'); });
     if (from) from.addEventListener('change', function () { commitState({ from: from.value, page: 1 }, 'replace'); });
     if (to) to.addEventListener('change', function () { commitState({ to: to.value, page: 1 }, 'replace'); });
-    if (reset) reset.addEventListener('click', function () { searchState = defaultState(); writeState('replace'); renderPage({ fromHash: false }); });
+    if (reset) reset.addEventListener('click', function () { resetServerPaging(); searchState = defaultState(); writeState('replace'); renderPage({ fromHash: false }); });
     if (types) types.addEventListener('click', function (event) {
       var button = event.target.closest('[data-type]');
       if (button) commitState({ type: button.dataset.type, page: 1 }, 'replace');
@@ -884,7 +1215,6 @@
   global.jayRebuildSearch = function () {
     searchRecords = buildIndex();
     global.searchIndex = searchRecords;
-    global.JAY_RAG_CORPUS = null;
     if (document.getElementById('search') && document.getElementById('search').classList.contains('active')) renderPage({ fromHash: false });
     return searchRecords;
   };

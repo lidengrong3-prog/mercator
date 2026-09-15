@@ -70,3 +70,37 @@ test('real invitation delivery is registered in production deployment', () => {
   assert.match(settings, /邀请邮件已发送/);
   assert.doesNotMatch(settings, /邮件尚未发送/);
 });
+
+test('workspace roles expose independent capabilities and shared report metadata', () => {
+  const auth = read('assets', 'js', 'auth-data.js');
+  const reports = read('assets', 'js', 'reports-decisions.js');
+  const settings = read('assets', 'js', 'product-enhancements.js') + read('assets', 'js', 'alerts-settings.js');
+  const invite = read('supabase', 'functions', 'workspace-invite', 'index.ts');
+  const exportPdf = read('supabase', 'functions', 'report-export', 'index.ts');
+  const exportDocx = read('supabase', 'functions', 'report-docx', 'index.ts');
+  const exportMigration = read('supabase', 'migrations', '20260913000000_workspace_report_exports.sql');
+
+  for (const role of ['owner', 'admin', 'editor', 'viewer']) assert.match(auth, new RegExp(`['"]${role}['"]`));
+  assert.match(auth, /function jayWorkspaceCapabilities\(\)/);
+  assert.match(auth, /canManageMembers:[\s\S]*\['owner', 'admin'\]/);
+  assert.match(auth, /canEdit:[\s\S]*\['owner', 'admin', 'editor'\]/);
+  assert.match(auth, /async function jayHydrateUserWorkspace\(force\)/);
+  assert.match(auth, /if \(force \|\| !knownWorkspaceId\) await jayLoadWorkspaceContext/);
+  assert.match(auth, /workspace_id=eq\.\' \+ encodeURIComponent\(workspaceId\)/);
+  assert.match(reports, /创建人：/);
+  assert.match(reports, /工作区：/);
+  assert.match(reports, /可执行：/);
+  assert.match(reports, /查看者只能打开共享报告/);
+  assert.match(settings, /请选择角色/);
+  assert.match(settings, /INVITE_ROLE_REQUIRED/);
+  assert.match(invite, /INVITE_ROLE_REQUIRED/);
+  for (const source of [exportPdf, exportDocx]) {
+    assert.match(source, /select=role/);
+    assert.match(source, /WORKSPACE_READ_ONLY/);
+    assert.match(source, /workspace_id: workspaceId/);
+  }
+  assert.match(exportMigration, /ALTER TABLE public\.report_exports[\s\S]*ADD COLUMN IF NOT EXISTS workspace_id/);
+  assert.match(exportMigration, /CREATE POLICY report_exports_select_workspace/);
+  assert.match(exportMigration, /public\.is_workspace_member\(workspace_id\)/);
+  assert.match(exportMigration, /CREATE POLICY report_exports_insert_workspace[\s\S]*public\.can_edit_workspace\(workspace_id\)/);
+});

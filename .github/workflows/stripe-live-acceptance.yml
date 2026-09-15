@@ -1,0 +1,102 @@
+name: Stripe live acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Acceptance operation
+        type: choice
+        required: true
+        options: [start, status, finalize]
+      workspace_id:
+        description: Dedicated acceptance workspace UUID (start only)
+        type: string
+        required: false
+      run_id:
+        description: Acceptance run UUID (status/finalize)
+        type: string
+        required: false
+      actor_id:
+        description: Platform administrator profile UUID
+        type: string
+        required: false
+      approval_reference:
+        description: Change ticket or written authorization reference
+        type: string
+        required: false
+      confirm_page_and_portal:
+        description: Confirm Stripe, Supabase, page and portal were manually compared
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_PRICE_PRO_MONTHLY: ${{ secrets.STRIPE_PRICE_PRO_MONTHLY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Resolve Supabase service key
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_ROLE_KEY=$service_key" >> "$GITHUB_ENV"
+      - name: Validate requested operation
+        shell: bash
+        env:
+          ACTION: ${{ inputs.action }}
+          WORKSPACE_ID: ${{ inputs.workspace_id }}
+          RUN_ID: ${{ inputs.run_id }}
+          ACTOR_ID: ${{ inputs.actor_id }}
+          APPROVAL_REFERENCE: ${{ inputs.approval_reference }}
+          CONFIRM_PAGE_AND_PORTAL: ${{ inputs.confirm_page_and_portal }}
+        run: |
+          set -eu
+          if [ "$ACTION" = start ]; then
+            test -n "$WORKSPACE_ID" && test -n "$ACTOR_ID" && test -n "$APPROVAL_REFERENCE"
+          else
+            test -n "$RUN_ID"
+          fi
+          if [ "$ACTION" = finalize ]; then
+            test -n "$ACTOR_ID" && test -n "$APPROVAL_REFERENCE"
+            [ "$CONFIRM_PAGE_AND_PORTAL" = true ] || { echo "Finalization requires page and portal confirmation" >&2; exit 1; }
+          fi
+      - name: Run acceptance operation
+        shell: bash
+        env:
+          ACTION: ${{ inputs.action }}
+          WORKSPACE_ID: ${{ inputs.workspace_id }}
+          RUN_ID: ${{ inputs.run_id }}
+          ACTOR_ID: ${{ inputs.actor_id }}
+          APPROVAL_REFERENCE: ${{ inputs.approval_reference }}
+        run: |
+          set -eu
+          case "$ACTION" in
+            start) python scripts/stripe_live_acceptance.py start --workspace-id "$WORKSPACE_ID" --actor-id "$ACTOR_ID" --approval-reference "$APPROVAL_REFERENCE" | tee stripe-live-acceptance-result.json ;;
+            status) python scripts/stripe_live_acceptance.py status --run-id "$RUN_ID" | tee stripe-live-acceptance-result.json ;;
+            finalize) python scripts/stripe_live_acceptance.py finalize --run-id "$RUN_ID" --actor-id "$ACTOR_ID" --approval-reference "$APPROVAL_REFERENCE" --confirm-page-portal | tee stripe-live-acceptance-result.json ;;
+          esac
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stripe-live-acceptance-${{ github.run_id }}
+          path: stripe-live-acceptance-result.json
+          retention-days: 30

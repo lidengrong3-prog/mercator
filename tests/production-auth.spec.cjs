@@ -8,6 +8,9 @@ const credentials = {
 };
 const enabled = process.env.RUN_PRODUCTION_ACCEPTANCE === '1';
 const ready = enabled && baseUrl && Object.values(credentials).every((account) => account.email && account.password);
+const acceptanceRunId = process.env.ACCEPTANCE_RUN_ID || `local-browser-${Date.now()}`;
+const acceptanceWorkspaceA = process.env.ACCEPTANCE_API_WORKSPACE_ID || '';
+const acceptanceWorkspaceB = process.env.ACCEPTANCE_BROWSER_WORKSPACE_ID || '';
 
 test.describe('production authenticated browser acceptance', () => {
   test.skip(!ready, 'set RUN_PRODUCTION_ACCEPTANCE=1 and two production test accounts to run this suite');
@@ -16,6 +19,7 @@ test.describe('production authenticated browser acceptance', () => {
   test.setTimeout(600_000);
 
   async function login(page, account) {
+    await page.addInitScript((runId) => { window.__JAY_ACCEPTANCE_RUN_ID = runId; }, acceptanceRunId);
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('#loginPage')).toBeVisible({ timeout: 30_000 });
     await page.locator('#auth-email').fill(account.email);
@@ -24,6 +28,13 @@ test.describe('production authenticated browser acceptance', () => {
     await expect(page.locator('#mainApp')).toHaveClass(/active/, { timeout: 30_000 });
     await page.waitForFunction(() => window.jayUser && !window.jayIsDemo, null, { timeout: 30_000 });
     await page.waitForFunction(() => !window.jayWorkspaceHydration && String(window.jayHydratedUserId || '').startsWith(window.jayUser.id + ':'), null, { timeout: 30_000 });
+    const targetWorkspace = account.email.toLowerCase() === credentials.a.email.toLowerCase() ? acceptanceWorkspaceA : acceptanceWorkspaceB;
+    if (targetWorkspace) {
+      await page.evaluate(async (workspaceId) => {
+        if (typeof window.jaySetActiveWorkspace === 'function') await window.jaySetActiveWorkspace(workspaceId);
+      }, targetWorkspace);
+      await page.waitForFunction((workspaceId) => window.jayActiveWorkspaceId() === workspaceId, targetWorkspace, { timeout: 30_000 });
+    }
   }
 
   async function signOut(page) {
@@ -115,7 +126,7 @@ test.describe('production authenticated browser acceptance', () => {
   test('real login, upload, report recovery, exports and account isolation', async ({ browser }) => {
     const context = await browser.newContext({ acceptDownloads: true });
     const page = await context.newPage();
-    const runId = Date.now();
+    const runId = acceptanceRunId;
     const uploadedFileName = `production-browser-acceptance-${runId}.json`;
     const importedProductTitle = `生产浏览验收商品-${runId}`;
     const browserTopic = `生产浏览器验收通用品类-${runId}`;
@@ -409,6 +420,9 @@ test.describe('production authenticated browser acceptance', () => {
     if (outputPath) {
       fs.writeFileSync(outputPath, JSON.stringify({
         status: 'passed',
+        acceptance_run_id: acceptanceRunId,
+        api_workspace_id: acceptanceWorkspaceA || workspaceA,
+        browser_workspace_id: acceptanceWorkspaceB || workspaceB,
         site: baseUrl,
         network_recovery: {
           function: 'billing-status',
@@ -417,6 +431,7 @@ test.describe('production authenticated browser acceptance', () => {
           recovered_with_production_response: true,
         },
         report_id: reportId,
+        invite_id: invitation.id,
         exports: { pdf: pdfExport.id, docx: docxExport.id },
       }, null, 2));
     }

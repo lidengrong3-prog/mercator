@@ -1,0 +1,129 @@
+name: Notification live acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Acceptance operation
+        type: choice
+        required: true
+        options: [start, status, probe, configuration, deduplication, isolation, finalize]
+      workspace_id:
+        description: Dedicated acceptance workspace UUID (start only)
+        type: string
+        required: false
+      run_id:
+        description: Acceptance run UUID (all operations except start)
+        type: string
+        required: false
+      actor_id:
+        description: Platform administrator profile UUID
+        type: string
+        required: false
+      user_id:
+        description: Acceptance recipient profile UUID (probe/deduplication)
+        type: string
+        required: false
+      channel:
+        description: Provider channel (probe)
+        type: choice
+        options: [email, wecom, feishu]
+      scenario:
+        description: Provider scenario (probe)
+        type: choice
+        options: [sent, failure_retry, disabled]
+      foreign_workspace_id:
+        description: Workspace the acceptance user must not access (isolation)
+        type: string
+        required: false
+      approval_reference:
+        description: Change ticket or written authorization reference
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      NOTIFICATION_CONFIG_ENCRYPTION_KEY: ${{ secrets.NOTIFICATION_CONFIG_ENCRYPTION_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      NOTIFICATION_FROM_EMAIL: ${{ secrets.NOTIFICATION_FROM_EMAIL }}
+      WORKSPACE_INVITE_FROM_EMAIL: ${{ secrets.WORKSPACE_INVITE_FROM_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Resolve Supabase service key
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_ROLE_KEY=$service_key" >> "$GITHUB_ENV"
+      - name: Resolve isolation access token
+        if: inputs.action == 'isolation'
+        shell: bash
+        env:
+          TEST_EMAIL: ${{ secrets.PROD_TEST_USER_A_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.PROD_TEST_USER_A_PASSWORD }}
+        run: |
+          set -eu
+          test -n "$TEST_EMAIL" && test -n "$TEST_PASSWORD" && test -n "$SUPABASE_ANON_KEY"
+          response="$(curl --fail-with-body --silent --show-error "$SUPABASE_URL/auth/v1/token?grant_type=password" -H "apikey: $SUPABASE_ANON_KEY" -H 'Content-Type: application/json' --data "$(jq -nc --arg email "$TEST_EMAIL" --arg password "$TEST_PASSWORD" '{email:$email,password:$password}')")"
+          access_token="$(printf '%s' "$response" | jq -r '.access_token // empty')"
+          test -n "$access_token"
+          echo "::add-mask::$access_token"
+          echo "ISOLATION_ACCESS_TOKEN=$access_token" >> "$GITHUB_ENV"
+      - name: Run acceptance operation
+        shell: bash
+        env:
+          ACTION: ${{ inputs.action }}
+          WORKSPACE_ID: ${{ inputs.workspace_id }}
+          RUN_ID: ${{ inputs.run_id }}
+          ACTOR_ID: ${{ inputs.actor_id }}
+          USER_ID: ${{ inputs.user_id }}
+          CHANNEL: ${{ inputs.channel }}
+          SCENARIO: ${{ inputs.scenario }}
+          FOREIGN_WORKSPACE_ID: ${{ inputs.foreign_workspace_id }}
+          APPROVAL_REFERENCE: ${{ inputs.approval_reference }}
+        run: |
+          set -eu
+          case "$ACTION" in
+            start)
+              test -n "$WORKSPACE_ID" && test -n "$ACTOR_ID" && test -n "$APPROVAL_REFERENCE"
+              python scripts/notification_live_acceptance.py start --workspace-id "$WORKSPACE_ID" --actor-id "$ACTOR_ID" --approval-reference "$APPROVAL_REFERENCE" ;;
+            status) python scripts/notification_live_acceptance.py status --run-id "$RUN_ID" ;;
+            probe)
+              test -n "$USER_ID"
+              python scripts/notification_live_acceptance.py probe --run-id "$RUN_ID" --user-id "$USER_ID" --channel "$CHANNEL" --scenario "$SCENARIO" ;;
+            configuration) python scripts/notification_live_acceptance.py configuration --run-id "$RUN_ID" ;;
+            deduplication)
+              test -n "$USER_ID"
+              python scripts/notification_live_acceptance.py deduplication --run-id "$RUN_ID" --user-id "$USER_ID" ;;
+            isolation)
+              test -n "$FOREIGN_WORKSPACE_ID" && test -n "${ISOLATION_ACCESS_TOKEN:-}"
+              python scripts/notification_live_acceptance.py isolation --run-id "$RUN_ID" --access-token "$ISOLATION_ACCESS_TOKEN" --foreign-workspace-id "$FOREIGN_WORKSPACE_ID" ;;
+            finalize)
+              test -n "$ACTOR_ID" && test -n "$APPROVAL_REFERENCE"
+              python scripts/notification_live_acceptance.py finalize --run-id "$RUN_ID" --actor-id "$ACTOR_ID" --approval-reference "$APPROVAL_REFERENCE" ;;
+          esac | tee notification-live-acceptance-result.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: notification-live-acceptance-${{ github.run_id }}
+          path: notification-live-acceptance-result.json
+          retention-days: 30

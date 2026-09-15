@@ -26,6 +26,7 @@ PUBLIC_PAGE_DATA_PATHS = (
     "data/quality_report.json",
     "data/rules.json",
     "data/taxes.json",
+    "data/industry_advisories.json",
     "data/us_market/macro_indicators.json",
 )
 
@@ -155,6 +156,10 @@ def main() -> int:
     browser_acceptance = parse_json(browser_acceptance_file.read_bytes(), "browser exception acceptance result")
     if browser_acceptance.get("status") != "passed":
         raise ReleaseCheckError("browser exception acceptance did not pass")
+    acceptance_run_id = acceptance.get("acceptance_run_id")
+    browser_acceptance_run_id = browser_acceptance.get("acceptance_run_id")
+    if not acceptance_run_id or acceptance_run_id != browser_acceptance_run_id:
+        raise ReleaseCheckError("API and browser acceptance results do not share acceptance_run_id")
     network_recovery = browser_acceptance.get("network_recovery") or {}
     if (network_recovery.get("first_request") != "internetdisconnected"
             or network_recovery.get("attempts") != 2
@@ -233,7 +238,8 @@ def main() -> int:
     for function_name in (
         "ai-proxy", "report-save", "report-export", "report-docx", "billing-checkout",
         "billing-status", "billing-portal", "billing-webhook", "admin-summary",
-        "notification-dispatch", "workspace-invite",
+        "notification-dispatch", "workspace-invite", "data-subject-request", "security-gate",
+        "history-search",
     ):
         status, _, response_headers = request("GET", f"{supabase}/functions/v1/{function_name}", headers=headers)
         if status == 404 or status >= 500:
@@ -243,6 +249,17 @@ def main() -> int:
             raise ReleaseCheckError(
                 f"Edge Function {function_name} release {function_release or 'missing'} does not match {expected_sha}"
             )
+
+    status, raw, _ = request(
+        "POST", f"{supabase}/functions/v1/history-search",
+        headers={**headers, "Origin": expected_origin},
+        body={"query": "", "sort": "newest", "page_size": 1},
+    )
+    history_search = parse_json(raw, "history search probe")
+    if (status != 200 or not isinstance(history_search.get("items"), list)
+            or not isinstance(history_search.get("counts"), dict)
+            or not isinstance(history_search.get("total"), int)):
+        raise ReleaseCheckError(f"history search contract probe failed: HTTP {status}")
 
     status, _, _ = request(
         "POST", f"{supabase}/functions/v1/ai-proxy",
@@ -306,6 +323,7 @@ def main() -> int:
         "network_recovery": True,
         "billing_status": "enabled" if billing_enabled else "disabled",
         "notification_channels": "enabled" if notification_expected else "disabled",
+        "history_search": True,
         "webhook_signature_guard": webhook_guard,
         "public_data_isolated": True,
         "frontend": True,
