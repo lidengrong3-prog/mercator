@@ -27,6 +27,7 @@ from datetime import datetime, timezone, timedelta
 
 from collect_data import annotate_provenance
 from collection_telemetry import append_collection_source
+from source_governance import SourceGovernanceError, assert_source_collectable
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -148,7 +149,7 @@ def gen_recall_id(recall):
     return f"cpsc-{h}"
 
 
-def fetch_cpsc_recalls(days=120):
+def fetch_cpsc_recalls(days=120, start_date=None, end_date=None, page=1, per_page=None):
     """
     Fetch recent recalls from CPSC.
     
@@ -164,9 +165,15 @@ def fetch_cpsc_recalls(days=120):
     - url: link to full recall notice
     - products: list of affected products
     """
+    try:
+        assert_source_collectable("cpsc")
+    except SourceGovernanceError as error:
+        print(f"[CPSC] Collection skipped: {error}")
+        return []
     print("[CPSC] Fetching recall data from CPSC API...")
-    start_date = (datetime.now(timezone.utc) - timedelta(days=max(days, 1))).strftime("%Y-%m-%d")
-    query = urllib.parse.urlencode({"format": "json", "RecallDateStart": start_date})
+    start_date = (start_date or (datetime.now(timezone.utc) - timedelta(days=max(days, 1))).strftime("%Y-%m-%d"))[:10]
+    end_date = (end_date or datetime.now(timezone.utc).strftime("%Y-%m-%d"))[:10]
+    query = urllib.parse.urlencode({"format": "json", "RecallDateStart": start_date, "RecallDateEnd": end_date})
     data = http_get_json(f"{CPSC_API}?{query}", timeout=60)
     if data is None:
         print("[CPSC] Official API request failed.")
@@ -187,17 +194,22 @@ def fetch_cpsc_recalls(days=120):
         return []
     
     print(f"[CPSC] Raw recalls: {len(recalls)}")
+    if per_page:
+        page_size = max(int(per_page), 1)
+        offset = max(int(page) - 1, 0) * page_size
+        return recalls[offset:offset + page_size]
     return recalls
 
 
-def process_recalls(recalls, days=120):
+def process_recalls(recalls, days=120, start_date=None, end_date=None):
     """Process raw recalls into structured format."""
     results = {
         "meta": {
             "source": "CPSC / SaferProducts Recall API",
             "source_url": CPSC_API,
             "generated_at": datetime.now(timezone.utc).isoformat(),
-            "query_start": (datetime.now(timezone.utc) - timedelta(days=max(days, 1))).strftime("%Y-%m-%d"),
+            "query_start": (start_date or (datetime.now(timezone.utc) - timedelta(days=max(days, 1))).strftime("%Y-%m-%d"))[:10],
+            "query_end": (end_date or datetime.now(timezone.utc).strftime("%Y-%m-%d"))[:10],
             "total_recalls": len(recalls),
         },
         "recalls": [],
@@ -254,6 +266,7 @@ def process_recalls(recalls, days=120):
             "manufacturer_countries": countries,
             "products": products,
             "hazards": hazards,
+            "revision_history": [],
         }, default_source_kind="official", default_source_type="regulator")
         
         results["recalls"].append(entry)
@@ -302,7 +315,8 @@ def merge_recalls(old_data, new_data):
                 default_source_kind="official",
                 default_source_type="regulator",
             ))
-    existing_ids = {r["id"] for r in old_data["recalls"]}
+    existing_by_id = {r["id"]: r for r in old_data["recalls"] if isinstance(r, dict) and r.get("id")}
+    existing_ids = set(existing_by_id)
     added = 0
     for recall in new_data["recalls"]:
         if recall["id"] not in existing_ids:
@@ -315,6 +329,23 @@ def merge_recalls(old_data, new_data):
                 old_data["by_category"][cat] = []
             old_data["by_category"][cat].append(recall)
             added += 1
+        else:
+            # A stable recall number can receive a correction. Keep the new
+            # evidence in a revision trail instead of silently replacing the
+            # first observed version in the compatibility JSON.
+            prior = existing_by_id[recall["id"]]
+            prior_hash = prior.get("evidence_hash")
+            current_hash = recall.get("evidence_hash")
+            if current_hash and prior_hash and current_hash != prior_hash:
+                revisions = prior.setdefault("revision_history", [])
+                if not any(row.get("evidence_hash") == current_hash for row in revisions if isinstance(row, dict)):
+                    revisions.append({
+                        "evidence_hash": current_hash,
+                        "collected_at": recall.get("collected_at"),
+                        "date": recall.get("date"),
+                        "title": recall.get("title"),
+                        "description": recall.get("description"),
+                    })
     
     old_data["meta"].update(new_data["meta"])
     old_data["meta"]["total_recalls"] = len(old_data["recalls"])
@@ -330,13 +361,17 @@ def main():
     parser.add_argument("--output", default=DEFAULT_OUTPUT, help="Output JSON path")
     parser.add_argument("--no-merge", action="store_true", help="Don't merge with existing data")
     parser.add_argument("--days", type=int, default=120, help="Recall lookback window in days")
+    parser.add_argument("--from", dest="start_date", help="Inclusive RecallDateStart (YYYY-MM-DD)")
+    parser.add_argument("--to", dest="end_date", help="Inclusive RecallDateEnd (YYYY-MM-DD)")
+    parser.add_argument("--page", type=int, default=1, help="Deterministic local page number")
+    parser.add_argument("--per-page", type=int, default=0, help="Local page size for checkpointed backfill")
     args = parser.parse_args()
     
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
     started = time.perf_counter()
     
     # Fetch
-    raw_recalls = fetch_cpsc_recalls(args.days)
+    raw_recalls = fetch_cpsc_recalls(args.days, args.start_date, args.end_date, args.page, args.per_page or None)
     if not raw_recalls:
         print("[CPSC] No recalls fetched. Keeping existing data if available.")
         existing = load_existing(args.output)
@@ -362,7 +397,7 @@ def main():
         return 1
     
     # Process
-    results = process_recalls(raw_recalls, args.days)
+    results = process_recalls(raw_recalls, args.days, args.start_date, args.end_date)
     
     # Merge with existing
     if not args.no_merge:

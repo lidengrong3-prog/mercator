@@ -26,6 +26,7 @@
 <script src="assets/js/alerts-settings.js" defer></script>
 <script src="assets/js/unified-search.js" defer></script>
 <script src="assets/js/product-enhancements.js" defer></script>
+<script src="assets/js/resource-center.js" defer></script>
 </head>
 <body>
 <div class="login-page" id="loginPage">
@@ -285,8 +286,9 @@
   <div class="pr-data-import-copy">
     <p class="eyebrow">CATEGORY OPPORTUNITY DATA</p>
     <h2>类目机会数据</h2>
-    <p>当前仅分析用户导入的商品或店铺文件，不展示未经接入验证的示例数据。</p>
+    <p>系统采集数据与工作区上传数据分开保存；只展示通过来源校验的正式快照和当前工作区记录。</p>
     <span id="pr-data-status" class="pr-data-status">暂无已导入的类目数据</span>
+    <span id="pr-system-status" class="pr-data-status" aria-live="polite">系统采集未连接</span>
   </div>
   <div class="pr-data-import-actions">
     <label class="pr-upload-btn" for="pr-file-input">上传 CSV / JSON</label>
@@ -358,6 +360,7 @@
   <div class="pr-filter-group">
     <label>关键词搜索</label>
     <input type="text" id="pr-f-keyword" placeholder="商品名/店铺名/类目">
+    <button type="button" id="pr-keyword-monitor" class="pr-save-tpl" title="创建关键词监控">📡 监控此关键词</button>
   </div>
   <div class="pr-filter-group">
     <label>排序方式</label>
@@ -392,7 +395,7 @@
 <article class="panel table-panel pr-table-wrap">
   <div class="panel-head">
     <div>
-      <p class="eyebrow">PRODUCT RADAR · USER IMPORTED DATA</p>
+      <p class="eyebrow">PRODUCT RADAR · VERIFIED SNAPSHOTS</p>
       <h2 id="pr-table-title">跨平台爆发爆款</h2>
     </div>
     <span class="source-warn" id="pr-count">○ 暂无已导入数据</span>
@@ -681,7 +684,7 @@
             </div>
           </div>
           <div class="platform-rule-status" data-platform-status="Amazon">
-            <span>已验证规则</span>
+            <span>规则接入状态</span>
             <b>正在读取...</b>
           </div>
           <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的当前市场规则记录。</p>
@@ -696,7 +699,7 @@
             </div>
           </div>
           <div class="platform-rule-status" data-platform-status="AliExpress">
-            <span>已验证规则</span>
+            <span>规则接入状态</span>
             <b>正在读取...</b>
           </div>
           <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的当前市场规则记录。</p>
@@ -711,7 +714,7 @@
             </div>
           </div>
           <div class="platform-rule-status" data-platform-status="TikTok Shop">
-            <span>已验证规则</span>
+            <span>规则接入状态</span>
             <b>正在读取...</b>
           </div>
           <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的当前市场规则记录。</p>
@@ -726,7 +729,7 @@
             </div>
           </div>
           <div class="platform-rule-status" data-platform-status="eBay">
-            <span>已验证规则</span>
+            <span>规则接入状态</span>
             <b>正在读取...</b>
           </div>
           <p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证的当前市场规则记录。</p>
@@ -793,8 +796,12 @@
       <div class="filter-row" style="flex-wrap:wrap;gap:8px">
         <select id="rl-platform"><option value="all">全部平台</option></select>
         <select id="rl-market"><option value="all">当前范围全部市场</option></select>
+        <select id="rl-topic"><option value="all">全部主题</option></select>
         <select id="rl-category"><option value="all">全部类别</option></select>
         <select id="rl-impact-level"><option value="all">全部影响等级</option><option value="high">🔴 高</option><option value="medium">🟡 中</option><option value="low">🔵 低</option></select>
+        <input id="rl-date-start" type="date" aria-label="规则开始日期" title="开始日期">
+        <input id="rl-date-end" type="date" aria-label="规则结束日期" title="结束日期">
+        <select id="rl-version"><option value="all">全部版本</option></select>
         <select id="rl-act-type"><option value="all">全部活动类型</option></select>
         <button class="filter-button" id="apply-rl">应用筛选</button>
         <button class="filter-button" id="reset-rl" style="background:#999">重置</button>
@@ -823,12 +830,45 @@
     </section>
 
     <section id="content" class="page">
-      <div class="page-header"><h2>📚 资源中心</h2></div>
-      <div class="resource-empty-state" id="content-resource-empty">
-        <i data-lucide="folder-open"></i>
-        <h3>暂无已接入资源</h3>
-        <p>运营指南、政策解读和行业报告将在通过来源校验后显示。</p>
+      <div class="page-header resource-page-header"><div><span class="section-label">KNOWLEDGE & TOOLS</span><h2>资源中心</h2><p id="resource-page-status">正在读取资源目录…</p></div><button type="button" class="st-btn st-btn-outline" id="resource-refresh"><i data-lucide="refresh-cw"></i>刷新</button></div>
+      <div class="resource-nav" role="tablist" aria-label="资源中心分类">
+        <button type="button" class="resource-nav-item is-active" data-resource-tab="market" role="tab" aria-selected="true"><i data-lucide="library"></i><span>市场资料库</span><small>年度报告、白皮书与政策解读</small></button>
+        <button type="button" class="resource-nav-item" data-resource-tab="ai" role="tab" aria-selected="false"><i data-lucide="bot"></i><span>AI 智能体中心</span><small>系统智能体与外部工具入口</small></button>
+        <button type="button" class="resource-nav-item" data-resource-tab="academy" role="tab" aria-selected="false"><i data-lucide="graduation-cap"></i><span>观海学院</span><small>课程、进度与配套资料</small></button>
       </div>
+      <div class="resource-toolbar">
+        <label class="resource-search"><i data-lucide="search"></i><input id="resource-query" type="search" placeholder="搜索标题、摘要或关键词" autocomplete="off"></label>
+        <select id="resource-type-filter" aria-label="资源类型"><option value="">全部类型</option><option value="annual_report">年度报告</option><option value="monthly_report">月报</option><option value="whitepaper">白皮书</option><option value="policy_guide">政策解读</option><option value="data_summary">数据汇总</option><option value="ai_agent">AI 智能体</option><option value="external_tool">外部工具</option><option value="course">课程</option><option value="lesson">课程单元</option><option value="course_material">课程资料</option></select>
+        <select id="resource-platform-filter" aria-label="平台"><option value="">全部平台</option></select>
+        <input id="resource-year-filter" type="number" min="1900" max="2200" placeholder="年份" aria-label="年份">
+        <select id="resource-market-filter" aria-label="市场"><option value="">全部市场</option></select>
+        <button type="button" class="st-btn st-btn-primary" id="resource-search-submit"><i data-lucide="search"></i>检索</button>
+      </div>
+      <div id="resource-admin-panel" class="resource-admin-panel" hidden>
+        <div class="resource-admin-head"><div><span class="section-label">ADMIN RESOURCE DESK</span><h3 id="resource-admin-title">新增资源</h3></div><button type="button" class="icon-btn" id="resource-admin-close" title="关闭编辑"><i data-lucide="x"></i></button></div>
+        <form id="resource-admin-form" class="resource-admin-form">
+          <input id="resource-edit-id" type="hidden"><div class="resource-form-grid">
+            <label>标题<input id="resource-edit-title" required maxlength="240"></label><label>Slug<input id="resource-edit-slug" required maxlength="120" pattern="[a-z0-9][a-z0-9-]{1,118}"></label>
+            <label>资源类型<select id="resource-edit-type" required><option value="annual_report">年度报告</option><option value="monthly_report">月报</option><option value="whitepaper">白皮书</option><option value="policy_guide">政策解读</option><option value="data_summary">数据汇总</option><option value="ai_agent">AI 智能体</option><option value="external_tool">外部工具</option><option value="course">课程</option><option value="lesson">课程单元</option><option value="course_material">课程资料</option></select></label><label>状态<select id="resource-edit-status"><option value="draft">草稿</option><option value="published">已发布</option><option value="archived">已归档</option></select></label>
+            <label>访问级别<select id="resource-edit-access"><option value="public">公开目录（文件仍需签名）</option><option value="workspace">工作区成员</option><option value="restricted">管理员</option></select></label><label>来源类别<select id="resource-edit-source-kind"><option value="official">官方来源</option><option value="licensed">授权资料</option><option value="internal">系统资料</option><option value="third_party">第三方来源</option><option value="user_upload">工作区上传</option></select></label><label>年份<input id="resource-edit-year" type="number" min="1900" max="2200"></label><label>市场代码<input id="resource-edit-market" maxlength="30" placeholder="US"></label><label>平台<input id="resource-edit-platform" maxlength="80"></label>
+          </div><label class="resource-form-wide">摘要<textarea id="resource-edit-summary" rows="3" maxlength="4000"></textarea></label><label class="resource-form-wide">来源链接（HTTPS）<input id="resource-edit-source" type="url" placeholder="https://"></label><label class="resource-form-wide">文件（可选）<input id="resource-edit-file" type="file" accept=".pdf,.docx,.xlsx,.csv,.md,.txt,.zip,.json"></label>
+          <div class="resource-admin-actions"><button type="submit" class="st-btn st-btn-primary" id="resource-admin-save"><i data-lucide="save"></i>保存资源</button><button type="button" class="st-btn st-btn-outline" id="resource-admin-new">新建</button><span id="resource-admin-feedback" aria-live="polite"></span></div>
+        </form>
+      </div>
+      <div id="resource-version-panel" class="resource-admin-panel" hidden>
+        <div class="resource-admin-head"><div><span class="section-label">RESOURCE VERSIONING</span><h3>新增资源版本</h3><p id="resource-version-context">为当前资源保留新的历史版本。</p></div><button type="button" class="icon-btn" id="resource-version-close" title="关闭版本编辑"><i data-lucide="x"></i></button></div>
+        <form id="resource-version-form" class="resource-admin-form">
+          <input id="resource-version-item-id" type="hidden"><div class="resource-form-grid">
+            <label>版本号<input id="resource-version-no" type="number" min="1" step="1" required></label><label>版本标题<input id="resource-version-title" maxlength="240" required></label>
+            <label>发布日期<input id="resource-version-published" type="date"></label><label>来源记录 ID<input id="resource-version-source-record" maxlength="240"></label>
+          </div><label class="resource-form-wide">版本摘要<textarea id="resource-version-summary" rows="3" maxlength="4000"></textarea></label><label class="resource-form-wide">来源链接（HTTPS）<input id="resource-version-source" type="url" placeholder="https://"></label><label class="resource-form-wide">更新说明<textarea id="resource-version-change-note" rows="3" maxlength="2000" placeholder="说明本次版本相对于上一版的变化"></textarea></label><label class="resource-form-wide">版本文件（可选）<input id="resource-version-file" type="file" accept=".pdf,.docx,.xlsx,.csv,.md,.txt,.zip,.json"></label>
+          <div class="resource-admin-actions"><button type="submit" class="st-btn st-btn-primary" id="resource-version-save"><i data-lucide="git-branch"></i>保存版本</button><button type="button" class="st-btn st-btn-outline" id="resource-version-cancel">取消</button><span id="resource-version-feedback" aria-live="polite"></span></div>
+        </form>
+      </div>
+      <div class="resource-catalog-head"><div><h3 id="resource-section-title">市场资料库</h3><span id="resource-result-count">--</span></div><button type="button" class="st-btn st-btn-outline" id="resource-admin-open" hidden><i data-lucide="plus"></i>新增资源</button></div>
+      <div id="resource-list" class="resource-list" aria-live="polite"></div>
+      <div id="resource-empty" class="resource-empty-state" hidden><i data-lucide="folder-open"></i><h3>暂时没有匹配资源</h3><p>调整筛选条件，或等待管理员发布新的正式资料。</p></div>
+      <aside id="resource-detail" class="resource-detail" hidden></aside>
     </section>
 
     <section id="report" class="page">
@@ -935,6 +975,7 @@
           <p>从「免费看清机会」到「PRO 深度决策」再到「企业级出海服务」，按出海阶段选择。</p>
           <div id="prc-current-tier" class="prc-current-tier" style="margin-top:10px;font-size:13px;color:var(--ink)"></div>
           <div id="prc-billing-notice" class="prc-billing-notice is-disabled" role="status">正式收费状态：未启用。本页面当前不会创建订单或扣款。</div>
+          <div id="prc-provider-sync" class="prc-provider-sync" role="status"></div>
           <div id="prc-usage-summary" class="prc-usage-summary"></div>
         </div>
         <div class="prc-grid">
@@ -1104,7 +1145,7 @@
           <div>
             <p class="eyebrow">WORKSPACE SEARCH</p>
             <h2>统一搜索</h2>
-            <p>检索已配置市场、平台、已接入来源记录和当前账号上传数据。</p>
+            <p>从服务端历史情报库检索正式政策、规则、商品和店铺记录。</p>
           </div>
           <span class="unified-search-scope" id="unified-search-scope">全部已配置市场</span>
         </div>
@@ -1118,6 +1159,10 @@
         <div class="unified-search-filters" aria-label="搜索筛选条件">
           <label><span>市场</span><select id="unified-search-market"><option value="">全部已配置市场</option></select></label>
           <label><span>平台</span><select id="unified-search-platform"><option value="">全部平台</option></select></label>
+          <label><span>品类</span><select id="unified-search-category"><option value="">全部品类</option></select></label>
+          <label><span>年份</span><select id="unified-search-year"><option value="">全部年份</option></select></label>
+          <label><span>来源</span><select id="unified-search-source"><option value="">全部来源</option></select></label>
+          <label><span>核验状态</span><select id="unified-search-verification"><option value="">全部核验状态</option><option value="verified">已验证</option><option value="uploaded">人工上传</option></select></label>
           <label><span>时间</span><select id="unified-search-time"><option value="all">全部时间</option><option value="7d">近 7 天</option><option value="30d">近 30 天</option><option value="1y">近 1 年</option><option value="custom">自定义</option></select></label>
           <label><span>排序</span><select id="unified-search-sort"><option value="relevance">相关度</option><option value="newest">时间从新到旧</option><option value="oldest">时间从旧到新</option><option value="title">标题 A-Z</option></select></label>
           <button type="button" class="unified-search-reset" id="unified-search-reset">重置</button>
@@ -1139,13 +1184,13 @@
     <section id="privacy" class="page">
       <div class="legal-page">
         <div class="legal-head"><span class="section-label">LEGAL &amp; PRIVACY</span><h2>隐私政策</h2><p>最后更新：2026-08-26 · 本页面用于说明 JAY观海如何处理账号、工作区和留资数据。</p></div>
-        <article class="legal-card"><h3>我们收集什么</h3><p>注册和登录会处理邮箱、显示名称及你主动填写的公司、岗位、联系电话。你创建的看板、报告素材、报告历史、预警订阅、工作区成员与商务留资会保存到 Supabase，用于提供跨设备同步和团队协作。</p><h3>我们如何使用</h3><p>数据只用于身份认证、产品功能、工作区权限、报告生成、预警和商务回访。AI 请求通过受保护的 Edge Function 转发，浏览器不会接触 AI 供应商密钥。</p><h3>数据隔离与保留</h3><p>用户数据通过 Supabase RLS 按登录身份隔离；工作区数据仅向有权限的成员开放。你可以通过设置页修改资料或联系管理员申请删除。外部邮件、企业微信、飞书投递未启用前，不会发送到这些渠道。</p><h3>第三方服务</h3><p>产品使用 Supabase Auth、数据库、Storage 和 Edge Functions；正式启用支付后可能使用 Stripe。第三方服务的处理以其公开条款为准。</p><h3>联系我们</h3><p>如需查阅、更正或删除个人信息，请通过企业服务入口提交申请，并在需求中注明“隐私请求”。</p></article>
+        <article class="legal-card"><h3>我们收集什么</h3><p>注册和登录会处理邮箱、显示名称及你主动填写的公司、岗位、联系电话。你创建的看板、报告素材、报告历史、预警订阅、工作区成员与商务留资会保存到 Supabase，用于提供跨设备同步和团队协作。</p><h3>我们如何使用</h3><p>数据只用于身份认证、产品功能、工作区权限、报告生成、预警和商务回访。AI 请求通过受保护的 Edge Function 转发，浏览器不会接触 AI 供应商密钥。除非另有明确授权，JAY观海不会把你的提示词、报告正文或上传内容用于训练通用模型；供应商只按当前请求处理必要内容。</p><h3>数据隔离、保存和安全</h3><p>用户数据通过 Supabase RLS 按登录身份隔离；工作区数据仅向有权限的成员开放。原始响应、付费数据和备份保存在私有 Storage，公开页面只使用允许发布的正式摘要。系统对登录、AI、搜索、报告、导出、邀请和上传实施用户/IP 限流，并记录不含正文的运行指标。备份会加密保存并定期在隔离环境恢复演练。数据保存期限按业务需要和来源许可期限确定，超过期限会清理。</p><h3>你的权利和请求流程</h3><p>你可以在设置页申请导出自己的账号数据，申请删除账号及相关 Storage 文件；工作区所有者或管理员可以申请删除整个工作区数据。请求会生成可查询的处理记录，删除账号前必须先完成工作区所有权转移。法律或安全审计要求保留的最小记录会去标识化保存。</p><h3>第三方服务和来源许可</h3><p>产品使用 Supabase Auth、数据库、Storage 和 Edge Functions；正式启用支付后可能使用 Stripe，邮件邀请使用 Resend。市场和政策信息来自政府、平台官方来源、用户上传或获得授权的第三方服务。TikHub 等商业 API 的原始响应只用于内部检索和工作区分析，不向公众再分发；第三方服务的处理以其公开条款和适用许可为准。</p><h3>供应商中断和安全事件</h3><p>供应商不可用、网络中断或数据源延迟时，系统会显示服务状态和失败原因，不会用未经标记的静态估算替代正式记录。发现可能影响个人数据的安全事件后，我们会依据适用法律通知受影响用户和监管机构。</p><h3>联系我们</h3><p>如需查阅、更正、导出或删除个人信息，请通过企业服务入口提交申请，并在需求中注明“隐私请求”。</p></article>
       </div>
     </section>
     <section id="terms" class="page">
       <div class="legal-page">
         <div class="legal-head"><span class="section-label">TERMS OF SERVICE</span><h2>服务条款</h2><p>最后更新：2026-08-26 · 使用 JAY观海即表示你同意以下使用边界。</p></div>
-        <article class="legal-card"><h3>服务性质</h3><p>JAY观海提供跨境市场信息整理、风险提示和决策辅助，不构成投资、法律、税务、海关或合规意见。政策、税率、平台规则和市场数据应以对应官方来源及平台最新公告为准。</p><h3>账号与工作区</h3><p>你应妥善保管账号凭据。工作区所有者和管理员负责成员权限与邀请管理，不得通过产品处理违法、侵权或未经授权的第三方数据。</p><h3>报告与 AI 输出</h3><p>报告和 AI 输出是基于当前可用素材的辅助结果，可能存在延迟、缺失或错误。使用前应进行人工复核，不得将演示数据或未核验结论直接作为商业承诺。</p><h3>付费服务</h3><p>当前支付供应商未配置时不会创建订单或扣款。正式订阅、退款、发票和取消规则以上线时展示的支付页面和公告为准。</p></article>
+        <article class="legal-card"><h3>服务性质</h3><p>JAY观海提供跨境市场信息整理、风险提示和决策辅助，不构成投资、法律、税务、海关或合规意见。政策、税率、平台规则和市场数据应以对应官方来源及平台最新公告为准。</p><h3>账号与工作区</h3><p>你应妥善保管账号凭据。工作区所有者和管理员负责成员权限与邀请管理，不得通过产品处理违法、侵权或未经授权的第三方数据。所有权转移、成员移除和工作区删除必须由有权限的管理员操作。</p><h3>报告与 AI 输出</h3><p>报告和 AI 输出是基于当前可用素材的辅助结果，可能存在延迟、缺失或错误。使用前应进行人工复核，不得将演示数据或未核验结论直接作为商业承诺。你不得把受许可限制的原始响应、商业 API 结果或其他用户数据导出到公开渠道。</p><h3>数据来源与许可</h3><p>你只能上传拥有合法处理权的素材。系统会保存来源 ID、采集时间、核验状态和适用范围；商业来源可能只允许服务内部使用。违反第三方许可、平台规则或适用法律的使用由上传或操作方负责。</p><h3>付费服务</h3><p>当前支付供应商未配置时不会创建订单或扣款。正式订阅、退款、发票和取消规则以上线时展示的支付页面和公告为准。套餐额度按工作区计算，恶意或自动化请求可能被限流或暂停。</p><h3>可用性与备份</h3><p>我们会实施加密备份、恢复演练、健康检查和故障告警，但不承诺绝对不间断。维护、供应商故障或不可抗力期间，服务可能暂时不可用。</p></article>
       </div>
     </section>
     <section id="admin" class="page">
@@ -1154,7 +1199,7 @@
         <div class="st-inline-notice" id="admin-access-note">正在校验管理员权限…</div>
         <div id="admin-content" style="display:none">
         <div class="admin-metrics"><article><span>注册用户</span><b id="admin-users">--</b></article><article><span>有效订阅</span><b id="admin-subs">--</b></article><article><span>工作区</span><b id="admin-workspaces">--</b></article><article><span>近100次报告失败率</span><b id="admin-report-failure">--</b></article><article><span>近500次 AI Token</span><b id="admin-ai-tokens">--</b></article><article><span>近500次 AI 输入 Token</span><b id="admin-ai-input-tokens">--</b></article><article><span>近500次 AI 输出 Token</span><b id="admin-ai-output-tokens">--</b></article><article><span>近500次联网检索</span><b id="admin-ai-searches">--</b></article><article><span>近500次 AI 估算成本</span><b id="admin-ai-cost">--</b></article><article><span>近100次平均报告耗时</span><b id="admin-report-duration">--</b></article><article><span>近100次导出失败</span><b id="admin-export-failures">--</b></article><article><span>未解决事件</span><b id="admin-incidents-count">--</b></article><article><span>待处理投递</span><b id="admin-deliveries">--</b></article></div>
-          <div class="admin-grid"><article class="admin-card"><h3>最近报告运行</h3><div id="admin-report-runs" class="admin-list"></div></article><article class="admin-card"><h3>最近 AI 请求</h3><div id="admin-ai-requests" class="admin-list"></div></article><article class="admin-card"><h3>系统事件</h3><div id="admin-incidents" class="admin-list"></div></article><article class="admin-card"><h3>备份运行</h3><div id="admin-backups" class="admin-list"></div></article></div>
+          <div class="admin-grid"><article class="admin-card"><h3>分阶段开放</h3><div id="admin-production-rollout" class="admin-list"></div></article><article class="admin-card"><h3>外部通知正式验收</h3><div id="admin-notification-acceptance" class="admin-list"></div></article><article class="admin-card"><h3>Stripe 正式收费验收</h3><div id="admin-stripe-acceptance" class="admin-list"></div></article><article class="admin-card"><h3>最近报告运行</h3><div id="admin-report-runs" class="admin-list"></div></article><article class="admin-card"><h3>最近 AI 请求</h3><div id="admin-ai-requests" class="admin-list"></div></article><article class="admin-card"><h3>AI 供应商目录</h3><div id="admin-ai-providers" class="admin-list"></div></article><article class="admin-card"><h3>系统事件</h3><div id="admin-incidents" class="admin-list"></div></article><article class="admin-card"><h3>备份运行</h3><div id="admin-backups" class="admin-list"></div></article></div>
         </div>
       </div>
     </section>

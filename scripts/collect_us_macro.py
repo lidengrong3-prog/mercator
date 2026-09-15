@@ -34,6 +34,7 @@ from datetime import datetime, timezone, timedelta
 
 from collect_data import annotate_provenance
 from collection_telemetry import append_collection_source
+from source_governance import SourceGovernanceError, assert_source_collectable
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -200,12 +201,26 @@ def collect_all(fred_key="", census_key=""):
     indicators = {}
     fetched = 0
     failed = 0
-    
+    fred_enabled = True
+    bls_enabled = True
+    try:
+        assert_source_collectable("fred")
+    except SourceGovernanceError as error:
+        print(f"[MACRO] FRED collection skipped: {error}")
+        fred_enabled = False
+    try:
+        assert_source_collectable("bls")
+    except SourceGovernanceError as error:
+        print(f"[MACRO] BLS collection skipped: {error}")
+        bls_enabled = False
+
     # FRED data
     for series_id, meta in FRED_SERIES.items():
         print(f"  FRED: {series_id} ({meta['name']})...", end=" ")
         
-        result = fetch_fred(series_id, api_key=fred_key) if fred_key else fetch_fred_csv(series_id)
+        result = None
+        if fred_enabled:
+            result = fetch_fred(series_id, api_key=fred_key) if fred_key else fetch_fred_csv(series_id)
         
         if result:
             indicators[series_id] = annotate_provenance({
@@ -226,7 +241,7 @@ def collect_all(fred_key="", census_key=""):
     print("\n[MACRO] Fetching BLS data (no key required)...")
     for series_id, name in BLS_SERIES.items():
         print(f"  BLS: {series_id} ({name})...", end=" ")
-        result = fetch_bls(series_id)
+        result = fetch_bls(series_id) if bls_enabled else None
         if result:
             bls_key = f"BLS_{series_id}"
             indicators[bls_key] = annotate_provenance({

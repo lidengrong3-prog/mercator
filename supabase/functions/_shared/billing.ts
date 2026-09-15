@@ -44,9 +44,23 @@ export function jsonResponse(
 
 export function billingEnabled(): boolean {
   return Deno.env.get('BILLING_ENABLED') === 'true'
-    && Boolean(Deno.env.get('STRIPE_SECRET_KEY'))
-    && Boolean(Deno.env.get('STRIPE_PRICE_PRO_MONTHLY'))
-    && Boolean(Deno.env.get('STRIPE_WEBHOOK_SECRET'));
+    && stripeConfigured();
+}
+
+export function stripeConfigured(): boolean {
+  return String(Deno.env.get('STRIPE_SECRET_KEY') || '').startsWith('sk_live_')
+    && String(Deno.env.get('STRIPE_PRICE_PRO_MONTHLY') || '').startsWith('price_')
+    && String(Deno.env.get('STRIPE_WEBHOOK_SECRET') || '').startsWith('whsec_');
+}
+
+export function billingAcceptanceMode(): boolean {
+  return Deno.env.get('BILLING_LIVE_ACCEPTANCE_MODE') === 'true' && stripeConfigured();
+}
+
+export function billingCheckoutEnabled(workspaceId: string): boolean {
+  if (billingEnabled()) return true;
+  const acceptanceWorkspaceId = String(Deno.env.get('BILLING_ACCEPTANCE_WORKSPACE_ID') || '').trim();
+  return billingAcceptanceMode() && Boolean(acceptanceWorkspaceId) && workspaceId === acceptanceWorkspaceId;
 }
 
 export function applicationBaseUrl(origin: string | null): string {

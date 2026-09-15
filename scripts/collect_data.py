@@ -7,16 +7,25 @@ Runs via GitHub Actions every 4 hours.
 
 import json
 import os
+import uuid
 import re
 import sys
 import hashlib
+import subprocess
 import traceback
 import time
 from datetime import datetime, timezone, timedelta
 from urllib.request import urlopen, Request
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit, urljoin
 from html import unescape
 from html.parser import HTMLParser
+
+from source_governance import (
+    SourceGovernanceError,
+    assert_source_collectable,
+    canonical_source_key,
+)
+from collection_telemetry import merge_collection_report
 
 # ---- Config ----
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
@@ -25,6 +34,7 @@ NOW = datetime.now(BJT)
 NOW_ISO = NOW.isoformat()
 NOW_DATE = NOW.strftime('%Y-%m-%d')
 COLLECTION_STARTED_AT = None
+COLLECTION_RUN_ID = None
 COLLECTION_SCOPE = {}
 COLLECTION_SOURCES = {}
 
@@ -94,8 +104,9 @@ def configured_collection_scope(manifest=None):
 
 
 def reset_collection_telemetry(scope=None):
-    global COLLECTION_STARTED_AT, COLLECTION_SCOPE, COLLECTION_SOURCES
+    global COLLECTION_STARTED_AT, COLLECTION_RUN_ID, COLLECTION_SCOPE, COLLECTION_SOURCES
     COLLECTION_STARTED_AT = datetime.now(timezone.utc)
+    COLLECTION_RUN_ID = str(os.environ.get('COLLECTION_RUN_ID') or uuid.uuid4())
     COLLECTION_SCOPE = dict(scope or {})
     COLLECTION_SOURCES = {}
 
@@ -105,6 +116,7 @@ def register_collection_source(
 ):
     source = COLLECTION_SOURCES.setdefault(str(key), {
         'key': str(key),
+        'source_key': canonical_source_key(key),
         'label': str(label),
         'domain': str(domain),
         'core': bool(core),
@@ -144,6 +156,8 @@ def _source_status(source):
         return 'failed'
     if source.get('failed_requests', 0):
         return 'degraded'
+    if source.get('collector_status') == 'degraded':
+        return 'degraded'
     if source.get('collector_status') == 'skipped':
         return 'skipped'
     return 'succeeded'
@@ -158,12 +172,20 @@ def run_collection_source(
         key, label, domain, core=core,
         market_codes=market_codes, platform_keys=platform_keys,
     )
+    try:
+        source['source_key'] = assert_source_collectable(key)
+    except SourceGovernanceError as error:
+        source['collector_status'] = 'skipped'
+        source['errors'].append(str(error))
+        print(f"  [SKIP] {label}: {error}")
+        return []
     started = time.perf_counter()
     try:
         result = collector()
         items = result[0] if isinstance(result, tuple) else result
         items = items if isinstance(items, list) else []
-        source['collector_status'] = 'succeeded'
+        if source.get('collector_status') == 'pending':
+            source['collector_status'] = 'succeeded'
     except Exception as error:
         source['collector_status'] = 'failed'
         message = re.sub(r'\s+', ' ', str(error)).strip()[:300]
@@ -209,7 +231,10 @@ def build_collection_report():
         row['duration_ms'] = max(row['duration_ms'], row['request_duration_ms'])
         row.pop('collector_status', None)
         sources.append(row)
-    core_failures = [row['key'] for row in sources if row['core'] and row['status'] == 'failed']
+    core_failures = [
+        row['key'] for row in sources
+        if row['core'] and row['status'] in {'failed', 'skipped'}
+    ]
     failed_sources = [row['key'] for row in sources if row['status'] == 'failed']
     degraded_sources = [row['key'] for row in sources if row['status'] == 'degraded']
     return {
@@ -218,6 +243,7 @@ def build_collection_report():
         # Starting at v2 prevents a partially executed workflow from being
         # accepted as a legacy, complete collection run.
         'schema_version': 2,
+        'run_id': COLLECTION_RUN_ID or str(uuid.uuid4()),
         'started_at': (COLLECTION_STARTED_AT or completed_at).isoformat(),
         'completed_at': completed_at.isoformat(),
         'duration_ms': max(int((completed_at - (COLLECTION_STARTED_AT or completed_at)).total_seconds() * 1000), 0),
@@ -241,9 +267,7 @@ def write_collection_report(path=None):
     path = path or os.path.join(DATA_DIR, 'collection_run.json')
     report = build_collection_report()
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
-    with open(path, 'w', encoding='utf-8') as handle:
-        json.dump(report, handle, ensure_ascii=False, indent=2)
-        handle.write('\n')
+    report = merge_collection_report(report, path=path)
     print(
         f"[Collection Report] status={report['status']} "
         f"sources={report['summary']['sources']} core_failures={len(report['summary']['core_failures'])}"
@@ -256,11 +280,259 @@ VERIFICATION_STATUSES = ('verified', 'uploaded', 'pending', 'rejected')
 PLATFORM_SOURCE_HOSTS = {
     'sellercentral.amazon.com',
     'seller.tiktokshopglobalselling.com',
+    'sell.aliexpress.com',
+    'rulechannel.aliexpress.com',
+    'www.aliexpress.com',
+    'www.ebay.com',
+    'pages.ebay.com',
     'seller.shein.com',
     'seller.temu.com',
     'sellercenter.lazada.sg',
     'seller.shopee.sg',
 }
+
+# These dimensions are deliberately explicit.  A missing value means that the
+# source did not state the dimension; the collector must never infer a fee or
+# penalty from a generic headline.
+RULE_DIMENSIONS = ('fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty')
+RULE_DIMENSION_LABELS = {
+    'fee': '费用', 'commission': '佣金', 'deposit': '保证金',
+    'fulfillment': '履约', 'prohibited': '禁售', 'settlement': '结算',
+    'penalty': '处罚',
+}
+RULE_DIMENSION_ALIASES = {
+    'fee': ('fee', 'fees', 'fee_desc', 'fee_description', '费用', '费用说明'),
+    'commission': ('commission', 'commission_rate', 'commission_fee', 'commission_description', '佣金', '佣金说明'),
+    'deposit': ('deposit', 'deposit_amount', 'security_deposit', 'margin', '保证金', '保证金金额'),
+    'fulfillment': ('fulfillment', 'fulfillment_mode', 'shipping', 'logistics', '履约', '履约方式'),
+    'prohibited': ('prohibited', 'prohibited_items', 'prohibited_goods', 'restricted', '禁售', '禁售商品', '限制销售'),
+    'settlement': ('settlement', 'settlement_cycle', 'payout', 'payout_schedule', 'payment', '结算', '结算周期'),
+    'penalty': ('penalty', 'penalties', 'penalty_rules', 'penalty_description', 'violation_penalty', '处罚', '处罚规则', '扣分'),
+}
+
+
+def _rule_value_text(value):
+    """Flatten a source field for storage without changing its meaning."""
+    if value is None:
+        return ''
+    if isinstance(value, (list, tuple)):
+        return '、'.join(part for part in (_rule_value_text(v) for v in value) if part)
+    if isinstance(value, dict):
+        for key in ('value', 'text', 'label', 'description'):
+            if value.get(key) is not None:
+                return _rule_value_text(value[key])
+        return ''
+    return str(value).strip()
+
+
+def _canonical_rule_url(value):
+    """Return a stable HTTPS rule URL without query/session parameters."""
+    try:
+        parsed = urlsplit(unescape(str(value or '').strip()))
+    except ValueError:
+        return ''
+    if parsed.scheme.lower() != 'https' or not parsed.netloc or not parsed.path.strip('/'):
+        return ''
+    return urlunsplit((parsed.scheme.lower(), parsed.netloc.lower(), parsed.path.rstrip('/'), '', ''))
+
+
+def _rule_dimension_value(item, dimension):
+    """Read one of the seven dimensions from common source payload shapes."""
+    item = item if isinstance(item, dict) else {}
+    bags = [item.get('rule_fields'), item.get('ruleFields'), item.get('fields'), item]
+    aliases = {str(alias).replace('-', '').replace('_', '').replace(' ', '').lower()
+               for alias in RULE_DIMENSION_ALIASES[dimension]}
+    for bag in bags:
+        if not isinstance(bag, dict):
+            continue
+        for key, value in bag.items():
+            normalized = str(key).replace('-', '').replace('_', '').replace(' ', '').lower()
+            if normalized in aliases:
+                text = _rule_value_text(value)
+                if text:
+                    return text
+    return ''
+
+
+def _rule_topic(item):
+    """Return the dimension explicitly represented by a rule record."""
+    item = item if isinstance(item, dict) else {}
+    explicit = str(item.get('topic') or item.get('rule_topic') or '').strip().lower()
+    if explicit in RULE_DIMENSIONS:
+        return explicit
+    category = str(item.get('category') or '').strip().lower()
+    aliases = {
+        'fee': 'fee', 'fees': 'fee', 'commission': 'commission', '佣金': 'commission',
+        'deposit': 'deposit', 'fulfillment': 'fulfillment', 'logistics': 'fulfillment',
+        'prohibited': 'prohibited', 'ban': 'prohibited', 'settlement': 'settlement',
+        'penalty': 'penalty', 'compliance': 'prohibited',
+    }
+    if category in aliases:
+        return aliases[category]
+    for dimension in RULE_DIMENSIONS:
+        if _rule_dimension_value(item, dimension):
+            return dimension
+    text = f"{item.get('title') or ''}\n{item.get('summary') or ''}".lower()
+    keyword_map = {
+        'commission': ('佣金', 'commission'), 'fee': ('费用', '费率', 'fee', 'pricing'),
+        'deposit': ('保证金', 'deposit', 'security deposit'),
+        'fulfillment': ('履约', '物流', '配送', 'fulfillment', 'shipping'),
+        'prohibited': ('禁售', '限制销售', 'restricted', 'prohibited'),
+        'settlement': ('结算', '回款', 'payout', 'settlement'),
+        'penalty': ('处罚', '扣分', 'penalty', 'violation'),
+    }
+    for dimension, words in keyword_map.items():
+        if any(word in text for word in words):
+            return dimension
+    return 'other'
+
+
+def _rule_identity(item):
+    """Stable identity used to match revisions across URL/title changes."""
+    item = item if isinstance(item, dict) else {}
+    platform = str(item.get('platform_key') or item.get('platform') or '').strip().casefold()
+    market = str(item.get('market_code') or item.get('market') or item.get('region') or '').strip().upper()
+    explicit = str(item.get('rule_key') or item.get('rule_id') or '').strip()
+    if explicit:
+        return (platform, market, explicit)
+    # A source page is more stable than its display title.  Seller centers
+    # routinely revise headlines while keeping the same canonical rule URL.
+    canonical_url = _canonical_rule_url(item.get('source_url') or item.get('url'))
+    if canonical_url:
+        digest = hashlib.sha256(f'{platform}|{market}|{canonical_url}'.encode('utf-8')).hexdigest()[:24]
+        return (platform, market, digest)
+    source_id = str(item.get('source_record_id') or '').strip()
+    if source_id:
+        return (platform, market, source_id)
+    title = str(item.get('title') or item.get('name') or '').strip().casefold()
+    digest = hashlib.sha256(f'{platform}|{market}|{title}'.encode('utf-8')).hexdigest()[:24]
+    return (platform, market, digest)
+
+
+def compare_rule_versions(previous, current):
+    """Compare two normalized rules and return changed fields plus a summary."""
+    previous = previous if isinstance(previous, dict) else {}
+    current = current if isinstance(current, dict) else {}
+    fields = ('title', 'summary', *RULE_DIMENSIONS, 'published_at', 'effective_from', 'effective_to')
+    changed = []
+    for field in fields:
+        old = _rule_value_text(previous.get(field) or (previous.get('rule_dimensions') or {}).get(field))
+        new = _rule_value_text(current.get(field) or (current.get('rule_dimensions') or {}).get(field))
+        if old != new:
+            changed.append(field)
+    labels = [RULE_DIMENSION_LABELS.get(field, field) for field in changed]
+    summary = '规则字段变化：' + '、'.join(labels) if labels else '未检测到规则字段变化'
+    return {'changed_fields': changed, 'change_summary': summary}
+
+
+def normalize_platform_rule(item, *, platform_key=None, market_code=None):
+    """Normalize a platform rule into the permanent-history contract."""
+    record = dict(item or {})
+    platform_key = str(platform_key or record.get('platform_key') or record.get('platform') or '').strip().casefold()
+    market_code = str(market_code or record.get('market_code') or record.get('market') or record.get('region') or '').strip().upper()
+    if platform_key:
+        record['platform_key'] = platform_key
+    if market_code:
+        record['market'] = market_code
+        record['market_code'] = market_code
+    record.setdefault('source_kind', 'official')
+    record.setdefault('source_type', 'platform')
+    record.setdefault('source', record.get('platform') or platform_key or '平台官方规则')
+    record['topic'] = _rule_topic(record)
+    dimensions = {}
+    for dimension in RULE_DIMENSIONS:
+        value = _rule_dimension_value(record, dimension)
+        if value:
+            record[dimension] = value
+            dimensions[dimension] = value
+    record['rule_dimensions'] = dimensions
+    stable_key = str(record.get('rule_key') or record.get('rule_id') or '').strip()
+    if not stable_key:
+        canonical_url = _canonical_rule_url(record.get('source_url') or record.get('url'))
+        if canonical_url:
+            stable_key = hashlib.sha256(f'{platform_key}|{market_code}|{canonical_url}'.encode('utf-8')).hexdigest()[:24]
+    if not stable_key:
+        title = str(record.get('title') or record.get('name') or '').strip()
+        stable_key = hashlib.sha256(f'{platform_key}|{market_code}|{title}'.encode('utf-8')).hexdigest()[:24]
+    record['rule_key'] = stable_key
+    record['id'] = str(record.get('id') or gen_id('r', f'{platform_key}|{market_code}|{stable_key}'))
+    record['source_record_id'] = str(record.get('source_record_id') or stable_key)
+    record.setdefault('rule_version', record.get('version') or '1')
+    record.setdefault('effective_from', record.get('effective_date') or record.get('published_at'))
+    record.setdefault('collected_at', NOW_ISO)
+    source_url = str(record.get('source_url') or '').strip()
+    try:
+        source_path = urlsplit(source_url).path.strip('/')
+    except ValueError:
+        source_path = ''
+    if not source_path:
+        # A platform homepage is not a record-level citation.  Downgrade old
+        # catalog rows instead of allowing them to masquerade as formal data.
+        record['verification_status'] = 'pending'
+        record['verified_at'] = None
+    elif not record.get('verification_status'):
+        record['verification_status'] = 'verified'
+    if record.get('verified_at') is None and record.get('source_url'):
+        if source_path:
+            record['verified_at'] = record['collected_at']
+    record.setdefault('changed_fields', [])
+    record.setdefault('change_summary', '首次采集版本')
+    return record
+
+
+def _is_formal_platform_rule(item):
+    item = item if isinstance(item, dict) else {}
+    url = str(item.get('source_url') or '').strip()
+    return (
+        bool(re.match(r'^https://[^/]+/.+', url, re.I))
+        and str(item.get('verification_status') or '').lower() == 'verified'
+        and bool(item.get('verified_at'))
+    )
+
+
+def build_platform_rule_coverage(items, platform_keys, *, market_codes=None, now=None, stale_days=45):
+    """Compute honest platform status from formal records, never from catalog rows."""
+    now = now or datetime.now(timezone.utc)
+    result = {}
+    for key in list(dict.fromkeys(str(value).strip().casefold() for value in (platform_keys or []) if str(value).strip())):
+        records = [normalize_platform_rule(row) for row in (items or [])
+                   if str((row or {}).get('platform_key') or (row or {}).get('platform') or '').strip().casefold() == key
+                   and (not market_codes or str((row or {}).get('market_code') or (row or {}).get('market') or (row or {}).get('region') or '').strip().upper() in {str(code).upper() for code in market_codes})]
+        formal = [row for row in records if _is_formal_platform_rule(row)]
+        topic_set = set()
+        for row in formal:
+            topic = str(row.get('topic') or '').strip()
+            if topic in RULE_DIMENSIONS:
+                topic_set.add(topic)
+            topic_set.update(
+                key for key in (row.get('rule_dimensions') or {}) if key in RULE_DIMENSIONS
+            )
+        topics = sorted(topic_set)
+        latest = max((str(row.get('verified_at') or '') for row in formal), default=None)
+        fresh = False
+        if latest:
+            try:
+                stamp = datetime.fromisoformat(latest.replace('Z', '+00:00'))
+                if stamp.tzinfo is None:
+                    stamp = stamp.replace(tzinfo=timezone.utc)
+                fresh = (now - stamp).days <= stale_days
+            except ValueError:
+                fresh = False
+        if not formal:
+            status, label, reason = 'not_connected', '未接入', '暂无通过核验的正式规则记录'
+        elif len(topics) < len(RULE_DIMENSIONS) or not fresh:
+            status, label = 'partial', '部分接入'
+            missing = [RULE_DIMENSION_LABELS[name] for name in RULE_DIMENSIONS if name not in topics]
+            reason = ('缺少主题：' + '、'.join(missing)) if missing else '最近核验时间已过期'
+        else:
+            status, label, reason = 'connected', '已接入', '七类规则主题均有近期核验记录'
+        result[key] = {
+            'platform_key': key, 'status': status, 'label': label,
+            'rule_count': len(formal), 'topics': topics,
+            'missing_topics': [name for name in RULE_DIMENSIONS if name not in topics],
+            'last_verified_at': latest, 'reason': reason,
+        }
+    return result
 
 # Third-party industry articles are useful leads, but their market scope must
 # be explicit before they are shown in a market-specific view.  A global
@@ -508,6 +780,17 @@ def fetch_json(
             source_key or host.replace('.', '_'), source_label or host, domain,
             core=core, market_codes=market_codes, platform_keys=platform_keys,
         )
+    if source_key:
+        try:
+            governed_key = assert_source_collectable(source_key)
+            if source:
+                source['source_key'] = governed_key
+        except SourceGovernanceError as error:
+            if source:
+                source['collector_status'] = 'skipped'
+                source['errors'].append(str(error))
+            print(f"  [SKIP] fetch_json blocked before request: {error}")
+            return None
     started = time.perf_counter()
     try:
         req = Request(url, headers=hdrs)
@@ -548,6 +831,17 @@ def fetch_html(
             source_key or host.replace('.', '_'), source_label or host, domain,
             core=core, market_codes=market_codes, platform_keys=platform_keys,
         )
+    if source_key:
+        try:
+            governed_key = assert_source_collectable(source_key)
+            if source:
+                source['source_key'] = governed_key
+        except SourceGovernanceError as error:
+            if source:
+                source['collector_status'] = 'skipped'
+                source['errors'].append(str(error))
+            print(f"  [SKIP] fetch_html blocked before request: {error}")
+            return None
     started = time.perf_counter()
     try:
         req = Request(url, headers=hdrs)
@@ -591,8 +885,13 @@ def _clean_link_text(value):
     return re.sub(r'\s+', ' ', unescape(text)).strip()
 
 # ---- Source: Federal Register API (US Trade Policies) ----
-def collect_federal_register():
-    """Collect US trade-related regulations from Federal Register API."""
+def collect_federal_register(start_date=None, end_date=None, page=1, per_page=10):
+    """Collect US trade-related regulations, optionally for a historical window.
+
+    ``start_date``/``end_date`` are inclusive ISO dates.  The defaults retain
+    the daily newest-page behaviour; backfill jobs pass a window and explicit
+    page size so every request is reproducible.
+    """
     print("[1/6] Collecting Federal Register (US trade regulations)...")
     items = []
     
@@ -604,19 +903,26 @@ def collect_federal_register():
     ]
     
     for agency in agencies:
-        url = build_query_url(
-            'https://www.federalregister.gov/api/v1/documents.json',
-            [
+        params = [
                 ('filter[conditions][agencies][]', agency),
                 ('filter[conditions][type]', 'RULE'),
-                ('per_page', 10),
-                ('order', 'newest'),
+                ('per_page', max(int(per_page), 1)),
+                ('page', max(int(page), 1)),
+                ('order', 'oldest' if start_date else 'newest'),
                 ('fields[]', 'title'),
                 ('fields[]', 'abstract'),
                 ('fields[]', 'publication_date'),
                 ('fields[]', 'html_url'),
+                ('fields[]', 'document_number'),
                 ('fields[]', 'type'),
-            ],
+            ]
+        if start_date:
+            params.append(('filter[publication_date][gte]', str(start_date)[:10]))
+        if end_date:
+            params.append(('filter[publication_date][lte]', str(end_date)[:10]))
+        url = build_query_url(
+            'https://www.federalregister.gov/api/v1/documents.json',
+            params,
         )
         data = fetch_json(
             url,
@@ -654,7 +960,8 @@ def collect_federal_register():
                 category = 'sanction'
             
             items.append({
-                'id': gen_id('p', title),
+                'id': gen_id('p', doc.get('document_number') or title),
+                'source_record_id': doc.get('document_number') or gen_id('p', title),
                 'title': title,
                 'summary': abstract[:300] if abstract else 'See source for details.',
                 'source': f"Federal Register ({agency.replace('-', ' ').title()})",
@@ -726,136 +1033,261 @@ def collect_ustr():
     print(f"  Found {len(items)} items from USTR")
     return items
 
+# ---- Platform rule parsing helpers ----
+def _extract_platform_rule_records(html, base_url, platform_key, platform_name, market='US'):
+    """Parse links/JSON-LD from listing pages without relying on one DOM class."""
+    if not html:
+        return []
+    records = []
+    seen = set()
+    base_host = (urlsplit(base_url).hostname or '').lower().rstrip('.')
+
+    def add(title, source_url, summary='', published_at=None, rule_key=None):
+        title = _clean_link_text(title)
+        source_url = urljoin(base_url, unescape(str(source_url or '').strip()))
+        parsed = urlsplit(source_url)
+        if len(title) < 8 or parsed.scheme != 'https' or not parsed.netloc:
+            return
+        source_host = (parsed.hostname or '').lower().rstrip('.')
+        if source_host != base_host and not source_host.endswith('.' + base_host):
+            return
+        # A homepage or a bare listing root cannot prove a particular rule.
+        if not parsed.path.strip('/'):
+            return
+        if platform_key == 'ebay':
+            # The public eBay selling page mixes rule articles with account,
+            # shopping and global navigation. Only record-level seller help or
+            # policy paths are eligible for the rule collection.
+            path = parsed.path.rstrip('/').casefold()
+            if not (
+                re.match(r'^/help/selling/.+', path)
+                or re.match(r'^/help/policies/member-behaviour-policies/.+', path)
+            ):
+                return
+        key = (title.casefold(), source_url.rstrip('/').casefold())
+        if key in seen:
+            return
+        title_lower = title.casefold()
+        path_lower = parsed.path.casefold()
+        if any(word in title_lower for word in (
+            'cookie', 'sign in', 'log in', 'sign up', 'register', 'javascript', 'privacy',
+            '账户', '注册', '登录', '创建您的亚马逊账户',
+        )) or any(token in path_lower for token in ('/ap/register', '/ap/signin', '/login', '/register')):
+            return
+        seen.add(key)
+        canonical_url = _canonical_rule_url(source_url)
+        derived_key = hashlib.sha256(f'{platform_key}|{market}|{canonical_url or title}'.encode('utf-8')).hexdigest()[:24]
+        record = {
+            'id': gen_id('r', f'{platform_key}|{market}|{title}'),
+            'rule_key': rule_key or derived_key,
+            'title': title,
+            'summary': _clean_link_text(summary),
+            'platform': platform_name,
+            'platform_key': platform_key,
+            'market': market,
+            'market_codes': [market],
+            'category': 'policy',
+            'impact_level': 'high' if re.search(r'fee|commission|penalty|prohibited|禁售|佣金|处罚|mandatory|必须', title, re.I) else 'medium',
+            'effective_date': published_at or NOW_DATE,
+            'published_at': published_at or NOW_DATE,
+            'source_url': source_url,
+            'source_kind': 'official',
+            'source_type': 'platform',
+            'verification_status': 'verified',
+            'verified_at': NOW_ISO,
+            'collected_at': NOW_ISO,
+        }
+        records.append(normalize_platform_rule(record, platform_key=platform_key, market_code=market))
+
+    # Standard anchors, including links rendered by legacy and current pages.
+    anchor_pattern = re.compile(r'<a\b([^>]*?href\s*=\s*["\']([^"\']+)["\'][^>]*)>(.*?)</a\s*>', re.I | re.S)
+    for match in anchor_pattern.finditer(html):
+        attrs, href, body = match.groups()
+        heading = re.search(r'<h[1-6]\b[^>]*>(.*?)</h[1-6]\s*>', body, re.I | re.S)
+        text = _clean_link_text(heading.group(1) if heading else body)
+        date_match = re.search(r'(?:data-(?:date|published)|datetime)\s*=\s*["\']([^"\']+)', attrs, re.I)
+        add(text, href, published_at=(date_match.group(1)[:10] if date_match else None))
+
+    # JSON-LD is used by several seller centers after their client-side redesign.
+    for block in re.findall(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', html, re.I | re.S):
+        try:
+            payload = json.loads(unescape(block).strip())
+        except (TypeError, ValueError, json.JSONDecodeError):
+            continue
+        values = payload if isinstance(payload, list) else [payload]
+        for value in values:
+            if not isinstance(value, dict):
+                continue
+            add(value.get('headline') or value.get('name'), value.get('url') or base_url,
+                value.get('description'), (value.get('datePublished') or value.get('dateModified') or '')[:10] or None,
+                value.get('identifier') or value.get('sku'))
+
+    # Some pages expose a JSON array but not JSON-LD. Keep this fallback narrow
+    # so arbitrary navigation strings are not promoted to formal rules.
+    for title, href, date in re.findall(
+        r'["\'](?:title|headline)["\']\s*:\s*["\']([^"\']{8,160})["\'][\s\S]{0,300}?["\'](?:url|href|link)["\']\s*:\s*["\']([^"\']+)["\'][\s\S]{0,120}?(?:["\'](?:date|published_at)["\']\s*:\s*["\']([^"\']+))?',
+        html, re.I,
+    ):
+        add(title, href, published_at=date[:10] if date else None)
+    return records
+
+
+def _browser_rendered_platform_rules(platform_key, listing_url):
+    """Run the bounded browser fallback without persisting HTML or cookies."""
+    if str(os.environ.get('ENABLE_BROWSER_PLATFORM_RULES', '')).strip().lower() not in {'1', 'true', 'yes'}:
+        return []
+    renderer = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'render_platform_rules.cjs')
+    try:
+        completed = subprocess.run(
+            ['node', renderer, platform_key, listing_url],
+            capture_output=True, text=True, encoding='utf-8', errors='replace',
+            timeout=max(int(os.environ.get('PLATFORM_BROWSER_TIMEOUT_SECONDS', '90')), 30),
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError, ValueError) as error:
+        print(f"  [WARN] browser-rendered {platform_key} collector unavailable: {error}")
+        return []
+    if completed.returncode != 0:
+        detail = re.sub(r'\s+', ' ', completed.stderr or '').strip()[:300]
+        print(f"  [WARN] browser-rendered {platform_key} collector failed: {detail or 'unknown error'}")
+        return []
+    try:
+        payload = json.loads(completed.stdout)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        print(f"  [WARN] browser-rendered {platform_key} collector returned invalid JSON")
+        return []
+    return payload if isinstance(payload, list) else []
+
+
+def _mark_rule_collector_degraded(source_key, message):
+    source = COLLECTION_SOURCES.get(source_key)
+    if source is None:
+        return
+    source['collector_status'] = 'degraded'
+    if message not in source['errors']:
+        source['errors'].append(message)
+
+
 # ---- Source: TikTok Shop Policy Center ----
 def collect_tiktok_shop(include_status=False):
-    """Collect TikTok Shop policy updates."""
+    """Collect TikTok Shop rules across current and legacy official entries."""
     print("[3/6] Collecting TikTok Shop policy updates...")
     items = []
-    source_checked = False
-    
-    # TikTok Shop seller academy policy page
-    urls = [build_query_url(
-        'https://seller.tiktokshopglobalselling.com/university/new-policies',
-        {'identity': 1, 'module_id': 'latest_policies'},
-    )]
-    
+    checked = False
+    urls = [
+        build_query_url('https://seller.tiktokshopglobalselling.com/university/new-policies',
+                        {'identity': 1, 'module_id': 'latest_policies'}),
+        'https://seller.tiktokshopglobalselling.com/university/policy',
+        'https://seller.tiktokshopglobalselling.com/academy/policy',
+    ]
     for url in urls:
-        html = fetch_html(
-            url,
-            source_key='tiktok_shop_rules',
-            source_label='TikTok Shop Seller Center',
-            domain='rule',
-            core=True,
-            market_codes=['US'],
-            platform_keys=['tiktok-shop'],
-        )
+        html = fetch_html(url, source_key='tiktok_shop_rules', source_label='TikTok Shop Seller Center',
+                          domain='rule', core=True, market_codes=['US'], platform_keys=['tiktok-shop'])
         if not html:
             continue
-        source_checked = True
-        
-        # Try to find policy update entries
-        # Look for text patterns like policy titles
-        patterns = [
-            r'(?:规则速递|政策更新|Policy Update|New Polic)[^<]{5,200}',
-            r'<h[23][^>]*>([^<]{10,100})</h[23]>',
-            r'"title":"([^"]{10,100})"',
-        ]
-        
-        for pat in patterns:
-            matches = re.findall(pat, html)
-            for m in matches:
-                title = m.strip() if isinstance(m, str) else m
-                if len(title) < 10 or title in [x.get('title','') for x in items]:
-                    continue
-                items.append({
-                    'id': gen_id('r', title),
-                    'title': title,
-                    'summary': '',
-                    'platform': 'TikTok Shop',
-                    'market': 'US',
-                    'market_codes': ['US'],
-                    'platform_key': 'tiktok-shop',
-                    'category': 'policy',
-                    'impact_level': 'medium',
-                    'effective_date': NOW_DATE,
-                    'source_url': 'https://seller.tiktokshopglobalselling.com/',
-                    'published_at': NOW_DATE,
-                    'collected_at': NOW_ISO
-                })
-        
-        if items:
+        checked = True
+        items.extend(_extract_platform_rule_records(html, url, 'tiktok-shop', 'TikTok Shop'))
+        if len(items) >= 30:
             break
-    
+    if not items:
+        rendered = _browser_rendered_platform_rules('tiktok-shop', urls[0])
+        checked = checked or bool(rendered)
+        items.extend(
+            normalize_platform_rule(row, platform_key='tiktok-shop', market_code='US')
+            for row in rendered if isinstance(row, dict)
+        )
+    # Deduplicate by stable rule key while retaining the first official URL.
+    unique = {}
+    for item in items:
+        unique.setdefault(item['rule_key'], item)
+    items = list(unique.values())[:30]
+    if checked and not items:
+        _mark_rule_collector_degraded(
+            'tiktok_shop_rules',
+            'official pages were reachable but no rule records were extracted; enable browser rendering or review the page contract',
+        )
     print(f"  Found {len(items)} items from TikTok Shop")
-    return (items, source_checked) if include_status else items
+    return (items, checked) if include_status else items
+
 
 # ---- Source: Amazon Seller Central News ----
 def collect_amazon(include_status=False):
-    """Collect Amazon Seller Central announcements."""
+    """Collect Amazon announcements with endpoint and markup fallbacks."""
     print("[4/6] Collecting Amazon Seller Central announcements...")
     items = []
-    
-    source_options = {
-        'source_key': 'amazon_rules',
-        'source_label': 'Amazon Seller Central',
-        'domain': 'rule',
-        'core': True,
-        'market_codes': ['US'],
-        'platform_keys': ['amazon'],
-    }
-    html = fetch_html('https://sellercentral.amazon.com/news', **source_options)
-    if not html:
-        html = fetch_html('https://sellercentral.amazon.com/gp/help/news', **source_options)
-    if not html:
-        print("  [WARN] Could not fetch Amazon Seller Central news")
-        return (items, False) if include_status else items
-    
-    # Find announcement titles
-    patterns = [
-        r'<h[23][^>]*>([^<]{15,120})</h[23]>',
-        r'"headline":"([^"]{15,120})"',
-        r'<a[^>]+href="[^"]*news[^"]*"[^>]*>([^<]{15,120})</a>',
+    checked = False
+    options = {'source_key': 'amazon_rules', 'source_label': 'Amazon Seller Central', 'domain': 'rule',
+               'core': True, 'market_codes': ['US'], 'platform_keys': ['amazon']}
+    urls = [
+        'https://sellercentral.amazon.com/gp/help/news',
+        'https://sellercentral.amazon.com/help/hub/reference/G200164330',
     ]
-    
-    seen = set()
-    for pat in patterns:
-        matches = re.findall(pat, html)
-        for m in matches:
-            title = m.strip()
-            if title in seen or len(title) < 15:
-                continue
-            seen.add(title)
-            
-            # Filter for relevant content
-            skip_kw = ['cookie', 'javascript', 'sign in', 'log in']
-            if any(kw in title.lower() for kw in skip_kw):
-                continue
-            
-            impact = 'high' if any(kw in title.lower() for kw in ['fee', 'policy', 'requirement', 'mandatory', 'change', 'update', 'new']) else 'medium'
-            
-            items.append({
-                'id': gen_id('r', title),
-                'title': title,
-                'summary': '',
-                    'platform': 'Amazon',
-                    'market': 'US',
-                    'market_codes': ['US'],
-                    'platform_key': 'amazon',
-                'category': 'policy',
-                'impact_level': impact,
-                'effective_date': NOW_DATE,
-                'source_url': 'https://sellercentral.amazon.com/',
-                'published_at': NOW_DATE,
-                'collected_at': NOW_ISO
-            })
-            
-            if len(items) >= 15:
-                break
-        if len(items) >= 15:
+    for url in urls:
+        html = fetch_html(url, **options)
+        if not html:
+            continue
+        checked = True
+        items.extend(_extract_platform_rule_records(html, url, 'amazon', 'Amazon'))
+        if len(items) >= 30:
             break
-    
+    unique = {}
+    for item in items:
+        unique.setdefault(item['rule_key'], item)
+    items = list(unique.values())[:30]
+    if checked and not items:
+        _mark_rule_collector_degraded(
+            'amazon_rules',
+            'official help pages were reachable but exposed no public rule records; authenticated endpoint review is required',
+        )
     print(f"  Found {len(items)} items from Amazon")
-    return (items, True) if include_status else items
+    return (items, checked) if include_status else items
+
+
+def _collect_optional_platform_rules(platform_key, platform_name, source_key, urls):
+    """Collect an optional platform only when operators explicitly enable it.
+
+    AliExpress and eBay do not expose one stable, universally authorized US
+    rules endpoint.  Keeping the collector disabled by default prevents a
+    directory entry or guessed fee from being presented as official data.
+    """
+    if str(os.environ.get('ENABLE_OPTIONAL_PLATFORM_RULES', '')).strip().lower() not in {'1', 'true', 'yes'}:
+        print(f"  [INFO] {platform_name} collector disabled pending endpoint authorization")
+        source = COLLECTION_SOURCES.get(source_key)
+        if source is not None:
+            source['collector_status'] = 'skipped'
+            reason = 'official endpoint authorization is not configured'
+            if reason not in source['errors']:
+                source['errors'].append(reason)
+        return []
+    items = []
+    for url in urls:
+        html = fetch_html(url, source_key=source_key, source_label=f'{platform_name} Official Rules',
+                          domain='rule', core=False, market_codes=['US'], platform_keys=[platform_key])
+        if not html:
+            continue
+        items.extend(_extract_platform_rule_records(html, url, platform_key, platform_name))
+        if len(items) >= 30:
+            break
+    unique = {}
+    for item in items:
+        unique.setdefault(item['rule_key'], item)
+    return list(unique.values())[:30]
+
+
+def collect_aliexpress(include_status=False):
+    items = _collect_optional_platform_rules(
+        'aliexpress', 'AliExpress', 'aliexpress_rules',
+        ['https://sell.aliexpress.com/soho/rules', 'https://rulechannel.aliexpress.com/'],
+    )
+    return (items, bool(items)) if include_status else items
+
+
+def collect_ebay(include_status=False):
+    items = _collect_optional_platform_rules(
+        'ebay', 'eBay', 'ebay_rules',
+        ['https://www.ebay.com/help/selling', 'https://pages.ebay.com/seller-center/'],
+    )
+    return (items, bool(items)) if include_status else items
 
 # ---- Source: Chinese Cross-border E-commerce News ----
 def collect_cn_news():
@@ -1166,7 +1598,7 @@ ITEM_CAP = 400  # 单个数据文件的自动采集条目上限（人工基线�
 
 # ---- Merge & Deduplicate ----
 def merge_data(existing_file, new_items, key_fields=['title'], baseline_kind=None, cap=ITEM_CAP):
-    """Merge new items with existing data, dedup by title similarity.
+    """Merge records while retaining append-only rule revisions.
 
     baseline_kind: 'policies' / 'rules'。给定时，会把 data/{kind}_baseline.json
     的人工条目并入结果，并在裁剪时保护它们不被挤出。
@@ -1190,10 +1622,55 @@ def merge_data(existing_file, new_items, key_fields=['title'], baseline_kind=Non
     else:
         existing = {'updated_at': NOW_ISO, 'source_count': 0, 'items': []}
     
-    # Normalize provenance before deduplication so new and persisted records
-    # share the same evidence envelope.  Legacy records are left untouched;
-    # the validator reports their compatibility inference separately.
-    new_items = [annotate_provenance(item) for item in new_items if isinstance(item, dict)]
+    # Rules use a stable platform/market/rule key.  This prevents a title or
+    # endpoint rename from creating a second current record and gives the
+    # permanent-history sync a deterministic revision boundary.
+    if baseline_kind == 'rules':
+        existing['items'] = [
+            annotate_provenance(normalize_platform_rule(item))
+            for item in existing.get('items', []) if isinstance(item, dict)
+        ]
+        new_items = [
+            annotate_provenance(normalize_platform_rule(item))
+            for item in new_items if isinstance(item, dict)
+        ]
+        existing_by_identity = {_rule_identity(item): index for index, item in enumerate(existing['items'])}
+        added = 0
+        for item in new_items:
+            identity = _rule_identity(item)
+            old_index = existing_by_identity.get(identity)
+            if old_index is None:
+                existing['items'].insert(0, item)
+                existing_by_identity = {_rule_identity(row): index for index, row in enumerate(existing['items'])}
+                added += 1
+                continue
+            previous = existing['items'][old_index]
+            diff = compare_rule_versions(previous, item)
+            if not diff['changed_fields']:
+                continue
+            history = previous.get('version_history') if isinstance(previous.get('version_history'), list) else []
+            # Keep history compact and immutable; the full evidence payload is
+            # retained in the permanent-history tables, not duplicated here.
+            previous_snapshot = {key: previous.get(key) for key in (
+                'id', 'rule_key', 'rule_version', 'title', 'summary', 'rule_dimensions',
+                'source_url', 'published_at', 'effective_from', 'effective_to',
+                'collected_at', 'verified_at', 'changed_fields', 'change_summary'
+            ) if previous.get(key) is not None}
+            item['version_history'] = (history + [previous_snapshot])[-20:]
+            try:
+                prior_version = int(str(previous.get('rule_version') or '0').lstrip('vV'))
+            except ValueError:
+                prior_version = len(history)
+            item['rule_version'] = str(max(prior_version + 1, 1))
+            item['previous_version'] = previous.get('rule_version')
+            item.update(diff)
+            existing['items'][old_index] = item
+            existing_by_identity = {_rule_identity(row): index for index, row in enumerate(existing['items'])}
+        # Baselines are appended below and intentionally remain demo records.
+    else:
+        # Normalize provenance before deduplication.  Legacy policy records are
+        # preserved; their compatibility status is evaluated by the validator.
+        new_items = [annotate_provenance(item) for item in new_items if isinstance(item, dict)]
 
     existing_titles = set()
     for item in existing['items']:
@@ -1203,16 +1680,17 @@ def merge_data(existing_file, new_items, key_fields=['title'], baseline_kind=Non
         if len(t) > 20:
             existing_titles.add(t[:20].lower())
     
-    added = 0
-    for item in new_items:
-        t = item.get('title', '').strip().lower()
-        if t in existing_titles or t[:20] in existing_titles:
-            continue
-        existing['items'].insert(0, item)
-        existing_titles.add(t)
-        if len(t) > 20:
-            existing_titles.add(t[:20].lower())
-        added += 1
+    if baseline_kind != 'rules':
+        added = 0
+        for item in new_items:
+            t = item.get('title', '').strip().lower()
+            if t in existing_titles or t[:20] in existing_titles:
+                continue
+            existing['items'].insert(0, item)
+            existing_titles.add(t)
+            if len(t) > 20:
+                existing_titles.add(t[:20].lower())
+            added += 1
     
     # ---- 人工基线并集（不存在基线文件时行为与以前完全一致）----
     baseline_titles = set()
@@ -1452,6 +1930,8 @@ def main():
     implemented_platform_collectors = {
         'amazon': ('amazon_rules', 'Amazon Seller Central', collect_amazon),
         'tiktok-shop': ('tiktok_shop_rules', 'TikTok Shop Seller Center', collect_tiktok_shop),
+        'aliexpress': ('aliexpress_rules', 'AliExpress Official Rules', collect_aliexpress),
+        'ebay': ('ebay_rules', 'eBay Official Rules', collect_ebay),
     }
     scope['unconnected_platform_keys'] = [
         key for key in scope['platform_keys'] if key not in implemented_platform_collectors
@@ -1529,7 +2009,8 @@ def main():
             )
         ]
         all_rules.extend(run_collection_source(
-            source_key, label, 'rule', collector, core=True,
+            source_key, label, 'rule', collector,
+            core=platform_key in {'amazon', 'tiktok-shop'},
             market_codes=market_codes, platform_keys=[platform_key],
         ))
     
@@ -1606,6 +2087,18 @@ def main():
         key: _source_status(COLLECTION_SOURCES[key])
         for key in rule_source_keys if key in COLLECTION_SOURCES
     }
+    platform_coverage = build_platform_rule_coverage(
+        rules_data.get('items', []), scope.get('platform_keys', []),
+        market_codes=scope.get('market_codes', []), now=datetime.now(timezone.utc)
+    )
+    # Both names are kept for consumers introduced in different releases.
+    # They are derived from formal records and never from market_scope.json.
+    rules_data['platform_coverage'] = platform_coverage
+    rules_data['platform_status'] = platform_coverage
+    scope['platform_status'] = platform_coverage
+    scope['unconnected_platform_keys'] = [
+        key for key, status in platform_coverage.items() if status.get('status') == 'not_connected'
+    ]
     
     # Save
     os.makedirs(DATA_DIR, exist_ok=True)

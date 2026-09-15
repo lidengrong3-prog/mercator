@@ -40,7 +40,20 @@ import urllib.parse
 import urllib.error
 import ssl
 import hashlib
-from datetime import datetime, timezone
+import uuid
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+from private_artifact_store import upload_private_artifact
+from source_governance import (
+    access_policy_rows,
+    canonical_source_key,
+    classify_source_for_publication,
+    quarantine_unlicensed_record,
+    registry_rows,
+    source_is_publishable,
+    source_metadata,
+)
 
 from validate_data import (
     DEFAULT_SCOPE_PLATFORMS,
@@ -66,6 +79,12 @@ ROOT = os.path.dirname(HERE)
 DATA_DIR = os.path.join(ROOT, "data")
 US_MARKET_DIR = os.path.join(DATA_DIR, "us_market")
 MARKET_SCOPE_PATH = os.path.join(DATA_DIR, "market_scope.json")
+HISTORY_TABLES = (
+    "source_fetch_runs", "raw_source_records", "policy_documents", "policy_versions",
+    "platform_rules", "platform_rule_versions", "product_entities", "product_snapshots",
+    "shop_entities", "shop_snapshots", "content_entities", "content_snapshots",
+    "formal_publications",
+)
 
 
 PROVENANCE_DATASETS = {
@@ -79,6 +98,130 @@ PROVENANCE_DATASETS = {
     "macro": (os.path.join("us_market", "macro_indicators.json"), "market"),
     "cpsc": (os.path.join("us_market", "cpsc_recalls.json"), "alert"),
 }
+
+SOURCE_ACCESS_POLICIES = {
+    "federal-register": {
+        "license_class": "official_public", "access_class": "public_summary",
+        "redistribution_allowed": True, "retention_days": 730,
+        "authorization_secret_name": None,
+        "provider_terms_url": "https://www.federalregister.gov/policy",
+        "permitted_uses": ["audit", "analysis", "public_summary"],
+    },
+    "ustr": {
+        "license_class": "official_public", "access_class": "public_summary",
+        "redistribution_allowed": True, "retention_days": 730,
+        "authorization_secret_name": None,
+        "provider_terms_url": "https://ustr.gov/about-us/policy-offices/press-office/website-policies",
+        "permitted_uses": ["audit", "analysis", "public_summary"],
+    },
+    "cpsc": {
+        "license_class": "official_public", "access_class": "public_summary",
+        "redistribution_allowed": True, "retention_days": 730,
+        "authorization_secret_name": None,
+        "provider_terms_url": "https://www.cpsc.gov/About-CPSC/Policies-Statements-and-Directives",
+        "permitted_uses": ["audit", "analysis", "public_summary"],
+    },
+    "fred": {
+        "license_class": "official_public", "access_class": "public_summary",
+        "redistribution_allowed": True, "retention_days": 730,
+        "authorization_secret_name": "FRED_API_KEY",
+        "provider_terms_url": "https://fred.stlouisfed.org/legal/",
+        "permitted_uses": ["audit", "analysis", "public_summary"],
+    },
+    "bls": {
+        "license_class": "official_public", "access_class": "public_summary",
+        "redistribution_allowed": True, "retention_days": 730,
+        "authorization_secret_name": None,
+        "provider_terms_url": "https://www.bls.gov/bls/linksite.htm",
+        "permitted_uses": ["audit", "analysis", "public_summary"],
+    },
+    "platform-official": {
+        "license_class": "official_public", "access_class": "public_summary",
+        "redistribution_allowed": True, "retention_days": 365,
+        "authorization_secret_name": None, "provider_terms_url": None,
+        "permitted_uses": ["audit", "analysis", "public_summary"],
+    },
+    "official-source": {
+        "license_class": "official_public", "access_class": "public_summary",
+        "redistribution_allowed": True, "retention_days": 730,
+        "authorization_secret_name": None, "provider_terms_url": None,
+        "permitted_uses": ["audit", "analysis", "public_summary"],
+    },
+    "traceable-feed": {
+        "license_class": "restricted", "access_class": "service_private",
+        "redistribution_allowed": False, "retention_days": 180,
+        "authorization_secret_name": None, "provider_terms_url": None,
+        "permitted_uses": ["audit", "analysis"],
+    },
+    "user-upload": {
+        "license_class": "user_owned", "access_class": "workspace_private",
+        "redistribution_allowed": False, "retention_days": 365,
+        "authorization_secret_name": None, "provider_terms_url": None,
+        "permitted_uses": ["workspace_analysis"],
+    },
+    "derived": {
+        "license_class": "internal", "access_class": "service_private",
+        "redistribution_allowed": False, "retention_days": 365,
+        "authorization_secret_name": None, "provider_terms_url": None,
+        "permitted_uses": ["analysis"],
+    },
+    "demo": {
+        "license_class": "restricted", "access_class": "blocked",
+        "redistribution_allowed": False, "retention_days": 30,
+        "authorization_secret_name": None, "provider_terms_url": None,
+        "permitted_uses": [],
+    },
+    "tikhub": {
+        "license_class": "commercial", "access_class": "service_private",
+        "redistribution_allowed": False, "retention_days": 30,
+        "authorization_secret_name": "TIKHUB_API_KEY",
+        "provider_terms_url": "https://tikhub.io/zh/terms",
+        "permitted_uses": ["internal_search", "workspace_analysis"],
+    },
+    "internal-system": {
+        "license_class": "internal", "access_class": "service_private",
+        "redistribution_allowed": False, "retention_days": 90,
+        "authorization_secret_name": None, "provider_terms_url": None,
+        "permitted_uses": ["operations", "audit", "recovery"],
+    },
+}
+
+PRIVATE_ARTIFACT_SPECS = (
+    # The Worker publishes these files before the repository projection step.
+    # Keeping the complete copies in private Storage lets a replacement
+    # container hydrate an empty persistent volume without using Git as a raw
+    # data store.
+    ("data/countries.json", "internal-system", "internal_dataset", 365),
+    ("data/platforms.json", "internal-system", "internal_dataset", 365),
+    ("data/policies.json", "internal-system", "internal_dataset", 365),
+    ("data/rules.json", "internal-system", "internal_dataset", 365),
+    ("data/us_market/macro_indicators.json", "internal-system", "internal_dataset", 365),
+    ("data/collection_run.json", "internal-system", "collection_log", 90),
+    ("data/alerts_detailed.json", "internal-system", "internal_dataset", 180),
+    ("data/macro_raw.json", "internal-system", "raw_response", 180),
+    ("data/countries_new.json", "internal-system", "internal_dataset", 180),
+    ("data/policies_baseline.json", "internal-system", "internal_dataset", 365),
+    ("data/rules_baseline.json", "internal-system", "internal_dataset", 365),
+    ("data/quarantine_*.json", "internal-system", "quarantine", 90),
+    ("data/_cfd_part1.json", "internal-system", "internal_dataset", 365),
+    ("data/_ext_part1.json", "internal-system", "internal_dataset", 365),
+    ("data/_new_cfd_js.txt", "internal-system", "internal_dataset", 365),
+    ("data/_new_ext_js.txt", "internal-system", "internal_dataset", 365),
+    ("data/_sync_logs/*.json", "internal-system", "sync_log", 90),
+    ("data/private_repository_source/**/*", "internal-system", "internal_dataset", 180),
+    ("data/us_market/cpsc_recalls.json", "cpsc", "raw_response", 730),
+    ("data/us_market/index.json", "internal-system", "internal_dataset", 180),
+    ("data/us_market/apparel.json", "internal-system", "internal_dataset", 180),
+    ("data/us_market/auto.json", "internal-system", "internal_dataset", 180),
+    ("data/us_market/beauty.json", "internal-system", "internal_dataset", 180),
+    ("data/us_market/electronics.json", "internal-system", "internal_dataset", 180),
+    ("data/us_market/home.json", "internal-system", "internal_dataset", 180),
+    ("data/us_market/sports.json", "internal-system", "internal_dataset", 180),
+    ("data/us_market/supplements.json", "internal-system", "internal_dataset", 180),
+    ("data/us_market/toys.json", "internal-system", "internal_dataset", 180),
+    ("data/providers/tikhub/**/*", "tikhub", "licensed_dataset", 30),
+    ("data/private/tikhub/**/*", "tikhub", "licensed_dataset", 30),
+)
 
 INDUSTRY_MARKET_PATTERNS = {
     "US": re.compile(
@@ -139,6 +282,8 @@ def source_key_for_record(record):
     source_type = normalize_source_type(record.get("source_type"))
     url = source_url_for(record).lower()
     source_text = f"{record.get('source', '')} {record.get('platform', '')}".lower()
+    if "tikhub.io" in url or "tikhub" in source_text:
+        return "tikhub"
     if is_industry_advisory(record):
         return "traceable-feed"
     if "federalregister.gov" in url:
@@ -149,15 +294,41 @@ def source_key_for_record(record):
         return "cpsc"
     if "cpsc" in source_text or "consumer product safety" in source_text:
         return "cpsc"
+    if "fred.stlouisfed.org" in url or re.search(r"\bfred\b", source_text):
+        return "fred"
+    if "bls.gov" in url or re.search(r"\bbls\b", source_text):
+        return "bls"
     if source_type == "user_upload" or kind == "uploaded":
         return "user-upload"
     if kind == "demo":
         return "demo"
     if source_type == "platform" or record.get("platform"):
         return "platform-official"
+    if kind == "official" and source_type in {"government", "regulator", "official_feed"}:
+        return "official-source"
     if kind == "derived":
         return "derived"
     return "traceable-feed"
+
+
+def source_access_policy(source_key):
+    """Return the explicit license and retention policy for a source."""
+    key = canonical_source_key(source_key)
+    base = dict(SOURCE_ACCESS_POLICIES.get(key, SOURCE_ACCESS_POLICIES["traceable-feed"]))
+    try:
+        governed = source_metadata(key).get("access_policy") or {}
+    except Exception:
+        governed = {}
+    # The governance ledger extends the original privacy policy with the
+    # authorization, price, rate-limit and field allowlist contract.
+    base.update(governed)
+    return base
+
+
+def redistribution_allowed_for_record(record):
+    """Only explicitly redistributable sources may enter public projections."""
+    source_key = source_key_for_record(record)
+    return bool(source_is_publishable(source_key) and source_access_policy(source_key)["redistribution_allowed"])
 
 
 def is_industry_advisory(record):
@@ -241,19 +412,64 @@ def explicit_industry_market_codes(record):
 
 def public_market_data_payload(key, data):
     """Build the current-scope formal payload exposed to anonymous clients."""
+    def with_governed_source(record):
+        copy_record = dict(record)
+        source_key = source_key_for_record(record)
+        lineage = classify_source_for_publication(source_key)
+        copy_record["source_key"] = source_key
+        copy_record["source_category"] = lineage["source_category"]
+        copy_record["authorization_status"] = lineage["authorization_status"]
+        copy_record["publication_status"] = "eligible"
+        return copy_record
+
     item_domains = {
         "policies": "policy",
         "taxes": "tax",
         "access_requirements": "access",
         "rules": "rule",
     }
+    if key == "industry_advisories":
+        # Public industry references are a deliberately small editorial
+        # projection, not raw provider responses and never formal evidence.
+        if not isinstance(data, dict) or not isinstance(data.get("items"), list):
+            return {"updated_at": None, "source_count": 0, "items": []}
+        allowed_fields = {
+            "id", "title", "summary", "title_zh", "summary_zh", "source",
+            "source_url", "region", "market_codes", "category", "impact_level",
+            "published_at", "collected_at", "source_kind", "source_type",
+            "source_class", "verification_status", "verified_at", "translation",
+        }
+        items = []
+        for item in data["items"]:
+            if not isinstance(item, dict) or not is_industry_advisory(item):
+                continue
+            parsed = urllib.parse.urlsplit(str(item.get("source_url") or ""))
+            if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
+                continue
+            market_codes = explicit_industry_market_codes(item) or infer_industry_market_codes(item)
+            public_market_codes = sorted({code for code in market_codes if is_current_scope_market(code)})
+            if not public_market_codes:
+                continue
+            projected = {field: item.get(field) for field in allowed_fields if field in item}
+            projected["market_codes"] = public_market_codes
+            projected["source_kind"] = "traceable"
+            projected["source_type"] = "licensed_provider"
+            projected["source_class"] = "industry_advisory"
+            projected["verification_status"] = "pending"
+            projected["verified_at"] = None
+            items.append(projected)
+        return {
+            "updated_at": data.get("updated_at"),
+            "source_count": len({str(item.get("source") or "") for item in items if item.get("source")}),
+            "items": items,
+        }
     if key in item_domains:
         if not isinstance(data, dict) or not isinstance(data.get("items"), list):
             return data
         domain = item_domains[key]
         payload = dict(data)
         payload["items"] = [
-            item for item in data["items"]
+            with_governed_source(item) for item in data["items"]
             if _is_public_formal_record(key, domain, item)
         ]
         payload["source_count"] = len({
@@ -285,7 +501,7 @@ def public_market_data_payload(key, data):
         payload = dict(data)
         generated_at = data.get("meta", {}).get("generated_at") if isinstance(data.get("meta"), dict) else None
         payload["indicators"] = {
-            indicator_key: value
+            indicator_key: with_governed_source(value)
             for indicator_key, value in data["indicators"].items()
             if _is_public_macro_indicator(indicator_key, value, generated_at)
         }
@@ -297,7 +513,11 @@ def public_market_data_payload(key, data):
 
 
 def _is_public_formal_record(dataset_key, domain, item):
-    if not isinstance(item, dict) or is_industry_advisory(item):
+    if (
+        not isinstance(item, dict)
+        or is_industry_advisory(item)
+        or not redistribution_allowed_for_record(item)
+    ):
         return False
     market = item.get("region") or item.get("market") or item.get("country")
     if not is_current_scope_market(market):
@@ -325,6 +545,7 @@ def _is_public_alert(row):
     record = _alert_record(row)
     return bool(
         record
+        and redistribution_allowed_for_record(record)
         and is_current_scope_market(record.get("market"))
         and record_quality(
             record,
@@ -346,7 +567,10 @@ def _is_public_macro_indicator(indicator_key, value, generated_at):
         published_at=value.get("published_at") or value.get("date"),
         collected_at=value.get("collected_at") or generated_at,
     )
-    return record_quality(record, require_scope=True, domain="market").get("formal", False)
+    return (
+        redistribution_allowed_for_record(record)
+        and record_quality(record, require_scope=True, domain="market").get("formal", False)
+    )
 
 
 def iter_provenance_records(only="all"):
@@ -398,18 +622,406 @@ def iter_provenance_records(only="all"):
 
 def build_source_registry_rows(only="all"):
     """Build idempotent source registry rows needed by raw records."""
-    rows = [
-        {"source_key": "federal-register", "name": "US Federal Register", "source_kind": "official", "source_type": "government", "base_url": "https://www.federalregister.gov/", "verification_policy": "automatic", "status": "active"},
-        {"source_key": "ustr", "name": "US Trade Representative", "source_kind": "official", "source_type": "government", "base_url": "https://ustr.gov/", "verification_policy": "automatic", "status": "active"},
-        {"source_key": "cpsc", "name": "US Consumer Product Safety Commission", "source_kind": "official", "source_type": "regulator", "base_url": "https://www.cpsc.gov/", "verification_policy": "automatic", "status": "active"},
-        {"source_key": "platform-official", "name": "Platform official announcements", "source_kind": "traceable", "source_type": "platform", "base_url": None, "verification_policy": "manual_review", "status": "active"},
-        {"source_key": "traceable-feed", "name": "Traceable licensed or industry feed", "source_kind": "traceable", "source_type": "licensed_provider", "base_url": None, "verification_policy": "manual_review", "status": "active"},
-        {"source_key": "user-upload", "name": "人工上传数据", "source_kind": "uploaded", "source_type": "user_upload", "base_url": None, "verification_policy": "upload_review", "status": "active"},
-        {"source_key": "derived", "name": "由正式记录派生的数据", "source_kind": "derived", "source_type": "derived", "base_url": None, "verification_policy": "automatic", "status": "active"},
-        {"source_key": "demo", "name": "演示数据（不可发布）", "source_kind": "demo", "source_type": "demo", "base_url": None, "verification_policy": "blocked", "status": "inactive"},
-    ]
+    rows = registry_rows()
     used = {source_key_for_record(row) for _, _, row, _ in iter_provenance_records(only)}
-    return [row for row in rows if row["source_key"] in used or row["source_key"] in {"federal-register", "user-upload"}]
+    always_required = {"federal-register", "user-upload", "tikhub", "internal-system"}
+    return [row for row in rows if row["source_key"] in used or row["source_key"] in always_required]
+
+
+def build_source_policy_rows(registry_rows):
+    """Build private authorization policies only for registered sources."""
+    rows = []
+    for registry in registry_rows:
+        source_key = registry["source_key"]
+        policy = source_access_policy(source_key)
+        rows.append({"source_key": source_key, **policy})
+    return rows
+
+
+def history_uuid(namespace, *parts):
+    """Return the same deterministic UUID produced by the SQL history_uuid()."""
+    value = "|".join(str(part or "") for part in parts)
+    digest = hashlib.md5(f"{namespace}:{value}".encode("utf-8")).hexdigest()
+    return str(uuid.UUID(digest))
+
+
+def collection_run_id(collection_run):
+    """Use the collector's UUID, with a stable fallback for older ledgers."""
+    if isinstance(collection_run, dict) and str(collection_run.get("run_id") or "").strip():
+        return str(collection_run["run_id"]).strip()
+    if not isinstance(collection_run, dict):
+        collection_run = {}
+    return history_uuid(
+        "collection-run",
+        collection_run.get("started_at") or collection_run.get("completed_at") or "unknown",
+        json.dumps(collection_run.get("scope") or {}, ensure_ascii=False, sort_keys=True),
+    )
+
+
+def _timestamp(value, fallback=None):
+    text = str(value or fallback or "").strip()
+    if not text:
+        return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    return text
+
+
+def build_source_fetch_run_rows(collection_run, only="all"):
+    """Flatten a collection ledger into one immutable row per source attempt."""
+    if not isinstance(collection_run, dict):
+        return []
+    selected = None if only in ("all", "catalog") else only
+    selected_aliases = {
+        "macro": "fred_bls_macro", "cpsc": "cpsc_recalls",
+        "us_market": "us_market_categories",
+    }
+    selected_key = selected_aliases.get(selected, selected)
+    run_id = collection_run_id(collection_run)
+    rows = []
+    for source in collection_run.get("sources") or []:
+        if not isinstance(source, dict) or not source.get("key"):
+            continue
+        key = str(source.get("key"))
+        if selected_key and selected_key not in {key, canonical_source_key(key)}:
+            continue
+        source_key = canonical_source_key(source.get("source_key") or key)
+        started = _timestamp(source.get("attempted_at") or collection_run.get("started_at"))
+        completed = _timestamp(source.get("last_checked_at") or collection_run.get("completed_at"), started)
+        status = str(source.get("status") or "skipped").lower()
+        if status not in {"succeeded", "degraded", "failed", "skipped"}:
+            status = "succeeded"
+        rows.append({
+            "id": history_uuid("source-fetch-run", run_id, key),
+            "run_id": run_id,
+            "source_key": source_key,
+            "collector_key": key,
+            "domain": str(source.get("domain") or "supporting"),
+            "status": status,
+            "scope": collection_run.get("scope") or {},
+            "started_at": started,
+            "completed_at": completed,
+            "duration_ms": max(int(source.get("duration_ms") or 0), 0),
+            "request_count": max(int(source.get("request_count") or 0), 0),
+            "successful_requests": max(int(source.get("successful_requests") or 0), 0),
+            "failed_requests": max(int(source.get("failed_requests") or 0), 0),
+            "records_collected": max(int(source.get("records_collected") or 0), 0),
+            "records_in_scope": max(int(source.get("records_in_scope") or 0), 0),
+            "errors": source.get("errors") if isinstance(source.get("errors"), list) else [],
+            "result": source,
+        })
+    return rows
+
+
+def _stable_id_value(item, names):
+    for name in names:
+        value = item.get(name)
+        if value is not None and str(value).strip():
+            return str(value).strip()
+    return None
+
+
+def _number(item, names):
+    value = _stable_id_value(item, names)
+    if value is None:
+        return None
+    try:
+        return float(value) if "." in value else int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _rule_dimensions(item):
+    aliases = {
+        "fee": ("fee", "fee_desc", "feeDesc", "费用", "费用说明"),
+        "commission": ("commission", "commission_rate", "commissionRate", "佣金", "佣金说明"),
+        "deposit": ("deposit", "deposit_amount", "security_deposit", "securityDeposit", "保证金"),
+        "fulfillment": ("fulfillment", "fulfillment_mode", "fulfillmentMode", "shipping", "logistics", "履约"),
+        "prohibited": ("prohibited", "prohibited_items", "prohibitedItems", "restricted", "禁售"),
+        "settlement": ("settlement", "settlement_cycle", "settlementCycle", "payout", "结算"),
+        "penalty": ("penalty", "penalties", "penalty_rules", "penaltyRules", "处罚", "扣分"),
+    }
+    return {
+        key: item[name]
+        for key, names in aliases.items()
+        for name in names
+        if name in item and item[name] is not None
+    }
+
+
+def _public_payload(item, allowed):
+    payload = item if isinstance(item, dict) else {}
+    return {key: payload[key] for key in (allowed or []) if key in payload}
+
+
+def _scope_rows_for_raw(raw, applicability_rows):
+    matches = [
+        row for row in applicability_rows
+        if row.get("source_key") == raw.get("source_key")
+        and row.get("source_record_id") == raw.get("source_record_id")
+        and row.get("evidence_hash") == raw.get("evidence_hash")
+    ]
+    if matches:
+        return matches
+    item = raw.get("payload") if isinstance(raw.get("payload"), dict) else {}
+    markets = raw.get("market_codes") or [None]
+    platforms = raw.get("platform_keys") or [None]
+    return [
+        {
+            "domain": raw.get("domain"), "market_code": market, "platform_key": platform,
+            "category_code": None, "jurisdiction_code": None,
+            "record_key": raw.get("source_record_id"),
+        }
+        for market in markets for platform in platforms
+    ]
+
+
+def _snapshot_descriptor(raw):
+    item = raw.get("payload") if isinstance(raw.get("payload"), dict) else {}
+    snapshot_type = str(
+        item.get("snapshot_type") or item.get("snapshotType") or raw.get("domain") or ""
+    ).casefold()
+    kind = snapshot_type.split("_", 1)[0]
+    if kind not in {"product", "shop", "content"}:
+        return None
+    platform = str(
+        item.get("platform_key") or item.get("platform")
+        or (raw.get("platform_keys") or [""])[0] or ""
+    ).casefold()
+    market = str(
+        item.get("market_code") or item.get("market")
+        or (raw.get("market_codes") or [""])[0] or ""
+    ).upper()
+    stable_names = {
+        "product": ("platform_product_id", "product_id", "productId"),
+        "shop": ("platform_shop_id", "shop_id", "shopId"),
+        "content": ("platform_content_id", "content_id", "contentId"),
+    }
+    stable = _stable_id_value(item, stable_names[kind])
+    if not stable:
+        return None
+    return {
+        "kind": kind, "platform": platform, "market": market, "stable": stable,
+        "category": item.get("category_code") or item.get("category"),
+        "title": item.get("title") or item.get("name"),
+    }
+
+
+def _merge_entity(store, entity):
+    existing = store.get(entity["id"])
+    if not existing:
+        store[entity["id"]] = entity
+        return
+    if str(entity.get("first_seen_at") or "") < str(existing.get("first_seen_at") or ""):
+        existing["first_seen_at"] = entity["first_seen_at"]
+    if str(entity.get("last_seen_at") or "") > str(existing.get("last_seen_at") or ""):
+        existing["last_seen_at"] = entity["last_seen_at"]
+    for key in ("title", "name", "source_url", "category_code"):
+        if entity.get(key) and not existing.get(key):
+            existing[key] = entity[key]
+
+
+def build_history_rows(quality_report, raw_rows, applicability_rows, only="all"):
+    """Build append-only evidence, version, snapshot and formal projection rows."""
+    collection_run = quality_report.get("collection_run") if isinstance(quality_report, dict) else {}
+    collection_run = collection_run if isinstance(collection_run, dict) else {}
+    run_id = collection_run_id(collection_run)
+    fetch_rows = build_source_fetch_run_rows(collection_run, only)
+    fetch_by_source = {}
+    for row in fetch_rows:
+        fetch_by_source.setdefault(row["source_key"], row)
+
+    canonical_raw = []
+    for row in raw_rows or []:
+        item = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+        collected = _timestamp(row.get("collected_at"), collection_run.get("completed_at"))
+        raw = dict(row)
+        raw["id"] = history_uuid(
+            "raw-source-record", row["source_key"], row["source_record_id"], row["evidence_hash"]
+        )
+        raw["source_fetch_run_id"] = (fetch_by_source.get(row["source_key"]) or {}).get("id")
+        raw["run_id"] = run_id
+        raw["collected_at"] = collected
+        raw["first_seen_at"] = collected
+        raw["last_seen_at"] = _timestamp(item.get("last_seen_at") or item.get("lastSeenAt"), collected)
+        raw["allowed_display_fields"] = row.get("allowed_display_fields") or []
+        raw["allowed_export_fields"] = row.get("allowed_export_fields") or []
+        canonical_raw.append(raw)
+
+    policy_documents = {}
+    policy_versions = {}
+    platform_rules = {}
+    platform_versions = {}
+    product_entities, product_snapshots = {}, {}
+    shop_entities, shop_snapshots = {}, {}
+    content_entities, content_snapshots = {}, {}
+    formal_publications = {}
+    version_ids = {}
+    snapshot_ids = {}
+
+    for raw in canonical_raw:
+        item = raw.get("payload") if isinstance(raw.get("payload"), dict) else {}
+        domain = raw.get("domain")
+        collected = raw["collected_at"]
+        if domain in {"policy", "tax", "access"}:
+            doc_id = history_uuid("policy-document", raw["source_key"], domain, raw["source_record_id"])
+            policy_documents[doc_id] = {
+                "id": doc_id, "source_key": raw["source_key"],
+                "policy_document_id": raw["source_record_id"], "domain": domain,
+                "authority_document_number": item.get("document_number") or item.get("documentNumber"),
+                "title": str(item.get("title") or raw["source_record_id"]),
+                "source_url": raw.get("source_url"), "market_codes": raw.get("market_codes") or [],
+                "jurisdiction_codes": raw.get("jurisdiction_codes") or [],
+                "category_codes": raw.get("category_codes") or [],
+                "first_seen_at": collected, "last_seen_at": raw.get("last_seen_at") or collected,
+                "metadata": {"source_type": raw.get("source_type")},
+            }
+            version_id = history_uuid("policy-version", doc_id, raw["evidence_hash"])
+            version_ids[(raw["source_key"], raw["source_record_id"], raw["evidence_hash"], None)] = version_id
+            policy_versions[version_id] = {
+                "id": version_id, "policy_document_id": doc_id,
+                "raw_source_record_id": raw["id"],
+                "version_label": item.get("version") or item.get("version_label"),
+                "title": str(item.get("title") or raw["source_record_id"]),
+                "summary": item.get("summary") or item.get("detail"),
+                "published_at": raw.get("published_at"), "effective_from": raw.get("effective_from"),
+                "effective_to": raw.get("effective_to"), "collected_at": collected,
+                "evidence_hash": raw["evidence_hash"],
+                "changed_fields": item.get("changed_fields") or [], "content": item,
+            }
+
+        if domain == "rule":
+            for scope in _scope_rows_for_raw(raw, applicability_rows):
+                platform_rule_id = str(item.get("rule_key") or raw["source_record_id"])
+                scope_parts = (
+                    scope.get("market_code"), scope.get("platform_key"),
+                    scope.get("category_code"), scope.get("jurisdiction_code"),
+                )
+                entity_id = history_uuid(
+                    "platform-rule", raw["source_key"], platform_rule_id, *scope_parts
+                )
+                platform_rules[entity_id] = {
+                    "id": entity_id, "source_key": raw["source_key"],
+                    "platform_rule_id": platform_rule_id,
+                    "title": str(item.get("title") or raw["source_record_id"]),
+                    "source_url": raw.get("source_url"), "market_code": scope_parts[0],
+                    "platform_key": scope_parts[1], "category_code": scope_parts[2],
+                    "jurisdiction_code": scope_parts[3], "first_seen_at": collected,
+                    "last_seen_at": raw.get("last_seen_at") or collected,
+                    "metadata": {"source_type": raw.get("source_type")},
+                }
+                version_id = history_uuid("platform-rule-version", entity_id, raw["evidence_hash"])
+                version_ids[(raw["source_key"], raw["source_record_id"], raw["evidence_hash"], scope_parts)] = version_id
+                platform_versions[version_id] = {
+                    "id": version_id, "platform_rule_id": entity_id,
+                    "raw_source_record_id": raw["id"],
+                    "version_label": item.get("rule_version") or item.get("version"),
+                    "title": str(item.get("title") or raw["source_record_id"]),
+                    "summary": item.get("summary") or item.get("detail"),
+                    "rule_dimensions": _rule_dimensions(item),
+                    "published_at": raw.get("published_at"), "effective_from": raw.get("effective_from"),
+                    "effective_to": raw.get("effective_to"), "collected_at": collected,
+                    "evidence_hash": raw["evidence_hash"],
+                    "changed_fields": item.get("changed_fields") or [], "content": item,
+                }
+
+        descriptor = _snapshot_descriptor(raw)
+        if descriptor:
+            kind, platform, market, stable = (
+                descriptor["kind"], descriptor["platform"], descriptor["market"], descriptor["stable"]
+            )
+            entity_id = history_uuid(f"{kind}-entity", raw["source_key"], platform, stable, market)
+            entity = {
+                "id": entity_id, "source_key": raw["source_key"], "platform_key": platform,
+                f"platform_{kind}_id": stable, "market_code": market,
+                "category_code": descriptor["category"], "title": descriptor["title"],
+                "source_url": raw.get("source_url"), "first_seen_at": collected,
+                "last_seen_at": raw.get("last_seen_at") or collected, "metadata": item,
+            }
+            snapshot_id = history_uuid(f"{kind}-snapshot", entity_id, collected, raw["evidence_hash"])
+            common = {
+                "id": snapshot_id, f"{kind}_entity_id": entity_id,
+                "raw_source_record_id": raw["id"], "collected_at": collected,
+                "first_seen_at": collected, "last_seen_at": raw.get("last_seen_at") or collected,
+                "published_at": raw.get("published_at"), "evidence_hash": raw["evidence_hash"],
+            }
+            if kind == "product":
+                _merge_entity(product_entities, entity)
+                product_snapshots[snapshot_id] = {
+                    **common, "price": _number(item, ("price", "selling_price", "sellingPrice")),
+                    "currency": item.get("currency"), "sales": _number(item, ("sales", "sold", "volume")),
+                    "rating": _number(item, ("rating",)), "review_count": _number(item, ("review_count", "reviewCount", "reviews")),
+                    "inventory": _number(item, ("inventory", "stock")), "metrics": item,
+                }
+            elif kind == "shop":
+                _merge_entity(shop_entities, entity)
+                shop_snapshots[snapshot_id] = {
+                    **common, "gmv": _number(item, ("gmv", "GMV")),
+                    "followers": _number(item, ("followers", "fans")),
+                    "product_count": _number(item, ("product_count", "productCount")),
+                    "sales": _number(item, ("sales", "sold", "volume")), "rating": _number(item, ("rating",)),
+                    "metrics": item,
+                }
+            else:
+                _merge_entity(content_entities, entity)
+                content_snapshots[snapshot_id] = {
+                    **common, "views": _number(item, ("views", "plays", "view_count")),
+                    "likes": _number(item, ("likes",)), "comments": _number(item, ("comments",)),
+                    "shares": _number(item, ("shares",)), "conversions": _number(item, ("conversions", "orders")),
+                    "engagement_rate": _number(item, ("engagement_rate", "engagementRate")), "metrics": item,
+                }
+            snapshot_ids[(raw["id"], kind)] = snapshot_id
+
+    raw_by_key = {
+        (row["source_key"], row["source_record_id"], row["evidence_hash"]): row
+        for row in canonical_raw
+    }
+    for app in applicability_rows or []:
+        raw = raw_by_key.get((app.get("source_key"), app.get("source_record_id"), app.get("evidence_hash")))
+        if not raw or raw.get("publication_status") != "eligible" or raw.get("verification_status") not in {"verified", "uploaded"}:
+            continue
+        scope_parts = (
+            app.get("market_code"), app.get("platform_key"),
+            app.get("category_code"), app.get("jurisdiction_code"),
+        )
+        publication_id = history_uuid(
+            "formal-publication", raw["id"], app.get("record_key"), *scope_parts
+        )
+        pub_type = (
+            "policy" if app.get("domain") in {"policy", "tax", "access"}
+            else ("platform_rule" if app.get("domain") == "rule" else "market_record")
+        )
+        version_id = version_ids.get(
+            (raw["source_key"], raw["source_record_id"], raw["evidence_hash"], scope_parts)
+        ) or version_ids.get((raw["source_key"], raw["source_record_id"], raw["evidence_hash"], None))
+        formal_publications[publication_id] = {
+            "id": publication_id, "source_key": raw["source_key"],
+            "raw_source_record_id": raw["id"],
+            "policy_version_id": version_id if pub_type == "policy" else None,
+            "platform_rule_version_id": version_id if pub_type == "platform_rule" else None,
+            "publication_type": pub_type, "domain": app.get("domain"),
+            "record_key": app.get("record_key") or raw["source_record_id"],
+            "market_code": app.get("market_code"), "platform_key": app.get("platform_key"),
+            "category_code": app.get("category_code"), "jurisdiction_code": app.get("jurisdiction_code"),
+            "status": "active",
+            "title": raw.get("payload", {}).get("title") or app.get("record_key"),
+            "summary": raw.get("payload", {}).get("summary") or raw.get("payload", {}).get("detail"),
+            "source_url": raw.get("source_url"), "published_at": raw.get("published_at"),
+            "effective_from": raw.get("effective_from"), "effective_to": raw.get("effective_to"),
+            "collected_at": raw["collected_at"], "first_seen_at": raw["collected_at"],
+            "last_seen_at": raw.get("last_seen_at") or raw["collected_at"],
+            "evidence_hash": raw["evidence_hash"],
+            "public_payload": _public_payload(raw.get("payload"), raw.get("allowed_display_fields")),
+        }
+        app["formal_publication_id"] = publication_id
+
+    return {
+        "source_fetch_runs": fetch_rows, "raw_source_records": canonical_raw,
+        "policy_documents": list(policy_documents.values()), "policy_versions": list(policy_versions.values()),
+        "platform_rules": list(platform_rules.values()), "platform_rule_versions": list(platform_versions.values()),
+        "product_entities": list(product_entities.values()), "product_snapshots": list(product_snapshots.values()),
+        "shop_entities": list(shop_entities.values()), "shop_snapshots": list(shop_snapshots.values()),
+        "content_entities": list(content_entities.values()), "content_snapshots": list(content_snapshots.values()),
+        "formal_publications": list(formal_publications.values()),
+    }
 
 
 def build_raw_record_rows(quality_report=None, only="all"):
@@ -423,15 +1035,18 @@ def build_raw_record_rows(quality_report=None, only="all"):
         verification_status = "pending" if industry_advisory else (infer_verification_status(item, source_kind) or "pending")
         source_type = "licensed_provider" if industry_advisory else effective_source_type(item, source_kind)
         source_record_id = source_record_id_for(item) or str(item.get("id") or f"{dataset_key}-{index}")
+        source_key = source_key_for_record(item)
+        source_policy = source_access_policy(source_key)
+        source_lineage = classify_source_for_publication(source_key)
         payload = dict(item)
-        evidence_hash = str(item.get("evidence_hash") or hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest())
+        evidence_hash = str(item.get("evidence_hash") or hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()).lower()
         market_codes = set(record_scope_codes(item))
         if industry_advisory:
             detected_codes = explicit_industry_market_codes(item) + infer_industry_market_codes(item)
             if detected_codes:
                 market_codes = set(detected_codes)
-        rows.append({
-            "source_key": source_key_for_record(item),
+        raw_row = {
+            "source_key": source_key,
             "domain": domain,
             "source_record_id": source_record_id,
             "normalized_record_key": str(item.get("id") or source_record_id),
@@ -441,6 +1056,7 @@ def build_raw_record_rows(quality_report=None, only="all"):
             "jurisdiction_codes": item.get("jurisdiction_codes") or item.get("jurisdictionCodes") or [],
             "source_kind": source_kind,
             "source_type": source_type,
+            "source_category": source_lineage["source_category"],
             "source_class": (
                 "industry_advisory" if industry_advisory
                 else str(item.get("source_class") or item.get("sourceClass") or "") or None
@@ -463,9 +1079,72 @@ def build_raw_record_rows(quality_report=None, only="all"):
             ),
             "evidence_hash": evidence_hash,
             "payload": payload,
+            "license_class": source_policy["license_class"],
+            "access_class": source_policy["access_class"],
+            "redistribution_allowed": source_policy["redistribution_allowed"],
+            "publication_status": "eligible" if source_lineage["publishable"] else "quarantined",
+            "quarantine_reason": None if source_lineage["publishable"] else (
+                "来源授权或商业再分发权限未确认；仅保留在隔离证据层。"
+            ),
+            "allowed_display_fields": source_policy.get("allowed_display_fields") or [],
+            "allowed_export_fields": source_policy.get("allowed_export_fields") or [],
+            "retention_until": (
+                datetime.now(timezone.utc).replace(microsecond=0)
+                + timedelta(days=source_policy["retention_days"])
+            ),
             "status": "active" if verification_status != "rejected" else "rejected",
-        })
+        }
+        if not source_lineage["publishable"]:
+            raw_row = quarantine_unlicensed_record(raw_row, source_key, raw_row["quarantine_reason"])
+        rows.append(raw_row)
+        rows[-1]["retention_until"] = rows[-1]["retention_until"].isoformat()
     return rows
+
+
+def iter_private_artifacts(root=ROOT):
+    """Yield restricted collector artifacts without ever adding them to Git."""
+    root_path = Path(root).resolve()
+    seen = set()
+    for pattern, source_key, artifact_kind, retention_days in PRIVATE_ARTIFACT_SPECS:
+        for path in sorted(root_path.glob(pattern)):
+            if not path.is_file():
+                continue
+            resolved = path.resolve()
+            if resolved in seen:
+                continue
+            seen.add(resolved)
+            yield {
+                "path": resolved,
+                "relative_path": resolved.relative_to(root_path).as_posix(),
+                "source_key": source_key,
+                "artifact_kind": artifact_kind,
+                "retention_days": retention_days,
+            }
+
+
+def sync_private_artifacts(supa_url, supa_key, run_id, *, root=ROOT, dry_run=False):
+    """Upload restricted local outputs to the service-only Storage bucket."""
+    artifacts = list(iter_private_artifacts(root))
+    if dry_run:
+        return len(artifacts), []
+    uploaded = []
+    failures = []
+    for artifact in artifacts:
+        try:
+            row = upload_private_artifact(
+                supa_url,
+                supa_key,
+                artifact["path"],
+                run_id=run_id,
+                source_key=artifact["source_key"],
+                artifact_kind=artifact["artifact_kind"],
+                retention_days=artifact["retention_days"],
+                metadata={"repository_relative_path": artifact["relative_path"]},
+            )
+            uploaded.append(row)
+        except Exception as error:
+            failures.append(f"{artifact['relative_path']}: {error}")
+    return len(uploaded), failures
 
 
 def _scope_catalog():
@@ -589,9 +1268,10 @@ def build_applicability_rows(quality_report=None, only="all"):
     markets, platforms, categories, jurisdictions, market_platforms = _scope_catalog()
     rows = []
     for dataset_key, domain, item, index in iter_provenance_records(only):
+        source_key = source_key_for_record(item)
         # Industry articles are intentionally retained in raw_data_records,
         # but never promoted to the formal market applicability projection.
-        if is_industry_advisory(item):
+        if is_industry_advisory(item) or not redistribution_allowed_for_record(item):
             continue
         quality = record_quality(item, require_scope=True)
         if not quality.get('formal'):
@@ -609,7 +1289,8 @@ def build_applicability_rows(quality_report=None, only="all"):
             continue
         category_codes = _category_codes(item, categories) or [None]
         source_record_id = source_record_id_for(item) or str(item.get('id') or f'{dataset_key}-{index}')
-        evidence_hash = str(item.get('evidence_hash') or hashlib.sha256(json.dumps(item, ensure_ascii=False, sort_keys=True).encode('utf-8')).hexdigest())
+        evidence_hash = str(item.get('evidence_hash') or hashlib.sha256(json.dumps(item, ensure_ascii=False, sort_keys=True).encode('utf-8')).hexdigest()).lower()
+        source_lineage = classify_source_for_publication(source_key)
         for market_code in market_codes:
             platform_keys = declared_platform_keys
             allowed_platforms = market_platforms.get(market_code)
@@ -648,7 +1329,8 @@ def build_applicability_rows(quality_report=None, only="all"):
                             'status': 'active',
                             'verification_status': quality.get('verification_status'),
                             'source_kind': quality.get('source_kind'),
-                            'source_key': source_key_for_record(item),
+                            'source_key': source_key,
+                            'source_category': source_lineage['source_category'],
                             'source_record_id': source_record_id,
                             'source_url': source_url_for(item) or None,
                             'source_type': effective_source_type(item, quality.get('source_kind')),
@@ -689,13 +1371,13 @@ def legacy_tables_enabled():
     }
 
 
-def supabase_request(url, key, method="GET", data=None, timeout=30):
+def supabase_request(url, key, method="GET", data=None, timeout=30, prefer=None):
     """Make a Supabase REST API request."""
     headers = {
         "apikey": key,
         "Authorization": f"Bearer {key}",
         "Content-Type": "application/json",
-        "Prefer": "return=minimal,resolution=merge-duplicates",
+        "Prefer": prefer or "return=minimal,resolution=merge-duplicates",
     }
     
     body = json.dumps(data).encode("utf-8") if data else None
@@ -741,6 +1423,27 @@ def supabase_upsert(supa_url, key, table, rows, conflict_key="id"):
                     total += len(chunk)
             return total
         return 0
+
+
+def supabase_insert_ignore(supa_url, key, table, rows, conflict_key=None):
+    """Insert immutable history rows without turning a retry into an UPDATE."""
+    if not rows:
+        return 0
+    url = f"{supa_url}/rest/v1/{table}"
+    if conflict_key:
+        url += "?on_conflict=" + urllib.parse.quote(conflict_key, safe=",")
+    prefer = "return=minimal,resolution=ignore-duplicates"
+    status = supabase_request(url, key, method="POST", data=rows, prefer=prefer)
+    if status in (200, 201):
+        return len(rows)
+    if len(rows) > 10:
+        total = 0
+        for index in range(0, len(rows), 10):
+            chunk = rows[index:index + 10]
+            if supabase_request(url, key, method="POST", data=chunk, prefer=prefer) in (200, 201):
+                total += len(chunk)
+        return total
+    return 0
 
 
 def transform_policies(data):
@@ -1103,19 +1806,79 @@ def main():
     if args.only in ("all", "policies", "taxes", "access_requirements", "rules", "alerts", "platforms", "countries", "macro", "cpsc"):
         print("[SYNC] Processing source registry and raw evidence...")
         registry_rows = build_source_registry_rows(args.only)
+        source_policy_rows = build_source_policy_rows(registry_rows)
         raw_rows = build_raw_record_rows(quality_report, args.only)
+        applicability_rows = build_applicability_rows(quality_report, args.only)
+        history_rows = build_history_rows(
+            quality_report, raw_rows, applicability_rows, args.only
+        )
         print(f"  data_source_registry: {len(registry_rows)} rows ready")
+        print(f"  data_source_access_policies: {len(source_policy_rows)} rows ready")
         print(f"  raw_data_records: {len(raw_rows)} rows ready")
+        for table in HISTORY_TABLES:
+            print(f"  {table}: {len(history_rows.get(table, []))} rows ready")
         if not args.dry_run:
             registry_count = supabase_upsert(supa_url, supa_key, "data_source_registry", registry_rows, conflict_key="source_key")
             summary["results"]["data_source_registry"] = registry_count
             if registry_count != len(registry_rows):
                 failures.append(f"data_source_registry: expected {len(registry_rows)}, synced {registry_count}")
-            raw_count = supabase_upsert(supa_url, supa_key, "raw_data_records", raw_rows, conflict_key="source_key,source_record_id,evidence_hash")
+            policy_count = supabase_upsert(
+                supa_url,
+                supa_key,
+                "data_source_access_policies",
+                source_policy_rows,
+                conflict_key="source_key",
+            )
+            summary["results"]["data_source_access_policies"] = policy_count
+            if policy_count != len(source_policy_rows):
+                failures.append(
+                    f"data_source_access_policies: expected {len(source_policy_rows)}, synced {policy_count}"
+                )
+            # The compatibility evidence table is now insert-only as well.
+            raw_count = supabase_insert_ignore(
+                supa_url, supa_key, "raw_data_records", raw_rows,
+                conflict_key="source_key,source_record_id,evidence_hash",
+            )
             summary["results"]["raw_data_records"] = raw_count
             if raw_count != len(raw_rows):
                 failures.append(f"raw_data_records: expected {len(raw_rows)}, synced {raw_count}")
-            applicability_rows = build_applicability_rows(quality_report, args.only)
+            for table in ("source_fetch_runs", "raw_source_records"):
+                rows = history_rows[table]
+                count = supabase_insert_ignore(
+                    supa_url, supa_key, table, rows,
+                    conflict_key="run_id,collector_key" if table == "source_fetch_runs" else "source_key,source_record_id,evidence_hash",
+                )
+                summary["results"][table] = count
+                if count != len(rows):
+                    failures.append(f"{table}: expected {len(rows)}, synced {count}")
+            for table in ("policy_documents", "platform_rules", "product_entities", "shop_entities", "content_entities"):
+                rows = history_rows[table]
+                count = supabase_upsert(supa_url, supa_key, table, rows, conflict_key="id")
+                summary["results"][table] = count
+                if count != len(rows):
+                    failures.append(f"{table}: expected {len(rows)}, synced {count}")
+            for table in ("policy_versions", "platform_rule_versions", "product_snapshots", "shop_snapshots", "content_snapshots"):
+                rows = history_rows[table]
+                conflict = {
+                    "policy_versions": "policy_document_id,evidence_hash",
+                    "platform_rule_versions": "platform_rule_id,evidence_hash",
+                    "product_snapshots": "id",
+                    "shop_snapshots": "id",
+                    "content_snapshots": "id",
+                }[table]
+                count = supabase_insert_ignore(supa_url, supa_key, table, rows, conflict_key=conflict)
+                summary["results"][table] = count
+                if count != len(rows):
+                    failures.append(f"{table}: expected {len(rows)}, synced {count}")
+            publication_rows = history_rows["formal_publications"]
+            publication_count = supabase_insert_ignore(
+                supa_url, supa_key, "formal_publications", publication_rows, conflict_key="id"
+            )
+            summary["results"]["formal_publications"] = publication_count
+            if publication_count != len(publication_rows):
+                failures.append(
+                    f"formal_publications: expected {len(publication_rows)}, synced {publication_count}"
+                )
             print(f"  market_data_applicability: {len(applicability_rows)} formal rows ready")
             applicability_count = supabase_upsert(
                 supa_url,
@@ -1130,8 +1893,20 @@ def main():
                     f"market_data_applicability: expected {len(applicability_rows)}, synced {applicability_count}"
                 )
         else:
-            applicability_rows = build_applicability_rows(quality_report, args.only)
             print(f"  market_data_applicability: {len(applicability_rows)} formal rows ready")
+
+    if args.only == "all":
+        private_run_id = str(collection_run.get("run_id") or summary["synced_at"])
+        print("[SYNC] Uploading restricted artifacts to private Storage...")
+        private_count, private_failures = sync_private_artifacts(
+            supa_url,
+            supa_key,
+            private_run_id,
+            dry_run=args.dry_run,
+        )
+        summary["results"]["private_data_artifacts"] = private_count
+        print(f"  private_data_artifacts: {private_count} object(s) ready")
+        failures.extend(f"private artifact {failure}" for failure in private_failures)
 
     # Policies
     if legacy_sync and args.only in ("policies", "all"):
@@ -1218,19 +1993,32 @@ def main():
         if n != len(market_rows):
             failures.append(f"market_data: expected {len(market_rows)}, synced {n}")
     
+    if not args.dry_run:
+        private_run_id = str(collection_run.get("run_id") or summary["synced_at"])
+        sync_run_count = supabase_upsert(
+            supa_url,
+            supa_key,
+            "private_sync_runs",
+            [{
+                "run_id": private_run_id,
+                "status": "failed" if failures else "succeeded",
+                "started_at": collection_run.get("started_at"),
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "summary": summary,
+            }],
+            conflict_key="run_id",
+        )
+        summary["results"]["private_sync_runs"] = sync_run_count
+        if sync_run_count != 1:
+            failures.append("private_sync_runs: expected 1, synced 0")
+
     # Summary
     print(f"\n[SYNC] {'='*50}")
     print(f"[SYNC] Sync complete!")
     for table, count in summary["results"].items():
         print(f"  {table}: {count} rows")
     
-    # Save sync log
-    log_dir = os.path.join(DATA_DIR, "_sync_logs")
-    os.makedirs(log_dir, exist_ok=True)
-    log_file = os.path.join(log_dir, f"sync_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.json")
-    with open(log_file, "w", encoding="utf-8") as f:
-        json.dump(summary, f, ensure_ascii=False, indent=2)
-    print(f"[SYNC] Log: {log_file}")
+    print("[SYNC] Log: private_sync_runs (service-only)")
     if failures:
         print("[SYNC] ERROR: incomplete Supabase sync")
         for failure in failures:

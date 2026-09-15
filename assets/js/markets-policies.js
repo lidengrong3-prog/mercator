@@ -405,11 +405,23 @@ function fillSelect(id,items,labels){
    var cards=document.querySelectorAll('#platforms .platform-card[data-platform]');
    if(!cards.length) return;
    var items=typeof rlGetJsonItems==='function'?rlGetJsonItems():[];
+   var coverage=(window.rulesJsonData&&((window.rulesJsonData.platform_coverage||window.rulesJsonData.platform_status)))||{};
+   if(!Object.keys(coverage).length && typeof rlComputePlatformCoverage==='function') coverage=rlComputePlatformCoverage();
+   var api=window.JAY_MARKET_SCOPE_API;
    cards.forEach(function(card){
      var name=card.dataset.platform;
-     var count=items.filter(function(item){return item.platform===name;}).length;
+     var key=api&&api.normalizePlatformKey?api.normalizePlatformKey(name):String(name||'').toLowerCase();
+     var status=coverage[key];
+     var count=status&&Number(status.rule_count)||items.filter(function(item){return item.platform===name;}).length;
      var value=card.querySelector('[data-platform-status] b');
-     if(value) value.textContent=count ? count+' 条' : '暂无已验证数据';
+     if(value){
+       var label=status&&status.label|| (count?'部分接入':'未接入');
+       value.textContent=label+(count?' · '+count+' 条':'');
+       value.title=status&&status.reason||'';
+       value.dataset.connectionStatus=status&&status.status||'not_connected';
+     }
+     var note=card.querySelector('.platform-desc');
+     if(note&&status) note.textContent=status.reason||'暂无通过核验的正式规则记录';
    });
  }
  window.renderPlatformProfileStatus=renderPlatformProfileStatus;
@@ -441,11 +453,18 @@ async function loadPoliciesData() {
     const results = await Promise.all([
       jayFetchMarketData('policies', './data/policies.json'),
       jayFetchMarketData('taxes', './data/taxes.json'),
-      jayFetchMarketData('access_requirements', './data/access_requirements.json')
+      jayFetchMarketData('access_requirements', './data/access_requirements.json'),
+      jayFetchMarketData('industry_advisories', './data/industry_advisories.json')
     ]);
-    const data=results[0], taxData=results[1], accessData=results[2];
+    let data=results[0], taxData=results[1], accessData=results[2], advisoryData=results[3];
     if (!data) throw new Error('Failed to load policies data');
     if (data && data.items && data.items.length > 0) {
+      // Advisory records live in a separate, traceable-only dataset. Merge
+      // them for the industry view while the formal policy gate continues to
+      // exclude source_class=industry_advisory records.
+      if (advisoryData && Array.isArray(advisoryData.items)) {
+        data = Object.assign({}, data, {items: data.items.concat(advisoryData.items)});
+      }
       policiesJsonData = data;
       taxesJsonData = taxData && Array.isArray(taxData.items) ? taxData : {updated_at:null,source_count:0,items:[]};
       accessRequirementsJsonData = accessData && Array.isArray(accessData.items) ? accessData : {updated_at:null,source_count:0,items:[]};
@@ -687,6 +706,21 @@ function plLineageSourceTypeLabel(type){
   })[type]||'来源类型未分类';
 }
 
+function plLineageSourceCategoryLabel(category, sourceType){
+  var key=String(category||'').toLowerCase();
+  return ({
+    official_policy:'官方政策/监管记录',
+    official_statistics:'官方统计数据',
+    platform_announcement:'平台官方公告',
+    industry_media:'行业媒体/协会资讯',
+    third_party_provider:'第三方数据服务商',
+    user_upload:'工作区上传资料',
+    derived:'系统派生数据',
+    internal:'系统运行数据',
+    demo:'演示数据'
+  })[key]||plLineageSourceTypeLabel(String(sourceType||'').toLowerCase());
+}
+
 function plLineageEvidenceLabel(record,evidence){
   record=record||{}; evidence=evidence||{};
   if(record._advisory)return '可追溯参考 · 非官方核验';
@@ -703,6 +737,7 @@ function plRenderDataLineage(record,evidence,options){
     ? window.JAY_MARKET_SCOPE_API.normalizeDataRecord(record,record.domain||plActiveDomain) : record;
   var sourceKind=String(normalized.source_kind||record.source_kind||'').toLowerCase();
   var sourceType=String(normalized.source_type||record.source_type||'').trim();
+  var sourceCategory=String(normalized.source_category||record.source_category||'').trim();
   var rawSourceUrl=record.source_url||record.sourceUrl||record.url||'';
   var safeUrl=typeof jaySafeHttpsUrl==='function'?jaySafeHttpsUrl(rawSourceUrl):'';
   var domain=plLineageSourceDomain(record);
@@ -722,6 +757,7 @@ function plRenderDataLineage(record,evidence,options){
       '<div class="data-lineage-detail-grid">'+
         '<div><b>来源记录 ID</b><code>'+escapeHtml(recordId||'未提供')+'</code></div>'+
         '<div><b>来源类型</b><span>'+escapeHtml(plLineageSourceTypeLabel(sourceType))+'</span></div>'+
+        '<div><b>来源类别</b><span>'+escapeHtml(plLineageSourceCategoryLabel(sourceCategory,sourceType))+'</span></div>'+
         '<div><b>来源分类</b><span>'+escapeHtml(tierLabel)+'</span></div>'+
         '<div><b>核验时间</b><span>'+escapeHtml(plFormatLineageTime(verifiedAt))+'</span></div>'+
         '<div class="data-lineage-detail-wide"><b>来源 URL</b>'+(safeUrl?'<a href="'+escapeHtml(safeUrl)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(safeUrl)+'</a>':'<span>尚未接入</span>')+'</div>'+
@@ -1433,8 +1469,10 @@ async function loadRulesData() {
     if (data && data.items && data.items.length > 0) {
       rulesJsonData = data;
       rlInitFromJson();
-      const time = new Date(data.updated_at).toLocaleString('zh-CN');
-      $('#rl-data-info').innerHTML = '📡 ' + (window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames().join('、'):'当前') + '市场规则更新时间: ' + time + ' | 原始数据来源: ' + (data.source_count || '?') + ' 个 | 当前展示已配置平台规则 | 支持版本与生效区间';
+      const time = data.updated_at && !isNaN(new Date(data.updated_at).getTime()) ? new Date(data.updated_at).toLocaleString('zh-CN') : '尚未接入';
+      var coverage=data.platform_coverage||data.platform_status||{};
+      var coverageText=Object.keys(coverage).map(function(key){var row=coverage[key]||{};return (row.label||'未接入')+' '+key+' '+(row.rule_count||0)+'条';}).join(' · ');
+      $('#rl-data-info').textContent = '📡 '+(window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames().join('、'):'当前')+'市场规则 · 最近更新：'+time+' · 正式规则：'+(data.source_count||0)+' 个来源 · 当前展示已配置平台规则，接入状态按正式记录计算 · '+(coverageText||'平台接入状态待采集');
       // Refresh alerts linkage
       if (typeof refreshDynamicAlerts === 'function') refreshDynamicAlerts();
     } else {
@@ -1459,8 +1497,13 @@ function rlInitFromJson() {
   var marketLabels={}; marketCodes.forEach(function(code){marketLabels[code]=rlMarketLabel(code);});
   fillSelect('#rl-platform', scopedPlatformNames);
   fillSelect('#rl-market', marketCodes, marketLabels);
+  var topicLabels={fee:'费用',commission:'佣金',deposit:'保证金',fulfillment:'履约',prohibited:'禁售',settlement:'结算',penalty:'处罚'};
+  fillSelect('#rl-topic', Object.keys(topicLabels), topicLabels);
   fillSelect('#rl-category', Object.keys(rlCategoryLabels).sort(), rlCategoryLabels);
   fillSelect('#rl-act-type', Object.keys(rlActTypeLabels).sort(), rlActTypeLabels);
+  var versions={};
+  (rulesJsonData.items||[]).forEach(function(item){var value=String(item.rule_version||item.version||item.version_label||'').trim();if(value)versions[value]=true;});
+  fillSelect('#rl-version', Object.keys(versions).sort().reverse(), Object.keys(versions).reduce(function(out,key){out[key]='版本 '+key;return out;},{}));
   var marketSelect=$('#rl-market');
   if(marketSelect && marketCodes.indexOf(marketSelect.value)<0) marketSelect.value=marketCodes[0]||'all';
   rlRulesPage = 1;
@@ -1490,16 +1533,53 @@ function rlGetJsonItems() {
   if(scopeApi && typeof scopeApi.filterFormalRecords==='function'){
     scopedItems=scopeApi.filterFormalRecords(scopedItems,{marketCodes:allowedMarkets,platformKeys:allowedPlatforms},{domain:'rule'});
   }
+  // The shared quality gate validates an HTTPS URL, but a platform homepage
+  // is not a record-level citation. Exclude legacy homepage-only rows here.
+  scopedItems=scopedItems.filter(function(r){
+    var raw=String(r.source_url||r.sourceUrl||'').trim();
+    try{return /^https:\/\//i.test(raw)&&String(new URL(raw).pathname||'').replace(/\/+$/,'').length>0;}
+    catch(e){return false;}
+  });
   return scopedItems.map(function(r){
     var copy=Object.assign({},r);
     var platform=scopeApi && scopeApi.normalizePlatform ? scopeApi.normalizePlatform(copy.platform) : copy.platform;
     copy.platform=platform;
     copy.market=scopeApi&&scopeApi.normalizeMarketCode ? scopeApi.normalizeMarketCode(copy.market||copy.region||copy.market_code) : copy.market;
+    copy.topic=copy.topic||copy.rule_topic||copy.category||'';
     return copy;
   });
 }
 
+function rlComputePlatformCoverage(){
+  var keys=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActivePlatforms
+    ? window.JAY_MARKET_SCOPE_API.getActivePlatforms().map(function(p){return p.key;})
+    : ['amazon','tiktok-shop','aliexpress','ebay'];
+  var dimensions=['fee','commission','deposit','fulfillment','prohibited','settlement','penalty'];
+  var labels={fee:'费用',commission:'佣金',deposit:'保证金',fulfillment:'履约',prohibited:'禁售',settlement:'结算',penalty:'处罚'};
+  var raw=(window.rulesJsonData&&window.rulesJsonData.items)||[];
+  var now=Date.now(),staleDays=45;
+  var result={};
+  keys.forEach(function(key){
+    var formal=raw.filter(function(row){
+      var candidate=String(row.platform_key||row.platform||'').toLowerCase();
+      if(window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.normalizePlatformKey)candidate=window.JAY_MARKET_SCOPE_API.normalizePlatformKey(candidate);
+      if(candidate!==key||String(row.verification_status||'').toLowerCase()!=='verified')return false;
+      if(!row.verified_at&&!row.verifiedAt)return false;
+      if(isNaN(new Date(row.verified_at||row.verifiedAt).getTime()))return false;
+      try{return /^https:\/\//i.test(String(row.source_url||''))&&String(new URL(row.source_url).pathname||'').replace(/\/+$/,'').length>0;}catch(e){return false;}
+    });
+    var topics=[];formal.forEach(function(row){var topic=String(row.topic||row.rule_topic||'').toLowerCase()||String(row.category||'').toLowerCase();if(dimensions.indexOf(topic)>=0&&topics.indexOf(topic)<0)topics.push(topic);var dims=row.rule_dimensions||row.ruleDimensions||{};Object.keys(dims).forEach(function(key){if(dimensions.indexOf(key)>=0&&dims[key]&&topics.indexOf(key)<0)topics.push(key);});});
+    var latest=formal.reduce(function(max,row){var value=new Date(row.verified_at||row.verifiedAt).getTime();return value>max?value:max;},0);
+    var fresh=latest>0&&((now-latest)/86400000)<=staleDays;
+    var missing=dimensions.filter(function(topic){return topics.indexOf(topic)<0;});
+    var status=formal.length?(missing.length||!fresh?'partial':'connected'):'not_connected';
+    result[key]={platform_key:key,status:status,label:status==='connected'?'已接入':status==='partial'?'部分接入':'未接入',rule_count:formal.length,topics:topics,missing_topics:missing,last_verified_at:latest?new Date(latest).toISOString():null,reason:formal.length?(missing.length?'缺少主题：'+missing.map(function(topic){return labels[topic];}).join('、'):(!fresh?'最近核验时间已过期':'七类规则主题均有近期核验记录')):'暂无通过核验的正式规则记录'};
+  });
+  return result;
+}
+
 const rlCategoryLabels = {fee:'费用佣金', fulfillment:'物流履约', compliance:'合规要求', penalty:'处罚扣分', category:'类目管理', listing:'商品发布'};
+const rlTopicLabels = {fee:'费用', commission:'佣金', deposit:'保证金', fulfillment:'履约', prohibited:'禁售', settlement:'结算', penalty:'处罚', other:'其他'};
 const rlMarketLabels = {US:'美国', EU:'欧洲', SEA:'东南亚', MEA:'中东', LATAM:'拉美', SAS:'南亚', AFR:'非洲', EA:'东亚（日韩）', OCE:'大洋洲', CIS:'独联体', CN:'中国', SG:'新加坡', Global:'全球'};
 function rlMarketLabel(code){
   var api=window.JAY_MARKET_SCOPE_API; var market=api&&api.getMarket?api.getMarket(code):null;
@@ -1743,6 +1823,7 @@ function renderRlRules(){
     const impactLabel=rlImpactLabels[r.impact_level]||r.impact_level;
     const catLabel=rlCategoryLabels[r.category]||r.category;
     const marketLabel=rlMarketLabel(r.market);
+    const topicLabel=rlTopicLabels[String(r.topic||'').toLowerCase()]||String(r.topic||'主题未分类');
     const effDate=r.effective_date||r.published_at||'';
     const days=effDate?Math.ceil((new Date(effDate)-new Date())/86400000):0;
     const isFuture=days>0;
@@ -1753,12 +1834,14 @@ function renderRlRules(){
     +'<div class="rl-risk-bar rl-risk-'+riskLevel+'"></div>'
     +'<div class="rl-card-body">'
     +'<h4><input type="checkbox" class="rl-check" data-idx="'+escapeHtml(String(r.id||''))+'" '+((rlChecked.has(r.id))?'checked':'')+' onchange="rlToggleCheck(\''+escInline(r.id||'')+'\')"> '+titleLink+' <span class="tag" style="color:'+impactColor+';border-color:'+impactColor+'">'+escapeHtml(catLabel)+'</span></h4>'
-    +'<div class="rl-card-meta"><span>📅 '+escapeHtml(r.published_at||'')+'</span><span class="tag watch">'+escapeHtml(marketLabel)+'</span><span>'+escapeHtml(r.platform||'')+'</span>'
+    +'<div class="rl-card-meta"><span>📅 '+escapeHtml(r.published_at||'')+'</span><span class="tag watch">'+escapeHtml(marketLabel)+'</span><span>'+escapeHtml(r.platform||'')+'</span><span class="tag">主题：'+escapeHtml(topicLabel)+'</span>'
     +(isFuture?'<span class="rl-countdown '+(days<=7?(days<=3?'rl-countdown-urgent':'rl-countdown-warn'):'rl-countdown-ok')+'">'+days+'天后生效</span>':'<span class="rl-countdown rl-countdown-ok">已生效</span>')
     +'<span class="rl-rule-version" data-rule-version="'+escapeHtml(rlRuleVersionLabel(r))+'">版本：'+escapeHtml(rlRuleVersionLabel(r))+'</span>'
+    +'<span>最近核验：'+escapeHtml(plFormatLineageTime(r.verified_at||r.verifiedAt||''))+'</span>'
     +'</div>'
     +plRenderDataLineage(r,evidence,{compact:true})
     +'<div class="rl-card-summary">'+escapeHtml((r.summary||'').substring(0,80))+((r.summary||'').length>80?'…':'')+'</div>'
+    +(r.change_summary?'<div class="rl-card-change">变更：'+escapeHtml(r.change_summary)+'</div>':'')
     +'</div>'
     +'<div class="rl-card-actions">'
     +'<button onclick="openRlRuleDetail('+globalIdx+')">查看详情</button>'
@@ -1807,9 +1890,26 @@ function renderRlActs(){
 // Filter logic
 function getFilteredRules(){
   const p=$('#rl-platform').value,m=$('#rl-market').value,cat=$('#rl-category').value,impact=$('#rl-impact-level').value;
+  const topic=$('#rl-topic')?$('#rl-topic').value:'all';
+  const version=$('#rl-version')?$('#rl-version').value:'all';
+  const start=$('#rl-date-start')?$('#rl-date-start').value:'';
+  const end=$('#rl-date-end')?$('#rl-date-end').value:'';
   const items=rlGetJsonItems();
   var api=window.JAY_MARKET_SCOPE_API;
-  return items.filter(r=>(p==='all'||r.platform===p)&&(m==='all'||(api&&api.normalizeMarketCode?api.normalizeMarketCode(r.market) : r.market)===m)&&(cat==='all'||r.category===cat)&&(impact==='all'||r.impact_level===impact));
+  return items.filter(function(r){
+    var date=String(r.effective_from||r.effective_date||r.published_at||'').slice(0,10);
+    var ruleTopic=String(r.topic||r.rule_topic||'').toLowerCase()||String(r.category||'').toLowerCase();
+    var ruleVersion=String(r.rule_version||r.version||r.version_label||'');
+    if((start||end)&&!date)return false;
+    return (p==='all'||r.platform===p)
+      &&(m==='all'||(api&&api.normalizeMarketCode?api.normalizeMarketCode(r.market) : r.market)===m)
+      &&(cat==='all'||r.category===cat)
+      &&(topic==='all'||ruleTopic===topic)
+      &&(impact==='all'||r.impact_level===impact)
+      &&(!version||version==='all'||ruleVersion===version)
+      &&(!start||date>=start)
+      &&(!end||date<=end);
+  });
 }
 function getFilteredActs(){
   const p=$('#rl-platform').value,at=$('#rl-act-type').value,m=$('#rl-market').value;
@@ -1845,7 +1945,9 @@ function rlExport(){toast('报表导出中…')}
 
 // Reset
 function resetRlFilters(){
-  ['#rl-platform','#rl-market','#rl-category','#rl-impact-level','#rl-act-type'].forEach(s=>$(s).value='all');
+  ['#rl-platform','#rl-market','#rl-topic','#rl-category','#rl-impact-level','#rl-version','#rl-act-type'].forEach(s=>{var node=$(s);if(node)node.value='all';});
+  var start=$('#rl-date-start');if(start)start.value='';
+  var end=$('#rl-date-end');if(end)end.value='';
   var marketSelect=$('#rl-market');
   var defaultMarket=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarkets?window.JAY_MARKET_SCOPE_API.getActiveMarkets()[0]:null;
   if(marketSelect) marketSelect.value=defaultMarket?defaultMarket.code:'all';

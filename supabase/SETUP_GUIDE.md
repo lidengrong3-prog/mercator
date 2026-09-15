@@ -35,6 +35,14 @@ npx supabase db reset
 - `report_exports`
 - `report_runs`
 - `ai_request_logs`
+- `workspace_subscriptions`
+- `workspace_usage_monthly`
+- `workspace_member_usage_minute`
+- `ai_provider_catalog`
+- `ai_agent_catalog`
+- `ai_routing_policies`
+- `ai_provider_attempt_logs`
+- `ai_provider_usage_daily`
 
 Deploy both `report-export` and `report-docx` Edge Functions. Reports must be
 saved first; the browser passes the resulting `generated_reports.id` to each
@@ -48,10 +56,15 @@ export function so every PDF/DOCX job remains linked to its source report.
 - `market_data_applicability`
 - `data_source_registry`
 - `raw_data_records`
+- `data_source_access_policies`
+- `private_data_artifacts`
+- `private_sync_runs`
 
-这些表均已启用 RLS。用户业务表只允许登录用户访问自己的 `user_id`；市场目录和已核验适用性记录是公开只读数据，`anon`/`authenticated` 仅能读取 active 且已核验（或用户上传）的记录。`raw_data_records` 保留原始证据供服务端审计和重处理，默认不向匿名浏览器开放。写入仍应通过受保护的数据发布任务完成。
+这些表均已启用 RLS。用户业务表只允许登录用户访问自己的 `user_id`；市场目录和已核验适用性记录是公开只读数据。`raw_data_records`、来源授权策略、私有对象索引和同步日志对 `anon`/`authenticated` 全部撤权，只允许 service role 访问。写入仍应通过受保护的数据发布任务完成。
 
-同时确认 `profiles` 已包含 `phone` 和 `job_title` 字段，用于账号资料页的联系电话和岗位信息。Storage 中应存在名为 `reports` 的私有 bucket。
+同时确认 `profiles` 已包含 `phone` 和 `job_title` 字段，用于账号资料页的联系电话和岗位信息。Storage 中应存在 `reports` 与 `private-raw-data` 两个私有 bucket；后者不得创建面向匿名或普通登录用户的 `storage.objects` 策略。
+
+如接入 TikHub，只在 GitHub `production` Environment 或 Supabase Secret 中配置 `TIKHUB_API_KEY`。仓库、Pages、Actions 工件和浏览器配置中不得出现该值。TikHub 原始响应只能写入 `private-raw-data`，默认保留 30 天且禁止进入公共投影。
 
 ## 2. 配置认证
 
@@ -75,7 +88,7 @@ publishable/anon key 可以出现在浏览器中，安全边界由 RLS 保证。
 
 ## 4. 部署 AI 服务
 
-在 Supabase 项目中配置：
+在 Supabase 项目中配置（DeepSeek 是生产基线；其他供应商按需配置）：
 
 ```text
 DEEPSEEK_API_KEY
@@ -86,9 +99,54 @@ AI_REQUESTS_PER_MINUTE
 AI_MONTHLY_TOKEN_LIMIT
 AI_INPUT_COST_PER_MILLION_USD
 AI_OUTPUT_COST_PER_MILLION_USD
+# 可选：Coze 专用智能体
+COZE_API_TOKEN
+COZE_BOT_ID
+# 可选：豆包/火山方舟
+DOUBAO_API_KEY
+DOUBAO_MODEL
+# 可选：OpenAI Responses API
+OPENAI_API_KEY
+OPENAI_MODEL
+# 可选：Codex，仅限 code/automation/system_maintenance 任务
+CODEX_API_KEY
+CODEX_MODEL
+AI_FALLBACK_PROVIDERS
+AI_GATEWAY_TIMEOUT_MS
 ```
 
-随后部署 `supabase/functions/ai-proxy`、`supabase/functions/report-export`、`supabase/functions/report-docx` 和 `supabase/functions/admin-summary`。函数需要服务端专用的 `SUPABASE_SERVICE_ROLE_KEY`，不得暴露到浏览器。`ALLOWED_ORIGINS` 应至少包含正式 GitHub Pages 域名；生产环境不要使用通配符。
+随后部署 `supabase/functions/ai-proxy`、`supabase/functions/report-export`、`supabase/functions/report-docx` 和 `supabase/functions/admin-summary`。函数需要服务端专用的 `SUPABASE_SERVICE_ROLE_KEY`，不得暴露到浏览器。`ALLOWED_ORIGINS` 应至少包含正式 GitHub Pages 域名；生产环境不要使用通配符。未配置密钥的可选供应商会保持 `pending_config`，不会被当作可用供应商；WorkBuddy 在正式 API、Webhook 或 MCP 契约确认前保持 `disabled`。
+
+AI 路由会先匹配当前工作区策略，再匹配全局任务策略；每条策略可指定一个主供应商和有序备用供应商。主供应商失败时只切换到下一候选，不会向所有供应商群发同一请求。部署后应在独立测试工作区逐一验证主备切换、请求编号一致、额度只结算一次，以及管理员后台的供应商尝试日志和成本统计。
+
+工作区套餐迁移 `20260914000000_workspace_billing.sql` 会为每个工作区建立一条
+`workspace_subscriptions`，并以 `workspace_usage_monthly` 原子记录 AI Token、报告和
+导出用量。Stripe 正式结账必须传入 `workspace_id`，且只有工作区 owner/admin 可以购买
+或打开账单门户；两个 editor 共享同一个工作区套餐，另一个工作区不会继承权益。
+内测人工套餐只能由 service role 调用 `configure_workspace_manual_subscription(...)`，
+每次变更都会写入 `admin_audit_log`。
+
+Stripe 正式收费分成隔离验收和公众开启两个阶段。先保持 `BILLING_ENABLED=false`，设置
+`BILLING_LIVE_ACCEPTANCE_MODE=true` 和唯一的 `BILLING_ACCEPTANCE_WORKSPACE_ID`，部署后
+由负责人完成 live 购买、续费、失败恢复、取消、退款、webhook 重放及四端一致性核对。
+全部证据通过后关闭验收模式，设置 `BILLING_ACCEPTANCE_RUN_ID`，最后才能设置
+`BILLING_ENABLED=true`。详细命令、事件口径和回滚条件见
+[Stripe 正式收费上线手册](../docs/STRIPE_LIVE_BILLING.md)。
+
+外部通知同样分成隔离验收与公众开启。使用独立的
+`NOTIFICATION_FROM_EMAIL` 和 `WORKSPACE_INVITE_FROM_EMAIL`，并配置
+`NOTIFICATION_CONFIG_ENCRYPTION_KEY`、`RESEND_API_KEY`。验收时保持
+`NOTIFICATION_CHANNELS_ENABLED=false`，只对
+`NOTIFICATION_ACCEPTANCE_WORKSPACE_ID` / `NOTIFICATION_ACCEPTANCE_RUN_ID` 开启
+`NOTIFICATION_LIVE_ACCEPTANCE_MODE=true`。邮件、企业微信、飞书的发送、失败、重试、
+停用及系统去重/隔离共 15 项证据通过后，关闭验收模式再启用公众通知。详见
+[外部通知正式验收](../docs/NOTIFICATION_LIVE_ACCEPTANCE.md)。
+
+迁移 `20261001000000_staged_public_rollout.sql` 默认把开放阶段设为 `internal`。
+管理员只能通过 readiness run 逐级进入 `invite_beta`、`public_beta` 和 `general`；
+公开测试阶段的注册人数和每用户每日 AI Token 在数据库原子限制，正式发布还要求
+14 天稳定窗口与收费、通知、客服、值班证据。详见
+[分阶段开放与容量验收](../docs/STAGED_PUBLIC_ROLLOUT.md)。
 
 ## 5. 配置 GitHub Actions
 
@@ -104,7 +162,7 @@ REGULATORY_TRANSLATION_API_KEY
 REGULATORY_TRANSLATION_MODEL
 ```
 
-`SUPABASE_SERVICE_KEY` 只用于服务端数据发布任务。数据工作流会先执行质量校验，失败或关键数据过期时不会写入 Supabase。同步默认只写前端读取的 `market_data` KV 表；旧版分类表 fan-out 只有在显式设置 `SUPABASE_SYNC_LEGACY_TABLES=1` 且对应 schema 已准备好时才启用。
+`SUPABASE_SERVICE_KEY` 只用于独立采集 Worker 和服务端数据发布任务。Worker 负责高频采集、历史回填、租约续期、退避和来源预算；GitHub Actions 的 `data-update.yml` 仅用于紧急入队，`collection-health.yml` 仅做低频健康检查。质量校验失败或关键数据过期时不会写入 Supabase。同步默认只写前端读取的 `market_data` KV 表；旧版分类表 fan-out 只有在显式设置 `SUPABASE_SYNC_LEGACY_TABLES=1` 且对应 schema 已准备好时才启用。
 
 `data/market_scope.json` 中的市场、平台、关系、品类和报告模板元数据会由
 `scripts/sync_to_supabase.py` 同步到对应 catalog 表；该步骤只发布目录，不

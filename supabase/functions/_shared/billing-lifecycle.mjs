@@ -118,11 +118,12 @@ export function buildBillingSubscriptionPatch(options) {
   const eventPriceId = billingPriceId(item);
   const inferredPlan = safePlan(metadata, eventPriceId, String(options.configuredProPrice || ''), existing);
   const patch = {
-    user_id: options.userId,
+    ...(options.workspaceId ? { workspace_id: options.workspaceId } : { user_id: options.userId }),
     plan: inferredPlan,
     provider: 'stripe',
     provider_customer_id: stringId(object.customer) || existing.provider_customer_id || null,
     provider_subscription_id: subscriptionId(object) || existing.provider_subscription_id || null,
+    seat_limit: inferredPlan === 'enterprise' ? 50 : (inferredPlan === 'pro' ? 5 : Math.max(1, Number(existing.seat_limit || 1))),
     provider_updated_at: eventCreatedAt,
     last_event_type: eventType,
   };

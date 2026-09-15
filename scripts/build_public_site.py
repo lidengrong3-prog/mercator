@@ -21,6 +21,7 @@ PUBLIC_DATASETS = {
     "alerts": Path("alerts.json"),
     "taxes": Path("taxes.json"),
     "access_requirements": Path("access_requirements.json"),
+    "industry_advisories": Path("industry_advisories.json"),
     "macro": Path("us_market") / "macro_indicators.json",
 }
 
@@ -39,7 +40,7 @@ def write_json(path, data):
 
 
 def record_count(key, data):
-    if key in {"policies", "rules", "taxes", "access_requirements"}:
+    if key in {"policies", "rules", "taxes", "access_requirements", "industry_advisories"}:
         return len(data.get("items", [])) if isinstance(data, dict) else 0
     if key in {"platforms", "alerts"}:
         return len(data) if isinstance(data, list) else 0

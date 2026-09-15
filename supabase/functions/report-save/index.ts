@@ -3,6 +3,7 @@ import {
   REPORT_VALIDATION_VERSION,
   validateFormalReportWithServerData,
 } from '../_shared/report-validation.ts';
+import { enforceRateLimit, rateLimitResponse, requestId as securityRequestId } from '../_shared/security.ts';
 
 const defaultOrigins = [
   'https://lidengrong3-prog.github.io',
@@ -86,6 +87,14 @@ Deno.serve(async (request) => {
   if (!supabaseUrl || !anonKey || !serviceKey) return jsonResponse({ error: 'REPORT_SERVICE_NOT_CONFIGURED' }, 503, origin);
   const user = await authenticatedUser(request, supabaseUrl, anonKey);
   if (!user) return jsonResponse({ error: 'AUTH_REQUIRED' }, 401, origin);
+  const securityRequest = securityRequestId(request);
+  try {
+    const rate = await enforceRateLimit({ supabaseUrl, serviceKey, request, scope: 'report', userId: user.id });
+    if (!rate.allowed) return rateLimitResponse(rate, securityRequest, origin);
+  } catch (error) {
+    console.error('report save rate limiter unavailable', error);
+    return jsonResponse({ error: 'RATE_LIMIT_UNAVAILABLE', request_id: securityRequest }, 503, origin);
+  }
 
   let payload: Row;
   try { payload = await request.json(); } catch { return jsonResponse({ error: 'INVALID_JSON' }, 400, origin); }
@@ -140,6 +149,9 @@ Deno.serve(async (request) => {
   }
 
   const now = new Date().toISOString();
+  const acceptanceRunId = typeof payload.acceptance_run_id === 'string'
+    ? payload.acceptance_run_id.trim().slice(0, 160)
+    : null;
   const appendix = array(content.source_appendix || object(content.model)?.sourceAppendix).map(object).filter((item): item is Row => !!item);
   const sourceRecordIds = cleanStrings(appendix.map((source) => source.recordId || source.source_record_id));
   const materialSnapshotIds = cleanStrings(appendix.filter((source) => String(source.verificationStatus || source.verification_status).toLowerCase() === 'uploaded').map((source) => source.snapshotId || source.recordId || source.source_record_id));
@@ -166,6 +178,7 @@ Deno.serve(async (request) => {
   const row: Row = {
     user_id: creatorId,
     workspace_id: workspaceId,
+    acceptance_run_id: acceptanceRunId,
     client_id: clientId,
     report_type: reportTypes.has(reportType) ? reportType : 'custom',
     title,

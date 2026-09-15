@@ -19,18 +19,19 @@ jobs:
     environment: production
     env:
       NOTIFICATION_CHANNELS_ENABLED: ${{ vars.NOTIFICATION_CHANNELS_ENABLED || secrets.NOTIFICATION_CHANNELS_ENABLED || 'false' }}
+      NOTIFICATION_LIVE_ACCEPTANCE_MODE: ${{ vars.NOTIFICATION_LIVE_ACCEPTANCE_MODE || secrets.NOTIFICATION_LIVE_ACCEPTANCE_MODE || 'false' }}
       SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
-        if: env.NOTIFICATION_CHANNELS_ENABLED == 'true'
+        if: env.NOTIFICATION_CHANNELS_ENABLED == 'true' || env.NOTIFICATION_LIVE_ACCEPTANCE_MODE == 'true'
       - uses: actions/setup-python@v5
-        if: env.NOTIFICATION_CHANNELS_ENABLED == 'true'
+        if: env.NOTIFICATION_CHANNELS_ENABLED == 'true' || env.NOTIFICATION_LIVE_ACCEPTANCE_MODE == 'true'
         with:
           python-version: '3.11'
       - name: Resolve ephemeral Supabase service key
-        if: env.NOTIFICATION_CHANNELS_ENABLED == 'true'
+        if: env.NOTIFICATION_CHANNELS_ENABLED == 'true' || env.NOTIFICATION_LIVE_ACCEPTANCE_MODE == 'true'
         shell: bash
         run: |
           set -eu
@@ -43,13 +44,14 @@ jobs:
         shell: bash
         run: |
           set -eu
-          case "$NOTIFICATION_CHANNELS_ENABLED" in
-            false)
+          case "$NOTIFICATION_CHANNELS_ENABLED:$NOTIFICATION_LIVE_ACCEPTANCE_MODE" in
+            false:false)
               echo "External notification delivery is disabled."
               exit 0
               ;;
-            true) ;;
-            *) echo "NOTIFICATION_CHANNELS_ENABLED must be true or false" >&2; exit 1 ;;
+            true:false|false:true) ;;
+            true:true) echo "Public and acceptance notification modes cannot both be enabled" >&2; exit 1 ;;
+            *) echo "Notification mode flags must be true or false" >&2; exit 1 ;;
           esac
           test -n "$SUPABASE_URL" || { echo "Missing production secret: SUPABASE_URL" >&2; exit 1; }
           test -n "$SUPABASE_SERVICE_KEY" || { echo "Missing production secret: SUPABASE_SERVICE_KEY" >&2; exit 1; }

@@ -1,0 +1,37 @@
+.git
+.github
+.env
+.env.*
+!.env.example
+node_modules
+test-results
+playwright-report
+_site
+dist
+web
+.docx-qa
+.docx-qa-2
+*.docx
+*.pdf
+*.log
+*.dump*
+__pycache__
+*.pyc
+
+# Never bake private or licensed collector state into an image. The entrypoint
+# restores it from private Storage into the mounted /app/data volume.
+data/*
+!data/access_requirements.json
+!data/alerts.json
+!data/countries.json
+!data/industry_advisories.json
+!data/market_scope.json
+!data/platforms.json
+!data/policies.json
+!data/provenance_schema.json
+!data/quality_report.json
+!data/rules.json
+!data/taxes.json
+!data/us_market
+data/us_market/*
+!data/us_market/macro_indicators.json

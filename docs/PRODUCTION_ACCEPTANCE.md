@@ -33,14 +33,14 @@ Pages 数据验收必须确认 10 个白名单 JSON 均可读取，且 `_cfd_par
 - 定时法规翻译默认复用上述 DeepSeek Secrets；如需独立翻译服务，可配置 `REGULATORY_TRANSLATION_API_URL`、`REGULATORY_TRANSLATION_API_KEY`、`REGULATORY_TRANSLATION_MODEL`，独立配置优先。
 - 限流与成本：`AI_REQUESTS_PER_MINUTE`、`AI_MONTHLY_TOKEN_LIMIT`、`AI_INPUT_COST_PER_MILLION_USD`、`AI_OUTPUT_COST_PER_MILLION_USD`。
 - Stripe（正式收费前）：`STRIPE_SECRET_KEY`、`STRIPE_PRICE_PRO_MONTHLY`、`STRIPE_WEBHOOK_SECRET`。
-- Variable：`BILLING_ENABLED`，未完成 Stripe live-mode 验收前必须保持 `false`。
+- Variables：`BILLING_ENABLED`、`BILLING_LIVE_ACCEPTANCE_MODE`、`BILLING_ACCEPTANCE_WORKSPACE_ID` 和 `BILLING_ACCEPTANCE_RUN_ID`。未完成 Stripe live-mode 验收前 `BILLING_ENABLED` 必须保持 `false`。
 - 团队邀请 Secrets：`RESEND_API_KEY`、已验证的 `WORKSPACE_INVITE_FROM_EMAIL`；`APP_PUBLIC_URL` 由 `PRODUCTION_SITE_URL` 写入 Edge Function。
-- 通知 Secrets：`NOTIFICATION_CONFIG_ENCRYPTION_KEY`、`NOTIFICATION_FROM_EMAIL`（可以与团队邀请发件人相同）。
-- 通知 Variables：`NOTIFICATION_CHANNELS_ENABLED`（完成真实渠道验收前保持 `false`）和 `NOTIFICATION_ALERT_MAX_AGE_DAYS`（默认 `7`，允许 `1-30`）。
+- 通知 Secrets：`NOTIFICATION_CONFIG_ENCRYPTION_KEY`、`NOTIFICATION_FROM_EMAIL`。通知发件地址必须与 `WORKSPACE_INVITE_FROM_EMAIL` 独立。
+- 通知 Variables：`NOTIFICATION_CHANNELS_ENABLED`、`NOTIFICATION_LIVE_ACCEPTANCE_MODE`、`NOTIFICATION_ACCEPTANCE_WORKSPACE_ID`、`NOTIFICATION_ACCEPTANCE_RUN_ID` 和 `NOTIFICATION_ALERT_MAX_AGE_DAYS`（默认 `7`，允许 `1-30`）。完成 15 项真实渠道验收前 `NOTIFICATION_CHANNELS_ENABLED` 必须保持 `false`。
 - 双账号验收：`PROD_TEST_USER_A_EMAIL`、`PROD_TEST_USER_A_PASSWORD`、`PROD_TEST_USER_B_EMAIL`、`PROD_TEST_USER_B_PASSWORD`。
 - Variable：`PRODUCTION_SITE_URL`，例如 `https://lidengrong3-prog.github.io/mercator/`。
 
-Stripe 后台的 webhook URL 必须配置为 `https://<project-ref>.supabase.co/functions/v1/billing-webhook`，并订阅 `checkout.session.completed`、`checkout.session.async_payment_succeeded`、`checkout.session.async_payment_failed`、`customer.subscription.created`、`customer.subscription.updated`、`customer.subscription.deleted`、`invoice.paid`、`invoice.payment_failed`、`invoice.payment_action_required`、`invoice.marked_uncollectible`、`charge.refunded` 和 `refund.updated`。只有签名验证成功的 live-mode 事件可以更新会员；重复事件按 Stripe event ID 去重，失败事件和超过 5 分钟未完成的处理事件可以安全重试，旧事件不得覆盖较新的订阅状态。生产环境不得设置 `STRIPE_ALLOW_TEST_EVENTS=true`。正式打开 `BILLING_ENABLED=true` 前，至少完成一次隔离测试环境验证，并在生产打开后完成受控小额购买、续费模拟、取消、付款失败和退款核对。
+Stripe 后台的 webhook URL 必须配置为 `https://<project-ref>.supabase.co/functions/v1/billing-webhook`，并订阅 `checkout.session.completed`、`checkout.session.async_payment_succeeded`、`checkout.session.async_payment_failed`、`customer.subscription.created`、`customer.subscription.updated`、`customer.subscription.deleted`、`invoice.paid`、`invoice.payment_failed`、`invoice.payment_action_required`、`invoice.marked_uncollectible`、`charge.refunded` 和 `refund.updated`。只有签名验证成功的 live-mode 事件可以更新会员；重复事件按 Stripe event ID 去重，失败事件和超过 5 分钟未完成的处理事件可以安全重试，旧事件不得覆盖较新的订阅状态。生产环境不得设置 `STRIPE_ALLOW_TEST_EVENTS=true`。完整的 live 验收、开启顺序和回滚流程见 [STRIPE_LIVE_BILLING.md](STRIPE_LIVE_BILLING.md)。
 
 ## Stripe 正式收费验收
 
@@ -50,15 +50,30 @@ Stripe 后台的 webhook URL 必须配置为 `https://<project-ref>.supabase.co/
 
 打开生产收费前按顺序保留验收证据：
 
-1. 在 Stripe 隔离测试环境完成 Checkout，确认 `billing_events` 只有一条对应 event ID，`user_subscriptions` 与 `profiles.tier` 同步。
-2. 使用 Stripe Test Clock 或测试订阅完成续费、周期末取消、立即取消、付款失败、付款恢复、部分退款和全额退款，逐项核对 `effective_plan`、退款字段和页面中文提示。
+1. 先在 Stripe test 模式完成开发回归，确认 `billing_events` 只有一条对应 event ID，当前工作区的 `workspace_subscriptions` 更新，且页面套餐状态与服务端 `effective_billing_plan(workspace_id)` 一致；test 结果不计入 live 发布证据。
+2. 保持 `BILLING_ENABLED=false`，仅对 `BILLING_ACCEPTANCE_WORKSPACE_ID` 开启 live 验收模式；在同一验收运行内完成购买、续费、周期末取消、立即取消、付款失败、付款恢复、部分退款和全额退款。
 3. 重放同一 webhook、先发送新事件再发送旧事件，并模拟处理超过 5 分钟后重试；不得重复开通、回退到旧状态或永久卡在 `processing`。
 4. 分别把免费版和 Pro 的 AI、报告、导出额度调到小值，验证并发请求不会越额，重复请求不会重复计数，免费版不能创建正式 PDF/DOCX。
 5. 检查 `billing_events.processing_status='failed'`、过期的 `ai_token_reservations.status='reserved'` 和订阅状态异常；三项均无未解释记录后才进入 live-mode 小额验收。
-6. 使用专用生产账号完成一次受控 live-mode 购买和退款，核对 Stripe、Supabase、页面和账单门户四处一致。该步骤会产生真实交易，必须由负责人明确授权并人工执行。
-7. 所有证据完成后才把 GitHub `production` Environment 的 `BILLING_ENABLED` 设为 `true`；任一项未通过时保持 `false`。
+6. 使用专用生产账号完成受控 live-mode 全场景验收，核对 Stripe、Supabase、页面和账单门户四处一致。真实资金操作必须由负责人明确授权并人工执行，脚本不得代操作。
+7. `stripe_live_acceptance_runs` 成为 `passed` 且当前生产 Price ID 与一致性证据相同后，才关闭验收模式并把 `BILLING_ENABLED` 设为 `true`；任一项未通过时保持 `false`。
 
 两个测试账号必须是不同的专用账号，不得使用管理员或真实客户账号。API 验收记录使用稳定客户端 ID，并在同一 CI 运行内复用幂等键；不同运行使用新的运行标识，避免上一次失败的导出任务阻塞重试。浏览器验收会使用带运行时间的标题创建一份独立 UI 报告，避免误打开旧验收结果，因此专用验收账号应定期清理历史导出文件。
+
+## 验收数据隔离与补偿清理
+
+每次 API/浏览器验收共用 `ACCEPTANCE_RUN_ID`（发布工作流使用 `github.run_id-github.run_attempt`）。迁移 `20260911000000_production_acceptance_isolation.sql` 建立 service-role 专属的 `production_acceptance_runs` 运行登记，并为工作区、商品/店铺、素材、报告、运行、导出、邀请、用户活动、AI 日志和 Token 预占记录增加 `acceptance_run_id`。运行开始时由 `start_production_acceptance_run()` 创建两个临时 owner 工作区，账号 A 使用 A 工作区、账号 B 使用 B 工作区作为各自的隔离起点；浏览器随后邀请 B 加入 A 的临时工作区，整个协作验收仍在临时空间内完成。
+
+验收结果 JSON 只输出运行号、工作区 ID、报告/运行/导出/邀请 ID、检查布尔值、状态和错误摘要，不写入报告正文、AI Prompt 或完整回答。`cleanup_production_acceptance_run()` 先删除 `reports` Storage 中按导出路径和运行目录匹配的对象，再删除导出、报告、素材、商品/店铺、观察列表、用户活动、AI 日志/预占、邀请和临时工作区；运行登记保留为 `cleaned`，只留下各类删除计数和必要错误。运行中被强制中断时，清理器会把终止原因记为 `timed_out`，重复执行是幂等的。
+
+API 进程退出钩子处理正常结束、异常和 KeyboardInterrupt；生产工作流还配置了独立的 `always()` 清理 Job，覆盖 GitHub 强制超时导致进程来不及执行钩子的情况。API 成功会暂缓清理，交由浏览器验收结束后统一清理；API 失败立即清理。`operations.yml` 每六小时调用 `cleanup_production_acceptance.py --expired --retention-days 7`，会清理超过保留期的完成记录，以及运行/清理超过一小时的遗留记录。可以手工执行：
+
+```bash
+ACCEPTANCE_RUN_ID=12345-1 python scripts/cleanup_production_acceptance.py --run-id 12345-1
+python scripts/cleanup_production_acceptance.py --expired --retention-days 7
+```
+
+验收账号的正常工作区不会被此流程使用或删除。验收完成后应抽查 `production_acceptance_runs.cleanup_summary` 和测试账号的正常 owner 工作区，确认连续三次运行没有新增测试商品、素材、报告或导出。
 
 ## 验收内容
 
@@ -95,7 +110,7 @@ Stripe 后台的 webhook URL 必须配置为 `https://<project-ref>.supabase.co/
 
 ## 外部通知验收
 
-发布工作流会部署 `notification-dispatch`，并在最终 smoke 中使用真实账号读取三个渠道的服务端状态，但不会自动发送测试消息。打开 `NOTIFICATION_CHANNELS_ENABLED=true` 前，使用专用验收账号在“设置 → 预警订阅”完成以下受控检查：
+发布工作流会部署 `notification-dispatch`，并在最终 smoke 中使用真实账号读取三个渠道的服务端状态。完整的隔离验收模式、15 项证据、配置指纹与回滚步骤见 [NOTIFICATION_LIVE_ACCEPTANCE.md](NOTIFICATION_LIVE_ACCEPTANCE.md)。打开 `NOTIFICATION_CHANNELS_ENABLED=true` 前，使用专用验收账号在“设置 → 预警订阅”完成以下受控检查：
 
 1. 保存邮件、企业微信和飞书配置后，页面只显示登录邮箱或 Webhook 的脱敏目标，刷新后仍不能读取原始 Webhook。
 2. 三个“发送测试”分别收到真实供应商回执后，页面才显示“最近测试成功”；无效 URL、超时和供应商拒绝必须显示失败。
@@ -103,6 +118,10 @@ Stripe 后台的 webhook URL 必须配置为 `https://<project-ref>.supabase.co/
 4. 重复运行 `.github/workflows/notification-delivery.yml`，同一 `source_record_id` 不得生成重复事件或重复待发送任务。
 5. 暂停一个渠道后，新通知不再为该渠道排队；失败任务按退避时间重试，五次后停止自动重试。
 6. 账号 A 不能读取账号 B 的渠道配置、通知事件和投递记录，普通用户永远不能读取 `secret_ciphertext`。
+
+## 分阶段开放
+
+公众开放由数据库状态控制，必须依次经过内部账号、邀请制内测、公开测试和正式发布。负载、安全、成本、容量、14 天事故窗口以及收费/通知/客服/值班证据要求见 [STAGED_PUBLIC_ROLLOUT.md](STAGED_PUBLIC_ROLLOUT.md)。当前未形成生产证据时保持 `internal`，不得直接跳到正式发布。
 
 ## 可观测性口径
 

@@ -37,3 +37,40 @@ reports/us_market/*.pdf
 
 # ============ Logs ============
 *.log
+
+# ============ Private collector / licensed data ============
+data/_sync_logs/
+data/private/
+data/providers/
+data/private_repository_source/
+data/raw/
+data/raw_data/
+data/raw_responses/
+data/paid_data/
+data/licensed_data/
+data/quarantine/
+data/_cfd_part1.json
+data/_ext_part1.json
+data/_new_cfd_js.txt
+data/_new_ext_js.txt
+data/alerts_detailed.json
+data/collection_run.json
+data/collection_run.json.lock
+data/.worker-state-initialized.json
+data/countries_new.json
+data/macro_raw.json
+data/*_baseline.json
+data/quarantine_*.json
+data/us_market/*.json
+!data/us_market/macro_indicators.json
+
+# ============ Private operational outputs ============
+*.dump
+*.dump.enc
+*.dump.enc.sha256
+production-acceptance-result.json
+production-browser-acceptance-result.json
+browser-acceptance-diagnostics.json
+private-data-retention-summary.json
+backup-upload-summary.json
+history-privacy-report.json

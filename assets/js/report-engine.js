@@ -93,6 +93,16 @@
   }
   function formal(record, domain, context) {
     if (!record || typeof record !== 'object') return false;
+    var publicationStatus = lower(record.publication_status || record.publicationStatus);
+    var authorizationStatus = lower(record.authorization_status || record.authorizationStatus);
+    var sourceCategory = lower(record.source_category || record.sourceCategory);
+    var sourceType = lower(record.source_type || record.sourceType);
+    if (publicationStatus === 'quarantined' || publicationStatus === 'blocked') return false;
+    if (['expired', 'revoked', 'pending'].indexOf(authorizationStatus) >= 0) return false;
+    if (['industry_media', 'third_party_provider'].indexOf(sourceCategory) >= 0
+        && ['confirmed', 'not_required'].indexOf(authorizationStatus) < 0) return false;
+    if (['licensed_provider', 'industry_association'].indexOf(sourceType) >= 0
+        && ['confirmed', 'not_required'].indexOf(authorizationStatus) < 0) return false;
     var quality = api().getRecordQuality ? api().getRecordQuality(record, { domain: domain, requireScope: false }) : null;
     if (quality) return quality.formal;
     var status = lower(record.verification_status || record.verificationStatus || record.status);
@@ -203,6 +213,7 @@
     return {
       source: text(source), url: text(url), date: text(date), verificationStatus: text(status), sourceKind: text(kind),
       sourceType: text(record && (record.source_type || record.sourceType || '')),
+      sourceCategory: text(record && (record.source_category || record.sourceCategory || '')),
       marketCodes: recordMarketCodes(record),
       platformKeys: recordPlatformKeys(record),
       categoryCodes: recordCategoryCodes(record, domainForType(record && (record.type || record.item_type))),
@@ -214,6 +225,15 @@
       snapshotId: text(record && (record.snapshot_id || record.snapshotId || record.source_record_id || record.sourceRecordId || record.id || '')),
       snapshotAt: text(record && (record.snapshot_at || record.snapshotAt || record.collected_at || record.collectedAt || ''))
     };
+  }
+
+  function sourceCategoryLabel(value) {
+    return ({
+      official_policy: '官方政策/监管记录', official_statistics: '官方统计数据',
+      platform_announcement: '平台官方公告', industry_media: '行业媒体/协会资讯',
+      third_party_provider: '第三方数据服务商', user_upload: '工作区上传资料',
+      derived: '系统派生数据', internal: '系统运行数据', demo: '演示数据'
+    })[lower(value)] || text(value);
   }
 
   function recordMarketCodes(record) {
@@ -854,7 +874,7 @@
     if (!qualityGatePassed) {
       textParts.unshift('> **未发布草稿**：全局数据质量门禁未通过，本报告不得作为正式报告或正式导出文件。');
     }
-    textParts.push('## 来源与核验附录\n\n' + (appendix.length ? appendix.map(function (source) { return '- [' + source.citation + '] ' + (source.source || '未命名来源') + ' · ' + (source.date || '日期未提供') + ' · ' + (source.verificationStatus || '待核验') + (source.recordId ? ' · 原始记录：' + source.recordId : '') + (source.dataSnapshotAt ? ' · 数据快照：' + source.dataSnapshotAt : '') + (source.url ? ' · ' + source.url : '') + (source.chapters && source.chapters.length ? ' · 引用章节：' + source.chapters.join('、') : ''); }).join('\n') : '暂无可发布来源记录。'));
+    textParts.push('## 来源与核验附录\n\n' + (appendix.length ? appendix.map(function (source) { return '- [' + source.citation + '] ' + (source.source || '未命名来源') + (source.sourceCategory ? ' · 来源类别：' + sourceCategoryLabel(source.sourceCategory) : '') + ' · ' + (source.date || '日期未提供') + ' · ' + (source.verificationStatus || '待核验') + (source.recordId ? ' · 原始记录：' + source.recordId : '') + (source.dataSnapshotAt ? ' · 数据快照：' + source.dataSnapshotAt : '') + (source.url ? ' · ' + source.url : '') + (source.chapters && source.chapters.length ? ' · 引用章节：' + source.chapters.join('、') : ''); }).join('\n') : '暂无可发布来源记录。'));
     var sourceRecordIds = uniq(appendix.map(function (source) { return source.recordId; }).filter(Boolean));
     var scopeSnapshot = Object.assign({}, facts && facts.scope || {}, { capturedAt: isoNow() });
     return {

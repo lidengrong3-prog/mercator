@@ -158,6 +158,10 @@
 .ov-hero-result .ovr-section p{margin:0 0 6px;font-size:13px;color:#3c4a43;line-height:1.6}
 .ov-hero-result .ovr-section ul{margin:0;padding-left:18px;font-size:13px;color:#3c4a43;line-height:1.7}
 .ov-hero-result .ovr-section li{margin-bottom:4px}
+.ov-hero-result .ovr-card-error{border-color:#f1c7c7;background:#fffafa}
+.ov-hero-result .ovr-error-meta{display:grid;grid-template-columns:max-content 1fr;gap:5px 12px;margin:10px 0;padding:10px 12px;background:#fff;border:1px solid #f3dddd;border-radius:8px;font-size:11px}
+.ov-hero-result .ovr-error-meta dt{color:#8a6b6b;font-weight:600}
+.ov-hero-result .ovr-error-meta dd{margin:0;color:#3c4a43;word-break:break-all}
 .ov-hero-result .ovr-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .ov-hero-result .ovr-tag{background:#f0f7ff;color:#3b7ab8;border:1px solid #d4e4f7;border-radius:12px;padding:3px 10px;font-size:11px}
 .ov-hero-result .ovr-foot{display:flex;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid #eef3f8}

@@ -9,8 +9,13 @@ from __future__ import annotations
 
 import json
 import os
+import threading
+import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Any
+
+from source_governance import canonical_source_key
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -32,6 +37,7 @@ def _read(path: str) -> dict[str, Any]:
     now = utc_now().isoformat()
     return {
         "schema_version": 1,
+        "run_id": str(uuid.uuid4()),
         "started_at": now,
         "completed_at": now,
         "duration_ms": 0,
@@ -61,7 +67,30 @@ def _positive_int(value: Any) -> int:
     return max(parsed, 0)
 
 
-def append_collection_source(
+@contextmanager
+def _telemetry_lock(path: str):
+    """Serialize append/read/write across Worker processes sharing a volume."""
+    lock_path = f"{path}.lock"
+    os.makedirs(os.path.dirname(os.path.abspath(lock_path)), exist_ok=True)
+    process_lock = getattr(_telemetry_lock, "_process_lock", None)
+    if process_lock is None:
+        process_lock = threading.RLock()
+        setattr(_telemetry_lock, "_process_lock", process_lock)
+    with process_lock:
+        handle = open(lock_path, "a+", encoding="utf-8")
+        try:
+            if os.name != "nt":
+                import fcntl
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            yield
+        finally:
+            if os.name != "nt":
+                import fcntl
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+            handle.close()
+
+
+def _append_collection_source_unlocked(
     source: dict[str, Any],
     *,
     path: str | None = None,
@@ -70,6 +99,7 @@ def append_collection_source(
     """Upsert one source row and recalculate aggregate ledger totals."""
     path = path or DEFAULT_PATH
     payload = _read(path)
+    payload["run_id"] = str(payload.get("run_id") or os.environ.get("COLLECTION_RUN_ID") or uuid.uuid4())
     payload["schema_version"] = max(_positive_int(payload.get("schema_version")), 2)
     if scope:
         current_scope = payload.get("scope") if isinstance(payload.get("scope"), dict) else {}
@@ -84,6 +114,7 @@ def append_collection_source(
         raise ValueError("collection telemetry source key is required")
     normalized = {
         "key": key,
+        "source_key": canonical_source_key(key),
         "label": str(source.get("label") or key),
         "domain": str(source.get("domain") or "supporting"),
         "core": bool(source.get("core", False)),
@@ -139,3 +170,52 @@ def append_collection_source(
         json.dump(payload, handle, ensure_ascii=False, indent=2)
         handle.write("\n")
     return payload
+
+
+def append_collection_source(
+    source: dict[str, Any],
+    *,
+    path: str | None = None,
+    scope: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Append one source outcome while protecting the shared telemetry file."""
+    path = path or DEFAULT_PATH
+    with _telemetry_lock(path):
+        return _append_collection_source_unlocked(source, path=path, scope=scope)
+
+
+def merge_collection_report(report: dict[str, Any], *, path: str | None = None) -> dict[str, Any]:
+    """Merge a collector's full report with concurrently appended source rows."""
+    path = path or DEFAULT_PATH
+    with _telemetry_lock(path):
+        existing = _read(path)
+        incoming = dict(report or {})
+        existing_rows = [row for row in existing.get("sources", []) if isinstance(row, dict)]
+        incoming_rows = [row for row in incoming.get("sources", []) if isinstance(row, dict)]
+        by_key = {str(row.get("key")): row for row in existing_rows if row.get("key")}
+        by_key.update({str(row.get("key")): row for row in incoming_rows if row.get("key")})
+        rows = list(by_key.values())
+        incoming["sources"] = rows
+        incoming["run_id"] = str(existing.get("run_id") or incoming.get("run_id") or os.environ.get("COLLECTION_RUN_ID") or uuid.uuid4())
+        incoming["schema_version"] = max(_positive_int(existing.get("schema_version")), _positive_int(incoming.get("schema_version")), 2)
+        if isinstance(existing.get("scope"), dict):
+            merged_scope = dict(existing["scope"])
+            merged_scope.update(incoming.get("scope") or {})
+            incoming["scope"] = merged_scope
+        failed = sorted(row.get("key") for row in rows if row.get("status") == "failed")
+        degraded = sorted(row.get("key") for row in rows if row.get("status") == "degraded")
+        core_failures = sorted(row.get("key") for row in rows if row.get("core") is True and row.get("status") == "failed")
+        incoming["status"] = "failed" if core_failures else ("degraded" if failed or degraded else "healthy")
+        incoming["summary"] = {
+            "sources": len(rows),
+            "succeeded": sum(row.get("status") == "succeeded" for row in rows),
+            "degraded": len(degraded), "failed": len(failed), "core_failures": core_failures,
+            "records_collected": sum(_positive_int(row.get("records_collected")) for row in rows),
+            "records_in_scope": sum(_positive_int(row.get("records_in_scope")) for row in rows),
+        }
+        incoming["completed_at"] = utc_now().isoformat()
+        os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as handle:
+            json.dump(incoming, handle, ensure_ascii=False, indent=2)
+            handle.write("\n")
+        return incoming

@@ -32,16 +32,18 @@ jobs:
           deno-version: v2.x
       - name: Verify release ref, worktree and migration ordering
         run: python scripts/release_preflight.py
+      - name: Reject tracked secrets and restricted data
+        run: python scripts/repository_privacy_check.py
       - run: npm ci
       - name: Validate code, data contracts and report engine
         run: npm test
       - name: Validate Edge Functions
         run: |
-          deno check supabase/functions/_shared/report-document.ts supabase/functions/_shared/report-pdf.ts supabase/functions/_shared/report-docx.ts supabase/functions/_shared/report-validation.ts supabase/functions/report-save/index.ts supabase/functions/report-export/index.ts supabase/functions/report-docx/index.ts supabase/functions/workspace-invite/index.ts
+          deno check supabase/functions/_shared/report-document.ts supabase/functions/_shared/report-pdf.ts supabase/functions/_shared/report-docx.ts supabase/functions/_shared/report-validation.ts supabase/functions/_shared/security.ts supabase/functions/_shared/ai-gateway.ts supabase/functions/report-save/index.ts supabase/functions/report-export/index.ts supabase/functions/report-docx/index.ts supabase/functions/workspace-invite/index.ts supabase/functions/data-subject-request/index.ts supabase/functions/security-gate/index.ts supabase/functions/history-search/index.ts supabase/functions/resource-library/index.ts supabase/functions/notification-dispatch/index.ts
           deno check supabase/functions/ai-proxy/index.ts supabase/functions/billing-checkout/index.ts supabase/functions/billing-status/index.ts supabase/functions/billing-portal/index.ts supabase/functions/billing-webhook/index.ts
-          deno test --allow-env supabase/functions/_shared/report-export.test.ts supabase/functions/_shared/report-quality.test.ts supabase/functions/_shared/report-validation.test.ts supabase/functions/workspace-invite/index.test.ts
+          deno test --allow-env supabase/functions/_shared/report-export.test.ts supabase/functions/_shared/report-quality.test.ts supabase/functions/_shared/report-validation.test.ts supabase/functions/_shared/ai-gateway.test.ts supabase/functions/workspace-invite/index.test.ts
       - name: Reject stale or non-publishable data
-        run: python scripts/validate_data.py
+        run: python scripts/validate_data.py --public-projection
       - name: Validate Python syntax
         run: python -m compileall -q scripts tests data supabase
       - name: Install browser
@@ -62,6 +64,27 @@ jobs:
       DEEPSEEK_API_URL: ${{ secrets.DEEPSEEK_API_URL }}
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       DEEPSEEK_MODEL: ${{ secrets.DEEPSEEK_MODEL }}
+      COZE_API_URL: ${{ secrets.COZE_API_URL }}
+      COZE_API_TOKEN: ${{ secrets.COZE_API_TOKEN }}
+      COZE_API_KEY: ${{ secrets.COZE_API_KEY }}
+      COZE_BOT_ID: ${{ secrets.COZE_BOT_ID }}
+      COZE_MODEL: ${{ secrets.COZE_MODEL }}
+      DOUBAO_API_URL: ${{ secrets.DOUBAO_API_URL }}
+      DOUBAO_API_KEY: ${{ secrets.DOUBAO_API_KEY }}
+      ARK_API_KEY: ${{ secrets.ARK_API_KEY }}
+      ARK_BASE_URL: ${{ secrets.ARK_BASE_URL }}
+      ARK_MODEL: ${{ secrets.ARK_MODEL }}
+      DOUBAO_MODEL: ${{ secrets.DOUBAO_MODEL }}
+      OPENAI_API_URL: ${{ secrets.OPENAI_API_URL }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+      OPENAI_ENABLE_WEB_SEARCH: ${{ vars.OPENAI_ENABLE_WEB_SEARCH || secrets.OPENAI_ENABLE_WEB_SEARCH || 'false' }}
+      CODEX_API_URL: ${{ secrets.CODEX_API_URL }}
+      CODEX_API_KEY: ${{ secrets.CODEX_API_KEY }}
+      CODEX_MODEL: ${{ secrets.CODEX_MODEL }}
+      AI_FALLBACK_PROVIDERS: ${{ vars.AI_FALLBACK_PROVIDERS || secrets.AI_FALLBACK_PROVIDERS || '' }}
+      AI_PROVIDER_TIMEOUT_MS: ${{ vars.AI_PROVIDER_TIMEOUT_MS || secrets.AI_PROVIDER_TIMEOUT_MS || '25000' }}
+      AI_GATEWAY_TIMEOUT_MS: ${{ vars.AI_GATEWAY_TIMEOUT_MS || secrets.AI_GATEWAY_TIMEOUT_MS || '55000' }}
       ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
       PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
       APP_PUBLIC_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
@@ -71,15 +94,21 @@ jobs:
       AI_INPUT_COST_PER_MILLION_USD: ${{ secrets.AI_INPUT_COST_PER_MILLION_USD }}
       AI_OUTPUT_COST_PER_MILLION_USD: ${{ secrets.AI_OUTPUT_COST_PER_MILLION_USD }}
       BILLING_ENABLED: ${{ vars.BILLING_ENABLED || secrets.BILLING_ENABLED || 'false' }}
+      BILLING_LIVE_ACCEPTANCE_MODE: ${{ vars.BILLING_LIVE_ACCEPTANCE_MODE || secrets.BILLING_LIVE_ACCEPTANCE_MODE || 'false' }}
+      BILLING_ACCEPTANCE_WORKSPACE_ID: ${{ vars.BILLING_ACCEPTANCE_WORKSPACE_ID || secrets.BILLING_ACCEPTANCE_WORKSPACE_ID || '' }}
+      BILLING_ACCEPTANCE_RUN_ID: ${{ vars.BILLING_ACCEPTANCE_RUN_ID || secrets.BILLING_ACCEPTANCE_RUN_ID || '' }}
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
       STRIPE_PRICE_PRO_MONTHLY: ${{ secrets.STRIPE_PRICE_PRO_MONTHLY }}
       STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
       STRIPE_WEBHOOK_TOLERANCE_SECONDS: ${{ secrets.STRIPE_WEBHOOK_TOLERANCE_SECONDS }}
       NOTIFICATION_CHANNELS_ENABLED: ${{ vars.NOTIFICATION_CHANNELS_ENABLED || secrets.NOTIFICATION_CHANNELS_ENABLED || 'false' }}
+      NOTIFICATION_LIVE_ACCEPTANCE_MODE: ${{ vars.NOTIFICATION_LIVE_ACCEPTANCE_MODE || secrets.NOTIFICATION_LIVE_ACCEPTANCE_MODE || 'false' }}
+      NOTIFICATION_ACCEPTANCE_WORKSPACE_ID: ${{ vars.NOTIFICATION_ACCEPTANCE_WORKSPACE_ID || secrets.NOTIFICATION_ACCEPTANCE_WORKSPACE_ID || '' }}
+      NOTIFICATION_ACCEPTANCE_RUN_ID: ${{ vars.NOTIFICATION_ACCEPTANCE_RUN_ID || secrets.NOTIFICATION_ACCEPTANCE_RUN_ID || '' }}
       NOTIFICATION_CONFIG_ENCRYPTION_KEY: ${{ secrets.NOTIFICATION_CONFIG_ENCRYPTION_KEY }}
       RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       NOTIFICATION_FROM_EMAIL: ${{ secrets.NOTIFICATION_FROM_EMAIL }}
-      WORKSPACE_INVITE_FROM_EMAIL: ${{ secrets.WORKSPACE_INVITE_FROM_EMAIL || secrets.NOTIFICATION_FROM_EMAIL }}
+      WORKSPACE_INVITE_FROM_EMAIL: ${{ secrets.WORKSPACE_INVITE_FROM_EMAIL }}
       NOTIFICATION_ALERT_MAX_AGE_DAYS: ${{ vars.NOTIFICATION_ALERT_MAX_AGE_DAYS || secrets.NOTIFICATION_ALERT_MAX_AGE_DAYS || '7' }}
     steps:
       - uses: actions/checkout@v4
@@ -113,34 +142,57 @@ jobs:
         shell: bash
         run: |
           set -eu
-          case "$BILLING_ENABLED" in
-            true)
-              for name in STRIPE_SECRET_KEY STRIPE_PRICE_PRO_MONTHLY STRIPE_WEBHOOK_SECRET; do
-                test -n "${!name:-}" || { echo "Billing is enabled but $name is missing" >&2; exit 1; }
-              done
-              [[ "$STRIPE_SECRET_KEY" == sk_live_* ]] || { echo "Production billing requires a Stripe live secret key" >&2; exit 1; }
-              [[ "$STRIPE_PRICE_PRO_MONTHLY" == price_* ]] || { echo "Invalid Stripe price ID" >&2; exit 1; }
-              [[ "$STRIPE_WEBHOOK_SECRET" == whsec_* ]] || { echo "Invalid Stripe webhook signing secret" >&2; exit 1; }
-              ;;
-            false) ;;
-            *) echo "BILLING_ENABLED must be true or false" >&2; exit 1 ;;
-          esac
+          for flag in BILLING_ENABLED BILLING_LIVE_ACCEPTANCE_MODE; do
+            case "${!flag}" in true|false) ;; *) echo "$flag must be true or false" >&2; exit 1 ;; esac
+          done
+          if [ "$BILLING_ENABLED" = true ] && [ "$BILLING_LIVE_ACCEPTANCE_MODE" = true ]; then
+            echo "Disable live acceptance mode before enabling public billing" >&2; exit 1
+          fi
+          if [ "$BILLING_ENABLED" = true ] || [ "$BILLING_LIVE_ACCEPTANCE_MODE" = true ]; then
+            for name in STRIPE_SECRET_KEY STRIPE_PRICE_PRO_MONTHLY STRIPE_WEBHOOK_SECRET; do
+              test -n "${!name:-}" || { echo "Stripe live operation requires $name" >&2; exit 1; }
+            done
+            [[ "$STRIPE_SECRET_KEY" == sk_live_* ]] || { echo "Production billing requires a Stripe live secret key" >&2; exit 1; }
+            [[ "$STRIPE_PRICE_PRO_MONTHLY" == price_* ]] || { echo "Invalid Stripe price ID" >&2; exit 1; }
+            [[ "$STRIPE_WEBHOOK_SECRET" == whsec_* ]] || { echo "Invalid Stripe webhook signing secret" >&2; exit 1; }
+          fi
+          if [ "$BILLING_LIVE_ACCEPTANCE_MODE" = true ]; then
+            [[ "$BILLING_ACCEPTANCE_WORKSPACE_ID" =~ ^[0-9a-fA-F-]{36}$ ]] || { echo "Live acceptance requires BILLING_ACCEPTANCE_WORKSPACE_ID" >&2; exit 1; }
+          fi
+          if [ "$BILLING_ENABLED" = true ]; then
+            [[ "$BILLING_ACCEPTANCE_RUN_ID" =~ ^[0-9a-fA-F-]{36}$ ]] || { echo "Public billing requires BILLING_ACCEPTANCE_RUN_ID" >&2; exit 1; }
+          fi
       - name: Validate optional external notification configuration
         shell: bash
         run: |
           set -eu
-          case "$NOTIFICATION_CHANNELS_ENABLED" in
-            true)
+          for flag in NOTIFICATION_CHANNELS_ENABLED NOTIFICATION_LIVE_ACCEPTANCE_MODE; do
+            case "${!flag}" in true|false) ;; *) echo "$flag must be true or false" >&2; exit 1 ;; esac
+          done
+          if [ "$NOTIFICATION_CHANNELS_ENABLED" = true ] && [ "$NOTIFICATION_LIVE_ACCEPTANCE_MODE" = true ]; then
+            echo "Disable notification acceptance mode before public notifications" >&2; exit 1
+          fi
+          case "$NOTIFICATION_CHANNELS_ENABLED:$NOTIFICATION_LIVE_ACCEPTANCE_MODE" in
+            true:false|false:true)
               for name in NOTIFICATION_CONFIG_ENCRYPTION_KEY RESEND_API_KEY NOTIFICATION_FROM_EMAIL; do
-                test -n "${!name:-}" || { echo "External notifications are enabled but $name is missing" >&2; exit 1; }
+                test -n "${!name:-}" || { echo "Live notifications require $name" >&2; exit 1; }
               done
               test "${#NOTIFICATION_CONFIG_ENCRYPTION_KEY}" -ge 24 || { echo "NOTIFICATION_CONFIG_ENCRYPTION_KEY must contain at least 24 characters" >&2; exit 1; }
               [[ "$NOTIFICATION_FROM_EMAIL" == *@* ]] || { echo "NOTIFICATION_FROM_EMAIL must be a valid Resend sender" >&2; exit 1; }
               [[ "$NOTIFICATION_ALERT_MAX_AGE_DAYS" =~ ^[0-9]+$ ]] && [ "$NOTIFICATION_ALERT_MAX_AGE_DAYS" -ge 1 ] && [ "$NOTIFICATION_ALERT_MAX_AGE_DAYS" -le 30 ] || { echo "NOTIFICATION_ALERT_MAX_AGE_DAYS must be between 1 and 30" >&2; exit 1; }
               ;;
-            false) ;;
-            *) echo "NOTIFICATION_CHANNELS_ENABLED must be true or false" >&2; exit 1 ;;
+            false:false) ;;
           esac
+          if [ "$NOTIFICATION_LIVE_ACCEPTANCE_MODE" = true ]; then
+            [[ "$NOTIFICATION_ACCEPTANCE_WORKSPACE_ID" =~ ^[0-9a-fA-F-]{36}$ ]] || { echo "Acceptance requires NOTIFICATION_ACCEPTANCE_WORKSPACE_ID" >&2; exit 1; }
+            [[ "$NOTIFICATION_ACCEPTANCE_RUN_ID" =~ ^[0-9a-fA-F-]{36}$ ]] || { echo "Acceptance requires NOTIFICATION_ACCEPTANCE_RUN_ID" >&2; exit 1; }
+          fi
+          if [ "$NOTIFICATION_CHANNELS_ENABLED" = true ]; then
+            [[ "$NOTIFICATION_ACCEPTANCE_RUN_ID" =~ ^[0-9a-fA-F-]{36}$ ]] || { echo "Public notifications require NOTIFICATION_ACCEPTANCE_RUN_ID" >&2; exit 1; }
+          fi
+          if [ "$NOTIFICATION_CHANNELS_ENABLED" = true ] || [ "$NOTIFICATION_LIVE_ACCEPTANCE_MODE" = true ]; then
+            [ "${NOTIFICATION_FROM_EMAIL,,}" != "${WORKSPACE_INVITE_FROM_EMAIL,,}" ] || { echo "Notification and workspace invitation senders must be independent" >&2; exit 1; }
+          fi
       - name: Resolve release migration head
         shell: bash
         run: |
@@ -162,8 +214,12 @@ jobs:
             $1 == version && $2 == "|" && $3 == version { matched = 1 }
             END { exit matched ? 0 : 1 }
           ' migration-list.txt
-      - name: Sync validated market data and provenance
-        run: python scripts/sync_to_supabase.py
+      - name: Enforce completed Stripe live acceptance before public billing
+        if: env.BILLING_ENABLED == 'true'
+        run: python scripts/stripe_live_acceptance.py validate --run-id "$BILLING_ACCEPTANCE_RUN_ID"
+      - name: Enforce completed notification live acceptance before public delivery
+        if: env.NOTIFICATION_CHANNELS_ENABLED == 'true'
+        run: python scripts/notification_live_acceptance.py validate --run-id "$NOTIFICATION_ACCEPTANCE_RUN_ID"
       - name: Configure Edge Function secrets
         shell: bash
         run: |
@@ -181,16 +237,28 @@ jobs:
             "AI_MONTHLY_TOKEN_LIMIT=${AI_MONTHLY_TOKEN_LIMIT:-0}"
             "AI_INPUT_COST_PER_MILLION_USD=${AI_INPUT_COST_PER_MILLION_USD:-0}"
             "AI_OUTPUT_COST_PER_MILLION_USD=${AI_OUTPUT_COST_PER_MILLION_USD:-0}"
+            "AI_FALLBACK_PROVIDERS=${AI_FALLBACK_PROVIDERS:-}"
+            "AI_PROVIDER_TIMEOUT_MS=${AI_PROVIDER_TIMEOUT_MS:-25000}"
+            "AI_GATEWAY_TIMEOUT_MS=${AI_GATEWAY_TIMEOUT_MS:-55000}"
+            "OPENAI_ENABLE_WEB_SEARCH=${OPENAI_ENABLE_WEB_SEARCH:-false}"
             "BILLING_ENABLED=$BILLING_ENABLED"
+            "BILLING_LIVE_ACCEPTANCE_MODE=$BILLING_LIVE_ACCEPTANCE_MODE"
+            "BILLING_ACCEPTANCE_WORKSPACE_ID=$BILLING_ACCEPTANCE_WORKSPACE_ID"
             "STRIPE_ALLOW_TEST_EVENTS=false"
             "PRODUCTION_SITE_URL=$PRODUCTION_SITE_URL"
             "APP_PUBLIC_URL=$APP_PUBLIC_URL"
             "RESEND_API_KEY=$RESEND_API_KEY"
             "WORKSPACE_INVITE_FROM_EMAIL=$WORKSPACE_INVITE_FROM_EMAIL"
             "NOTIFICATION_CHANNELS_ENABLED=$NOTIFICATION_CHANNELS_ENABLED"
+            "NOTIFICATION_LIVE_ACCEPTANCE_MODE=$NOTIFICATION_LIVE_ACCEPTANCE_MODE"
+            "NOTIFICATION_ACCEPTANCE_WORKSPACE_ID=$NOTIFICATION_ACCEPTANCE_WORKSPACE_ID"
+            "NOTIFICATION_ACCEPTANCE_RUN_ID=$NOTIFICATION_ACCEPTANCE_RUN_ID"
             "NOTIFICATION_ALERT_MAX_AGE_DAYS=$NOTIFICATION_ALERT_MAX_AGE_DAYS"
           )
-          if [ "$BILLING_ENABLED" = true ]; then
+          for optional_name in COZE_API_URL COZE_API_TOKEN COZE_API_KEY COZE_BOT_ID COZE_MODEL DOUBAO_API_URL DOUBAO_API_KEY ARK_API_KEY ARK_BASE_URL ARK_MODEL DOUBAO_MODEL OPENAI_API_URL OPENAI_API_KEY OPENAI_MODEL CODEX_API_URL CODEX_API_KEY CODEX_MODEL; do
+            if [ -n "${!optional_name:-}" ]; then args+=("$optional_name=${!optional_name}"); fi
+          done
+          if [ "$BILLING_ENABLED" = true ] || [ "$BILLING_LIVE_ACCEPTANCE_MODE" = true ]; then
             args+=(
               "STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY"
               "STRIPE_PRICE_PRO_MONTHLY=$STRIPE_PRICE_PRO_MONTHLY"
@@ -198,7 +266,7 @@ jobs:
               "STRIPE_WEBHOOK_TOLERANCE_SECONDS=${STRIPE_WEBHOOK_TOLERANCE_SECONDS:-300}"
             )
           fi
-          if [ "$NOTIFICATION_CHANNELS_ENABLED" = true ]; then
+          if [ "$NOTIFICATION_CHANNELS_ENABLED" = true ] || [ "$NOTIFICATION_LIVE_ACCEPTANCE_MODE" = true ]; then
             args+=(
               "NOTIFICATION_CONFIG_ENCRYPTION_KEY=$NOTIFICATION_CONFIG_ENCRYPTION_KEY"
               "NOTIFICATION_FROM_EMAIL=$NOTIFICATION_FROM_EMAIL"
@@ -209,7 +277,7 @@ jobs:
         shell: bash
         run: |
           set -eu
-          for function_name in ai-proxy report-save report-export report-docx workspace-invite billing-checkout billing-status billing-portal admin-summary; do
+          for function_name in ai-proxy history-search resource-library report-save report-export report-docx workspace-invite billing-checkout billing-status billing-portal admin-summary data-subject-request security-gate; do
             npx --yes supabase@2.39.2 functions deploy "$function_name" --project-ref "$SUPABASE_PROJECT_ID"
           done
       - name: Deploy Stripe webhook without Supabase JWT verification
@@ -232,6 +300,8 @@ jobs:
       PROD_TEST_USER_A_PASSWORD: ${{ secrets.PROD_TEST_USER_A_PASSWORD }}
       PROD_TEST_USER_B_EMAIL: ${{ secrets.PROD_TEST_USER_B_EMAIL }}
       PROD_TEST_USER_B_PASSWORD: ${{ secrets.PROD_TEST_USER_B_PASSWORD }}
+      ACCEPTANCE_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+      DEFER_ACCEPTANCE_CLEANUP: '1'
       PRODUCTION_ACCEPTANCE_OUTPUT: production-acceptance-result.json
       RELEASE_SHA: ${{ github.sha }}
     steps:
@@ -256,6 +326,42 @@ jobs:
           name: production-acceptance-result-${{ github.run_id }}
           path: production-acceptance-result.json
           if-no-files-found: error
+
+  authenticated-acceptance-cleanup:
+    if: ${{ always() && needs['authenticated-acceptance'].result != 'success' }}
+    needs: authenticated-acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      ACCEPTANCE_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+      ACCEPTANCE_JOB_RESULT: ${{ needs['authenticated-acceptance'].result }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Resolve ephemeral Supabase service key
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
+      - name: Mark and cleanup backend acceptance after failure or timeout
+        shell: bash
+        run: |
+          set -eu
+          case "$ACCEPTANCE_JOB_RESULT" in
+            cancelled) terminal_status=timed_out ;;
+            *) terminal_status=failed ;;
+          esac
+          python scripts/cleanup_production_acceptance.py --run-id "$ACCEPTANCE_RUN_ID" --mark "$terminal_status"
 
   deploy-frontend:
     needs: authenticated-acceptance
@@ -313,10 +419,14 @@ jobs:
     environment: production
     env:
       PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
       PROD_TEST_USER_A_EMAIL: ${{ secrets.PROD_TEST_USER_A_EMAIL }}
       PROD_TEST_USER_A_PASSWORD: ${{ secrets.PROD_TEST_USER_A_PASSWORD }}
       PROD_TEST_USER_B_EMAIL: ${{ secrets.PROD_TEST_USER_B_EMAIL }}
       PROD_TEST_USER_B_PASSWORD: ${{ secrets.PROD_TEST_USER_B_PASSWORD }}
+      ACCEPTANCE_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
       RUN_PRODUCTION_ACCEPTANCE: '1'
       PRODUCTION_BROWSER_ACCEPTANCE_OUTPUT: production-browser-acceptance-result.json
     steps:
@@ -327,6 +437,30 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - name: Download backend acceptance workspace manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: production-acceptance-result-${{ github.run_id }}
+      - name: Select dedicated acceptance workspaces
+        shell: bash
+        run: |
+          set -eu
+          test "$(python -c 'import json; print(json.load(open("production-acceptance-result.json"))["acceptance_run_id"])')" = "$ACCEPTANCE_RUN_ID"
+          python - <<'PY' >> "$GITHUB_ENV"
+          import json
+          result = json.load(open('production-acceptance-result.json', encoding='utf-8'))
+          print('ACCEPTANCE_API_WORKSPACE_ID=' + str(result['api_workspace_id']))
+          print('ACCEPTANCE_BROWSER_WORKSPACE_ID=' + str(result['browser_workspace_id']))
+          PY
+      - name: Resolve ephemeral Supabase service key for cleanup
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
       - name: Run real browser exception and account-isolation acceptance
         run: JAY_PLAYWRIGHT_BASE_URL="$PRODUCTION_SITE_URL" npm run test:browser:production
       - name: Publish browser exception acceptance result
@@ -335,17 +469,58 @@ jobs:
           name: production-browser-acceptance-result-${{ github.run_id }}
           path: production-browser-acceptance-result.json
           if-no-files-found: error
-      - name: Upload browser acceptance diagnostics
+      - name: Summarize browser acceptance diagnostics without contents
+        if: failure()
+        run: python scripts/summarize_test_diagnostics.py --input test-results --output browser-acceptance-diagnostics.json
+      - name: Upload content-free browser diagnostic summary
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: browser-acceptance-diagnostics-${{ github.run_id }}
-          path: test-results/
-          if-no-files-found: warn
+          path: browser-acceptance-diagnostics.json
+          if-no-files-found: error
           retention-days: 7
+  browser-authenticated-acceptance-cleanup:
+    if: ${{ always() }}
+    needs: browser-authenticated-acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      ACCEPTANCE_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+      ACCEPTANCE_JOB_RESULT: ${{ needs.browser-authenticated-acceptance.result }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Resolve ephemeral Supabase service key
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
+      - name: Mark and cleanup browser acceptance after termination
+        shell: bash
+        run: |
+          set -eu
+          case "$ACCEPTANCE_JOB_RESULT" in
+            success) terminal_status=passed ;;
+            cancelled) terminal_status=timed_out ;;
+            *) terminal_status=failed ;;
+          esac
+          python scripts/cleanup_production_acceptance.py --run-id "$ACCEPTANCE_RUN_ID" --mark "$terminal_status"
 
   production-smoke:
-    needs: browser-authenticated-acceptance
+    needs:
+      - browser-authenticated-acceptance
+      - browser-authenticated-acceptance-cleanup
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: production

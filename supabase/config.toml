@@ -28,5 +28,17 @@ verify_jwt = false
 [functions.admin-summary]
 verify_jwt = true
 
+[functions.data-subject-request]
+verify_jwt = true
+
+[functions.security-gate]
+verify_jwt = true
+
+[functions.history-search]
+verify_jwt = true
+
+[functions.resource-library]
+verify_jwt = true
+
 [functions.notification-dispatch]
 verify_jwt = false

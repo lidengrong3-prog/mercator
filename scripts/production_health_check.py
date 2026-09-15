@@ -24,6 +24,9 @@ EDGE_FUNCTIONS = (
     "billing-portal",
     "billing-webhook",
     "admin-summary",
+    "data-subject-request",
+    "security-gate",
+    "history-search",
     "notification-dispatch",
 )
 
@@ -169,6 +172,21 @@ def probe_storage() -> dict:
     return {"http_status": status, "bucket": "reports"}
 
 
+def probe_capacity() -> dict:
+    status, raw, _ = request(
+        "POST",
+        f"{supabase_url()}/rest/v1/rpc/collect_service_capacity",
+        headers=supabase_headers(service_role=True),
+        body={},
+    )
+    if status != 200:
+        raise HealthCheckError("CAPACITY_UNAVAILABLE", f"capacity probe returned HTTP {status}", http_status=status)
+    capacity = parse_json(raw, "capacity probe")
+    if not isinstance(capacity, dict):
+        raise HealthCheckError("CAPACITY_INVALID", "capacity probe did not return an object")
+    return {"capacity": capacity}
+
+
 def probe_edge_functions() -> dict:
     base = supabase_url()
     headers = supabase_headers()
@@ -233,6 +251,7 @@ def collect_health(probes: dict[str, Callable[[], dict]] | None = None) -> dict:
         "release_manifest": probe_release_manifest,
         "database": probe_database,
         "storage": probe_storage,
+        "capacity": probe_capacity,
         "edge_functions": probe_edge_functions,
         "auth": probe_auth,
     }
@@ -287,6 +306,17 @@ def main(argv: list[str] | None = None) -> int:
     result = collect_health()
     rendered = json.dumps(result, ensure_ascii=False, indent=2) + "\n"
     Path(args.output).write_text(rendered, encoding="utf-8")
+    service_key = env_value("SUPABASE_SERVICE_KEY")
+    if service_key:
+        try:
+            request(
+                "POST",
+                f"{supabase_url()}/rest/v1/service_health_snapshots",
+                headers={**supabase_headers(service_role=True), "Content-Type": "application/json", "Prefer": "return=minimal"},
+                body={"service": "production-availability", "status": result["status"], "checked_at": result["checked_at"], "release_sha": result.get("release_sha"), "metrics": result},
+            )
+        except Exception as error:
+            print(f"[health] could not persist health snapshot: {error}", file=sys.stderr)
     print(rendered, end="")
     return 1 if result["status"] == "failed" else 0
 

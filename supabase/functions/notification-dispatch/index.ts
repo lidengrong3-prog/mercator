@@ -72,6 +72,24 @@ function notificationEnabled(): boolean {
   return Deno.env.get('NOTIFICATION_CHANNELS_ENABLED') === 'true';
 }
 
+function acceptanceEnabled(): boolean {
+  return Deno.env.get('NOTIFICATION_LIVE_ACCEPTANCE_MODE') === 'true';
+}
+
+function acceptanceScope(): { workspaceId: string | null; runId: string | null } {
+  return {
+    workspaceId: uuid(Deno.env.get('NOTIFICATION_ACCEPTANCE_WORKSPACE_ID')),
+    runId: uuid(Deno.env.get('NOTIFICATION_ACCEPTANCE_RUN_ID')),
+  };
+}
+
+function workspaceDeliveryEnabled(workspaceId: string, runId?: string | null): boolean {
+  if (notificationEnabled()) return true;
+  const scope = acceptanceScope();
+  return acceptanceEnabled() && scope.workspaceId === workspaceId
+    && Boolean(scope.runId && runId && scope.runId === runId);
+}
+
 function uuid(value: unknown): string | null {
   const candidate = typeof value === 'string' ? value : '';
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(candidate) ? candidate : null;
@@ -298,6 +316,7 @@ function alertMatchesPreferences(alert: AlertRecord, preferences: Json): boolean
 
 async function syncSubscribedAlerts(
   service: NonNullable<ReturnType<typeof supabaseServiceConfig>>,
+  workspaceId?: string | null,
 ): Promise<number> {
   const configuredAge = Number(Deno.env.get('NOTIFICATION_ALERT_MAX_AGE_DAYS') || 7);
   const maxAgeDays = Math.min(30, Math.max(1, Number.isFinite(configuredAge) ? configuredAge : 7));
@@ -320,13 +339,14 @@ async function syncSubscribedAlerts(
   const rows: Json[] = [];
   (memberships || []).forEach((membership: Json) => {
     const userId = String(membership.user_id || '');
-    const workspaceId = String(membership.workspace_id || '');
-    if (!configuredPairs.has(`${userId}:${workspaceId}`)) return;
+    const memberWorkspaceId = String(membership.workspace_id || '');
+    if (workspaceId && memberWorkspaceId !== workspaceId) return;
+    if (!configuredPairs.has(`${userId}:${memberWorkspaceId}`)) return;
     const userPreferences = preferences.get(userId) || {};
     alerts.filter((alert) => alertMatchesPreferences(alert, userPreferences)).forEach((alert) => {
       rows.push({
         user_id: userId,
-        workspace_id: workspaceId,
+        workspace_id: memberWorkspaceId,
         event_type: 'alert',
         severity: ['high', 'critical'].includes(alert.level) ? 'critical' : alert.level === 'low' ? 'info' : 'warning',
         title: alert.title,
@@ -358,8 +378,11 @@ async function syncSubscribedAlerts(
   return created;
 }
 
-function availability(userEmail?: string): Record<Channel, boolean> {
-  const master = notificationEnabled();
+function availability(userEmail?: string, workspaceId?: string): Record<Channel, boolean> {
+  const scope = acceptanceScope();
+  const master = notificationEnabled() || (
+    acceptanceEnabled() && Boolean(workspaceId && scope.workspaceId === workspaceId && scope.runId)
+  );
   const encrypted = String(Deno.env.get('NOTIFICATION_CONFIG_ENCRYPTION_KEY') || '').length >= 24;
   return {
     email: master && Boolean(userEmail && Deno.env.get('RESEND_API_KEY') && Deno.env.get('NOTIFICATION_FROM_EMAIL')),
@@ -378,7 +401,7 @@ async function saveConfig(
   if (!channel) throw new HttpError('INVALID_NOTIFICATION_CHANNEL', 400);
   const enabled = payload.enabled === true;
   const existing = (await channelConfigs(service, user.id, workspaceId)).find((row) => row.channel === channel);
-  const available = availability(user.email)[channel];
+  const available = availability(user.email, workspaceId)[channel];
   if (enabled && !available) throw new HttpError('NOTIFICATION_CHANNEL_NOT_AVAILABLE', 503);
 
   let ciphertext = existing?.secret_ciphertext || null;
@@ -410,6 +433,39 @@ async function saveConfig(
 async function updateDelivery(service: NonNullable<ReturnType<typeof supabaseServiceConfig>>, id: string, values: Json): Promise<void> {
   await dbJson(service, `notification_deliveries?id=eq.${encodeURIComponent(id)}`, {
     method: 'PATCH', body: JSON.stringify(values),
+  });
+}
+
+function deliveryErrorCode(value: unknown): string {
+  return cleanError(value).toUpperCase().replace(/[^A-Z0-9_.-]+/g, '_').slice(0, 160) || 'DELIVERY_FAILED';
+}
+
+async function recordDeliveryAttempt(
+  service: NonNullable<ReturnType<typeof supabaseServiceConfig>>,
+  delivery: Delivery,
+  context: Awaited<ReturnType<typeof deliveryContext>> | null,
+  status: 'sent' | 'failed' | 'cancelled',
+  startedAt: string,
+  providerMessageId?: string | null,
+  error?: unknown,
+): Promise<void> {
+  if (!context) return;
+  await dbJson(service, 'notification_delivery_attempts?on_conflict=delivery_id,attempt_no', {
+    method: 'POST',
+    headers: { Prefer: 'resolution=ignore-duplicates,return=minimal' },
+    body: JSON.stringify({
+      delivery_id: delivery.id,
+      event_id: context.event.id,
+      user_id: delivery.user_id,
+      workspace_id: context.event.workspace_id,
+      channel: delivery.channel,
+      attempt_no: Number(delivery.attempt_count || 0),
+      status,
+      provider_message_id: providerMessageId ? String(providerMessageId).slice(0, 240) : null,
+      error_code: error ? deliveryErrorCode(error) : null,
+      started_at: startedAt,
+      completed_at: new Date().toISOString(),
+    }),
   });
 }
 
@@ -500,19 +556,36 @@ async function deliveryContext(
 async function deliverClaimed(
   service: NonNullable<ReturnType<typeof supabaseServiceConfig>>,
   delivery: Delivery,
+  controlledFailure = false,
 ): Promise<Json> {
+  const startedAt = new Date().toISOString();
   let context: Awaited<ReturnType<typeof deliveryContext>> | null = null;
   try {
-    if (!notificationEnabled()) throw new HttpError('NOTIFICATION_CHANNELS_DISABLED', 503);
     context = await deliveryContext(service, delivery);
+    const acceptanceRunId = uuid(context.event.payload?.acceptance_run_id);
+    if (!workspaceDeliveryEnabled(context.event.workspace_id, acceptanceRunId)) {
+      throw new HttpError('NOTIFICATION_CHANNELS_DISABLED', 503);
+    }
     let providerMessageId: string | null = null;
     if (delivery.channel === 'email') {
       if (!context.email) throw new HttpError('EMAIL_ADDRESS_REQUIRED', 400);
-      providerMessageId = await sendEmail(context.email, context.event, delivery.id);
+      providerMessageId = await sendEmail(
+        controlledFailure ? 'notification-acceptance-invalid' : context.email,
+        context.event,
+        controlledFailure ? `${delivery.id}-acceptance-failure` : delivery.id,
+      );
     } else {
       if (!context.config.secret_ciphertext) throw new HttpError('WEBHOOK_URL_REQUIRED', 400);
-      providerMessageId = await sendEnterprise(delivery.channel, await decryptSecret(context.config.secret_ciphertext), context.event);
+      const invalidWebhook = delivery.channel === 'wecom'
+        ? 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=00000000-0000-0000-0000-000000000000'
+        : 'https://open.feishu.cn/open-apis/bot/v2/hook/00000000-0000-0000-0000-000000000000';
+      providerMessageId = await sendEnterprise(
+        delivery.channel,
+        controlledFailure ? invalidWebhook : await decryptSecret(context.config.secret_ciphertext),
+        context.event,
+      );
     }
+    await recordDeliveryAttempt(service, delivery, context, 'sent', startedAt, providerMessageId);
     await updateDelivery(service, delivery.id, {
       status: 'sent', provider_message_id: providerMessageId, last_error: null,
       next_attempt_at: null, sent_at: new Date().toISOString(), completed_at: new Date().toISOString(),
@@ -527,6 +600,7 @@ async function deliverClaimed(
       'NOTIFICATION_CHANNEL_DISABLED', 'NOTIFICATION_WORKSPACE_INACTIVE',
       'NOTIFICATION_EVENT_NOT_FOUND', 'NOTIFICATION_EVENT_WORKSPACE_REQUIRED',
     ].includes(error.message);
+    await recordDeliveryAttempt(service, delivery, context, cancelled ? 'cancelled' : 'failed', startedAt, null, error);
     await updateDelivery(service, delivery.id, {
       status: cancelled ? 'cancelled' : 'failed',
       last_error: message, next_attempt_at: exhausted || cancelled ? null : new Date(Date.now() + delaySeconds * 1000).toISOString(),
@@ -541,9 +615,16 @@ async function claim(
   service: NonNullable<ReturnType<typeof supabaseServiceConfig>>,
   limit: number,
   deliveryId?: string | null,
+  workspaceId?: string | null,
+  force = false,
+  acceptanceRunId?: string | null,
 ): Promise<Delivery[]> {
-  return await dbJson(service, 'rpc/claim_notification_deliveries', {
-    method: 'POST', body: JSON.stringify({ p_limit: Math.min(100, Math.max(1, limit)), p_delivery_id: deliveryId || null }),
+  return await dbJson(service, 'rpc/claim_notification_deliveries_scoped', {
+    method: 'POST', body: JSON.stringify({
+      p_limit: Math.min(100, Math.max(1, limit)), p_delivery_id: deliveryId || null,
+      p_workspace_id: workspaceId || null, p_force: force,
+      p_acceptance_run_id: acceptanceRunId || null,
+    }),
   }) || [];
 }
 
@@ -574,10 +655,166 @@ async function dispatchEvent(
   const deliveries = await dbJson(service, `notification_deliveries?event_id=eq.${encodeURIComponent(eventId)}&user_id=eq.${encodeURIComponent(userId)}${channelFilter}&status=in.(pending,failed)&select=id,event_id,user_id,channel,status,attempt_count`);
   const results: Json[] = [];
   for (const queued of deliveries || []) {
-    const claimed = await claim(service, 1, queued.id);
+    const claimed = await claim(service, 1, queued.id, workspaceId);
     if (claimed[0]) results.push(await deliverClaimed(service, claimed[0]));
   }
   return results;
+}
+
+async function activeAcceptanceRun(
+  service: NonNullable<ReturnType<typeof supabaseServiceConfig>>,
+  workspaceId: string,
+  runId: string,
+): Promise<void> {
+  const rows = await dbJson(service,
+    `notification_live_acceptance_runs?id=eq.${encodeURIComponent(runId)}&workspace_id=eq.${encodeURIComponent(workspaceId)}&status=eq.collecting&expires_at=gt.${encodeURIComponent(new Date().toISOString())}&select=id&limit=1`);
+  if (!rows?.length) throw new HttpError('NOTIFICATION_ACCEPTANCE_RUN_INVALID', 409);
+}
+
+async function recordAcceptanceEvidence(
+  service: NonNullable<ReturnType<typeof supabaseServiceConfig>>,
+  workspaceId: string,
+  channel: Channel,
+  scenario: string,
+  passed: boolean,
+  deliveryId?: string | null,
+  providerMessageId?: string | null,
+  details: Json = {},
+): Promise<void> {
+  await dbJson(service, 'rpc/record_notification_live_acceptance_evidence', {
+    method: 'POST', body: JSON.stringify({
+      p_workspace_id: workspaceId, p_channel: channel, p_scenario: scenario,
+      p_passed: passed, p_delivery_id: deliveryId || null,
+      p_provider_message_id: providerMessageId || null, p_details: details,
+      p_observed_at: new Date().toISOString(),
+    }),
+  });
+}
+
+async function createAcceptanceEvent(
+  service: NonNullable<ReturnType<typeof supabaseServiceConfig>>,
+  userId: string,
+  workspaceId: string,
+  runId: string,
+  channel: Channel,
+  scenario: string,
+): Promise<string> {
+  const sourceRecordId = `notification-acceptance:${runId}:${channel}:${scenario}`;
+  const existing = await dbJson(service,
+    `notification_events?user_id=eq.${encodeURIComponent(userId)}&workspace_id=eq.${encodeURIComponent(workspaceId)}&event_type=eq.test&source_record_id=eq.${encodeURIComponent(sourceRecordId)}&select=id&limit=1`);
+  if (uuid(existing?.[0]?.id)) return String(existing[0].id);
+  const rows = await dbJson(service, 'notification_events', {
+    method: 'POST', headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      user_id: userId, workspace_id: workspaceId, event_type: 'test', severity: 'info',
+      title: 'JAY观海外部通知验收', body: `渠道：${channel}；场景：${scenario}。`,
+      source_record_id: sourceRecordId,
+      payload: { channel_test: channel, acceptance_run_id: runId, acceptance_scenario: scenario },
+    }),
+  });
+  const eventId = uuid(rows?.[0]?.id);
+  if (!eventId) throw new HttpError('NOTIFICATION_ACCEPTANCE_EVENT_FAILED', 502);
+  return eventId;
+}
+
+async function acceptanceProbe(
+  service: NonNullable<ReturnType<typeof supabaseServiceConfig>>,
+  payload: Json,
+): Promise<Json> {
+  const scope = acceptanceScope();
+  const workspaceId = uuid(payload.workspace_id);
+  const runId = uuid(payload.run_id);
+  const userId = uuid(payload.user_id);
+  const channel = asChannel(payload.channel);
+  const scenario = String(payload.scenario || 'sent');
+  if (!acceptanceEnabled() || notificationEnabled()) throw new HttpError('NOTIFICATION_ACCEPTANCE_MODE_DISABLED', 409);
+  if (!workspaceId || !runId || !userId || !channel || !['sent', 'failure_retry', 'disabled'].includes(scenario)) {
+    throw new HttpError('NOTIFICATION_ACCEPTANCE_PROBE_INVALID', 400);
+  }
+  if (workspaceId !== scope.workspaceId || runId !== scope.runId) throw new HttpError('NOTIFICATION_ACCEPTANCE_SCOPE_MISMATCH', 403);
+  await activeAcceptanceRun(service, workspaceId, runId);
+  const requiredScenarios = scenario === 'failure_retry' ? ['failed', 'retry'] : [scenario];
+  const priorEvidence = await dbJson(service,
+    `notification_live_acceptance_evidence?run_id=eq.${encodeURIComponent(runId)}&channel=eq.${encodeURIComponent(channel)}&scenario=in.(${requiredScenarios.join(',')})&passed=eq.true&select=scenario`);
+  if (priorEvidence?.length === requiredScenarios.length) {
+    return { status: 'passed', channel, scenario, duplicate: true };
+  }
+  let failedAlready = scenario === 'failure_retry'
+    && priorEvidence?.some((item: Json) => item.scenario === 'failed');
+  const membership = await dbJson(service,
+    `workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(userId)}&status=eq.active&select=id&limit=1`);
+  if (!membership?.length) throw new HttpError('NOTIFICATION_ACCEPTANCE_USER_FORBIDDEN', 403);
+  const config = (await channelConfigs(service, userId, workspaceId)).find((row) => row.channel === channel);
+  if (scenario === 'disabled') {
+    if (config?.enabled) throw new HttpError('NOTIFICATION_CHANNEL_MUST_BE_DISABLED', 409);
+    const eventId = await createAcceptanceEvent(service, userId, workspaceId, runId, channel, scenario);
+    const external = await dbJson(service,
+      `notification_deliveries?event_id=eq.${encodeURIComponent(eventId)}&channel=eq.${encodeURIComponent(channel)}&select=id&limit=1`);
+    const passed = !external?.length;
+    await recordAcceptanceEvidence(service, workspaceId, channel, 'disabled', passed, null, null, {
+      external_delivery_created: !passed,
+    });
+    return { status: passed ? 'passed' : 'failed', channel, scenario, event_id: eventId };
+  }
+  if (!config?.enabled) throw new HttpError('NOTIFICATION_CHANNEL_DISABLED', 409);
+  const eventId = await createAcceptanceEvent(service, userId, workspaceId, runId, channel, scenario);
+  const deliveries = await dbJson(service,
+    `notification_deliveries?event_id=eq.${encodeURIComponent(eventId)}&channel=eq.${encodeURIComponent(channel)}&select=id,event_id,user_id,channel,status,attempt_count&limit=1`);
+  const existingDelivery = deliveries?.[0] as Delivery | undefined;
+  const attempts = existingDelivery ? await dbJson(service,
+    `notification_delivery_attempts?delivery_id=eq.${encodeURIComponent(existingDelivery.id)}&select=attempt_no,status&order=attempt_no.asc`) : [];
+  if (scenario === 'sent' && existingDelivery?.status === 'sent' && attempts?.some((item: Json) => item.status === 'sent')) {
+    await recordAcceptanceEvidence(service, workspaceId, channel, 'sent', true, existingDelivery.id, null, {
+      reconciled_from_attempt_log: true,
+    });
+    return { status: 'passed', channel, scenario, event_id: eventId, delivery_id: existingDelivery.id, reconciled: true };
+  }
+  if (scenario === 'failure_retry' && existingDelivery) {
+    const failedAttempt = attempts?.find((item: Json) => item.status === 'failed');
+    const sentAttempt = attempts?.find((item: Json) => item.status === 'sent');
+    if (failedAttempt && !failedAlready) {
+      await recordAcceptanceEvidence(service, workspaceId, channel, 'failed', true, existingDelivery.id, null, {
+        reconciled_from_attempt_log: true,
+      });
+      failedAlready = true;
+    }
+    if (failedAttempt && sentAttempt && existingDelivery.status === 'sent') {
+      await recordAcceptanceEvidence(service, workspaceId, channel, 'retry', true, existingDelivery.id, null, {
+        reconciled_from_attempt_log: true, failed_attempt: failedAttempt.attempt_no, successful_attempt: sentAttempt.attempt_no,
+      });
+      return { status: 'passed', channel, scenario, event_id: eventId, delivery_id: existingDelivery.id, reconciled: true };
+    }
+  }
+  const firstClaim = deliveries?.[0] ? await claim(service, 1, deliveries[0].id, workspaceId, true, runId) : [];
+  if (!firstClaim[0]) throw new HttpError('NOTIFICATION_DELIVERY_NOT_QUEUED', 502);
+  if (scenario === 'sent') {
+    const sent = await deliverClaimed(service, firstClaim[0]);
+    const passed = sent.status === 'sent';
+    await recordAcceptanceEvidence(service, workspaceId, channel, 'sent', passed, firstClaim[0].id, null, {
+      attempt_count: firstClaim[0].attempt_count, provider_confirmed: passed,
+    });
+    return { status: passed ? 'passed' : 'failed', channel, scenario, event_id: eventId, delivery_id: firstClaim[0].id };
+  }
+  if (failedAlready) {
+    const retried = await deliverClaimed(service, firstClaim[0]);
+    const retryPassed = retried.status === 'sent' && Number(firstClaim[0].attempt_count || 0) >= 2;
+    await recordAcceptanceEvidence(service, workspaceId, channel, 'retry', retryPassed, firstClaim[0].id, null, {
+      resumed_after_interruption: true, successful_attempt: retryPassed ? firstClaim[0].attempt_count : null,
+    });
+    return { status: retryPassed ? 'passed' : 'failed', channel, scenario, event_id: eventId, delivery_id: firstClaim[0].id };
+  }
+  const failed = await deliverClaimed(service, firstClaim[0], true);
+  const failedAsExpected = failed.status === 'failed';
+  await recordAcceptanceEvidence(service, workspaceId, channel, 'failed', failedAsExpected, firstClaim[0].id, null, {
+    controlled_invalid_target: true, provider_rejected: failedAsExpected,
+  });
+  const retryClaim = await claim(service, 1, firstClaim[0].id, workspaceId, true, runId);
+  const retried = retryClaim[0] ? await deliverClaimed(service, retryClaim[0]) : null;
+  const retryPassed = failedAsExpected && retried?.status === 'sent' && Number(retryClaim[0]?.attempt_count || 0) === 2;
+  await recordAcceptanceEvidence(service, workspaceId, channel, 'retry', retryPassed, firstClaim[0].id, null, {
+    failed_attempt: 1, successful_attempt: retryPassed ? 2 : null,
+  });
+  return { status: retryPassed ? 'passed' : 'failed', channel, scenario, event_id: eventId, delivery_id: firstClaim[0].id };
 }
 
 Deno.serve(async (request) => {
@@ -597,11 +834,23 @@ Deno.serve(async (request) => {
   try {
     if (action === 'process_pending') {
       if (!worker) return jsonResponse({ error: 'WORKER_FORBIDDEN' }, 403, origin);
-      if (!notificationEnabled()) return jsonResponse({ error: 'NOTIFICATION_CHANNELS_DISABLED' }, 503, origin);
-      const eventsCreated = await syncSubscribedAlerts(service);
-      const claimed = await claim(service, Number(payload.limit || 25));
+      if (!notificationEnabled() && !acceptanceEnabled()) return jsonResponse({ error: 'NOTIFICATION_CHANNELS_DISABLED' }, 503, origin);
+      if (notificationEnabled() && acceptanceEnabled()) return jsonResponse({ error: 'NOTIFICATION_MODES_CONFLICT' }, 503, origin);
+      const scope = acceptanceScope();
+      if (acceptanceEnabled() && (!scope.workspaceId || !scope.runId)) return jsonResponse({ error: 'NOTIFICATION_ACCEPTANCE_SCOPE_REQUIRED' }, 503, origin);
+      const eventsCreated = notificationEnabled() ? await syncSubscribedAlerts(service) : 0;
+      const claimed = await claim(
+        service, Number(payload.limit || 25), null,
+        notificationEnabled() ? null : scope.workspaceId, false,
+        notificationEnabled() ? null : scope.runId,
+      );
       const results = await deliverClaims(service, claimed);
       return jsonResponse({ status: 'processed', events_created: eventsCreated, claimed: claimed.length, results }, 200, origin);
+    }
+
+    if (action === 'acceptance_probe') {
+      if (!worker) return jsonResponse({ error: 'WORKER_FORBIDDEN' }, 403, origin);
+      return jsonResponse(await acceptanceProbe(service, payload), 200, origin);
     }
 
     const user = worker ? null : await userFromJwt(request, service);
@@ -610,9 +859,10 @@ Deno.serve(async (request) => {
 
     if (action === 'status') {
       const configs = await channelConfigs(service, user.id, workspaceId);
-      const available = availability(user.email);
+      const available = availability(user.email, workspaceId);
       return jsonResponse({
-        enabled: notificationEnabled(), workspace_id: workspaceId,
+        enabled: notificationEnabled(), acceptance_mode: acceptanceEnabled() && acceptanceScope().workspaceId === workspaceId,
+        workspace_id: workspaceId,
         channels: Object.fromEntries(channels.map((channel) => {
           const row = configs.find((item) => item.channel === channel);
           return [channel, {

@@ -9,6 +9,7 @@ var ctAiConvert = [];
 var ctAiTrend = [];
 var ctAiRisk = [];
 var ctLiveData = [];
+var ctSystemContentData = [];
 
 function ctRecordMeta(record) {
   if(!record || typeof record !== 'object') return {};
@@ -69,8 +70,10 @@ function ctSetContentRecords(records){
     Object.keys(raw||{}).forEach(function(key){if(!/^\d+$/.test(key))record[key]=raw[key];});
     return record;
   }).filter(Boolean);
+  // Keep system snapshots independent from workspace uploads. Re-importing a
+  // file only replaces the upload collection and cannot erase formal data.
   contentData.splice(0,contentData.length);
-  contentData.push.apply(contentData,next);
+  contentData.push.apply(contentData,ctSystemContentData.concat(next));
   ctSelected.clear();
   ctRenderAI();
   ctApplyFilters();
@@ -80,6 +83,25 @@ function ctSetContentRecords(records){
   return next.length;
 }
 window.jaySetContentRecords=ctSetContentRecords;
+
+function jaySetSystemContentRecords(items){
+  function payloadOf(pub){return pub&&pub.public_payload&&typeof pub.public_payload==='object'?pub.public_payload:{};}
+  function first(obj,names){for(var i=0;i<names.length;i++){if(obj[names[i]]!==undefined&&obj[names[i]]!==null&&String(obj[names[i]]).trim()!=='')return obj[names[i]];}return '';}
+  ctSystemContentData=(Array.isArray(items)?items:[]).map(function(entry){
+    var pub=entry&&entry.publication||entry||{},payload=payloadOf(pub),history=entry&&entry.history||[pub];
+    var title=pub.title||first(payload,['title','name','description'])||pub.record_key||'未命名内容';
+    var market=pub.market_code||payload.market_code||payload.market||'';
+    var platform=pub.platform_key||payload.platform_key||payload.platform||'';
+    var record=[String(title),String(platform),String(market),first(payload,['content_type','type'])||'视频',first(payload,['likes','like_count']),first(payload,['views','plays','view_count']),pub.published_at||pub.collected_at||'',first(payload,['creator','author','influencer','达人']),first(payload,['product_name','product','商品']),first(payload,['conversion_rate','conversions','orders']),pub.category_code||first(payload,['category_code','category']),first(payload,['script_type','script']),first(payload,['followers','fans']),first(payload,['shop_name','shop','store']),first(payload,['signal','trend'])];
+    var sourceKey=String(pub.source_key||'');var meta={source_kind:sourceKey==='tikhub'?'traceable':'official',source_type:sourceKey==='tikhub'?'licensed_provider':'official_feed',source_category:sourceKey==='tikhub'?'third_party_provider':'official',source_key:sourceKey,source_record_id:pub.raw_source_record_id||pub.record_key||'',source_url:pub.source_url||'',verification_status:'verified',publication_status:pub.status||'active',collected_at:pub.collected_at||null,snapshot_at:pub.collected_at||null,evidence_hash:pub.evidence_hash||'',history_url:pub.id?'#search?record='+pub.id:''};
+    record._provenance=meta;record._sourceMeta=meta;record._source='系统采集 · '+(sourceKey||'正式数据');record._sourceKind='system';record._history=history;return record;
+  });
+  // Replace only the system portion while preserving user uploads.
+  var uploads=contentData.filter(function(record){return !record||record._sourceKind!=='system';});
+  contentData.splice(0,contentData.length);contentData.push.apply(contentData,ctSystemContentData.concat(uploads));
+  if(typeof ctRenderAI==='function')ctRenderAI();if(typeof ctApplyFilters==='function')ctApplyFilters();if(typeof ctRenderCreator==='function')ctRenderCreator();if(typeof ctRenderLive==='function')ctRenderLive();
+}
+window.jaySetSystemContentRecords=jaySetSystemContentRecords;
 
 function ctSwitchAI(tab) {
   ctActiveAI = tab;
@@ -190,6 +212,12 @@ function ctSignalCls(s) {
   if(s==='衰退') return 'alert-tag-ct';
   return 'watch';
 }
+function ctSourceBadge(record){
+  var meta=ctRecordMeta(record),system=record&&record._sourceKind==='system',kind=system?(meta.source_kind==='traceable'?'第三方采集':'系统采集'):'工作区上传';
+  var stamp=meta.collected_at||meta.snapshot_at||record&&record[6]||'';
+  var age=stamp&&Date.now()-new Date(stamp).getTime()>3*86400000?' · 已过期':'';
+  return '<span style="display:inline-block;font-size:10px;line-height:1.4;padding:0 4px;border:1px solid '+(system?'#236b52':'#5b6472')+';color:'+(system?'#236b52':'#5b6472')+';border-radius:3px">'+kind+escapeHtml(age)+'</span>';
+}
 
 // S-07 标题兜底：缺标题时用带货商品+类型生成可读标题
 function ctTitle(c) {
@@ -261,7 +289,7 @@ function ctRenderCards(list) {
         '<span style="font-size:10px;padding:1px 6px;border:1px solid ' + tierColor + ';color:' + tierColor + ';border-radius:3px">' + escapeHtml(tier) + '</span>' +
       '</div>' +
       '<h3 class="ct-card-title" data-idx="' + idx + '" style="cursor:pointer">' + escapeHtml(ctTitle(c)) + '</h3>' +
-      '<p class="ct-meta">' + escapeHtml(c[1]) + ' · ' + escapeHtml(c[2]) + ' · ' + escapeHtml(jayFmtTime(c[6])) + '</p>' +
+      '<p class="ct-meta">' + escapeHtml(c[1]) + ' · ' + escapeHtml(c[2]) + ' · ' + escapeHtml(jayFmtTime(c[6])) + ' '+ctSourceBadge(c)+'</p>' +
       '<p class="ct-meta">创作者: ' + escapeHtml(c[7]) + ' <span style="color:var(--muted);font-size:11px">(' + escapeHtml(c[12]) + '粉)</span></p>' +
       '<p class="ct-meta">脚本: ' + escapeHtml(c[11]) + ' | 类目: ' + escapeHtml(c[10]) + '</p>' +
       '<p class="ct-product">带货: ' + escapeHtml(c[8]) + '</p>' +
@@ -711,6 +739,7 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
   var heroInput=$('#ov-hero-input');
   var heroSend=$('#ov-hero-send');
   var resultEl=$('#ov-hero-result');
+  var scopeApi=window.JAY_MARKET_SCOPE_API;
 
   function escapeHtml(s){ return s.replace(/[&<"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c];}); }
 
@@ -723,7 +752,6 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
     var wrap=document.querySelector('.ov-hero-input-wrap');
     if(wrap)wrap.classList.add('busy');
     resultEl.style.display='';
-    var scopeApi=window.JAY_MARKET_SCOPE_API;
     var scopeLabel=scopeApi&&scopeApi.getScopeLabel?scopeApi.getScopeLabel():'当前市场范围';
     resultEl.innerHTML='<div class="ovr-card"><div class="ovr-head"><span>🤖</span><h4>AI 正在分析「'+escapeHtml(q)+'」<small>结合'+escapeHtml(scopeLabel)+'数据</small></h4></div>'+
       '<div class="ovr-steps">'+
@@ -743,7 +771,7 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
       var dot=el.querySelector('.ovr-dot');
       el.classList.remove('active','done');
       if(idx<step){el.classList.add('done');if(dot)dot.textContent='✓';}
-      else{el.classList.add(idx===step?'active':'');if(dot)dot.textContent=String(idx);}
+      else{if(idx===step)el.classList.add('active');if(dot)dot.textContent=String(idx);}
     });
     var bar=resultEl.querySelector('.ovr-progress-bar i');
     if(bar)bar.style.width=(Math.min(step,3)/3*100)+'%';
@@ -751,38 +779,85 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
 
   function delay(ms){return new Promise(function(r){setTimeout(r,ms);});}
 
-  function buildHeroResultCard(q, bodyHtml){
-    return '<div class="ovr-card"><div class="ovr-head"><span>AI</span><h4>分析结果：'+escapeHtml(q)+'<small>基于当前工作区数据与联网检索</small></h4></div>'+
-      bodyHtml+
+  function buildHeroResultCard(q, bodyHtml, requestId){
+    var gateway=window.jayGetAIGateway?window.jayGetAIGateway(requestId):null;
+    var disclosure='';
+    if(gateway){
+      var scope=gateway.data_disclosure&&Array.isArray(gateway.data_disclosure.scope)?gateway.data_disclosure.scope.join('、'):'正式历史投影、当前问题上下文';
+      disclosure='<div class="ovr-note ovr-ai-disclosure">本次由 '+escapeHtml(String(gateway.provider||'服务端 AI'))+'（'+escapeHtml(String(gateway.agent_key||'市场分析助手'))+'）处理；发送给第三方 AI 的数据范围：'+escapeHtml(scope)+(gateway.fallback_used?'；主供应商不可用，已按策略切换备用供应商':'')+'。</div>';
+    }
+    return '<div class="ovr-card"><div class="ovr-head"><span>AI</span><h4>分析结果：'+escapeHtml(q)+'<small>优先基于当前工作区已核验数据</small></h4></div>'+
+      bodyHtml+disclosure+
       '<div class="ovr-foot"><button class="primary" onclick="switchPage(\'platforms\')">查看平台详情</button><button onclick="switchPage(\'policies\')">查看政策动态</button></div>'+
       '<div class="ovr-note">结论仅在服务端 AI 成功返回后展示；数据不足时不会使用内置规则补造结果。</div></div>';
+  }
+  function buildHeroErrorCard(q, error, requestId){
+    var info=window.jayAIErrorDetails?window.jayAIErrorDetails(error,requestId):{code:error&&error.code||'UNKNOWN_ERROR',text:error&&error.message||'AI 服务请求失败',requestId:requestId||'',provider:'未确定',retryable:true,suggestion:'请稍后重试'};
+    var retry=info.retryable?'建议：'+escapeHtml(info.suggestion||'请稍后重试'):'请按提示处理后再试';
+    return '<div class="ovr-card ovr-card-error"><div class="ovr-head"><span>AI</span><h4>本次分析未完成<small>'+escapeHtml(info.text)+'</small></h4></div>'+
+      '<div class="ovr-section"><p>'+escapeHtml(info.text)+'</p><dl class="ovr-error-meta"><dt>错误类型</dt><dd>'+escapeHtml(info.code)+'</dd><dt>请求编号</dt><dd>'+escapeHtml(info.requestId||'未生成')+'</dd><dt>供应商</dt><dd>'+escapeHtml(info.provider||'未确定')+'</dd></dl><p>'+retry+'</p></div>'+
+      '<div class="ovr-foot"><button class="primary" type="button" data-ov-retry="1">重新分析</button></div></div>';
+  }
+  function renderHistoryCitations(answer, requestId){
+    var retrieval=window.jayGetAIRetrieval?window.jayGetAIRetrieval(requestId):null;
+    var citations=retrieval&&Array.isArray(retrieval.citations)?retrieval.citations:[];
+    var citationMap={};
+    citations.forEach(function(item){
+      var citation=String(item&&item.citation_id||'');
+      var historyUrl=String(item&&item.history_url||'');
+      if(/^H\d{3}$/.test(citation)&&/^#search\?record=[0-9a-f-]{36}$/i.test(historyUrl))citationMap[citation]=historyUrl;
+    });
+    var html=simpleRenderMd(answer).replace(/\[(H\d{3})\]/g,function(match,citation){
+      var href=citationMap[citation];
+      return href?'<a class="ovr-history-citation" href="'+escapeHtml(href)+'" title="打开正式历史记录 '+citation+'">['+citation+']</a>':match;
+    });
+    if(!citations.length)return {html:html,count:0};
+    var links=citations.map(function(item){
+      var href=/^#search\?record=[0-9a-f-]{36}$/i.test(String(item.history_url||''))?String(item.history_url):'';
+      if(!href)return '';
+      return '<a href="'+escapeHtml(href)+'"><b>['+escapeHtml(item.citation_id||'')+']</b> '+escapeHtml(item.title||item.source_name||item.source_id||'历史记录')+'</a>';
+    }).filter(Boolean).join('');
+    return {html:html+(links?'<div class="ovr-history-sources"><strong>正式历史来源</strong>'+links+'</div>':''),count:citations.length};
   }
   async function renderHeroResponse(q){
     if(!resultEl)return;
     showHeroLoading(q);
     var s=$('#global-search');if(s)s.value=q;
     function finish(){ var wrap=document.querySelector('.ov-hero-input-wrap'); if(wrap)wrap.classList.remove('busy'); }
+    var requestId='overview.decision:'+Date.now()+':'+Math.random().toString(36).slice(2,8);
     if(typeof AI_ENGINE!=='undefined' && AI_ENGINE && AI_ENGINE.hasKey()){
       try{
         await delay(320);
         setHeroStep(2);
-        var rag = jayRagContextBlock(q, 6);
-        var systemPrompt='你是 JAY观海（跨境电商市场情报系统）的 AI 分析师。' + (rag.text ? '\n\n'+rag.text+'\n\n请优先基于上方【JAY观海知识库上下文】作答，引用数据时标注来源类型（如 国家市场/平台规则），不编造知识库之外的精确数字；若上下文不足可结合联网检索补充。' : '') + '\n对用户输入的品类或市场问题，给出简洁的市场机会、风险提醒和下一步建议。优先使用列表，控制在 300 字以内。';
-        var answer=await callAI(systemPrompt, q, {max_tokens:800, timeout:20000, search:true});
+        var systemPrompt='你是 JAY观海（跨境电商市场情报系统）的 AI 分析师。服务端会提供正式历史投影作为检索上下文；引用事实时必须保留 [Hxxx] 来源编号，不得把浏览器缓存当作知识库。对用户输入的品类或市场问题，给出简洁的市场机会、风险提醒和下一步建议。优先使用列表，控制在 300 字以内。';
+         // Only explicitly time-sensitive questions opt into provider search;
+         // the formal server-side history projection is always queried first.
+         var wantsLive=/实时|最新|今日|今天|政策更新|规则变动|最近/.test(q);
+         var activeScope=scopeApi&&scopeApi.getActiveContext?scopeApi.getActiveContext():{};
+         var answer=await callAI(systemPrompt, q, {max_tokens:800, timeout:60000, search:wantsLive, entryPoint:'overview.decision', operation:'decision_assistant', retrievalMode:wantsLive?'formal_first':'formal_only', retrievalQuery:q, requestId:requestId, context:{market_codes:activeScope.marketCodes||[],platform_keys:activeScope.platformKeys||[],data_snapshot_at:(window.JAY_QUALITY_REPORT&&window.JAY_QUALITY_REPORT.generated_at)||null}});
         setHeroStep(3);
-        var bodyHtml='<div class="ovr-section">'+simpleRenderMd(answer)+'</div>';
-        var card = buildHeroResultCard(q, bodyHtml);
-        if(rag.sources && rag.sources.length){
-          card = card.replace('<div class="ovr-note">', '<div class="ovr-note">检索来源：' + rag.sources.join(' · ') + '。');
+        var rendered=renderHistoryCitations(answer,requestId);
+        var bodyHtml='<div class="ovr-section">'+rendered.html+'</div>';
+         var card = buildHeroResultCard(q, bodyHtml, requestId);
+        if(rendered.count){
+          card = card.replace('<div class="ovr-note">', '<div class="ovr-note">已检索 '+rendered.count+' 条正式历史记录，点击 [Hxxx] 可返回对应记录。');
         }
         resultEl.innerHTML=card;
         finish();
         return;
       }catch(e){
         console.error('Overview AI analysis failed:', e);
+        resultEl.innerHTML=buildHeroErrorCard(q,e,requestId);
+        var retryBtn=resultEl.querySelector('[data-ov-retry="1"]');
+        if(retryBtn)retryBtn.onclick=function(){renderHeroResponse(q);};
+        finish();
+        return;
       }
     }
-    resultEl.innerHTML='<div class="ovr-card"><div class="ovr-head"><span>AI</span><h4>暂未生成分析</h4></div><div class="ovr-section"><p>当前没有可验证的分析结果。请登录并确认 AI 服务可用后重试。</p></div></div>';
+    var authError=new Error('AUTH_REQUIRED'); authError.code='AUTH_REQUIRED'; authError.status=401; authError.requestId=requestId;
+    resultEl.innerHTML=buildHeroErrorCard(q,authError,requestId);
+    var authRetry=resultEl.querySelector('[data-ov-retry="1"]');
+    if(authRetry)authRetry.onclick=function(){renderHeroResponse(q);};
     finish();
   }
 

@@ -1,0 +1,75 @@
+name: Encrypted private backups
+
+on:
+  schedule:
+    - cron: '23 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+      STORAGE_BACKUP_BUCKETS: ${{ vars.STORAGE_BACKUP_BUCKETS || 'private-raw-data,reports' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate backup configuration
+        run: |
+          set -eu
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID SUPABASE_DB_URL BACKUP_ENCRYPTION_KEY; do test -n "${!name:-}" || { echo "Missing $name" >&2; exit 1; }; done
+      - name: Resolve ephemeral service key
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Dump and encrypt PostgreSQL
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: |
+          set -eu
+          pg_dump "$SUPABASE_DB_URL" --format=custom --no-owner --no-privileges --file=jay-guanhai.dump
+          openssl enc -aes-256-cbc -pbkdf2 -salt -in jay-guanhai.dump -out jay-guanhai.dump.enc -pass env:BACKUP_ENCRYPTION_KEY
+          python scripts/private_artifact_store.py --file jay-guanhai.dump.enc --run-id "${{ github.run_id }}-${{ github.run_attempt }}-database" --source-key internal-system --kind encrypted_backup --retention-days 30 --summary-output backup-database-summary.json
+      - name: Archive and encrypt Storage
+        env:
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: |
+          set -eu
+          python scripts/backup_storage.py --output storage-backup.tar.gz
+          openssl enc -aes-256-cbc -pbkdf2 -salt -in storage-backup.tar.gz -out storage-backup.tar.gz.enc -pass env:BACKUP_ENCRYPTION_KEY
+          python scripts/private_artifact_store.py --file storage-backup.tar.gz.enc --run-id "${{ github.run_id }}-${{ github.run_attempt }}-storage" --source-key internal-system --kind storage_backup --retention-days 30 --summary-output backup-storage-summary.json
+      - name: Remove local backup payloads
+        if: ${{ always() }}
+        run: rm -f jay-guanhai.dump jay-guanhai.dump.enc storage-backup.tar.gz storage-backup.tar.gz.enc
+      - name: Publish sanitized backup summaries
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: encrypted-backup-summary-${{ github.run_id }}
+          path: '*-summary.json'
+          if-no-files-found: warn
+          retention-days: 30

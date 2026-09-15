@@ -27,6 +27,9 @@ jobs:
       - name: Install test dependencies
         run: npm ci
 
+      - name: Reject tracked secrets and restricted data
+        run: python scripts/repository_privacy_check.py
+
       - name: Validate JavaScript, DOM contracts, security, and workflow guards
         run: npm test
 
@@ -34,7 +37,7 @@ jobs:
         run: python -m compileall -q scripts data supabase
 
       - name: Validate publishable data and quality report
-        run: python scripts/validate_data.py
+        run: python scripts/validate_data.py --public-projection
 
       - name: Install browser
         run: npx playwright install --with-deps chromium

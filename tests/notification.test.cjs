@@ -57,7 +57,7 @@ test('verified alerts are fanned out only to saved scope and deduplicated before
   assert.match(edge, /categoryCodes\.includes\(code\)/);
   assert.match(edge, /resolution=ignore-duplicates,return=representation/);
   assert.match(edge, /on_conflict=user_id,workspace_id,event_type,source_record_id/);
-  assert.match(edge, /const eventsCreated = await syncSubscribedAlerts\(service\)/);
+  assert.match(edge, /const eventsCreated = notificationEnabled\(\) \? await syncSubscribedAlerts\(service\) : 0/);
 
   const settings = read('assets', 'js', 'reports-decisions.js');
   assert.match(settings, /subscriptions_configured:true/);

@@ -189,3 +189,53 @@ test('billing lifecycle is fail-closed, idempotent and deployed in the required 
   assert.match(workflow, /Deploy Stripe webhook without Supabase JWT verification/);
   assert.ok(workflow.indexOf('Apply database migrations before functions') < workflow.indexOf('Deploy Stripe webhook without Supabase JWT verification'));
 });
+
+test('public billing requires a completed Stripe live evidence gate', () => {
+  const migration = fs.readFileSync(path.join(root, 'supabase/migrations/20260929000000_stripe_live_acceptance.sql'), 'utf8');
+  const webhook = fs.readFileSync(path.join(root, 'supabase/functions/billing-webhook/index.ts'), 'utf8');
+  const status = fs.readFileSync(path.join(root, 'supabase/functions/billing-status/index.ts'), 'utf8');
+  const checkout = fs.readFileSync(path.join(root, 'supabase/functions/billing-checkout/index.ts'), 'utf8');
+  const shared = fs.readFileSync(path.join(root, 'supabase/functions/_shared/billing.ts'), 'utf8');
+  const workflow = fs.readFileSync(path.join(root, '.github/workflows/deploy-production.yml'), 'utf8');
+  const acceptanceWorkflow = fs.readFileSync(path.join(root, '.github/workflows/stripe-live-acceptance.yml'), 'utf8');
+  const script = fs.readFileSync(path.join(root, 'scripts/stripe_live_acceptance.py'), 'utf8');
+  const adminSummary = fs.readFileSync(path.join(root, 'supabase/functions/admin-summary/index.ts'), 'utf8');
+  const adminBrowser = fs.readFileSync(path.join(root, 'assets/js/alerts-settings.js'), 'utf8');
+  const runbook = fs.readFileSync(path.join(root, 'docs/STRIPE_LIVE_BILLING.md'), 'utf8');
+
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.stripe_live_acceptance_runs/);
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.stripe_live_acceptance_evidence/);
+  for (const scenario of [
+    'purchase', 'renewal', 'payment_failed', 'payment_recovered', 'cancel_period_end',
+    'cancel_immediate', 'refund_partial', 'refund_full', 'webhook_replay', 'state_consistency',
+  ]) assert.match(migration, new RegExp(`'${scenario}'`));
+  assert.match(migration, /evidence_mode TEXT NOT NULL DEFAULT 'live'/);
+  assert.match(migration, /pg_column_size\(details\) <= 16384/);
+  assert.match(migration, /auth\.role\(\).*service_role/);
+  assert.match(migration, /expires_at TIMESTAMPTZ NOT NULL DEFAULT \(NOW\(\) \+ INTERVAL '60 days'\)/);
+  assert.match(migration, /stripe_live_billing_readiness/);
+  assert.match(migration, /LIVE_ACCEPTANCE_INCOMPLETE/);
+  assert.match(webhook, /record_stripe_live_billing_evidence/);
+  assert.match(webhook, /record_stripe_webhook_replay_evidence/);
+  assert.match(webhook, /billing_reason.*subscription_cycle/);
+  assert.match(status, /provider_consistency/);
+  assert.match(status, /stripeRetrieve/);
+  assert.match(shared, /BILLING_LIVE_ACCEPTANCE_MODE/);
+  assert.match(shared, /BILLING_ACCEPTANCE_WORKSPACE_ID/);
+  assert.match(checkout, /billingCheckoutEnabled\(workspaceId\)/);
+  assert.match(workflow, /stripe_live_acceptance\.py validate/);
+  assert.match(workflow, /BILLING_ACCEPTANCE_RUN_ID/);
+  assert.match(acceptanceWorkflow, /confirm_page_and_portal/);
+  assert.match(acceptanceWorkflow, /STRIPE_PRICE_PRO_MONTHLY/);
+  assert.match(script, /STRIPE_SECRET_KEY must be a live key/);
+  assert.match(script, /page_confirmed/);
+  assert.match(script, /configured Stripe price does not match/);
+  assert.match(adminSummary, /stripe_live_acceptance_runs/);
+  assert.match(adminSummary, /stripe_live_acceptance_evidence/);
+  assert.match(adminBrowser, /adminRenderStripeAcceptance/);
+  assert.match(runbook, /BILLING_ENABLED=false/);
+  assert.match(runbook, /BILLING_ENABLED=true/);
+  assert.doesNotMatch(workflow, /SUPABASE_SERVICE_ROLE_KEY:\s*\$\{\{ env\.SUPABASE_SERVICE_KEY \}\}/);
+  assert.ok(workflow.indexOf('Apply database migrations before functions') < workflow.indexOf('stripe_live_acceptance.py validate'));
+  assert.ok(workflow.indexOf('stripe_live_acceptance.py validate') < workflow.indexOf('Configure Edge Function secrets'));
+});

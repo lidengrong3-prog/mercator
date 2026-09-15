@@ -103,6 +103,81 @@ test('team settings switch workspaces and expose viewer read-only state', async 
   await expect(page.locator('#st-workspace-permission-hint')).toContainText('可以编辑共享数据');
 });
 
+async function readRoleCapabilities(page, role) {
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  return page.evaluate((selectedRole) => {
+    window.jayIsDemo = false;
+    window.jayUser = { id: 'role-matrix-user', email: 'role-matrix@example.test' };
+    window.jayProfile = { tier: 'pro' };
+    window.supabaseClient = {};
+    window.jayWorkspaceContext = {
+      available: true,
+      workspace: { id: 'role-matrix-workspace', name: '角色验收工作区' },
+      membership: { workspace_id: 'role-matrix-workspace', role: selectedRole, status: 'active' },
+    };
+    const result = window.jayWorkspaceCapabilities();
+    return { role: selectedRole, canView: result.canView, canEdit: result.canEdit, canManageMembers: result.canManageMembers };
+  }, role);
+}
+
+test('owner role can view, edit and manage members', async ({ page }) => {
+  await expect(readRoleCapabilities(page, 'owner')).resolves.toEqual({ role: 'owner', canView: true, canEdit: true, canManageMembers: true });
+});
+
+test('admin role can view, edit and manage members', async ({ page }) => {
+  await expect(readRoleCapabilities(page, 'admin')).resolves.toEqual({ role: 'admin', canView: true, canEdit: true, canManageMembers: true });
+});
+
+test('editor role can view and edit but cannot manage members', async ({ page }) => {
+  await expect(readRoleCapabilities(page, 'editor')).resolves.toEqual({ role: 'editor', canView: true, canEdit: true, canManageMembers: false });
+});
+
+test('viewer role can view only', async ({ page }) => {
+  await expect(readRoleCapabilities(page, 'viewer')).resolves.toEqual({ role: 'viewer', canView: true, canEdit: false, canManageMembers: false });
+});
+
+test('removed member loses cached workspace data after forced refresh', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  const result = await page.evaluate(async () => {
+    window.jayIsDemo = false;
+    window.jayUser = { id: 'removed-user', email: 'removed@example.test' };
+    window.supabaseClient = {};
+    let membershipActive = true;
+    window.jayDbGet = async (table, query) => {
+      if (table === 'workspace_members' && String(query).includes('user_id=eq.removed-user')) {
+        return membershipActive ? [{ workspace_id: 'workspace-a', role: 'viewer', status: 'active', joined_at: '2026-09-01T00:00:00Z' }] : [];
+      }
+      if (table === 'workspaces') return membershipActive ? [{ id: 'workspace-a', name: '共享工作区' }] : [];
+      if (table === 'workspace_members' && String(query).includes('workspace_id=eq.workspace-a')) {
+        return membershipActive ? [{ id: 'member-a', user_id: 'removed-user', role: 'viewer', status: 'active' }] : [];
+      }
+      return [];
+    };
+    window.jayWorkspaceContext = {
+      available: true,
+      workspace: { id: 'workspace-a', name: '共享工作区' },
+      membership: { workspace_id: 'workspace-a', role: 'viewer', status: 'active' },
+      memberships: [{ workspace_id: 'workspace-a', role: 'viewer', status: 'active' }],
+      members: [], invites: [], workspaces: [],
+    };
+    window.jayReportPoolCache = [{ client_id: 'shared-material' }];
+    window.jayReportsCache = [{ id: 'shared-report' }];
+    window.jayWorkspaceAssetCache = { reports: 'shared' };
+    membershipActive = false;
+    await window.jayHydrateUserWorkspace(true);
+    return {
+      available: window.jayWorkspaceContext.available,
+      workspace: window.jayActiveWorkspaceId(),
+      materials: window.jayReportPoolCache.length,
+      reports: window.jayReportsCache.length,
+      assets: Object.keys(window.jayWorkspaceAssetCache || {}).length,
+    };
+  });
+  expect(result).toEqual({ available: false, workspace: '', materials: 0, reports: 0, assets: 0 });
+});
+
 test('report inline citations open a traceable source snapshot', async ({ page }) => {
   const pageErrors = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
@@ -590,7 +665,35 @@ test('platform archive and watchlist do not expose retired global records', asyn
   await expect(page.locator('#platforms .platform-rule-status b').first()).toHaveText(/条|暂无已验证数据/, { timeout: 15_000 });
 
   await page.evaluate(() => window.switchPage('content'));
-  await expect(page.locator('#content-resource-empty')).toContainText('暂无已接入资源');
+  await expect(page.locator('#content .resource-nav-item')).toHaveCount(3);
+  await expect(page.locator('#content .resource-nav-item').nth(0)).toContainText('市场资料库');
+  await expect(page.locator('#content .resource-nav-item').nth(1)).toContainText('AI 智能体中心');
+  await expect(page.locator('#content .resource-nav-item').nth(2)).toContainText('观海学院');
+  await expect(page.locator('#resource-list .resource-card')).toHaveCount(1);
+  await expect(page.locator('#resource-list')).toContainText('跨境市场年度数据汇总');
+  await page.locator('#content .resource-nav-item[data-resource-tab="ai"]').click();
+  await expect(page.locator('#resource-list .resource-card')).toHaveCount(3);
+  await expect(page.locator('#resource-list')).toContainText('市场分析助手');
+  await page.locator('#content .resource-nav-item[data-resource-tab="academy"]').click();
+  await expect(page.locator('#resource-list')).toContainText('观海学院');
+  await page.locator('#resource-list .resource-progress-toggle').click();
+  await expect(page.locator('#resource-list .resource-progress-head')).toContainText('100%');
+  await expect(page.locator('#resource-list .resource-progress-toggle')).toHaveText('重新学习');
+  await page.locator('#resource-list .resource-detail-open').click();
+  await expect(page.locator('#resource-detail')).toBeVisible();
+  await expect(page.locator('#resource-detail')).toContainText('短视频操盘手');
+  await expect(page.locator('#resource-detail .academy-module')).toHaveCount(3);
+  await expect(page.locator('#resource-detail .academy-lesson')).toHaveCount(6);
+  await page.locator('#resource-detail .academy-lesson-progress').first().click();
+  await expect(page.locator('#resource-detail .academy-lesson').first()).toContainText('100%');
+  await page.locator('#resource-detail .academy-favorite').click();
+  await expect(page.locator('#resource-detail .academy-favorite')).toContainText('取消收藏');
+  await page.locator('#resource-detail .academy-lesson-play').first().click();
+  await expect(page.locator('#resource-page-status')).toContainText('尚未配置视频媒体');
+  await expect(page.locator('#academy-question-form')).toBeVisible();
+  await page.locator('#academy-question').fill('第一章主要讲什么？');
+  await page.locator('#academy-question-submit').click();
+  await expect(page.locator('#academy-answer')).toContainText('演示模式不调用第三方 AI');
 
   await page.evaluate(() => window.switchPage('watchlist'));
   await expect(page.locator('#watch-grid')).toContainText('暂无已保存的关注项');
@@ -719,6 +822,11 @@ test('platform rules are filtered to the US market and supported platforms', asy
   ]);
   await expect(page.locator('#rl-market option')).toHaveText(['当前范围全部市场', '美国']);
   await expect(page.locator('#rl-market')).toHaveValue('US');
+  await expect(page.locator('#rl-version option')).toHaveText(['全部版本', '版本 1']);
+  await expect(page.locator('#platforms .platform-card[data-platform="Amazon"] [data-platform-status]')).toContainText('部分接入 · 2 条');
+  await expect(page.locator('#platforms .platform-card[data-platform="TikTok Shop"] [data-platform-status]')).toContainText('部分接入 · 3 条');
+  await expect(page.locator('#platforms .platform-card[data-platform="AliExpress"] [data-platform-status]')).toContainText('未接入');
+  await expect(page.locator('#platforms .platform-card[data-platform="eBay"] [data-platform-status]')).toContainText('未接入');
 
   const rules = page.locator('#rl-rules-list .rl-rule-card');
   await expect(rules).toHaveCount(5);
@@ -733,6 +841,15 @@ test('platform rules are filtered to the US market and supported platforms', asy
   expect(ruleRows.every((row) => row.text.includes('美国'))).toBe(true);
   expect(ruleRows.every((row) => ['Amazon', 'TikTok Shop', 'AliExpress', 'eBay'].includes(row.platform))).toBe(true);
   expect(await page.locator('#rl-rules-list').innerText()).not.toContain('全球');
+
+  await page.locator('#rl-topic').selectOption('fee');
+  await page.locator('#apply-rl').click();
+  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(2);
+  await page.locator('#rl-topic').selectOption('all');
+  await page.locator('#rl-date-start').fill('2026-07-01');
+  await page.locator('#apply-rl').click();
+  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(3);
+  await page.locator('#reset-rl').click();
 
   await page.locator('#rl-platform').selectOption('Amazon');
   await page.locator('#apply-rl').click();
@@ -1470,6 +1587,7 @@ test('pricing remains disabled by default and renders payment and refund states 
     window.JAY_QUALITY_REPORT = { schema_version: 1, generated_at: new Date().toISOString(), status: 'healthy', publishable: true, datasets: {} };
     window.jayBillingStatusCache = {
       billing_enabled: true,
+      checkout_enabled: true,
       effective_plan: 'free',
       access_state: 'past_due',
       subscription: {
@@ -1490,6 +1608,7 @@ test('pricing remains disabled by default and renders payment and refund states 
   await page.evaluate(async () => {
     window.jayBillingStatusCache = {
       billing_enabled: true,
+      checkout_enabled: true,
       effective_plan: 'free',
       access_state: 'refunded',
       subscription: {
@@ -1498,12 +1617,14 @@ test('pricing remains disabled by default and renders payment and refund states 
       },
       entitlement: { monthly_ai_token_limit: 100000, monthly_report_limit: 5, monthly_export_limit: 10 },
       usage: { ai_tokens: 25000, ai_tokens_reserved: 0, reports: 2, exports: 3 },
+      provider_consistency: { status: 'consistent', consistent: true },
     };
     await window.jayRenderPricingTier();
   });
   await expect(page.locator('#prc-billing-notice')).toContainText('全额退款已确认');
   await expect(page.locator('#prc-current-tier')).toContainText('免费版');
   await expect(page.locator('#prc-manage-billing')).toBeEnabled();
+  await expect(page.locator('#prc-provider-sync')).toContainText('一致');
 
   await page.evaluate(async () => {
     window.jayBillingStatusCache.effective_plan = 'pro';
@@ -1519,6 +1640,7 @@ test('pricing remains disabled by default and renders payment and refund states 
 test('authenticated function errors and network recovery use the real request wrapper', async ({ page }) => {
   let mode = 'ok';
   let requestCount = 0;
+  const searchBodies = [];
   await page.route('**/functions/v1/**', async (route) => {
     requestCount += 1;
     if (mode === 'offline-once' && requestCount === 1) return route.abort('internetdisconnected');
@@ -1527,11 +1649,23 @@ test('authenticated function errors and network recovery use the real request wr
       try { await route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }); } catch (error) {}
       return;
     }
+    if (mode === 'search-fallback') {
+      const requestBody = route.request().postDataJSON();
+      searchBodies.push(requestBody);
+      if (requestBody.web_search || requestBody.plugins) {
+        await route.fulfill({ status: 400, contentType: 'application/json', body: JSON.stringify({ error: 'AI_PROVIDER_ERROR', message: 'web_search unsupported' }) });
+      } else {
+        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ choices: [{ message: { content: '基于本地数据的回退结果' } }] }) });
+      }
+      return;
+    }
     const responses = {
-      unauthorized: [401, { error: 'AUTH_REQUIRED' }],
-      forbidden: [403, { error: 'WORKSPACE_FORBIDDEN' }],
-      limited: [429, { error: 'AI_RATE_LIMITED' }],
-      quota: [402, { error: 'AI_QUOTA_EXCEEDED', used_tokens: 100, limit: 100 }],
+      unauthorized: [401, { error: 'AUTH_REQUIRED', request_id: 'error-contract-test', provider: 'deepseek', suggestion: '请重新登录后重试' }],
+      forbidden: [403, { error: 'WORKSPACE_FORBIDDEN', request_id: 'error-contract-test', provider: 'deepseek' }],
+      limited: [429, { error: 'AI_RATE_LIMITED', request_id: 'error-contract-test', provider: 'deepseek', retryable: true, suggestion: '请稍后重试' }],
+      quota: [402, { error: 'AI_QUOTA_EXCEEDED', request_id: 'error-contract-test', provider: 'deepseek', used_tokens: 100, limit: 100 }],
+      providerTimeout: [504, { error: 'AI_PROVIDER_TIMEOUT', request_id: 'error-contract-test', provider: 'deepseek', retryable: true, suggestion: '请稍后重试' }],
+      empty: [200, { choices: [{ message: { content: '' } }] }],
       failed: [503, { error: 'SERVICE_UNAVAILABLE' }],
     };
     const response = responses[mode] || [200, { ok: true }];
@@ -1554,7 +1688,7 @@ test('authenticated function errors and network recovery use the real request wr
         const result = await window.jayFunctionRequest('ai-proxy', { messages: [{ role: 'user', content: 'test' }] }, { retryOnNetwork: retry, timeout, requestId: 'error-contract-test' });
         return { ok: true, result };
       } catch (error) {
-        return { ok: false, status: error.status, code: error.code, text: window.jayServiceErrorText(error), retryAfter: error.retryAfter || null };
+      return { ok: false, status: error.status, code: error.code, text: window.jayServiceErrorText(error), retryAfter: error.retryAfter || null, requestId: error.requestId || null, provider: error.provider || null, suggestion: error.suggestion || null };
       }
     }, { retry: options.retry === true, timeout: options.timeout || 5000 });
   }
@@ -1569,16 +1703,40 @@ test('authenticated function errors and network recovery use the real request wr
   expect(limited).toMatchObject({ ok: false, status: 429, code: 'AI_RATE_LIMITED', retryAfter: '60' });
   const quota = await invoke('quota');
   expect(quota).toMatchObject({ ok: false, status: 402, code: 'AI_QUOTA_EXCEEDED' });
+  expect(quota).toMatchObject({ requestId: 'error-contract-test', provider: 'deepseek' });
   const databaseQuota = await page.evaluate(() => window.jayServiceErrorText({ code: 'P0001', message: 'REPORT_QUOTA_EXCEEDED', details: { message: 'REPORT_QUOTA_EXCEEDED' } }));
   expect(databaseQuota).toContain('报告生成额度已用完');
   const failed = await invoke('failed');
   expect(failed.text).toContain('服务暂时不可用');
   const timeout = await invoke('timeout', { timeout: 1000 });
   expect(timeout).toMatchObject({ ok: false, status: 408, code: 'REQUEST_TIMEOUT' });
+  const providerTimeout = await invoke('providerTimeout');
+  expect(providerTimeout).toMatchObject({ ok: false, status: 504, code: 'AI_PROVIDER_TIMEOUT', requestId: 'error-contract-test', provider: 'deepseek' });
 
   const recovered = await invoke('offline-once', { retry: true });
   expect(recovered).toMatchObject({ ok: true, result: { ok: true } });
   expect(requestCount).toBe(2);
+  mode = 'empty';
+  const empty = await page.evaluate(async () => {
+    try {
+      await window.callAI('system', 'user', { requestId: 'empty-response-test', entryPoint: 'overview.decision' });
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, code: error.code, status: error.status, requestId: error.requestId, provider: error.provider };
+    }
+  });
+  expect(empty).toMatchObject({ ok: false, code: 'AI_EMPTY_RESPONSE', status: 502, requestId: 'empty-response-test' });
+  mode = 'search-fallback';
+  requestCount = 0;
+  searchBodies.length = 0;
+  const fallback = await page.evaluate(() => window.callAI('system', 'user', {
+    requestId: 'search-fallback-test', entryPoint: 'overview.decision', operation: 'decision_assistant', search: true,
+  }));
+  expect(fallback).toContain('回退结果');
+  expect(requestCount).toBe(2);
+  expect(searchBodies[0].request_id).toBe('search-fallback-test');
+  expect(searchBodies[1].request_id).toBe('search-fallback-test');
+  expect(searchBodies[1].web_search).toBeUndefined();
 });
 
 test('duplicate checkout, report generation and export actions collapse to one operation', async ({ page }) => {
