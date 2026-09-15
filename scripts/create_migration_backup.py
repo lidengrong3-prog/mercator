@@ -187,7 +187,12 @@ def main() -> int:
         summary["missing_config"] = missing
         write_summary(output_path, summary)
         return 1
-    if not versions or args.requested_migrations < 1 or args.retention_days < 1:
+    if (
+        not versions
+        or args.requested_migrations < 1
+        or args.retention_days < 1
+        or len(encryption_key) < 24
+    ):
         summary["error_code"] = "BACKUP_ARGUMENT_INVALID"
         write_summary(output_path, summary)
         return 1

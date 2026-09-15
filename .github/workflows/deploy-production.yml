@@ -75,10 +75,9 @@ jobs:
         shell: bash
         run: |
           set -eu
-          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID SUPABASE_DB_URL BACKUP_ENCRYPTION_KEY; do
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID; do
             test -n "${!name:-}" || { echo "Missing production backup secret: $name" >&2; exit 1; }
           done
-          test "${#BACKUP_ENCRYPTION_KEY}" -ge 24 || { echo "BACKUP_ENCRYPTION_KEY must contain at least 24 characters" >&2; exit 1; }
       - name: Resolve service key for private backup registration
         shell: bash
         run: |
