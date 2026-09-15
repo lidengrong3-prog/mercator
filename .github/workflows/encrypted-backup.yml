@@ -45,15 +45,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes postgresql-client
-      - name: Dump and encrypt PostgreSQL
-        env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
-          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
-        run: |
-          set -eu
-          pg_dump "$SUPABASE_DB_URL" --format=custom --no-owner --no-privileges --file=jay-guanhai.dump
-          openssl enc -aes-256-cbc -pbkdf2 -salt -in jay-guanhai.dump -out jay-guanhai.dump.enc -pass env:BACKUP_ENCRYPTION_KEY
-          python scripts/private_artifact_store.py --file jay-guanhai.dump.enc --run-id "${{ github.run_id }}-${{ github.run_attempt }}-database" --source-key internal-system --kind encrypted_backup --retention-days 30 --summary-output backup-database-summary.json
+      - name: Dump, encrypt and verify PostgreSQL
+        run: python scripts/create_migration_backup.py --requested-migrations 25 --output backup-database-summary.json
       - name: Archive and encrypt Storage
         env:
           BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}

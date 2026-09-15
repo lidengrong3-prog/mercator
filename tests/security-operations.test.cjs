@@ -29,7 +29,7 @@ test('backup and restore workflows are scheduled and publish only summaries', ()
   const restore = read('.github/workflows/restore-drill.yml');
   assert.match(backup, /cron:/);
   assert.match(backup, /BACKUP_ENCRYPTION_KEY/);
-  assert.match(backup, /--kind encrypted_backup/);
+  assert.match(backup, /create_migration_backup\.py/);
   assert.match(backup, /--kind storage_backup/);
   assert.match(backup, /\*-summary\.json/);
   assert.match(restore, /RESTORE_DRILL_DB_URL/);
