@@ -7,7 +7,7 @@ on:
         description: Readiness operation
         type: choice
         required: true
-        options: [start, status, load, record, finalize, advance]
+        options: [start, status, load, record, finalize, advance, migration-rehearsal]
       target_stage:
         description: Next stage (start)
         type: choice
@@ -62,6 +62,7 @@ permissions:
 
 jobs:
   readiness:
+    if: inputs.action != 'migration-rehearsal'
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 40
@@ -152,4 +153,35 @@ jobs:
             production-readiness-result.json
             production-load-result.json
           if-no-files-found: ignore
+          retention-days: 30
+
+  migration_rehearsal:
+    if: inputs.action == 'migration-rehearsal'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install PostgreSQL client
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Rehearse empty rebuild and existing database upgrade
+        shell: bash
+        env:
+          EXPECTED_MIGRATION_COUNT: '49'
+          DATABASE_REHEARSAL_REPORT: database-rehearsal-result.json
+        run: bash scripts/run_database_rehearsal.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: database-rehearsal-${{ github.run_id }}
+          path: database-rehearsal-result.json
+          if-no-files-found: warn
           retention-days: 30

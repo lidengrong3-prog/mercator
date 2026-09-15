@@ -14,6 +14,21 @@ npx supabase start
 npx supabase db reset
 ```
 
+### 隔离数据库重建与升级演练
+
+生产库禁止用于 `db reset`。仓库的 `Production readiness and staged rollout`
+工作流提供 `migration-rehearsal` 手动操作，在 GitHub Runner 的临时 Supabase
+数据库中执行以下检查：
+
+1. 从空库依次应用当前全部 49 个迁移，并校验迁移账本、关键表、视图、函数、
+   扩展、RLS、Storage 私有桶和授权。
+2. 重建至第 48 个迁移，写入不含生产数据的代表性旧记录，再升级至第 49 个迁移。
+3. 验证旧记录保留、Worker 心跳可写以及第二次迁移检查不存在待应用版本。
+
+演练数据库随 Runner 销毁，结果以不含连接信息的
+`database-rehearsal-result.json` Artifact 保存 30 天。新增迁移时必须同步更新脚本和
+工作流中的 `EXPECTED_MIGRATION_COUNT`，防止未审查的迁移绕过演练。
+
 `db reset` 会清空本地 Supabase 数据库并从完整迁移链重建，不能对生产库使用。已有远端项目通过正式发布工作流运行 `supabase db push --linked --include-all`；基础迁移可重复执行，会保留旧表和数据，并把原先手工创建的对象纳入迁移历史。工作区迁移会为现有 profile 补齐默认工作区。
 
 执行后在 Table Editor 中确认以下正式用户表存在：
