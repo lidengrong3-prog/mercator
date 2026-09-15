@@ -82,6 +82,8 @@ def restricted_path_reason(relative):
         return "restricted directory"
     if len(path.parts) == 3 and path.parts[:2] == ("data", "us_market") and path.name in US_MARKET_PRIVATE:
         return "private US category dataset"
+    if path.parts and path.parts[0].casefold() == "reports" and path.suffix.casefold() == ".pdf":
+        return "legacy generated PDF"
     if path.parts and path.parts[0] == "data" and lowered not in PUBLIC_DATA_FILES:
         if path.suffix.casefold() in {".json", ".jsonl", ".ndjson", ".csv", ".tsv"}:
             return "data file is not on the public repository allowlist"

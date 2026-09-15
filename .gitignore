@@ -37,6 +37,7 @@ Thumbs.db
 # ============ Large binary assets ============
 image_*.png
 reports/us_market/*.pdf
+reports/**/*.pdf
 *.bak
 
 # ============ Logs ============

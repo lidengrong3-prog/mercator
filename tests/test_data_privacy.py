@@ -26,6 +26,10 @@ class DataPrivacyTests(unittest.TestCase):
             repository_privacy_check.restricted_path_reason("data/us_market/electronics.json"),
             "private US category dataset",
         )
+        self.assertEqual(
+            repository_privacy_check.restricted_path_reason("reports/us_market/electronics_report.pdf"),
+            "legacy generated PDF",
+        )
         self.assertIsNone(
             repository_privacy_check.restricted_path_reason("data/policies.json")
         )
@@ -109,11 +113,17 @@ class DataPrivacyTests(unittest.TestCase):
             (root / "data").mkdir()
             (root / "data" / "_sync_logs").mkdir()
             (root / "data" / "_sync_logs" / "run.json").write_text("{}", encoding="utf-8")
+            (root / "reports").mkdir()
+            (root / "reports" / "legacy.pdf").write_bytes(b"%PDF-1.4 fixture")
             subprocess.run(["git", "add", "."], cwd=root, check=True)
             subprocess.run(["git", "-c", "user.email=test@example.com", "-c", "user.name=test", "commit", "-qm", "fixture"], cwd=root, check=True)
             result = history_privacy_scan.scan_history(root)
         self.assertEqual(result["secret_findings"], [])
+        self.assertTrue(result["repository_complete"])
+        self.assertTrue(result["secret_scan_complete"])
+        self.assertEqual(result["reachable_blob_count"], result["scanned_blob_count"])
         self.assertTrue(any(item["path"] == "data/_sync_logs/run.json" for item in result["restricted_paths"]))
+        self.assertTrue(any(item["path"] == "reports/legacy.pdf" for item in result["restricted_paths"]))
 
 
 if __name__ == "__main__":
