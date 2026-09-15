@@ -20,6 +20,10 @@ dist/
 web/
 _site/
 
+# ============ Local document render QA ============
+/.docx-qa*/
+/.pdf-qa*/
+
 # ============ Project memory (private, not for public repo) ============
 .workbuddy/
 
