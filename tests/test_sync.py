@@ -82,8 +82,31 @@ class SyncTests(unittest.TestCase):
         self.assertTrue(all(row["evidence_hash"] for row in rows))
         self.assertTrue(all(row["verification_status"] in {"verified", "uploaded", "pending", "rejected"} for row in rows))
         self.assertTrue({"policies", "taxes", "access_requirements", "rules", "alerts"}.issubset(set(sync_to_supabase.PROVENANCE_DATASETS)))
-        self.assertTrue({"macro", "cpsc"}.issubset({key for key, _, _, _ in sync_to_supabase.iter_provenance_records()}))
+        self.assertTrue({"macro", "cpsc"}.issubset(set(sync_to_supabase.PROVENANCE_DATASETS)))
         self.assertIn("retrieved_at", rows[0])
+
+    def test_private_provenance_inputs_are_loaded_after_worker_restore(self):
+        generated_at = "2026-09-15T00:00:00+00:00"
+        with tempfile.TemporaryDirectory() as directory:
+            us_market = os.path.join(directory, "us_market")
+            os.makedirs(us_market)
+            with open(os.path.join(us_market, "macro_indicators.json"), "w", encoding="utf-8") as handle:
+                json.dump({
+                    "meta": {"generated_at": generated_at},
+                    "indicators": {"gdp": {"id": "GDP", "value": 1}},
+                }, handle)
+            with open(os.path.join(us_market, "cpsc_recalls.json"), "w", encoding="utf-8") as handle:
+                json.dump({
+                    "meta": {"generated_at": generated_at},
+                    "recalls": [{"id": "cpsc-test-1", "title": "Test recall"}],
+                }, handle)
+
+            with patch.object(sync_to_supabase, "DATA_DIR", directory):
+                records = list(sync_to_supabase.iter_provenance_records())
+
+        self.assertEqual({key for key, _, _, _ in records}, {"macro", "cpsc"})
+        self.assertTrue(all(record.get("market") == "US" for _, _, record, _ in records))
+        self.assertTrue(all(record.get("collected_at") == generated_at for _, _, record, _ in records))
 
     def test_source_registry_covers_raw_record_source_keys(self):
         registry = {row["source_key"] for row in sync_to_supabase.build_source_registry_rows()}
