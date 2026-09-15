@@ -75,6 +75,27 @@ class DatabaseRebuildTests(unittest.TestCase):
         self.assertNotIn("新项目按以下顺序在 Supabase SQL Editor 中各执行一次", setup)
         self.assertIn("npx supabase db reset", setup)
 
+    def test_isolated_rehearsal_covers_fresh_and_incremental_paths(self):
+        workflow = (ROOT / ".github" / "workflows" / "production-readiness.yml").read_text(
+            encoding="utf-8"
+        )
+        script = (ROOT / "scripts" / "run_database_rehearsal.sh").read_text(encoding="utf-8")
+        assertions = (ROOT / "scripts" / "database_rehearsal_assertions.sql").read_text(
+            encoding="utf-8"
+        )
+        migration_count = len(list((ROOT / "supabase" / "migrations").glob("*.sql")))
+
+        self.assertEqual(migration_count, 49)
+        self.assertIn("migration-rehearsal", workflow)
+        self.assertIn("if: inputs.action == 'migration-rehearsal'", workflow)
+        self.assertIn('EXPECTED_MIGRATION_COUNT: \'49\'', workflow)
+        self.assertIn('supabase db reset --local --no-seed', script)
+        self.assertIn('--version "$previous_version"', script)
+        self.assertIn('supabase migration up --local', script)
+        self.assertIn('existing market data preservation', script)
+        self.assertIn("public.collection_worker_instances", assertions)
+        self.assertIn("has_function_privilege", assertions)
+
 
 if __name__ == "__main__":
     unittest.main()
