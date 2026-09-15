@@ -31,8 +31,8 @@ BEGIN
       ('public.collection_worker_instances'),
       ('public.resource_items'),
       ('public.courses'),
-      ('public.notification_channels'),
-      ('public.stripe_webhook_events'),
+      ('public.notification_channel_configs'),
+      ('public.stripe_live_acceptance_runs'),
       ('public.production_rollout_state')
     ) AS required(object_name)
    WHERE to_regclass(object_name) IS NULL;
@@ -104,4 +104,3 @@ BEGIN
   END IF;
 END;
 $$;
-
