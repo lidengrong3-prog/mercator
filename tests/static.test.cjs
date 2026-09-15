@@ -61,7 +61,9 @@ test('legacy US category PDFs are not regenerated or included in GitHub Pages', 
   const dataWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'data-update.yml'), 'utf8');
   const deployWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'deploy-production.yml'), 'utf8');
   const collector = fs.readFileSync(path.join(root, 'scripts', 'collect_us_market.py'), 'utf8');
-  const categoryIndex = JSON.parse(fs.readFileSync(path.join(root, 'data', 'us_market', 'index.json'), 'utf8'));
+  const publicBuilder = fs.readFileSync(path.join(root, 'scripts', 'build_public_site.py'), 'utf8');
+  const privacyCheck = fs.readFileSync(path.join(root, 'scripts', 'repository_privacy_check.py'), 'utf8');
+  const gitignore = fs.readFileSync(path.join(root, '.gitignore'), 'utf8');
   const legacyReportDir = path.join(root, 'reports', 'us_market');
   const legacyPdfs = fs.existsSync(legacyReportDir)
     ? fs.readdirSync(legacyReportDir).filter((name) => name.endsWith('_report.pdf'))
@@ -72,7 +74,9 @@ test('legacy US category PDFs are not regenerated or included in GitHub Pages', 
   assert.doesNotMatch(dataWorkflow, /gen_us_market_report|reports\//);
   assert.doesNotMatch(deployWorkflow, /cp\s+-R\s+reports|_site\/reports/);
   assert.doesNotMatch(collector, /reports\/us_market|_report\.pdf/);
-  assert.ok(categoryIndex.categories.every((category) => !Object.hasOwn(category, 'report')));
+  assert.doesNotMatch(publicBuilder, /us_market["']?\s*[/\\]\s*["']?index\.json|reports\/us_market/);
+  assert.match(privacyCheck, /data\/us_market\/index\.json/);
+  assert.match(gitignore, /reports\/us_market\/\*\.pdf/);
 });
 
 test('frontend assets are externalized and loaded in dependency order', () => {
