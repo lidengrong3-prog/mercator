@@ -23,6 +23,12 @@ Supabase 项目应优先启用平台提供的托管数据库备份和时间点�
 
 恢复演练至少每季度执行一次。恢复时在隔离的测试 Supabase 项目中解密并使用 `pg_restore --clean --if-exists --no-owner`，完成账号隔离、RLS、报告和工作区抽样验证后，才能用于生产恢复。
 
+生产发布还会在 `db push` 前运行 `migration-backup` 闸门。它会记录迁移前版本，
+验证 custom-format 归档和 AES-256-CBC/PBKDF2 加密往返，将加密文件写入私有
+`private-raw-data`，并登记 `backup_runs`。备份失败时生产迁移不会开始。迁移没有
+自动 down migration；失败时按 [生产迁移前备份与回滚手册](MIGRATION_ROLLBACK.md)
+使用 PITR 或隔离恢复后的替换数据库方案。
+
 ## 管理后台
 
 `admin-summary` Edge Function 只接受 `platform_admins` 表中登记的用户。它返回聚合统计、最近系统事件和备份运行，不把 service role key 暴露到浏览器。每次查看都会写入 `admin_audit_log`。
