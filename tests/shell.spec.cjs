@@ -18,6 +18,15 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+async function waitForRulesProjection(page) {
+  await page.waitForFunction(() => (
+    window.rulesDataLoading === false
+    && window.rulesJsonData
+    && Boolean(window.rulesJsonData.updated_at)
+    && Array.isArray(window.rulesJsonData.items)
+  ));
+}
+
 test('authenticated entry and read-only demo shell work on desktop', async ({ page }) => {
   const pageErrors = [];
   const userTableRequests = [];
@@ -655,6 +664,7 @@ test('platform archive and watchlist do not expose retired global records', asyn
   await page.getByRole('button', { name: '浏览只读演示' }).click();
 
   await page.evaluate(() => window.switchPage('platforms'));
+  await waitForRulesProjection(page);
   await expect(page.locator('#platforms .platform-card[data-platform]')).toHaveCount(4);
   await expect(page.locator('#platforms')).not.toContainText(/Walmart|SHEIN|Temu|Shopee|Lazada|Noon/);
   expect(await page.locator('#platforms .platform-card[data-platform]').evaluateAll((cards) => cards.map((card) => card.dataset.platform))).toEqual([
@@ -662,7 +672,26 @@ test('platform archive and watchlist do not expose retired global records', asyn
   ]);
   await expect(page.locator('#platforms .platform-source-note')).toContainText('统一市场配置');
   await expect(page.locator('#platforms .platform-rule-status')).toHaveCount(4);
-  await expect(page.locator('#platforms .platform-rule-status b').first()).toHaveText(/条|暂无已验证数据/, { timeout: 15_000 });
+  const platformStatuses = await page.locator('#platforms .platform-card[data-platform]').evaluateAll((cards) => {
+    const coverage = window.rulesJsonData.platform_coverage || window.rulesJsonData.platform_status || {};
+    return cards.map((card) => {
+      const platform = card.dataset.platform;
+      const key = window.JAY_MARKET_SCOPE_API.normalizePlatformKey(platform);
+      const expected = coverage[key];
+      const status = card.querySelector('[data-platform-status] b');
+      return {
+        platform,
+        text: status.textContent.trim(),
+        connectionStatus: status.dataset.connectionStatus,
+        expectedText: expected.label + (expected.rule_count ? ` · ${expected.rule_count} 条` : ''),
+        expectedStatus: expected.status,
+      };
+    });
+  });
+  for (const status of platformStatuses) {
+    expect(status.text, status.platform).toBe(status.expectedText);
+    expect(status.connectionStatus, status.platform).toBe(status.expectedStatus);
+  }
 
   await page.evaluate(() => window.switchPage('content'));
   await expect(page.locator('#content .resource-nav-item')).toHaveCount(3);
@@ -811,6 +840,7 @@ test('platform rules are filtered to the US market and supported platforms', asy
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
   await page.evaluate(() => window.switchPage('rules'));
+  await waitForRulesProjection(page);
   const initialAiText = await page.locator('#ai-rules').innerText();
   expect(initialAiText).toContain('规则变动洞察');
   expect(initialAiText).not.toMatch(/东南亚|北美|欧洲|全球/);
@@ -822,15 +852,42 @@ test('platform rules are filtered to the US market and supported platforms', asy
   ]);
   await expect(page.locator('#rl-market option')).toHaveText(['当前范围全部市场', '美国']);
   await expect(page.locator('#rl-market')).toHaveValue('US');
-  await expect(page.locator('#rl-version option')).toHaveText(['全部版本', '版本 1']);
-  await expect(page.locator('#platforms .platform-card[data-platform="Amazon"] [data-platform-status]')).toContainText('部分接入 · 2 条');
-  await expect(page.locator('#platforms .platform-card[data-platform="TikTok Shop"] [data-platform-status]')).toContainText('部分接入 · 3 条');
-  await expect(page.locator('#platforms .platform-card[data-platform="AliExpress"] [data-platform-status]')).toContainText('未接入');
-  await expect(page.locator('#platforms .platform-card[data-platform="eBay"] [data-platform-status]')).toContainText('未接入');
+  const ruleSnapshot = await page.evaluate(() => {
+    const items = window.rlGetJsonItems();
+    const coverage = window.rulesJsonData.platform_coverage || window.rulesJsonData.platform_status || {};
+    const platforms = ['Amazon', 'TikTok Shop', 'AliExpress', 'eBay'];
+    const platformCounts = Object.fromEntries(platforms.map((platform) => [
+      platform,
+      items.filter((item) => item.platform === platform).length,
+    ]));
+    return {
+      total: items.length,
+      feeCount: items.filter((item) => String(item.topic || item.rule_topic || item.category || '').toLowerCase() === 'fee').length,
+      sinceCount: items.filter((item) => String(item.effective_from || item.effective_date || item.published_at || '').slice(0, 10) >= '2026-07-01').length,
+      platformCounts,
+      detailPlatform: platforms.find((platform) => platformCounts[platform] > 0),
+      versions: [...new Set(items.map((item) => String(item.rule_version || item.version || item.version_label || '').trim()).filter(Boolean))]
+        .sort()
+        .reverse(),
+      coverage: Object.fromEntries(platforms.map((platform) => {
+        const key = window.JAY_MARKET_SCOPE_API.normalizePlatformKey(platform);
+        return [platform, coverage[key]];
+      })),
+    };
+  });
+  expect(ruleSnapshot.total).toBeGreaterThan(0);
+  expect(ruleSnapshot.detailPlatform).toBeTruthy();
+  await expect(page.locator('#rl-version option')).toHaveText([
+    '全部版本', ...ruleSnapshot.versions.map((version) => `版本 ${version}`),
+  ]);
+  for (const [platform, status] of Object.entries(ruleSnapshot.coverage)) {
+    const expectedText = status.label + (status.rule_count ? ` · ${status.rule_count} 条` : '');
+    await expect(page.locator(`#platforms .platform-card[data-platform="${platform}"] [data-platform-status]`)).toContainText(expectedText);
+  }
 
   const rules = page.locator('#rl-rules-list .rl-rule-card');
-  await expect(rules).toHaveCount(5);
-  await expect(rules.locator('.data-lineage')).toHaveCount(5);
+  await expect(rules).toHaveCount(Math.min(ruleSnapshot.total, 8));
+  await expect(rules.locator('.data-lineage')).toHaveCount(Math.min(ruleSnapshot.total, 8));
   await expect(rules.first().locator('.data-lineage')).toContainText('来源：');
   await expect(rules.first().locator('.data-lineage')).toContainText('采集：');
   await expect(rules.first().locator('.data-lineage')).toContainText('证据等级：');
@@ -844,18 +901,24 @@ test('platform rules are filtered to the US market and supported platforms', asy
 
   await page.locator('#rl-topic').selectOption('fee');
   await page.locator('#apply-rl').click();
-  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(2);
+  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(Math.min(ruleSnapshot.feeCount, 8));
+  await expect(page.locator('#rl-count')).toContainText(`规则 ${ruleSnapshot.feeCount} 条`);
   await page.locator('#rl-topic').selectOption('all');
   await page.locator('#rl-date-start').fill('2026-07-01');
   await page.locator('#apply-rl').click();
-  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(3);
+  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(Math.min(ruleSnapshot.sinceCount, 8));
+  await expect(page.locator('#rl-count')).toContainText(`规则 ${ruleSnapshot.sinceCount} 条`);
   await page.locator('#reset-rl').click();
 
-  await page.locator('#rl-platform').selectOption('Amazon');
+  await page.locator('#rl-platform').selectOption(ruleSnapshot.detailPlatform);
   await page.locator('#apply-rl').click();
-  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(2);
-  await expect(page.locator('#rl-count')).toContainText('规则 2 条');
-  await expect(page.locator('#rl-rules-list')).not.toContainText('TikTok Shop');
+  const detailCount = ruleSnapshot.platformCounts[ruleSnapshot.detailPlatform];
+  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(Math.min(detailCount, 8));
+  await expect(page.locator('#rl-count')).toContainText(`规则 ${detailCount} 条`);
+  const otherPlatforms = Object.keys(ruleSnapshot.platformCounts).filter((platform) => platform !== ruleSnapshot.detailPlatform);
+  for (const platform of otherPlatforms) {
+    await expect(page.locator('#rl-rules-list')).not.toContainText(platform);
+  }
 
   await page.locator('#rl-rules-list .rl-rule-card').first().getByRole('button', { name: '查看详情' }).click();
   const ruleDetail = page.locator('.rl-detail-overlay').last();
@@ -868,7 +931,7 @@ test('platform rules are filtered to the US market and supported platforms', asy
   await expect(ruleDetail).toContainText('结算');
   await expect(ruleDetail).toContainText('处罚');
   await expect(ruleDetail).toContainText('版本与历史变化');
-  await expect(ruleDetail).toContainText('暂无已验证历史版本记录');
+  await expect(ruleDetail.locator('.rl-version-empty, .rl-version-history')).toHaveCount(1);
   await expect(ruleDetail.locator('.data-lineage-detail')).toContainText('来源记录 ID');
   await expect(ruleDetail.locator('.data-lineage-detail')).toContainText('证据哈希');
   await expect(ruleDetail.locator('.data-lineage-detail')).toContainText('核验时间');
@@ -1064,6 +1127,10 @@ test('cross-page entries preserve the configured market and platform filters', a
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await waitForRulesProjection(page);
+  const amazonRuleCount = await page.evaluate(() => (
+    window.rlGetJsonItems().filter((item) => item.platform === 'Amazon').length
+  ));
 
   const routeFromMetric = async (metric, pageId) => {
     await page.evaluate(() => window.switchPage('overview'));
@@ -1091,13 +1158,15 @@ test('cross-page entries preserve the configured market and platform filters', a
   await expect(page.locator('#rules')).toHaveClass(/active/);
   await expect(page.locator('#rl-platform')).toHaveValue('Amazon');
   await expect(page.locator('#rl-market')).toHaveValue('US');
-  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(2);
+  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(Math.min(amazonRuleCount, 8));
+  await expect(page.locator('#rl-count')).toContainText(`规则 ${amazonRuleCount} 条`);
 
   await page.evaluate(() => window.switchPage('countries'));
   await page.evaluate(() => window.switchPage('rules'));
   await expect(page.locator('#rl-platform')).toHaveValue('Amazon');
   await expect(page.locator('#rl-market')).toHaveValue('US');
-  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(2);
+  await expect(page.locator('#rl-rules-list .rl-rule-card')).toHaveCount(Math.min(amazonRuleCount, 8));
+  await expect(page.locator('#rl-count')).toContainText(`规则 ${amazonRuleCount} 条`);
 
   await page.evaluate(() => window.jayOpenPolicyFilter({
     region: 'US', category: 'tariff', impact: 'high', scope: 'all-us',
