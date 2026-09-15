@@ -1038,8 +1038,14 @@ if(name==='platforms'){ /* platform archive is constrained by the shared active 
 if(name==='policies'){ var plf=$('#pl-f-region'); if(plf) plf.value=jayConfiguredMarketCode(); window.jayPolicyFilter={region:jayConfiguredMarketCode(),category:'all',impact:'all'}; renderPoliciesPage(); }
 if(name==='rules'){
   var rulePlatform=$('#rl-platform');
-  var allowedRulePlatform=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.isAllowedPlatform&&JAY_CTX.platform
-    ? window.JAY_MARKET_SCOPE_API.normalizePlatform(JAY_CTX.platform) : '';
+  var requestedRulePlatform=JAY_CTX.platform||(JAY_CTX.ruleFilter&&JAY_CTX.ruleFilter.platform)||'all';
+  var allowedRulePlatform='';
+  if(requestedRulePlatform!=='all'&&window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.normalizePlatform){
+    requestedRulePlatform=window.JAY_MARKET_SCOPE_API.normalizePlatform(requestedRulePlatform);
+    if(!window.JAY_MARKET_SCOPE_API.isAllowedPlatform||window.JAY_MARKET_SCOPE_API.isAllowedPlatform(requestedRulePlatform,jayConfiguredMarketCode())){
+      allowedRulePlatform=requestedRulePlatform;
+    }
+  }
   if(rulePlatform) rulePlatform.value=allowedRulePlatform||'all';
   var ruleMarket=$('#rl-market');
   if(ruleMarket) ruleMarket.value=jayConfiguredMarketCode();
