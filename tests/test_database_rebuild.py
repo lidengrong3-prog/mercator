@@ -96,6 +96,31 @@ class DatabaseRebuildTests(unittest.TestCase):
         self.assertIn("public.collection_worker_instances", assertions)
         self.assertIn("has_function_privilege", assertions)
 
+    def test_production_migrations_require_a_verified_backup_and_rollback_anchor(self):
+        workflow = (ROOT / ".github" / "workflows" / "deploy-production.yml").read_text(
+            encoding="utf-8"
+        )
+        backup = (ROOT / "scripts" / "create_migration_backup.py").read_text(encoding="utf-8")
+        rollback = (ROOT / "docs" / "MIGRATION_ROLLBACK.md").read_text(encoding="utf-8")
+
+        self.assertIn("migration-backup:", workflow)
+        self.assertIn("- migration-backup", workflow)
+        self.assertIn("Create and verify pre-migration backup", workflow)
+        self.assertIn("--requested-migrations 25", workflow)
+        self.assertIn("pg_dump", backup)
+        self.assertIn("pg_restore", backup)
+        self.assertIn("encryption_round_trip", backup)
+        self.assertIn("backup_run_registered", backup)
+        self.assertIn("automatic_down_migration", backup)
+        self.assertIn("PITR", rollback)
+        self.assertIn("pre_migration_head", rollback)
+        standalone = (ROOT / ".github" / "workflows" / "pre-migration-backup.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("requested_migrations", standalone)
+        self.assertIn("create_migration_backup.py", standalone)
+        self.assertIn("pre-migration-backup-result.json", standalone)
+
 
 if __name__ == "__main__":
     unittest.main()

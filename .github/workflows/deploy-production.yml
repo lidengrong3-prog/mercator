@@ -51,8 +51,63 @@ jobs:
       - name: Run desktop and mobile acceptance tests
         run: npm run test:browser
 
-  deploy-backend:
+  migration-backup:
     needs: quality-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+      MIGRATION_BACKUP_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}-migration
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate pre-migration backup configuration
+        shell: bash
+        run: |
+          set -eu
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID SUPABASE_DB_URL BACKUP_ENCRYPTION_KEY; do
+            test -n "${!name:-}" || { echo "Missing production backup secret: $name" >&2; exit 1; }
+          done
+          test "${#BACKUP_ENCRYPTION_KEY}" -ge 24 || { echo "BACKUP_ENCRYPTION_KEY must contain at least 24 characters" >&2; exit 1; }
+      - name: Resolve service key for private backup registration
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
+      - name: Install PostgreSQL client
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Create and verify pre-migration backup
+        run: python scripts/create_migration_backup.py --requested-migrations 25 --output migration-backup-result.json
+      - name: Publish sanitized migration backup evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-backup-${{ github.run_id }}
+          path: migration-backup-result.json
+          if-no-files-found: error
+          retention-days: 30
+
+  deploy-backend:
+    needs:
+      - quality-gate
+      - migration-backup
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment: production
