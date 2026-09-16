@@ -27,7 +27,10 @@ test('public rule projection reports honest status and traceable records', () =>
   assert.equal(rules.platform_coverage['tiktok-shop'].status, 'partial');
   assert.equal(rules.platform_coverage.aliexpress.status, 'not_connected');
   assert.equal(rules.platform_coverage.ebay.status, 'partial');
-  assert.equal(rules.items.length, 3);
+  const coveredRuleCount = Object.values(rules.platform_coverage)
+    .reduce((total, platform) => total + Number(platform.rule_count || 0), 0);
+  assert.ok(rules.items.length > 0);
+  assert.equal(rules.items.length, coveredRuleCount);
   for (const rule of rules.items) {
     assert.match(rule.source_url, /^https:\/\/[^/]+\/.+/);
     assert.ok(!Number.isNaN(Date.parse(rule.verified_at)));
