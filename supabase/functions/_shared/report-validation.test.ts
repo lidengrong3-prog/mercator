@@ -1,4 +1,4 @@
-import { canonicalReportText, validateFormalReportContent, type ReportValidationContext } from './report-validation.ts';
+import { canonicalizeFormalReportContent, canonicalReportText, validateFormalReportContent, type ReportValidationContext } from './report-validation.ts';
 import type { QualityGate } from './report-quality.ts';
 
 type Row = Record<string, unknown>;
@@ -150,6 +150,18 @@ Deno.test('canonical report text matches the browser source-category appendix co
   if (canonicalReportText(value) !== expected) {
     throw new Error(`canonical appendix drifted:\n${canonicalReportText(value)}`);
   }
+});
+
+Deno.test('formal save canonicalization discards client text drift', () => {
+  const evidence = [
+    { domain: 'market', market_code: 'US', source_record_id: 'market-1', source_url: 'https://example.test/market', verification_status: 'verified', payload: { status: 'ready' } },
+  ];
+  const report = content({ domains: ['market'], evidence });
+  report.text = `${report.text}\n\n未经过结构化校验的附加正文`;
+  const normalized = canonicalizeFormalReportContent(report);
+  if (normalized.text !== canonicalReportText(report)) throw new Error('server canonical text was not applied');
+  const result = validateFormalReportContent(normalized, quality, context({ domains: ['market'], evidence }), { now });
+  if (!result.ok) throw new Error(result.reasons.map((reason) => reason.code).join(','));
 });
 
 Deno.test('server validation accepts a traceable subset of eligible evidence', () => {

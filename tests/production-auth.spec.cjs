@@ -291,7 +291,10 @@ test.describe('production authenticated browser acceptance', () => {
     await page.locator('#rp-q-category').fill('通用');
     await page.locator('#rp-questionnaire .rp-q-go').click();
     await waitForReportPreview(page);
-    await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端', { timeout: 60_000 });
+    await page.waitForFunction(() => ['saved', 'failed', 'blocked'].includes(String(window.rpLastSaveState || '')), null, { timeout: 60_000 });
+    const cloudSave = await page.evaluate(() => ({ state: window.rpLastSaveState, error: window.rpLastSaveError || null }));
+    if (cloudSave.state !== 'saved') throw new Error(`report-save did not reach cloud: ${JSON.stringify(cloudSave)}`);
+    await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
 
     const reportRow = await waitForRow(page, 'generated_reports', { title: browserReportTitle }, (row) => row.save_status === 'saved');
     expect(reportRow.generation_status).toBe('completed');

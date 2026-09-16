@@ -1,6 +1,6 @@
 import { assessReportContent, reportContentAllowsFormalOutput, type ContentQualityAssessment, type QualityGate } from './report-quality.ts';
 
-export const REPORT_VALIDATION_VERSION = '2026.09.16.2';
+export const REPORT_VALIDATION_VERSION = '2026.09.16.3';
 
 type Row = Record<string, unknown>;
 
@@ -197,6 +197,11 @@ export function canonicalReportText(value: unknown): string {
   const parts = sections.map((section) => `## ${String(section.title || '').trim()}\n\n${String(section.text || '').trim()}`);
   parts.push(`## 来源与核验附录\n\n${appendix.length ? appendix.map(sourceAppendixLine).join('\n') : '暂无可发布来源记录。'}`);
   return parts.join('\n\n');
+}
+
+export function canonicalizeFormalReportContent(value: unknown): Row {
+  const content = object(value) || {};
+  return { ...content, text: canonicalReportText(content) };
 }
 
 export function validateFormalReportContent(

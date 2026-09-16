@@ -1738,6 +1738,7 @@ async function jayPersistGeneratedReport(report) {
     report.savedAt = row.saved_at || new Date().toISOString();
     report.serverValidation = content.server_validation || result.validation || null;
     report.publicationStatus = row.publication_status || content.publication_status || 'formal';
+    if (typeof content.text === 'string' && content.text) report.text = content.text;
     report.cloudSaved = true;
   }
   if(!row)throw new Error('REPORT_SAVE_FAILED');

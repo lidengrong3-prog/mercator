@@ -378,6 +378,18 @@ function rpV2SetSaveState(state, message){
   var labels={saving:'云端保存中',saved:'已保存到云端',failed:'仅本地暂存 · 云端保存失败',blocked:'未保存草稿 · 质量门禁阻断',pending:'等待云端保存'};
   badge.textContent=message||labels[state]||'';
   badge.className='rp-v2-save-status '+(state==='saved'?'is-saved':(state==='failed'?'is-failed':(state==='blocked'?'is-blocked':'is-saving')));
+  if(state!=='failed')badge.removeAttribute('title');
+}
+function rpV2SaveErrorDetails(error){
+  var details=error&&error.details&&typeof error.details==='object'?error.details:{};
+  var validation=details.validation&&typeof details.validation==='object'?details.validation:{};
+  var reasons=Array.isArray(validation.reasons)?validation.reasons.map(function(reason){return String(reason&&reason.code||'').trim();}).filter(Boolean):[];
+  return {
+    code:String(error&&error.code||details.error||'REPORT_SAVE_FAILED'),
+    status:Number(error&&error.status||0),
+    requestId:String(error&&error.requestId||details.request_id||''),
+    reasonCodes:Array.from(new Set(reasons))
+  };
 }
 function rpV2SetToolbarBusy(busy){
   var tb=document.querySelector('.rp-v2-preview-toolbar-right');
@@ -711,7 +723,7 @@ async function rpV2SaveReport(name,materialCount,details){
   jayReportsCache=reports;
   try{localStorage.setItem(jayPendingKey(RP_REPORTS_KEY),JSON.stringify(reports));}catch(e){}
   var statEl=document.getElementById('rp-stat-reports'); if(statEl)statEl.textContent=reports.length;
-  rpV2SetSaveState('saving'); rpV2LoadRecent();
+  window.rpLastSaveError=null;rpV2SetSaveState('saving'); rpV2LoadRecent();
   if(!report.publishable||typeof jayReportHasPublishableQuality!=='function'||!jayReportHasPublishableQuality(report)){
     report.saveStatus='blocked';report.cloudSaved=false;
     jayReportsCache=reports.map(function(item){return item.id===report.id?report:item;});
@@ -727,6 +739,7 @@ async function rpV2SaveReport(name,materialCount,details){
     var saved=await jayPersistGeneratedReport(report);
     if(saved&&saved.id)report.dbId=saved.id;
     report.saveStatus='saved'; report.cloudSaved=true; report.savedAt=(saved&&saved.saved_at)||new Date().toISOString();
+    window.rpLastSaveError=null;
     jayReportsCache=reports.map(function(item){return item.id===report.id?report:item;});
     try{localStorage.removeItem(jayPendingKey(RP_REPORTS_KEY));localStorage.removeItem(RP_REPORTS_KEY);}catch(e){}
     rpV2SetSaveState('saved'); rpV2LoadRecent();
@@ -734,10 +747,13 @@ async function rpV2SaveReport(name,materialCount,details){
     return report;
   } catch(error){
     report.saveStatus='failed'; report.cloudSaved=false;
+    report.saveError=rpV2SaveErrorDetails(error);window.rpLastSaveError=report.saveError;
     jayReportsCache=reports.map(function(item){return item.id===report.id?report:item;});
     rpV2SetSaveState('failed'); rpV2LoadRecent();
+    var saveBadge=document.getElementById('rp-v2-save-status');
+    if(saveBadge)saveBadge.title='错误：'+report.saveError.code+(report.saveError.requestId?'；请求编号：'+report.saveError.requestId:'')+(report.saveError.reasonCodes.length?'；校验原因：'+report.saveError.reasonCodes.join('、'):'');
     console.warn('[JAY观海] report history sync failed:',error);
-    toast('报告保存失败，仅暂存在本机：'+jayDbErrorText(error)); rpSaveBusy=false;
+    toast('报告保存失败，仅暂存在本机：'+jayDbErrorText(error)+'（'+report.saveError.code+(report.saveError.requestId?'；请求编号 '+report.saveError.requestId:'')+'）'); rpSaveBusy=false;
     return false;
   }
 }

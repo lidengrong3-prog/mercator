@@ -1094,6 +1094,8 @@ test('formal report publication is server validated and client writes stay draft
     assert.match(marketPolicySource, new RegExp(`${field}:normalized\\.${field}`));
   }
   assert.match(save, /REPORT_VALIDATION_VERSION/);
+  assert.match(save, /canonicalizeFormalReportContent\(submittedContent\)/);
+  assert.match(save, /text_normalized_by_server:\s*textNormalized/);
   assert.match(save, /publication_status:\s*'formal'/);
   assert.match(pdf, /validateFormalReportWithServerData/);
   assert.match(docx, /validateFormalReportWithServerData/);

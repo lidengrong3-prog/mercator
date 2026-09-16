@@ -1,5 +1,6 @@
 import { fetchCurrentQualityGate } from '../_shared/report-quality.ts';
 import {
+  canonicalizeFormalReportContent,
   REPORT_VALIDATION_VERSION,
   validateFormalReportWithServerData,
 } from '../_shared/report-validation.ts';
@@ -99,9 +100,14 @@ Deno.serve(async (request) => {
   let payload: Row;
   try { payload = await request.json(); } catch { return jsonResponse({ error: 'INVALID_JSON' }, 400, origin); }
   const submitted = object(payload.report);
-  const content = object(submitted?.content);
-  if (!submitted || !content) return jsonResponse({ error: 'REPORT_PAYLOAD_REQUIRED' }, 400, origin);
-  if (JSON.stringify(content).length > 2_000_000) return jsonResponse({ error: 'REPORT_TOO_LARGE' }, 413, origin);
+  const submittedContent = object(submitted?.content);
+  if (!submitted || !submittedContent) return jsonResponse({ error: 'REPORT_PAYLOAD_REQUIRED' }, 400, origin);
+  if (JSON.stringify(submittedContent).length > 2_000_000) return jsonResponse({ error: 'REPORT_TOO_LARGE' }, 413, origin);
+  // The structured sections and appendix are the source of truth. Rebuild the
+  // formal body server-side so harmless renderer drift cannot reject a report,
+  // and unstructured client additions can never enter the saved publication.
+  const content = canonicalizeFormalReportContent(submittedContent);
+  const textNormalized = String(submittedContent.text || '').trim() !== String(content.text || '').trim();
 
   const clientId = String(submitted.client_id || '').trim().slice(0, 240);
   const title = String(submitted.title || '').trim().slice(0, 160);
@@ -171,6 +177,7 @@ Deno.serve(async (request) => {
     },
     server_validation: validation,
     content_quality: validation.content_quality,
+    text_normalized_by_server: textNormalized,
     publication_status: 'formal',
   };
   const reportType = String(submitted.report_type || 'custom');
@@ -217,5 +224,5 @@ Deno.serve(async (request) => {
   const rows = await saveResponse.json();
   const saved = rows?.[0];
   if (!saved) return jsonResponse({ error: 'REPORT_SAVE_FAILED' }, 502, origin);
-  return jsonResponse({ report: saved, validation }, 200, origin);
+  return jsonResponse({ report: saved, validation, text_normalized: textNormalized }, 200, origin);
 });
