@@ -15,6 +15,7 @@ from validate_migration_chain import (  # noqa: E402
     validate_migration_chain,
 )
 from scripts import release_preflight  # noqa: E402
+from scripts import create_migration_backup  # noqa: E402
 
 
 class DatabaseRebuildTests(unittest.TestCase):
@@ -120,6 +121,43 @@ class DatabaseRebuildTests(unittest.TestCase):
         self.assertIn("requested_migrations", standalone)
         self.assertIn("create_migration_backup.py", standalone)
         self.assertIn("pre-migration-backup-result.json", standalone)
+
+    def test_backup_connection_diagnostics_are_safe_and_actionable(self):
+        valid = (
+            "postgresql://postgres.project:encoded-password@"
+            "aws-1-region.pooler.supabase.com:5432/postgres?sslmode=require"
+        )
+        create_migration_backup.validate_database_url(valid)
+
+        invalid_urls = {
+            "postgresql://postgres.project:[YOUR-PASSWORD]@host:5432/postgres?sslmode=require":
+                "DATABASE_URL_CONTAINS_PLACEHOLDER",
+            "postgresql://postgres.project:secret@host:5432/postgres":
+                "DATABASE_URL_SSLMODE_REQUIRED",
+            "postgresql://postgres.project:secret#part@host:5432/postgres?sslmode=require":
+                "DATABASE_URL_PASSWORD_NOT_ENCODED",
+        }
+        for connection_string, error_code in invalid_urls.items():
+            with self.subTest(error_code=error_code):
+                with self.assertRaisesRegex(RuntimeError, f"^{error_code}$"):
+                    create_migration_backup.validate_database_url(connection_string)
+
+        cases = {
+            'psql: error: password authentication failed for user "postgres.project"':
+                "DATABASE_AUTHENTICATION_FAILED",
+            'psql: error: could not translate host name "redacted"':
+                "DATABASE_DNS_FAILED",
+            "FATAL: Tenant or user not found":
+                "DATABASE_POOLER_TENANT_NOT_FOUND",
+            'ERROR: relation "supabase_migrations.schema_migrations" does not exist':
+                "DATABASE_MIGRATION_LEDGER_UNAVAILABLE",
+        }
+        for diagnostic, expected in cases.items():
+            with self.subTest(expected=expected):
+                self.assertEqual(
+                    create_migration_backup.classify_database_error(diagnostic),
+                    expected,
+                )
 
 
 if __name__ == "__main__":
