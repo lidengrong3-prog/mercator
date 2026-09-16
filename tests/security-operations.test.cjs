@@ -18,10 +18,12 @@ test('security migration contains atomic limits, recovery and data-subject recor
 
 test('shared security layer covers user and IP dimensions and emits 429', () => {
   const source = read('supabase/functions/_shared/security.ts');
+  const extensionPath = read('supabase/migrations/20261003000000_security_rate_limit_extension_path.sql');
   assert.match(source, /security:\$\{options\.scope\}:user/);
   assert.match(source, /security:\$\{options\.scope\}:ip/);
   assert.match(source, /\}, 429,/);
   assert.match(source, /Retry-After/);
+  assert.match(extensionPath, /SET search_path = public, extensions/);
 });
 
 test('backup and restore workflows are scheduled and publish only summaries', () => {
