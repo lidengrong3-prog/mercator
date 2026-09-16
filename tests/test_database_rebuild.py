@@ -95,6 +95,7 @@ class DatabaseRebuildTests(unittest.TestCase):
         self.assertIn('supabase migration up --local', script)
         self.assertIn('existing market data preservation', script)
         self.assertIn('upgraded rate-limit extension path', script)
+        self.assertIn('upgraded acceptance Storage API contract', script)
         self.assertIn("public.collection_worker_instances", assertions)
         self.assertIn("has_function_privilege", assertions)
 

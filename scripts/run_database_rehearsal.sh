@@ -46,6 +46,13 @@ rate_limit_path_has_extensions() {
   )::text"
 }
 
+acceptance_cleanup_deletes_storage_table() {
+  scalar "SELECT position(
+    'DELETE FROM storage.objects'
+    IN pg_get_functiondef('public.cleanup_production_acceptance_run(text)'::regprocedure)
+  ) > 0"
+}
+
 assert_equal() {
   local expected="$1"
   local actual="$2"
@@ -77,13 +84,14 @@ upgrade_started_epoch="$(date +%s)"
 supabase db reset --local --no-seed --version "$previous_version"
 assert_equal "$((migration_count - 1))" "$(scalar 'SELECT count(*) FROM supabase_migrations.schema_migrations')" "pre-upgrade migration ledger"
 assert_equal "$previous_version" "$(scalar 'SELECT max(version) FROM supabase_migrations.schema_migrations')" "pre-upgrade migration head"
-assert_equal "false" "$(rate_limit_path_has_extensions)" "pre-upgrade rate-limit extension path"
+assert_equal "true" "$(acceptance_cleanup_deletes_storage_table)" "pre-upgrade direct Storage table deletion"
 psql_rehearsal -f scripts/database_upgrade_seed.sql
 
 supabase migration up --local
 assert_equal "$migration_count" "$(scalar 'SELECT count(*) FROM supabase_migrations.schema_migrations')" "upgraded migration ledger"
 assert_equal "$head_version" "$(scalar 'SELECT max(version) FROM supabase_migrations.schema_migrations')" "upgraded migration head"
 assert_equal "true" "$(rate_limit_path_has_extensions)" "upgraded rate-limit extension path"
+assert_equal "false" "$(acceptance_cleanup_deletes_storage_table)" "upgraded acceptance Storage API contract"
 assert_equal "preserve-me" "$(scalar "SELECT data->>'value' FROM public.market_data WHERE key = 'migration-rehearsal-existing-row'")" "existing market data preservation"
 assert_equal "migration-rehearsal-existing-row" "$(scalar "SELECT approval_reference FROM public.production_rollout_state WHERE singleton = TRUE")" "existing rollout state preservation"
 psql_rehearsal -f scripts/database_rehearsal_assertions.sql
