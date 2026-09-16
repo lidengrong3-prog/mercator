@@ -52,6 +52,7 @@ test('production configuration audit keeps launch gates closed and checks two ac
   assert.match(audit, /allowed_origin_preflight/);
   assert.match(audit, /billing_disabled_runtime/);
   assert.match(audit, /notifications_disabled_runtime/);
+  assert.match(audit, /runtime_failures/);
   assert.doesNotMatch(audit, /\["access_token"\].*print/);
 });
 

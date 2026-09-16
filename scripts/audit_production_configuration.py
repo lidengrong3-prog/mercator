@@ -236,6 +236,7 @@ def audit(output: Path) -> int:
         result["checks"]["allowed_origin_preflight"] = True
         result["checks"]["untrusted_origin_rejected"] = True
 
+        runtime_failures: list[dict] = []
         status, billing = function_json(
             supabase_url,
             "billing-status",
@@ -245,11 +246,25 @@ def audit(output: Path) -> int:
             {},
         )
         if status != 200:
-            result["runtime_error_code"] = safe_runtime_error(billing)
-            raise AuditError(f"BILLING_STATUS_CHECK_FAILED:HTTP_{status}")
-        if billing.get("billing_enabled") is not False or billing.get("live_acceptance_mode") is not False:
-            raise AuditError("BILLING_GATE_NOT_DISABLED")
-        result["checks"]["billing_disabled_runtime"] = True
+            runtime_failures.append(
+                {
+                    "check": "billing_status",
+                    "audit_error_code": "BILLING_STATUS_CHECK_FAILED",
+                    "runtime_error_code": safe_runtime_error(billing),
+                    "http_status": status,
+                }
+            )
+        elif billing.get("billing_enabled") is not False or billing.get("live_acceptance_mode") is not False:
+            runtime_failures.append(
+                {
+                    "check": "billing_status",
+                    "audit_error_code": "BILLING_GATE_NOT_DISABLED",
+                    "runtime_error_code": "BILLING_GATE_NOT_DISABLED",
+                    "http_status": status,
+                }
+            )
+        else:
+            result["checks"]["billing_disabled_runtime"] = True
 
         status, notification = function_json(
             supabase_url,
@@ -260,11 +275,33 @@ def audit(output: Path) -> int:
             {"action": "status"},
         )
         if status != 200:
-            result["runtime_error_code"] = safe_runtime_error(notification)
-            raise AuditError(f"NOTIFICATION_STATUS_CHECK_FAILED:HTTP_{status}")
-        if notification.get("enabled") is not False or notification.get("acceptance_mode") is not False:
-            raise AuditError("NOTIFICATION_GATE_NOT_DISABLED")
-        result["checks"]["notifications_disabled_runtime"] = True
+            runtime_failures.append(
+                {
+                    "check": "notification_status",
+                    "audit_error_code": "NOTIFICATION_STATUS_CHECK_FAILED",
+                    "runtime_error_code": safe_runtime_error(notification),
+                    "http_status": status,
+                }
+            )
+        elif notification.get("enabled") is not False or notification.get("acceptance_mode") is not False:
+            runtime_failures.append(
+                {
+                    "check": "notification_status",
+                    "audit_error_code": "NOTIFICATION_GATE_NOT_DISABLED",
+                    "runtime_error_code": "NOTIFICATION_GATE_NOT_DISABLED",
+                    "http_status": status,
+                }
+            )
+        else:
+            result["checks"]["notifications_disabled_runtime"] = True
+
+        if runtime_failures:
+            result["runtime_failures"] = runtime_failures
+            first_failure = runtime_failures[0]
+            result["runtime_error_code"] = first_failure["runtime_error_code"]
+            raise AuditError(
+                f"{first_failure['audit_error_code']}:HTTP_{first_failure['http_status']}"
+            )
         result["status"] = "passed"
     except AuditError as error:
         result["error_code"] = str(error).split(":", 1)[0]
