@@ -404,6 +404,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production
+    outputs:
+      production_site_url: ${{ steps.release_context.outputs.production_site_url }}
     env:
       PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
       SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
@@ -423,6 +425,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Export validated production site URL
+        id: release_context
+        shell: bash
+        run: |
+          set -eu
+          [[ "$PRODUCTION_SITE_URL" == https://* ]]
+          echo "production_site_url=$PRODUCTION_SITE_URL" >> "$GITHUB_OUTPUT"
       - name: Resolve ephemeral Supabase service key
         shell: bash
         run: |
@@ -485,7 +494,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     env:
-      PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://lidengrong3-prog.github.io/mercator/' }}
+      PRODUCTION_SITE_URL: ${{ needs.authenticated-acceptance.outputs.production_site_url }}
       RELEASE_SHA: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v4

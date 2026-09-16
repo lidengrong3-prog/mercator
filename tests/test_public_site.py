@@ -96,6 +96,18 @@ class PublicSiteTests(unittest.TestCase):
         self.assertIn("python scripts/build_public_site.py --output _site", workflow)
         self.assertNotRegex(workflow, r"cp\s+-R\s+assets\s+data\s+_site")
 
+    def test_pages_deployment_receives_the_validated_production_site_url(self):
+        workflow = (ROOT / ".github" / "workflows" / "deploy-production.yml").read_text(encoding="utf-8")
+        self.assertIn(
+            "production_site_url: ${{ steps.release_context.outputs.production_site_url }}",
+            workflow,
+        )
+        self.assertIn(
+            "PRODUCTION_SITE_URL: ${{ needs.authenticated-acceptance.outputs.production_site_url }}",
+            workflow,
+        )
+        self.assertIn('echo "production_site_url=$PRODUCTION_SITE_URL" >> "$GITHUB_OUTPUT"', workflow)
+
     def test_builder_rejects_nonempty_output_to_prevent_stale_files(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / "site"
