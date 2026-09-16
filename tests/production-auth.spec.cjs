@@ -342,10 +342,7 @@ test.describe('production authenticated browser acceptance', () => {
     const pageB = await contextB.newPage();
     await login(pageB, credentials.b);
     const userB = await pageB.evaluate(() => window.jayUser.id);
-    const workspaceB = await pageB.evaluate(() => {
-      const owned = (window.jayWorkspaceContext.workspaces || []).find((workspace) => workspace.role === 'owner');
-      return owned?.id || window.jayActiveWorkspaceId();
-    });
+    const workspaceB = acceptanceWorkspaceB || await pageB.evaluate(() => window.jayActiveWorkspaceId());
     expect(workspaceB).not.toBe(workspaceA);
 
     // Recover from an interrupted previous run, then prove the two owner
@@ -405,7 +402,8 @@ test.describe('production authenticated browser acceptance', () => {
     expect((await rows(pageB, 'report_materials', { title: importedProductTitle })).length).toBeGreaterThan(0);
     expect((await rows(pageB, 'generated_reports', { id: reportId })).length).toBe(1);
     await pageB.evaluate(() => { window.switchPage('settings'); window.stSwitchTab('team'); });
-    await expect(pageB.locator('#st-workspace-select option')).toHaveCount(2);
+    await expect(pageB.locator(`#st-workspace-select option[value="${workspaceA}"]`)).toHaveCount(1);
+    await expect(pageB.locator(`#st-workspace-select option[value="${workspaceB}"]`)).toHaveCount(1);
 
     const staleWatchlistCleanup = await pageB.evaluate(async (workspaceId) => {
       const result = await window.supabaseClient
