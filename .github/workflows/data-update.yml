@@ -84,8 +84,7 @@ jobs:
               health = json.load(handle)
           ready = int(health.get('active_workers') or 0) > 0
           cutover = os.environ.get('COLLECTION_WORKER_CUTOVER', '').strip().lower() == 'true'
-          event = os.environ.get('EVENT_NAME', '')
-          mode = 'manual' if event == 'workflow_dispatch' else ('worker' if cutover and ready else 'legacy')
+          mode = 'worker' if cutover and ready else 'legacy'
           with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
               output.write(f"worker_ready={'true' if ready else 'false'}\n")
               output.write(f"mode={mode}\n")
@@ -108,7 +107,7 @@ jobs:
 
   enqueue:
     needs: route
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.route.outputs.mode == 'worker' }}
+    if: ${{ needs.route.outputs.mode == 'worker' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: production
@@ -157,7 +156,7 @@ jobs:
   # this path again instead of silently leaving production data stale.
   legacy-update-data:
     needs: route
-    if: ${{ github.event_name == 'schedule' && needs.route.outputs.mode == 'legacy' }}
+    if: ${{ needs.route.outputs.mode == 'legacy' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     environment: production
@@ -194,6 +193,8 @@ jobs:
           echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
       - name: Validate regulatory translation configuration
         run: python scripts/translate_regulatory_data.py --check-config
+      - name: Restore complete collector state from private Storage
+        run: python scripts/bootstrap_worker_data.py --required
       - name: Run configured market data collector
         run: python scripts/collect_data.py
       - name: Translate policy, tax and access records to Simplified Chinese

@@ -35,7 +35,9 @@ test('scheduled cutover preserves the legacy collector until a Worker is healthy
   assert.match(dataWorkflow, /COLLECTION_WORKER_CUTOVER/);
   assert.match(dataWorkflow, /active_workers/);
   assert.match(dataWorkflow, /legacy-update-data:/);
-  assert.match(dataWorkflow, /needs\.route\.outputs\.mode == 'legacy'/);
+  assert.match(dataWorkflow, /if: \$\{\{ needs\.route\.outputs\.mode == 'worker' \}\}/);
+  assert.match(dataWorkflow, /if: \$\{\{ needs\.route\.outputs\.mode == 'legacy' \}\}/);
+  assert.match(dataWorkflow, /bootstrap_worker_data\.py --required/);
   assert.match(healthWorkflow, /collection_worker\.py --health-check/);
   assert.match(healthWorkflow, /upload-artifact@v4/);
   assert.match(publish, /validate_data\.py/);
