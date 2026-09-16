@@ -47,10 +47,10 @@ rate_limit_path_has_extensions() {
 }
 
 acceptance_cleanup_deletes_storage_table() {
-  scalar "SELECT position(
+  scalar "SELECT (position(
     'DELETE FROM storage.objects'
     IN pg_get_functiondef('public.cleanup_production_acceptance_run(text)'::regprocedure)
-  ) > 0"
+  ) > 0)::text"
 }
 
 assert_equal() {
