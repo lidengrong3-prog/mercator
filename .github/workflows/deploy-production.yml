@@ -87,11 +87,8 @@ jobs:
           test -n "$service_key"
           echo "::add-mask::$service_key"
           echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
-      - name: Install PostgreSQL client
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes postgresql-client
+      - name: Install matching PostgreSQL client
+        run: bash scripts/install_postgresql_client.sh SUPABASE_DB_URL
       - name: Create and verify pre-migration backup
         run: python scripts/create_migration_backup.py --requested-migrations 25 --output migration-backup-result.json
       - name: Publish sanitized migration backup evidence

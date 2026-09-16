@@ -191,10 +191,10 @@ jobs:
           test -n "$service_key"
           echo "::add-mask::$service_key"
           echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
-      - name: Install PostgreSQL client
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes postgresql-client
+      - name: Install matching PostgreSQL client
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: bash scripts/install_postgresql_client.sh SUPABASE_DB_URL
       - name: Create and encrypt backup
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
