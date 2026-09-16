@@ -1081,6 +1081,7 @@ test('production release deploys database and functions before the frontend', ()
 
 test('formal report publication is server validated and client writes stay draft-only', () => {
   const validation = fs.readFileSync(path.join(root, 'supabase', 'functions', '_shared', 'report-validation.ts'), 'utf8');
+  const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'deploy-production.yml'), 'utf8');
   const marketPolicySource = fs.readFileSync(path.join(root, 'assets', 'js', 'markets-policies.js'), 'utf8');
   const save = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-save', 'index.ts'), 'utf8');
   const pdf = fs.readFileSync(path.join(root, 'supabase', 'functions', 'report-export', 'index.ts'), 'utf8');
@@ -1096,6 +1097,8 @@ test('formal report publication is server validated and client writes stay draft
   assert.match(save, /REPORT_VALIDATION_VERSION/);
   assert.match(save, /canonicalizeFormalReportContent\(submittedContent\)/);
   assert.match(save, /text_normalized_by_server:\s*textNormalized/);
+  assert.match(workflow, /Verify report function validation contract versions/);
+  assert.match(workflow, /report_validation_version/);
   assert.match(save, /publication_status:\s*'formal'/);
   assert.match(pdf, /validateFormalReportWithServerData/);
   assert.match(docx, /validateFormalReportWithServerData/);

@@ -50,6 +50,7 @@ Deno.serve(async (request) => {
   const origin = request.headers.get('Origin');
   if (origin && !allowedOrigins().includes(origin)) return jsonResponse({ error: 'ORIGIN_NOT_ALLOWED' }, 403, origin);
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(origin) });
+  if (request.method === 'GET' && new URL(request.url).searchParams.has('validation_probe')) return jsonResponse({ status: 'ok', report_validation_version: REPORT_VALIDATION_VERSION }, 200, origin);
   if (request.method !== 'POST') return jsonResponse({ error: 'METHOD_NOT_ALLOWED' }, 405, origin);
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL');

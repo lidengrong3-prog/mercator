@@ -17,7 +17,7 @@ async function authenticatedUser(request: Request, url: string, key: string): Pr
 
 Deno.serve(async (request) => {
   const startedAt = Date.now();
-  const origin = request.headers.get('Origin'); if (origin && !allowedOrigins().includes(origin)) return jsonResponse({ error: 'ORIGIN_NOT_ALLOWED' }, 403, origin); if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(origin) }); if (request.method !== 'POST') return jsonResponse({ error: 'METHOD_NOT_ALLOWED' }, 405, origin);
+  const origin = request.headers.get('Origin'); if (origin && !allowedOrigins().includes(origin)) return jsonResponse({ error: 'ORIGIN_NOT_ALLOWED' }, 403, origin); if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(origin) }); if (request.method === 'GET' && new URL(request.url).searchParams.has('validation_probe')) return jsonResponse({ status: 'ok', report_validation_version: REPORT_VALIDATION_VERSION }, 200, origin); if (request.method !== 'POST') return jsonResponse({ error: 'METHOD_NOT_ALLOWED' }, 405, origin);
   const supabaseUrl = Deno.env.get('SUPABASE_URL'); const anonKey = Deno.env.get('SUPABASE_ANON_KEY'); const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'); if (!supabaseUrl || !anonKey || !serviceKey) return jsonResponse({ error: 'REPORT_SERVICE_NOT_CONFIGURED' }, 503, origin);
   const user = await authenticatedUser(request, supabaseUrl, anonKey); if (!user) return jsonResponse({ error: 'AUTH_REQUIRED' }, 401, origin);
   const securityRequest = securityRequestId(request);

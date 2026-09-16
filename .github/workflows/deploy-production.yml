@@ -112,6 +112,7 @@ jobs:
       SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
       SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       DEEPSEEK_API_URL: ${{ secrets.DEEPSEEK_API_URL }}
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       DEEPSEEK_MODEL: ${{ secrets.DEEPSEEK_MODEL }}
@@ -173,7 +174,7 @@ jobs:
         shell: bash
         run: |
           set -eu
-          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID SUPABASE_DB_PASSWORD SUPABASE_URL DEEPSEEK_API_KEY DEEPSEEK_MODEL ALLOWED_ORIGINS APP_PUBLIC_URL RESEND_API_KEY WORKSPACE_INVITE_FROM_EMAIL; do
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID SUPABASE_DB_PASSWORD SUPABASE_URL SUPABASE_ANON_KEY DEEPSEEK_API_KEY DEEPSEEK_MODEL ALLOWED_ORIGINS APP_PUBLIC_URL RESEND_API_KEY WORKSPACE_INVITE_FROM_EMAIL; do
             test -n "${!name:-}" || { echo "Missing production secret: $name" >&2; exit 1; }
           done
           [[ "$APP_PUBLIC_URL" == https://* ]] || { echo "APP_PUBLIC_URL must use https" >&2; exit 1; }
@@ -331,6 +332,68 @@ jobs:
           for function_name in ai-proxy history-search resource-library report-save report-export report-docx workspace-invite billing-checkout billing-status billing-portal admin-summary data-subject-request security-gate; do
             npx --yes supabase@2.39.2 functions deploy "$function_name" --project-ref "$SUPABASE_PROJECT_ID"
           done
+      - name: Verify report function validation contract versions
+        shell: bash
+        run: |
+          set -eu
+          expected="$(python - <<'PY'
+          import re
+          from pathlib import Path
+          source = Path('supabase/functions/_shared/report-validation.ts').read_text(encoding='utf-8')
+          match = re.search(r"REPORT_VALIDATION_VERSION\s*=\s*'([^']+)'", source)
+          if not match:
+              raise SystemExit('REPORT_VALIDATION_VERSION missing')
+          print(match.group(1))
+          PY
+          )"
+          probe_dir="$(mktemp -d)"
+          trap 'rm -rf "$probe_dir"' EXIT
+          stable_rounds=0
+          last_summary=""
+          for attempt in $(seq 1 72); do
+            all_match=true
+            summary=""
+            for function_name in report-save report-export report-docx; do
+              response_file="$probe_dir/$function_name.json"
+              if http_status="$(curl --silent --show-error \
+                --output "$response_file" \
+                --write-out '%{http_code}' \
+                -H 'Cache-Control: no-cache' \
+                -H "apikey: $SUPABASE_ANON_KEY" \
+                -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+                "$SUPABASE_URL/functions/v1/$function_name?validation_probe=$GITHUB_RUN_ID-$attempt")"; then
+                :
+              else
+                http_status="curl-error"
+              fi
+              actual="$(python - "$response_file" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          try:
+              payload = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'))
+              print(payload.get('report_validation_version', ''))
+          except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+              print('')
+          PY
+              )"
+              summary="$summary $function_name=$http_status/${actual:-missing}"
+              if [ "$http_status" != "200" ] || [ "$actual" != "$expected" ]; then
+                all_match=false
+              fi
+            done
+            last_summary="$summary"
+            if [ "$all_match" = true ]; then
+              stable_rounds=$((stable_rounds + 1))
+            else
+              stable_rounds=0
+            fi
+            echo "Report validation propagation probe $attempt: stable=$stable_rounds/12$summary"
+            if [ "$stable_rounds" -ge 12 ]; then break; fi
+            sleep 5
+          done
+          test "$stable_rounds" -ge 12 || { echo "Report function validation contracts did not converge: expected=$expected$last_summary"; exit 1; }
       - name: Deploy Stripe webhook without Supabase JWT verification
         run: npx --yes supabase@2.39.2 functions deploy billing-webhook --project-ref "$SUPABASE_PROJECT_ID" --no-verify-jwt
       - name: Deploy notification dispatcher with application-level authentication
