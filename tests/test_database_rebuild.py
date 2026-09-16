@@ -159,6 +159,30 @@ class DatabaseRebuildTests(unittest.TestCase):
                     expected,
                 )
 
+    def test_backup_workflows_install_a_server_compatible_postgresql_client(self):
+        installer = (ROOT / "scripts" / "install_postgresql_client.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("SHOW server_version_num", installer)
+        self.assertIn("postgresql-client-${server_major}", installer)
+        self.assertIn('echo "$client_bin" >> "$GITHUB_PATH"', installer)
+
+        for relative_path, database_url_variable in (
+            ("encrypted-backup.yml", "SUPABASE_DB_URL"),
+            ("pre-migration-backup.yml", "SUPABASE_DB_URL"),
+            ("deploy-production.yml", "SUPABASE_DB_URL"),
+            ("operations.yml", "SUPABASE_DB_URL"),
+            ("restore-drill.yml", "RESTORE_DRILL_DB_URL"),
+        ):
+            with self.subTest(workflow=relative_path):
+                workflow = (ROOT / ".github" / "workflows" / relative_path).read_text(
+                    encoding="utf-8"
+                )
+                self.assertIn(
+                    f"bash scripts/install_postgresql_client.sh {database_url_variable}",
+                    workflow,
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

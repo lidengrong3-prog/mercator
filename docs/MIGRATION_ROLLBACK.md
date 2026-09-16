@@ -6,6 +6,9 @@
 `supabase_migrations.schema_migrations`，记录迁移前版本，使用 PostgreSQL
 custom-format `pg_dump` 创建逻辑备份，并完成以下校验：
 
+工作流会先读取目标数据库的 `server_version_num`，从 PostgreSQL 官方仓库安装相同
+大版本的 `pg_dump` 和 `pg_restore`，避免 GitHub Runner 默认客户端低于生产数据库。
+
 - `pg_restore --list` 能读取归档且包含迁移账本；
 - AES-256-CBC/PBKDF2 加密后可以解密，解密归档的条目数和迁移账本一致；
 - 私有 Storage 中的对象 SHA-256 和字节数与本地加密文件一致；

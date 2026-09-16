@@ -38,10 +38,8 @@ jobs:
             echo "::add-mask::$service_key"
             echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
           fi
-      - name: Install PostgreSQL client
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes postgresql-client
+      - name: Install PostgreSQL client matching the restore database
+        run: bash scripts/install_postgresql_client.sh RESTORE_DRILL_DB_URL
       - name: Restore newest encrypted backup in isolation
         run: python scripts/restore_backup_drill.py --output backup-restore-drill-summary.json
       - name: Publish sanitized drill result
