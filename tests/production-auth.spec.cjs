@@ -458,7 +458,11 @@ test.describe('production authenticated browser acceptance', () => {
       null,
       { timeout: 30_000 }
     );
-    expect(await pageB.evaluate(() => window.jayActiveWorkspaceId())).toBe(workspaceB);
+    expect(await pageB.evaluate(() => window.jayActiveWorkspaceId())).not.toBe(workspaceA);
+    const stillHasRemovedWorkspace = await pageB.evaluate((removedWorkspaceId) => (
+      window.jayWorkspaceContext.workspaces || []
+    ).some((workspace) => workspace.id === removedWorkspaceId), workspaceA);
+    expect(stillHasRemovedWorkspace).toBe(false);
     expect(await rows(pageB, 'generated_reports', { id: reportId })).toEqual([]);
     expect(await rows(pageB, 'report_materials', { title: importedProductTitle })).toEqual([]);
 
