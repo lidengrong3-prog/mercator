@@ -104,34 +104,25 @@ def upsert(table: str, token: str, body: dict, conflict: str):
     return value[0]
 
 
-def ensure_export_entitlement(user_id: str) -> dict:
-    """Give dedicated CI accounts a non-Stripe Pro entitlement for export checks."""
-    rows = service_select_rows("user_subscriptions", {
-        "select": "id,plan,status,provider",
-        "user_id": f"eq.{user_id}", "limit": "1",
-    })
-    if rows and rows[0].get("plan") == "pro" and rows[0].get("status") in ("active", "trialing"):
-        return rows[0]
-    query = urllib.parse.urlencode({"on_conflict": "user_id"})
+def ensure_export_entitlement(workspace_id: str, actor_id: str) -> dict:
+    """Give a dedicated acceptance workspace an audited non-Stripe Pro plan."""
     status, value, _ = request(
         "POST",
-        f"{SUPABASE_URL}/rest/v1/user_subscriptions?{query}",
+        f"{SUPABASE_URL}/rest/v1/rpc/configure_workspace_manual_subscription",
         token=SERVICE_KEY,
         body={
-            "user_id": user_id,
-            "plan": "pro",
-            "status": "active",
-            "provider": "manual",
-            "provider_customer_id": None,
-            "provider_subscription_id": None,
-            "current_period_start": None,
-            "current_period_end": None,
-            "cancel_at_period_end": False,
+            "p_workspace_id": workspace_id,
+            "p_plan": "pro",
+            "p_seat_limit": 5,
+            "p_actor_id": actor_id,
+            "p_reason": "production acceptance export and collaboration validation",
+            "p_overrides": {"monthly_report_limit": 100, "monthly_export_limit": 100},
         },
-        headers={"apikey": SERVICE_KEY, "Prefer": "resolution=merge-duplicates,return=representation"},
+        headers={"apikey": SERVICE_KEY, "Prefer": "return=representation"},
     )
-    expect(status in (200, 201) and isinstance(value, list) and value, f"ensure export entitlement failed: {status} {value}")
-    return value[0]
+    expect(status == 200 and isinstance(value, dict) and value.get("plan") == "pro",
+           f"ensure workspace export entitlement failed: {status} {value}")
+    return value
 
 
 def function(name: str, token: str | None, body: dict, *, headers=None, timeout=120):
@@ -537,8 +528,8 @@ def main() -> int:
     # Free plans intentionally cannot export formal PDF/DOCX. The two
     # dedicated CI accounts need a non-Stripe Pro entitlement to exercise the
     # complete export and collaboration path without enabling billing.
-    ensure_export_entitlement(user_a)
-    ensure_export_entitlement(user_b)
+    ensure_export_entitlement(workspace_a, user_a)
+    ensure_export_entitlement(workspace_b, user_b)
 
     # Recover from an interrupted previous acceptance run before checking the
     # initial isolation boundary. The owner can remove only a non-owner member.

@@ -6,6 +6,25 @@ from scripts import production_acceptance
 
 
 class ProductionAcceptanceTests(unittest.TestCase):
+    def test_export_entitlement_uses_audited_workspace_subscription_rpc(self):
+        workspace_id = "00000000-0000-4000-8000-000000000010"
+        actor_id = "00000000-0000-4000-8000-000000000020"
+        with patch.object(production_acceptance, "SERVICE_KEY", "service-role-test-key"), patch.object(
+            production_acceptance,
+            "request",
+            return_value=(200, {"workspace_id": workspace_id, "plan": "pro", "status": "active"}, {}),
+        ) as request:
+            result = production_acceptance.ensure_export_entitlement(workspace_id, actor_id)
+
+        self.assertEqual(result["plan"], "pro")
+        _, url = request.call_args.args[:2]
+        body = request.call_args.kwargs["body"]
+        self.assertTrue(url.endswith("/rest/v1/rpc/configure_workspace_manual_subscription"))
+        self.assertEqual(body["p_workspace_id"], workspace_id)
+        self.assertEqual(body["p_actor_id"], actor_id)
+        self.assertGreaterEqual(body["p_seat_limit"], 2)
+        self.assertGreaterEqual(body["p_overrides"]["monthly_export_limit"], 4)
+
     def test_fault_signature_matches_the_edge_function_vector(self):
         with patch.object(production_acceptance, "SERVICE_KEY", "service-role-test-key"):
             headers = production_acceptance.acceptance_fault_headers(
