@@ -39,6 +39,22 @@ test('backup and restore workflows are scheduled and publish only summaries', ()
   assert.match(restore, /cron: '41 3 1 \* \*'/);
 });
 
+test('production configuration audit keeps launch gates closed and checks two accounts', () => {
+  const workflow = read('.github/workflows/production-readiness.yml');
+  const audit = read('scripts/audit_production_configuration.py');
+  for (const value of [
+    'BILLING_ENABLED=false', 'BILLING_LIVE_ACCEPTANCE_MODE=false',
+    'NOTIFICATION_CHANNELS_ENABLED=false', 'NOTIFICATION_LIVE_ACCEPTANCE_MODE=false',
+    'STRIPE_ALLOW_TEST_EVENTS=false',
+  ]) assert.match(workflow, new RegExp(value));
+  assert.match(workflow, /inputs\.action == 'config-audit'/);
+  assert.match(audit, /ACCEPTANCE_ACCOUNTS_NOT_DISTINCT/);
+  assert.match(audit, /allowed_origin_preflight/);
+  assert.match(audit, /billing_disabled_runtime/);
+  assert.match(audit, /notifications_disabled_runtime/);
+  assert.doesNotMatch(audit, /\["access_token"\].*print/);
+});
+
 test('data-subject endpoint enforces ownership and does not expose raw private tables', () => {
   const source = read('supabase/functions/data-subject-request/index.ts');
   assert.match(source, /data_subject_request/);

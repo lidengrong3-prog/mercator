@@ -12,6 +12,11 @@
 
 `availability-monitor` 会始终执行全部组件探针；单个数据库表或 Edge Function 请求异常时，也会继续检查其余目标。结果写入 `production-health-result.json`，包含总状态、失败组件、逐组件耗时、HTTP 状态和发布 SHA，并作为 `production-health-<run_id>` Artifact 保留 30 天。数据质量结果使用独立的 `operations-data-quality-<run_id>` Artifact，不能用“网站可访问”代替“数据可发布”，也不能用“数据质量失败”推断生产服务宕机。
 
+手动运行 `Production readiness and staged rollout` 的 `config-audit` 操作，会先把收费、
+收费验收、通知和通知验收四个开关显式保持为 `false`，再验证严格正式 origin、两套
+验收账号登录与隔离、以及 Billing/通知运行时状态。公开收费或通知正式验收前，不得
+修改这些关闭值。
+
 ## 备份
 
 Supabase 项目应优先启用平台提供的托管数据库备份和时间点恢复。仓库另提供手动加密逻辑备份：

@@ -7,7 +7,7 @@ on:
         description: Readiness operation
         type: choice
         required: true
-        options: [start, status, load, record, finalize, advance, migration-rehearsal]
+        options: [start, status, load, record, finalize, advance, config-audit, migration-rehearsal]
       target_stage:
         description: Next stage (start)
         type: choice
@@ -62,7 +62,7 @@ permissions:
 
 jobs:
   readiness:
-    if: inputs.action != 'migration-rehearsal'
+    if: inputs.action != 'migration-rehearsal' && inputs.action != 'config-audit'
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 40
@@ -153,6 +153,70 @@ jobs:
             production-readiness-result.json
             production-load-result.json
           if-no-files-found: ignore
+          retention-days: 30
+
+  config_audit:
+    if: inputs.action == 'config-audit'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
+      PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL }}
+      PROD_TEST_USER_A_EMAIL: ${{ secrets.PROD_TEST_USER_A_EMAIL }}
+      PROD_TEST_USER_A_PASSWORD: ${{ secrets.PROD_TEST_USER_A_PASSWORD }}
+      PROD_TEST_USER_B_EMAIL: ${{ secrets.PROD_TEST_USER_B_EMAIL }}
+      PROD_TEST_USER_B_PASSWORD: ${{ secrets.PROD_TEST_USER_B_PASSWORD }}
+      BILLING_ENABLED: ${{ vars.BILLING_ENABLED }}
+      BILLING_LIVE_ACCEPTANCE_MODE: ${{ vars.BILLING_LIVE_ACCEPTANCE_MODE }}
+      NOTIFICATION_CHANNELS_ENABLED: ${{ vars.NOTIFICATION_CHANNELS_ENABLED }}
+      NOTIFICATION_LIVE_ACCEPTANCE_MODE: ${{ vars.NOTIFICATION_LIVE_ACCEPTANCE_MODE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate auditable production inputs
+        shell: bash
+        run: |
+          set -eu
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID SUPABASE_URL SUPABASE_ANON_KEY ALLOWED_ORIGINS PRODUCTION_SITE_URL PROD_TEST_USER_A_EMAIL PROD_TEST_USER_A_PASSWORD PROD_TEST_USER_B_EMAIL PROD_TEST_USER_B_PASSWORD; do
+            test -n "${!name:-}" || { echo "Missing production audit configuration: $name" >&2; exit 1; }
+          done
+          for name in BILLING_ENABLED BILLING_LIVE_ACCEPTANCE_MODE NOTIFICATION_CHANNELS_ENABLED NOTIFICATION_LIVE_ACCEPTANCE_MODE; do
+            [ "${!name:-}" = false ] || { echo "$name must remain false" >&2; exit 1; }
+          done
+      - name: Validate strict production origin before writing Edge secrets
+        run: python scripts/release_preflight.py --origin-only
+      - name: Enforce disabled billing and notification gates
+        shell: bash
+        run: |
+          set -eu
+          npx --yes supabase@2.39.2 secrets set --project-ref "$SUPABASE_PROJECT_ID" \
+            "BILLING_ENABLED=false" \
+            "BILLING_LIVE_ACCEPTANCE_MODE=false" \
+            "NOTIFICATION_CHANNELS_ENABLED=false" \
+            "NOTIFICATION_LIVE_ACCEPTANCE_MODE=false" \
+            "STRIPE_ALLOW_TEST_EVENTS=false" \
+            "ALLOWED_ORIGINS=$ALLOWED_ORIGINS" \
+            "PRODUCTION_SITE_URL=$PRODUCTION_SITE_URL" \
+            "APP_PUBLIC_URL=$PRODUCTION_SITE_URL"
+      - name: Audit origin, acceptance accounts and runtime gates
+        run: python scripts/audit_production_configuration.py --output production-configuration-audit.json
+      - name: Publish sanitized configuration evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-configuration-audit-${{ github.run_id }}
+          path: production-configuration-audit.json
+          if-no-files-found: error
           retention-days: 30
 
   migration_rehearsal:
