@@ -9,6 +9,7 @@ const read = (...parts) => fs.readFileSync(path.join(root, ...parts), 'utf8');
 test('production acceptance has a service-owned run ledger and compensating cleanup', () => {
   const migration = read('supabase', 'migrations', '20260911000000_production_acceptance_isolation.sql');
   const storageCleanup = read('supabase', 'migrations', '20261004000000_acceptance_storage_api_cleanup.sql');
+  const watchlistTag = read('supabase', 'migrations', '20261005000000_acceptance_watchlist_tag.sql');
   for (const table of [
     'production_acceptance_runs', 'workspaces', 'workspace_members', 'workspace_invites',
     'report_materials', 'saved_workspace_items', 'generated_reports', 'report_runs',
@@ -30,6 +31,8 @@ test('production acceptance has a service-owned run ledger and compensating clea
   assert.doesNotMatch(storageCleanup, /DELETE FROM storage\.objects/);
   assert.match(storageCleanup, /storage_paths_delegated/);
   assert.match(storageCleanup, /status <> 'cleaned'/);
+  assert.match(watchlistTag, /ALTER TABLE public\.user_watchlist[\s\S]*acceptance_run_id TEXT/);
+  assert.match(watchlistTag, /idx_user_watchlist_acceptance_run/);
 });
 
 test('API and browser acceptance share the workflow run ID and always clean browser data', () => {
