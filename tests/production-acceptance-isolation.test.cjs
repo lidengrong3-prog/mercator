@@ -48,6 +48,10 @@ test('API and browser acceptance share the workflow run ID and always clean brow
   assert.match(workflow, /ACCEPTANCE_RUN_ID: \$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/g);
   assert.match(workflow, /DEFER_ACCEPTANCE_CLEANUP: '1'/);
   assert.match(workflow, /browser-authenticated-acceptance-cleanup:[\s\S]*if: \$\{\{ always\(\) \}\}/);
+  assert.match(
+    workflow,
+    /production-smoke:[\s\S]*if: \$\{\{ always\(\) && needs\['browser-authenticated-acceptance'\]\.result == 'success' && needs\['browser-authenticated-acceptance-cleanup'\]\.result == 'success' \}\}/,
+  );
   assert.match(workflow, /cleanup_production_acceptance\.py --run-id/);
   assert.equal((workflow.match(/python scripts\/cleanup_production_acceptance\.py --run-id "\$ACCEPTANCE_RUN_ID"/g) || []).length, 2);
   assert.match(python, /os\.environ\.get\("ACCEPTANCE_RUN_ID"/);

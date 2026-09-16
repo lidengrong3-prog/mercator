@@ -569,6 +569,7 @@ jobs:
           python scripts/cleanup_production_acceptance.py --run-id "$ACCEPTANCE_RUN_ID" --mark "$terminal_status"
 
   production-smoke:
+    if: ${{ always() && needs['browser-authenticated-acceptance'].result == 'success' && needs['browser-authenticated-acceptance-cleanup'].result == 'success' }}
     needs:
       - browser-authenticated-acceptance
       - browser-authenticated-acceptance-cleanup
