@@ -377,7 +377,13 @@ def build_server_validated_report_content(token: str, ai_text: str) -> dict:
                 continue
             candidates.append(row)
         expect(candidates, f"production evidence is missing for {market_code}|{platform_key}|{category_code}|{domain}")
-        selected[domain] = candidates
+        candidates.sort(key=lambda row: (
+            str(row.get("published_at") or row.get("verified_at") or ""),
+            str(row.get("source_record_id") or row.get("record_key") or ""),
+        ), reverse=True)
+        # Acceptance proves every required domain is exportable; it must not
+        # turn the entire production history into one oversized test report.
+        selected[domain] = candidates[:3]
 
     unique_rows: list[dict] = []
     seen_ids: set[str] = set()
