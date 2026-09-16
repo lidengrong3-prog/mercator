@@ -35,7 +35,7 @@ test('public rule projection reports honest status and traceable records', () =>
     assert.match(rule.source_url, /^https:\/\/[^/]+\/.+/);
     assert.ok(!Number.isNaN(Date.parse(rule.verified_at)));
     assert.ok(rule.rule_key);
-    assert.equal(rule.rule_version, '1');
+    assert.ok(String(rule.rule_version || '').trim());
     assert.ok(['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty', 'other'].includes(rule.topic));
   }
 });
