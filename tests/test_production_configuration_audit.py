@@ -4,6 +4,7 @@ from scripts.audit_production_configuration import (
     AuditError,
     fingerprint,
     production_origin,
+    safe_machine_code,
     safe_runtime_error,
 )
 
@@ -35,6 +36,8 @@ class ProductionConfigurationAuditTests(unittest.TestCase):
         )
         self.assertEqual(safe_runtime_error({"error": "secret=value"}), "UNKNOWN_ERROR")
         self.assertEqual(safe_runtime_error({}), "UNKNOWN_ERROR")
+        self.assertEqual(safe_machine_code("42883"), "42883")
+        self.assertEqual(safe_machine_code("message: secret"), "UNKNOWN_ERROR")
 
 
 if __name__ == "__main__":

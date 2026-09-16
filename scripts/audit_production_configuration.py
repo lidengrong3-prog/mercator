@@ -34,10 +34,14 @@ def fingerprint(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:12]
 
 
+def safe_machine_code(value: object) -> str:
+    candidate = str(value or "UNKNOWN_ERROR")
+    return candidate if re.fullmatch(r"[A-Z0-9_]{1,64}", candidate) else "UNKNOWN_ERROR"
+
+
 def safe_runtime_error(payload: dict) -> str:
     """Return only a bounded machine error code from an Edge response."""
-    value = str(payload.get("error") or "UNKNOWN_ERROR")
-    return value if re.fullmatch(r"[A-Z][A-Z0-9_]{0,63}", value) else "UNKNOWN_ERROR"
+    return safe_machine_code(payload.get("error"))
 
 
 def production_origin(site_url: str) -> str:
@@ -143,6 +147,26 @@ def function_json(
     return status, json_body(raw, f"{function_name.upper()}_RESPONSE_INVALID")
 
 
+def diagnose_rate_limit_rpc(supabase_url: str, service_key: str) -> dict:
+    status, raw, _ = request(
+        "POST",
+        f"{supabase_url}/rest/v1/rpc/consume_security_rate_limit",
+        headers=auth_headers(service_key, service_key),
+        body={
+            "p_scope": "security:config_audit:system",
+            "p_subject_key": "production-configuration-audit",
+            "p_limit": 1000000,
+            "p_window_seconds": 60,
+            "p_user_id": None,
+        },
+    )
+    payload = json_body(raw, "RATE_LIMIT_DIAGNOSTIC_RESPONSE_INVALID")
+    return {
+        "http_status": status,
+        "error_code": None if status == 200 else safe_machine_code(payload.get("code")),
+    }
+
+
 def audit(output: Path) -> int:
     result: dict = {
         "kind": "production_configuration_audit",
@@ -246,14 +270,20 @@ def audit(output: Path) -> int:
             {},
         )
         if status != 200:
+            runtime_error = safe_runtime_error(billing)
             runtime_failures.append(
                 {
                     "check": "billing_status",
                     "audit_error_code": "BILLING_STATUS_CHECK_FAILED",
-                    "runtime_error_code": safe_runtime_error(billing),
+                    "runtime_error_code": runtime_error,
                     "http_status": status,
                 }
             )
+            service_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "").strip()
+            if runtime_error == "RATE_LIMIT_UNAVAILABLE" and service_key:
+                result["rate_limit_rpc_diagnostic"] = diagnose_rate_limit_rpc(
+                    supabase_url, service_key
+                )
         elif billing.get("billing_enabled") is not False or billing.get("live_acceptance_mode") is not False:
             runtime_failures.append(
                 {

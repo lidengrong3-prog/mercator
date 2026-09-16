@@ -195,6 +195,15 @@ jobs:
           done
       - name: Validate strict production origin before writing Edge secrets
         run: python scripts/release_preflight.py --origin-only
+      - name: Resolve ephemeral Supabase service key for runtime diagnostics
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_ROLE_KEY=$service_key" >> "$GITHUB_ENV"
       - name: Enforce disabled billing and notification gates
         shell: bash
         run: |
