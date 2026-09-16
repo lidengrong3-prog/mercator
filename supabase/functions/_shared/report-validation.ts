@@ -1,6 +1,6 @@
 import { assessReportContent, reportContentAllowsFormalOutput, type ContentQualityAssessment, type QualityGate } from './report-quality.ts';
 
-export const REPORT_VALIDATION_VERSION = '2026.09.11.1';
+export const REPORT_VALIDATION_VERSION = '2026.09.16.2';
 
 type Row = Record<string, unknown>;
 
@@ -156,6 +156,21 @@ function addReason(reasons: ReportValidationReason[], reason: ReportValidationRe
   if (!reasons.some((item) => item.code === reason.code && item.cell_id === reason.cell_id && item.value === reason.value)) reasons.push(reason);
 }
 
+function sourceCategoryLabel(value: unknown): string {
+  const normalized = String(value || '').trim().toLowerCase();
+  return ({
+    official_policy: '官方政策/监管记录',
+    official_statistics: '官方统计数据',
+    platform_announcement: '平台官方公告',
+    industry_media: '行业媒体/协会资讯',
+    third_party_provider: '第三方数据服务商',
+    user_upload: '工作区上传资料',
+    derived: '系统派生数据',
+    internal: '系统运行数据',
+    demo: '演示数据',
+  } as Record<string, string>)[normalized] || String(value || '');
+}
+
 function sourceAppendixLine(source: Row): string {
   const chapters = strings(source.chapters);
   const citation = String(source.citation || '');
@@ -165,7 +180,10 @@ function sourceAppendixLine(source: Row): string {
   const recordId = String(source.recordId || source.source_record_id || '');
   const snapshotAt = String(source.dataSnapshotAt || source.data_snapshot_at || '');
   const url = String(source.url || '');
-  return `- [${citation}] ${name} · ${date} · ${verification}`
+  const sourceCategory = sourceCategoryLabel(source.sourceCategory || source.source_category);
+  return `- [${citation}] ${name}`
+    + (sourceCategory ? ` · 来源类别：${sourceCategory}` : '')
+    + ` · ${date} · ${verification}`
     + (recordId ? ` · 原始记录：${recordId}` : '')
     + (snapshotAt ? ` · 数据快照：${snapshotAt}` : '')
     + (url ? ` · ${url}` : '')

@@ -123,6 +123,35 @@ Deno.test('server validation accepts a complete server-backed coverage matrix', 
   if (!result.ok) throw new Error(result.reasons.map((reason) => reason.code).join(','));
 });
 
+Deno.test('canonical report text matches the browser source-category appendix contract', () => {
+  const value: Row = {
+    model: { sections: [{ id: 'summary', title: '摘要', text: '正式平台规则已核验 [S001]' }] },
+    source_appendix: [{
+      citation: 'S001',
+      source: 'eBay',
+      sourceCategory: 'platform_announcement',
+      date: '2026-09-16',
+      verificationStatus: 'verified',
+      recordId: 'rule-ebay-1',
+      dataSnapshotAt: '2026-09-16T05:17:15.000Z',
+      url: 'https://www.ebay.com/help/example',
+      chapters: ['summary'],
+    }],
+  };
+  const expected = [
+    '## 摘要',
+    '',
+    '正式平台规则已核验 [S001]',
+    '',
+    '## 来源与核验附录',
+    '',
+    '- [S001] eBay · 来源类别：平台官方公告 · 2026-09-16 · verified · 原始记录：rule-ebay-1 · 数据快照：2026-09-16T05:17:15.000Z · https://www.ebay.com/help/example · 引用章节：summary',
+  ].join('\n');
+  if (canonicalReportText(value) !== expected) {
+    throw new Error(`canonical appendix drifted:\n${canonicalReportText(value)}`);
+  }
+});
+
 Deno.test('server validation accepts a traceable subset of eligible evidence', () => {
   const selectedEvidence = [
     { domain: 'market', market_code: 'US', source_record_id: 'market-1', source_url: 'https://example.test/market-1', verification_status: 'verified', payload: { status: 'ready' } },
