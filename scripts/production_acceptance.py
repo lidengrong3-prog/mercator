@@ -626,6 +626,7 @@ def main() -> int:
     run_key = f"production-acceptance-report:{acceptance_run_id}"
     run_payload = {
         "user_id": user_a,
+        "workspace_id": workspace_a,
         "client_report_id": "production-acceptance-report",
         "idempotency_key": run_key,
         "purpose": "market-research",
@@ -643,7 +644,7 @@ def main() -> int:
     }
     with ThreadPoolExecutor(max_workers=2) as executor:
         duplicate_runs = list(executor.map(
-            lambda _: upsert("report_runs", token_a, run_payload, "user_id,idempotency_key"),
+            lambda _: upsert("report_runs", token_a, run_payload, "workspace_id,idempotency_key"),
             range(2),
         ))
     duplicate_run_ids = {str(row.get("id") or "") for row in duplicate_runs}
