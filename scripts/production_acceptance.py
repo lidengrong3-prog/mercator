@@ -179,9 +179,50 @@ def mark_acceptance_run(status: str, result_summary=None, error_summary=None) ->
 
 
 def cleanup_acceptance_run(acceptance_run_id: str) -> dict:
-    return service_rpc("cleanup_production_acceptance_run", {
+    paths = service_select_rows("report_exports", {
+        "select": "file_path",
+        "acceptance_run_id": f"eq.{acceptance_run_id}",
+        "file_path": "not.is.null",
+        "limit": "5000",
+    })
+    marker = f"/acceptance/{urllib.parse.quote(acceptance_run_id, safe='')}/"
+    storage_paths = sorted({
+        str(row.get("file_path") or "").strip()
+        for row in paths
+        if marker in str(row.get("file_path") or "")
+        and "://" not in str(row.get("file_path") or "")
+    })
+    if storage_paths:
+        status, value, _ = request(
+            "DELETE",
+            f"{SUPABASE_URL}/storage/v1/object/reports",
+            token=SERVICE_KEY,
+            body={"prefixes": storage_paths},
+            headers={"apikey": SERVICE_KEY},
+        )
+        expect(status in (200, 204), f"acceptance Storage cleanup failed: {status} {value}")
+    result = service_rpc("cleanup_production_acceptance_run", {
         "p_acceptance_run_id": acceptance_run_id,
     })
+    expect(result.get("status") in ("cleaned", "not_found"), f"acceptance cleanup failed: {result}")
+    return {**result, "storage_objects": len(storage_paths)}
+
+
+def recover_prior_acceptance_runs(current_run_id: str, owner_ids: tuple[str, str]) -> None:
+    owner_set = set(owner_ids)
+    rows = service_select_rows("production_acceptance_runs", {
+        "select": "acceptance_run_id,status,api_owner_id,browser_owner_id",
+        "status": "in.(running,cleaning,cleanup_failed)",
+        "order": "started_at.asc",
+        "limit": "100",
+    })
+    for row in rows:
+        run_owners = {str(row.get("api_owner_id") or ""), str(row.get("browser_owner_id") or "")}
+        if not owner_set.intersection(run_owners):
+            continue
+        run_id = str(row.get("acceptance_run_id") or "").strip()
+        if run_id and run_id != current_run_id:
+            cleanup_acceptance_run(run_id)
 
 
 def cleanup_expired_acceptance_runs(retention_days: int = 7) -> dict:
@@ -476,6 +517,7 @@ def main() -> int:
     token_a, token_b = session_a["access_token"], session_b["access_token"]
     user_a, user_b = session_a["user"]["id"], session_b["user"]["id"]
     expect(user_a != user_b, "test accounts resolved to the same user id")
+    recover_prior_acceptance_runs(acceptance_run_id, (user_a, user_b))
     run_setup = start_acceptance_run(acceptance_run_id, user_a, user_b)
     workspace_a = str(run_setup.get("api_workspace_id") or "")
     workspace_b = str(run_setup.get("browser_workspace_id") or "")
