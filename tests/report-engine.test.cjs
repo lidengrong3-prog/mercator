@@ -215,6 +215,27 @@ test('citation audit rejects unknown citations and uncited key numbers', () => {
   assert.deepEqual(Array.from(result.invalidCitations, (item) => item.citation), ['S999']);
 });
 
+test('citation audit rejects a cited number absent from the referenced evidence', () => {
+  const appendix = [{ citation: 'S001' }];
+  const citationFacts = [{ record: { growth_rate: '8%' }, source: { citation: 'S001' } }];
+  const result = engine.auditCitations([
+    { id: 'market', text: '市场增速为 12% [S001]' },
+  ], appendix, citationFacts);
+  assert.equal(result.ok, false);
+  assert.equal(result.untraceableNumericCitations.length, 1);
+  assert.equal(result.untraceableNumericCitations[0].value, '12');
+});
+
+test('citation audit accepts a cited number present in the referenced evidence', () => {
+  const appendix = [{ citation: 'S001' }];
+  const citationFacts = [{ record: { growth_rate: '12%' }, source: { citation: 'S001' } }];
+  const result = engine.auditCitations([
+    { id: 'market', text: '市场增速为 12% [S001]' },
+  ], appendix, citationFacts);
+  assert.equal(result.ok, true);
+  assert.equal(result.untraceableNumericCitations.length, 0);
+});
+
 test('citation audit exempts generated snapshot dates but not unsupported metrics on the same line', () => {
   const appendix = [{ citation: 'S001' }];
   const result = engine.auditCitations([
@@ -323,6 +344,16 @@ test('publication pruning removes unsupported numeric lines after retry', () => 
   assert.equal(result.removedCount, 2);
   assert.doesNotMatch(result.text, /999/);
   assert.match(result.text, /12% \[S001\]/);
+  assert.equal(result.audit.ok, true);
+});
+
+test('publication pruning removes cited numbers that the selected source cannot prove', () => {
+  const appendix = [{ citation: 'S001' }];
+  const citationFacts = [{ record: { growth_rate: '8%' }, source: { citation: 'S001' } }];
+  const result = engine.pruneUncitedNumericLines('可核验增速为 8% [S001]\n错误增速为 12% [S001]\n暂无更多数据。', appendix, citationFacts);
+  assert.equal(result.removedCount, 1);
+  assert.match(result.text, /8%/);
+  assert.doesNotMatch(result.text, /12%/);
   assert.equal(result.audit.ok, true);
 });
 

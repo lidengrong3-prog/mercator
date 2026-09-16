@@ -518,11 +518,36 @@
     return match && match.citation || '';
   }
 
-  function auditCitations(sections, appendix) {
+  function factualNumericTokens(line) {
+    var value = text(line);
+    if (/数据快照(?:时间)?|数据截至|数据时间|生成日期|当前日期|本快照时间|截至\s*[（(]?\s*\d{4}/.test(value)) {
+      value = value
+        .replace(/\d{4}\s*年\s*\d{1,2}\s*月(?:\s*\d{1,2}\s*日)?/g, '')
+        .replace(/\d{4}-\d{2}-\d{2}(?:T[^\s]*)?/g, '');
+    }
+    var tokens = [];
+    value.replace(/(?:[$￥¥€£]\s*)?(\d+(?:[,.]\d+)*)(?:\s*(?:%|％|美元|美金|元|万|亿|百万|件|单|人|天|月|年|个|家|项|倍|bps|USD|CNY))|\d+\.\d+/gi, function (match, captured) {
+      var numeric = text(captured || (match.match(/\d+(?:[,.]\d+)*/) || [])[0]).replace(/,/g, '');
+      if (numeric && tokens.indexOf(numeric) < 0) tokens.push(numeric);
+      return match;
+    });
+    return tokens;
+  }
+
+  function auditCitations(sections, appendix, citationFacts) {
     var valid = list(appendix).map(function (source) { return source.citation; }).filter(Boolean);
+    var enforceTraceability = arguments.length >= 3;
+    var evidenceByCitation = {};
+    if (enforceTraceability) list(citationFacts).forEach(function (entry) {
+      var citation = entry && entry.source && entry.source.citation;
+      if (!citation) return;
+      if (!evidenceByCitation[citation]) evidenceByCitation[citation] = [];
+      evidenceByCitation[citation].push((JSON.stringify(entry.record || {}) + ' ' + JSON.stringify(entry.source || {})).replace(/,/g, ''));
+    });
     var used = [];
     var invalid = [];
     var missingNumericCitations = [];
+    var untraceableNumericCitations = [];
     list(sections).forEach(function (section) {
       var sectionId = section && section.id || '';
       text(section && section.text).split(/\r?\n/).forEach(function (line) {
@@ -540,19 +565,29 @@
             .replace(/\d{4}\s*年\s*\d{1,2}\s*月(?:\s*\d{1,2}\s*日(?:\s*\d{1,2}(?::\d{2}){0,2}\s*(?:UTC)?)?)?/gi, '')
             .replace(/\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?Z?)?/gi, '');
         }
-        var factualNumber = /(?:[$￥¥€£]\s*\d|\d+(?:[,.]\d+)*(?:\s*(?:%|％|美元|美金|元|万|亿|百万|件|单|人|天|月|年|个|家|项|倍|bps|USD|CNY))|\d+\.\d+)/i.test(auditLine);
-        if (factualNumber && !citations.some(function (citation) { return valid.indexOf(citation) >= 0; })) {
+        var numbers = factualNumericTokens(auditLine);
+        var validLineCitations = citations.filter(function (citation) { return valid.indexOf(citation) >= 0; });
+        if (numbers.length && !validLineCitations.length) {
           missingNumericCitations.push({ section: sectionId, text: line.trim().slice(0, 240) });
+          return;
         }
+        if (!enforceTraceability || !numbers.length) return;
+        numbers.forEach(function (numberValue) {
+          var supported = validLineCitations.some(function (citation) {
+            return list(evidenceByCitation[citation]).some(function (evidence) { return evidence.indexOf(numberValue) >= 0; });
+          });
+          if (!supported) untraceableNumericCitations.push({ section: sectionId, value: numberValue, text: line.trim().slice(0, 240), citations: validLineCitations.slice() });
+        });
       });
     });
     used = uniq(used);
     return {
-      ok: invalid.length === 0 && missingNumericCitations.length === 0,
+      ok: invalid.length === 0 && missingNumericCitations.length === 0 && untraceableNumericCitations.length === 0,
       validCitations: valid,
       usedCitations: used,
       invalidCitations: invalid,
       missingNumericCitations: missingNumericCitations,
+      untraceableNumericCitations: untraceableNumericCitations,
       coverage: valid.length ? Math.round(used.length / valid.length * 100) : 100,
       checkedAt: isoNow()
     };
@@ -605,8 +640,8 @@
     var facts = list(citationFacts).filter(function (entry) { return entry && entry.source && valid.indexOf(entry.source.citation) >= 0; });
     var repairedCount = 0;
     var lines = text(sectionText).split(/\r?\n/).map(function (line) {
-      var lineAudit = auditCitations([{ id: 'citation-repair', text: line }], appendix);
-      if (!lineAudit.missingNumericCitations.length || lineAudit.invalidCitations.length) return line;
+      var lineAudit = auditCitations([{ id: 'citation-repair', text: line }], appendix, citationFacts);
+      if ((!lineAudit.missingNumericCitations.length && !lineAudit.untraceableNumericCitations.length) || lineAudit.invalidCitations.length) return line;
       var lineTerms = matchTerms(line);
       var lineNumbers = matchNumbers(line);
       if (!lineTerms.length || !lineNumbers.length) return line;
@@ -641,7 +676,7 @@
       return line.replace(/\s+$/, '') + ' ' + citations.map(function (citation) { return '[' + citation + ']'; }).join('');
     });
     var repairedText = lines.join('\n');
-    return { text: repairedText, repairedCount: repairedCount, audit: auditCitations([{ id: 'citation-repair', text: repairedText }], appendix) };
+    return { text: repairedText, repairedCount: repairedCount, audit: auditCitations([{ id: 'citation-repair', text: repairedText }], appendix, citationFacts) };
   }
 
   function repairSectionScope(sectionText, scope) {
@@ -654,15 +689,24 @@
     return { text: repaired, removedCount: removedCount, audit: checkScope(repaired, scope) };
   }
 
-  function pruneUncitedNumericLines(sectionText, appendix) {
+  function pruneUncitedNumericLines(sectionText, appendix, citationFacts) {
     var removedCount = 0;
+    var enforceTraceability = arguments.length >= 3;
     var repaired = text(sectionText).split(/\r?\n/).filter(function (line) {
-      var audit = auditCitations([{ id: 'citation-prune', text: line }], appendix);
-      if (!audit.missingNumericCitations.length && !audit.invalidCitations.length) return true;
+      var audit = enforceTraceability
+        ? auditCitations([{ id: 'citation-prune', text: line }], appendix, citationFacts)
+        : auditCitations([{ id: 'citation-prune', text: line }], appendix);
+      if (!audit.untraceableNumericCitations.length && !audit.missingNumericCitations.length && !audit.invalidCitations.length) return true;
       removedCount++;
       return false;
     }).join('\n').replace(/\n{3,}/g, '\n\n').trim();
-    return { text: repaired, removedCount: removedCount, audit: auditCitations([{ id: 'citation-prune', text: repaired }], appendix) };
+    return {
+      text: repaired,
+      removedCount: removedCount,
+      audit: enforceTraceability
+        ? auditCitations([{ id: 'citation-prune', text: repaired }], appendix, citationFacts)
+        : auditCitations([{ id: 'citation-prune', text: repaired }], appendix)
+    };
   }
 
   function scoreCompleteness(plan, check, appendix, facts) {
@@ -860,9 +904,17 @@
       if (['policy', 'tax', 'access', 'rule', 'alert'].indexOf(source.domain) >= 0) chapterDomains = chapterDomains.concat(['risk', 'summary', 'action']);
       return Object.assign({}, source, { chapters: list(results).filter(function (section) { return chapterDomains.indexOf(section.domain) >= 0; }).map(function (section) { return section.id; }) });
     });
+    var citationFacts = [];
+    Object.keys(facts && facts.records || {}).forEach(function (domain) {
+      list(facts.records[domain]).forEach(function (entry) {
+        var source = Object.assign({ domain: entry.domain || domain }, entry.source || {});
+        source.citation = citationForSource(source, appendix);
+        citationFacts.push({ domain: entry.domain || domain, record: entry.record || {}, source: source });
+      });
+    });
     var completeness = scoreCompleteness(plan, check, appendix, facts);
     var reconciliation = reconcile(results, facts, financial);
-    var citationAudit = auditCitations(results, appendix);
+    var citationAudit = auditCitations(results, appendix, citationFacts);
     var scopeCheck = results.reduce(function (state, section) { var current = checkScope(section.text, facts.scope); state.violations = state.violations.concat(current.violations); return state; }, { violations: [] });
     scopeCheck.violations = uniq(scopeCheck.violations); scopeCheck.ok = scopeCheck.violations.length === 0;
     var contentQuality = root.JAY_REPORT_QUALITY && typeof root.JAY_REPORT_QUALITY.assessContent === 'function'
