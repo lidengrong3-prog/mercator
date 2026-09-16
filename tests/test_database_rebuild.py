@@ -86,10 +86,10 @@ class DatabaseRebuildTests(unittest.TestCase):
         )
         migration_count = len(list((ROOT / "supabase" / "migrations").glob("*.sql")))
 
-        self.assertEqual(migration_count, 52)
+        self.assertEqual(migration_count, 53)
         self.assertIn("migration-rehearsal", workflow)
         self.assertIn("if: inputs.action == 'migration-rehearsal'", workflow)
-        self.assertIn('EXPECTED_MIGRATION_COUNT: \'52\'', workflow)
+        self.assertIn('EXPECTED_MIGRATION_COUNT: \'53\'', workflow)
         self.assertIn('supabase db reset --local --no-seed', script)
         self.assertIn('--version "$previous_version"', script)
         self.assertIn('supabase migration up --local', script)
@@ -97,6 +97,7 @@ class DatabaseRebuildTests(unittest.TestCase):
         self.assertIn('upgraded rate-limit extension path', script)
         self.assertIn('upgraded acceptance Storage API contract', script)
         self.assertIn('upgraded watchlist acceptance tag', script)
+        self.assertIn('upgraded owner cleanup guard', script)
         self.assertIn("public.collection_worker_instances", assertions)
         self.assertIn("has_function_privilege", assertions)
 

@@ -248,7 +248,7 @@ jobs:
       - name: Rehearse empty rebuild and existing database upgrade
         shell: bash
         env:
-          EXPECTED_MIGRATION_COUNT: '52'
+          EXPECTED_MIGRATION_COUNT: '53'
           DATABASE_REHEARSAL_REPORT: database-rehearsal-result.json
         run: bash scripts/run_database_rehearsal.sh
       - uses: actions/upload-artifact@v4

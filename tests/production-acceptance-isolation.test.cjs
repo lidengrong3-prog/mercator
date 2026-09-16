@@ -10,6 +10,7 @@ test('production acceptance has a service-owned run ledger and compensating clea
   const migration = read('supabase', 'migrations', '20260911000000_production_acceptance_isolation.sql');
   const storageCleanup = read('supabase', 'migrations', '20261004000000_acceptance_storage_api_cleanup.sql');
   const watchlistTag = read('supabase', 'migrations', '20261005000000_acceptance_watchlist_tag.sql');
+  const ownerCleanupGuard = read('supabase', 'migrations', '20261006000000_acceptance_owner_cleanup_guard.sql');
   for (const table of [
     'production_acceptance_runs', 'workspaces', 'workspace_members', 'workspace_invites',
     'report_materials', 'saved_workspace_items', 'generated_reports', 'report_runs',
@@ -33,6 +34,9 @@ test('production acceptance has a service-owned run ledger and compensating clea
   assert.match(storageCleanup, /status <> 'cleaned'/);
   assert.match(watchlistTag, /ALTER TABLE public\.user_watchlist[\s\S]*acceptance_run_id TEXT/);
   assert.match(watchlistTag, /idx_user_watchlist_acceptance_run/);
+  assert.match(ownerCleanupGuard, /service_role_request/);
+  assert.match(ownerCleanupGuard, /OLD\.acceptance_run_id IS NOT NULL/);
+  assert.match(ownerCleanupGuard, /workspace ownership transfer is not enabled/);
 });
 
 test('API and browser acceptance share the workflow run ID and always clean browser data', () => {

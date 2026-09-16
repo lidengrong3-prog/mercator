@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 SUPABASE_CLI_VERSION="${SUPABASE_CLI_VERSION:-2.39.2}"
-EXPECTED_MIGRATION_COUNT="${EXPECTED_MIGRATION_COUNT:-52}"
+EXPECTED_MIGRATION_COUNT="${EXPECTED_MIGRATION_COUNT:-53}"
 REPORT_PATH="${DATABASE_REHEARSAL_REPORT:-database-rehearsal-result.json}"
 DB_URL="${LOCAL_REHEARSAL_DB_URL:-postgresql://postgres:postgres@127.0.0.1:54322/postgres}"
 MIGRATION_DIR="$ROOT_DIR/supabase/migrations"
@@ -62,6 +62,13 @@ user_watchlist_has_acceptance_tag() {
   )::text"
 }
 
+owner_guard_uses_membership_tag() {
+  scalar "SELECT position(
+    'OLD.acceptance_run_id IS NOT NULL'
+    IN pg_get_functiondef('public.guard_workspace_member_role()'::regprocedure)
+  ) > 0"
+}
+
 assert_equal() {
   local expected="$1"
   local actual="$2"
@@ -94,7 +101,8 @@ supabase db reset --local --no-seed --version "$previous_version"
 assert_equal "$((migration_count - 1))" "$(scalar 'SELECT count(*) FROM supabase_migrations.schema_migrations')" "pre-upgrade migration ledger"
 assert_equal "$previous_version" "$(scalar 'SELECT max(version) FROM supabase_migrations.schema_migrations')" "pre-upgrade migration head"
 assert_equal "false" "$(acceptance_cleanup_deletes_storage_table)" "pre-upgrade Storage API cleanup contract"
-assert_equal "false" "$(user_watchlist_has_acceptance_tag)" "pre-upgrade watchlist acceptance tag"
+assert_equal "true" "$(user_watchlist_has_acceptance_tag)" "pre-upgrade watchlist acceptance tag"
+assert_equal "f" "$(owner_guard_uses_membership_tag)" "pre-upgrade owner cleanup guard"
 psql_rehearsal -f scripts/database_upgrade_seed.sql
 
 supabase migration up --local
@@ -103,6 +111,7 @@ assert_equal "$head_version" "$(scalar 'SELECT max(version) FROM supabase_migrat
 assert_equal "true" "$(rate_limit_path_has_extensions)" "upgraded rate-limit extension path"
 assert_equal "false" "$(acceptance_cleanup_deletes_storage_table)" "upgraded acceptance Storage API contract"
 assert_equal "true" "$(user_watchlist_has_acceptance_tag)" "upgraded watchlist acceptance tag"
+assert_equal "t" "$(owner_guard_uses_membership_tag)" "upgraded owner cleanup guard"
 assert_equal "preserve-me" "$(scalar "SELECT data->>'value' FROM public.market_data WHERE key = 'migration-rehearsal-existing-row'")" "existing market data preservation"
 assert_equal "migration-rehearsal-existing-row" "$(scalar "SELECT approval_reference FROM public.production_rollout_state WHERE singleton = TRUE")" "existing rollout state preservation"
 psql_rehearsal -f scripts/database_rehearsal_assertions.sql
