@@ -43,8 +43,68 @@ def run_command(args: list[str], *, environment: dict[str, str] | None = None) -
     )
 
 
+def validate_database_url(db_url: str) -> None:
+    """Reject malformed connection strings without ever echoing their contents."""
+    if "YOUR-PASSWORD" in db_url.upper():
+        raise RuntimeError("DATABASE_URL_CONTAINS_PLACEHOLDER")
+    try:
+        parsed = urllib.parse.urlsplit(db_url)
+        if parsed.fragment:
+            # A raw # in a password starts a URI fragment. Percent-encode the password.
+            raise RuntimeError("DATABASE_URL_PASSWORD_NOT_ENCODED")
+        port = parsed.port
+    except RuntimeError:
+        raise
+    except ValueError as error:
+        raise RuntimeError("DATABASE_URL_INVALID") from error
+    if (
+        parsed.scheme not in {"postgres", "postgresql"}
+        or not parsed.hostname
+        or not parsed.username
+        or parsed.password is None
+        or not parsed.path.lstrip("/")
+    ):
+        raise RuntimeError("DATABASE_URL_INVALID")
+    if port is None:
+        raise RuntimeError("DATABASE_URL_PORT_MISSING")
+    sslmode = urllib.parse.parse_qs(parsed.query).get("sslmode", [])
+    if sslmode not in (["require"], ["verify-ca"], ["verify-full"]):
+        raise RuntimeError("DATABASE_URL_SSLMODE_REQUIRED")
+
+
+def classify_database_error(stderr: str) -> str:
+    """Map PostgreSQL diagnostics to a safe code that cannot contain credentials."""
+    diagnostic = stderr.lower()
+    if "password authentication failed" in diagnostic:
+        return "DATABASE_AUTHENTICATION_FAILED"
+    if "tenant or user not found" in diagnostic or "invalid tenant" in diagnostic:
+        return "DATABASE_POOLER_TENANT_NOT_FOUND"
+    if "could not translate host name" in diagnostic or "name or service not known" in diagnostic:
+        return "DATABASE_DNS_FAILED"
+    if "network is unreachable" in diagnostic or "no route to host" in diagnostic:
+        return "DATABASE_NETWORK_UNREACHABLE"
+    if "connection timed out" in diagnostic or "timeout expired" in diagnostic:
+        return "DATABASE_CONNECTION_TIMEOUT"
+    if "connection refused" in diagnostic:
+        return "DATABASE_CONNECTION_REFUSED"
+    if "ssl" in diagnostic or "no pg_hba.conf entry" in diagnostic:
+        return "DATABASE_SSL_OR_ACCESS_FAILED"
+    if "schema_migrations" in diagnostic and (
+        "does not exist" in diagnostic or "permission denied" in diagnostic
+    ):
+        return "DATABASE_MIGRATION_LEDGER_UNAVAILABLE"
+    if "server version" in diagnostic and "pg_dump version" in diagnostic:
+        return "PG_DUMP_CLIENT_VERSION_INCOMPATIBLE"
+    return "DATABASE_CONNECTION_OR_QUERY_FAILED"
+
+
 def scalar(db_url: str, sql: str) -> str:
-    result = run_command(["psql", db_url, "-X", "-Atqc", sql])
+    try:
+        result = run_command(["psql", db_url, "-X", "-Atqc", sql])
+    except FileNotFoundError as error:
+        raise RuntimeError("PSQL_NOT_AVAILABLE") from error
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError(classify_database_error(error.stderr or "")) from None
     return result.stdout.strip()
 
 
@@ -196,6 +256,14 @@ def main() -> int:
         summary["error_code"] = "BACKUP_ARGUMENT_INVALID"
         write_summary(output_path, summary)
         return 1
+    try:
+        validate_database_url(db_url)
+        summary["checks"]["database_url_valid"] = True
+    except RuntimeError as error:
+        summary["error_code"] = str(error)
+        summary["checks"]["database_url_valid"] = False
+        write_summary(output_path, summary)
+        return 1
 
     temp_dir = Path(tempfile.mkdtemp(prefix="jay-pre-migration-backup-"))
     location = None
@@ -219,8 +287,10 @@ def main() -> int:
         try:
             run_command(["pg_dump", db_url, "--format=custom", "--no-owner", "--no-privileges", "--file", str(dump_path)])
             summary["checks"]["pg_dump_created"] = dump_path.is_file() and dump_path.stat().st_size > 0
-        except (OSError, subprocess.CalledProcessError) as error:
-            raise RuntimeError("PG_DUMP_FAILED") from error
+        except FileNotFoundError as error:
+            raise RuntimeError("PG_DUMP_NOT_AVAILABLE") from error
+        except subprocess.CalledProcessError as error:
+            raise RuntimeError(classify_database_error(error.stderr or "")) from None
 
         try:
             archive_listing = run_command(["pg_restore", "--list", str(dump_path)]).stdout
