@@ -1,6 +1,11 @@
 import unittest
 
-from scripts.audit_production_configuration import AuditError, fingerprint, production_origin
+from scripts.audit_production_configuration import (
+    AuditError,
+    fingerprint,
+    production_origin,
+    safe_runtime_error,
+)
 
 
 class ProductionConfigurationAuditTests(unittest.TestCase):
@@ -22,6 +27,14 @@ class ProductionConfigurationAuditTests(unittest.TestCase):
         self.assertEqual(len(digest), 12)
         self.assertEqual(digest, fingerprint(value))
         self.assertNotIn("acceptance", digest)
+
+    def test_runtime_error_only_accepts_bounded_machine_codes(self):
+        self.assertEqual(
+            safe_runtime_error({"error": "BILLING_ENTITLEMENTS_UNAVAILABLE"}),
+            "BILLING_ENTITLEMENTS_UNAVAILABLE",
+        )
+        self.assertEqual(safe_runtime_error({"error": "secret=value"}), "UNKNOWN_ERROR")
+        self.assertEqual(safe_runtime_error({}), "UNKNOWN_ERROR")
 
 
 if __name__ == "__main__":

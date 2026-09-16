@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -31,6 +32,12 @@ def env(name: str) -> str:
 
 def fingerprint(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:12]
+
+
+def safe_runtime_error(payload: dict) -> str:
+    """Return only a bounded machine error code from an Edge response."""
+    value = str(payload.get("error") or "UNKNOWN_ERROR")
+    return value if re.fullmatch(r"[A-Z][A-Z0-9_]{0,63}", value) else "UNKNOWN_ERROR"
 
 
 def production_origin(site_url: str) -> str:
@@ -238,6 +245,7 @@ def audit(output: Path) -> int:
             {},
         )
         if status != 200:
+            result["runtime_error_code"] = safe_runtime_error(billing)
             raise AuditError(f"BILLING_STATUS_CHECK_FAILED:HTTP_{status}")
         if billing.get("billing_enabled") is not False or billing.get("live_acceptance_mode") is not False:
             raise AuditError("BILLING_GATE_NOT_DISABLED")
@@ -252,6 +260,7 @@ def audit(output: Path) -> int:
             {"action": "status"},
         )
         if status != 200:
+            result["runtime_error_code"] = safe_runtime_error(notification)
             raise AuditError(f"NOTIFICATION_STATUS_CHECK_FAILED:HTTP_{status}")
         if notification.get("enabled") is not False or notification.get("acceptance_mode") is not False:
             raise AuditError("NOTIFICATION_GATE_NOT_DISABLED")
