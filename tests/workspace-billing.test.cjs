@@ -8,6 +8,7 @@ const read = (...parts) => fs.readFileSync(path.join(root, ...parts), 'utf8');
 
 test('workspace billing migration owns plans, seats and atomic monthly counters', () => {
   const migration = read('supabase', 'migrations', '20260914000000_workspace_billing.sql');
+  const exportIdempotency = read('supabase', 'migrations', '20261007000000_report_export_idempotency_constraint.sql');
   assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.workspace_subscriptions/);
   assert.match(migration, /workspace_id UUID REFERENCES public\.workspaces/);
   assert.match(migration, /seat_limit INTEGER/);
@@ -27,6 +28,8 @@ test('workspace billing migration owns plans, seats and atomic monthly counters'
   assert.match(migration, /enforce_report_run_status_quota/);
   assert.match(migration, /enforce_report_export_status_quota/);
   assert.match(migration, /REPORT_RUN_CREATOR_REQUIRED/);
+  assert.match(exportIdempotency, /CREATE UNIQUE INDEX idx_report_exports_workspace_idempotency[\s\S]*ON public\.report_exports\(workspace_id, idempotency_key\);/);
+  assert.doesNotMatch(exportIdempotency, /WHERE idempotency_key IS NOT NULL/);
 });
 
 test('workspace billing keeps workspaces isolated and protects membership seats', () => {
