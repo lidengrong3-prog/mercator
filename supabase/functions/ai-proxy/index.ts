@@ -724,6 +724,7 @@ Deno.serve(async (request) => {
   let parsedResult: ReturnType<typeof parseProviderResult> | null = null;
   let lastErrorCode = 'AI_PROVIDER_ERROR';
   let lastErrorStatus = 502;
+  let configuredProviderAttempted = false;
   let retryAfter = '60';
   for (let candidateIndex = 0; candidateIndex < enabledCandidates.length && !successfulResult; candidateIndex += 1) {
     const candidate = enabledCandidates[candidateIndex];
@@ -731,11 +732,18 @@ Deno.serve(async (request) => {
     activeModel = requestedModel || config?.model || '';
     if (candidateIndex > 0) fallbackUsed = true;
     if (!config) {
-      lastErrorCode = 'AI_PROVIDER_NOT_CONFIGURED';
-      lastErrorStatus = 503;
-      await logProviderAttempt({ provider: candidate, model: activeModel, status: 'failed', http_status: 503, error_code: lastErrorCode, fallback_reason: candidateIndex ? 'primary_provider_failed' : 'provider_not_configured' });
+      const unavailableProviderError = 'AI_PROVIDER_NOT_CONFIGURED';
+      // An unavailable fallback must not hide the actionable error returned by
+      // a configured provider that was actually attempted (for example, a
+      // DeepSeek timeout followed by optional OpenAI/Doubao fallbacks).
+      if (!configuredProviderAttempted) {
+        lastErrorCode = unavailableProviderError;
+        lastErrorStatus = 503;
+      }
+      await logProviderAttempt({ provider: candidate, model: activeModel, status: 'failed', http_status: 503, error_code: unavailableProviderError, fallback_reason: candidateIndex ? 'primary_provider_failed' : 'provider_not_configured' });
       continue;
     }
+    configuredProviderAttempted = true;
     const searchVariants = searchRequested && candidate === 'deepseek' ? [true, false] : [searchRequested && candidate === 'openai'];
     let providerFinished = false;
     for (let variantIndex = 0; variantIndex < searchVariants.length && !providerFinished && !successfulResult; variantIndex += 1) {

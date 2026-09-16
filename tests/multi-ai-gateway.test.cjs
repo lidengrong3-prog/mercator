@@ -45,6 +45,15 @@ test('gateway routes one logical request through ordered fallbacks and reserves 
   assert.match(edge, /fallback_used/);
 });
 
+test('unconfigured optional fallbacks preserve the last configured provider failure', () => {
+  const edge = read('supabase', 'functions', 'ai-proxy', 'index.ts');
+  assert.match(edge, /let configuredProviderAttempted = false/);
+  assert.match(edge, /const unavailableProviderError = 'AI_PROVIDER_NOT_CONFIGURED'/);
+  assert.match(edge, /if \(!configuredProviderAttempted\) \{[\s\S]*lastErrorCode = unavailableProviderError;[\s\S]*lastErrorStatus = 503;/);
+  assert.match(edge, /logProviderAttempt\(\{[^\n]+error_code: unavailableProviderError/);
+  assert.match(edge, /configuredProviderAttempted = true;[\s\S]*const searchVariants/);
+});
+
 test('workspace routing and disclosure metadata are server-owned', () => {
   const edge = read('supabase', 'functions', 'ai-proxy', 'index.ts');
   assert.match(edge, /selectedPolicy = policyRows\.find\(\(row\) => String\(row\.workspace_id \|\| ''\) === workspaceId\)/);
