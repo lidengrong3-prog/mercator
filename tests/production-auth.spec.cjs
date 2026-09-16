@@ -11,6 +11,12 @@ const ready = enabled && baseUrl && Object.values(credentials).every((account) =
 const acceptanceRunId = process.env.ACCEPTANCE_RUN_ID || `local-browser-${Date.now()}`;
 const acceptanceWorkspaceA = process.env.ACCEPTANCE_API_WORKSPACE_ID || '';
 const acceptanceWorkspaceB = process.env.ACCEPTANCE_BROWSER_WORKSPACE_ID || '';
+const platformDisplayNames = {
+  amazon: 'Amazon',
+  'tiktok-shop': 'TikTok Shop',
+  aliexpress: 'AliExpress',
+  ebay: 'eBay',
+};
 
 test.describe('production authenticated browser acceptance', () => {
   test.skip(!ready, 'set RUN_PRODUCTION_ACCEPTANCE=1 and two production test accounts to run this suite');
@@ -64,6 +70,47 @@ test.describe('production authenticated browser acceptance', () => {
       await page.waitForTimeout(500);
     }
     throw new Error(`timed out waiting for ${table}`);
+  }
+
+  async function selectReportPlatform(page) {
+    const candidates = await page.evaluate(async () => {
+      const result = await window.supabaseClient
+        .from('market_data_applicability')
+        .select('platform_key,category_code,source_url,verification_status,published_at,verified_at')
+        .eq('market_code', 'US')
+        .eq('domain', 'rule')
+        .eq('status', 'active')
+        .in('verification_status', ['verified', 'uploaded'])
+        .not('platform_key', 'is', null)
+        .limit(1000);
+      if (result.error) throw new Error(result.error.message);
+      return (result.data || []).filter((row) => (
+        (!row.category_code || row.category_code === 'generic')
+        && (row.verification_status === 'uploaded' || String(row.source_url || '').startsWith('https://'))
+      ));
+    });
+    const coverage = new Map();
+    for (const row of candidates) {
+      const key = String(row.platform_key || '').trim().toLowerCase();
+      if (!key) continue;
+      const current = coverage.get(key) || { key, count: 0, latest: '' };
+      current.count += 1;
+      current.latest = [current.latest, row.published_at || row.verified_at || ''].sort().at(-1);
+      coverage.set(key, current);
+    }
+    const selected = [...coverage.values()].sort((left, right) => (
+      right.count - left.count
+      || right.latest.localeCompare(left.latest)
+      || left.key.localeCompare(right.key)
+    ))[0];
+    if (!selected) {
+      throw new Error('no active US platform has verified formal rule evidence for production report acceptance');
+    }
+    return {
+      key: selected.key,
+      name: platformDisplayNames[selected.key] || selected.key,
+      ruleCount: selected.count,
+    };
   }
 
   async function waitForReportPreview(page, timeout = 480_000) {
@@ -135,6 +182,7 @@ test.describe('production authenticated browser acceptance', () => {
 
     await login(page, credentials.a);
     const workspaceA = await page.evaluate(() => window.jayActiveWorkspaceId());
+    const reportPlatform = await selectReportPlatform(page);
 
     const recoveryRequestId = `production-browser-network-recovery:${runId}`;
     let recoveryAttempts = 0;
@@ -179,11 +227,11 @@ test.describe('production authenticated browser acceptance', () => {
     expect(forgedWrite.error).toBeTruthy();
     expect(await rows(page, 'generated_reports', { client_id: forgedClientId })).toEqual([]);
 
-    await page.evaluate(() => {
+    await page.evaluate((platformKey) => {
       window.JAY_MARKET_SCOPE_API.setActiveMarket('US');
-      window.JAY_MARKET_SCOPE_API.setActivePlatforms(['amazon']);
+      window.JAY_MARKET_SCOPE_API.setActivePlatforms([platformKey]);
       window.JAY_MARKET_SCOPE_API.setActiveCategories(['generic']);
-    });
+    }, reportPlatform.key);
 
     await page.evaluate(() => {
       window.__productionAcceptanceToasts = [];
@@ -204,7 +252,7 @@ test.describe('production authenticated browser acceptance', () => {
         products: [{
           商品名: importedProductTitle,
           '国家/市场': '美国',
-          电商平台: 'Amazon',
+          电商平台: reportPlatform.name,
           商品类目: '通用',
           售价: '39.90',
           销量: '12',

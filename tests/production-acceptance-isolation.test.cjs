@@ -62,5 +62,8 @@ test('API and browser acceptance share the workflow run ID and always clean brow
   assert.match(cleanup, /status.*not_found/);
   assert.match(browser, /process\.env\.ACCEPTANCE_RUN_ID/);
   assert.match(browser, /addInitScript[\s\S]*__JAY_ACCEPTANCE_RUN_ID/);
+  assert.match(browser, /from\('market_data_applicability'\)[\s\S]*\.eq\('domain', 'rule'\)/);
+  assert.match(browser, /setActivePlatforms\(\[platformKey\]\)/);
+  assert.doesNotMatch(browser, /setActivePlatforms\(\['amazon'\]\)/);
   assert.match(authData, /user_activity: true/);
 });
