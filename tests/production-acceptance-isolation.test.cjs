@@ -56,6 +56,7 @@ test('API and browser acceptance share the workflow run ID and always clean brow
   assert.match(python, /recover_prior_acceptance_runs/);
   assert.match(python, /"workspace_id": workspace_a/);
   assert.match(python, /workspace_id,idempotency_key/);
+  assert.match(python, /fault_body = \{[\s\S]*"workspace_id": workspace_a/);
   assert.match(python, /atexit\.register\(_finalize_acceptance_run\)/);
   assert.match(cleanup, /storage\/v1\/object\/reports/);
   assert.match(cleanup, /status.*not_found/);

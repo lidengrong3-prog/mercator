@@ -676,6 +676,7 @@ def main() -> int:
     report_text = ai_body["choices"][0]["message"]["content"]
 
     fault_body = {
+        "workspace_id": workspace_a,
         "operation": "production.acceptance.failure",
         "messages": [{"role": "user", "content": "production acceptance probe"}],
         "temperature": 0,
