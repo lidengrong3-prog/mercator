@@ -1101,7 +1101,7 @@ test('third-party industry news is visible as traceable reference only', async (
   expect(pageErrors).toEqual([]);
 });
 
-test('tax and market-access domains stay independent and honest when empty', async ({ page }) => {
+test('tax and market-access domains stay independent and show traceable formal records', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
@@ -1111,14 +1111,36 @@ test('tax and market-access domains stay independent and honest when empty', asy
   expect(await page.evaluate(() => window.plActiveDomain)).toBe('tax');
   await expect(page.locator('#pl-f-category option')).toHaveText(['全部类别', '关税', '进口费用', '平台代扣税', '销售税', '增值税']);
   await expect(page.locator('#pl-f-scope')).toBeDisabled();
-  await expect(page.locator('#pl-list .pl-card')).toHaveCount(0);
-  await expect(page.locator('#pl-empty')).toContainText('税收数据尚未接入');
+  const taxState = await page.evaluate(() => ({
+    count: window.plGetVerifiedDomainRecords('tax').length,
+    records: window.plGetVerifiedDomainRecords('tax').map((item) => ({
+      id: item.source_record_id,
+      url: item.source_url,
+      hash: item.evidence_hash,
+      status: item.verification_status,
+    })),
+  }));
+  expect(taxState.count).toBeGreaterThan(0);
+  expect(taxState.records.every((item) => item.id && /^https:\/\//.test(item.url) && /^[0-9a-f]{64}$/.test(item.hash) && item.status === 'verified')).toBe(true);
+  await expect(page.locator('#pl-list .pl-card')).toHaveCount(Math.min(10, taxState.count));
+  await expect(page.locator('#pl-empty')).toBeHidden();
 
   await page.locator('#policies .pl-domain-tab[data-domain="access"]').click();
   expect(await page.evaluate(() => window.plActiveDomain)).toBe('access');
   await expect(page.locator('#pl-f-category option')).toHaveText(['全部类别', '认证', '进口要求', '知识产权', '标签', '包装', '注册']);
-  await expect(page.locator('#pl-list .pl-card')).toHaveCount(0);
-  await expect(page.locator('#pl-empty')).toContainText('准入条件尚未接入');
+  const accessState = await page.evaluate(() => ({
+    count: window.plGetVerifiedDomainRecords('access').length,
+    records: window.plGetVerifiedDomainRecords('access').map((item) => ({
+      id: item.source_record_id,
+      url: item.source_url,
+      hash: item.evidence_hash,
+      status: item.verification_status,
+    })),
+  }));
+  expect(accessState.count).toBeGreaterThan(0);
+  expect(accessState.records.every((item) => item.id && /^https:\/\//.test(item.url) && /^[0-9a-f]{64}$/.test(item.hash) && item.status === 'verified')).toBe(true);
+  await expect(page.locator('#pl-list .pl-card')).toHaveCount(Math.min(10, accessState.count));
+  await expect(page.locator('#pl-empty')).toBeHidden();
 });
 
 test('cross-page entries preserve the configured market and platform filters', async ({ page }) => {
@@ -1848,7 +1870,12 @@ test('duplicate checkout, report generation and export actions collapse to one o
       datasets: {},
     };
     const exportGate = window.JAY_REPORT_QUALITY.evaluate(window.JAY_QUALITY_REPORT);
-    window.rpLastReportRecord = { dbId: '00000000-0000-4000-8000-000000000010', saveStatus: 'saved', cloudSaved: true, publishable: true, qualityGate: exportGate, qualitySnapshot: exportGate.snapshot, name: '测试报告', text: '正文' };
+    const coverageMatrix = {
+      requiredDomains: ['market'], requiredPlatformRuleDimensions: [],
+      cells: [{ id: 'US|*|home|market', domain: 'market', covered: true }],
+      missingCells: [], totalCells: 1, coveredCells: 1, coveragePercent: 100, ok: true,
+    };
+    window.rpLastReportRecord = { dbId: '00000000-0000-4000-8000-000000000010', saveStatus: 'saved', cloudSaved: true, publishable: true, qualityGate: exportGate, qualitySnapshot: exportGate.snapshot, coverageMatrix, name: '测试报告', text: '正文' };
     const preview = document.getElementById('rp-v2-preview-body');
     preview.classList.remove('rp-empty-preview');
     preview.textContent = '正文';
