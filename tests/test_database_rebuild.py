@@ -68,6 +68,18 @@ class DatabaseRebuildTests(unittest.TestCase):
         self.assertIn("guard_configured_market_scope", migration)
         self.assertNotIn("SET publication_status = 'quarantined'", migration)
 
+    def test_worker_bootstrap_recovery_only_extends_latest_required_snapshots(self):
+        migration = (
+            ROOT / "supabase" / "migrations" /
+            "20261011000000_recover_worker_bootstrap_artifacts.sql"
+        ).read_text(encoding="utf-8")
+        self.assertIn("ROW_NUMBER() OVER", migration)
+        self.assertIn("bootstrap_rank = 1", migration)
+        self.assertIn("data/private_repository_source/policies.json", migration)
+        self.assertIn("data/us_market/macro_indicators.json", migration)
+        self.assertIn("worker_bootstrap_deadlock", migration)
+        self.assertNotIn("LIKE 'data/private_repository_source/%'", migration)
+
     def test_dependency_audit_rejects_a_table_used_before_creation(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             migration_dir = Path(temp_dir)
@@ -99,11 +111,11 @@ class DatabaseRebuildTests(unittest.TestCase):
         )
         migration_count = len(list((ROOT / "supabase" / "migrations").glob("*.sql")))
 
-        self.assertEqual(migration_count, 57)
+        self.assertEqual(migration_count, 58)
         self.assertIn("migration-rehearsal", workflow)
         self.assertIn("if: inputs.action == 'migration-rehearsal'", workflow)
-        self.assertIn('EXPECTED_MIGRATION_COUNT: \'57\'', workflow)
-        self.assertIn('EXPECTED_MIGRATION_COUNT="${EXPECTED_MIGRATION_COUNT:-57}"', script)
+        self.assertIn('EXPECTED_MIGRATION_COUNT: \'58\'', workflow)
+        self.assertIn('EXPECTED_MIGRATION_COUNT="${EXPECTED_MIGRATION_COUNT:-58}"', script)
         self.assertIn('supabase db reset --local --no-seed', script)
         self.assertIn('--version "$previous_version"', script)
         self.assertIn('supabase migration up --local', script)
