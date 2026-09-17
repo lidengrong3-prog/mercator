@@ -215,10 +215,10 @@ jobs:
         run: python scripts/validate_data.py
       - name: Sync data to Supabase
         run: python scripts/sync_to_supabase.py
-      - name: Enforce repository privacy boundary
-        run: python scripts/repository_privacy_check.py
       - name: Reduce collector outputs to public repository projections
         run: python scripts/prepare_public_repository_data.py
+      - name: Enforce repository privacy boundary
+        run: python scripts/repository_privacy_check.py
       - id: git-check
         shell: bash
         run: git diff --quiet -- data/ || echo "changed=true" >> "$GITHUB_OUTPUT"

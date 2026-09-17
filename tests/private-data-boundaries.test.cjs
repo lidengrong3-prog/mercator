@@ -40,6 +40,14 @@ test('workflows publish only summaries and enforce the repository privacy gate',
   assert.doesNotMatch(update, /git add data\//);
   assert.match(update, /prepare_public_repository_data\.py/);
   assert.match(update, /git add --[\s\S]*data\/us_market\/macro_indicators\.json/);
+  assert.ok(
+    update.indexOf('prepare_public_repository_data.py') < update.indexOf('repository_privacy_check.py'),
+    'collector outputs must be reduced before the repository privacy gate runs',
+  );
+  assert.ok(
+    update.indexOf('repository_privacy_check.py') < update.indexOf('Publish fresh public projections'),
+    'the repository privacy gate must pass before public projections are committed',
+  );
   assert.doesNotMatch(deploy, /path:\s*test-results\//);
   assert.match(deploy, /summarize_test_diagnostics\.py/);
   assert.doesNotMatch(operations, /path:\s*\|[\s\S]{0,100}jay-guanhai\.dump\.enc/);
