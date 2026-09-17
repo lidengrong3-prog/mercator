@@ -1,32 +1,34 @@
 [
   {
-    "name": "SOUQ / Amazon中东站",
-    "region": "中东",
-    "categories": "电子产品,图书,家居家电,美妆个护,时尚服饰",
-    "gmv": "175",
-    "fee": "10",
-    "feeDesc": "佣金抽成5-15%因品类而异 + FBA物流费 + 广告推广费",
+    "name": "Amazon",
+    "region": "欧美, 日韩, 中东",
+    "categories": "3C数码,家居家电,服饰鞋包,图书,美妆",
+    "gmv": "7000",
+    "fee": "12",
+    "feeDesc": "品类佣金8-15%+FBA仓储费+广告费",
     "type": "货架电商",
-    "mau": "4200",
-    "updates": "2026年推出FBA新卖家头程返现计划及新品激励计划(NSP)，降低卖家物流成本；Prime会员在中东持续增长，亚马逊Fresh生鲜配送业务扩展中；市场份额约35%稳居中东第一大电商",
+    "mau": "300000",
+    "updates": "Prime会员超2.5亿;FBA费用上涨;AI购物助手Rufus上线;广告收入破500亿美元",
     "ext": {
-      "growth": "+18.5%",
+      "growth": "+9.5%",
       "risk": "low",
-      "shipping": "FBA本土仓",
-      "entry": "需本地资质",
-      "priceRange": "$20-150",
+      "shipping": "FBA+FBM",
+      "entry": "跨境店可入驻",
+      "priceRange": "$10-100",
       "hotCats": [
-        "电子产品",
-        "美妆个护"
+        "电子",
+        "家居",
+        "美妆"
       ],
       "blueCats": [
-        "智能家居",
-        "母婴"
+        "宠物",
+        "户外",
+        "健康"
       ],
-      "founded": "2017(中东)",
-      "users": "5000万/月",
-      "payments": "COD/信用卡/Apple Pay",
-      "events": "White Friday, Ramadan Sale"
+      "founded": "1994",
+      "users": "3.1亿/月",
+      "payments": "信用卡/Amazon Pay/Afterpay",
+      "events": "Prime Day, Black Friday, Cyber Monday"
     }
   },
   {
@@ -60,38 +62,6 @@
     }
   },
   {
-    "name": "Amazon",
-    "region": "欧美, 日韩, 中东",
-    "categories": "3C数码,家居家电,服饰鞋包,图书,美妆",
-    "gmv": "7000",
-    "fee": "12",
-    "feeDesc": "品类佣金8-15%+FBA仓储费+广告费",
-    "type": "货架电商",
-    "mau": "300000",
-    "updates": "Prime会员超2.5亿;FBA费用上涨;AI购物助手Rufus上线;广告收入破500亿美元",
-    "ext": {
-      "growth": "+9.5%",
-      "risk": "low",
-      "shipping": "FBA+FBM",
-      "entry": "跨境店可入驻",
-      "priceRange": "$10-100",
-      "hotCats": [
-        "电子",
-        "家居",
-        "美妆"
-      ],
-      "blueCats": [
-        "宠物",
-        "户外",
-        "健康"
-      ],
-      "founded": "1994",
-      "users": "3.1亿/月",
-      "payments": "信用卡/Amazon Pay/Afterpay",
-      "events": "Prime Day, Black Friday, Cyber Monday"
-    }
-  },
-  {
     "name": "AliExpress 速卖通",
     "region": "欧美, 中东, 拉美",
     "categories": "3C数码,服饰鞋包,家居家装,汽配,美妆",
@@ -114,67 +84,5 @@
     "mau": "13000",
     "updates": "聚焦汽配和翻新电子品类;拍卖弱化固定价占比超85%;卖家费用优化",
     "ext": {}
-  },
-  {
-    "name": "Amazon欧洲站",
-    "region": "",
-    "categories": "家居,电子,服饰",
-    "gmv": "",
-    "fee": "",
-    "feeDesc": "",
-    "type": "",
-    "mau": "2.5亿/月",
-    "updates": "",
-    "ext": {
-      "growth": "+7.8%",
-      "risk": "low",
-      "shipping": "FBA欧洲仓",
-      "entry": "需VAT/EORI号",
-      "priceRange": "€10-80",
-      "hotCats": [
-        "家居",
-        "电子",
-        "服饰"
-      ],
-      "blueCats": [
-        "有机食品",
-        "环保产品"
-      ],
-      "founded": "1998(英国)",
-      "users": "2.5亿/月",
-      "payments": "信用卡/银行转账/Amazon Pay",
-      "events": "Prime Day, Black Friday"
-    }
-  },
-  {
-    "name": "Amazon日本站",
-    "region": "",
-    "categories": "电子,家居,动漫周边",
-    "gmv": "",
-    "fee": "",
-    "feeDesc": "",
-    "type": "",
-    "mau": "6500万/月",
-    "updates": "",
-    "ext": {
-      "growth": "+6.2%",
-      "risk": "low",
-      "shipping": "FBA日本仓",
-      "entry": "跨境可入驻(需日文)",
-      "priceRange": "¥1000-10000",
-      "hotCats": [
-        "电子",
-        "家居",
-        "动漫周边"
-      ],
-      "blueCats": [
-        "保健品",
-        "户外"
-      ],
-      "founded": "2000",
-      "users": "6500万/月",
-      "payments": "信用卡/便利店支付/Amazon Pay",
-      "events": "Prime Day, Black Friday, 年末"
-    }
   }
 ]

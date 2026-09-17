@@ -489,11 +489,20 @@ def public_market_data_payload(key, data):
             )
         }
     if key == "platforms" and isinstance(data, list):
-        return [
-            row for row in data
-            if isinstance(row, dict)
-            and normalize_platform(row.get("name")) in DEFAULT_SCOPE_PLATFORMS
-        ]
+        profiles = {}
+        exact_matches = set()
+        for row in data:
+            if not isinstance(row, dict):
+                continue
+            platform = normalize_platform(row.get("name"))
+            if platform not in DEFAULT_SCOPE_PLATFORMS:
+                continue
+            exact = str(row.get("name") or "").strip().casefold() == platform.casefold()
+            if platform not in profiles or (exact and platform not in exact_matches):
+                profiles[platform] = row
+            if exact:
+                exact_matches.add(platform)
+        return list(profiles.values())
     if key == "macro" and isinstance(data, dict) and isinstance(data.get("indicators"), dict):
         payload = dict(data)
         generated_at = data.get("meta", {}).get("generated_at") if isinstance(data.get("meta"), dict) else None

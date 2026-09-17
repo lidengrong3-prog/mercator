@@ -126,6 +126,29 @@ class SyncTests(unittest.TestCase):
             "ECOMSA",
         )
 
+    def test_public_platform_projection_collapses_regional_aliases(self):
+        source = [
+            {"name": "SOUQ / Amazon中东站", "region": "中东"},
+            {"name": "TikTok Shop", "region": "美国"},
+            {"name": "Amazon", "region": "美国"},
+            {"name": "AliExpress 速卖通", "region": "美国"},
+            {"name": "eBay", "region": "美国"},
+            {"name": "Amazon欧洲站", "region": "欧洲"},
+            {"name": "Amazon日本站", "region": "日本"},
+        ]
+
+        public = sync_to_supabase.public_market_data_payload("platforms", source)
+
+        self.assertEqual(len(public), 4)
+        self.assertEqual(
+            {sync_to_supabase.normalize_platform(row["name"]) for row in public},
+            {"Amazon", "TikTok Shop", "AliExpress", "eBay"},
+        )
+        self.assertEqual(
+            next(row for row in public if sync_to_supabase.normalize_platform(row["name"]) == "Amazon")["name"],
+            "Amazon",
+        )
+
     def test_applicability_projection_contains_formal_records_only(self):
         rows = sync_to_supabase.build_applicability_rows({"datasets": {}})
         self.assertGreater(len(rows), 0)

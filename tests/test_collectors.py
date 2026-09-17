@@ -18,6 +18,20 @@ from quarantine_unverified_baseline import is_unverified  # noqa: E402
 
 
 class CollectorTests(unittest.TestCase):
+    def test_rule_merge_restores_complete_versioning_contract(self):
+        payload = {
+            "versioning": {"identity_field": "rule_key"},
+            "items": [],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = os.path.join(directory, "rules.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(payload, handle)
+            merged, added = collect_data.merge_data(path, [], baseline_kind="rules")
+
+        self.assertEqual(added, 0)
+        self.assertEqual(merged["versioning"], collect_data.PLATFORM_RULE_VERSIONING)
+
     def test_cpsc_categories_are_limited_to_manifest_catalog(self):
         self.assertEqual(collect_cpsc.categorize_recall("Dog food recall"), "pet-food")
         self.assertEqual(collect_cpsc.categorize_recall("Pet leash recall"), "pet-supplies")

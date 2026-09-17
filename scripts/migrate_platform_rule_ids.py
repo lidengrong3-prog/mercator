@@ -39,15 +39,7 @@ def migrate_payload(payload, *, now=None):
     migrated["source_count"] = len({item.get("platform_key") for item in items if item.get("platform_key")})
     migrated["platform_coverage"] = coverage
     migrated["platform_status"] = coverage
-    migrated["versioning"] = {
-        "identity_field": "rule_key",
-        "source_identity_field": "source_record_id",
-        "source_identity_method_field": "source_id_method",
-        "version_field": "rule_version",
-        "effective_from_field": "effective_date",
-        "effective_to_field": "effective_to",
-        "history_field": "version_history",
-    }
+    migrated["versioning"] = dict(collect_data.PLATFORM_RULE_VERSIONING)
     migrated["source_identity_migration"] = {
         "version": 1,
         "migrated_at": now.isoformat(),

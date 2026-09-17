@@ -309,6 +309,15 @@ PLATFORM_SOURCE_HOSTS = {
 # source did not state the dimension; the collector must never infer a fee or
 # penalty from a generic headline.
 RULE_DIMENSIONS = ('fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty')
+PLATFORM_RULE_VERSIONING = {
+    'identity_field': 'rule_key',
+    'source_identity_field': 'source_record_id',
+    'source_identity_method_field': 'source_id_method',
+    'version_field': 'rule_version',
+    'effective_from_field': 'effective_date',
+    'effective_to_field': 'effective_to',
+    'history_field': 'version_history',
+}
 RULE_DIMENSION_LABELS = {
     'fee': '费用', 'commission': '佣金', 'deposit': '保证金',
     'fulfillment': '履约', 'prohibited': '禁售', 'settlement': '结算',
@@ -1815,6 +1824,7 @@ def merge_data(existing_file, new_items, key_fields=['title'], baseline_kind=Non
     # endpoint rename from creating a second current record and gives the
     # permanent-history sync a deterministic revision boundary.
     if baseline_kind == 'rules':
+        existing['versioning'] = dict(PLATFORM_RULE_VERSIONING)
         existing['items'] = [
             annotate_provenance(normalize_platform_rule(item))
             for item in existing.get('items', []) if isinstance(item, dict)

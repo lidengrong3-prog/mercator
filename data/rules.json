@@ -3,6 +3,8 @@
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
+    "source_identity_field": "source_record_id",
+    "source_identity_method_field": "source_id_method",
     "version_field": "rule_version",
     "effective_from_field": "effective_date",
     "effective_to_field": "effective_to",
