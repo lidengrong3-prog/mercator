@@ -159,6 +159,22 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(raw[0]["source_class"], "industry_advisory")
         self.assertEqual(formal, [])
 
+    def test_out_of_scope_platform_and_category_never_enter_sync_layers(self):
+        base = {
+            "id": "scope-test", "title": "Scoped record", "market": "US",
+            "source": "CPSC", "source_url": "https://www.cpsc.gov/record/scope-test",
+            "source_kind": "official", "source_type": "regulator",
+            "source_record_id": "scope-test", "verification_status": "verified",
+            "published_at": "2026-09-01", "collected_at": "2026-09-02T00:00:00Z",
+        }
+        records = [
+            ("policies", "policy", dict(base, id="bad-platform", platform_keys=["walmart"]), 0),
+            ("policies", "policy", dict(base, id="bad-category", category_codes=["toys"]), 1),
+        ]
+        with patch.object(sync_to_supabase, "iter_provenance_records", return_value=records):
+            self.assertEqual(sync_to_supabase.build_raw_record_rows({"datasets": {}}), [])
+            self.assertEqual(sync_to_supabase.build_applicability_rows({"datasets": {}}), [])
+
     def test_public_policy_bundle_excludes_legacy_industry_articles(self):
         source = {
             "updated_at": "2026-08-30T00:00:00+00:00",

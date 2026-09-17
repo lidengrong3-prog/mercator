@@ -22,6 +22,8 @@ import hashlib
 import re
 from datetime import datetime, timezone, timedelta
 
+from market_scope import category_name_map, load_market_scope, normalize_category_code
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DATA_DIR = os.path.join(ROOT, "data")
@@ -33,6 +35,12 @@ NOW = datetime.now(BJT)
 TODAY = NOW.strftime("%Y-%m-%d")
 GENERATOR_VERSION = "2026.09.08.1"
 ALERT_SCHEMA_VERSION = "2.1"
+MARKET_SCOPE = load_market_scope()
+CATEGORY_NAMES = category_name_map(MARKET_SCOPE)
+
+
+def canonical_category(value):
+    return normalize_category_code(value, MARKET_SCOPE, market_codes=["US"])
 
 
 def load_json(path):
@@ -376,14 +384,8 @@ def generate_from_cpsc():
         if not has_chinese(title_zh) or not has_chinese(description_zh):
             continue
         date = recall.get("date", "")
-        cat = recall.get("category", "other")
-        category_names = {
-            "electronics": "消费电子", "apparel": "服饰鞋包",
-            "home": "家居厨具", "beauty": "美妆个护",
-            "toys": "玩具", "sports": "运动户外",
-            "auto": "汽配", "health": "保健品", "other": "其他",
-        }
-        cat_cn = category_names.get(cat, cat)
+        cat = canonical_category(recall.get("category"))
+        cat_cn = CATEGORY_NAMES.get(cat, cat)
         lineage = _lineage_fields(
             cpsc_snapshot, [recall], cutoff, TODAY, len(recent_china), "record"
         )
@@ -413,17 +415,11 @@ def generate_from_cpsc():
     # Category summary alerts
     recent_by_cat = {}
     for recall in recent_china:
-        recent_by_cat.setdefault(recall.get("category", "other"), []).append(recall)
+        recent_by_cat.setdefault(canonical_category(recall.get("category")), []).append(recall)
     for cat, recalls in recent_by_cat.items():
         china_count = len(recalls)
         if china_count >= 3:
-            category_names = {
-                "electronics": "消费电子", "apparel": "服饰鞋包",
-                "home": "家居厨具", "beauty": "美妆个护",
-                "toys": "玩具", "sports": "运动户外",
-                "auto": "汽配", "health": "保健品", "other": "其他",
-            }
-            cat_cn = category_names.get(cat, cat)
+            cat_cn = CATEGORY_NAMES.get(cat, cat)
             complete_records = [
                 recall for recall in recalls
                 if _source_provenance_complete({

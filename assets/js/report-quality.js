@@ -5,6 +5,7 @@
   var MAX_AGE_MS = 12 * 60 * 60 * 1000;
   var BLOCKED_STATUSES = ['failed', 'stale'];
   var GLOBAL_BLOCKED_STATUSES = ['failed', 'stale', 'not_connected', 'pending'];
+  var PLATFORM_RULE_DIMENSIONS = ['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty'];
 
   function list(value) { return Array.isArray(value) ? value : []; }
   function text(value) { return value == null ? '' : String(value); }
@@ -101,7 +102,22 @@
     var snapshot = content.quality_snapshot || gate && gate.snapshot;
     if (!gate || gate.ok !== true || !snapshot || typeof snapshot !== 'object') return false;
     if (snapshot.publishable !== true || snapshot.stale === true) return false;
-    return GLOBAL_BLOCKED_STATUSES.indexOf(text(snapshot.effective_status || snapshot.status).toLowerCase()) < 0;
+    if (GLOBAL_BLOCKED_STATUSES.indexOf(text(snapshot.effective_status || snapshot.status).toLowerCase()) >= 0) return false;
+    var model = content.model && typeof content.model === 'object' ? content.model : {};
+    var matrix = content.coverage_matrix || model.coverageMatrix;
+    if (!matrix || typeof matrix !== 'object' || matrix.ok !== true || list(matrix.missingCells).length || !list(matrix.cells).length) return false;
+    if (Number(matrix.totalCells) !== list(matrix.cells).length || Number(matrix.coveredCells) !== list(matrix.cells).length) return false;
+    var required = list(matrix.requiredDomains).map(function (value) { return text(value).toLowerCase(); });
+    var requirePlatformDimensions = required.indexOf('platform') >= 0 && required.indexOf('rule') >= 0;
+    var requiredDimensions = unique(list(matrix.requiredPlatformRuleDimensions).map(function (value) { return text(value).toLowerCase(); }));
+    if (requirePlatformDimensions && (requiredDimensions.length !== PLATFORM_RULE_DIMENSIONS.length || !PLATFORM_RULE_DIMENSIONS.every(function (dimension) { return requiredDimensions.indexOf(dimension) >= 0; }))) return false;
+    if (!requirePlatformDimensions) return true;
+    var platformCells = list(matrix.cells).filter(function (cell) { return cell && cell.domain === 'platform'; });
+    if (!platformCells.length) return false;
+    return platformCells.every(function (cell) {
+      var covered = unique(list(cell.ruleDimensions).map(function (value) { return text(value).toLowerCase(); }));
+      return cell.covered === true && list(cell.missingRuleDimensions).length === 0 && covered.length === PLATFORM_RULE_DIMENSIONS.length && PLATFORM_RULE_DIMENSIONS.every(function (dimension) { return covered.indexOf(dimension) >= 0; });
+    });
   }
 
   function reportSections(content) {

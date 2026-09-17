@@ -34,8 +34,12 @@ test('backup and restore workflows are scheduled and publish only summaries', ()
   assert.match(backup, /create_migration_backup\.py/);
   assert.match(backup, /install_postgresql_client\.sh SUPABASE_DB_URL/);
   assert.match(backup, /--kind storage_backup/);
+  assert.match(backup, /storage-backup\.verify\.tar\.gz/);
+  assert.match(backup, /backup-storage-archive-summary\.json/);
   assert.match(backup, /\*-summary\.json/);
   assert.match(restore, /RESTORE_DRILL_DB_URL/);
+  assert.match(restore, /PRODUCTION_DB_URL/);
+  assert.match(restore, /RESTORE_DRILL_CONFIRM_ISOLATED/);
   assert.match(restore, /restore_backup_drill\.py/);
   assert.match(restore, /install_postgresql_client\.sh RESTORE_DRILL_DB_URL/);
   assert.match(restore, /cron: '41 3 1 \* \*'/);

@@ -158,6 +158,7 @@ class ValidateDataTests(unittest.TestCase):
             "scope": {
                 "market_codes": ["US"],
                 "platform_keys": ["amazon", "tiktok-shop", "aliexpress", "ebay"],
+                "category_keys": ["generic"],
                 "unconnected_platform_keys": ["aliexpress", "ebay"],
             },
             "sources": [

@@ -9,6 +9,8 @@ import subprocess
 import sys
 from pathlib import Path, PurePosixPath
 
+from market_scope import configured_catalog, load_market_scope
+
 
 ROOT = Path(__file__).resolve().parent.parent
 PUBLIC_DATA_FILES = {
@@ -42,8 +44,8 @@ RESTRICTED_EXACT = {
     "data/us_market/index.json",
 }
 US_MARKET_PRIVATE = {
-    "apparel.json", "auto.json", "beauty.json", "electronics.json", "home.json",
-    "sports.json", "supplements.json", "toys.json",
+    f"{code}.json"
+    for code in configured_catalog(load_market_scope(), market_codes=["US"])["category_keys"]
 }
 RESTRICTED_COMPONENTS = {
     "_sync_logs", "private_repository_source", "raw", "raw_data", "raw_responses",

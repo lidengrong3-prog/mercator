@@ -56,6 +56,22 @@ def telemetry(status, successful, failed):
 
 
 class UsMarketFreshnessTests(unittest.TestCase):
+    def test_collector_catalog_matches_market_scope_and_excludes_retired_platforms(self):
+        manifest_categories = set(collect_us_market._US_SCOPE["category_keys"])
+        self.assertEqual(set(collect_us_market.CATEGORIES), manifest_categories)
+        self.assertIn("pet-food", manifest_categories)
+        self.assertIn("pet-supplies", manifest_categories)
+
+        retired = {"walmart", "etsy", "shopify", "temu", "shein"}
+        for category in collect_us_market.CATEGORIES:
+            payload = collect_us_market.collect_category(category, no_network=True)
+            rendered = json.dumps(payload, ensure_ascii=False).casefold()
+            self.assertFalse(any(platform in rendered for platform in retired))
+            self.assertEqual(
+                {row["platform_key"] for row in payload["platforms"]},
+                set(collect_us_market._US_SCOPE["platform_keys"]),
+            )
+
     def test_fetch_telemetry_distinguishes_partial_request_failure(self):
         response_count = len(collect_us_market.CATEGORIES["electronics"]["fr_terms"])
         responses = [{"results": []}] + [None] * (response_count - 1)

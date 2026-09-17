@@ -14,6 +14,8 @@ on:
         options:
           - all
           - collect_data
+          - collect_us_taxes
+          - collect_us_access
           - collect_us_market
           - collect_cpsc
           - collect_us_macro
@@ -197,6 +199,8 @@ jobs:
         run: python scripts/bootstrap_worker_data.py --required
       - name: Run configured market data collector
         run: python scripts/collect_data.py
+      - name: Collect official US tax and market-access records
+        run: python scripts/collect_us_regulatory.py
       - name: Translate policy, tax and access records to Simplified Chinese
         run: python scripts/translate_regulatory_data.py --require-config
       - name: Collect configured market intelligence

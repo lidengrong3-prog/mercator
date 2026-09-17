@@ -17,7 +17,7 @@
         aliases: ['us', 'usa', 'united states', 'unitedstates', '美国', '美区'],
         regionCode: 'NA', regionName: '北美', jurisdictionCodes: ['US'],
         platformKeys: ['amazon', 'tiktok-shop', 'aliexpress', 'ebay'],
-        categoryKeys: [], dataStatus: 'verified',
+        categoryKeys: ['generic', 'electronics', 'beauty', 'apparel', 'home', 'pet-food', 'pet-supplies'], dataStatus: 'verified',
         dataSources: {
           macro: {
             localPath: 'data/us_market/macro_indicators.json',
@@ -105,9 +105,21 @@
         dataStatus: 'schema_only',
       },
       {
+        id: 'home-market-v1', code: 'home-market', version: 1,
+        name: '家居产品市场调研报告', marketCodes: [], platformKeys: [], categoryCodes: ['home'], requiredDomains: ['market', 'policy', 'tax', 'access', 'logistics', 'platform', 'rule'],
+        modules: ['executive_summary', 'market_environment', 'consumer_profile', 'platform_research', 'access_requirements', 'price_band', 'logistics', 'risk_recommendations'],
+        dataStatus: 'schema_only',
+      },
+      {
         id: 'pet-food-market-v1', code: 'pet-food-market', version: 1,
         name: '宠物食品市场调研报告', marketCodes: [], platformKeys: [], categoryCodes: ['pet-food'], requiredDomains: ['market', 'policy', 'tax', 'access', 'logistics', 'platform', 'rule'],
         modules: ['executive_summary', 'market_environment', 'consumer_profile', 'platform_research', 'access_requirements', 'unit_economics', 'logistics', 'risk_recommendations'],
+        dataStatus: 'schema_only',
+      },
+      {
+        id: 'pet-supplies-market-v1', code: 'pet-supplies-market', version: 1,
+        name: '宠物用品市场调研报告', marketCodes: [], platformKeys: [], categoryCodes: ['pet-supplies'], requiredDomains: ['market', 'policy', 'tax', 'access', 'logistics', 'platform', 'rule'],
+        modules: ['executive_summary', 'market_environment', 'consumer_profile', 'platform_research', 'access_requirements', 'price_band', 'logistics', 'risk_recommendations'],
         dataStatus: 'schema_only',
       },
     ],

@@ -1,6 +1,8 @@
 import { assessReportContent, reportContentAllowsFormalOutput, type ContentQualityAssessment, type QualityGate } from './report-quality.ts';
 
-export const REPORT_VALIDATION_VERSION = '2026.09.16.3';
+export const REPORT_VALIDATION_VERSION = '2026.09.17.1';
+
+const PLATFORM_RULE_DIMENSIONS = ['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty'] as const;
 
 type Row = Record<string, unknown>;
 
@@ -98,6 +100,22 @@ function evidenceVerificationStatus(row: Row): string {
 function evidenceSourceUrl(row: Row): string {
   const metadata = object(row.metadata) || {};
   return String(row.source_url || row.snapshot_source || metadata.source_url || metadata.snapshot_source || '').trim();
+}
+
+function ruleDimensionKeys(row: Row): string[] {
+  const payload = object(row.payload) || {};
+  const raw = object(row.rule_dimensions) || object(row.ruleDimensions) || object(payload.rule_dimensions) || object(payload.ruleDimensions) || {};
+  const keys = Object.keys(raw).filter((key) => (PLATFORM_RULE_DIMENSIONS as readonly string[]).includes(key.toLowerCase()) && raw[key] != null && String(raw[key]).trim()).map((key) => key.toLowerCase());
+  const topic = String(row.rule_topic || row.topic || payload.rule_topic || payload.topic || '').trim().toLowerCase();
+  if ((PLATFORM_RULE_DIMENSIONS as readonly string[]).includes(topic)) keys.push(topic);
+  return Array.from(new Set(keys));
+}
+
+function platformRuleCoverage(rows: Row[]) {
+  const covered = new Set<string>();
+  rows.forEach((row) => ruleDimensionKeys(row).forEach((key) => covered.add(key)));
+  const missing = PLATFORM_RULE_DIMENSIONS.filter((key) => !covered.has(key));
+  return { covered: PLATFORM_RULE_DIMENSIONS.filter((key) => covered.has(key)), missing, complete: missing.length === 0 };
 }
 
 function rowCoversCell(row: Row, domain: string, marketCode: string, platformKey: string | null, categoryCode: string | null): boolean {
@@ -271,13 +289,18 @@ export function validateFormalReportContent(
     if (!expectedPairs.some((pair) => pair.platformKey === platformKey)) addReason(reasons, { code: 'PLATFORM_NOT_AVAILABLE_IN_SCOPE', value: platformKey, message: `平台 ${platformKey} 不适用于所选市场` });
   });
   if (!sameSet(strings(matrix.requiredDomains, (value) => value.trim().toLowerCase()), requiredDomains)) addReason(reasons, { code: 'COVERAGE_REQUIRED_DOMAINS_MISMATCH', message: '覆盖矩阵必需数据域与服务端模板不一致' });
+  const submittedRuleDimensions = strings(matrix.requiredPlatformRuleDimensions, (value) => value.trim().toLowerCase());
+  const requiresRuleDimensions = requiredDomains.includes('platform') && requiredDomains.includes('rule');
+  if (!sameSet(submittedRuleDimensions, requiresRuleDimensions ? [...PLATFORM_RULE_DIMENSIONS] : [])) addReason(reasons, { code: 'COVERAGE_RULE_DIMENSIONS_MISMATCH', message: '覆盖矩阵平台规则维度与服务端要求不一致' });
 
   const evidence = context.applicability.concat(context.materials);
   const categoryDimension: Array<string | null> = scope.categoryCodes.length ? scope.categoryCodes : [null];
-  const expectedCells: Array<{ id: string; domain: string; marketCode: string; platformKey: string | null; categoryCode: string | null; evidence: Row[] }> = [];
+  const requirePlatformRuleDimensions = requiresRuleDimensions;
+  const expectedCells: Array<{ id: string; domain: string; marketCode: string; platformKey: string | null; categoryCode: string | null; evidence: Row[]; covered: boolean; ruleDimensions: string[]; missingRuleDimensions: string[] }> = [];
   expectedPairs.forEach((pair) => categoryDimension.forEach((categoryCode) => requiredDomains.forEach((domain) => {
     const rows = evidence.filter((row) => rowCoversCell(row, domain, pair.marketCode, pair.platformKey, categoryCode));
-    expectedCells.push({ id: [pair.marketCode, pair.platformKey || '*', categoryCode || '*', domain].join('|'), domain, marketCode: pair.marketCode, platformKey: pair.platformKey, categoryCode, evidence: rows });
+    const ruleCoverage = domain === 'platform' && requirePlatformRuleDimensions ? platformRuleCoverage(rows) : { complete: true, covered: [] as string[], missing: [] as string[] };
+    expectedCells.push({ id: [pair.marketCode, pair.platformKey || '*', categoryCode || '*', domain].join('|'), domain, marketCode: pair.marketCode, platformKey: pair.platformKey, categoryCode, evidence: rows, covered: rows.length > 0 && ruleCoverage.complete, ruleDimensions: [...ruleCoverage.covered], missingRuleDimensions: [...ruleCoverage.missing] });
   })));
   const submittedCells = array(matrix.cells).map(object).filter((value): value is Row => !!value);
   const submittedIds = submittedCells.map((cell) => String(cell.id || ''));
@@ -292,16 +315,27 @@ export function validateFormalReportContent(
       || String(submitted.platformKey || submitted.platform_key || '').toLowerCase() !== String(cell.platformKey || '')
       || String(submitted.categoryCode || submitted.category_code || '').toLowerCase() !== String(cell.categoryCode || '')
     ) addReason(reasons, { code: 'COVERAGE_CELL_FIELDS_MISMATCH', cell_id: cell.id, message: '覆盖格字段与服务端范围不一致' });
-    if (!cell.evidence.length) addReason(reasons, { code: 'COVERAGE_EVIDENCE_MISSING', cell_id: cell.id, message: '服务端未找到该范围格的正式证据' });
+    if (!cell.evidence.length) {
+      addReason(reasons, { code: 'COVERAGE_EVIDENCE_MISSING', cell_id: cell.id, message: '服务端未找到该范围格的正式证据' });
+      addReason(reasons, { code: 'QUALITY_REQUIRED_DATA_MISSING', cell_id: cell.id, value: cell.domain, message: `报告必需数据域缺失：${cell.domain}` });
+    }
+    if (cell.missingRuleDimensions.length) {
+      addReason(reasons, { code: 'COVERAGE_PLATFORM_RULE_DIMENSIONS_MISSING', cell_id: cell.id, value: cell.missingRuleDimensions.join(','), message: `平台规则七个必需维度未完整覆盖：${cell.missingRuleDimensions.join('、')}` });
+      addReason(reasons, { code: 'QUALITY_PLATFORM_RULE_COVERAGE_MISSING', cell_id: cell.id, value: cell.missingRuleDimensions.join(','), message: `平台规则覆盖缺失：${cell.missingRuleDimensions.join('、')}` });
+    }
     if (submitted) {
       const serverSourceIds = strings(cell.evidence.map(sourceRecordId));
       const submittedSourceIds = strings(submitted.sourceRecordIds || submitted.source_record_ids);
+      const cellRuleDimensions = strings(submitted.ruleDimensions || submitted.rule_dimensions, (value) => value.trim().toLowerCase());
+      const cellMissingRuleDimensions = strings(submitted.missingRuleDimensions || submitted.missing_rule_dimensions, (value) => value.trim().toLowerCase());
       const unknownSourceIds = submittedSourceIds.filter((sourceId) => !serverSourceIds.includes(sourceId));
       if (
-        submitted.covered !== true
+        submitted.covered !== cell.covered
         || !submittedSourceIds.length
         || Number(submitted.recordCount ?? submitted.record_count) !== submittedSourceIds.length
         || unknownSourceIds.length
+        || !sameSet(cellRuleDimensions, cell.ruleDimensions)
+        || !sameSet(cellMissingRuleDimensions, cell.missingRuleDimensions)
       ) {
         addReason(reasons, { code: 'COVERAGE_CELL_EVIDENCE_MISMATCH', cell_id: cell.id, message: '覆盖格来源数量或来源编号与服务端记录不一致' });
       }
@@ -378,7 +412,7 @@ export function validateFormalReportContent(
     });
   }
 
-  const missingCellIds = expectedCells.filter((cell) => !cell.evidence.length).map((cell) => cell.id);
+  const missingCellIds = expectedCells.filter((cell) => !cell.covered).map((cell) => cell.id);
   return {
     ok: reasons.length === 0,
     unavailable: false,

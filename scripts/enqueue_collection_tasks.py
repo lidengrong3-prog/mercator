@@ -23,6 +23,14 @@ TASK_SPECS: dict[str, dict[str, Any]] = {
         "source_key": "federal-register", "collector_key": "collect_data", "domain": "policy",
         "market_codes": ["US"], "platform_keys": ["amazon", "tiktok-shop"], "priority": 900,
     },
+    "collect_us_taxes": {
+        "source_key": "official-source", "collector_key": "collect_us_taxes", "domain": "tax",
+        "market_codes": ["US"], "platform_keys": [], "priority": 890,
+    },
+    "collect_us_access": {
+        "source_key": "official-source", "collector_key": "collect_us_access", "domain": "access",
+        "market_codes": ["US"], "platform_keys": [], "priority": 880,
+    },
     "collect_us_market": {
         "source_key": "federal-register", "collector_key": "collect_us_market", "domain": "market",
         "market_codes": ["US"], "platform_keys": ["amazon", "tiktok-shop"], "priority": 800,
@@ -54,7 +62,10 @@ TASK_SPECS: dict[str, dict[str, Any]] = {
         "request_count": 80, "estimated_cost_usd": 4.0,
     },
 }
-DEFAULT_COLLECTORS = ("collect_data", "collect_us_market", "collect_cpsc", "collect_us_macro")
+DEFAULT_COLLECTORS = (
+    "collect_data", "collect_us_taxes", "collect_us_access",
+    "collect_us_market", "collect_cpsc", "collect_us_macro",
+)
 
 
 def enqueue(

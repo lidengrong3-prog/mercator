@@ -26,7 +26,9 @@ custom-format `pg_dump` 创建逻辑备份，并完成以下校验：
 2. 保存 `migration-backup-result.json` 中的 `pre_migration_head`、备份对象 ID、
    SHA-256 和 `backup_run_id`。
 3. 在隔离数据库运行月度恢复演练流程，验证解密、`pg_restore`、RLS、工作区、报告
-   和来源数据抽样；不要直接在生产库执行 `--clean`。
+   和来源数据抽样，并验证 Storage 归档内每个对象的大小与 SHA-256；不要直接在生产库执行 `--clean`。恢复工作流必须设置
+   `RESTORE_DRILL_CONFIRM_ISOLATED=true`，且 `RESTORE_DRILL_DB_URL` 不能与生产数据库
+   endpoint 或 Supabase project ref 相同。
 4. 首选 Supabase 的时间点恢复（PITR）恢复到迁移前时间点。若无可用 PITR，先将
    加密备份恢复到新的数据库，再切换受控的连接配置；生产原库保留为取证副本。
 5. 恢复后确认迁移账本等于记录的 `pre_migration_head`，再运行生产健康检查和双账号

@@ -27,6 +27,7 @@ from datetime import datetime, timezone, timedelta
 
 from collect_data import annotate_provenance
 from collection_telemetry import append_collection_source
+from market_scope import configured_catalog, load_market_scope
 from source_governance import SourceGovernanceError, assert_source_collectable
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -45,8 +46,10 @@ CHINA_KEYWORDS = [
     "shanghai", "beijing", "dongguan", "yiwu", "ningbo",
 ]
 
-# 品类映射: CPSC 产品描述 -> Mercator 品类
-CATEGORY_MAP = {
+# 品类映射: CPSC 产品描述 -> market_scope.json 中的 Mercator 品类。
+_MARKET_SCOPE = load_market_scope()
+_SCOPE_CATEGORY_CODES = set(configured_catalog(_MARKET_SCOPE, market_codes=["US"])["category_keys"])
+_CATEGORY_KEYWORDS = {
     "electronics": ["electronic", "battery", "charger", "cable", "phone", "laptop",
                     "tablet", "speaker", "headphone", "earbud", "camera", "led",
                     "light", "usb", "power", "adapter", "plug", "switch", "sensor"],
@@ -58,15 +61,16 @@ CATEGORY_MAP = {
              "carpet", "bedding", "pillow", "blanket", "towel", "candle"],
     "beauty": ["cosmetic", "makeup", "lip", "skin", "cream", "lotion", "shampoo",
                "soap", "beauty", "nail", "hair", "perfume"],
-    "toys": ["toy", "play", "doll", "game", "puzzle", "stuffed", "plush",
-             "lego", "block", "ball", "ride", "scooter", "tricycle"],
-    "sports": ["sport", "fitness", "exercise", "bike", "bicycle", "helmet",
-               "yoga", "gym", "weight", "tent", "camping"],
-    "auto": ["auto", "car", "vehicle", "tire", "seat", "brake", "motor",
-             "engine", "light bar", "headlight", "bumper"],
-    "health": ["supplement", "vitamin", "health", "medical", "drug", "pill",
-               "tablet", "capsule", "device", "thermo", "mask", "sanitizer"],
+    "pet-food": ["pet food", "dog food", "cat food", "pet treat", "dog treat",
+                 "cat treat", "animal feed", "kibble", "rawhide", "pet nutrition"],
+    "pet-supplies": ["pet product", "pet supply", "dog toy", "cat toy", "pet bed",
+                     "pet bowl", "pet leash", "pet collar", "pet carrier", "aquarium"],
 }
+CATEGORY_MAP = {
+    code: keywords for code, keywords in _CATEGORY_KEYWORDS.items()
+    if code in _SCOPE_CATEGORY_CODES
+}
+CATEGORY_FALLBACK = "generic" if "generic" in _SCOPE_CATEGORY_CODES else next(iter(_SCOPE_CATEGORY_CODES), "")
 
 # SSL context (some environments have cert issues)
 try:
@@ -133,7 +137,7 @@ def categorize_recall(title, description=""):
             scores[cat] = score
     if scores:
         return max(scores, key=scores.get)
-    return "other"
+    return CATEGORY_FALLBACK
 
 
 def gen_recall_id(recall):

@@ -89,6 +89,18 @@ class TikHubPilotTests(unittest.TestCase):
         self.assertEqual(content["product_id"], "p-1")
         self.assertEqual(content["views"], 100)
 
+    def test_provider_taxonomy_is_normalized_to_catalog_codes(self):
+        pet = pilot.normalize_record(
+            {"product_id": "pet-1", "category": "pet supplies"},
+            "product_search", "pet-supplies", "US", "tiktok-shop",
+        )
+        legacy = pilot.normalize_record(
+            {"product_id": "toy-1", "category": "toys"},
+            "product_search", "toys", "US", "tiktok-shop",
+        )
+        self.assertEqual(pet["category_code"], "pet-supplies")
+        self.assertEqual(legacy["category_code"], "generic")
+
     def test_content_collection_writes_content_scope_without_product_shop_calls(self):
         payload = {
             "video_search": [{"video_id": "v-1", "description": "Demo", "creator_id": "u-1", "product_id": "p-1", "views": 10}],

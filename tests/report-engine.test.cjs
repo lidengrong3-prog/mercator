@@ -83,7 +83,9 @@ test('report data check blocks a scope with missing required evidence', () => {
   const result = engine.checkData(plan, { scope: plan.scope, records: {} });
   assert.equal(result.ok, false);
   assert.ok(result.missing.length > 0);
-  assert.ok(result.missing.every((item) => item.reason === '该范围格没有已核验记录'));
+  assert.ok(result.missing.every((item) => /没有已核验记录|平台规则七个必需维度未完整覆盖/.test(item.reason)));
+  assert.ok(plan.requiredDomains.includes('tax'));
+  assert.ok(plan.requiredDomains.includes('access'));
 });
 
 test('coverage matrix blocks a second market without evidence', () => {
@@ -100,6 +102,24 @@ test('coverage matrix does not reuse one platform rule for another platform', ()
   const result = engine.checkData(plan, facts);
   assert.equal(result.ok, false);
   assert.ok(result.coverageMatrix.missingCells.some((cell) => cell.id === 'US|tiktok-shop|generic|rule'));
+});
+
+test('platform coverage requires all seven explicit rule dimensions', () => {
+  const dimensions = Array.from(engine.platformRuleDimensions);
+  const plan = { requiredDomains: ['platform', 'rule'], scope: { marketCodes: ['US'], platformKeys: ['amazon'], categoryCodes: ['generic'] } };
+  const entries = dimensions.slice(0, 6).map((dimension, index) => ({
+    record: { market_code: 'US', platform_key: 'amazon', topic: dimension, rule_dimensions: { [dimension]: `${dimension}-value` } },
+    source: { recordId: `amazon-${index}` },
+  }));
+  const facts = { scope: plan.scope, records: { platform: entries, rule: entries } };
+  const partial = engine.checkData(plan, facts);
+  assert.equal(partial.ok, false);
+  const platformCell = partial.coverageMatrix.cells.find((cell) => cell.domain === 'platform');
+  assert.deepEqual(Array.from(platformCell.missingRuleDimensions), ['penalty']);
+  entries.push({ record: { market_code: 'US', platform_key: 'amazon', topic: 'penalty', rule_dimensions: { penalty: 'penalty-value' } }, source: { recordId: 'amazon-penalty' } });
+  const complete = engine.checkData(plan, facts);
+  assert.equal(complete.ok, true);
+  assert.deepEqual(Array.from(complete.coverageMatrix.cells.find((cell) => cell.domain === 'platform').ruleDimensions), dimensions);
 });
 
 test('coverage matrix keeps uploaded product evidence category-specific', () => {

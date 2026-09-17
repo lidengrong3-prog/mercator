@@ -50,8 +50,6 @@ OFFICIAL_HOSTS = {
     "saferproducts.gov",
     "sellercentral.amazon.com",
     "seller.tiktokshopglobalselling.com",
-    "seller.shein.com",
-    "seller.temu.com",
     "sellercenter.lazada.sg",
     "seller.shopee.sg",
 }
@@ -140,6 +138,13 @@ SCOPE_PLATFORM_NAMES = {
     for item in SCOPE_MANIFEST_DATA.get("platforms", [])
     if isinstance(item, dict) and str(item.get("name", "")).strip()
 }
+SCOPE_PLATFORM_ALIASES = {
+    str(value).strip().casefold(): str(item.get("name") or item.get("key") or "").strip()
+    for item in SCOPE_MANIFEST_DATA.get("platforms", [])
+    if isinstance(item, dict) and str(item.get("key") or "").strip()
+    for value in [item.get("key"), item.get("name"), *(item.get("aliases") or [])]
+    if str(value or "").strip()
+}
 SCOPE_PLATFORMS = SCOPE_PLATFORM_NAMES or {"Amazon", "TikTok Shop", "AliExpress", "eBay"}
 # The manifest can describe markets that are available for a future user
 # selection.  Validation totals, however, must remain aligned with the
@@ -164,6 +169,8 @@ DEFAULT_SCOPE_PLATFORM_KEYS = {
     if isinstance(item, dict)
     and str(item.get("market_code") or item.get("marketCode") or "").strip().upper() in DEFAULT_SCOPE_MARKET_CODES
     and str(item.get("platform_key") or item.get("platformKey") or "").strip()
+    and str(item.get("status") or "active").strip().casefold() == "active"
+    and str(item.get("data_status") or item.get("dataStatus") or "").strip().casefold() == "configured"
 }
 DEFAULT_SCOPE_PLATFORMS = {
     str(item.get("name", "")).strip()
@@ -172,6 +179,22 @@ DEFAULT_SCOPE_PLATFORMS = {
     and str(item.get("key", "")).strip().casefold() in DEFAULT_SCOPE_PLATFORM_KEYS
     and str(item.get("name", "")).strip()
 } or {"Amazon", "TikTok Shop", "AliExpress", "eBay"}
+DEFAULT_SCOPE_CATEGORY_CODES = {
+    str(code).strip().casefold()
+    for market in SCOPE_MANIFEST_DATA.get("markets", [])
+    if isinstance(market, dict)
+    and str(market.get("code") or "").strip().upper() in DEFAULT_SCOPE_MARKET_CODES
+    for code in (market.get("category_keys") or market.get("categoryKeys") or [])
+    if str(code or "").strip()
+}
+SCOPE_CATEGORY_CODES = {
+    str(row.get("code") or "").strip().casefold()
+    for row in SCOPE_MANIFEST_DATA.get("categories", [])
+    if isinstance(row, dict)
+    and str(row.get("code") or "").strip()
+    and str(row.get("status") or "active").strip().casefold() == "active"
+}
+DEFAULT_SCOPE_CATEGORY_CODES &= SCOPE_CATEGORY_CODES
 # Backward-compatible names for existing collectors and tests.
 SCOPE_COUNTRY_CODE = next(iter(sorted(DEFAULT_SCOPE_MARKET_CODES)), "US")
 SCOPE_COUNTRY_KEY = next(iter(sorted(DEFAULT_SCOPE_MARKET_NAMES)), "us")
@@ -650,6 +673,22 @@ def is_scoped_record(item: dict[str, Any]) -> bool:
     return bool(record_scope_codes(item) & DEFAULT_SCOPE_MARKET_CODES)
 
 
+def record_platform_names(item: dict[str, Any], *, include_display_field: bool = False) -> set[str]:
+    values = item.get("platform_keys") or item.get("platformKeys") or item.get("platform_key") or item.get("platformKey")
+    if not values and include_display_field:
+        values = item.get("platform") or item.get("platforms")
+    if not isinstance(values, (list, tuple, set)):
+        values = [values]
+    return {normalize_platform(value) for value in values if str(value or "").strip()}
+
+
+def record_category_codes(item: dict[str, Any]) -> set[str]:
+    values = item.get("category_codes") or item.get("categoryCodes") or item.get("category_code") or item.get("categoryCode")
+    if not isinstance(values, (list, tuple, set)):
+        values = [values]
+    return {str(value).strip().casefold() for value in values if str(value or "").strip()}
+
+
 def record_quality(
     item: dict[str, Any],
     *,
@@ -684,6 +723,12 @@ def record_quality(
         reasons.append("missing_upload_reference")
     if require_scope and not is_scoped_record(item):
         reasons.append("out_of_scope")
+    explicit_platforms = record_platform_names(item, include_display_field=domain == "rule")
+    if explicit_platforms and not explicit_platforms <= DEFAULT_SCOPE_PLATFORMS:
+        reasons.append("out_of_scope_platform")
+    explicit_categories = record_category_codes(item)
+    if explicit_categories and not explicit_categories <= DEFAULT_SCOPE_CATEGORY_CODES:
+        reasons.append("out_of_scope_category")
     required_domain = require_provenance or domain in PROVENANCE_REQUIRED_DOMAINS
     missing_fields: list[str] = []
     if required_domain:
@@ -816,18 +861,11 @@ def apply_record_quality_metrics(
 def normalize_platform(value: Any) -> str:
     raw = str(value or "").strip()
     lower = raw.casefold()
-    if "tiktok" in lower and "shop" in lower:
-        return "TikTok Shop"
-    if "aliexpress" in lower or "速卖通" in raw:
-        return "AliExpress"
-    if "ebay" in lower:
-        return "eBay"
-    if lower == "amazon" or "amazon（美国" in lower or "amazon (us" in lower:
-        return "Amazon"
-    if "shopee" in lower or "虾皮" in raw:
-        return "Shopee"
-    if "lazada" in lower:
-        return "Lazada"
+    if lower in SCOPE_PLATFORM_ALIASES:
+        return SCOPE_PLATFORM_ALIASES[lower]
+    for alias, name in SCOPE_PLATFORM_ALIASES.items():
+        if alias and alias in lower:
+            return name
     return raw
 
 
@@ -1216,8 +1254,15 @@ def validate_us_market(now: datetime) -> DatasetResult:
     result.records = len(categories)
     result.scoped_records = result.records
     result.formal_records = result.records
-    if len(categories) < 8:
-        result.errors.append(f"品类数不足：{len(categories)} < 8")
+    actual_category_keys = {
+        str(row.get("key") or "").strip().casefold()
+        for row in categories if isinstance(row, dict) and str(row.get("key") or "").strip()
+    }
+    if actual_category_keys != DEFAULT_SCOPE_CATEGORY_CODES:
+        result.errors.append(
+            "美国品类索引与范围目录不一致："
+            f"actual={sorted(actual_category_keys)} expected={sorted(DEFAULT_SCOPE_CATEGORY_CODES)}"
+        )
     duplicate_keys = duplicate_count(row.get("key") for row in categories if isinstance(row, dict))
     missing_files = 0
     invalid_sections = 0
@@ -1227,6 +1272,7 @@ def validate_us_market(now: datetime) -> DatasetResult:
     succeeded_categories = []
     cached_categories = []
     missing_collection_status = []
+    out_of_scope_platforms = []
     freshness_candidates = []
     for row in categories:
         if not isinstance(row, dict):
@@ -1243,6 +1289,27 @@ def validate_us_market(now: datetime) -> DatasetResult:
         if not isinstance(category, dict) or any(key not in category for key in required):
             invalid_sections += 1
             continue
+        platform_names = {
+            normalize_platform(item.get("name") or item.get("platform"))
+            for item in category.get("platforms", [])
+            if isinstance(item, dict) and str(item.get("name") or item.get("platform") or "").strip()
+        }
+        matrix_names = {
+            normalize_platform(item[0])
+            for item in category.get("matrix", [])
+            if isinstance(item, list) and item and str(item[0] or "").strip()
+        }
+        rule_platforms = {
+            normalize_platform(item.get("platform"))
+            for item in category.get("rules", [])
+            if isinstance(item, dict) and str(item.get("platform") or "").strip()
+            and normalize_platform(item.get("platform")) in SCOPE_PLATFORM_NAMES
+        }
+        invalid_platforms = sorted(
+            (platform_names | matrix_names | rule_platforms) - DEFAULT_SCOPE_PLATFORMS
+        )
+        if invalid_platforms:
+            out_of_scope_platforms.append({"category": str(row.get("key") or ""), "platforms": invalid_platforms})
         meta = category.get("meta") if isinstance(category.get("meta"), dict) else {}
         category_key = str(row.get("key") or filename or "unknown")
         collection_status = str(
@@ -1271,7 +1338,7 @@ def validate_us_market(now: datetime) -> DatasetResult:
         if parsed_freshness:
             freshness_candidates.append(parsed_freshness)
     if freshness_candidates:
-        # All eight category feeds are required. The oldest category therefore
+        # Every manifest category feed is required. The oldest category therefore
         # defines the freshness of the aggregate US-market dataset.
         set_freshness(result, min(freshness_candidates).isoformat(), now, 36)
         result.metrics["freshness_basis"] = "oldest_category_last_successful_check"
@@ -1292,6 +1359,9 @@ def validate_us_market(now: datetime) -> DatasetResult:
             "unknown": len(missing_collection_status),
         },
         "cached_categories": sorted(cached_categories),
+        "expected_category_keys": sorted(DEFAULT_SCOPE_CATEGORY_CODES),
+        "actual_category_keys": sorted(actual_category_keys),
+        "out_of_scope_platforms": out_of_scope_platforms,
     })
     if duplicate_keys:
         result.errors.append(f"存在 {duplicate_keys} 组重复品类 key")
@@ -1299,6 +1369,8 @@ def validate_us_market(now: datetime) -> DatasetResult:
         result.errors.append(f"缺少 {missing_files} 个品类文件")
     if invalid_sections:
         result.errors.append(f"存在 {invalid_sections} 个板块不完整的品类文件")
+    if out_of_scope_platforms:
+        result.errors.append("美国品类文件仍包含范围外平台")
     if failed_categories:
         result.errors.append(
             "美国品类核心来源全量采集失败：" + ", ".join(sorted(failed_categories))
@@ -1496,6 +1568,21 @@ def validate_collection_run(
         and str(row.get("data_status") or "").strip().casefold() == "configured"
         and str(row.get("platform_key") or "").strip()
     }
+    active_category_codes = {
+        str(row.get("code") or "").strip().casefold()
+        for row in manifest.get("categories", [])
+        if isinstance(row, dict)
+        and str(row.get("code") or "").strip()
+        and str(row.get("status") or "active").strip().casefold() == "active"
+    }
+    configured_categories = {
+        str(category).strip().casefold()
+        for row in manifest.get("markets", [])
+        if isinstance(row, dict)
+        and str(row.get("code") or "").strip().upper() in configured_markets
+        for category in (row.get("category_keys") or row.get("categoryKeys") or [])
+        if str(category or "").strip().casefold() in active_category_codes
+    }
     scope = data.get("scope") if isinstance(data.get("scope"), dict) else {}
     actual_markets = {
         str(code).strip().upper() for code in scope.get("market_codes", [])
@@ -1503,6 +1590,10 @@ def validate_collection_run(
     }
     actual_platforms = {
         str(key).strip().casefold() for key in scope.get("platform_keys", [])
+        if str(key or "").strip()
+    }
+    actual_categories = {
+        str(key).strip().casefold() for key in scope.get("category_keys", [])
         if str(key or "").strip()
     }
     if actual_markets != configured_markets:
@@ -1514,6 +1605,11 @@ def validate_collection_run(
         result.errors.append(
             "采集平台范围与目录不一致："
             f"actual={sorted(actual_platforms)} expected={sorted(configured_platforms)}"
+        )
+    if actual_categories != configured_categories:
+        result.errors.append(
+            "采集品类范围与目录不一致："
+            f"actual={sorted(actual_categories)} expected={sorted(configured_categories)}"
         )
     if data.get("legacy_global_writes") is not False:
         result.errors.append("采集运行未明确停用旧全球国家/平台回写")
@@ -1528,6 +1624,7 @@ def validate_collection_run(
     result.metrics["ledger_scope"] = {
         "market_codes": sorted(actual_markets),
         "platform_keys": sorted(actual_platforms),
+        "category_keys": sorted(actual_categories),
     }
     if configured_markets and schema_version < 2:
         result.errors.append(
@@ -1676,6 +1773,7 @@ def validate_collection_run(
     result.metrics.update({
         "configured_market_codes": sorted(configured_markets),
         "configured_platform_keys": sorted(configured_platforms),
+        "configured_category_keys": sorted(configured_categories),
         "source_status_counts": {
             status: sum(row.get("status") == status for row in sources)
             for status in ("succeeded", "degraded", "failed", "skipped")
@@ -1702,12 +1800,12 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
         ),
         validate_items_dataset(
             "taxes", os.path.join(DATA_DIR, "taxes.json"), now,
-            minimum=0, max_age_hours=168, allow_empty=True, require_chinese_display=True,
+            minimum=1, max_age_hours=168, require_chinese_display=True,
             type_field="tax_type", allowed_types=TAX_TYPES,
         ),
         validate_items_dataset(
             "access_requirements", os.path.join(DATA_DIR, "access_requirements.json"), now,
-            minimum=0, max_age_hours=168, allow_empty=True, require_chinese_display=True,
+            minimum=1, max_age_hours=168, require_chinese_display=True,
             type_field="requirement_type", allowed_types=ACCESS_REQUIREMENT_TYPES,
         ),
         validate_items_dataset("rules", os.path.join(DATA_DIR, "rules.json"), now, minimum=30, max_age_hours=36),
@@ -1775,6 +1873,7 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
             "config_version": SCOPE_MANIFEST_DATA.get("config_version", "1"),
             "market_codes": sorted(DEFAULT_SCOPE_MARKET_CODES),
             "platform_names": sorted(DEFAULT_SCOPE_PLATFORMS),
+            "category_codes": sorted(DEFAULT_SCOPE_CATEGORY_CODES),
             "configured_market_codes": sorted(SCOPE_MARKET_CODES),
             "configured_platform_names": sorted(SCOPE_PLATFORMS),
             "manifest": os.path.relpath(SCOPE_MANIFEST, ROOT).replace("\\", "/"),
@@ -1975,9 +2074,10 @@ def validate_public_projection(
         return _public_projection_report(results, source_report, now)
     markets = manifest.get("markets")
     platforms = manifest.get("platforms")
+    categories = manifest.get("categories")
     market_platforms = manifest.get("market_platforms") or manifest.get("marketPlatforms")
-    if not isinstance(markets, list) or not isinstance(platforms, list) or not isinstance(market_platforms, list):
-        manifest_result.errors.append("范围清单必须包含 markets、platforms 和 market_platforms 数组")
+    if not all(isinstance(rows, list) for rows in (markets, platforms, categories, market_platforms)):
+        manifest_result.errors.append("范围清单必须包含 markets、platforms、categories 和 market_platforms 数组")
         return _public_projection_report(results, source_report, now)
 
     allowed_market_codes = {
@@ -2003,6 +2103,21 @@ def validate_public_projection(
         for key in configured_platform_keys
         if key in platform_names_by_key
     }
+    catalog_category_codes = {
+        str(item.get("code") or "").strip().casefold()
+        for item in categories
+        if isinstance(item, dict)
+        and str(item.get("code") or "").strip()
+        and str(item.get("status") or "active").strip().casefold() == "active"
+    }
+    allowed_category_codes = {
+        str(code).strip().casefold()
+        for item in markets
+        if isinstance(item, dict)
+        and str(item.get("code") or "").strip().upper() in allowed_market_codes
+        for code in (item.get("category_keys") or item.get("categoryKeys") or [])
+        if str(code or "").strip().casefold() in catalog_category_codes
+    }
     reported_scope = source_report.get("scope") if isinstance(source_report.get("scope"), dict) else {}
     reported_markets = {
         str(code).strip().upper()
@@ -2014,19 +2129,27 @@ def validate_public_projection(
         for name in (reported_scope.get("platform_names") or [])
         if str(name or "").strip()
     }
+    reported_categories = {
+        str(code).strip().casefold()
+        for code in (reported_scope.get("category_codes") or [])
+        if str(code or "").strip()
+    }
     if not allowed_market_codes:
         manifest_result.errors.append("范围清单缺少 default_market_codes")
     if reported_markets != allowed_market_codes:
         manifest_result.errors.append("范围清单与质量报告的 market_codes 不一致")
     if reported_platforms != allowed_platform_names:
         manifest_result.errors.append("范围清单与质量报告的 platform_names 不一致")
-    manifest_result.records = len(allowed_market_codes) + len(allowed_platform_names)
+    if reported_categories != allowed_category_codes:
+        manifest_result.errors.append("范围清单与质量报告的 category_codes 不一致")
+    manifest_result.records = len(allowed_market_codes) + len(allowed_platform_names) + len(allowed_category_codes)
     manifest_result.scoped_records = manifest_result.records
     manifest_result.formal_records = manifest_result.records if not manifest_result.errors else 0
     manifest_result.excluded_records = manifest_result.records - manifest_result.formal_records
     manifest_result.metrics.update({
         "market_codes": sorted(allowed_market_codes),
         "platform_names": sorted(allowed_platform_names),
+        "category_codes": sorted(allowed_category_codes),
     })
 
     def result_for(key: str) -> tuple[DatasetResult, Any]:

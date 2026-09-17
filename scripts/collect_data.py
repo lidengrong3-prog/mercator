@@ -92,6 +92,19 @@ def configured_collection_scope(manifest=None):
         for item in market_platforms
         if str(item.get('platform_key') or '').strip().casefold() in platform_map
     ))
+    category_catalog = {
+        str(item.get('code') or '').strip().casefold()
+        for item in manifest.get('categories', [])
+        if isinstance(item, dict)
+        and str(item.get('code') or '').strip()
+        and str(item.get('status') or 'active').strip().lower() == 'active'
+    }
+    category_keys = list(dict.fromkeys(
+        str(key).strip().casefold()
+        for market in markets
+        for key in (market.get('category_keys') or market.get('categoryKeys') or [])
+        if str(key).strip().casefold() in category_catalog
+    ))
     return {
         'config_version': str(manifest.get('config_version') or ''),
         'market_codes': sorted(market_codes),
@@ -100,6 +113,7 @@ def configured_collection_scope(manifest=None):
             str(platform_map[key].get('name') or key).strip()
             for key in platform_keys
         ],
+        'category_keys': category_keys,
     }
 
 
@@ -309,6 +323,40 @@ RULE_DIMENSION_ALIASES = {
     'settlement': ('settlement', 'settlement_cycle', 'payout', 'payout_schedule', 'payment', '结算', '结算周期'),
     'penalty': ('penalty', 'penalties', 'penalty_rules', 'penalty_description', 'violation_penalty', '处罚', '处罚规则', '扣分'),
 }
+PLATFORM_RULE_HOSTS = {
+    'amazon': ('sellercentral.amazon.com',),
+    'tiktok-shop': ('seller.tiktokshopglobalselling.com',),
+    'aliexpress': ('sell.aliexpress.com', 'rulechannel.aliexpress.com', 'www.aliexpress.com'),
+    'ebay': ('www.ebay.com', 'pages.ebay.com'),
+}
+PLATFORM_RULE_LISTING_PATHS = {
+    'amazon': ('/gp/help/news', '/help/hub'),
+    'tiktok-shop': ('/university/new-policies', '/university/policy', '/academy/policy'),
+    'aliexpress': ('/soho/rules',),
+    'ebay': ('/help/selling', '/seller-center'),
+}
+RULE_DIMENSION_EVIDENCE_PATTERNS = {
+    'fee': (
+        r'\bfees?(?:\s+and\s+taxes)?\b', r'\bpricing\b', r'费用', r'费率', r'收费',
+    ),
+    'commission': (r'\bcommissions?\b', r'佣金'),
+    'deposit': (r'\bsecurity\s+deposit\b', r'\bseller\s+deposit\b', r'保证金'),
+    'fulfillment': (
+        r'\bfulfillment\b', r'\bshipping\b', r'\bdelivery\b', r'\blogistics\b',
+        r'履约', r'发货', r'配送', r'物流',
+    ),
+    'prohibited': (
+        r'\bprohibited\s+(?:items?|products?|goods?)\b',
+        r'\brestricted\s+(?:items?|products?|goods?)\b', r'禁售', r'限制销售', r'限制商品发布',
+    ),
+    'settlement': (
+        r'\bpayouts?\b', r'\bsettlement\b', r'\bgetting\s+paid\b', r'结算', r'回款',
+    ),
+    'penalty': (
+        r'\bpenalt(?:y|ies)\b', r'\bpolicy\s+enforcement\b', r'\baccount\s+suspension\b',
+        r'\bseller\s+standards?\b', r'处罚', r'扣分', r'处置措施', r'下架商品', r'限制商品发布权限',
+    ),
+}
 
 
 def _rule_value_text(value):
@@ -334,6 +382,74 @@ def _canonical_rule_url(value):
     if parsed.scheme.lower() != 'https' or not parsed.netloc or not parsed.path.strip('/'):
         return ''
     return urlunsplit((parsed.scheme.lower(), parsed.netloc.lower(), parsed.path.rstrip('/'), '', ''))
+
+
+def _platform_rule_source_identity(value, platform_key):
+    """Return a publisher-owned rule identifier and how it was extracted."""
+    platform_key = str(platform_key or '').strip().casefold()
+    try:
+        parsed = urlsplit(unescape(str(value or '').strip()))
+    except ValueError:
+        return '', ''
+    host = (parsed.hostname or '').casefold().rstrip('.')
+    allowed_hosts = PLATFORM_RULE_HOSTS.get(platform_key, ())
+    if parsed.scheme.casefold() != 'https' or not any(
+        host == allowed or host.endswith('.' + allowed) for allowed in allowed_hosts
+    ):
+        return '', ''
+    query = {str(key).casefold(): str(value).strip() for key, value in parse_qsl(parsed.query, keep_blank_values=False)}
+    query_keys = {
+        'tiktok-shop': ('knowledge_id',),
+        'ebay': ('id',),
+        'amazon': ('nodeid', 'itemid', 'documentid', 'articleid', 'helpid'),
+        'aliexpress': ('ruleid', 'articleid', 'contentid', 'id'),
+    }.get(platform_key, ())
+    for key in query_keys:
+        candidate = query.get(key)
+        if candidate and re.fullmatch(r'[A-Za-z0-9_-]{2,120}', candidate):
+            return f'{platform_key}:{candidate}', 'url_query'
+
+    path = re.sub(r'/+', '/', parsed.path or '').rstrip('/')
+    path_patterns = {
+        'amazon': (r'/help/hub/reference/(?:external/)?([A-Za-z0-9_-]{5,120})$',),
+        'tiktok-shop': (r'/(?:university|academy)/essay/([0-9]{6,30})$',),
+        'aliexpress': (r'/(?:rule|rules|article|content)/([A-Za-z0-9_-]{3,120})(?:\.html)?$',),
+        'ebay': (),
+    }.get(platform_key, ())
+    for pattern in path_patterns:
+        match = re.search(pattern, path, re.I)
+        if match:
+            return f'{platform_key}:{match.group(1)}', 'url_path'
+
+    normalized_path = path.casefold().strip('/')
+    blocked = {item.casefold().strip('/') for item in PLATFORM_RULE_LISTING_PATHS.get(platform_key, ())}
+    if normalized_path and normalized_path not in blocked:
+        return f'{platform_key}:path:{normalized_path}', 'url_path'
+    return '', ''
+
+
+def extract_platform_source_record_id(value, platform_key):
+    """Extract a stable official rule ID from a platform URL, if available."""
+    return _platform_rule_source_identity(value, platform_key)[0]
+
+
+def _rule_dimension_evidence(item):
+    """Extract only dimensions explicitly stated in the official record text."""
+    item = item if isinstance(item, dict) else {}
+    text = re.sub(r'\s+', ' ', f"{item.get('title') or ''}. {item.get('summary') or ''}").strip()
+    evidence = {}
+    for dimension, patterns in RULE_DIMENSION_EVIDENCE_PATTERNS.items():
+        for pattern in patterns:
+            match = re.search(pattern, text, re.I)
+            if not match:
+                continue
+            start = max(match.start() - 70, 0)
+            end = min(match.end() + 130, len(text))
+            excerpt = text[start:end].strip(' .,:;，。；：')
+            if excerpt:
+                evidence[dimension] = excerpt
+            break
+    return evidence
 
 
 def _rule_dimension_value(item, dimension):
@@ -392,6 +508,9 @@ def _rule_identity(item):
     item = item if isinstance(item, dict) else {}
     platform = str(item.get('platform_key') or item.get('platform') or '').strip().casefold()
     market = str(item.get('market_code') or item.get('market') or item.get('region') or '').strip().upper()
+    source_id = str(item.get('source_record_id') or '').strip()
+    if source_id and item.get('source_id_is_official') is True:
+        return (platform, market, source_id)
     explicit = str(item.get('rule_key') or item.get('rule_id') or '').strip()
     if explicit:
         return (platform, market, explicit)
@@ -401,7 +520,6 @@ def _rule_identity(item):
     if canonical_url:
         digest = hashlib.sha256(f'{platform}|{market}|{canonical_url}'.encode('utf-8')).hexdigest()[:24]
         return (platform, market, digest)
-    source_id = str(item.get('source_record_id') or '').strip()
     if source_id:
         return (platform, market, source_id)
     title = str(item.get('title') or item.get('name') or '').strip().casefold()
@@ -445,8 +563,41 @@ def normalize_platform_rule(item, *, platform_key=None, market_code=None):
         if value:
             record[dimension] = value
             dimensions[dimension] = value
+    for dimension, evidence in _rule_dimension_evidence(record).items():
+        dimensions.setdefault(dimension, evidence)
+        record.setdefault(dimension, evidence)
     record['rule_dimensions'] = dimensions
-    stable_key = str(record.get('rule_key') or record.get('rule_id') or '').strip()
+    if record['topic'] == 'other' and len(dimensions) == 1:
+        record['topic'] = next(iter(dimensions))
+    source_url = str(record.get('source_url') or record.get('url') or '').strip()
+    extracted_source_id, source_id_method = _platform_rule_source_identity(source_url, platform_key)
+    explicit_source_id = str(record.get('source_record_id') or '').strip()
+    explicit_source_is_official = record.get('source_id_is_official') is True or str(
+        record.get('source_id_method') or ''
+    ).strip() in {'api_field', 'url_query', 'url_path'}
+    official_source_id = extracted_source_id or (explicit_source_id if explicit_source_is_official else '')
+    if official_source_id:
+        record['source_record_id'] = official_source_id
+        record['source_id_method'] = source_id_method or str(record.get('source_id_method') or 'api_field')
+        record['source_id_is_official'] = True
+        history = record.get('version_history')
+        if isinstance(history, list):
+            for snapshot in history:
+                if not isinstance(snapshot, dict):
+                    continue
+                snapshot_source_id, snapshot_method = _platform_rule_source_identity(
+                    snapshot.get('source_url') or source_url, platform_key
+                )
+                snapshot['rule_key'] = snapshot_source_id or official_source_id
+                snapshot['source_record_id'] = snapshot_source_id or official_source_id
+                snapshot['source_id_method'] = snapshot_method or record['source_id_method']
+                snapshot['source_id_is_official'] = True
+    else:
+        record['source_record_id'] = ''
+        record['source_id_method'] = 'internal_fallback'
+        record['source_id_is_official'] = False
+
+    stable_key = official_source_id or str(record.get('rule_key') or record.get('rule_id') or '').strip()
     if not stable_key:
         canonical_url = _canonical_rule_url(record.get('source_url') or record.get('url'))
         if canonical_url:
@@ -456,18 +607,16 @@ def normalize_platform_rule(item, *, platform_key=None, market_code=None):
         stable_key = hashlib.sha256(f'{platform_key}|{market_code}|{title}'.encode('utf-8')).hexdigest()[:24]
     record['rule_key'] = stable_key
     record['id'] = str(record.get('id') or gen_id('r', f'{platform_key}|{market_code}|{stable_key}'))
-    record['source_record_id'] = str(record.get('source_record_id') or stable_key)
     record.setdefault('rule_version', record.get('version') or '1')
     record.setdefault('effective_from', record.get('effective_date') or record.get('published_at'))
     record.setdefault('collected_at', NOW_ISO)
-    source_url = str(record.get('source_url') or '').strip()
     try:
         source_path = urlsplit(source_url).path.strip('/')
     except ValueError:
         source_path = ''
-    if not source_path:
+    if not source_path or not official_source_id:
         # A platform homepage is not a record-level citation.  Downgrade old
-        # catalog rows instead of allowing them to masquerade as formal data.
+        # catalog rows and internal identities instead of publishing them.
         record['verification_status'] = 'pending'
         record['verified_at'] = None
     elif not record.get('verification_status'):
@@ -487,6 +636,8 @@ def _is_formal_platform_rule(item):
         bool(re.match(r'^https://[^/]+/.+', url, re.I))
         and str(item.get('verification_status') or '').lower() == 'verified'
         and bool(item.get('verified_at'))
+        and item.get('source_id_is_official') is True
+        and bool(item.get('source_record_id'))
     )
 
 
@@ -500,6 +651,7 @@ def build_platform_rule_coverage(items, platform_keys, *, market_codes=None, now
                    and (not market_codes or str((row or {}).get('market_code') or (row or {}).get('market') or (row or {}).get('region') or '').strip().upper() in {str(code).upper() for code in market_codes})]
         formal = [row for row in records if _is_formal_platform_rule(row)]
         topic_set = set()
+        dimension_records = {dimension: [] for dimension in RULE_DIMENSIONS}
         for row in formal:
             topic = str(row.get('topic') or '').strip()
             if topic in RULE_DIMENSIONS:
@@ -507,6 +659,10 @@ def build_platform_rule_coverage(items, platform_keys, *, market_codes=None, now
             topic_set.update(
                 key for key in (row.get('rule_dimensions') or {}) if key in RULE_DIMENSIONS
             )
+            row_topics = {topic} if topic in RULE_DIMENSIONS else set()
+            row_topics.update(key for key in (row.get('rule_dimensions') or {}) if key in RULE_DIMENSIONS)
+            for dimension in row_topics:
+                dimension_records[dimension].append(row)
         topics = sorted(topic_set)
         latest = max((str(row.get('verified_at') or '') for row in formal), default=None)
         fresh = False
@@ -526,10 +682,32 @@ def build_platform_rule_coverage(items, platform_keys, *, market_codes=None, now
             reason = ('缺少主题：' + '、'.join(missing)) if missing else '最近核验时间已过期'
         else:
             status, label, reason = 'connected', '已接入', '七类规则主题均有近期核验记录'
+        dimension_status = {}
+        for dimension in RULE_DIMENSIONS:
+            evidence_rows = dimension_records[dimension]
+            dimension_latest = max((str(row.get('verified_at') or '') for row in evidence_rows), default=None)
+            if not evidence_rows:
+                dimension_state = 'not_connected'
+            else:
+                try:
+                    stamp = datetime.fromisoformat(dimension_latest.replace('Z', '+00:00'))
+                    if stamp.tzinfo is None:
+                        stamp = stamp.replace(tzinfo=timezone.utc)
+                    dimension_state = 'connected' if (now - stamp).days <= stale_days else 'partial'
+                except (AttributeError, ValueError):
+                    dimension_state = 'partial'
+            dimension_status[dimension] = {
+                'status': dimension_state,
+                'label': {'connected': '已接入', 'partial': '部分接入', 'not_connected': '未接入'}[dimension_state],
+                'record_count': len(evidence_rows),
+                'source_record_ids': sorted({row['source_record_id'] for row in evidence_rows}),
+                'last_verified_at': dimension_latest,
+            }
         result[key] = {
             'platform_key': key, 'status': status, 'label': label,
             'rule_count': len(formal), 'topics': topics,
             'missing_topics': [name for name in RULE_DIMENSIONS if name not in topics],
+            'dimensions': dimension_status,
             'last_verified_at': latest, 'reason': reason,
         }
     return result
@@ -662,7 +840,12 @@ def annotate_provenance(item, *, default_source_kind=None, default_source_type=N
     record['source_type'] = source_type
     if url and not record.get('source_url'):
         record['source_url'] = url
-    record['source_record_id'] = str(record.get('source_record_id') or _source_record_id(record))
+    if record.get('source_id_method') == 'internal_fallback' and record.get('source_id_is_official') is False:
+        record['source_record_id'] = ''
+        verification_status = 'pending'
+        record['verified_at'] = None
+    else:
+        record['source_record_id'] = str(record.get('source_record_id') or _source_record_id(record))
     record['verification_status'] = verification_status
     record['collected_at'] = record.get('collected_at') or NOW_ISO
     record['retrieved_at'] = record.get('retrieved_at') or record['collected_at']
@@ -1054,6 +1237,25 @@ def _extract_platform_rule_records(html, base_url, platform_key, platform_name, 
         # A homepage or a bare listing root cannot prove a particular rule.
         if not parsed.path.strip('/'):
             return
+        source_record_id, source_id_method = _platform_rule_source_identity(source_url, platform_key)
+        if not source_record_id:
+            return
+        record_path = parsed.path.rstrip('/').casefold()
+        if platform_key == 'amazon' and not (
+            re.match(r'^/help/hub/reference/(?:external/)?[^/]+$', record_path)
+            or re.match(r'^/gp/help/(?:external|customer/display\.html).+', record_path)
+            or re.match(r'^/(?:gp/help/)?news/.+', record_path)
+        ):
+            return
+        if platform_key == 'tiktok-shop' and not re.match(
+            r'^/(?:university|academy)/(?:essay|article)(?:/|$)', record_path
+        ):
+            return
+        if platform_key == 'aliexpress' and not (
+            re.match(r'^/soho/rules/.+', record_path)
+            or re.search(r'/(?:rule|rules|article|content)(?:/|\.|-)', record_path)
+        ):
+            return
         if platform_key == 'ebay':
             # The public eBay selling page mixes rule articles with account,
             # shopping and global navigation. Only record-level seller help or
@@ -1075,11 +1277,12 @@ def _extract_platform_rule_records(html, base_url, platform_key, platform_name, 
         )) or any(token in path_lower for token in ('/ap/register', '/ap/signin', '/login', '/register')):
             return
         seen.add(key)
-        canonical_url = _canonical_rule_url(source_url)
-        derived_key = hashlib.sha256(f'{platform_key}|{market}|{canonical_url or title}'.encode('utf-8')).hexdigest()[:24]
         record = {
             'id': gen_id('r', f'{platform_key}|{market}|{title}'),
-            'rule_key': rule_key or derived_key,
+            'rule_key': source_record_id,
+            'source_record_id': source_record_id,
+            'source_id_method': source_id_method,
+            'source_id_is_official': True,
             'title': title,
             'summary': _clean_link_text(summary),
             'platform': platform_name,
@@ -1243,22 +1446,8 @@ def collect_amazon(include_status=False):
     return (items, checked) if include_status else items
 
 
-def _collect_optional_platform_rules(platform_key, platform_name, source_key, urls):
-    """Collect an optional platform only when operators explicitly enable it.
-
-    AliExpress and eBay do not expose one stable, universally authorized US
-    rules endpoint.  Keeping the collector disabled by default prevents a
-    directory entry or guessed fee from being presented as official data.
-    """
-    if str(os.environ.get('ENABLE_OPTIONAL_PLATFORM_RULES', '')).strip().lower() not in {'1', 'true', 'yes'}:
-        print(f"  [INFO] {platform_name} collector disabled pending endpoint authorization")
-        source = COLLECTION_SOURCES.get(source_key)
-        if source is not None:
-            source['collector_status'] = 'skipped'
-            reason = 'official endpoint authorization is not configured'
-            if reason not in source['errors']:
-                source['errors'].append(reason)
-        return []
+def _collect_public_platform_rules(platform_key, platform_name, source_key, urls):
+    """Collect record-level rules from official public platform endpoints."""
     items = []
     for url in urls:
         html = fetch_html(url, source_key=source_key, source_label=f'{platform_name} Official Rules',
@@ -1275,7 +1464,7 @@ def _collect_optional_platform_rules(platform_key, platform_name, source_key, ur
 
 
 def collect_aliexpress(include_status=False):
-    items = _collect_optional_platform_rules(
+    items = _collect_public_platform_rules(
         'aliexpress', 'AliExpress', 'aliexpress_rules',
         ['https://sell.aliexpress.com/soho/rules', 'https://rulechannel.aliexpress.com/'],
     )
@@ -1283,7 +1472,7 @@ def collect_aliexpress(include_status=False):
 
 
 def collect_ebay(include_status=False):
-    items = _collect_optional_platform_rules(
+    items = _collect_public_platform_rules(
         'ebay', 'eBay', 'ebay_rules',
         ['https://www.ebay.com/help/selling', 'https://pages.ebay.com/seller-center/'],
     )
@@ -1654,6 +1843,7 @@ def merge_data(existing_file, new_items, key_fields=['title'], baseline_kind=Non
             previous_snapshot = {key: previous.get(key) for key in (
                 'id', 'rule_key', 'rule_version', 'title', 'summary', 'rule_dimensions',
                 'source_url', 'published_at', 'effective_from', 'effective_to',
+                'source_record_id', 'source_id_method', 'source_id_is_official', 'evidence_hash',
                 'collected_at', 'verified_at', 'changed_fields', 'change_summary'
             ) if previous.get(key) is not None}
             item['version_history'] = (history + [previous_snapshot])[-20:]

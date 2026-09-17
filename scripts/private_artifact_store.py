@@ -157,6 +157,49 @@ def public_upload_summary(row):
     }
 
 
+def register_completed_backup(supabase_url, service_key, row):
+    artifact_kind = row.get("artifact_kind")
+    if artifact_kind not in {"encrypted_backup", "storage_backup"}:
+        return None
+    location = f"{row['bucket_id']}/{row['object_path']}"
+    query = urllib.parse.urlencode({
+        "location": f"eq.{location}",
+        "status": "eq.completed",
+        "select": "id",
+        "limit": "1",
+    })
+    status, body = _request(
+        f"{supabase_url.rstrip('/')}/rest/v1/backup_runs?{query}",
+        service_key,
+        method="GET",
+    )
+    if status != 200:
+        raise RuntimeError(f"backup run lookup returned HTTP {status}")
+    existing = json.loads(body.decode("utf-8")) if body else []
+    if isinstance(existing, list) and existing:
+        return existing[0].get("id")
+    payload = {
+        "backup_type": "storage" if artifact_kind == "storage_backup" else "logical",
+        "status": "completed",
+        "location": location,
+        "checksum": row["sha256"],
+        "size_bytes": row["byte_size"],
+        "started_at": row["captured_at"],
+        "completed_at": datetime.now(timezone.utc).isoformat(),
+    }
+    status, body = _request(
+        f"{supabase_url.rstrip('/')}/rest/v1/backup_runs",
+        service_key,
+        method="POST",
+        body=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json", "Prefer": "return=representation"},
+    )
+    if status not in (200, 201):
+        raise RuntimeError(f"backup run registration returned HTTP {status}")
+    rows = json.loads(body.decode("utf-8")) if body else []
+    return rows[0].get("id") if isinstance(rows, list) and rows else None
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--file", required=True)
@@ -186,6 +229,9 @@ def main():
         retention_days=args.retention_days,
     )
     summary = public_upload_summary(row)
+    backup_run_id = register_completed_backup(supabase_url, service_key, row)
+    if backup_run_id:
+        summary["backup_run_id"] = backup_run_id
     if args.summary_output:
         Path(args.summary_output).write_text(
             json.dumps(summary, ensure_ascii=False, indent=2) + "\n",

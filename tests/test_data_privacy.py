@@ -105,6 +105,22 @@ class DataPrivacyTests(unittest.TestCase):
         self.assertEqual(artifacts[0]["source_key"], "tikhub")
         self.assertEqual(artifacts[0]["retention_days"], 30)
 
+    def test_private_us_artifacts_follow_manifest_category_catalog(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            us_market = root / "data" / "us_market"
+            us_market.mkdir(parents=True)
+            for name in ("electronics.json", "pet-food.json", "auto.json", "toys.json"):
+                (us_market / name).write_text("{}", encoding="utf-8")
+            paths = {
+                item["relative_path"]
+                for item in sync_to_supabase.iter_private_artifacts(root)
+            }
+        self.assertIn("data/us_market/electronics.json", paths)
+        self.assertIn("data/us_market/pet-food.json", paths)
+        self.assertNotIn("data/us_market/auto.json", paths)
+        self.assertNotIn("data/us_market/toys.json", paths)
+
     def test_history_scan_reports_restricted_paths_without_exposing_contents(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

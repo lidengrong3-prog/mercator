@@ -30,7 +30,8 @@ function jayReportHasPublishableQuality(report){
   return window.JAY_REPORT_QUALITY.allowsStoredReport({
     publishable:report.publishable===true,
     quality_gate:report.qualityGate||(report.model&&report.model.qualityGate)||null,
-    quality_snapshot:report.qualitySnapshot||(report.model&&report.model.qualitySnapshot)||null
+    quality_snapshot:report.qualitySnapshot||(report.model&&report.model.qualitySnapshot)||null,
+    coverage_matrix:report.coverageMatrix||(report.model&&report.model.coverageMatrix)||null
   });
 }
 function jayQualityDate(value){

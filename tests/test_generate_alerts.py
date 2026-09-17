@@ -34,6 +34,17 @@ def lineage_fields(record_ids=None, evidence_hashes=None, lineage_type="record",
 
 
 class GenerateAlertsTests(unittest.TestCase):
+    def test_legacy_cpsc_category_is_normalized_to_catalog(self):
+        records = [{
+            "id": f"legacy-toy-{index}", "title": "Toy recall",
+            "title_zh": f"玩具召回{index}", "description_zh": "产品存在安全风险",
+            "date": generate_alerts.TODAY, "category": "toys",
+        } for index in range(3)]
+        with patch.object(generate_alerts, "load_json", return_value={"china_related": records}):
+            alerts = generate_alerts.generate_from_cpsc()
+        self.assertTrue(alerts)
+        self.assertEqual({tuple(alert["category_codes"]) for alert in alerts}, {("generic",)})
+
     def test_untranslated_cpsc_records_do_not_enter_chinese_alert_ui(self):
         payload = {
             "china_related": [{

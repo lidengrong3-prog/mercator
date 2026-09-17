@@ -1,8 +1,9 @@
 {
   "schema_version": "1.0",
   "domain": "tax",
-  "updated_at": null,
-  "source_count": 0,
+  "updated_at": "2026-09-17T08:08:18.530274+00:00",
+  "last_checked_at": "2026-09-17T08:08:18.530274+00:00",
+  "source_count": 5,
   "tax_types": [
     "customs_duty",
     "vat",
@@ -10,7 +11,344 @@
     "marketplace_collection",
     "import_fee"
   ],
-  "items": [],
+  "source_checks": {
+    "https://www.usa.gov/state-taxes": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:08:18.530274+00:00",
+      "source_content_hash": "b2d178b4f00bf94bb196fd47128ad0d693fe5b1f93010a9ba6a684a9821626af",
+      "source_last_modified_at": "2026-09-16T14:13:49+00:00",
+      "error": null
+    },
+    "https://www.cdtfa.ca.gov/formspubs/pub109/": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:08:18.530274+00:00",
+      "source_content_hash": "a233c1e3376190ff743f55c865b7ee4d5a474f207d9fabd3c3feba649514cffa",
+      "source_last_modified_at": "2026-08-07T20:29:39+00:00",
+      "error": null
+    },
+    "https://hts.usitc.gov/": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:08:18.530274+00:00",
+      "source_content_hash": "4e791848243d04488ad9cd5265a3187130b09ad0a597aa9a77e6eccf9776a8b9",
+      "source_last_modified_at": "2026-09-02T23:17:34+00:00",
+      "error": null
+    },
+    "https://ustr.gov/issue-areas/enforcement/section-301-investigations/tariff-actions": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:08:18.530274+00:00",
+      "source_content_hash": "cec6e3c588c97f0be3712300b542f987444f1ff80db4d257644723c461eddcb8",
+      "source_last_modified_at": "2026-09-17T08:08:16+00:00",
+      "error": null
+    },
+    "https://www.cbp.gov/trade/basic-import-export/user-fee-table": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:08:18.530274+00:00",
+      "source_content_hash": "99363c332d59ea94fb982342942ab3c99e49e669c1cf5b0a1a811d1d79365d08",
+      "source_last_modified_at": "2026-09-17T08:08:16+00:00",
+      "error": null
+    }
+  },
+  "items": [
+    {
+      "id": "tax-us-state-local-sales-tax",
+      "source_record_id": "USA-GOV-STATE-TAXES",
+      "source_key": "usa-gov",
+      "source": "USA.gov",
+      "source_type": "government",
+      "source_url": "https://www.usa.gov/state-taxes",
+      "title": "State and local sales taxes in the United States",
+      "title_zh": "美国州和地方销售税",
+      "summary": "The United States has no single federal retail sales-tax rate. State and local governments determine whether sales tax applies and the applicable rate, so a seller must resolve the destination jurisdiction before calculating tax.",
+      "summary_zh": "美国没有统一的联邦零售销售税率。销售税是否适用及具体税率由州和地方政府决定，卖家应先确认交易目的地辖区再计算税额。",
+      "tax_type": "sales_tax",
+      "rate": "Varies by state and locality",
+      "scope_condition": "Destination-state and local nexus rules determine liability.",
+      "effective_from": "2025-01-01",
+      "category_codes": [
+        "generic",
+        "electronics",
+        "beauty",
+        "apparel",
+        "home",
+        "pet-food",
+        "pet-supplies"
+      ],
+      "authority": "United States General Services Administration",
+      "legal_reference": "USA.gov state and local tax guidance",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:08:18.530274+00:00",
+      "retrieved_at": "2026-09-17T08:08:18.530274+00:00",
+      "verified_at": "2026-09-17T08:08:18.530274+00:00",
+      "published_at": "2026-09-16",
+      "source_last_modified_at": "2026-09-16T14:13:49+00:00",
+      "source_content_hash": "b2d178b4f00bf94bb196fd47128ad0d693fe5b1f93010a9ba6a684a9821626af",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "bd3ad6eca5c842e54fc8c2fb4bc36086a64bcad0dc1b317fe1cf27e32e5a6b87",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "bd3ad6eca5c842e5",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:08:18.530274+00:00",
+        "source_hash": "23ccc30531feb89a57d5761059bf43df3a549762a4f116a60f34d849172d2104",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "tax-us-ca-marketplace-collection",
+      "source_record_id": "CA-CDTFA-PUBLICATION-109",
+      "source_key": "cdtfa",
+      "source": "California Department of Tax and Fee Administration",
+      "source_type": "government",
+      "source_url": "https://cdtfa.ca.gov/formspubs/pub109/",
+      "title": "California marketplace sales rules (Publication 109)",
+      "title_zh": "加州平台交易销售税规则（第 109 号出版物）",
+      "summary": "California Publication 109 explains sales and use-tax responsibilities for internet sales, including marketplace-facilitator collection duties. Applicability depends on the transaction, seller activities, and California nexus.",
+      "summary_zh": "加州第 109 号出版物说明互联网销售的销售税和使用税责任，包括平台促进者的代收义务。是否适用取决于具体交易、卖家活动及其与加州的税收联系。",
+      "tax_type": "marketplace_collection",
+      "rate": "California state and district rates apply when the transaction is taxable",
+      "scope_condition": "California marketplace transactions; verify facilitator and seller roles.",
+      "effective_from": "2019-10-01",
+      "category_codes": [
+        "generic",
+        "electronics",
+        "beauty",
+        "apparel",
+        "home",
+        "pet-food",
+        "pet-supplies"
+      ],
+      "subjurisdiction_codes": [
+        "US-CA"
+      ],
+      "authority": "California Department of Tax and Fee Administration",
+      "legal_reference": "California Revenue and Taxation Code marketplace-facilitator rules",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:08:18.530274+00:00",
+      "retrieved_at": "2026-09-17T08:08:18.530274+00:00",
+      "verified_at": "2026-09-17T08:08:18.530274+00:00",
+      "published_at": "2026-08-07",
+      "source_last_modified_at": "2026-08-07T20:29:39+00:00",
+      "source_content_hash": "a233c1e3376190ff743f55c865b7ee4d5a474f207d9fabd3c3feba649514cffa",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "824516887bcdb0a757a5368fe21021f6f707b46d4d748547b2b59e0ae52a9d05",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "824516887bcdb0a7",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:08:18.530274+00:00",
+        "source_hash": "d0e1576f73350e8f190887174052eb94ea37f21cb88843d9f12ce10e7acaddc0",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "tax-us-htsus-customs-duty",
+      "source_record_id": "USITC-HTSUS-CURRENT",
+      "source_key": "usitc",
+      "source": "United States International Trade Commission",
+      "source_type": "government",
+      "source_url": "https://hts.usitc.gov/",
+      "title": "Harmonized Tariff Schedule of the United States",
+      "title_zh": "美国协调关税表",
+      "summary": "The HTSUS is the official tariff schedule used to classify imported merchandise. Duty treatment must be determined from the current HTSUS classification, country of origin, special-program eligibility, and applicable chapter notes.",
+      "summary_zh": "美国协调关税表是进口商品归类所使用的正式税则。关税待遇必须结合现行 HTSUS 归类、原产国、特殊项目资格及相关章注确定。",
+      "tax_type": "customs_duty",
+      "rate": "Varies by HTSUS classification and origin",
+      "scope_condition": "Imported merchandise; classification-specific.",
+      "effective_from": "2026-01-01",
+      "category_codes": [
+        "generic",
+        "electronics",
+        "beauty",
+        "apparel",
+        "home",
+        "pet-food",
+        "pet-supplies"
+      ],
+      "authority": "United States International Trade Commission",
+      "legal_reference": "Harmonized Tariff Schedule of the United States",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:08:18.530274+00:00",
+      "retrieved_at": "2026-09-17T08:08:18.530274+00:00",
+      "verified_at": "2026-09-17T08:08:18.530274+00:00",
+      "published_at": "2026-09-02",
+      "source_last_modified_at": "2026-09-02T23:17:34+00:00",
+      "source_content_hash": "4e791848243d04488ad9cd5265a3187130b09ad0a597aa9a77e6eccf9776a8b9",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "4a37705170454ba5293a265da2a330133d61d20bebd9421861c8c1f3dfca0a10",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "4a37705170454ba5",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:08:18.530274+00:00",
+        "source_hash": "bdbb13497673f399484cccc9266ddfc014c083fbfefa1143979945ba5ab54dab",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "tax-us-section-301-additional-tariff",
+      "source_record_id": "USTR-SECTION-301-TARIFF-ACTIONS",
+      "source_key": "ustr",
+      "source": "Office of the United States Trade Representative",
+      "source_type": "government",
+      "source_url": "https://ustr.gov/issue-areas/enforcement/section-301-investigations/tariff-actions",
+      "title": "Section 301 tariff actions concerning China",
+      "title_zh": "针对中国的 301 条款附加关税措施",
+      "summary": "USTR maintains the official Section 301 tariff-action record. Additional duties apply only to covered HTSUS subheadings and must be checked together with exclusions, effective dates, country of origin, and the ordinary customs duty.",
+      "summary_zh": "美国贸易代表办公室维护 301 条款关税措施的正式记录。附加税仅适用于被列入范围的 HTSUS 税号，判断时还需同时核对排除清单、生效日期、原产国和普通关税。",
+      "tax_type": "customs_duty",
+      "tax_subtype": "additional_tariff",
+      "rate": "Varies by covered HTSUS subheading and effective action",
+      "scope_condition": "China-origin goods in covered HTSUS subheadings; exclusions may apply.",
+      "effective_from": "2018-07-06",
+      "category_codes": [
+        "generic",
+        "electronics",
+        "beauty",
+        "apparel",
+        "home",
+        "pet-food",
+        "pet-supplies"
+      ],
+      "authority": "Office of the United States Trade Representative",
+      "legal_reference": "Trade Act of 1974, Section 301 tariff actions",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:08:18.530274+00:00",
+      "retrieved_at": "2026-09-17T08:08:18.530274+00:00",
+      "verified_at": "2026-09-17T08:08:18.530274+00:00",
+      "published_at": "2026-09-17",
+      "source_last_modified_at": "2026-09-17T08:08:16+00:00",
+      "source_content_hash": "cec6e3c588c97f0be3712300b542f987444f1ff80db4d257644723c461eddcb8",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "5d5410c0598e9983ad3e6661a85bbc7fb66722e30fa405af3641b9343766595a",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "5d5410c0598e9983",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:08:18.530274+00:00",
+        "source_hash": "3cce08d46a8d58dbe99c25a10098136ed92e84b213814e889f6c0b0d7605c84e",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "tax-us-cbp-merchandise-processing-fee",
+      "source_record_id": "CBP-USER-FEE-TABLE-MPF",
+      "source_key": "cbp",
+      "source": "U.S. Customs and Border Protection",
+      "source_type": "government",
+      "source_url": "https://www.cbp.gov/trade/basic-import-export/user-fee-table",
+      "title": "Customs user fees and merchandise processing fee",
+      "title_zh": "美国海关用户费与商品处理费",
+      "summary": "CBP publishes the official user-fee table, including the merchandise processing fee. The payable amount depends on entry type, entered value, statutory minimum and maximum amounts, and any applicable exemption or trade agreement.",
+      "summary_zh": "美国海关与边境保护局发布正式用户费表，其中包括商品处理费。应付金额取决于申报类型、申报价值、法定最低和最高金额，以及适用的豁免或贸易协定。",
+      "tax_type": "import_fee",
+      "rate": "See the current CBP user-fee table",
+      "scope_condition": "Customs entries; entry type and exemptions affect the fee.",
+      "effective_from": "2025-10-01",
+      "category_codes": [
+        "generic",
+        "electronics",
+        "beauty",
+        "apparel",
+        "home",
+        "pet-food",
+        "pet-supplies"
+      ],
+      "authority": "U.S. Customs and Border Protection",
+      "legal_reference": "19 CFR 24.23 and the current CBP user-fee table",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:08:18.530274+00:00",
+      "retrieved_at": "2026-09-17T08:08:18.530274+00:00",
+      "verified_at": "2026-09-17T08:08:18.530274+00:00",
+      "published_at": "2026-09-17",
+      "source_last_modified_at": "2026-09-17T08:08:16+00:00",
+      "source_content_hash": "99363c332d59ea94fb982342942ab3c99e49e669c1cf5b0a1a811d1d79365d08",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "a6db012ef1e13cf20b9b90834eaee0a687cfd5e9f5cc0020918f998e6af19bca",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "a6db012ef1e13cf2",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:08:18.530274+00:00",
+        "source_hash": "0d049946b344733bf4771259c373efa7f580f21208e4081fbe1853137439a623",
+        "human_reviewed": true
+      }
+    }
+  ],
   "language_contract": {
     "source_fields": [
       "title",

@@ -35,7 +35,20 @@ test('public rule projection reports honest status and traceable records', () =>
     assert.match(rule.source_url, /^https:\/\/[^/]+\/.+/);
     assert.ok(!Number.isNaN(Date.parse(rule.verified_at)));
     assert.ok(rule.rule_key);
+    assert.ok(rule.source_record_id);
+    assert.equal(rule.source_id_is_official, true);
+    assert.ok(['url_query', 'url_path', 'api_field'].includes(rule.source_id_method));
+    assert.equal(rule.rule_key, rule.source_record_id);
     assert.ok(String(rule.rule_version || '').trim());
     assert.ok(['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty', 'other'].includes(rule.topic));
+  }
+  for (const platform of Object.values(rules.platform_coverage)) {
+    assert.deepEqual(Object.keys(platform.dimensions), [
+      'fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty',
+    ]);
+    for (const dimension of Object.values(platform.dimensions)) {
+      assert.ok(['connected', 'partial', 'not_connected'].includes(dimension.status));
+      assert.ok(Array.isArray(dimension.source_record_ids));
+    }
   }
 });

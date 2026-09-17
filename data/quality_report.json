@@ -46,17 +46,26 @@
       "TikTok Shop",
       "eBay"
     ],
-    "manifest": "data/market_scope.json"
+    "manifest": "data/market_scope.json",
+    "category_codes": [
+      "apparel",
+      "beauty",
+      "electronics",
+      "generic",
+      "home",
+      "pet-food",
+      "pet-supplies"
+    ]
   },
   "provenance_schema": "data/provenance_schema.json",
-  "generated_at": "2026-09-16T22:59:42.662889+00:00",
+  "generated_at": "2026-09-17T08:22:29.964Z",
   "status": "degraded",
   "publishable": true,
   "collection_run": {
     "quality_status": "degraded",
     "ledger_schema_version": 2,
     "ledger_status": "degraded",
-    "completed_at": "2026-09-16T22:59:42.211690+00:00",
+    "completed_at": "2026-09-17T08:22:29.964Z",
     "scope": {
       "market_codes": [
         "US"
@@ -66,9 +75,18 @@
         "amazon",
         "ebay",
         "tiktok-shop"
+      ],
+      "category_keys": [
+        "apparel",
+        "beauty",
+        "electronics",
+        "generic",
+        "home",
+        "pet-food",
+        "pet-supplies"
       ]
     },
-    "source_count": 12,
+    "source_count": 14,
     "pipeline_sources": [
       "cpsc_recalls",
       "fred_bls_macro",
@@ -79,24 +97,24 @@
   },
   "summary": {
     "datasets": 11,
-    "raw_records": 772,
-    "scoped_records": 587,
-    "formal_records": 567,
+    "raw_records": 790,
+    "scoped_records": 605,
+    "formal_records": 583,
     "demo_records": 0,
     "unverified_records": 93,
     "missing_source_records": 0,
     "excluded_records": 193,
-    "healthy": 6,
+    "healthy": 8,
     "degraded": 3,
-    "not_connected": 2,
+    "not_connected": 0,
     "stale": 0,
     "failed": 0,
     "errors": 0,
-    "warnings": 8,
+    "warnings": 6,
     "collection_run_status": "degraded",
     "collection_ledger_status": "degraded",
     "collection_ledger_schema_version": 2,
-    "collection_sources": 12,
+    "collection_sources": 14,
     "pipeline_sources": [
       "cpsc_recalls",
       "fred_bls_macro",
@@ -111,17 +129,17 @@
       "label": "采集运行状态",
       "status": "degraded",
       "path": "data/collection_run.json",
-      "records": 12,
-      "raw_records": 12,
-      "scoped_records": 12,
+      "records": 14,
+      "raw_records": 14,
+      "scoped_records": 14,
       "formal_records": 0,
       "demo_records": 0,
       "unverified_records": 0,
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-16T22:59:42.211690+00:00",
-      "freshness_hours": 0.0,
+      "updated_at": "2026-09-17T08:22:29.964Z",
+      "freshness_hours": 0,
       "connected": true,
       "errors": [],
       "warnings": [
@@ -131,7 +149,7 @@
       "metrics": {
         "ledger_schema_version": 2,
         "ledger_status": "degraded",
-        "ledger_completed_at": "2026-09-16T22:59:42.211690+00:00",
+        "ledger_completed_at": "2026-09-17T08:22:29.964Z",
         "ledger_scope": {
           "market_codes": [
             "US"
@@ -141,6 +159,15 @@
             "amazon",
             "ebay",
             "tiktok-shop"
+          ],
+          "category_keys": [
+            "apparel",
+            "beauty",
+            "electronics",
+            "generic",
+            "home",
+            "pet-food",
+            "pet-supplies"
           ]
         },
         "configured_market_codes": [
@@ -153,7 +180,7 @@
           "tiktok-shop"
         ],
         "source_status_counts": {
-          "succeeded": 8,
+          "succeeded": 10,
           "degraded": 3,
           "failed": 1,
           "skipped": 0
@@ -162,7 +189,9 @@
           "amazon_rules",
           "federal_register",
           "tiktok_shop_rules",
-          "us_market_categories"
+          "us_access_official",
+          "us_market_categories",
+          "us_tax_official"
         ],
         "core_failures": [],
         "pipeline_sources": [
@@ -173,14 +202,23 @@
         "missing_pipeline_sources": [],
         "unconnected_platform_keys": [],
         "ledger_summary": {
-          "sources": 12,
-          "succeeded": 8,
+          "sources": 14,
+          "succeeded": 10,
           "degraded": 3,
           "failed": 1,
           "core_failures": [],
-          "records_collected": 482,
-          "records_in_scope": 513
-        }
+          "records_collected": 498,
+          "records_in_scope": 529
+        },
+        "configured_category_keys": [
+          "apparel",
+          "beauty",
+          "electronics",
+          "generic",
+          "home",
+          "pet-food",
+          "pet-supplies"
+        ]
       }
     },
     "policies": {
@@ -202,7 +240,7 @@
         "out_of_scope": 38
       },
       "updated_at": "2026-09-16T22:58:49.285933+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0,
       "connected": null,
       "errors": [],
       "warnings": [
@@ -260,33 +298,32 @@
         "future_dated_records": 0,
         "formal_records_missing_chinese": 0,
         "invalid_domain_types": 0,
-        "source_url_coverage_pct": 100.0
+        "source_url_coverage_pct": 100
       }
     },
     "taxes": {
       "key": "taxes",
       "label": "税收与关税",
-      "status": "not_connected",
+      "status": "healthy",
       "path": "data/taxes.json",
-      "records": 0,
-      "raw_records": 0,
-      "scoped_records": 0,
-      "formal_records": 0,
+      "records": 5,
+      "raw_records": 5,
+      "scoped_records": 5,
+      "formal_records": 5,
       "demo_records": 0,
       "unverified_records": 0,
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": null,
-      "freshness_hours": null,
-      "connected": false,
+      "updated_at": "2026-09-17T08:08:18.530274+00:00",
+      "freshness_hours": 0.1,
+      "connected": true,
       "errors": [],
-      "warnings": [
-        "税收与关税数据集为空：尚未接入当前范围数据，相关结论仅可显示为待补充"
-      ],
+      "warnings": [],
       "metrics": {
-        "connection_status": "not_connected",
-        "formal_records": 0,
+        "freshness_basis": "last_checked_at",
+        "content_updated_at": "2026-09-17T08:08:18.530274+00:00",
+        "formal_records": 5,
         "demo_records": 0,
         "unverified_records": 0,
         "missing_source_records": 0,
@@ -294,20 +331,20 @@
         "exclusion_reasons": {},
         "legacy_inferred_records": 0,
         "source_kind_counts": {
-          "official": 0,
+          "official": 5,
           "traceable": 0,
           "uploaded": 0,
           "derived": 0,
           "demo": 0
         },
         "verification_status_counts": {
-          "verified": 0,
+          "verified": 5,
           "uploaded": 0,
           "pending": 0,
           "rejected": 0
         },
         "source_type_counts": {
-          "government": 0,
+          "government": 5,
           "regulator": 0,
           "platform": 0,
           "official_feed": 0,
@@ -318,8 +355,8 @@
           "demo": 0,
           "unknown": 0
         },
-        "official_or_traceable_records": 0,
-        "provenance_complete_records": 0,
+        "official_or_traceable_records": 5,
+        "provenance_complete_records": 5,
         "malformed_records": 0,
         "missing_ids": 0,
         "missing_titles": 0,
@@ -330,33 +367,32 @@
         "future_dated_records": 0,
         "formal_records_missing_chinese": 0,
         "invalid_domain_types": 0,
-        "source_url_coverage_pct": 0
+        "source_url_coverage_pct": 100
       }
     },
     "access_requirements": {
       "key": "access_requirements",
       "label": "市场准入",
-      "status": "not_connected",
+      "status": "healthy",
       "path": "data/access_requirements.json",
-      "records": 0,
-      "raw_records": 0,
-      "scoped_records": 0,
-      "formal_records": 0,
+      "records": 11,
+      "raw_records": 11,
+      "scoped_records": 11,
+      "formal_records": 11,
       "demo_records": 0,
       "unverified_records": 0,
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": null,
-      "freshness_hours": null,
-      "connected": false,
+      "updated_at": "2026-09-17T08:15:08.346719+00:00",
+      "freshness_hours": 0,
+      "connected": true,
       "errors": [],
-      "warnings": [
-        "市场准入数据集为空：尚未接入当前范围数据，相关结论仅可显示为待补充"
-      ],
+      "warnings": [],
       "metrics": {
-        "connection_status": "not_connected",
-        "formal_records": 0,
+        "freshness_basis": "last_checked_at",
+        "content_updated_at": "2026-09-17T08:15:08.346719+00:00",
+        "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 0,
         "missing_source_records": 0,
@@ -364,21 +400,21 @@
         "exclusion_reasons": {},
         "legacy_inferred_records": 0,
         "source_kind_counts": {
-          "official": 0,
+          "official": 11,
           "traceable": 0,
           "uploaded": 0,
           "derived": 0,
           "demo": 0
         },
         "verification_status_counts": {
-          "verified": 0,
+          "verified": 11,
           "uploaded": 0,
           "pending": 0,
           "rejected": 0
         },
         "source_type_counts": {
-          "government": 0,
-          "regulator": 0,
+          "government": 6,
+          "regulator": 5,
           "platform": 0,
           "official_feed": 0,
           "industry_association": 0,
@@ -388,8 +424,8 @@
           "demo": 0,
           "unknown": 0
         },
-        "official_or_traceable_records": 0,
-        "provenance_complete_records": 0,
+        "official_or_traceable_records": 11,
+        "provenance_complete_records": 11,
         "malformed_records": 0,
         "missing_ids": 0,
         "missing_titles": 0,
@@ -400,7 +436,7 @@
         "future_dated_records": 0,
         "formal_records_missing_chinese": 0,
         "invalid_domain_types": 0,
-        "source_url_coverage_pct": 0
+        "source_url_coverage_pct": 100
       }
     },
     "rules": {
@@ -422,7 +458,7 @@
         "out_of_scope": 47
       },
       "updated_at": "2026-09-16T22:58:49.285933+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0,
       "connected": null,
       "errors": [],
       "warnings": [
@@ -480,7 +516,7 @@
         "future_dated_records": 0,
         "formal_records_missing_chinese": 0,
         "invalid_domain_types": 0,
-        "source_url_coverage_pct": 100.0
+        "source_url_coverage_pct": 100
       }
     },
     "alerts": {
@@ -498,7 +534,7 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-16T22:59:42.261652+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0,
       "connected": null,
       "errors": [],
       "warnings": [],
@@ -562,7 +598,7 @@
       "excluded_records": 38,
       "exclusion_reasons": {},
       "updated_at": "2026-09-16T22:59:42.210873+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0,
       "connected": null,
       "errors": [],
       "warnings": [],
@@ -614,7 +650,7 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-16T22:59:22.911453+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0,
       "connected": null,
       "errors": [],
       "warnings": [],
@@ -648,7 +684,7 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-16T22:59:42.210873+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0,
       "connected": null,
       "errors": [],
       "warnings": [],
@@ -709,7 +745,7 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-16T22:59:30.351580+00:00",
-      "freshness_hours": 0.0,
+      "freshness_hours": 0,
       "connected": null,
       "errors": [],
       "warnings": [],

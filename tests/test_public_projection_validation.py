@@ -44,8 +44,9 @@ class PublicProjectionValidationTests(unittest.TestCase):
         manifest = {
             "config_version": "test",
             "default_market_codes": ["US"],
-            "markets": [{"code": "US", "key": "us", "name": "美国", "aliases": ["United States"]}],
+            "markets": [{"code": "US", "key": "us", "name": "美国", "aliases": ["United States"], "category_keys": ["generic"]}],
             "platforms": [{"key": "amazon", "name": "Amazon"}],
+            "categories": [{"code": "generic", "name": "通用品类", "status": "active"}],
             "market_platforms": [{
                 "market_code": "US",
                 "platform_key": "amazon",
@@ -69,7 +70,7 @@ class PublicProjectionValidationTests(unittest.TestCase):
             "generated_at": "2026-09-10T09:00:00+00:00",
             "status": "healthy",
             "publishable": True,
-            "scope": {"market_codes": ["US"], "platform_names": ["Amazon"]},
+            "scope": {"market_codes": ["US"], "platform_names": ["Amazon"], "category_codes": ["generic"]},
             "summary": {"errors": 0},
             "datasets": {
                 key: {"formal_records": count, "errors": []}

@@ -1,8 +1,9 @@
 {
   "schema_version": "1.0",
   "domain": "access",
-  "updated_at": null,
-  "source_count": 0,
+  "updated_at": "2026-09-17T08:15:08.346719+00:00",
+  "last_checked_at": "2026-09-17T08:15:08.346719+00:00",
+  "source_count": 4,
   "requirement_types": [
     "certification",
     "labeling",
@@ -11,7 +12,665 @@
     "intellectual_property",
     "import_requirement"
   ],
-  "items": [],
+  "source_checks": {
+    "https://www.govinfo.gov/content/pkg/CFR-2025-title47-vol1/xml/CFR-2025-title47-vol1-part2.xml": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:15:08.346719+00:00",
+      "source_content_hash": "77a41b563a6190d417dc450e8bae814c7128867536fc9bd179862380b3c4341f",
+      "source_last_modified_at": "2026-08-01T12:20:22+00:00",
+      "error": null
+    },
+    "https://www.cpsc.gov/Business--Manufacturing/Testing-Certification": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:15:08.346719+00:00",
+      "source_content_hash": "d42cdffbc41ceaaef3a4fb7c82e8b41028aeddbd883b5dc6350f91c00159781b",
+      "source_last_modified_at": "2026-09-16T22:47:18+00:00",
+      "error": null
+    },
+    "https://www.govinfo.gov/content/pkg/CFR-2025-title16-vol1/xml/CFR-2025-title16-vol1-part303.xml": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:15:08.346719+00:00",
+      "source_content_hash": "2143e786f59b08866d29bb0b6e0cad93a4b578c062fb0e22dbabab7786a71a14",
+      "source_last_modified_at": "2025-07-03T18:40:54+00:00",
+      "error": null
+    },
+    "https://www.fda.gov/cosmetics/cosmetics-labeling-regulations/cosmetics-labeling-guide": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:15:08.346719+00:00",
+      "source_content_hash": "f03089518485eb8868da4377a8d11b04a184047bb580c25737340f5ed7cd41f9",
+      "source_last_modified_at": "2026-09-16T15:59:07+00:00",
+      "error": null
+    },
+    "https://www.fda.gov/cosmetics/registration-listing-cosmetic-product-facilities-and-products": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:15:08.346719+00:00",
+      "source_content_hash": "a6f25ffb85a9d9d3f79ec81c24cf60cde88f2411a16b5b682f2130ceaa1771c5",
+      "source_last_modified_at": "2026-09-16T13:48:17+00:00",
+      "error": null
+    },
+    "https://www.govinfo.gov/content/pkg/CFR-2025-title16-vol1/xml/CFR-2025-title16-vol1-part500.xml": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:15:08.346719+00:00",
+      "source_content_hash": "a657d8ac91a41b7f363a727bfade1dcb666a22093c7a5e4da096969655d73d6e",
+      "source_last_modified_at": "2025-07-03T18:40:53+00:00",
+      "error": null
+    },
+    "https://www.govinfo.gov/content/pkg/CFR-2025-title21-vol1/xml/CFR-2025-title21-vol1-part1.xml": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:15:08.346719+00:00",
+      "source_content_hash": "642d0b59626414f7cfd4216a5e638c4d59b487b5bd7daaea3eecc40b76a71429",
+      "source_last_modified_at": "2025-08-15T16:04:54+00:00",
+      "error": null
+    },
+    "https://www.govinfo.gov/content/pkg/CFR-2025-title21-vol6/xml/CFR-2025-title21-vol6-part501.xml": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:15:08.346719+00:00",
+      "source_content_hash": "717281966e6c2221fe3b7a2d37d93fb2b3738dab9254d111da4a6d6eb599df19",
+      "source_last_modified_at": "2025-08-06T15:39:13+00:00",
+      "error": null
+    },
+    "https://www.fda.gov/animal-veterinary/import-exports/importing-animal-food": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:15:08.346719+00:00",
+      "source_content_hash": "8edf4f95f37e2eae1145666d315c304eb5f4ab5dc6c52436b217f622cc621709",
+      "source_last_modified_at": "2026-09-16T23:59:47+00:00",
+      "error": null
+    },
+    "https://www.cbp.gov/trade/basic-import-export": {
+      "status": "succeeded",
+      "checked_at": "2026-09-17T08:15:08.346719+00:00",
+      "source_content_hash": "c34b00d52e3ad7af810aad22ff1e43ac2eeeeb4732c4725038e84e2849635cc5",
+      "source_last_modified_at": "2026-09-17T07:27:24+00:00",
+      "error": null
+    }
+  },
+  "items": [
+    {
+      "id": "access-us-fcc-equipment-authorization",
+      "source_record_id": "47-CFR-PART-2-SUBPART-J",
+      "source_key": "govinfo",
+      "source": "U.S. Government Publishing Office",
+      "source_type": "government",
+      "source_url": "https://www.govinfo.gov/content/pkg/CFR-2025-title47-vol1/xml/CFR-2025-title47-vol1-part2.xml",
+      "title": "FCC equipment authorization procedures",
+      "title_zh": "FCC 设备授权程序",
+      "summary": "47 CFR Part 2 Subpart J sets equipment-authorization procedures for radiofrequency devices. Electronics that intentionally or unintentionally emit radiofrequency energy must be classified against the applicable FCC authorization route before marketing.",
+      "summary_zh": "《联邦法规汇编》第 47 编第 2 部分 J 分部规定射频设备授权程序。对有意或无意发射射频能量的电子产品，应在上市前确认适用的 FCC 授权路径。",
+      "requirement_type": "certification",
+      "category_codes": [
+        "electronics"
+      ],
+      "scope_condition": "Applies when the product is an RF device subject to FCC rules.",
+      "effective_from": "2017-11-02",
+      "authority": "Federal Communications Commission",
+      "legal_reference": "47 CFR Part 2 Subpart J",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:15:08.346719+00:00",
+      "retrieved_at": "2026-09-17T08:15:08.346719+00:00",
+      "verified_at": "2026-09-17T08:15:08.346719+00:00",
+      "published_at": "2026-08-01",
+      "source_last_modified_at": "2026-08-01T12:20:22+00:00",
+      "source_content_hash": "77a41b563a6190d417dc450e8bae814c7128867536fc9bd179862380b3c4341f",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "b389f3554555d34b472301b776c35b828cc0a5755be1b4310074d37a83aee45e",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "b389f3554555d34b",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:15:08.346719+00:00",
+        "source_hash": "4bd7d11f50629e85d2f6cca428d42995370a36f0fca8928f24eb084e821fdda6",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "access-us-cpsc-product-certification",
+      "source_record_id": "CPSC-TESTING-CERTIFICATION",
+      "source_key": "cpsc",
+      "source": "U.S. Consumer Product Safety Commission",
+      "source_type": "regulator",
+      "source_url": "https://www.cpsc.gov/Business--Manufacturing/Testing-Certification",
+      "title": "CPSC product testing and certification",
+      "title_zh": "CPSC 产品测试与合格证要求",
+      "summary": "Manufacturers and importers of products subject to a CPSC-enforced product-safety rule must determine whether a General Certificate of Conformity or Children's Product Certificate and required testing apply before distribution in the United States.",
+      "summary_zh": "对受 CPSC 执行的产品安全规则约束的商品，制造商和进口商应在美国分销前确认是否需要一般合格证、儿童产品证书及相应测试。",
+      "requirement_type": "certification",
+      "category_codes": [
+        "generic",
+        "electronics",
+        "home",
+        "pet-supplies"
+      ],
+      "scope_condition": "Conditional on a CPSC-enforced product-safety rule and product use.",
+      "effective_from": "2008-11-12",
+      "authority": "U.S. Consumer Product Safety Commission",
+      "legal_reference": "Consumer Product Safety Improvement Act certification provisions",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:15:08.346719+00:00",
+      "retrieved_at": "2026-09-17T08:15:08.346719+00:00",
+      "verified_at": "2026-09-17T08:15:08.346719+00:00",
+      "published_at": "2026-09-16",
+      "source_last_modified_at": "2026-09-16T22:47:18+00:00",
+      "source_content_hash": "d42cdffbc41ceaaef3a4fb7c82e8b41028aeddbd883b5dc6350f91c00159781b",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "6767847ef997ad497bdbbb75bbefc317b7b86726fdc333afeb3b92f3f60cdb6e",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "6767847ef997ad49",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:15:08.346719+00:00",
+        "source_hash": "a3b26f1f8945b7ec4a6b8a70ec314e62d711c2f38d1712ded9b0315457ecc8da",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "access-us-textile-labeling",
+      "source_record_id": "16-CFR-PART-303",
+      "source_key": "govinfo",
+      "source": "U.S. Government Publishing Office",
+      "source_type": "government",
+      "source_url": "https://www.govinfo.gov/content/pkg/CFR-2025-title16-vol1/xml/CFR-2025-title16-vol1-part303.xml",
+      "title": "Textile fiber product identification and labeling",
+      "title_zh": "纺织纤维产品标识与标签要求",
+      "summary": "16 CFR Part 303 implements textile labeling requirements, including fiber content, responsible company identification, and country-of-origin disclosures for covered textile products.",
+      "summary_zh": "《联邦法规汇编》第 16 编第 303 部分规定受管纺织产品的纤维成分、责任企业身份和原产国等标签信息。",
+      "requirement_type": "labeling",
+      "category_codes": [
+        "apparel"
+      ],
+      "scope_condition": "Covered textile fiber products; statutory exclusions must be checked.",
+      "effective_from": "1960-03-03",
+      "authority": "Federal Trade Commission",
+      "legal_reference": "16 CFR Part 303",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:15:08.346719+00:00",
+      "retrieved_at": "2026-09-17T08:15:08.346719+00:00",
+      "verified_at": "2026-09-17T08:15:08.346719+00:00",
+      "published_at": "2025-07-03",
+      "source_last_modified_at": "2025-07-03T18:40:54+00:00",
+      "source_content_hash": "2143e786f59b08866d29bb0b6e0cad93a4b578c062fb0e22dbabab7786a71a14",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "1de0fdf286c615932c649299c37401151243b71564d3d2e4ac63909a3885b714",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "1de0fdf286c61593",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:15:08.346719+00:00",
+        "source_hash": "9349c58e13f46d0117a1dad06c98867a8ef898b0d699e539b1ed6c9e5e234747",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "access-us-cosmetics-labeling",
+      "source_record_id": "FDA-COSMETICS-LABELING-GUIDE",
+      "source_key": "fda",
+      "source": "U.S. Food and Drug Administration",
+      "source_type": "regulator",
+      "source_url": "https://www.fda.gov/cosmetics/cosmetics-labeling-regulations/cosmetics-labeling-guide",
+      "title": "FDA cosmetics labeling requirements",
+      "title_zh": "FDA 化妆品标签要求",
+      "summary": "FDA's cosmetics labeling guide explains identity, net quantity, ingredient declaration, business information, warning, and placement requirements for cosmetic labels. Claims that make a product a drug trigger additional requirements.",
+      "summary_zh": "FDA 化妆品标签指南说明产品名称、净含量、成分表、企业信息、警示语和标签位置要求。使产品构成药品的宣称会触发额外要求。",
+      "requirement_type": "labeling",
+      "category_codes": [
+        "beauty"
+      ],
+      "scope_condition": "Cosmetics marketed in the United States; drug claims change the regime.",
+      "effective_from": "1975-05-05",
+      "authority": "U.S. Food and Drug Administration",
+      "legal_reference": "21 CFR Part 701 and FDA Cosmetics Labeling Guide",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:15:08.346719+00:00",
+      "retrieved_at": "2026-09-17T08:15:08.346719+00:00",
+      "verified_at": "2026-09-17T08:15:08.346719+00:00",
+      "published_at": "2026-09-16",
+      "source_last_modified_at": "2026-09-16T15:59:07+00:00",
+      "source_content_hash": "f03089518485eb8868da4377a8d11b04a184047bb580c25737340f5ed7cd41f9",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "948a34c7c3707c12846fa3cdb8181b58dcc6e492c0cfcfef51acd49e5eab9cb3",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "948a34c7c3707c12",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:15:08.346719+00:00",
+        "source_hash": "45ad57c6bc2382efbda485477c9d16aff248660b679ca72676d7191cebe232e3",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "access-us-cosmetics-packaging-display",
+      "source_record_id": "FDA-COSMETICS-PACKAGING-DISPLAY",
+      "source_key": "fda",
+      "source": "U.S. Food and Drug Administration",
+      "source_type": "regulator",
+      "source_url": "https://www.fda.gov/cosmetics/cosmetics-labeling-regulations/cosmetics-labeling-guide",
+      "title": "Cosmetics packaging display-panel requirements",
+      "title_zh": "化妆品包装展示面要求",
+      "summary": "Cosmetic containers and outer packaging must provide the required principal-display and information-panel statements in the prescribed location and prominence. Package design must preserve the mandatory identity, quantity, ingredient, warning, and firm details.",
+      "summary_zh": "化妆品容器和外包装应在规定位置、以规定显著程度展示主展示面和信息面声明。包装设计必须保留法定的产品名称、净含量、成分、警示语和企业信息。",
+      "requirement_type": "packaging",
+      "category_codes": [
+        "beauty"
+      ],
+      "scope_condition": "Retail cosmetic containers and outer packaging.",
+      "effective_from": "1975-05-05",
+      "authority": "U.S. Food and Drug Administration",
+      "legal_reference": "21 CFR Part 701 packaging and display-panel provisions",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:15:08.346719+00:00",
+      "retrieved_at": "2026-09-17T08:15:08.346719+00:00",
+      "verified_at": "2026-09-17T08:15:08.346719+00:00",
+      "published_at": "2026-09-16",
+      "source_last_modified_at": "2026-09-16T15:59:07+00:00",
+      "source_content_hash": "f03089518485eb8868da4377a8d11b04a184047bb580c25737340f5ed7cd41f9",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "72f9654e12ebb461fdad96092d63ac3b0fddb7872a9782ec63126981843c7cb6",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "72f9654e12ebb461",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:15:08.346719+00:00",
+        "source_hash": "4328ddd9126e51d0ba7ab8c053356ad0c71587870d857befd70b25d3f24be3c4",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "access-us-mocra-registration-listing",
+      "source_record_id": "FDCA-606-607-MOCRA",
+      "source_key": "fda",
+      "source": "U.S. Food and Drug Administration",
+      "source_type": "regulator",
+      "source_url": "https://www.fda.gov/cosmetics/registration-listing-cosmetic-product-facilities-and-products",
+      "title": "MoCRA cosmetic facility registration and product listing",
+      "title_zh": "MoCRA 化妆品设施注册与产品列名",
+      "summary": "MoCRA requires covered cosmetic-product facilities to register with FDA and responsible persons to list marketed cosmetic products, subject to statutory exemptions and renewal or update obligations.",
+      "summary_zh": "《化妆品监管现代化法》要求受覆盖的化妆品设施向 FDA 注册，并由责任人对上市化妆品进行产品列名，同时遵守法定豁免、续期和更新义务。",
+      "requirement_type": "registration",
+      "category_codes": [
+        "beauty"
+      ],
+      "scope_condition": "Covered cosmetic facilities and responsible persons; exemptions may apply.",
+      "effective_from": "2023-12-29",
+      "authority": "U.S. Food and Drug Administration",
+      "legal_reference": "Federal Food, Drug, and Cosmetic Act sections 606 and 607",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:15:08.346719+00:00",
+      "retrieved_at": "2026-09-17T08:15:08.346719+00:00",
+      "verified_at": "2026-09-17T08:15:08.346719+00:00",
+      "published_at": "2026-09-16",
+      "source_last_modified_at": "2026-09-16T13:48:17+00:00",
+      "source_content_hash": "a6f25ffb85a9d9d3f79ec81c24cf60cde88f2411a16b5b682f2130ceaa1771c5",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "83d962c9b0c6a0df059e5947396adafa2b22f870ff5ec9c3367e8b4e021c2e47",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "83d962c9b0c6a0df",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:15:08.346719+00:00",
+        "source_hash": "d33559e65d2e280bafbec5af0d679b3f10d019cdb25923f174d65dc3e944593c",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "access-us-fpla-packaging-labeling",
+      "source_record_id": "16-CFR-PART-500",
+      "source_key": "govinfo",
+      "source": "U.S. Government Publishing Office",
+      "source_type": "government",
+      "source_url": "https://www.govinfo.gov/content/pkg/CFR-2025-title16-vol1/xml/CFR-2025-title16-vol1-part500.xml",
+      "title": "Fair Packaging and Labeling Act requirements",
+      "title_zh": "《公平包装与标签法》要求",
+      "summary": "16 CFR Part 500 requires covered consumer-commodity packages to disclose identity, responsible business, and net quantity in the required form and location. FDA-regulated foods, drugs, devices, and cosmetics follow their applicable FDA provisions.",
+      "summary_zh": "《联邦法规汇编》第 16 编第 500 部分要求受覆盖的消费品包装按规定形式和位置标示产品名称、责任企业及净含量。受 FDA 管辖的食品、药品、器械和化妆品应适用相应 FDA 规定。",
+      "requirement_type": "packaging",
+      "category_codes": [
+        "generic",
+        "electronics",
+        "apparel",
+        "home",
+        "pet-supplies"
+      ],
+      "scope_condition": "Consumer commodities within FTC jurisdiction; agency-specific exclusions apply.",
+      "effective_from": "1968-07-01",
+      "authority": "Federal Trade Commission",
+      "legal_reference": "16 CFR Part 500",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:15:08.346719+00:00",
+      "retrieved_at": "2026-09-17T08:15:08.346719+00:00",
+      "verified_at": "2026-09-17T08:15:08.346719+00:00",
+      "published_at": "2025-07-03",
+      "source_last_modified_at": "2025-07-03T18:40:53+00:00",
+      "source_content_hash": "a657d8ac91a41b7f363a727bfade1dcb666a22093c7a5e4da096969655d73d6e",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "70959d129326b985e8210c89df18ae94b2c5d574d38f3717d18b29cc79aad16a",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "70959d129326b985",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:15:08.346719+00:00",
+        "source_hash": "a9714d32f053b9c09d48f1961acef57c6e12db31e17ffe877694824dbfa86b51",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "access-us-food-facility-registration",
+      "source_record_id": "21-CFR-PART-1-SUBPART-H",
+      "source_key": "govinfo",
+      "source": "U.S. Government Publishing Office",
+      "source_type": "government",
+      "source_url": "https://www.govinfo.gov/content/pkg/CFR-2025-title21-vol1/xml/CFR-2025-title21-vol1-part1.xml",
+      "title": "Food facility registration requirements",
+      "title_zh": "食品设施注册要求",
+      "summary": "21 CFR Part 1 Subpart H establishes FDA food-facility registration requirements. Facilities that manufacture, process, pack, or hold animal food for U.S. consumption must determine registration and biennial-renewal duties, including foreign-facility duties.",
+      "summary_zh": "《联邦法规汇编》第 21 编第 1 部分 H 分部规定 FDA 食品设施注册要求。为美国消费而生产、加工、包装或储存动物食品的设施，应确认注册、双年续期及境外设施义务。",
+      "requirement_type": "registration",
+      "category_codes": [
+        "pet-food"
+      ],
+      "scope_condition": "Animal-food facilities subject to FDA registration; exemptions must be checked.",
+      "effective_from": "2003-12-12",
+      "authority": "U.S. Food and Drug Administration",
+      "legal_reference": "21 CFR Part 1 Subpart H",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:15:08.346719+00:00",
+      "retrieved_at": "2026-09-17T08:15:08.346719+00:00",
+      "verified_at": "2026-09-17T08:15:08.346719+00:00",
+      "published_at": "2025-08-15",
+      "source_last_modified_at": "2025-08-15T16:04:54+00:00",
+      "source_content_hash": "642d0b59626414f7cfd4216a5e638c4d59b487b5bd7daaea3eecc40b76a71429",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "62d545f4443ea5b1d78a69d55f08ffd02b551d88b74870cd8bc9a28aa8067613",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "62d545f4443ea5b1",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:15:08.346719+00:00",
+        "source_hash": "7fba3768bf8332f598d7011e571ad0c6173c8ec5a0288d1635e4179a7f091db8",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "access-us-animal-food-labeling",
+      "source_record_id": "21-CFR-PART-501",
+      "source_key": "govinfo",
+      "source": "U.S. Government Publishing Office",
+      "source_type": "government",
+      "source_url": "https://www.govinfo.gov/content/pkg/CFR-2025-title21-vol6/xml/CFR-2025-title21-vol6-part501.xml",
+      "title": "Animal food labeling requirements",
+      "title_zh": "动物食品标签要求",
+      "summary": "21 CFR Part 501 contains labeling requirements for animal food, including product identity, net quantity, ingredient statements, manufacturer or distributor information, and other statements required for the product and claims.",
+      "summary_zh": "《联邦法规汇编》第 21 编第 501 部分规定动物食品的产品名称、净含量、成分表、制造商或经销商信息，以及与产品和宣称相关的其他标签要求。",
+      "requirement_type": "labeling",
+      "category_codes": [
+        "pet-food"
+      ],
+      "scope_condition": "Animal food offered for sale in the United States.",
+      "effective_from": "1977-03-15",
+      "authority": "U.S. Food and Drug Administration",
+      "legal_reference": "21 CFR Part 501",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:15:08.346719+00:00",
+      "retrieved_at": "2026-09-17T08:15:08.346719+00:00",
+      "verified_at": "2026-09-17T08:15:08.346719+00:00",
+      "published_at": "2025-08-06",
+      "source_last_modified_at": "2025-08-06T15:39:13+00:00",
+      "source_content_hash": "717281966e6c2221fe3b7a2d37d93fb2b3738dab9254d111da4a6d6eb599df19",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "24448c1bcdfa57519fd92d330c851952323e93894348b94106f84485bfb133a3",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "24448c1bcdfa5751",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:15:08.346719+00:00",
+        "source_hash": "a21a38c2e3fdab3bc5953f736aceb6acede16549bf4585d6e6b4075be6b6f2ae",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "access-us-animal-food-import",
+      "source_record_id": "FDA-IMPORTING-ANIMAL-FOOD",
+      "source_key": "fda",
+      "source": "U.S. Food and Drug Administration",
+      "source_type": "regulator",
+      "source_url": "https://www.fda.gov/animal-veterinary/import-exports/importing-animal-food",
+      "title": "FDA requirements for importing animal food",
+      "title_zh": "FDA 动物食品进口要求",
+      "summary": "Imported animal food must satisfy the same FDA requirements as domestic animal food. Importers must assess facility registration, prior notice, applicable food-safety rules, labeling, admissibility review, and any ingredient-specific restrictions.",
+      "summary_zh": "进口动物食品必须满足与美国境内动物食品相同的 FDA 要求。进口商应核对设施注册、进口预先通知、适用的食品安全规则、标签、准入审查及特定成分限制。",
+      "requirement_type": "import_requirement",
+      "category_codes": [
+        "pet-food"
+      ],
+      "scope_condition": "Animal food imported into the United States.",
+      "effective_from": "2011-01-04",
+      "authority": "U.S. Food and Drug Administration",
+      "legal_reference": "Federal Food, Drug, and Cosmetic Act import requirements",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:15:08.346719+00:00",
+      "retrieved_at": "2026-09-17T08:15:08.346719+00:00",
+      "verified_at": "2026-09-17T08:15:08.346719+00:00",
+      "published_at": "2026-09-16",
+      "source_last_modified_at": "2026-09-16T23:59:47+00:00",
+      "source_content_hash": "8edf4f95f37e2eae1145666d315c304eb5f4ab5dc6c52436b217f622cc621709",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "ee5d87f1a715764842f2a09158eac951e717453e889adc17128b945dcf263cf6",
+      "change_type": "initial_record",
+      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "record_version": "ee5d87f1a7157648",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:15:08.346719+00:00",
+        "source_hash": "5cfded55a3bd0cdb1357648d1c5c555603d1ef4d97e61c431004cd9b488b745d",
+        "human_reviewed": true
+      }
+    },
+    {
+      "id": "access-us-cbp-import-entry",
+      "source_record_id": "CBP-BASIC-IMPORT-EXPORT",
+      "source_key": "cbp",
+      "source": "U.S. Customs and Border Protection",
+      "source_type": "government",
+      "source_url": "https://www.cbp.gov/trade/basic-import-export",
+      "title": "CBP basic import entry requirements",
+      "title_zh": "美国海关基本进口申报要求",
+      "summary": "CBP's official import guidance requires importers to classify merchandise, establish value and origin, file the appropriate entry, pay duties and fees, retain records, and satisfy partner-government-agency requirements before release.",
+      "summary_zh": "美国海关正式进口指南要求进口商完成商品归类、价值和原产地确定、适当的进口申报、税费缴纳和记录保存，并在放行前满足其他合作政府机构的要求。",
+      "requirement_type": "import_requirement",
+      "category_codes": [
+        "generic",
+        "electronics",
+        "beauty",
+        "apparel",
+        "home",
+        "pet-food",
+        "pet-supplies"
+      ],
+      "scope_condition": "Commercial merchandise imported into the United States.",
+      "effective_from": "1993-12-08",
+      "authority": "U.S. Customs and Border Protection",
+      "legal_reference": "19 U.S.C. 1484 reasonable-care entry obligations",
+      "region": "US",
+      "market": "US",
+      "market_codes": [
+        "US"
+      ],
+      "jurisdiction_codes": [
+        "US"
+      ],
+      "source_kind": "official",
+      "verification_status": "verified",
+      "collected_at": "2026-09-17T08:15:08.346719+00:00",
+      "retrieved_at": "2026-09-17T08:15:08.346719+00:00",
+      "verified_at": "2026-09-17T08:15:08.346719+00:00",
+      "published_at": "2026-09-17",
+      "source_last_modified_at": "2026-09-17T07:27:24+00:00",
+      "source_content_hash": "c34b00d52e3ad7af810aad22ff1e43ac2eeeeb4732c4725038e84e2849635cc5",
+      "evidence_method": "official_https_snapshot_with_curated_legal_scope",
+      "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
+      "collector_key": "collect_us_regulatory",
+      "evidence_hash": "1236c03a465d9564fbf70553ae2cfe1b9bf652825449a2df914e029fbb2a4d23",
+      "change_type": "unchanged",
+      "change_summary": "Official source snapshot reverified; the normalized legal scope is unchanged.",
+      "record_version": "1236c03a465d9564",
+      "translation": {
+        "source_language": "en",
+        "target_language": "zh-CN",
+        "status": "reviewed",
+        "provider": "human-curated",
+        "translated_at": "2026-09-17T08:15:08.346719+00:00",
+        "source_hash": "b6ebaa6b9956eb5599bbff77e3c55e818f2d9b0a8cf7d81120bcb5d7ffc898e4",
+        "human_reviewed": true
+      }
+    }
+  ],
   "language_contract": {
     "source_fields": [
       "title",

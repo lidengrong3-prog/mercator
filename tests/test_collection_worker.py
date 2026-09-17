@@ -123,6 +123,17 @@ class CollectionWorkerTests(unittest.TestCase):
         with self.assertRaises(WorkerConfigurationError):
             build_collector_command({"collector_key": "shell", "parameters": {"command": "rm -rf /"}})
 
+    def test_tax_and_access_collectors_use_fixed_domains(self):
+        tax = build_collector_command({
+            "collector_key": "collect_us_taxes", "parameters": {"timeout": 45},
+        }, python_executable="python")
+        access = build_collector_command({
+            "collector_key": "collect_us_access", "parameters": {},
+        }, python_executable="python")
+        self.assertIn("collect_us_regulatory.py", tax[1])
+        self.assertEqual(tax[-4:], ["--domain", "tax", "--timeout", "45"])
+        self.assertEqual(access[-2:], ["--domain", "access"])
+
     def test_tikhub_command_has_only_fixed_non_secret_parameters(self):
         command = build_collector_command({
             "collector_key": "tikhub_pilot",
@@ -271,6 +282,18 @@ class CollectionWorkerTests(unittest.TestCase):
         self.assertTrue(all(set(row) == set(rows[0]) for row in rows))
         self.assertEqual(publish["depends_on_task_keys"], [
             "run-1:collect_data", "run-1:collect_cpsc",
+        ])
+
+    def test_regulatory_collectors_are_independent_publish_dependencies(self):
+        rows = enqueue(
+            None, ["collect_us_taxes", "collect_us_access"],
+            run_id="regulatory-1", dry_run=True,
+        )
+        collection_rows = [row for row in rows if row["collector_key"] != "publish_formal"]
+        self.assertEqual([row["domain"] for row in collection_rows], ["tax", "access"])
+        publish = next(row for row in rows if row["collector_key"] == "publish_formal")
+        self.assertEqual(publish["depends_on_task_keys"], [
+            "regulatory-1:collect_us_taxes", "regulatory-1:collect_us_access",
         ])
 
 

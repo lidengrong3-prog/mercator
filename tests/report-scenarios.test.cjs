@@ -83,6 +83,27 @@ test('the same category keeps market-specific tax and access records', () => {
   assert.deepEqual(Array.from(facts.records.access, (entry) => entry.record.requirement_type).sort(), ['labeling', 'registration']);
 });
 
+test('US reports can cite concrete formal tax and access records', () => {
+  const { window, api, engine } = createEnvironment();
+  const context = setScope(api, ['US'], ['amazon'], ['electronics']);
+  window.taxesJsonData = JSON.parse(fs.readFileSync(path.join(root, 'data', 'taxes.json'), 'utf8'));
+  window.accessRequirementsJsonData = JSON.parse(fs.readFileSync(path.join(root, 'data', 'access_requirements.json'), 'utf8'));
+  const facts = engine.collectFacts(context, []);
+  assert.ok(facts.records.tax.some((entry) => entry.record.id === 'tax-us-htsus-customs-duty'));
+  assert.ok(facts.records.tax.some((entry) => entry.record.id === 'tax-us-section-301-additional-tariff'));
+  assert.ok(facts.records.access.some((entry) => entry.record.id === 'access-us-fcc-equipment-authorization'));
+  const prompt = engine.buildSectionPrompt(
+    {}, { id: 'access', title: '准入', domain: 'access' }, facts, null, ''
+  );
+  const payload = JSON.parse(prompt.user);
+  const fcc = payload.facts.find((entry) => entry.record.id === 'access-us-fcc-equipment-authorization');
+  assert.equal(fcc.record.legal_reference, '47 CFR Part 2 Subpart J');
+  assert.equal(fcc.record.authority, 'Federal Communications Commission');
+  const source = payload.citationCatalog.find((entry) => entry.citation === fcc.source.citation);
+  assert.equal(source.recordId, '47-CFR-PART-2-SUBPART-J');
+  assert.match(source.evidenceHash, /^[0-9a-f]{64}$/);
+});
+
 test('multi-market and multi-category plan creates comparison and scoped chapters', () => {
   const { api, engine } = createEnvironment();
   const context = setScope(api, ['US', 'ID'], ['tiktok-shop'], ['beauty', 'electronics']);

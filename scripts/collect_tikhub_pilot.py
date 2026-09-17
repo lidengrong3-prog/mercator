@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
 from private_artifact_store import upload_private_bytes
-from market_scope import load_market_scope, resolve_market_scopes
+from market_scope import load_market_scope, normalize_category_code, resolve_market_scopes
 from source_governance import SourceGovernanceError, assert_source_collectable
 
 
@@ -80,6 +80,7 @@ STANDARD_CONTENT_FIELDS = (
 )
 
 ROOT = Path(__file__).resolve().parent.parent
+MARKET_SCOPE = load_market_scope()
 FIXTURE_ENDPOINT_URL = "https://api.tikhub.io/fixture"
 urlopen = urllib.request.urlopen
 
@@ -313,7 +314,11 @@ def normalize_record(record: Mapping[str, Any], endpoint_key: str, keyword: str,
             "platform_product_id": str(stable).strip() if stable is not None else None,
             "title": _first(item, ("title", "name", "product_name", "productName")),
             "source_url": _first(item, ("source_url", "product_url", "productUrl", "url", "link")),
-            "category_code": _first(item, ("category_code", "category", "categoryName")) or keyword,
+            "category_code": normalize_category_code(
+                _first(item, ("category_code", "category", "categoryName")) or keyword,
+                MARKET_SCOPE,
+                market_codes=[market_code],
+            ),
             "price": _number(_first(item, ("price", "selling_price", "sellingPrice", "current_price", "sale_price"))),
             "currency": _first(item, ("currency", "currency_code", "currencyCode")),
             "sales": _number(_first(item, ("sales", "sold", "sold_count", "volume", "orders"))),
@@ -331,7 +336,11 @@ def normalize_record(record: Mapping[str, Any], endpoint_key: str, keyword: str,
             "platform_content_id": str(stable).strip() if stable is not None else None,
             "title": _first(item, ("title", "description", "caption", "text")),
             "content_type": _first(item, ("content_type", "contentType", "type")) or "video",
-            "category_code": _first(item, ("category_code", "category", "categoryName")) or keyword,
+            "category_code": normalize_category_code(
+                _first(item, ("category_code", "category", "categoryName")) or keyword,
+                MARKET_SCOPE,
+                market_codes=[market_code],
+            ),
             "source_url": _first(item, ("source_url", "video_url", "videoUrl", "share_url", "url", "link")),
             "creator_id": _first(item, ("creator_id", "creatorId", "author_id", "authorId", "user_id", "userId")),
             "creator_name": _first(item, ("creator_name", "creatorName", "author", "author_name", "nickname", "username")),

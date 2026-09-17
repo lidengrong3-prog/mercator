@@ -18,6 +18,12 @@ from quarantine_unverified_baseline import is_unverified  # noqa: E402
 
 
 class CollectorTests(unittest.TestCase):
+    def test_cpsc_categories_are_limited_to_manifest_catalog(self):
+        self.assertEqual(collect_cpsc.categorize_recall("Dog food recall"), "pet-food")
+        self.assertEqual(collect_cpsc.categorize_recall("Pet leash recall"), "pet-supplies")
+        self.assertEqual(collect_cpsc.categorize_recall("Toy scooter recall"), "generic")
+        self.assertTrue(set(collect_cpsc.CATEGORY_MAP) <= collect_cpsc._SCOPE_CATEGORY_CODES)
+
     def test_query_url_encodes_unicode_spaces_and_repeated_fields(self):
         url = collect_data.build_query_url(
             "https://example.test/search?existing=1",
@@ -50,6 +56,27 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(scope["market_codes"], ["US"])
         self.assertEqual(scope["platform_keys"], ["amazon"])
         self.assertEqual(scope["platform_names"], ["Amazon"])
+
+    def test_configured_collection_scope_uses_manifest_category_codes(self):
+        scope = collect_data.configured_collection_scope({
+            "markets": [{
+                "code": "US", "status": "active", "data_status": "configured",
+                "category_keys": ["electronics", "pet-food", "pet-supplies"],
+            }],
+            "platforms": [{"key": "amazon", "name": "Amazon"}],
+            "market_platforms": [{
+                "market_code": "US", "platform_key": "amazon",
+                "status": "active", "data_status": "configured",
+            }],
+            "categories": [
+                {"code": "electronics", "status": "active"},
+                {"code": "pet-food", "status": "active"},
+                {"code": "pet-supplies", "status": "active"},
+                {"code": "retired", "status": "inactive"},
+            ],
+        })
+
+        self.assertEqual(scope["category_keys"], ["electronics", "pet-food", "pet-supplies"])
 
     def test_core_source_http_failure_is_retained_in_collection_report(self):
         collect_data.reset_collection_telemetry({"market_codes": ["US"]})
@@ -342,6 +369,55 @@ class CollectorTests(unittest.TestCase):
         }, platform_key="tiktok-shop", market_code="US")
         self.assertRegex(row["id"], r"^r\d{8}-[0-9a-f]{8}$")
         self.assertEqual(row["source_record_id"], "tiktok-shop:6061866251044609")
+        self.assertEqual(row["source_id_method"], "url_query")
+        self.assertTrue(row["source_id_is_official"])
+
+    def test_platform_source_ids_are_extracted_from_official_urls(self):
+        ebay = collect_data.normalize_platform_rule({
+            "title": "Seller fees",
+            "source_url": "https://www.ebay.com/help/selling/fees?id=4079&campid=tracking",
+        }, platform_key="ebay", market_code="US")
+        ebay_locale = collect_data.normalize_platform_rule({
+            "title": "Seller fees renamed",
+            "source_url": "https://www.ebay.com/help/selling/fees?locale=en_US&id=4079",
+        }, platform_key="ebay", market_code="US")
+        amazon = collect_data.normalize_platform_rule({
+            "title": "Amazon help reference",
+            "source_url": "https://sellercentral.amazon.com/help/hub/reference/G200164330?ref_=abc",
+        }, platform_key="amazon", market_code="US")
+        self.assertEqual(ebay["source_record_id"], "ebay:4079")
+        self.assertEqual(ebay["rule_key"], "ebay:4079")
+        self.assertEqual(collect_data._rule_identity(ebay), collect_data._rule_identity(ebay_locale))
+        self.assertEqual(amazon["source_record_id"], "amazon:G200164330")
+
+    def test_internal_fallback_never_masquerades_as_a_source_record_id(self):
+        row = collect_data.normalize_platform_rule({
+            "title": "Unverified imported rule",
+            "source_url": "https://example.test/rules/123",
+            "verification_status": "verified",
+            "verified_at": "2026-09-12T00:00:00Z",
+        }, platform_key="amazon", market_code="US")
+        row = collect_data.annotate_provenance(row)
+        self.assertTrue(row["rule_key"])
+        self.assertEqual(row["source_record_id"], "")
+        self.assertEqual(row["source_id_method"], "internal_fallback")
+        self.assertFalse(row["source_id_is_official"])
+        self.assertEqual(row["verification_status"], "pending")
+        self.assertFalse(collect_data._is_formal_platform_rule(row))
+
+    def test_rule_dimensions_require_explicit_text_evidence(self):
+        row = collect_data.normalize_platform_rule({
+            "title": "Brand authorization compliance requirements",
+            "summary": "未取得授权的商品可能被下架，平台也可能限制商品发布权限或采取其他处置措施。",
+            "source_url": "https://seller.tiktokshopglobalselling.com/university/essay?knowledge_id=4315917970491137",
+        }, platform_key="tiktok-shop", market_code="US")
+        self.assertEqual(set(row["rule_dimensions"]), {"prohibited", "penalty"})
+        generic = collect_data.normalize_platform_rule({
+            "title": "Monthly policy update",
+            "summary": "Read the latest seller news.",
+            "source_url": "https://seller.tiktokshopglobalselling.com/university/essay?knowledge_id=6061866251044609",
+        }, platform_key="tiktok-shop", market_code="US")
+        self.assertEqual(generic["rule_dimensions"], {})
 
     def test_rule_version_diff_and_stable_identity(self):
         previous = collect_data.normalize_platform_rule({
@@ -382,13 +458,17 @@ class CollectorTests(unittest.TestCase):
         )
         self.assertEqual(coverage["amazon"]["status"], "partial")
         self.assertEqual(coverage["aliexpress"]["status"], "not_connected")
+        self.assertEqual(coverage["amazon"]["dimensions"]["fee"]["status"], "connected")
+        self.assertEqual(coverage["amazon"]["dimensions"]["fee"]["source_record_ids"], [
+            "amazon:path:news/fee"
+        ])
+        self.assertEqual(coverage["aliexpress"]["dimensions"]["fee"]["status"], "not_connected")
 
-    def test_optional_platform_collectors_are_explicitly_disabled_by_default(self):
-        with patch.dict(os.environ, {"ENABLE_OPTIONAL_PLATFORM_RULES": ""}, clear=False), \
-                patch.object(collect_data, "fetch_html") as fetch:
+    def test_public_platform_collectors_run_without_directory_fallbacks(self):
+        with patch.object(collect_data, "fetch_html", return_value="<html><a href='/'>Home</a></html>") as fetch:
             self.assertEqual(collect_data.collect_aliexpress(), [])
             self.assertEqual(collect_data.collect_ebay(), [])
-            fetch.assert_not_called()
+            self.assertEqual(fetch.call_count, 4)
 
     def test_browser_rule_fallback_is_opt_in_and_returns_bounded_records(self):
         payload = [{

@@ -292,6 +292,8 @@ class SupabaseClient:
 # 只有这些脚本可以由数据库任务触发。脚本路径固定为仓库内的文件。
 COLLECTOR_SCRIPTS: dict[str, str] = {
     "collect_data": "collect_data.py",
+    "collect_us_taxes": "collect_us_regulatory.py",
+    "collect_us_access": "collect_us_regulatory.py",
     "collect_us_market": "collect_us_market.py",
     "collect_cpsc": "collect_cpsc.py",
     "collect_us_macro": "collect_us_macro.py",
@@ -340,6 +342,11 @@ def build_collector_command(task: Mapping[str, Any], *, python_executable: str |
             command += ["--category", category]
         if bool(parameters.get("no_network", False)):
             command.append("--no-network")
+    elif collector_key in {"collect_us_taxes", "collect_us_access"}:
+        command += ["--domain", "tax" if collector_key == "collect_us_taxes" else "access"]
+        timeout = _int_param(parameters, "timeout", minimum=5, maximum=120)
+        if timeout is not None:
+            command += ["--timeout", str(timeout)]
     elif collector_key == "collect_cpsc":
         days = _int_param(parameters, "days", minimum=1, maximum=3650)
         start_date = _string_param(parameters, "from", max_length=10)

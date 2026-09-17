@@ -24,6 +24,7 @@ type Row = Record<string, unknown>;
 
 const MAX_AGE_MS = 12 * 60 * 60 * 1000;
 const BLOCKED_STATUSES = new Set(['failed', 'stale', 'not_connected', 'pending']);
+const PLATFORM_RULE_DIMENSIONS = ['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty'];
 
 function object(value: unknown): Record<string, unknown> | null {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null;
@@ -79,7 +80,24 @@ export function reportContentAllowsFormalOutput(value: unknown): boolean {
   const snapshot = object(content.quality_snapshot) || object(gate?.snapshot);
   if (!gate || gate.ok !== true || !snapshot) return false;
   const status = String(snapshot.effective_status || snapshot.status || '').toLowerCase();
-  return snapshot.publishable === true && snapshot.stale !== true && !BLOCKED_STATUSES.has(status);
+  if (snapshot.publishable !== true || snapshot.stale === true || BLOCKED_STATUSES.has(status)) return false;
+  const model = object(content.model) || {};
+  const matrix = object(content.coverage_matrix) || object(model.coverageMatrix);
+  if (!matrix || matrix.ok !== true || array(matrix.missingCells).length || !array(matrix.cells).length) return false;
+  if (Number(matrix.totalCells) !== array(matrix.cells).length || Number(matrix.coveredCells) !== array(matrix.cells).length) return false;
+  const requiredDomains = array(matrix.requiredDomains).map((domain) => String(domain).toLowerCase());
+  const requirePlatformDimensions = requiredDomains.includes('platform') && requiredDomains.includes('rule');
+  const requiredDimensions = new Set(array(matrix.requiredPlatformRuleDimensions).map((dimension) => String(dimension).toLowerCase()));
+  if (requirePlatformDimensions && (requiredDimensions.size !== PLATFORM_RULE_DIMENSIONS.length || !PLATFORM_RULE_DIMENSIONS.every((dimension) => requiredDimensions.has(dimension)))) return false;
+  if (!requirePlatformDimensions) return true;
+  const platformCells = array(matrix.cells).map(object).filter((cell): cell is Row => !!cell && cell.domain === 'platform');
+  if (!platformCells.length) return false;
+  return platformCells.every((cell) => (
+    cell.covered === true && array(cell.missingRuleDimensions).length === 0 && (() => {
+      const covered = new Set(array(cell.ruleDimensions).map((dimension) => String(dimension).toLowerCase()));
+      return covered.size === PLATFORM_RULE_DIMENSIONS.length && PLATFORM_RULE_DIMENSIONS.every((dimension) => covered.has(dimension));
+    })()
+  ));
 }
 
 function reportSections(value: Row): Row[] {

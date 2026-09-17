@@ -10,6 +10,15 @@ vm.runInNewContext(source, { window, Date, isFinite, Number, String, Object, Arr
 const quality = window.JAY_REPORT_QUALITY;
 const now = Date.parse('2026-09-08T08:00:00Z');
 
+function completeCoverage() {
+  return {
+    requiredDomains: ['market'],
+    requiredPlatformRuleDimensions: [],
+    cells: [{ id: 'US|*|generic|market', domain: 'market', covered: true }],
+    missingCells: [], totalCells: 1, coveredCells: 1, coveragePercent: 100, ok: true,
+  };
+}
+
 function report(overrides = {}) {
   return {
     schema_version: 1,
@@ -47,11 +56,30 @@ test('stale or explicitly non-publishable quality creates a blocking snapshot', 
 
 test('formal output requires a successful embedded quality gate and snapshot', () => {
   const gate = quality.evaluate(report(), { now });
-  assert.equal(quality.allowsStoredReport({ publishable: true, quality_gate: gate, quality_snapshot: gate.snapshot }), true);
+  assert.equal(quality.allowsStoredReport({ publishable: true, quality_gate: gate, quality_snapshot: gate.snapshot, coverage_matrix: completeCoverage() }), true);
   assert.equal(quality.allowsStoredReport({ publishable: true }), false);
+  assert.equal(quality.allowsStoredReport({ publishable: true, quality_gate: gate, quality_snapshot: gate.snapshot }), false);
   assert.equal(quality.allowsStoredReport({ publishable: false, quality_gate: gate, quality_snapshot: gate.snapshot }), false);
   const blocked = quality.evaluate(report({ status: 'failed', publishable: false }), { now });
-  assert.equal(quality.allowsStoredReport({ publishable: true, quality_gate: blocked, quality_snapshot: blocked.snapshot }), false);
+  assert.equal(quality.allowsStoredReport({ publishable: true, quality_gate: blocked, quality_snapshot: blocked.snapshot, coverage_matrix: completeCoverage() }), false);
+});
+
+test('formal output rejects incomplete platform rule dimensions even when global quality is degraded but publishable', () => {
+  const gate = quality.evaluate(report(), { now });
+  const dimensions = ['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty'];
+  const matrix = completeCoverage();
+  matrix.requiredDomains = ['tax', 'access', 'platform', 'rule'];
+  matrix.requiredPlatformRuleDimensions = dimensions;
+  matrix.cells = [{ id: 'US|amazon|generic|platform', domain: 'platform', covered: false, ruleDimensions: dimensions.slice(0, 6), missingRuleDimensions: ['penalty'] }];
+  matrix.missingCells = [matrix.cells[0]];
+  matrix.coveredCells = 0;
+  matrix.ok = false;
+  assert.equal(quality.allowsStoredReport({ publishable: true, quality_gate: gate, quality_snapshot: gate.snapshot, coverage_matrix: matrix }), false);
+  matrix.cells[0] = { ...matrix.cells[0], covered: true, ruleDimensions: dimensions, missingRuleDimensions: [] };
+  matrix.missingCells = [];
+  matrix.coveredCells = 1;
+  matrix.ok = true;
+  assert.equal(quality.allowsStoredReport({ publishable: true, quality_gate: gate, quality_snapshot: gate.snapshot, coverage_matrix: matrix }), true);
 });
 
 test('content quality reports four dimensions and passes traceable structured content', () => {

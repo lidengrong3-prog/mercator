@@ -113,6 +113,17 @@ test('frontend assets are externalized and loaded in dependency order', () => {
 
 test('market scope is centralized before data modules load', () => {
   const scope = fs.readFileSync(path.join(root, 'assets/js/market-scope.js'), 'utf8');
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'data', 'market_scope.json'), 'utf8'));
+  const us = manifest.markets.find((market) => market.code === 'US');
+  const activeCategories = manifest.categories
+    .filter((category) => (category.status || 'active') === 'active')
+    .map((category) => category.code);
+  const templateCategories = manifest.report_templates.flatMap((template) => template.category_codes);
+  assert.deepEqual(us.platform_keys, ['amazon', 'tiktok-shop', 'aliexpress', 'ebay']);
+  assert.deepEqual(new Set(us.category_keys), new Set(activeCategories));
+  assert.deepEqual(new Set(templateCategories), new Set(activeCategories));
+  assert.ok(us.category_keys.includes('pet-food'));
+  assert.ok(us.category_keys.includes('pet-supplies'));
   assert.match(scope, /code:\s*'US'/);
   assert.match(scope, /name:\s*'美国'/);
   assert.match(scope, /name:\s*'Amazon'/);
@@ -132,6 +143,12 @@ test('market scope is centralized before data modules load', () => {
   assert.match(scope, /normalizeDataRecord/);
   assert.match(scope, /getReportTemplates/);
   assert.match(scope, /global\.JAY_MARKET_SCOPE/);
+  const reportEngine = fs.readFileSync(path.join(root, 'assets/js/report-engine.js'), 'utf8');
+  const reportDecisions = fs.readFileSync(path.join(root, 'assets/js/reports-decisions.js'), 'utf8');
+  for (const retired of ['walmart', 'etsy', 'shopify', 'temu', 'shein']) {
+    assert.match(reportEngine.toLowerCase(), new RegExp(retired));
+    assert.match(reportDecisions.toLowerCase(), new RegExp(retired));
+  }
 });
 
 test('unified search page exposes seven sourced result domains and restorable filters', () => {
@@ -188,6 +205,8 @@ test('platform rules consume the configured market scope', () => {
   const ruleData = JSON.parse(fs.readFileSync(path.join(root, 'data', 'rules.json'), 'utf8'));
   assert.deepEqual(ruleData.versioning, {
     identity_field: 'rule_key',
+    source_identity_field: 'source_record_id',
+    source_identity_method_field: 'source_id_method',
     version_field: 'rule_version',
     effective_from_field: 'effective_date',
     effective_to_field: 'effective_to',
@@ -195,6 +214,16 @@ test('platform rules consume the configured market scope', () => {
   });
   const versionMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20260831000000_platform_rule_versions.sql'), 'utf8');
   assert.match(versionMigration, /record_version/);
+});
+
+test('platform rule status exposes all seven evidence-derived dimensions', () => {
+  const collectorSource = fs.readFileSync(path.join(root, 'scripts', 'collect_data.py'), 'utf8');
+  assert.match(browserSource, /rlRenderPlatformCoverage/);
+  assert.match(browserSource, /source_record_ids/);
+  assert.match(browserSource, /\['fee','commission','deposit','fulfillment','prohibited','settlement','penalty'\]/);
+  assert.match(collectorSource, /extract_platform_source_record_id/);
+  assert.match(collectorSource, /source_id_is_official/);
+  assert.match(collectorSource, /internal_fallback/);
 });
 
 test('rules and formal pages do not seed retired global AI insights', () => {
@@ -764,13 +793,15 @@ test('data publication is gated and exposes its quality report', () => {
   assert.ok(report.datasets.macro);
   assert.ok(['healthy', 'degraded', 'not_connected', 'stale', 'failed'].includes(report.status));
   assert.ok(['healthy', 'degraded', 'not_connected', 'stale', 'failed'].includes(report.datasets.cpsc.status));
-  assert.ok(report.summary.raw_records > report.summary.scoped_records);
+  assert.ok(report.summary.raw_records >= report.summary.scoped_records);
   assert.equal(report.summary.raw_records, Object.values(report.datasets).reduce((sum, item) => sum + item.raw_records, 0));
   assert.equal(report.summary.scoped_records, Object.values(report.datasets).reduce((sum, item) => sum + item.scoped_records, 0));
   assert.equal(report.datasets.countries.scoped_records, 1);
   assert.equal(report.datasets.platforms.scoped_records, 4);
-  assert.equal(report.datasets.taxes.status, 'not_connected');
-  assert.equal(report.datasets.access_requirements.status, 'not_connected');
+  assert.equal(report.datasets.taxes.status, 'healthy');
+  assert.ok(report.datasets.taxes.formal_records > 0);
+  assert.equal(report.datasets.access_requirements.status, 'healthy');
+  assert.ok(report.datasets.access_requirements.formal_records > 0);
   for (const dataset of Object.values(report.datasets)) {
     assert.equal(dataset.records, dataset.raw_records);
     assert.ok(dataset.scoped_records <= dataset.raw_records);

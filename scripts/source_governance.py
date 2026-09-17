@@ -17,6 +17,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from market_scope import configured_catalog, load_market_scope
+
 
 class SourceGovernanceError(RuntimeError):
     """Raised when a collector references an unknown or stopped source."""
@@ -38,6 +40,9 @@ SOURCE_CATEGORIES = {
     "internal",
     "demo",
 }
+CONFIGURED_US_CATEGORY_CODES = configured_catalog(
+    load_market_scope(), market_codes=["US"]
+)["category_keys"]
 
 
 def _policy(
@@ -162,6 +167,41 @@ SOURCE_REGISTRY: dict[str, dict[str, Any]] = {
         {**_OFFICIAL_POLICY, "provider_terms_url": "https://www.cpsc.gov/About-CPSC/Policies-Statements-and-Directives"},
         market_codes=["US"], verification_policy="automatic",
     ),
+    "usa-gov": _source(
+        "USA.gov", "official_policy", "official", "government", "https://www.usa.gov/",
+        "United States General Services Administration", "federal", "high", "weekly",
+        _OFFICIAL_POLICY, market_codes=["US"], verification_policy="automatic",
+    ),
+    "cdtfa": _source(
+        "California Department of Tax and Fee Administration", "official_policy", "official", "government",
+        "https://www.cdtfa.ca.gov/", "California Department of Tax and Fee Administration",
+        "state", "high", "weekly", _OFFICIAL_POLICY,
+        market_codes=["US"], verification_policy="automatic",
+    ),
+    "usitc": _source(
+        "US International Trade Commission", "official_policy", "official", "government",
+        "https://www.usitc.gov/", "United States International Trade Commission",
+        "federal", "high", "daily", _OFFICIAL_POLICY,
+        market_codes=["US"], verification_policy="automatic",
+    ),
+    "cbp": _source(
+        "US Customs and Border Protection", "official_policy", "official", "government",
+        "https://www.cbp.gov/", "U.S. Customs and Border Protection",
+        "federal", "high", "daily", _OFFICIAL_POLICY,
+        market_codes=["US"], verification_policy="automatic",
+    ),
+    "govinfo": _source(
+        "GovInfo Code of Federal Regulations", "official_policy", "official", "government",
+        "https://www.govinfo.gov/", "U.S. Government Publishing Office",
+        "federal", "high", "annual", _OFFICIAL_POLICY,
+        market_codes=["US"], verification_policy="automatic",
+    ),
+    "fda": _source(
+        "US Food and Drug Administration", "official_policy", "official", "regulator",
+        "https://www.fda.gov/", "U.S. Food and Drug Administration",
+        "federal", "high", "daily", _OFFICIAL_POLICY,
+        market_codes=["US"], verification_policy="automatic",
+    ),
     "fred": _source(
         "Federal Reserve Economic Data", "official_statistics", "official", "official_feed",
         "https://fred.stlouisfed.org/", "Federal Reserve Bank of St. Louis", "federal", "high", "1d",
@@ -213,12 +253,8 @@ SOURCE_REGISTRY: dict[str, dict[str, Any]] = {
             provider_terms_url="https://tikhub.io/zh/terms", api_pricing={"model": "provider_plan", "currency": "USD"},
             rate_limit_requests=60, rate_limit_window_seconds=60,
         ),
-        market_codes=["US"], platform_keys=["tiktok-shop"], category_codes=[
-            "beauty", "skincare", "makeup", "haircare", "womens-fashion",
-            "mens-fashion", "shoes", "jewelry", "home-decor", "kitchen",
-            "electronics", "phone-accessories", "pet-supplies", "toys", "fitness",
-            "outdoor", "baby-products", "health", "automotive", "luggage",
-        ],
+        market_codes=["US"], platform_keys=["tiktok-shop"],
+        category_codes=list(CONFIGURED_US_CATEGORY_CODES),
         verification_policy="manual_review",
     ),
     "user-upload": _source(
@@ -280,6 +316,8 @@ SOURCE_KEY_ALIASES = {
     "fred_bls_macro": "macro-official",
     "cpsc_recalls": "cpsc",
     "us_market_categories": "federal-register",
+    "us_tax_official": "official-source",
+    "us_access_official": "official-source",
     "market_scope": "internal-system",
 }
 

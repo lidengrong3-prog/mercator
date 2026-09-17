@@ -10,7 +10,8 @@
 (function (root) {
   'use strict';
 
-  var ENGINE_VERSION = '3.2';
+  var ENGINE_VERSION = '3.3';
+  var PLATFORM_RULE_DIMENSIONS = ['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty'];
   var SECTION_USER_PROMPT_LIMIT = 24000;
   var SECTION_CUSTOM_PROMPT_LIMIT = 2000;
   var SECTION_RECORD_LIMIT = 80;
@@ -46,11 +47,11 @@
     'content-marketing': ['consumer_profile', 'competitor_research', 'platform_research', 'price_band', 'risk_recommendations']
   };
   var PURPOSE_REQUIRED_DOMAINS = {
-    'product-research': ['market', 'policy', 'platform', 'rule', 'product', 'financial'],
-    'competitor-analysis': ['market', 'platform', 'rule', 'competitor'],
-    'content-marketing': ['market', 'platform', 'content'],
-    'market-entry': ['market', 'policy', 'platform', 'rule', 'access', 'logistics'],
-    'market-research': ['market', 'policy', 'platform', 'rule']
+    'product-research': ['market', 'policy', 'tax', 'access', 'platform', 'rule', 'product', 'financial'],
+    'competitor-analysis': ['market', 'policy', 'tax', 'access', 'platform', 'rule', 'competitor'],
+    'content-marketing': ['market', 'policy', 'tax', 'access', 'platform', 'rule', 'content'],
+    'market-entry': ['market', 'policy', 'tax', 'access', 'platform', 'rule', 'logistics'],
+    'market-research': ['market', 'policy', 'tax', 'access', 'platform', 'rule']
   };
 
   function list(value) { return Array.isArray(value) ? value : (value == null || value === '' ? [] : [value]); }
@@ -150,7 +151,7 @@
       var candidates = api().getReportTemplates({ categoryCodes: current.categoryCodes });
       template = candidates.find(function (item) { return item.code === selectedTemplate; }) || candidates.find(function (item) { return item.code === 'market-research'; }) || candidates[0];
     }
-    template = template || { id: selectedTemplate || 'market-research-v1', code: selectedTemplate || 'market-research', version: 1, name: '市场调研报告', modules: PURPOSE_MODULES['market-research'], requiredDomains: ['market', 'policy', 'platform', 'rule'], categoryCodes: [] };
+    template = template || { id: selectedTemplate || 'market-research-v1', code: selectedTemplate || 'market-research', version: 1, name: '市场调研报告', modules: PURPOSE_MODULES['market-research'], requiredDomains: ['market', 'policy', 'tax', 'access', 'platform', 'rule'], categoryCodes: [] };
     var normalizedModules = uniq(template.modules || template.sections || PURPOSE_MODULES[template.code] || PURPOSE_MODULES['market-research']);
     return Object.assign({}, template, {
       id: template.id || template.code,
@@ -255,7 +256,7 @@
   }
   function compactRecord(record) {
     record = record || {};
-    var allowed = ['id', 'record_key', 'title', 'title_zh', 'name', 'summary', 'summary_zh', 'value', 'unit', 'date', 'published_at', 'effective_date', 'market', 'market_code', 'market_codes', 'platform', 'platform_key', 'platform_keys', 'category', 'category_code', 'category_codes', 'fee', 'feeDesc', 'fee_desc', 'requirement_type', 'tax_type', 'impact_level', 'snapshot_type'];
+    var allowed = ['id', 'record_key', 'title', 'title_zh', 'name', 'summary', 'summary_zh', 'value', 'unit', 'rate', 'date', 'published_at', 'effective_date', 'effective_from', 'market', 'market_code', 'market_codes', 'platform', 'platform_key', 'platform_keys', 'category', 'category_code', 'category_codes', 'fee', 'feeDesc', 'fee_desc', 'requirement_type', 'tax_type', 'tax_subtype', 'scope_condition', 'authority', 'legal_reference', 'impact_level', 'snapshot_type'];
     var copy = {};
     allowed.forEach(function (key) { if (record[key] != null && record[key] !== '') copy[key] = typeof record[key] === 'string' && record[key].length > 480 ? record[key].slice(0, 480) + '…' : record[key]; });
     // Reports are generated in Chinese. Avoid sending the source-language
@@ -365,11 +366,35 @@
     return [market && (market.name || market.label) || cell.marketCode, platform && (platform.name || platform.label) || cell.platformKey, category && (category.name || category.label) || cell.categoryCode, (MODULES[cell.domain] && MODULES[cell.domain].title) || cell.domain].filter(Boolean).join(' / ');
   }
 
+  function ruleDimensionKeys(record) {
+    record = record || {};
+    var raw = record.rule_dimensions || record.ruleDimensions || {};
+    var keys = [];
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      Object.keys(raw).forEach(function (key) {
+        if (PLATFORM_RULE_DIMENSIONS.indexOf(lower(key)) >= 0 && raw[key] != null && text(raw[key]).trim()) keys.push(lower(key));
+      });
+    }
+    var topic = lower(record.topic || record.rule_topic || record.ruleTopic);
+    if (PLATFORM_RULE_DIMENSIONS.indexOf(topic) >= 0) keys.push(topic);
+    return uniq(keys);
+  }
+
+  function platformRuleCoverage(entries) {
+    var covered = {};
+    list(entries).forEach(function (entry) {
+      ruleDimensionKeys(entry && entry.record || {}).forEach(function (key) { covered[key] = true; });
+    });
+    var missing = PLATFORM_RULE_DIMENSIONS.filter(function (key) { return !covered[key]; });
+    return { covered: PLATFORM_RULE_DIMENSIONS.filter(function (key) { return covered[key]; }), missing: missing, complete: missing.length === 0 };
+  }
+
   function buildCoverageMatrix(plan, facts) {
     plan = plan || {}; facts = facts || {};
     var scope = facts.scope || plan.scope || {};
     var records = facts.records || {};
     var requiredDomains = uniq(plan.requiredDomains || []);
+    var requirePlatformRuleDimensions = requiredDomains.indexOf('platform') >= 0 && requiredDomains.indexOf('rule') >= 0;
     var categories = list(scope.categoryCodes);
     if (!categories.length) categories = [null];
     var cells = [];
@@ -379,10 +404,14 @@
           var cell = { marketCode: pair.marketCode, platformKey: pair.platformKey, categoryCode: categoryCode, domain: domain };
           var evidence = list(records[domain]).filter(function (entry) { return entryCoversCell(entry, domain, cell); });
           var sourceRecordIds = uniq(evidence.map(function (entry) { return entry && entry.source && entry.source.recordId; }).filter(Boolean));
+          var ruleCoverage = domain === 'platform' && requirePlatformRuleDimensions ? platformRuleCoverage(evidence) : { covered: [], missing: [], complete: true };
           cells.push(Object.assign(cell, {
             id: [pair.marketCode, pair.platformKey || '*', categoryCode || '*', domain].join('|'),
-            label: coverageCellLabel(cell), required: true, covered: evidence.length > 0,
-            recordCount: sourceRecordIds.length, sourceRecordIds: sourceRecordIds
+            label: coverageCellLabel(cell), required: true,
+            covered: evidence.length > 0 && ruleCoverage.complete,
+            recordCount: sourceRecordIds.length, sourceRecordIds: sourceRecordIds,
+            ruleDimensions: domain === 'platform' && requirePlatformRuleDimensions ? ruleCoverage.covered : [],
+            missingRuleDimensions: domain === 'platform' && requirePlatformRuleDimensions ? ruleCoverage.missing : []
           }));
         });
       });
@@ -391,6 +420,7 @@
     var coveredCells = cells.length - missingCells.length;
     return {
       version: '1.0', requiredDomains: requiredDomains,
+      requiredPlatformRuleDimensions: requirePlatformRuleDimensions ? PLATFORM_RULE_DIMENSIONS.slice() : [],
       dimensions: {
         marketCodes: list(scope.marketCodes).slice(),
         platformKeys: list(scope.platformKeys).slice(),
@@ -415,7 +445,11 @@
       missing.push({
         domain: cell.domain, label: cell.label,
         marketCode: cell.marketCode, platformKey: cell.platformKey, categoryCode: cell.categoryCode,
-        coverageCellId: cell.id, reason: '该范围格没有已核验记录'
+        coverageCellId: cell.id,
+        reason: cell.missingRuleDimensions && cell.missingRuleDimensions.length
+          ? '平台规则七个必需维度未完整覆盖：' + cell.missingRuleDimensions.join('、')
+          : '该范围格没有已核验记录',
+        missingRuleDimensions: cell.missingRuleDimensions || []
       });
     });
     ['tax', 'access'].forEach(function (domain) {
@@ -750,6 +784,7 @@
       { key: 'aliexpress', terms: ['aliexpress', '速卖通'] }, { key: 'ebay', terms: ['ebay'] },
       { key: 'shopee', terms: ['shopee'] }, { key: 'lazada', terms: ['lazada'] },
       { key: 'temu', terms: ['temu'] }, { key: 'walmart', terms: ['walmart'] },
+      { key: 'etsy', terms: ['etsy'] }, { key: 'shopify', terms: ['shopify'] },
       { key: 'shein', terms: ['shein'] }, { key: 'noon', terms: ['noon'] },
       { key: 'mercado-libre', terms: ['mercado libre'] }
     ].forEach(function (platform) {
@@ -860,6 +895,7 @@
         sourceKind: source.sourceKind,
         sourceType: source.sourceType,
         recordId: source.recordId,
+        evidenceHash: source.evidenceHash,
         dataSnapshotAt: source.dataSnapshotAt
       };
     }
@@ -923,6 +959,9 @@
     var textParts = results.map(function (section) { return '## ' + section.title + '\n\n' + text(section.text).trim(); });
     var qualityGateProvided = !!(qualityGate && typeof qualityGate === 'object');
     var qualityGatePassed = !qualityGateProvided || qualityGate.ok === true;
+    if (!check || !check.ok) {
+      textParts.unshift('> **未发布草稿**：税收、准入或平台规则覆盖未达到当前报告范围要求，本报告不得正式保存或导出。');
+    }
     if (!qualityGatePassed) {
       textParts.unshift('> **未发布草稿**：全局数据质量门禁未通过，本报告不得作为正式报告或正式导出文件。');
     }
@@ -938,7 +977,9 @@
       coverageMatrix: check && check.coverageMatrix || null,
       qualityGate: qualityGateProvided ? qualityGate : null,
       qualitySnapshot: qualityGateProvided ? qualityGate.snapshot || null : null,
-      publicationBlocks: (qualityGateProvided && !qualityGatePassed ? list(qualityGate.reasons) : []).concat(contentQuality.ok ? [] : list(contentQuality.reasons).map(function (reason) { return { code: 'CONTENT_QUALITY_' + contentQuality.status.toUpperCase(), message: reason }; })),
+      publicationBlocks: (check && !check.ok ? list(check.missing).map(function (item) {
+        return { code: item.missingRuleDimensions && item.missingRuleDimensions.length ? 'QUALITY_PLATFORM_RULE_COVERAGE_MISSING' : 'QUALITY_REQUIRED_DATA_MISSING', message: item.reason, cell_id: item.coverageCellId };
+      }) : []).concat(qualityGateProvided && !qualityGatePassed ? list(qualityGate.reasons) : []).concat(contentQuality.ok ? [] : list(contentQuality.reasons).map(function (reason) { return { code: 'CONTENT_QUALITY_' + contentQuality.status.toUpperCase(), message: reason }; })),
       publishable: !!check.ok && scopeCheck.ok && reconciliation.ok && citationAudit.ok && contentQuality.ok && qualityGatePassed,
       generatedAt: isoNow()
     };
@@ -951,7 +992,7 @@
     return Object.assign({}, report, { engineVersion: ENGINE_VERSION, seriesId: seriesId, revision: revision, version: revision, parentId: prior.id || prior.parentId || null, action: action || 'generate', versionCreatedAt: isoNow() });
   }
 
-  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, buildCoverageMatrix: buildCoverageMatrix, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, auditCitations: auditCitations, repairSectionCitations: repairSectionCitations, pruneUncitedNumericLines: pruneUncitedNumericLines, repairSectionScope: repairSectionScope, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
+  root.JAY_REPORT_ENGINE = { version: ENGINE_VERSION, platformRuleDimensions: PLATFORM_RULE_DIMENSIONS.slice(), coreSections: CORE_SECTIONS, modules: MODULES, purposes: PURPOSE_MODULES, getTemplate: getTemplate, buildPlan: buildPlan, collectFacts: collectFacts, buildCoverageMatrix: buildCoverageMatrix, checkData: checkData, calculateFinancialModel: calculateFinancialModel, financialFromFacts: financialFromFacts, buildSectionPrompt: buildSectionPrompt, buildSourceAppendix: buildSourceAppendix, auditCitations: auditCitations, repairSectionCitations: repairSectionCitations, pruneUncitedNumericLines: pruneUncitedNumericLines, repairSectionScope: repairSectionScope, scoreCompleteness: scoreCompleteness, checkScope: checkScope, reconcile: reconcile, assemble: assemble, createVersion: createVersion };
   root.rpBuildReportPlan = buildPlan;
   root.rpCollectReportFacts = collectFacts;
   root.rpCheckReportData = checkData;

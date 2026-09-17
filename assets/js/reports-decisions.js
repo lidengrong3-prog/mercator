@@ -57,7 +57,7 @@ function jayScopeHasRetiredText(value){
   jayConfiguredMarketNames().concat(jayConfiguredPlatformNames()).forEach(function(label){
     if(label) raw=raw.replace(new RegExp(String(label).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'ig'),'');
   });
-  return /(全球|global|全域|跨区域|东南亚|北美|欧洲|中东|拉美|日韩|南亚|非洲|澳洲|独联体|印尼|印度尼西亚|越南|泰国|马来西亚|菲律宾|新加坡|日本|韩国|巴西|墨西哥|英国|法国|沙特|阿联酋|Shopee|Lazada|Temu|Walmart|SHEIN|Noon|Mercado ?Libre|Bukalapak)/i.test(raw);
+  return /(全球|global|全域|跨区域|东南亚|北美|欧洲|中东|拉美|日韩|南亚|非洲|澳洲|独联体|印尼|印度尼西亚|越南|泰国|马来西亚|菲律宾|新加坡|日本|韩国|巴西|墨西哥|英国|法国|沙特|阿联酋|Shopee|Lazada|Temu|Walmart|Etsy|Shopify|SHEIN|Noon|Mercado ?Libre|Bukalapak)/i.test(raw);
 }
 function wlIsConfiguredScopeRow(row){
   row = row || {};
@@ -478,7 +478,7 @@ async function rpV2Generate(){
   rpV2RenderDataCheck(plan,check,financial);
   rpV2RenderQualityGate(qualityGate);
   rpV2RenderContentQuality(null);
-  if(!check.ok){toast('报告缺少关键数据，已停止生成；请先补充数据');return;}
+  if(!check.ok)toast('报告缺少必需数据，本次只生成未保存草稿');
   if(!qualityGate||!qualityGate.ok)toast('全局数据质量未通过，本次只生成未保存草稿');
   if(!AI_ENGINE.hasKey()){toast('请先登录后使用 AI 报告服务');return;}
   rpGenInterval=true;
@@ -707,7 +707,7 @@ async function rpV2SaveReport(name,materialCount,details){
     market_codes:jayConfiguredMarketCodes(), platform_keys:Array.isArray(scope.platformKeys)?scope.platformKeys.slice():[], category_codes:categoryCodes,
     materials:materialCount, date:details.date||new Date().toISOString(), tpl:details.tpl||rpV2SelectedTpl||'custom',
     text:details.text||rpLastReportText||'', items:details.items||rpGetPool().filter(function(item){return item.selected}),
-    engineVersion:version.engineVersion||'3.2', seriesId:version.seriesId||reportId, revision:Number(version.revision||version.version||1),
+    engineVersion:version.engineVersion||'3.3', seriesId:version.seriesId||reportId, revision:Number(version.revision||version.version||1),
     parentId:version.parentId||details.parentId||null, model:version, completeness:version.completeness||null,
     publishable:version.publishable===true, sourceAppendix:version.sourceAppendix||[], citationAudit:version.citationAudit||null, reconciliation:version.reconciliation||null, scopeCheck:version.scopeCheck||null,
     coverageMatrix:snapshot.coverageMatrix||version.coverageMatrix||null,

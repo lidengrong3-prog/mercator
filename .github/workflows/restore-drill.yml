@@ -19,6 +19,8 @@ jobs:
       SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       RESTORE_DRILL_DB_URL: ${{ secrets.RESTORE_DRILL_DB_URL }}
+      PRODUCTION_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      RESTORE_DRILL_CONFIRM_ISOLATED: ${{ vars.RESTORE_DRILL_CONFIRM_ISOLATED || secrets.RESTORE_DRILL_CONFIRM_ISOLATED || 'false' }}
       BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +30,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Validate isolated restore configuration
+        shell: bash
+        run: |
+          set -eu
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_ID RESTORE_DRILL_DB_URL PRODUCTION_DB_URL BACKUP_ENCRYPTION_KEY; do
+            test -n "${!name:-}" || { echo "Missing restore drill configuration: $name" >&2; exit 1; }
+          done
+          test "$RESTORE_DRILL_CONFIRM_ISOLATED" = true || { echo "RESTORE_DRILL_CONFIRM_ISOLATED must be true" >&2; exit 1; }
       - name: Resolve ephemeral service key when not explicitly provided
         shell: bash
         run: |

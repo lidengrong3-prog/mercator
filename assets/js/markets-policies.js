@@ -1473,6 +1473,7 @@ async function loadRulesData() {
       var coverage=data.platform_coverage||data.platform_status||{};
       var coverageText=Object.keys(coverage).map(function(key){var row=coverage[key]||{};return (row.label||'未接入')+' '+key+' '+(row.rule_count||0)+'条';}).join(' · ');
       $('#rl-data-info').textContent = '📡 '+(window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames().join('、'):'当前')+'市场规则 · 最近更新：'+time+' · 正式规则：'+(data.source_count||0)+' 个来源 · 当前展示已配置平台规则，接入状态按正式记录计算 · '+(coverageText||'平台接入状态待采集');
+      rlRenderPlatformCoverage(coverage);
       // Refresh alerts linkage
       if (typeof refreshDynamicAlerts === 'function') refreshDynamicAlerts();
     } else {
@@ -1482,6 +1483,7 @@ async function loadRulesData() {
     console.error('Failed to load rules.json; rule records remain empty:', e);
     rulesJsonData = { updated_at:null, source_count:0, items:[] };
     rlInitFromJson();
+    rlRenderPlatformCoverage({});
     $('#rl-data-info').innerHTML = '数据加载失败，当前没有可发布的平台规则记录';
   }
   rulesDataLoading = false;
@@ -1573,9 +1575,33 @@ function rlComputePlatformCoverage(){
     var fresh=latest>0&&((now-latest)/86400000)<=staleDays;
     var missing=dimensions.filter(function(topic){return topics.indexOf(topic)<0;});
     var status=formal.length?(missing.length||!fresh?'partial':'connected'):'not_connected';
-    result[key]={platform_key:key,status:status,label:status==='connected'?'已接入':status==='partial'?'部分接入':'未接入',rule_count:formal.length,topics:topics,missing_topics:missing,last_verified_at:latest?new Date(latest).toISOString():null,reason:formal.length?(missing.length?'缺少主题：'+missing.map(function(topic){return labels[topic];}).join('、'):(!fresh?'最近核验时间已过期':'七类规则主题均有近期核验记录')):'暂无通过核验的正式规则记录'};
+    var dimensionStatus={};dimensions.forEach(function(topic){var rows=formal.filter(function(row){var rowTopic=String(row.topic||row.rule_topic||'').toLowerCase();var dims=row.rule_dimensions||row.ruleDimensions||{};return rowTopic===topic||!!dims[topic];});var dimensionLatest=rows.reduce(function(max,row){var value=new Date(row.verified_at||row.verifiedAt).getTime();return value>max?value:max;},0);var dimensionFresh=dimensionLatest>0&&((now-dimensionLatest)/86400000)<=staleDays;var dimensionState=rows.length?(dimensionFresh?'connected':'partial'):'not_connected';dimensionStatus[topic]={status:dimensionState,label:dimensionState==='connected'?'已接入':dimensionState==='partial'?'部分接入':'未接入',record_count:rows.length,source_record_ids:rows.map(function(row){return row.source_record_id;}).filter(Boolean),last_verified_at:dimensionLatest?new Date(dimensionLatest).toISOString():null};});
+    result[key]={platform_key:key,status:status,label:status==='connected'?'已接入':status==='partial'?'部分接入':'未接入',rule_count:formal.length,topics:topics,missing_topics:missing,dimensions:dimensionStatus,last_verified_at:latest?new Date(latest).toISOString():null,reason:formal.length?(missing.length?'缺少主题：'+missing.map(function(topic){return labels[topic];}).join('、'):(!fresh?'最近核验时间已过期':'七类规则主题均有近期核验记录')):'暂无通过核验的正式规则记录'};
   });
   return result;
+}
+
+function rlRenderPlatformCoverage(coverage){
+  var target=$('#rl-platform-coverage');
+  if(!target)return;
+  var keys=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActivePlatforms
+    ? window.JAY_MARKET_SCOPE_API.getActivePlatforms().map(function(platform){return platform.key;})
+    : ['amazon','tiktok-shop','aliexpress','ebay'];
+  var platformLabels={amazon:'Amazon','tiktok-shop':'TikTok Shop',aliexpress:'AliExpress',ebay:'eBay'};
+  var dimensionLabels={fee:'费用',commission:'佣金',deposit:'保证金',fulfillment:'履约',prohibited:'禁售',settlement:'结算',penalty:'处罚'};
+  coverage=coverage&&Object.keys(coverage).length?coverage:rlComputePlatformCoverage();
+  target.innerHTML=keys.map(function(key){
+    var row=coverage[key]||{status:'not_connected',label:'未接入',rule_count:0,reason:'暂无通过核验的正式规则记录',dimensions:{}};
+    var dimensions=row.dimensions||{};
+    var topics=Object.keys(dimensionLabels).map(function(topic){
+      var dimension=dimensions[topic]||{};
+      var state=dimension.status||(Array.isArray(row.topics)&&row.topics.indexOf(topic)>=0?'connected':'not_connected');
+      var evidence=Number(dimension.record_count||0);
+      var title=dimension.label|| (state==='connected'?'已接入':state==='partial'?'部分接入':'未接入');
+      return '<span class="rl-coverage-dimension is-'+escapeHtml(state)+'" data-rule-dimension="'+topic+'" title="'+escapeHtml(title+(evidence?' · '+evidence+' 条正式记录':''))+'">'+dimensionLabels[topic]+'</span>';
+    }).join('');
+    return '<section class="rl-coverage-platform" data-platform="'+escapeHtml(key)+'" data-connection-status="'+escapeHtml(row.status||'not_connected')+'"><header><b>'+escapeHtml(platformLabels[key]||key)+'</b><span class="rl-coverage-status is-'+escapeHtml(row.status||'not_connected')+'">'+escapeHtml(row.label||'未接入')+'</span><small>'+Number(row.rule_count||0)+' 条</small></header><div class="rl-coverage-dimensions">'+topics+'</div><p>'+escapeHtml(row.reason||'暂无通过核验的正式规则记录')+'</p></section>';
+  }).join('');
 }
 
 const rlCategoryLabels = {fee:'费用佣金', fulfillment:'物流履约', compliance:'合规要求', penalty:'处罚扣分', category:'类目管理', listing:'商品发布'};

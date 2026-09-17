@@ -3,15 +3,14 @@
 """
 collect_us_market.py — 美国市场「全品类」单点情报采集器（参数化 · 真实源）
 
-覆盖用户指定的 5 大板块 × 8 个品类：
+覆盖 ``market_scope.json`` 为美国配置的 5 大板块 × N 个品类：
   1. country    美国 <品类> 宏观全景（真实参考 + 实时关税）
-  2. platforms  电商平台档案（7 平台 × 品类适配）
+  2. platforms  电商平台档案（目录配置平台 × 品类适配）
   3. rules      平台 / 监管合规红线（真实法规）
   4. policies   实时 Federal Register <品类> 公文（API 实时抓取）
   5. alerts     预警中心（FR 实时 + 关税专项）
 
-品类（每品类一份报告 / 一份数据）：
-  消费电子 / 服饰 / 家居厨具 / 美妆个护 / 玩具 / 运动户外 / 汽配 / 保健品
+品类由 ``data/market_scope.json`` 统一定义，每品类一份报告 / 一份数据。
 
 输出：
   data/us_market/<cat>.json   每品类一份（含 5 大板块）
@@ -26,7 +25,7 @@ collect_us_market.py — 美国市场「全品类」单点情报采集器（参�
   - 网络失败时回退到已有 data/us_market/<cat>.json，保证流水线不中断。
 
 用法：
-  python scripts/collect_us_market.py                # 采集全部 8 品类
+  python scripts/collect_us_market.py                # 采集目录内全部品类
   python scripts/collect_us_market.py --category electronics   # 单品类
   python scripts/collect_us_market.py --no-network   # 仅用本地参考库重建
   python scripts/collect_us_market.py --validate     # 离线校验输出结构
@@ -43,6 +42,7 @@ import urllib.error
 from datetime import datetime, timezone, timedelta
 
 from collection_telemetry import append_collection_source
+from market_scope import configured_catalog, load_market_scope, platform_alias_map
 from source_governance import SourceGovernanceError, assert_source_collectable
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -114,14 +114,14 @@ US_MACRO = [
 ]
 
 # ---------------------------------------------------------------------------
-# 共享：7 大平台档案（基础真实费率；hotCats 按品类覆盖）
+# 共享：当前 manifest 配置平台档案（hotCats 按品类覆盖）
 # ---------------------------------------------------------------------------
 PLATFORMS_BASE = [
     {
-        "name": "Amazon（美国）", "type": "货架电商", "market": "美国",
-        "commission": "多数品类佣金 8%–20%（如消费电子 8%、服饰 17%、家居 15%、美妆 8%–15%、玩具 15%、运动 15%、汽配 12%–15%、保健品 15%）；专业计划 $39.99/月 + FBA 仓储配送费",
+        "platform_key": "amazon", "name": "Amazon（美国）", "type": "货架电商", "market": "美国",
+        "commission": "多数品类佣金 8%–20%（如消费电子 8%、服饰 17%、家居 15%、美妆 8%–15%；宠物食品和用品按当前类目费率核验）；专业计划 $39.99/月 + FBA 仓储配送费",
         "feeDesc": "最大流量与信任背书；FBA 本土履约；Brand Registry 防跟卖",
-        "entry": "跨境可入驻；部分类目需审核/资质（如保健品、美妆、汽配）",
+        "entry": "跨境可入驻；部分类目需审核/资质（如宠物食品、美妆）",
         "strength": "最大流量与信任背书，高客单承接力强",
         "risk": "佣金高、价格战、账号合规风险",
         "source": "Amazon Seller Central 销售费用(2026)",
@@ -129,7 +129,7 @@ PLATFORMS_BASE = [
         "as_of": AS_OF,
     },
     {
-        "name": "TikTok Shop（美国）", "type": "内容电商", "market": "美国",
+        "platform_key": "tiktok-shop", "name": "TikTok Shop（美国）", "type": "内容电商", "market": "美国",
         "commission": "平台佣金约 6%–8%（按类目）+ 支付手续费；卖家中心 2026 更新内容合规红线",
         "feeDesc": "内容种草+直播转化；跨境店需本地主体/合规资质",
         "entry": "跨境店可入驻；需本地主体/合规资质",
@@ -140,18 +140,18 @@ PLATFORMS_BASE = [
         "as_of": AS_OF,
     },
     {
-        "name": "Walmart Marketplace", "type": "货架电商", "market": "美国",
-        "commission": "佣金 6%–15%（按品类），WFS 仓储费 $0.75/立方英尺/月，无月费/入驻费",
-        "feeDesc": "WFS 本土仓 + 跨境；47 个履约中心，88% 美国人口两日达",
-        "entry": "跨境店可入驻，审核较严",
-        "strength": "高信任、低佣金、本土履约",
-        "risk": "流量弱于 Amazon、品类受限",
-        "source": "Walmart Marketplace 费用说明",
-        "source_url": "https://marketplace.walmart.com/",
+        "platform_key": "aliexpress", "name": "AliExpress 速卖通", "type": "跨境电商", "market": "美国",
+        "commission": "多数品类佣金约 5%–8% + 交易服务费，按类目和履约模式核验",
+        "feeDesc": "跨境专供与 Choice 履约；适合价格敏感和长尾商品",
+        "entry": "跨境卖家可按类目申请",
+        "strength": "跨境供给和价格带覆盖广",
+        "risk": "履约时效、平台规则和价格竞争压力",
+        "source": "AliExpress 卖家中心",
+        "source_url": "https://sell.aliexpress.com/",
         "as_of": AS_OF,
     },
     {
-        "name": "eBay", "type": "货架/拍卖", "market": "美国",
+        "platform_key": "ebay", "name": "eBay", "type": "货架/拍卖", "market": "美国",
         "commission": "成交费约 13%（按品类），店铺订阅另计；无月费基础店",
         "feeDesc": "开放入驻门槛低；二手/长尾天然场",
         "entry": "开放入驻，门槛低",
@@ -161,45 +161,12 @@ PLATFORMS_BASE = [
         "source_url": "https://www.ebay.com/sellercenter",
         "as_of": AS_OF,
     },
-    {
-        "name": "Etsy", "type": "手作/设计师", "market": "美国",
-        "commission": "上架费 $0.20/件 + 交易费 6.5% + 支付处理费 6.5%（按国别）",
-        "feeDesc": "无月费；手作/复古/定制定位",
-        "entry": "开放入驻",
-        "strength": "设计师/手工溢价高、客群精准",
-        "risk": "流量小于综合平台、仿品管控",
-        "source": "Etsy Seller Handbook（参考）",
-        "source_url": "https://www.etsy.com/seller-handbook",
-        "as_of": AS_OF,
-    },
-    {
-        "name": "Shopify（独立站 DTC）", "type": "独立站", "market": "美国",
-        "commission": "无平台佣金；订阅 $39–$399/月 + 支付费率 ~2.9%+$0.30",
-        "feeDesc": "品牌自主、数据自有；需自引流量",
-        "entry": "自助建站",
-        "strength": "品牌资产沉淀、毛利高",
-        "risk": "获客成本高、运营重",
-        "source": "Shopify 定价（参考）",
-        "source_url": "https://www.shopify.com/pricing",
-        "as_of": AS_OF,
-    },
-    {
-        "name": "Temu / SHEIN", "type": "低价全托管", "market": "美国",
-        "commission": "全托管/半托管模式，平台定价，卖家挣供货价",
-        "feeDesc": "极致低价流量，卖家利润薄；关税敏感",
-        "entry": "供货商入驻（全托管）",
-        "strength": "海量低价流量",
-        "risk": "利润极低、品牌稀释、关税敏感",
-        "source": "平台公开模式（参考）",
-        "source_url": "https://www.temu.com/",
-        "as_of": AS_OF,
-    },
 ]
 
 # ---------------------------------------------------------------------------
 # 品类配置（真实数据锚点 + 合规 + FR 检索词）
 # ---------------------------------------------------------------------------
-CATEGORIES = {
+_CATEGORY_REFERENCES = {
     "electronics": {
         "name": "消费电子", "name_en": "Consumer Electronics", "icon": "📱",
         "subtitle": "United States · 全球最大单一国家电商市场",
@@ -247,14 +214,14 @@ CATEGORIES = {
         "advice": [
             "新手：TikTok Shop 验证手机配件/音频爆款",
             "工厂：Amazon FBA + 海外仓，重 UL/电池合规",
-            "品牌：Amazon Brand Registry + Shopify DTC 双轨",
+            "品牌：Amazon Brand Registry + eBay 长尾分销双轨",
         ],
         "findings": [
             "美国是全球最大单一电商市场（2026E ≈ $1.6 万亿），消费电子高频高复购，是工厂出海首选试水品类。",
             "含射频产品须 FCC 认证、含锂电池须 UN38.3/UL，是两大硬性合规门槛，决定能否清关与上线。",
             "对华 Section 301 附加关税覆盖大量电子 HTS 编码，精确税率须逐票用 USTR 检索或 CBP 裁定确认。",
             "Amazon 承接高客单 + TikTok Shop 内容种草为双引擎；本土仓履约与品牌化是利润关键。",
-            "工厂推荐路径：TikTok Shop 试水爆款 → Amazon FBA + 独立站双轨 → 品牌 DTC 沉淀资产。",
+            "工厂推荐路径：TikTok Shop 试水爆款 → Amazon FBA + eBay 长尾分销 → 品牌资产沉淀。",
         ],
         "tariff_alert": {
             "level": "high",
@@ -266,20 +233,14 @@ CATEGORIES = {
         "platform_hotcats": {
             "Amazon（美国）": ["手机配件", "智能穿戴", "电脑外设", "智能家居"],
             "TikTok Shop（美国）": ["蓝牙耳机", "手机壳", "智能手表", "充电配件"],
-            "Walmart Marketplace": ["家电配件", "电脑外设", "智能家居"],
+            "AliExpress 速卖通": ["手机配件", "充电配件", "电脑外设"],
             "eBay": ["二手电子", "收藏机型", "配件长尾"],
-            "Etsy": ["手工电子饰品", "定制外壳"],
-            "Shopify（独立站 DTC）": ["品牌官网", "订阅制配件"],
-            "Temu / SHEIN": ["低价配件", "合金/塑料外壳"],
         },
         "matrix": [
             ["Amazon（美国）", "工厂 / 品牌出海", "中（类目审核）", "中", "FBA + Brand Registry，重 UL/电池合规"],
             ["TikTok Shop（美国）", "工厂爆款试水", "中（本地主体）", "高（内容红线）", "内容种草验证爆款，控退货率"],
-            ["Walmart", "本土履约卖家", "中高", "低", "WFS 降低履约成本，高信任"],
+            ["AliExpress", "跨境长尾卖家", "低", "中", "价格敏感和长尾配件"],
             ["eBay", "二手 / 长尾", "低", "中", "二手+收藏款流量"],
-            ["Etsy", "设计师/手工", "低", "低", "手工溢价，客群精准"],
-            ["Shopify", "品牌 DTC", "自助", "中（获客）", "沉淀品牌资产与复购"],
-            ["Temu / SHEIN", "低价供货商", "低（全托管）", "高（利润薄）", "走量需谨慎，防品牌稀释"],
         ],
     },
 
@@ -329,15 +290,15 @@ CATEGORIES = {
         ],
         "advice": [
             "新手：TikTok Shop 快时尚小单快反试水",
-            "工厂：Amazon + 独立站，柔性供应链为王",
-            "品牌：DTC + 社媒种草，重尺码/材质真实",
+            "工厂：Amazon + AliExpress，柔性供应链为王",
+            "品牌：Amazon + TikTok Shop 社媒种草，重尺码/材质真实",
         ],
         "findings": [
             "美国服饰为万亿级成熟市场（2026E ≈ $3,730 亿），线上占比 ≈ 31% 且持续提升。",
             "FTC 纺织/羊毛标示 + 原产地是硬性合规；童装须 CPSIA 第三方检测与 CPC 证书。",
             "对华 Section 301 覆盖服饰鞋包（HTS 61/62/64），精确税率须逐票确认。",
             "TikTok Shop 内容电商为年轻客群新增量；柔性供应链+小单快反是工厂核心优势。",
-            "工厂推荐路径：TikTok 快反试水 → Amazon + 独立站 → 品牌 DTC 沉淀。",
+            "工厂推荐路径：TikTok Shop 快反试水 → Amazon 主销 + eBay 长尾分销。",
         ],
         "tariff_alert": {
             "level": "high",
@@ -349,20 +310,14 @@ CATEGORIES = {
         "platform_hotcats": {
             "Amazon（美国）": ["女装", "男装基础款", "鞋包", "运动休闲"],
             "TikTok Shop（美国）": ["女装潮款", "配饰", "鞋包", "节日礼"],
-            "Walmart Marketplace": ["家庭装", "基础款", "童装"],
+            "AliExpress 速卖通": ["潮流配饰", "基础服饰", "鞋包"],
             "eBay": ["二手/古着", "收藏款", "长尾尺码"],
-            "Etsy": ["手作服饰", "定制刺绣", "复古"],
-            "Shopify（独立站 DTC）": ["品牌官网", "会员复购", "定制"],
-            "Temu / SHEIN": ["低价快时尚", "合金/合成"],
         },
         "matrix": [
             ["Amazon（美国）", "工厂 / 品牌出海", "中", "中", "FBA + 类目审核，重尺码/材质真实"],
             ["TikTok Shop（美国）", "工厂快反试水", "中（本地主体）", "高（内容红线）", "小单快反验证爆款"],
-            ["Walmart", "本土履约卖家", "中高", "低", "高信任基础款"],
+            ["AliExpress", "跨境长尾卖家", "低", "中", "价格敏感和多尺码长尾"],
             ["eBay", "二手 / 古着", "低", "中", "古着+长尾流量"],
-            ["Etsy", "设计师/手作", "低", "低", "手工溢价，客群精准"],
-            ["Shopify", "品牌 DTC", "自助", "中（获客）", "沉淀品牌与复购"],
-            ["Temu / SHEIN", "低价供货商", "低（全托管）", "高（利润薄）", "走量需谨慎"],
         ],
     },
 
@@ -413,14 +368,14 @@ CATEGORIES = {
         "advice": [
             "新手：厨房小电/锅具 Amazon 爆款试水",
             "工厂：海外仓 + 家具家纺高客单",
-            "品牌：DTC 重设计感与食品接触合规",
+            "品牌：Amazon 重设计感与食品接触合规",
         ],
         "findings": [
             "家居厨具为 Amazon 高客单主力类目，厨房小电+锅具是爆款集中地。",
             "食品接触部件须 FDA 合规（铅迁移/氟聚合物），是核心门槛与差异化护城河。",
             "小电须 UL/ETL 认证，儿童家具须 ASTM + STURDY 防倾倒法。",
             "PFAS 多州限制与 Prop 65 警示需提前规避。",
-            "重货履约成本高，海外仓为必选项；工厂路径：Amazon 爆款 → 海外仓高客单 → DTC。",
+            "重货履约成本高，海外仓为必选项；工厂路径：TikTok Shop 试水 → Amazon 海外仓高客单。",
         ],
         "tariff_alert": {
             "level": "medium",
@@ -432,20 +387,14 @@ CATEGORIES = {
         "platform_hotcats": {
             "Amazon（美国）": ["厨房小电", "锅具餐具", "家具家纺", "收纳清洁"],
             "TikTok Shop（美国）": ["空气炸锅", "咖啡机", "收纳好物", "装饰"],
-            "Walmart Marketplace": ["家庭装", "基础家具", "厨具"],
+            "AliExpress 速卖通": ["厨房工具", "收纳", "家居小件"],
             "eBay": ["二手家具", "收藏餐具", "长尾"],
-            "Etsy": ["手作家居", "定制餐具", "复古"],
-            "Shopify（独立站 DTC）": ["品牌官网", "设计款", "定制"],
-            "Temu / SHEIN": ["低价厨具", "合金/塑料"],
         },
         "matrix": [
             ["Amazon（美国）", "工厂 / 品牌出海", "中", "中", "FBA + 海外仓，重 UL/FDA 认证"],
             ["TikTok Shop（美国）", "工厂爆款试水", "中（本地主体）", "高（内容红线）", "厨房小电内容种草"],
-            ["Walmart", "本土履约卖家", "中高", "低", "高信任基础款"],
+            ["AliExpress", "跨境长尾卖家", "低", "中", "家居小件和价格敏感商品"],
             ["eBay", "二手 / 长尾", "低", "中", "二手家具+长尾"],
-            ["Etsy", "设计师/手作", "低", "低", "手工溢价"],
-            ["Shopify", "品牌 DTC", "自助", "中（获客）", "设计款沉淀"],
-            ["Temu / SHEIN", "低价供货商", "低（全托管）", "高（利润薄）", "走量谨慎"],
         ],
     },
 
@@ -492,14 +441,14 @@ CATEGORIES = {
         ],
         "advice": [
             "新手：TikTok Shop 成分爆款试水",
-            "工厂：Amazon + 独立站，重 MoCRA 备案",
-            "品牌：DTC + 成分叙事，重真实功效",
+            "工厂：Amazon + AliExpress，重 MoCRA 备案",
+            "品牌：TikTok Shop + Amazon 成分叙事，重真实功效",
         ],
         "findings": [
             "美妆个护高毛利、强内容驱动（线上 ≈ 60%，TikTok 占比最高品类之一）。",
             "MoCRA 现代化法规强制工厂注册+产品备案+不良事件报告，是硬门槛也是信任背书。",
             "色素须 FDA 批号，功效/成分宣称须有 substantiation，FTC 严打虚假宣传。",
-            "成分党与国货成分出海是增量；工厂路径：TikTok 爆款 → Amazon+独立站 → DTC。",
+            "成分党与国货成分出海是增量；工厂路径：TikTok Shop 爆款 → Amazon 主销 + eBay 长尾分销。",
         ],
         "tariff_alert": {
             "level": "low",
@@ -511,343 +460,152 @@ CATEGORIES = {
         "platform_hotcats": {
             "Amazon（美国）": ["护肤", "彩妆", "香水", "个护"],
             "TikTok Shop（美国）": ["护肤爆款", "彩妆", "美甲", "香水"],
-            "Walmart Marketplace": ["家庭个护", "基础护肤", "洗护"],
+            "AliExpress 速卖通": ["美甲", "美容工具", "个护配件"],
             "eBay": ["收藏香水", "二手", "长尾"],
-            "Etsy": ["手工皂", "天然护肤", "定制"],
-            "Shopify（独立站 DTC）": ["品牌官网", "订阅制", "定制"],
-            "Temu / SHEIN": ["低价彩妆", "合金/塑料包装"],
         },
         "matrix": [
             ["Amazon（美国）", "工厂 / 品牌出海", "中（类目审核）", "中", "FBA + Brand Registry，重 MoCRA"],
             ["TikTok Shop（美国）", "工厂爆款试水", "中（本地主体）", "高（功效红线）", "成分种草验证爆款"],
-            ["Walmart", "本土履约卖家", "中高", "低", "高信任基础个护"],
+            ["AliExpress", "跨境长尾卖家", "低", "中", "美妆工具和个护配件"],
             ["eBay", "二手 / 收藏", "低", "中", "收藏香水+长尾"],
-            ["Etsy", "手工/天然", "低", "低", "手工溢价"],
-            ["Shopify", "品牌 DTC", "自助", "中（获客）", "订阅制沉淀"],
-            ["Temu / SHEIN", "低价供货商", "低（全托管）", "高（利润薄）", "走量谨慎"],
         ],
     },
 
-    "toys": {
-        "name": "玩具乐器", "name_en": "Toys & Games", "icon": "🧸",
-        "subtitle": "United States · 强季节 + 严安全合规",
-        "fr_terms": ["toy", "children product", "children's product", "plaything", "CPSC toy"],
-        "fr_strong": ["toy", "children", "plaything", "crib", "baby", "cpsc", "ASTM F963"],
-        "market": {
-            "size_2026": "玩具 US$ 387 亿 (2026E)；玩具游戏合计 ≈ $820.9 亿",
-            "cagr": "玩具 CAGR 3.8% (2026-2031)",
-            "note": "Q4  holiday 占全年约 1/3；安全合规门槛全品类最高之一",
-            "source": "Morgan Reed / Grand View, 2026",
-            "source_url": "https://www.grandviewresearch.com/industry-analysis/toys-market",
-            "as_of": "2026-08",
-        },
-        "segments": [
-            {"name": "益智教育", "note": "STEM/积木，家长偏好高"},
-            {"name": "娃娃玩偶", "note": "IP 授权集中，TikTok 爆款"},
-            {"name": "户外/运动玩具", "note": "季节性+庭院场景"},
-            {"name": "婴幼儿玩具", "note": "CPSIA 合规最严，安全门槛高"},
-        ],
-        "regulators": ["CPSC", "ASTM F963", "CPSIA"],
-        "rules": [
-            {"platform": "CPSC", "title": "玩具安全委员会标准 (ASTM F963)",
-             "detail": "玩具须符合 ASTM F963 机械/物理/燃烧/化学要求；CPSC 强制执行，违规可召回。",
-             "severity": "high", "source": "CPSC", "source_url": "https://www.cpsc.gov/", "as_of": AS_OF},
-            {"platform": "CPSIA", "title": "铅/邻苯 + 第三方检测 + CPC",
-             "detail": "儿童玩具铅 ≤100ppm、邻苯二甲酸盐受限；须第三方检测并出具儿童产品证书 (CPC)，随货提供。",
-             "severity": "high", "source": "CPSC CPSIA", "source_url": "https://www.cpsc.gov/Business--Manufacturing/Business-Education/CPSA-Compliance-Guide-for-Manufacturers-Importers", "as_of": AS_OF},
-            {"platform": "Amazon", "title": "玩具类目资质",
-             "detail": "玩具为受限类目，需 CPC + 检测报告；部分 IP 玩偶需授权。",
-             "severity": "medium", "source": "Amazon Seller Central", "source_url": "https://sell.amazon.com/pricing", "as_of": AS_OF},
-            {"platform": "TikTok Shop（美国）", "title": "内容合规红线（2026 更新）",
-             "detail": "90 天内累计违规可撤销权限；禁虚假安全宣称；须真实演示。",
-             "severity": "high", "source": "TikTok Shop 卖家中心", "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795", "as_of": AS_OF},
-        ],
-        "opportunity": "玩具市场强季节（Q4 占全年约 1/3）、复购+礼品属性强；STEM/益智与家长偏好品类溢价高。合规完备即可进入 Amazon 高信任渠道。",
-        "risks": [
-            "⚠️ ASTM F963 全项安全 + CPSIA 铅/邻苯 + 第三方 CPC 为强制",
-            "⚠️ 婴幼儿玩具安全门槛全品类最高",
-            "⚠️ IP 玩偶须授权，侵权风险高",
-            "⚠️ 对华 Section 301 覆盖玩具（HTS 9503），须确认税率",
-        ],
-        "advice": [
-            "新手：STEM/益智 Amazon 试水",
-            "工厂：Amazon + 海外仓，重 CPC 合规",
-            "品牌：DTC + IP 合规授权",
-        ],
-        "findings": [
-            "玩具市场强季节（Q4 占全年约 1/3）、礼品属性强，STEM/益智溢价高。",
-            "ASTM F963 + CPSIA 铅/邻苯 + 第三方 CPC 证书为强制，安全门槛全品类最高之一。",
-            "IP 玩偶须授权，侵权风险高，建议走自有设计。",
-            "对华 Section 301 覆盖玩具（HTS 9503），税率须逐票确认。",
-            "工厂路径：STEM 试水 → Amazon+海外仓 → DTC 自有设计。",
-        ],
-        "tariff_alert": {
-            "level": "medium",
-            "title": "对华 Section 301 附加关税覆盖玩具税则（HTS 9503）",
-            "market": "美国", "platform": "USTR / CBP",
-            "detail": "HTS 9503(玩具/游戏/模型) 受 Section 301 约束；2026 强迫劳动提案对部分经济体加征附加税。精确税率须用 USTR 检索或 CBP 裁定确认。",
-            "date": AS_OF, "source": "USTR Section 301", "url": "https://ustr.gov/node/9608", "as_of": AS_OF,
-        },
-        "platform_hotcats": {
-            "Amazon（美国）": ["益智STEM", "娃娃", "户外玩具", "婴幼儿"],
-            "TikTok Shop（美国）": ["爆款玩具", "解压", "IP 周边", "节日礼"],
-            "Walmart Marketplace": ["家庭玩具", "基础款", "学前教育"],
-            "eBay": ["收藏玩具", "二手", "长尾"],
-            "Etsy": ["手工玩具", "定制", "木制"],
-            "Shopify（独立站 DTC）": ["品牌官网", "订阅盒", "定制"],
-            "Temu / SHEIN": ["低价玩具", "合金/塑料"],
-        },
-        "matrix": [
-            ["Amazon（美国）", "工厂 / 品牌出海", "中（类目审核）", "中", "FBA + CPC 合规"],
-            ["TikTok Shop（美国）", "工厂爆款试水", "中（本地主体）", "高（内容红线）", "爆款种草"],
-            ["Walmart", "本土履约卖家", "中高", "低", "高信任家庭款"],
-            ["eBay", "二手 / 收藏", "低", "中", "收藏+长尾"],
-            ["Etsy", "手工/木制", "低", "低", "手工溢价"],
-            ["Shopify", "品牌 DTC", "自助", "中（获客）", "订阅盒沉淀"],
-            ["Temu / SHEIN", "低价供货商", "低（全托管）", "高（利润薄）", "走量谨慎"],
-        ],
-    },
-
-    "sports": {
-        "name": "运动户外", "name_en": "Sports & Outdoor", "icon": "⛺",
-        "subtitle": "United States · 健康生活方式驱动高增长",
-        "fr_terms": ["sporting good", "bicycle", "helmet", "athletic equipment", "outdoor gear"],
-        "fr_strong": ["sporting", "bicycle", "helmet", "athletic", "outdoor", "fitness", "recreation", "exercise"],
-        "market": {
-            "size_2026": "运动用品 US$ 339 亿 (2026E)；户外装备全球 ≈ $652.8 亿",
-            "cagr": "运动用品 CAGR 6% (2026-2031)",
-            "note": "健身/露营/骑行热驱动；运动器材美国 ≈ $294 亿",
-            "source": "Mordor / Grand View, 2026",
-            "source_url": "https://www.mordorintelligence.com/industry-reports/sports-equipment-market",
-            "as_of": "2026-08",
-        },
-        "segments": [
-            {"name": "健身器材", "note": "居家健身+瑜伽，复购配件强"},
-            {"name": "户外露营", "note": "帐篷/睡袋，疫情后持续热"},
-            {"name": "骑行运动", "note": "自行车/头盔，CPSC 认证"},
-            {"name": "球类与水上", "note": "季节性强，赛事驱动"},
-        ],
-        "regulators": ["CPSC", "ASTM"],
-        "rules": [
-            {"platform": "CPSC", "title": "自行车/头盔安全标准",
-             "detail": "自行车须符合 CPSC 16 CFR Part 1512；自行车头盔须符合 Part 1203 冲击标准；违规可召回。",
-             "severity": "high", "source": "CPSC", "source_url": "https://www.cpsc.gov/", "as_of": AS_OF},
-            {"platform": "ASTM", "title": "运动器材安全 (ASTM F963 等)",
-             "detail": "健身/游乐器材须符合相应 ASTM 安全标准（机械/稳定/锐边）；儿童运动器材并入 CPSIA。",
-             "severity": "medium", "source": "ASTM International", "source_url": "https://www.astm.org/", "as_of": AS_OF},
-            {"platform": "Amazon", "title": "运动类目资质",
-             "detail": "健身/骑行类部分需安全认证与合规声明；建议 Brand Registry。",
-             "severity": "medium", "source": "Amazon Seller Central", "source_url": "https://sell.amazon.com/pricing", "as_of": AS_OF},
-            {"platform": "TikTok Shop（美国）", "title": "内容合规红线（2026 更新）",
-             "detail": "90 天内累计违规可撤销权限；须真实演示、明示价格。",
-             "severity": "high", "source": "TikTok Shop 卖家中心", "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795", "as_of": AS_OF},
-        ],
-        "opportunity": "健康生活方式驱动运动户外高增长（CAGR 6%）；健身/露营/骑行持续热。DTC + 内容种草（户外场景）转化强，本土仓解决大件履约。",
-        "risks": [
-            "⚠️ 自行车/头盔须 CPSC 强制安全标准",
-            "⚠️ 健身器材须 ASTM 稳定/锐边合规",
-            "⚠️ 大件履约成本高，海外仓为必选",
-            "⚠️ 对华 Section 301 覆盖运动器材（HTS 9506/8712），须确认税率",
-        ],
-        "advice": [
-            "新手：健身配件 TikTok 试水",
-            "工厂：Amazon + 海外仓，重认证",
-            "品牌：DTC + 户外内容种草",
-        ],
-        "findings": [
-            "运动户外受健康生活方式驱动高增长（CAGR ≈ 6%），健身/露营/骑行持续热。",
-            "自行车/头盔须 CPSC 强制安全标准，健身器材须 ASTM 合规。",
-            "大件履约成本高，海外仓为必选。",
-            "对华 Section 301 覆盖运动器材（HTS 9506/8712），税率须逐票确认。",
-            "工厂路径：健身配件试水 → Amazon+海外仓 → DTC 户外内容种草。",
-        ],
-        "tariff_alert": {
-            "level": "medium",
-            "title": "对华 Section 301 附加关税覆盖运动器材税则",
-            "market": "美国", "platform": "USTR / CBP",
-            "detail": "HTS 9506(运动器材)/8712(自行车) 等受 Section 301 约束；2026 强迫劳动提案对部分经济体加征附加税。精确税率须用 USTR 检索或 CBP 裁定确认。",
-            "date": AS_OF, "source": "USTR Section 301", "url": "https://ustr.gov/node/9608", "as_of": AS_OF,
-        },
-        "platform_hotcats": {
-            "Amazon（美国）": ["健身器材", "露营", "骑行", "瑜伽"],
-            "TikTok Shop（美国）": ["健身配件", "露营好物", "运动服", "水具"],
-            "Walmart Marketplace": ["家庭健身", "基础户外", "球类"],
-            "eBay": ["二手器材", "收藏", "长尾"],
-            "Etsy": ["手工运动饰品", "定制"],
-            "Shopify（独立站 DTC）": ["品牌官网", "订阅", "定制"],
-            "Temu / SHEIN": ["低价配件", "合金/塑料"],
-        },
-        "matrix": [
-            ["Amazon（美国）", "工厂 / 品牌出海", "中", "中", "FBA + 海外仓，重认证"],
-            ["TikTok Shop（美国）", "工厂爆款试水", "中（本地主体）", "高（内容红线）", "户外场景种草"],
-            ["Walmart", "本土履约卖家", "中高", "低", "高信任基础款"],
-            ["eBay", "二手 / 长尾", "低", "中", "二手+长尾"],
-            ["Etsy", "设计师/手工", "低", "低", "手工溢价"],
-            ["Shopify", "品牌 DTC", "自助", "中（获客）", "户外内容沉淀"],
-            ["Temu / SHEIN", "低价供货商", "低（全托管）", "高（利润薄）", "走量谨慎"],
-        ],
-    },
-
-    "auto": {
-        "name": "汽车配件", "name_en": "Automotive Aftermarket", "icon": "🔧",
-        "subtitle": "United States · 庞大保有量驱动的刚需后市场",
-        "fr_terms": ["motor vehicle", "automotive part", "auto part", "emission standard", "NHTSA"],
-        "fr_strong": ["motor vehicle", "automotive", "auto part", "emission", "nhtsa", "tire", "headlamp", "epa", "vehicle"],
-        "market": {
-            "size_2026": "US$ 2,387.5 亿 (2026E)",
-            "cagr": "CAGR 4.12% (2026-2031)",
-            "note": "另口径 ≈ $2,495.5 亿 (Precedence)；含替换件/养护/电子",
-            "source": "Mordor / Precedence, 2026",
-            "source_url": "https://www.mordorintelligence.com/industry-reports/automotive-aftermarket-market",
-            "as_of": "2026-08",
-        },
-        "segments": [
-            {"name": "替换件", "note": "滤清/刹车/电池，高频刚需"},
-            {"name": "养护品", "note": "机油/添加剂，复购强"},
-            {"name": "电子改装", "note": "车灯/雷达，FCC/合规严"},
-            {"name": "轮胎轮毂", "note": "DOT 认证，重货履约"},
-        ],
-        "regulators": ["EPA", "CARB", "NHTSA", "Right-to-Repair"],
-        "rules": [
-            {"platform": "NHTSA / DOT", "title": "安全件与轮胎标准 (FMVSS)",
-             "detail": "刹车/车灯/轮胎等安全件须符合联邦机动车安全标准 (FMVSS)；轮胎须 DOT 认证与统一轮胎质量分级 (UTQG)。",
-             "severity": "high", "source": "NHTSA", "source_url": "https://www.nhtsa.gov/", "as_of": AS_OF},
-            {"platform": "EPA / CARB", "title": "排放与改装合规",
-             "detail": "影响排放的改装件（排气/ECU）须 EPA/CARB 豁免；加州 CARB 标准更严，违规可重罚。",
-             "severity": "high", "source": "EPA / CARB", "source_url": "https://ww2.arb.ca.gov/", "as_of": AS_OF},
-            {"platform": "FCC", "title": "车载电子射频认证",
-             "detail": "车灯/雷达/蓝牙配件含射频须 FCC 认证；改装件须避免干扰。",
-             "severity": "medium", "source": "FCC", "source_url": "https://www.fcc.gov/", "as_of": AS_OF},
-            {"platform": "Amazon / eBay", "title": "汽配类目资质",
-             "detail": "汽配为专业类目，需 fitment 数据（适配车型）与合规声明；eBay 汽配天然场。",
-             "severity": "medium", "source": "Amazon / eBay", "source_url": "https://sell.amazon.com/pricing", "as_of": AS_OF},
-        ],
-        "opportunity": "美国汽车保有量全球前列，后市场为刚需高频；替换件/养护品复购强，eBay 汽配天然场。Fitment 数据+合规完备是核心壁垒。",
-        "risks": [
-            "⚠️ 安全件须 FMVSS，轮胎须 DOT/UTQG 认证",
-            "⚠️ 排气/ECU 改装受 EPA/CARB 排放约束",
-            "⚠️ 车载电子含射频须 FCC 认证",
-            "⚠️ 重货履约成本高；对华 Section 301 覆盖汽配（HTS 8708），须确认税率",
-        ],
-        "advice": [
-            "新手：eBay 汽配长尾试水",
-            "工厂：Amazon + 海外仓，重 fitment 数据",
-            "品牌：DTC + 车型适配工具",
-        ],
-        "findings": [
-            "美国汽车后市场庞大刚需（2026E ≈ $2,387 亿），替换件/养护品高频复购。",
-            "安全件须 FMVSS，轮胎须 DOT/UTQG，排放改装受 EPA/CARB 约束。",
-            "车载电子含射频须 FCC 认证；eBay 汽配为天然场。",
-            "重货履约成本高，fitment 适配数据+合规是核心壁垒。",
-            "工厂路径：eBay 长尾 → Amazon+海外仓 → DTC 车型适配。",
-        ],
-        "tariff_alert": {
-            "level": "medium",
-            "title": "对华 Section 301 附加关税覆盖汽车配件税则（HTS 8708）",
-            "market": "美国", "platform": "USTR / CBP",
-            "detail": "HTS 8708(机动车辆零件/附件) 广泛受 Section 301 约束；2026 强迫劳动提案对部分经济体加征附加税。精确税率须用 USTR 检索或 CBP 裁定确认。",
-            "date": AS_OF, "source": "USTR Section 301", "url": "https://ustr.gov/node/9608", "as_of": AS_OF,
-        },
-        "platform_hotcats": {
-            "Amazon（美国）": ["替换件", "养护品", "电子改装", "轮胎轮毂"],
-            "TikTok Shop（美国）": ["车载好物", "清洁护理", "小配件"],
-            "Walmart Marketplace": ["基础养护", "替换件"],
-            "eBay": ["汽配长尾", "二手件", "收藏"],
-            "Etsy": ["手工车饰", "定制"],
-            "Shopify（独立站 DTC）": ["品牌官网", "车型适配", "定制"],
-            "Temu / SHEIN": ["低价小配件", "合金/塑料"],
-        },
-        "matrix": [
-            ["Amazon（美国）", "工厂 / 品牌出海", "中", "中", "FBA + fitment 数据，重认证"],
-            ["TikTok Shop（美国）", "工厂爆款试水", "中（本地主体）", "高（内容红线）", "车载好物种草"],
-            ["Walmart", "本土履约卖家", "中高", "低", "高信任基础养护"],
-            ["eBay", "汽配长尾", "低", "中", "天然汽配场+车型适配"],
-            ["Etsy", "手工/定制", "低", "低", "手工车饰溢价"],
-            ["Shopify", "品牌 DTC", "自助", "中（获客）", "车型适配工具沉淀"],
-            ["Temu / SHEIN", "低价供货商", "低（全托管）", "高（利润薄）", "走量谨慎"],
-        ],
-    },
-
-    "supplements": {
-        "name": "保健品", "name_en": "Dietary Supplements", "icon": "💊",
-        "subtitle": "United States · 高增速 + 严 FDA/cGMP 监管",
-        "fr_terms": ["dietary supplement", "nutrient", "vitamin", "FDA supplement", "botanical"],
-        "fr_strong": ["dietary supplement", "nutrient", "vitamin", "fda", "botanical", "amino", "probiotic", "mineral"],
-        "market": {
-            "size_2026": "US$ 773.7 亿 (2026E)",
-            "cagr": "CAGR 7.9% (2026-2031)",
-            "note": "广义营养健康（含 OTC）≈ $8,540 亿；膳食补充剂为最高增速品类之一",
-            "source": "Polaris / 行业研究, 2026",
-            "source_url": "https://www.polarismarketresearch.com/industry-analysis/dietary-supplements-market",
-            "as_of": "2026-08",
-        },
-        "segments": [
-            {"name": "维生素矿物质", "note": "最大基础细分，复购强"},
-            {"name": "蛋白/运动营养", "note": "健身人群驱动，TikTok 热"},
-            {"name": "草本植物", "note": "植物提取，NDI 合规关键"},
-            {"name": "益生菌/功能", "note": "肠道/睡眠，高溢价"},
-        ],
-        "regulators": ["FDA (DSHEA/cGMP/NDI)", "FTC"],
-        "rules": [
-            {"platform": "FDA", "title": "DSHEA / cGMP / NDI 备案",
-             "detail": "膳食补充剂受 DSHEA 监管，须符合 cGMP (21 CFR Part 111)；新 dietary ingredient (NDI) 须上市前 75 天备案；结构/功能宣称须有 substantiation 且不宣称治病。",
-             "severity": "high", "source": "FDA", "source_url": "https://www.fda.gov/food/dietary-supplements", "as_of": AS_OF},
-            {"platform": "FTC", "title": "功效宣称合规",
-             "detail": "「抗衰老/治愈/减重」等健康宣称须有可靠科学证据；禁止疾病治疗宣称，网红须披露。",
-             "severity": "high", "source": "FTC", "source_url": "https://www.ftc.gov/business-guidance/industry/health-care", "as_of": AS_OF},
-            {"platform": "Amazon", "title": "保健品类目资质",
-             "detail": "保健品为受限类目，需 cGMP/检测报告与合规声明；建议 Brand Registry。",
-             "severity": "medium", "source": "Amazon Seller Central", "source_url": "https://sell.amazon.com/pricing", "as_of": AS_OF},
-            {"platform": "TikTok Shop（美国）", "title": "内容合规红线（2026 更新）",
-             "detail": "90 天内累计违规可撤销权限；禁医疗/疾病治疗宣称、禁减肥夸大；须真实演示。",
-             "severity": "high", "source": "TikTok Shop 卖家中心", "source_url": "https://seller-us.tiktok.com/university/essay?knowledge_id=3106489578538795", "as_of": AS_OF},
-        ],
-        "opportunity": "保健品为高增速品类（CAGR ≈ 7.9%），维生素/蛋白/草本复购强。TikTok 内容种草驱动增量，cGMP+NDI 合规完备是壁垒也是信任。",
-        "risks": [
-            "⚠️ cGMP 强制 + NDI 上市前 75 天备案",
-            "⚠️ 结构/功能宣称须 substantiation，禁疾病治疗宣称",
-            "⚠️ FTC 严打功效/减重虚假宣传",
-            "⚠️ 对华 Section 301 多不直接覆盖，但包材/设备受约束",
-        ],
-        "advice": [
-            "新手：维生素/蛋白 TikTok 试水",
-            "工厂：Amazon + 独立站，重 cGMP/NDI",
-            "品牌：DTC + 科学叙事，重真实功效",
-        ],
-        "findings": [
-            "保健品为高增速品类（CAGR ≈ 7.9%），维生素/蛋白/草本复购强。",
-            "cGMP 强制 + NDI 上市前 75 天备案，结构/功能宣称须 substantiation。",
-            "FTC 严打疾病治疗/减重虚假宣传；TikTok 内容红线严格。",
-            "对华 Section 301 多不直接覆盖成品，但包材/设备受约束。",
-            "工厂路径：TikTok 爆款 → Amazon+独立站 → DTC 科学叙事。",
-        ],
-        "tariff_alert": {
-            "level": "low",
-            "title": "保健品成品多为零关税，包材/设备受 Section 301 约束",
-            "market": "美国", "platform": "USTR / CBP",
-            "detail": "HTS 2106(营养制剂) 多为零基础关税，但胶囊/瓶体包材与生产设备受 Section 301 附加税约束。出口须以 USTR 检索确认具体编码税率。",
-            "date": AS_OF, "source": "USTR Section 301", "url": "https://ustr.gov/node/9608", "as_of": AS_OF,
-        },
-        "platform_hotcats": {
-            "Amazon（美国）": ["维生素", "蛋白", "草本", "益生菌"],
-            "TikTok Shop（美国）": ["蛋白", " gummies", "草本", "睡眠"],
-            "Walmart Marketplace": ["家庭基础", "维生素", "蛋白"],
-            "eBay": ["收藏/长尾", "二手"],
-            "Etsy": ["手工草本", "天然", "定制"],
-            "Shopify（独立站 DTC）": ["品牌官网", "订阅制", "定制"],
-            "Temu / SHEIN": ["低价软糖", "基础维生素"],
-        },
-        "matrix": [
-            ["Amazon（美国）", "工厂 / 品牌出海", "中（类目审核）", "中", "FBA + cGMP/NDI 合规"],
-            ["TikTok Shop（美国）", "工厂爆款试水", "中（本地主体）", "高（功效红线）", "成分种草验证爆款"],
-            ["Walmart", "本土履约卖家", "中高", "低", "高信任基础款"],
-            ["eBay", "二手 / 长尾", "低", "中", "长尾+收藏"],
-            ["Etsy", "手工/天然", "低", "低", "手工溢价"],
-            ["Shopify", "品牌 DTC", "自助", "中（获客）", "订阅制沉淀"],
-            ["Temu / SHEIN", "低价供货商", "低（全托管）", "高（利润薄）", "走量谨慎"],
-        ],
-    },
 }
+
+
+# The manifest is the source of truth for what this collector may emit.  The
+# Reference blocks above provide factual content only for categories that are
+# still configured. The manifest, never this mapping, decides what is emitted.
+_MARKET_SCOPE = load_market_scope()
+_US_SCOPE = configured_catalog(_MARKET_SCOPE, market_codes=["US"])
+_RETIRED_PLATFORM_TERMS = ("walmart", "etsy", "shopify", "temu", "shein")
+
+
+def _contains_retired_platform(value):
+    text = str(value or "").casefold()
+    return any(term in text for term in _RETIRED_PLATFORM_TERMS)
+
+
+def _scrub_retired_platforms(value):
+    """Drop retired platform references from nested collector configuration."""
+    if isinstance(value, dict):
+        cleaned = {}
+        for key, item in value.items():
+            if key == "platform_hotcats":
+                item = {
+                    name: cats for name, cats in (item.items() if isinstance(item, dict) else [])
+                    if not _contains_retired_platform(name)
+                }
+            sanitized = _scrub_retired_platforms(item)
+            if sanitized is not None:
+                cleaned[key] = sanitized
+        return cleaned
+    if isinstance(value, list):
+        cleaned = []
+        for item in value:
+            if isinstance(item, list) and any(_contains_retired_platform(part) for part in item):
+                continue
+            sanitized = _scrub_retired_platforms(item)
+            if sanitized is not None:
+                cleaned.append(sanitized)
+        return cleaned
+    if isinstance(value, str) and _contains_retired_platform(value):
+        return None
+    return value
+
+
+def _minimal_category_config(row):
+    key = str(row.get("code") or "generic").strip().lower()
+    name = str(row.get("name") or key).strip()
+    names = {
+        "generic": ("通用品类", "General Merchandise", "📦", ["consumer product", "retail"], "覆盖美国市场的通用商品机会与合规要求"),
+        "pet-food": ("宠物食品", "Pet Food", "🐾", ["pet food", "animal food", "pet nutrition"], "宠物食品消费稳定复购，配方、标签和进口合规决定上市速度"),
+        "pet-supplies": ("宠物用品", "Pet Supplies", "🐕", ["pet supplies", "animal product", "pet safety"], "宠物用品覆盖用品、护理和出行场景，安全声明与材料合规是关键"),
+    }
+    default_name, name_en, icon, terms, opportunity = names.get(key, (name, key.replace("-", " ").title(), "📦", [key], f"{name}在美国市场的需求、平台和合规机会"))
+    if name == key:
+        name = default_name
+    return {
+        "name": name,
+        "name_en": name_en,
+        "icon": icon,
+        "subtitle": f"United States · {name} market intelligence",
+        "fr_terms": terms,
+        "fr_strong": terms + ["import", "safety", "label"],
+        "market": {
+            "size_2026": "待正式来源核验",
+            "cagr": "待正式来源核验",
+            "note": opportunity,
+            "source": "Federal Register / official market sources",
+            "source_url": "https://www.federalregister.gov/",
+            "as_of": AS_OF,
+        },
+        "segments": [{"name": name, "note": opportunity}],
+        "regulators": ["FDA", "CPSC", "FTC"],
+        "rules": [],
+        "opportunity": opportunity,
+        "risks": ["需以官方来源核验产品、标签和进口要求", "平台政策和州级要求可能变化"],
+        "advice": ["先核验目标平台、市场和品类范围，再进行小批量验证"],
+        "findings": [opportunity],
+        "tariff_alert": {
+            "level": "medium", "title": f"{name}进口与合规要求需按具体商品核验",
+            "market": "美国", "platform": "USTR / CBP",
+            "detail": "具体税号、标签、认证和进口要求以官方当前规则和商品事实为准。",
+            "date": AS_OF, "source": "USTR / CBP", "url": "https://ustr.gov/", "as_of": AS_OF,
+        },
+        "platform_hotcats": {},
+        "matrix": [],
+    }
+
+
+def _manifest_category_configs():
+    rows = {
+        str(row.get("code") or "").strip().lower(): row
+        for row in _MARKET_SCOPE.get("categories", []) or []
+        if isinstance(row, dict) and str(row.get("code") or "").strip()
+    }
+    keys = _US_SCOPE.get("category_keys") or list(rows)
+    result = {}
+    for key in keys:
+        row = rows.get(str(key).strip().lower(), {"code": key, "name": key})
+        source = _CATEGORY_REFERENCES.get(str(key).strip().lower()) or _minimal_category_config(row)
+        result[str(key).strip().lower()] = _scrub_retired_platforms(copy.deepcopy(source))
+    return result
+
+
+CATEGORIES = _manifest_category_configs()
+
+
+def _configured_platform_keys():
+    return [str(key).strip().lower() for key in (_US_SCOPE.get("platform_keys") or []) if str(key).strip()]
+
+
+def _configured_platform_records():
+    by_key = {str(row.get("platform_key") or "").strip().lower(): row for row in PLATFORMS_BASE}
+    manifest_rows = {
+        str(row.get("key") or "").strip().lower(): row
+        for row in _MARKET_SCOPE.get("platforms", []) or []
+        if isinstance(row, dict) and str(row.get("key") or "").strip()
+    }
+    records = []
+    for key in _configured_platform_keys():
+        row = copy.deepcopy(by_key.get(key) or {})
+        catalog = manifest_rows.get(key, {})
+        row.setdefault("platform_key", key)
+        row.setdefault("name", catalog.get("name") or key)
+        row.setdefault("type", catalog.get("kind") or "marketplace")
+        row.setdefault("market", "美国")
+        row.setdefault("commission", "按平台和品类当前费率核验")
+        row.setdefault("feeDesc", "平台费用、履约和规则以官方卖家中心为准")
+        row.setdefault("entry", "按平台当前入驻要求申请")
+        row.setdefault("strength", "覆盖目标市场的跨境销售渠道")
+        row.setdefault("risk", "平台规则、费用和履约要求会变化")
+        row.setdefault("source", f"{row['name']} 官方卖家中心")
+        row.setdefault("source_url", "https://www.google.com/search?q=" + urllib.parse.quote(row["name"] + " seller"))
+        row.setdefault("as_of", AS_OF)
+        records.append(row)
+    return records
 
 # ---------------------------------------------------------------------------
 # 实时政策/预警（Federal Register 真实公文）
@@ -1010,15 +768,33 @@ def build_platforms(cat_key):
     cfg = CATEGORIES[cat_key]
     hot = cfg.get("platform_hotcats", {})
     out = []
-    for p in PLATFORMS_BASE:
+    for p in _configured_platform_records():
         pp = dict(p)
-        pp["hotCats"] = hot.get(p["name"], [])
+        pp["hotCats"] = hot.get(p["name"], hot.get(p.get("platform_key"), []))
         out.append(pp)
     return out
 
 
 def build_rules(cat_key):
-    return CATEGORIES[cat_key]["rules"]
+    return [
+        rule for rule in CATEGORIES[cat_key]["rules"]
+        if isinstance(rule, dict) and not _contains_retired_platform(rule.get("platform"))
+    ]
+
+
+def build_matrix(cat_key):
+    """Keep only configured platform rows from the legacy comparison matrix."""
+    rows = []
+    configured = set(_configured_platform_keys())
+    aliases = platform_alias_map(_MARKET_SCOPE)
+    for row in CATEGORIES[cat_key].get("matrix", []):
+        if not isinstance(row, list) or not row:
+            continue
+        label = str(row[0] or "").strip().lower()
+        key = aliases.get(label)
+        if key in configured or (not key and not _contains_retired_platform(label)):
+            rows.append(row)
+    return rows
 
 
 # ---------------------------------------------------------------------------
@@ -1057,7 +833,10 @@ def collect_category(cat_key, no_network=False):
     # A total outage must leave the cached factual payload and its original
     # timestamps untouched. Only the attempt status is allowed to advance.
     if collection_status in {"failed", "skipped"} and old:
-        out = copy.deepcopy(old)
+        out = _scrub_retired_platforms(copy.deepcopy(old))
+        out["platforms"] = build_platforms(cat_key)
+        out["matrix"] = build_matrix(cat_key)
+        out["rules"] = build_rules(cat_key)
         meta = out.setdefault("meta", {})
         meta.setdefault("content_updated_at", meta.get("generated_at"))
         meta["collection_status"] = collection_status
@@ -1118,7 +897,7 @@ def collect_category(cat_key, no_network=False):
         "country": country,
         "findings": cfg["findings"],
         "platforms": platforms,
-        "matrix": cfg["matrix"],
+        "matrix": build_matrix(cat_key),
         "rules": rules,
         "policies": policies,
         "alerts": alerts,
@@ -1183,6 +962,8 @@ def main():
     args = p.parse_args()
 
     os.makedirs(DATA_DIR, exist_ok=True)
+    if args.category and args.category not in CATEGORIES:
+        p.error("category must be one of: " + ", ".join(CATEGORIES))
     keys = [args.category] if args.category else list(CATEGORIES.keys())
 
     if args.validate:
@@ -1269,8 +1050,8 @@ def main():
         "domain": "market_intelligence",
         "core": True,
         "status": "degraded" if category_status == "degraded" else ("failed" if category_status == "failed" else "succeeded"),
-        "market_codes": ["US"],
-        "platform_keys": ["amazon", "tiktok-shop", "aliexpress", "ebay"],
+        "market_codes": _US_SCOPE.get("market_codes") or ["US"],
+        "platform_keys": _configured_platform_keys(),
         "request_count": category_requests,
         "successful_requests": category_successes,
         "failed_requests": category_failures,

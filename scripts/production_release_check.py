@@ -11,6 +11,11 @@ import urllib.request
 from pathlib import Path
 from urllib.parse import urlparse
 
+try:
+    from market_scope import configured_catalog, load_market_scope
+except ModuleNotFoundError:  # Imported as scripts.production_release_check in tests/tools.
+    from scripts.market_scope import configured_catalog, load_market_scope
+
 
 class ReleaseCheckError(RuntimeError):
     pass
@@ -40,8 +45,10 @@ PRIVATE_PAGE_DATA_PATHS = (
     "data/rules_baseline.json",
     "data/_sync_logs/sync_20260819_092403.json",
     "data/us_market/cpsc_recalls.json",
-    "data/us_market/electronics.json",
     "data/us_market/index.json",
+) + tuple(
+    f"data/us_market/{code}.json"
+    for code in configured_catalog(load_market_scope(), market_codes=["US"])["category_keys"]
 )
 
 

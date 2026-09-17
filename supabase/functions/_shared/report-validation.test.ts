@@ -50,6 +50,8 @@ function content(options: { markets?: string[]; platforms?: string[]; categories
     if (platforms.length) platforms.forEach((platformKey) => pairs.push({ marketCode, platformKey }));
     else pairs.push({ marketCode, platformKey: null });
   });
+  const ruleDimensions = ['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty'];
+  const requireRuleDimensions = domains.includes('platform') && domains.includes('rule');
   const cells = pairs.flatMap((pair) => categories.flatMap((categoryCode) => domains.map((domain) => {
     const matching = (options.evidence || []).filter((row) => {
       const rowDomain = String(row.domain || row.material_type || '').toLowerCase();
@@ -62,15 +64,23 @@ function content(options: { markets?: string[]; platforms?: string[]; categories
       return !rowCategory || rowCategory === categoryCode;
     });
     const sourceRecordIds = matching.map((row) => row.source_record_id || (row.metadata as Row | undefined)?.source_record_id || row.record_key || row.client_id).filter(Boolean);
+    const coveredRuleDimensions = domain === 'platform' && requireRuleDimensions ? ruleDimensions.filter((dimension) => matching.some((row) => {
+      const payload = row.payload && typeof row.payload === 'object' ? row.payload as Row : {};
+      const values = payload.rule_dimensions && typeof payload.rule_dimensions === 'object' ? payload.rule_dimensions as Row : {};
+      return String(payload.topic || row.topic || '').toLowerCase() === dimension || !!values[dimension];
+    })) : [];
+    const missingRuleDimensions = domain === 'platform' && requireRuleDimensions ? ruleDimensions.filter((dimension) => !coveredRuleDimensions.includes(dimension)) : [];
     return {
       id: [pair.marketCode, pair.platformKey || '*', categoryCode || '*', domain].join('|'),
       marketCode: pair.marketCode,
       platformKey: pair.platformKey,
       categoryCode,
       domain,
-      covered: matching.length > 0,
+      covered: matching.length > 0 && missingRuleDimensions.length === 0,
       recordCount: matching.length,
       sourceRecordIds,
+      ruleDimensions: coveredRuleDimensions,
+      missingRuleDimensions,
     };
   })));
   const appendix = options.appendix || (options.evidence || []).map((row, index) => ({
@@ -96,6 +106,7 @@ function content(options: { markets?: string[]; platforms?: string[]; categories
     quality_snapshot: quality.snapshot,
     coverage_matrix: {
       requiredDomains: domains,
+      requiredPlatformRuleDimensions: requireRuleDimensions ? ruleDimensions : [],
       dimensions: { marketCodes: markets, platformKeys: platforms, categoryCodes: categories, marketPlatformPairs: pairs },
       cells,
       missingCells: cells.filter((cell) => !cell.covered),
@@ -228,6 +239,34 @@ Deno.test('one platform rule cannot cover another selected platform', () => {
   );
   assertReason(result, 'COVERAGE_EVIDENCE_MISSING');
   if (!result.coverage.missing_cell_ids.includes('US|tiktok-shop|generic|rule')) throw new Error('missing TikTok Shop rule cell was not reported');
+});
+
+Deno.test('formal output requires all seven platform rule dimensions', () => {
+  const dimensions = ['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty'];
+  const evidence = dimensions.slice(0, 6).map((dimension) => ({
+    domain: 'rule', market_code: 'US', platform_key: 'amazon', source_record_id: `amazon-${dimension}`,
+    source_url: `https://example.test/amazon/${dimension}`, verification_status: 'verified',
+    payload: { topic: dimension, rule_dimensions: { [dimension]: `${dimension}-value` } },
+  }));
+  const partial = validateFormalReportContent(
+    content({ domains: ['platform', 'rule'], evidence }),
+    quality,
+    context({ domains: ['platform', 'rule'], evidence }),
+    { now },
+  );
+  assertReason(partial, 'QUALITY_PLATFORM_RULE_COVERAGE_MISSING');
+  evidence.push({
+    domain: 'rule', market_code: 'US', platform_key: 'amazon', source_record_id: 'amazon-penalty',
+    source_url: 'https://example.test/amazon/penalty', verification_status: 'verified',
+    payload: { topic: 'penalty', rule_dimensions: { penalty: 'penalty-value' } },
+  });
+  const complete = validateFormalReportContent(
+    content({ domains: ['platform', 'rule'], evidence }),
+    quality,
+    context({ domains: ['platform', 'rule'], evidence }),
+    { now },
+  );
+  if (!complete.ok) throw new Error(complete.reasons.map((reason) => reason.code).join(','));
 });
 
 Deno.test('uploaded product evidence remains category-specific', () => {

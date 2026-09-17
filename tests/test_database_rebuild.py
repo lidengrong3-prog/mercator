@@ -55,6 +55,19 @@ class DatabaseRebuildTests(unittest.TestCase):
             expected_head,
         )
 
+    def test_market_scope_migration_retires_legacy_rows_and_guards_new_writes(self):
+        migration = (
+            ROOT / "supabase" / "migrations" /
+            "20261009000000_market_scope_catalog_hardening.sql"
+        ).read_text(encoding="utf-8")
+        self.assertIn("UPDATE public.market_platforms", migration)
+        self.assertIn("UPDATE public.category_profiles", migration)
+        self.assertIn("UPDATE public.formal_publications", migration)
+        self.assertIn("DELETE FROM public.market_data_applicability", migration)
+        self.assertIn("guard_configured_raw_scope", migration)
+        self.assertIn("guard_configured_market_scope", migration)
+        self.assertNotIn("SET publication_status = 'quarantined'", migration)
+
     def test_dependency_audit_rejects_a_table_used_before_creation(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             migration_dir = Path(temp_dir)
@@ -86,10 +99,11 @@ class DatabaseRebuildTests(unittest.TestCase):
         )
         migration_count = len(list((ROOT / "supabase" / "migrations").glob("*.sql")))
 
-        self.assertEqual(migration_count, 54)
+        self.assertEqual(migration_count, 57)
         self.assertIn("migration-rehearsal", workflow)
         self.assertIn("if: inputs.action == 'migration-rehearsal'", workflow)
-        self.assertIn('EXPECTED_MIGRATION_COUNT: \'54\'', workflow)
+        self.assertIn('EXPECTED_MIGRATION_COUNT: \'57\'', workflow)
+        self.assertIn('EXPECTED_MIGRATION_COUNT="${EXPECTED_MIGRATION_COUNT:-57}"', script)
         self.assertIn('supabase db reset --local --no-seed', script)
         self.assertIn('--version "$previous_version"', script)
         self.assertIn('supabase migration up --local', script)

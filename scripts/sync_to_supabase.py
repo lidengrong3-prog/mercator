@@ -56,6 +56,7 @@ from source_governance import (
 )
 
 from validate_data import (
+    DEFAULT_SCOPE_CATEGORY_CODES,
     DEFAULT_SCOPE_PLATFORMS,
     DEFAULT_REPORT,
     PROVENANCE_REQUIRED_DOMAINS,
@@ -67,6 +68,8 @@ from validate_data import (
     normalize_source_type,
     normalize_platform,
     record_quality,
+    record_category_codes,
+    record_platform_names,
     record_scope_codes,
     source_record_id_for,
     source_url_for,
@@ -199,26 +202,11 @@ PRIVATE_ARTIFACT_SPECS = (
     ("data/collection_run.json", "internal-system", "collection_log", 90),
     ("data/alerts_detailed.json", "internal-system", "internal_dataset", 180),
     ("data/macro_raw.json", "internal-system", "raw_response", 180),
-    ("data/countries_new.json", "internal-system", "internal_dataset", 180),
-    ("data/policies_baseline.json", "internal-system", "internal_dataset", 365),
-    ("data/rules_baseline.json", "internal-system", "internal_dataset", 365),
-    ("data/quarantine_*.json", "internal-system", "quarantine", 90),
-    ("data/_cfd_part1.json", "internal-system", "internal_dataset", 365),
-    ("data/_ext_part1.json", "internal-system", "internal_dataset", 365),
-    ("data/_new_cfd_js.txt", "internal-system", "internal_dataset", 365),
-    ("data/_new_ext_js.txt", "internal-system", "internal_dataset", 365),
     ("data/_sync_logs/*.json", "internal-system", "sync_log", 90),
     ("data/private_repository_source/**/*", "internal-system", "internal_dataset", 180),
     ("data/us_market/cpsc_recalls.json", "cpsc", "raw_response", 730),
     ("data/us_market/index.json", "internal-system", "internal_dataset", 180),
-    ("data/us_market/apparel.json", "internal-system", "internal_dataset", 180),
-    ("data/us_market/auto.json", "internal-system", "internal_dataset", 180),
-    ("data/us_market/beauty.json", "internal-system", "internal_dataset", 180),
-    ("data/us_market/electronics.json", "internal-system", "internal_dataset", 180),
-    ("data/us_market/home.json", "internal-system", "internal_dataset", 180),
-    ("data/us_market/sports.json", "internal-system", "internal_dataset", 180),
-    ("data/us_market/supplements.json", "internal-system", "internal_dataset", 180),
-    ("data/us_market/toys.json", "internal-system", "internal_dataset", 180),
+    ("data/us_market/*.json", "internal-system", "internal_dataset", 180),
     ("data/providers/tikhub/**/*", "tikhub", "licensed_dataset", 30),
     ("data/private/tikhub/**/*", "tikhub", "licensed_dataset", 30),
 )
@@ -278,6 +266,15 @@ def _industry_market_catalog():
 
 def source_key_for_record(record):
     """Resolve a raw record to a stable source registry key."""
+    explicit_source_key = canonical_source_key(record.get("source_key"))
+    if explicit_source_key:
+        try:
+            source_metadata(explicit_source_key)
+            return explicit_source_key
+        except Exception:
+            # Unknown collector input is classified by the established source
+            # rules below; it never gains publication rights from a free-form key.
+            pass
     kind = infer_source_kind(record)
     source_type = normalize_source_type(record.get("source_type"))
     url = source_url_for(record).lower()
@@ -1027,7 +1024,14 @@ def build_history_rows(quality_report, raw_rows, applicability_rows, only="all")
 def build_raw_record_rows(quality_report=None, only="all"):
     """Build the auditable raw-record projection for Supabase."""
     rows = []
+    _, platform_catalog, _, _, _ = _scope_catalog()
     for dataset_key, domain, item, index in iter_provenance_records(only):
+        platform_names = record_platform_names(item, include_display_field=domain == "rule")
+        category_codes = record_category_codes(item)
+        if platform_names and not platform_names <= DEFAULT_SCOPE_PLATFORMS:
+            continue
+        if category_codes and not category_codes <= DEFAULT_SCOPE_CATEGORY_CODES:
+            continue
         industry_advisory = is_industry_advisory(item)
         source_kind = "traceable" if industry_advisory else (infer_source_kind(item) or "traceable")
         # Legacy third-party articles may satisfy the compatibility URL/date
@@ -1051,8 +1055,8 @@ def build_raw_record_rows(quality_report=None, only="all"):
             "source_record_id": source_record_id,
             "normalized_record_key": str(item.get("id") or source_record_id),
             "market_codes": sorted(market_codes),
-            "platform_keys": item.get("platform_keys") or item.get("platformKeys") or [],
-            "category_codes": item.get("category_codes") or item.get("categoryCodes") or [],
+            "platform_keys": sorted(_platform_keys(item, platform_catalog)),
+            "category_codes": sorted(category_codes),
             "jurisdiction_codes": item.get("jurisdiction_codes") or item.get("jurisdictionCodes") or [],
             "source_kind": source_kind,
             "source_type": source_type,
@@ -1109,13 +1113,18 @@ def iter_private_artifacts(root=ROOT):
         for path in sorted(root_path.glob(pattern)):
             if not path.is_file():
                 continue
+            relative_path = path.resolve().relative_to(root_path).as_posix()
+            if relative_path.startswith("data/us_market/") and path.suffix == ".json":
+                special = {"macro_indicators", "cpsc_recalls", "index"}
+                if path.stem not in special and path.stem not in DEFAULT_SCOPE_CATEGORY_CODES:
+                    continue
             resolved = path.resolve()
             if resolved in seen:
                 continue
             seen.add(resolved)
             yield {
                 "path": resolved,
-                "relative_path": resolved.relative_to(root_path).as_posix(),
+                "relative_path": relative_path,
                 "source_key": source_key,
                 "artifact_kind": artifact_kind,
                 "retention_days": retention_days,
@@ -1288,10 +1297,31 @@ def build_applicability_rows(quality_report=None, only="all"):
             # downgraded to a market-wide rule by the normalized projection.
             continue
         category_codes = _category_codes(item, categories) or [None]
+        declared_category_values = (
+            _values(item.get('category_codes') or item.get('categoryCodes'))
+            + _values(item.get('category_code') or item.get('categoryCode'))
+        )
+        if declared_category_values and category_codes == [None]:
+            continue
         source_record_id = source_record_id_for(item) or str(item.get('id') or f'{dataset_key}-{index}')
         evidence_hash = str(item.get('evidence_hash') or hashlib.sha256(json.dumps(item, ensure_ascii=False, sort_keys=True).encode('utf-8')).hexdigest()).lower()
         source_lineage = classify_source_for_publication(source_key)
         for market_code in market_codes:
+            allowed_categories = {
+                str(value).strip()
+                for value in (
+                    markets.get(market_code, {}).get('category_keys')
+                    or markets.get(market_code, {}).get('categoryKeys')
+                    or []
+                )
+                if str(value).strip()
+            }
+            market_category_codes = [
+                code for code in category_codes
+                if code is None or not allowed_categories or code in allowed_categories
+            ]
+            if category_codes != [None] and not market_category_codes:
+                continue
             platform_keys = declared_platform_keys
             allowed_platforms = market_platforms.get(market_code)
             if allowed_platforms and platform_keys:
@@ -1299,7 +1329,7 @@ def build_applicability_rows(quality_report=None, only="all"):
             platform_keys = platform_keys or [None]
             jurisdiction_codes = _jurisdiction_codes(item, market_code, markets, jurisdictions) or [None]
             for platform in platform_keys:
-                for category in category_codes:
+                for category in market_category_codes:
                     for jurisdiction_code in jurisdiction_codes:
                         record_version = _rule_version(item) if domain in ('policy', 'tax', 'access', 'rule') else None
                         stable_key = '|'.join([
