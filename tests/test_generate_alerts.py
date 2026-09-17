@@ -109,6 +109,38 @@ class GenerateAlertsTests(unittest.TestCase):
         ]]
         self.assertEqual(generate_alerts.merge_alerts(existing, []), [])
 
+    def test_current_alert_replaces_same_day_summary_with_same_id(self):
+        existing = [[
+            "cpsc-cat-stable", "policy", "high", "消费电子品类: 近90天78起召回",
+            "美国", "CPSC", "旧汇总", generate_alerts.TODAY, False,
+            {"source": "CPSC", "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
+             "source_kind": "derived", "source_type": "derived", "source_record_id": "old-summary",
+             "verification_status": "verified", "published_at": generate_alerts.TODAY,
+             "collected_at": "2026-09-17T01:00:00Z", "verified_at": "2026-09-17T01:00:00Z",
+             "verification_notes": "已核验", "evidence_hash": "a" * 64,
+             **lineage_fields(["old-summary"], ["a" * 64]),
+             "schema_version": generate_alerts.ALERT_SCHEMA_VERSION, "display_locale": "zh-CN",
+             "generator_version": generate_alerts.GENERATOR_VERSION},
+        ]]
+        current = [{
+            "id": "cpsc-cat-stable",
+            "title": "消费电子品类: 近90天79起召回",
+            "detail": "新汇总",
+        }]
+
+        merged = generate_alerts.merge_alerts(existing, current)
+
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(merged[0], current[0])
+
+    def test_merge_deduplicates_current_alerts_by_stable_id(self):
+        first = {"id": "same-id", "title": "第一次生成"}
+        refreshed = {"id": "same-id", "title": "同一来源更新后的标题"}
+
+        merged = generate_alerts.merge_alerts([], [first, refreshed])
+
+        self.assertEqual(merged, [first])
+
     def test_old_generator_version_is_not_retained(self):
         meta = {
             "source": "CPSC", "source_url": "https://www.cpsc.gov/Recalls/2026/old-version",

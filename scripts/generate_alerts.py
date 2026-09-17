@@ -556,7 +556,7 @@ def generate_from_policies():
 
 
 def merge_alerts(existing_alerts, new_alerts):
-    """Merge new alerts with existing, deduplicating by title similarity."""
+    """Merge alerts, preferring current records and stable-ID deduplication."""
     # The retired array payload had no provenance envelope and mixed old
     # category-file fallbacks into the formal feed. Only current, complete
     # serialized records may survive a later run. Do not refresh missing old
@@ -565,24 +565,33 @@ def merge_alerts(existing_alerts, new_alerts):
         normalized for alert in (existing_alerts or [])
         if (normalized := normalize_existing_alert(alert)) is not None
     ]
-    if not existing_alerts:
-        return new_alerts
-    
-    existing_titles = set()
-    merged = list(existing_alerts)
-    
-    for a in existing_alerts:
-        if isinstance(a, dict):
-            existing_titles.add(a.get("title", "")[:30])
-        elif isinstance(a, list) and len(a) >= 4:
-            existing_titles.add(str(a[3])[:30])
-    
+    def identity(alert):
+        if isinstance(alert, dict):
+            return str(alert.get("id") or "").strip(), str(alert.get("title") or "")[:30]
+        if isinstance(alert, list):
+            alert_id = str(alert[0] or "").strip() if alert else ""
+            title = str(alert[3] or "")[:30] if len(alert) >= 4 else ""
+            return alert_id, title
+        return "", ""
+
+    # Same-day category summaries deliberately retain a stable ID. If their
+    # count changes during a later collection, the title changes as well, so
+    # title-only deduplication would publish two rows with the same ID. Process
+    # current records first so refreshed evidence replaces the retained row.
+    merged = []
+    seen_ids = set()
+    seen_titles = set()
     added = 0
-    for alert in new_alerts:
-        title_key = alert.get("title", "")[:30]
-        if title_key not in existing_titles:
-            merged.append(alert)
-            existing_titles.add(title_key)
+    for alert in list(new_alerts or []) + existing_alerts:
+        alert_id, title_key = identity(alert)
+        if (alert_id and alert_id in seen_ids) or (title_key and title_key in seen_titles):
+            continue
+        merged.append(alert)
+        if alert_id:
+            seen_ids.add(alert_id)
+        if title_key:
+            seen_titles.add(title_key)
+        if isinstance(alert, dict):
             added += 1
     
     print(f"[ALERTS] Merged {added} new alerts (total: {len(merged)})")
