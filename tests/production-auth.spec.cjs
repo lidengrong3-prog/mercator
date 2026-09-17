@@ -164,7 +164,10 @@ test.describe('production authenticated browser acceptance', () => {
       if (state.ready) return state;
       const terminalToast = state.toasts.find((message) => /停止生成|无法创建报告运行记录|请先登录|额度|相同报告/.test(message));
       const terminalReportState = !state.generationActive && /生成失败/.test(state.publishStatusText);
-      if (/is-blocked/.test(state.dataCheckClass) || terminalReportState || terminalToast) {
+      // Missing coverage is allowed to finish as an unsaved draft. The data
+      // check stays blocked while that generation is active, so it is not a
+      // terminal condition by itself.
+      if (terminalReportState || terminalToast) {
         const runs = await rows(page, 'report_runs', {});
         throw new Error(`report generation stopped before preview: ${JSON.stringify({ ...state, latestRun: runs[0] || null })}`);
       }
@@ -249,6 +252,10 @@ test.describe('production authenticated browser acceptance', () => {
       window.JAY_MARKET_SCOPE_API.setActivePlatforms([platformKey]);
       window.JAY_MARKET_SCOPE_API.setActiveCategories(['generic']);
     }, reportPlatform.key);
+    const activeReportScope = await page.evaluate(() => window.JAY_MARKET_SCOPE_API.getActiveContext());
+    expect(activeReportScope.marketCodes).toEqual(['US']);
+    expect(activeReportScope.platformKeys).toEqual([reportPlatform.key]);
+    expect(activeReportScope.categoryCodes).toEqual(['generic']);
 
     await page.evaluate(() => {
       window.__productionAcceptanceToasts = [];
