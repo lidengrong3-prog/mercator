@@ -9,6 +9,86 @@ from scripts.production_health_check import HealthCheckError
 
 
 class ProductionHealthCheckTests(unittest.TestCase):
+    def test_operations_workflow_does_not_treat_checkout_sha_as_deployed(self):
+        workflow = (
+            Path(__file__).resolve().parents[1] / ".github" / "workflows" / "operations.yml"
+        ).read_text(encoding="utf-8")
+
+        self.assertNotIn("EXPECTED_RELEASE_SHA: ${{ github.sha }}", workflow)
+
+    def test_scheduled_monitor_uses_deployed_manifest_instead_of_checkout_sha(self):
+        deployed_sha = "deployed-release"
+
+        def fake_request(_method, url, **_kwargs):
+            if url.endswith("/release.json"):
+                return 200, json.dumps({
+                    "release_sha": deployed_sha,
+                    "migration_head": "migration",
+                    "generated_at": "2026-09-17T00:00:00Z",
+                }).encode(), {}
+            return 405, b"", {"X-JAY-Release": deployed_sha}
+
+        with patch.dict(production_health_check.os.environ, {
+            "PRODUCTION_SITE_URL": "https://production.example/",
+            "SUPABASE_URL": "https://example.supabase.co",
+            "SUPABASE_ANON_KEY": "anon",
+        }, clear=True), patch.object(production_health_check, "request", side_effect=fake_request):
+            manifest = production_health_check.probe_release_manifest()
+            functions = production_health_check.probe_edge_functions()
+
+        self.assertEqual(manifest["release_sha"], deployed_sha)
+        self.assertEqual(functions["expected_release_sha"], deployed_sha)
+        self.assertEqual(functions["release_source"], "frontend_manifest")
+        self.assertTrue(all(row["release_matches"] for row in functions["functions"].values()))
+
+    def test_scheduled_monitor_rejects_frontend_and_function_release_mismatch(self):
+        deployed_sha = "deployed-release"
+
+        def fake_request(_method, url, **_kwargs):
+            if url.endswith("/release.json"):
+                return 200, json.dumps({"release_sha": deployed_sha}).encode(), {}
+            function_name = url.rsplit("/", 1)[-1]
+            function_sha = "older-release" if function_name == "report-save" else deployed_sha
+            return 405, b"", {"X-JAY-Release": function_sha}
+
+        with patch.dict(production_health_check.os.environ, {
+            "PRODUCTION_SITE_URL": "https://production.example/",
+            "SUPABASE_URL": "https://example.supabase.co",
+            "SUPABASE_ANON_KEY": "anon",
+        }, clear=True), patch.object(production_health_check, "request", side_effect=fake_request):
+            with self.assertRaises(HealthCheckError) as raised:
+                production_health_check.probe_edge_functions()
+
+        self.assertEqual(raised.exception.code, "EDGE_FUNCTIONS_UNAVAILABLE")
+        self.assertFalse(raised.exception.details["functions"]["report-save"]["release_matches"])
+
+    def test_release_workflow_can_still_enforce_an_explicit_expected_sha(self):
+        with patch.dict(production_health_check.os.environ, {
+            "PRODUCTION_SITE_URL": "https://production.example/",
+            "EXPECTED_RELEASE_SHA": "expected-release",
+        }, clear=True), patch.object(
+            production_health_check,
+            "request",
+            return_value=(200, b'{"release_sha":"other-release"}', {}),
+        ):
+            with self.assertRaises(HealthCheckError) as raised:
+                production_health_check.probe_release_manifest()
+
+        self.assertEqual(raised.exception.code, "RELEASE_SHA_MISMATCH")
+
+    def test_release_manifest_requires_a_deployed_sha(self):
+        with patch.dict(production_health_check.os.environ, {
+            "PRODUCTION_SITE_URL": "https://production.example/",
+        }, clear=True), patch.object(
+            production_health_check,
+            "request",
+            return_value=(200, b'{"migration_head":"migration"}', {}),
+        ):
+            with self.assertRaises(HealthCheckError) as raised:
+                production_health_check.probe_release_manifest()
+
+        self.assertEqual(raised.exception.code, "MANIFEST_INVALID")
+
     def test_failed_frontend_does_not_stop_remaining_component_probes(self):
         called = []
 
@@ -116,6 +196,14 @@ class ProductionHealthCheckTests(unittest.TestCase):
             for name, details in functions.items()
             if name != "report-export"
         ))
+
+    def test_health_summary_records_actual_manifest_release(self):
+        result = production_health_check.collect_health({
+            "release_manifest": lambda: {"release_sha": "deployed-release"},
+            "frontend": lambda: {},
+        })
+
+        self.assertEqual(result["release_sha"], "deployed-release")
 
     def test_each_database_table_is_recorded_when_one_request_raises(self):
         responses = []

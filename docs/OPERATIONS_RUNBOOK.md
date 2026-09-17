@@ -10,7 +10,7 @@
 
 三个任务互不依赖并行运行。代码或数据质量失败不会阻止生产可用性探针，生产组件失败也不会吞掉数据质量结果。任何失败仍会让整个 GitHub Actions 工作流显示失败，不会静默标记成功。
 
-`availability-monitor` 会始终执行全部组件探针；单个数据库表或 Edge Function 请求异常时，也会继续检查其余目标。结果写入 `production-health-result.json`，包含总状态、失败组件、逐组件耗时、HTTP 状态和发布 SHA，并作为 `production-health-<run_id>` Artifact 保留 30 天。数据质量结果使用独立的 `operations-data-quality-<run_id>` Artifact，不能用“网站可访问”代替“数据可发布”，也不能用“数据质量失败”推断生产服务宕机。
+`availability-monitor` 会始终执行全部组件探针；单个数据库表或 Edge Function 请求异常时，也会继续检查其余目标。定时监控从生产站点的 `release.json` 读取实际部署 SHA，再与 Edge Function 返回的 `X-JAY-Release` 比较，不使用当前 `main` 的检出 SHA 代替生产版本。发布工作流仍可通过显式 `EXPECTED_RELEASE_SHA` 严格验证刚发布的提交。结果写入 `production-health-result.json`，包含总状态、失败组件、逐组件耗时、HTTP 状态和发布 SHA，并作为 `production-health-<run_id>` Artifact 保留 30 天。数据质量结果使用独立的 `operations-data-quality-<run_id>` Artifact，不能用“网站可访问”代替“数据可发布”，也不能用“数据质量失败”推断生产服务宕机。
 
 手动运行 `Production readiness and staged rollout` 的 `config-audit` 操作，会先把收费、
 收费验收、通知和通知验收四个开关显式保持为 `false`，再验证严格正式 origin、两套

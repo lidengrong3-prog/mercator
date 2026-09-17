@@ -105,6 +105,12 @@ def probe_release_manifest() -> dict:
         raise HealthCheckError("MANIFEST_UNAVAILABLE", f"release manifest returned HTTP {status}", http_status=status)
     manifest = parse_json(raw, "release manifest")
     actual_sha = str(manifest.get("release_sha") or "")
+    if not actual_sha:
+        raise HealthCheckError(
+            "MANIFEST_INVALID",
+            "release manifest is missing release_sha",
+            http_status=status,
+        )
     expected_sha = env_value("EXPECTED_RELEASE_SHA")
     if expected_sha and actual_sha != expected_sha:
         raise HealthCheckError(
@@ -120,6 +126,21 @@ def probe_release_manifest() -> dict:
         "migration_head": manifest.get("migration_head"),
         "generated_at": manifest.get("generated_at"),
     }
+
+
+def deployed_release_sha() -> str:
+    """Resolve the deployed frontend SHA without assuming the checkout is live."""
+    explicit_sha = env_value("EXPECTED_RELEASE_SHA")
+    if explicit_sha:
+        return explicit_sha
+    status, raw, _ = request("GET", site_url() + "release.json")
+    if status != 200:
+        return ""
+    try:
+        manifest = json.loads(raw)
+    except Exception:
+        return ""
+    return str(manifest.get("release_sha") or "")
 
 
 def probe_database() -> dict:
@@ -190,7 +211,7 @@ def probe_capacity() -> dict:
 def probe_edge_functions() -> dict:
     base = supabase_url()
     headers = supabase_headers()
-    expected_sha = env_value("EXPECTED_RELEASE_SHA")
+    expected_sha = deployed_release_sha()
     functions = {}
     failures = []
     for function_name in EDGE_FUNCTIONS:
@@ -223,7 +244,15 @@ def probe_edge_functions() -> dict:
             "Edge Function probes failed: " + ", ".join(failures),
             functions=functions,
         )
-    return {"functions": functions}
+    return {
+        "expected_release_sha": expected_sha or None,
+        "release_source": (
+            "configured"
+            if env_value("EXPECTED_RELEASE_SHA")
+            else ("frontend_manifest" if expected_sha else "unavailable")
+        ),
+        "functions": functions,
+    }
 
 
 def probe_auth() -> dict:
@@ -284,11 +313,16 @@ def collect_health(probes: dict[str, Callable[[], dict]] | None = None) -> dict:
         status: statuses.count(status)
         for status in ("passed", "degraded", "failed")
     }
+    manifest_release_sha = (
+        components.get("release_manifest", {}).get("release_sha")
+        if components.get("release_manifest", {}).get("status") == "passed"
+        else None
+    )
     return {
         "kind": "production_availability",
         "status": overall,
         "checked_at": datetime.now(timezone.utc).isoformat(),
-        "release_sha": env_value("EXPECTED_RELEASE_SHA") or None,
+        "release_sha": manifest_release_sha or env_value("EXPECTED_RELEASE_SHA") or None,
         "duration_ms": round((time.perf_counter() - started) * 1000),
         "summary": summary,
         "failed_components": [
