@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "domain": "tax",
-  "updated_at": "2026-09-17T08:08:18.530274+00:00",
+  "updated_at": "2026-09-17T14:32:18.524654+00:00",
   "last_checked_at": "2026-09-17T08:08:18.530274+00:00",
   "source_count": 5,
   "tax_types": [
@@ -14,38 +14,38 @@
   "source_checks": {
     "https://www.usa.gov/state-taxes": {
       "status": "succeeded",
-      "checked_at": "2026-09-17T08:08:18.530274+00:00",
+      "checked_at": "2026-09-17T14:32:18.524654+00:00",
       "source_content_hash": "b2d178b4f00bf94bb196fd47128ad0d693fe5b1f93010a9ba6a684a9821626af",
       "source_last_modified_at": "2026-09-16T14:13:49+00:00",
       "error": null
     },
     "https://www.cdtfa.ca.gov/formspubs/pub109/": {
       "status": "succeeded",
-      "checked_at": "2026-09-17T08:08:18.530274+00:00",
+      "checked_at": "2026-09-17T14:32:18.524654+00:00",
       "source_content_hash": "a233c1e3376190ff743f55c865b7ee4d5a474f207d9fabd3c3feba649514cffa",
       "source_last_modified_at": "2026-08-07T20:29:39+00:00",
       "error": null
     },
     "https://hts.usitc.gov/": {
       "status": "succeeded",
-      "checked_at": "2026-09-17T08:08:18.530274+00:00",
-      "source_content_hash": "4e791848243d04488ad9cd5265a3187130b09ad0a597aa9a77e6eccf9776a8b9",
-      "source_last_modified_at": "2026-09-02T23:17:34+00:00",
+      "checked_at": "2026-09-17T14:32:18.524654+00:00",
+      "source_content_hash": "d6e50020e554d03e322cac81b12ccd05eccddead617d7b52ca9609ac81d42d26",
+      "source_last_modified_at": "2026-09-02T23:17:35+00:00",
       "error": null
     },
     "https://ustr.gov/issue-areas/enforcement/section-301-investigations/tariff-actions": {
       "status": "succeeded",
-      "checked_at": "2026-09-17T08:08:18.530274+00:00",
+      "checked_at": "2026-09-17T14:32:18.524654+00:00",
       "source_content_hash": "cec6e3c588c97f0be3712300b542f987444f1ff80db4d257644723c461eddcb8",
-      "source_last_modified_at": "2026-09-17T08:08:16+00:00",
+      "source_last_modified_at": "2026-09-17T14:32:18+00:00",
       "error": null
     },
     "https://www.cbp.gov/trade/basic-import-export/user-fee-table": {
-      "status": "succeeded",
-      "checked_at": "2026-09-17T08:08:18.530274+00:00",
-      "source_content_hash": "99363c332d59ea94fb982342942ab3c99e49e669c1cf5b0a1a811d1d79365d08",
-      "source_last_modified_at": "2026-09-17T08:08:16+00:00",
-      "error": null
+      "status": "failed",
+      "checked_at": "2026-09-17T14:32:18.524654+00:00",
+      "source_content_hash": null,
+      "source_last_modified_at": null,
+      "error": "HTTP Error 403: Forbidden"
     }
   },
   "items": [
@@ -85,9 +85,9 @@
       ],
       "source_kind": "official",
       "verification_status": "verified",
-      "collected_at": "2026-09-17T08:08:18.530274+00:00",
-      "retrieved_at": "2026-09-17T08:08:18.530274+00:00",
-      "verified_at": "2026-09-17T08:08:18.530274+00:00",
+      "collected_at": "2026-09-17T14:32:18.524654+00:00",
+      "retrieved_at": "2026-09-17T14:32:18.524654+00:00",
+      "verified_at": "2026-09-17T14:32:18.524654+00:00",
       "published_at": "2026-09-16",
       "source_last_modified_at": "2026-09-16T14:13:49+00:00",
       "source_content_hash": "b2d178b4f00bf94bb196fd47128ad0d693fe5b1f93010a9ba6a684a9821626af",
@@ -95,18 +95,21 @@
       "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
       "collector_key": "collect_us_regulatory",
       "evidence_hash": "bd3ad6eca5c842e54fc8c2fb4bc36086a64bcad0dc1b317fe1cf27e32e5a6b87",
-      "change_type": "initial_record",
-      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "change_type": "unchanged",
+      "change_summary": "Official source snapshot reverified; the normalized legal scope is unchanged.",
       "record_version": "bd3ad6eca5c842e5",
       "translation": {
         "source_language": "en",
         "target_language": "zh-CN",
         "status": "reviewed",
         "provider": "human-curated",
-        "translated_at": "2026-09-17T08:08:18.530274+00:00",
+        "translated_at": "2026-09-17T14:32:18.524654+00:00",
         "source_hash": "23ccc30531feb89a57d5761059bf43df3a549762a4f116a60f34d849172d2104",
         "human_reviewed": true
-      }
+      },
+      "source_category": "official_policy",
+      "authorization_status": "not_required",
+      "publication_status": "eligible"
     },
     {
       "id": "tax-us-ca-marketplace-collection",
@@ -147,9 +150,9 @@
       ],
       "source_kind": "official",
       "verification_status": "verified",
-      "collected_at": "2026-09-17T08:08:18.530274+00:00",
-      "retrieved_at": "2026-09-17T08:08:18.530274+00:00",
-      "verified_at": "2026-09-17T08:08:18.530274+00:00",
+      "collected_at": "2026-09-17T14:32:18.524654+00:00",
+      "retrieved_at": "2026-09-17T14:32:18.524654+00:00",
+      "verified_at": "2026-09-17T14:32:18.524654+00:00",
       "published_at": "2026-08-07",
       "source_last_modified_at": "2026-08-07T20:29:39+00:00",
       "source_content_hash": "a233c1e3376190ff743f55c865b7ee4d5a474f207d9fabd3c3feba649514cffa",
@@ -157,18 +160,21 @@
       "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
       "collector_key": "collect_us_regulatory",
       "evidence_hash": "824516887bcdb0a757a5368fe21021f6f707b46d4d748547b2b59e0ae52a9d05",
-      "change_type": "initial_record",
-      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "change_type": "unchanged",
+      "change_summary": "Official source snapshot reverified; the normalized legal scope is unchanged.",
       "record_version": "824516887bcdb0a7",
       "translation": {
         "source_language": "en",
         "target_language": "zh-CN",
         "status": "reviewed",
         "provider": "human-curated",
-        "translated_at": "2026-09-17T08:08:18.530274+00:00",
+        "translated_at": "2026-09-17T14:32:18.524654+00:00",
         "source_hash": "d0e1576f73350e8f190887174052eb94ea37f21cb88843d9f12ce10e7acaddc0",
         "human_reviewed": true
-      }
+      },
+      "source_category": "official_policy",
+      "authorization_status": "not_required",
+      "publication_status": "eligible"
     },
     {
       "id": "tax-us-htsus-customs-duty",
@@ -206,28 +212,31 @@
       ],
       "source_kind": "official",
       "verification_status": "verified",
-      "collected_at": "2026-09-17T08:08:18.530274+00:00",
-      "retrieved_at": "2026-09-17T08:08:18.530274+00:00",
-      "verified_at": "2026-09-17T08:08:18.530274+00:00",
+      "collected_at": "2026-09-17T14:32:18.524654+00:00",
+      "retrieved_at": "2026-09-17T14:32:18.524654+00:00",
+      "verified_at": "2026-09-17T14:32:18.524654+00:00",
       "published_at": "2026-09-02",
-      "source_last_modified_at": "2026-09-02T23:17:34+00:00",
-      "source_content_hash": "4e791848243d04488ad9cd5265a3187130b09ad0a597aa9a77e6eccf9776a8b9",
+      "source_last_modified_at": "2026-09-02T23:17:35+00:00",
+      "source_content_hash": "d6e50020e554d03e322cac81b12ccd05eccddead617d7b52ca9609ac81d42d26",
       "evidence_method": "official_https_snapshot_with_curated_legal_scope",
       "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
       "collector_key": "collect_us_regulatory",
-      "evidence_hash": "4a37705170454ba5293a265da2a330133d61d20bebd9421861c8c1f3dfca0a10",
-      "change_type": "initial_record",
+      "evidence_hash": "744c0159e9d8b8dd8c3ecebbd7a7828d0a227055663fadd166798e44301217ce",
+      "change_type": "source_snapshot_changed",
       "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
-      "record_version": "4a37705170454ba5",
+      "record_version": "744c0159e9d8b8dd",
       "translation": {
         "source_language": "en",
         "target_language": "zh-CN",
         "status": "reviewed",
         "provider": "human-curated",
-        "translated_at": "2026-09-17T08:08:18.530274+00:00",
+        "translated_at": "2026-09-17T14:32:18.524654+00:00",
         "source_hash": "bdbb13497673f399484cccc9266ddfc014c083fbfefa1143979945ba5ab54dab",
         "human_reviewed": true
-      }
+      },
+      "source_category": "official_policy",
+      "authorization_status": "not_required",
+      "publication_status": "eligible"
     },
     {
       "id": "tax-us-section-301-additional-tariff",
@@ -266,28 +275,31 @@
       ],
       "source_kind": "official",
       "verification_status": "verified",
-      "collected_at": "2026-09-17T08:08:18.530274+00:00",
-      "retrieved_at": "2026-09-17T08:08:18.530274+00:00",
-      "verified_at": "2026-09-17T08:08:18.530274+00:00",
+      "collected_at": "2026-09-17T14:32:18.524654+00:00",
+      "retrieved_at": "2026-09-17T14:32:18.524654+00:00",
+      "verified_at": "2026-09-17T14:32:18.524654+00:00",
       "published_at": "2026-09-17",
-      "source_last_modified_at": "2026-09-17T08:08:16+00:00",
+      "source_last_modified_at": "2026-09-17T14:32:18+00:00",
       "source_content_hash": "cec6e3c588c97f0be3712300b542f987444f1ff80db4d257644723c461eddcb8",
       "evidence_method": "official_https_snapshot_with_curated_legal_scope",
       "verification_notes": "Official HTTPS source and authority host were verified; applicability remains subject to product facts, classification, origin, destination, and current agency guidance.",
       "collector_key": "collect_us_regulatory",
       "evidence_hash": "5d5410c0598e9983ad3e6661a85bbc7fb66722e30fa405af3641b9343766595a",
-      "change_type": "initial_record",
-      "change_summary": "Formal record generated from the verified official source snapshot and stated legal scope.",
+      "change_type": "unchanged",
+      "change_summary": "Official source snapshot reverified; the normalized legal scope is unchanged.",
       "record_version": "5d5410c0598e9983",
       "translation": {
         "source_language": "en",
         "target_language": "zh-CN",
         "status": "reviewed",
         "provider": "human-curated",
-        "translated_at": "2026-09-17T08:08:18.530274+00:00",
+        "translated_at": "2026-09-17T14:32:18.524654+00:00",
         "source_hash": "3cce08d46a8d58dbe99c25a10098136ed92e84b213814e889f6c0b0d7605c84e",
         "human_reviewed": true
-      }
+      },
+      "source_category": "official_policy",
+      "authorization_status": "not_required",
+      "publication_status": "eligible"
     },
     {
       "id": "tax-us-cbp-merchandise-processing-fee",
@@ -346,7 +358,10 @@
         "translated_at": "2026-09-17T08:08:18.530274+00:00",
         "source_hash": "0d049946b344733bf4771259c373efa7f580f21208e4081fbe1853137439a623",
         "human_reviewed": true
-      }
+      },
+      "source_category": "official_policy",
+      "authorization_status": "not_required",
+      "publication_status": "eligible"
     }
   ],
   "language_contract": {
