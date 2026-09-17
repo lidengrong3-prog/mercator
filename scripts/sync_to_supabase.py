@@ -1272,6 +1272,19 @@ def _rule_version(item):
     return str(value).strip() if value is not None and str(value).strip() else None
 
 
+def _applicability_change_type(item):
+    """Map collector comparison states to the formal projection vocabulary."""
+    value = str(item.get('change_type') or item.get('changeType') or '').strip()
+    aliases = {
+        'initial_record': 'created',
+        'source_snapshot_changed': 'updated',
+        'unchanged': None,
+    }
+    value = aliases.get(value, value or None)
+    allowed = {'created', 'updated', 'rate_change', 'requirement_change', 'suspended', 'expired'}
+    return value if value in allowed else None
+
+
 def build_applicability_rows(quality_report=None, only="all"):
     """Build only formal, current-scope normalized rows for public reads."""
     markets, platforms, categories, jurisdictions, market_platforms = _scope_catalog()
@@ -1348,7 +1361,7 @@ def build_applicability_rows(quality_report=None, only="all"):
                             'domain': domain,
                             'record_key': record_key,
                             'record_version': record_version,
-                            'change_type': item.get('change_type') or item.get('changeType') or None,
+                            'change_type': _applicability_change_type(item),
                             'change_summary': item.get('change_summary') or item.get('changeSummary') or None,
                             'locale': 'zh-CN' if item.get('title_zh') or item.get('titleZh') else None,
                             'translation_status': translation.get('status') or None,

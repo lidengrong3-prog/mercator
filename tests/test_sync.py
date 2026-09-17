@@ -334,6 +334,26 @@ class SyncTests(unittest.TestCase):
         finally:
             os.unlink(manifest_path)
 
+    def test_collector_comparison_states_map_to_formal_change_types(self):
+        self.assertEqual(
+            sync_to_supabase._applicability_change_type({"change_type": "initial_record"}),
+            "created",
+        )
+        self.assertEqual(
+            sync_to_supabase._applicability_change_type({"change_type": "source_snapshot_changed"}),
+            "updated",
+        )
+        self.assertIsNone(
+            sync_to_supabase._applicability_change_type({"change_type": "unchanged"})
+        )
+        self.assertEqual(
+            sync_to_supabase._applicability_change_type({"change_type": "rate_change"}),
+            "rate_change",
+        )
+        self.assertIsNone(
+            sync_to_supabase._applicability_change_type({"change_type": "unsupported"})
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
