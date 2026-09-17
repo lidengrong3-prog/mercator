@@ -111,6 +111,59 @@ def validate_webhook_probe(status: int, raw: bytes, billing_enabled: bool) -> st
     )
 
 
+def validate_report_content_gate(acceptance: dict) -> str:
+    gate = acceptance.get("report_content_gate") or {}
+    mode = gate.get("mode")
+    exception_checks = acceptance.get("production_exceptions") or {}
+    if mode == "formal":
+        if gate.get("formal_save") is not True or gate.get("formal_exports") is not True:
+            raise ReleaseCheckError("formal report acceptance omitted successful save/export evidence")
+        duplicate_exports = exception_checks.get("duplicate_exports") or {}
+        for export_format in ("pdf", "docx"):
+            evidence = duplicate_exports.get(export_format) or {}
+            if evidence.get("row_count") != 1 or evidence.get("duplicate_response") is not True or not evidence.get("id"):
+                raise ReleaseCheckError(f"duplicate {export_format} export did not collapse to one job")
+        return "formal"
+    if mode == "blocked":
+        if gate.get("formal_save") is not False or gate.get("formal_exports") is not False:
+            raise ReleaseCheckError("blocked report acceptance did not keep formal output disabled")
+        rejection = gate.get("save_rejection") or {}
+        if rejection.get("status") != 409 or rejection.get("error") != "REPORT_SERVER_VALIDATION_FAILED":
+            raise ReleaseCheckError("incomplete report was not rejected by the server validation gate")
+        reason_codes = set(rejection.get("reason_codes") or gate.get("reason_codes") or [])
+        if not reason_codes.intersection({"QUALITY_REQUIRED_DATA_MISSING", "QUALITY_PLATFORM_RULE_COVERAGE_MISSING"}):
+            raise ReleaseCheckError("blocked report acceptance omitted the missing-content reason")
+        blocked_exports = exception_checks.get("blocked_exports") or gate.get("blocked_exports") or {}
+        for export_format in ("pdf", "docx"):
+            evidence = blocked_exports.get(export_format) or {}
+            if evidence.get("status") != 409 or evidence.get("error") != "REPORT_NOT_SAVED":
+                raise ReleaseCheckError(f"incomplete {export_format} export was not blocked")
+        return "blocked"
+    raise ReleaseCheckError("authenticated acceptance omitted the report content gate mode")
+
+
+def validate_browser_report_content_gate(browser_acceptance: dict) -> str:
+    gate = browser_acceptance.get("report_content_gate") or {}
+    exports = browser_acceptance.get("exports") or {}
+    mode = gate.get("mode")
+    if mode == "formal":
+        if gate.get("formal_save") is not True or gate.get("formal_exports") is not True:
+            raise ReleaseCheckError("browser formal report acceptance omitted save/export evidence")
+        if not exports.get("pdf") or not exports.get("docx"):
+            raise ReleaseCheckError("browser formal report acceptance omitted PDF/DOCX jobs")
+        return "formal"
+    if mode == "blocked":
+        if gate.get("formal_save") is not False or gate.get("formal_exports") is not False:
+            raise ReleaseCheckError("browser blocked report acceptance enabled formal output")
+        if gate.get("browser_formal_requests") != 0 or exports:
+            raise ReleaseCheckError("browser sent a formal export request for an incomplete report")
+        reason_codes = set(gate.get("reason_codes") or [])
+        if not reason_codes.intersection({"QUALITY_REQUIRED_DATA_MISSING", "QUALITY_PLATFORM_RULE_COVERAGE_MISSING"}):
+            raise ReleaseCheckError("browser blocked report acceptance omitted the missing-content reason")
+        return "blocked"
+    raise ReleaseCheckError("browser acceptance omitted the report content gate mode")
+
+
 def main() -> int:
     site = required("PRODUCTION_SITE_URL").rstrip("/") + "/"
     supabase = required("SUPABASE_URL").rstrip("/")
@@ -154,15 +207,12 @@ def main() -> int:
     duplicate_generation = exception_checks.get("duplicate_generation") or {}
     if duplicate_generation.get("row_count") != 1 or not duplicate_generation.get("run_id"):
         raise ReleaseCheckError("duplicate report generation did not collapse to one run")
-    duplicate_exports = exception_checks.get("duplicate_exports") or {}
-    for export_format in ("pdf", "docx"):
-        evidence = duplicate_exports.get(export_format) or {}
-        if evidence.get("row_count") != 1 or evidence.get("duplicate_response") is not True or not evidence.get("id"):
-            raise ReleaseCheckError(f"duplicate {export_format} export did not collapse to one job")
+    report_content_gate = validate_report_content_gate(acceptance)
 
     browser_acceptance = parse_json(browser_acceptance_file.read_bytes(), "browser exception acceptance result")
     if browser_acceptance.get("status") != "passed":
         raise ReleaseCheckError("browser exception acceptance did not pass")
+    browser_report_content_gate = validate_browser_report_content_gate(browser_acceptance)
     acceptance_run_id = acceptance.get("acceptance_run_id")
     browser_acceptance_run_id = browser_acceptance.get("acceptance_run_id")
     if not acceptance_run_id or acceptance_run_id != browser_acceptance_run_id:
@@ -327,6 +377,8 @@ def main() -> int:
         "edge_functions": True,
         "auth_error_contracts": True,
         "production_exceptions": True,
+        "report_content_gate": report_content_gate,
+        "browser_report_content_gate": browser_report_content_gate,
         "network_recovery": True,
         "billing_status": "enabled" if billing_enabled else "disabled",
         "notification_channels": "enabled" if notification_expected else "disabled",

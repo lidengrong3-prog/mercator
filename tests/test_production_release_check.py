@@ -9,6 +9,8 @@ from scripts.production_release_check import (
     PRIVATE_PAGE_DATA_PATHS,
     PUBLIC_PAGE_DATA_PATHS,
     ReleaseCheckError,
+    validate_browser_report_content_gate,
+    validate_report_content_gate,
     validate_webhook_probe,
 )
 
@@ -25,6 +27,55 @@ class ProductionReleaseCheckTests(unittest.TestCase):
     def test_enabled_billing_rejects_an_unconfigured_webhook(self):
         with self.assertRaises(ReleaseCheckError):
             validate_webhook_probe(503, b'{"error":"BILLING_WEBHOOK_NOT_CONFIGURED"}', True)
+
+    def test_report_content_gate_accepts_fail_closed_coverage_evidence(self):
+        acceptance = {
+            "report_content_gate": {
+                "mode": "blocked",
+                "formal_save": False,
+                "formal_exports": False,
+                "save_rejection": {
+                    "status": 409,
+                    "error": "REPORT_SERVER_VALIDATION_FAILED",
+                    "reason_codes": ["QUALITY_PLATFORM_RULE_COVERAGE_MISSING"],
+                },
+            },
+            "production_exceptions": {
+                "blocked_exports": {
+                    "pdf": {"status": 409, "error": "REPORT_NOT_SAVED"},
+                    "docx": {"status": 409, "error": "REPORT_NOT_SAVED"},
+                },
+            },
+        }
+        self.assertEqual(validate_report_content_gate(acceptance), "blocked")
+
+    def test_report_content_gate_rejects_a_block_without_a_coverage_reason(self):
+        with self.assertRaises(ReleaseCheckError):
+            validate_report_content_gate({
+                "report_content_gate": {
+                    "mode": "blocked",
+                    "formal_save": False,
+                    "formal_exports": False,
+                    "save_rejection": {
+                        "status": 409,
+                        "error": "REPORT_SERVER_VALIDATION_FAILED",
+                        "reason_codes": ["CONTENT_QUALITY_BLOCKED"],
+                    },
+                },
+                "production_exceptions": {"blocked_exports": {}},
+            })
+
+    def test_browser_report_content_gate_accepts_a_local_only_draft(self):
+        self.assertEqual(validate_browser_report_content_gate({
+            "report_content_gate": {
+                "mode": "blocked",
+                "formal_save": False,
+                "formal_exports": False,
+                "browser_formal_requests": 0,
+                "reason_codes": ["QUALITY_REQUIRED_DATA_MISSING"],
+            },
+            "exports": {},
+        }), "blocked")
 
     def test_database_probes_use_each_tables_real_primary_key(self):
         requests = []
@@ -70,6 +121,11 @@ class ProductionReleaseCheckTests(unittest.TestCase):
             "status": "passed",
             "acceptance_run_id": "run-1",
             "release_sha": "sha",
+            "report_content_gate": {
+                "mode": "formal",
+                "formal_save": True,
+                "formal_exports": True,
+            },
             "checks": {
                 "database": True,
                 "storage_bucket": True,
@@ -93,6 +149,12 @@ class ProductionReleaseCheckTests(unittest.TestCase):
         browser_acceptance = {
             "status": "passed",
             "acceptance_run_id": "run-1",
+            "report_content_gate": {
+                "mode": "formal",
+                "formal_save": True,
+                "formal_exports": True,
+            },
+            "exports": {"pdf": "pdf", "docx": "docx"},
             "network_recovery": {
                 "first_request": "internetdisconnected",
                 "attempts": 2,

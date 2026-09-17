@@ -42,6 +42,7 @@ test('production acceptance has a service-owned run ledger and compensating clea
 test('API and browser acceptance share the workflow run ID and always clean browser data', () => {
   const workflow = read('.github', 'workflows', 'deploy-production.yml');
   const python = read('scripts', 'production_acceptance.py');
+  const releaseCheck = read('scripts', 'production_release_check.py');
   const cleanup = read('scripts', 'cleanup_production_acceptance.py');
   const browser = read('tests', 'production-auth.spec.cjs');
   const authData = read('assets', 'js', 'auth-data.js');
@@ -62,6 +63,9 @@ test('API and browser acceptance share the workflow run ID and always clean brow
   assert.match(python, /workspace_id,idempotency_key/);
   assert.match(python, /fault_body = \{[\s\S]*"workspace_id": workspace_a/);
   assert.match(python, /atexit\.register\(_finalize_acceptance_run\)/);
+  assert.match(python, /QUALITY_PLATFORM_RULE_COVERAGE_MISSING/);
+  assert.match(python, /"report_content_gate": report_gate/);
+  assert.match(python, /REPORT_NOT_SAVED/);
   assert.match(cleanup, /storage\/v1\/object\/reports/);
   assert.match(cleanup, /status.*not_found/);
   assert.match(browser, /process\.env\.ACCEPTANCE_RUN_ID/);
@@ -69,5 +73,9 @@ test('API and browser acceptance share the workflow run ID and always clean brow
   assert.match(browser, /from\('market_data_applicability'\)[\s\S]*\.eq\('domain', 'rule'\)/);
   assert.match(browser, /setActivePlatforms\(\[platformKey\]\)/);
   assert.doesNotMatch(browser, /setActivePlatforms\(\['amazon'\]\)/);
+  assert.match(browser, /browser_formal_requests/);
+  assert.match(browser, /QUALITY_PLATFORM_RULE_COVERAGE_MISSING/);
+  assert.match(releaseCheck, /validate_report_content_gate/);
+  assert.match(releaseCheck, /validate_browser_report_content_gate/);
   assert.match(authData, /user_activity: true/);
 });

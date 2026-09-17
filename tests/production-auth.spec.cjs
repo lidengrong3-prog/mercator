@@ -17,6 +17,7 @@ const platformDisplayNames = {
   aliexpress: 'AliExpress',
   ebay: 'eBay',
 };
+const platformRuleDimensions = ['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty'];
 
 test.describe('production authenticated browser acceptance', () => {
   test.skip(!ready, 'set RUN_PRODUCTION_ACCEPTANCE=1 and two production test accounts to run this suite');
@@ -76,7 +77,7 @@ test.describe('production authenticated browser acceptance', () => {
     const candidates = await page.evaluate(async () => {
       const result = await window.supabaseClient
         .from('market_data_applicability')
-        .select('platform_key,category_code,source_url,verification_status,published_at,verified_at')
+        .select('platform_key,category_code,source_url,verification_status,published_at,verified_at,payload')
         .eq('market_code', 'US')
         .eq('domain', 'rule')
         .eq('status', 'active')
@@ -93,13 +94,25 @@ test.describe('production authenticated browser acceptance', () => {
     for (const row of candidates) {
       const key = String(row.platform_key || '').trim().toLowerCase();
       if (!key) continue;
-      const current = coverage.get(key) || { key, count: 0, latest: '' };
+      const current = coverage.get(key) || { key, count: 0, latest: '', dimensions: new Set() };
       current.count += 1;
       current.latest = [current.latest, row.published_at || row.verified_at || ''].sort().at(-1);
+      const payload = row.payload && typeof row.payload === 'object' ? row.payload : {};
+      const raw = payload.rule_dimensions && typeof payload.rule_dimensions === 'object'
+        ? payload.rule_dimensions : {};
+      Object.entries(raw).forEach(([dimension, value]) => {
+        const normalized = String(dimension || '').trim().toLowerCase();
+        if (platformRuleDimensions.includes(normalized) && value != null && String(value).trim()) {
+          current.dimensions.add(normalized);
+        }
+      });
+      const topic = String(payload.rule_topic || payload.topic || '').trim().toLowerCase();
+      if (platformRuleDimensions.includes(topic)) current.dimensions.add(topic);
       coverage.set(key, current);
     }
     const selected = [...coverage.values()].sort((left, right) => (
-      right.count - left.count
+      right.dimensions.size - left.dimensions.size
+      || right.count - left.count
       || right.latest.localeCompare(left.latest)
       || left.key.localeCompare(right.key)
     ))[0];
@@ -110,6 +123,9 @@ test.describe('production authenticated browser acceptance', () => {
       key: selected.key,
       name: platformDisplayNames[selected.key] || selected.key,
       ruleCount: selected.count,
+      ruleDimensions: platformRuleDimensions.filter((dimension) => selected.dimensions.has(dimension)),
+      missingRuleDimensions: platformRuleDimensions.filter((dimension) => !selected.dimensions.has(dimension)),
+      complete: platformRuleDimensions.every((dimension) => selected.dimensions.has(dimension)),
     };
   }
 
@@ -127,7 +143,7 @@ test.describe('production authenticated browser acceptance', () => {
             && !preview.classList.contains('rp-empty-preview')
             && !generating
             && !generationActive
-            && publishStatus?.classList.contains('is-publishable'),
+            && (publishStatus?.classList.contains('is-publishable') || publishStatus?.classList.contains('is-blocked')),
           generationActive,
           generating,
           previewClass: preview?.className || '',
@@ -137,16 +153,17 @@ test.describe('production authenticated browser acceptance', () => {
           citationAudit: window.rpLastReportModel?.citationAudit || null,
           reconciliation: window.rpLastReportModel?.reconciliation || null,
           scopeCheck: window.rpLastReportModel?.scopeCheck || null,
+          publishable: window.rpLastReportModel?.publishable === true,
+          publicationBlocks: window.rpLastReportModel?.publicationBlocks || [],
           dataCheckClass: dataCheck?.className || '',
           dataCheckText: dataCheck?.textContent?.trim() || '',
           toasts: Array.isArray(window.__productionAcceptanceToasts)
             ? window.__productionAcceptanceToasts.slice(-5) : [],
         };
       });
-      if (state.ready) return;
+      if (state.ready) return state;
       const terminalToast = state.toasts.find((message) => /停止生成|无法创建报告运行记录|请先登录|额度|相同报告/.test(message));
-      const terminalReportState = !state.generationActive
-        && (/is-blocked/.test(state.publishStatusClass) || /生成失败/.test(state.publishStatusText));
+      const terminalReportState = !state.generationActive && /生成失败/.test(state.publishStatusText);
       if (/is-blocked/.test(state.dataCheckClass) || terminalReportState || terminalToast) {
         const runs = await rows(page, 'report_runs', {});
         throw new Error(`report generation stopped before preview: ${JSON.stringify({ ...state, latestRun: runs[0] || null })}`);
@@ -290,53 +307,127 @@ test.describe('production authenticated browser acceptance', () => {
     await expect(page.locator('#rp-questionnaire')).toHaveClass(/show/);
     await page.locator('#rp-q-category').fill('通用');
     await page.locator('#rp-questionnaire .rp-q-go').click();
-    await waitForReportPreview(page);
+    const previewState = await waitForReportPreview(page);
+    const formalReady = previewState.publishable === true;
     await page.waitForFunction(() => ['saved', 'failed', 'blocked'].includes(String(window.rpLastSaveState || '')), null, { timeout: 60_000 });
     const cloudSave = await page.evaluate(() => ({ state: window.rpLastSaveState, error: window.rpLastSaveError || null }));
-    if (cloudSave.state !== 'saved') throw new Error(`report-save did not reach cloud: ${JSON.stringify(cloudSave)}`);
-    await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
+    let reportRow;
+    let reportId;
+    let pdfExport = null;
+    let docxExport = null;
+    let reportContentGate;
+    if (formalReady) {
+      if (cloudSave.state !== 'saved') throw new Error(`report-save did not reach cloud: ${JSON.stringify(cloudSave)}`);
+      await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
 
-    const reportRow = await waitForRow(page, 'generated_reports', { title: browserReportTitle }, (row) => row.save_status === 'saved');
-    expect(reportRow.generation_status).toBe('completed');
-    expect(reportRow.publication_status).toBe('formal');
-    expect(reportRow.server_validation_version).toBeTruthy();
-    expect(reportRow.server_validation?.ok).toBe(true);
-    expect(reportRow.user_id).toBe(await page.evaluate(() => window.jayUser.id));
-    const reportId = reportRow.id;
-    const reportItem = page.locator('#rp-v2-recent-list .rp-v2-recent-item').filter({ hasText: browserReportTitle }).first();
-    await expect(reportItem).toBeVisible({ timeout: 30_000 });
-    await reportItem.click();
-    await expect(page.locator('#rp-v2-preview-body')).not.toHaveClass(/rp-empty-preview/);
-    await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
+      reportRow = await waitForRow(page, 'generated_reports', { title: browserReportTitle }, (row) => row.save_status === 'saved');
+      expect(reportRow.generation_status).toBe('completed');
+      expect(reportRow.publication_status).toBe('formal');
+      expect(reportRow.server_validation_version).toBeTruthy();
+      expect(reportRow.server_validation?.ok).toBe(true);
+      expect(reportRow.user_id).toBe(await page.evaluate(() => window.jayUser.id));
+      reportId = reportRow.id;
+      const reportItem = page.locator('#rp-v2-recent-list .rp-v2-recent-item').filter({ hasText: browserReportTitle }).first();
+      await expect(reportItem).toBeVisible({ timeout: 30_000 });
+      await reportItem.click();
+      await expect(page.locator('#rp-v2-preview-body')).not.toHaveClass(/rp-empty-preview/);
+      await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
 
-    // Trigger both authenticated server exports from the report toolbar and
-    // wait for their cloud history rows, rather than trusting a pre-seeded row.
-    await page.locator('#rp-panel-step3 button[onclick="rpV2Export(\'pdf\')"]').click();
-    const pdfExport = await waitForRow(page, 'report_exports', { report_id: reportId, format: 'pdf' }, (row) => row.status === 'completed', 90_000);
-    expect(pdfExport.file_path).toBeTruthy();
-    await page.locator('#rp-panel-step3 button[onclick="rpV2Export(\'docx\')"]').click();
-    const docxExport = await waitForRow(page, 'report_exports', { report_id: reportId, format: 'docx' }, (row) => row.status === 'completed', 90_000);
-    expect(docxExport.file_path).toBeTruthy();
-    await expect(page.locator('#rp-v2-export-history')).toContainText('PDF', { timeout: 30_000 });
-    await expect(page.locator('#rp-v2-export-history')).toContainText('DOCX', { timeout: 30_000 });
+      // Trigger both authenticated server exports from the report toolbar and
+      // wait for their cloud history rows, rather than trusting a pre-seeded row.
+      await page.locator('#rp-panel-step3 button[onclick="rpV2Export(\'pdf\')"]').click();
+      pdfExport = await waitForRow(page, 'report_exports', { report_id: reportId, format: 'pdf' }, (row) => row.status === 'completed', 90_000);
+      expect(pdfExport.file_path).toBeTruthy();
+      await page.locator('#rp-panel-step3 button[onclick="rpV2Export(\'docx\')"]').click();
+      docxExport = await waitForRow(page, 'report_exports', { report_id: reportId, format: 'docx' }, (row) => row.status === 'completed', 90_000);
+      expect(docxExport.file_path).toBeTruthy();
+      await expect(page.locator('#rp-v2-export-history')).toContainText('PDF', { timeout: 30_000 });
+      await expect(page.locator('#rp-v2-export-history')).toContainText('DOCX', { timeout: 30_000 });
 
-    // A full reload must hydrate the same account from Supabase, not memory.
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => window.jayUser && !window.jayIsDemo, null, { timeout: 30_000 });
-    await page.waitForFunction(() => !window.jayWorkspaceHydration && String(window.jayHydratedUserId || '').startsWith(window.jayUser.id + ':'), null, { timeout: 30_000 });
-    await page.evaluate(() => window.switchPage('report'));
-    await expect(page.locator('#rp-v2-recent-list')).toContainText(browserReportTitle, { timeout: 30_000 });
-    await page.locator('#rp-v2-recent-list .rp-v2-recent-item').filter({ hasText: browserReportTitle }).first().click();
-    await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
+      // A full reload must hydrate the same account from Supabase, not memory.
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await page.waitForFunction(() => window.jayUser && !window.jayIsDemo, null, { timeout: 30_000 });
+      await page.waitForFunction(() => !window.jayWorkspaceHydration && String(window.jayHydratedUserId || '').startsWith(window.jayUser.id + ':'), null, { timeout: 30_000 });
+      await page.evaluate(() => window.switchPage('report'));
+      await expect(page.locator('#rp-v2-recent-list')).toContainText(browserReportTitle, { timeout: 30_000 });
+      await page.locator('#rp-v2-recent-list .rp-v2-recent-item').filter({ hasText: browserReportTitle }).first().click();
+      await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
 
-    // A new authenticated browser session must be able to reopen the same
-    // report after an explicit logout, not only after an in-place reload.
-    await signOut(page);
-    await login(page, credentials.a);
-    await page.evaluate(() => window.switchPage('report'));
-    await expect(page.locator('#rp-v2-recent-list')).toContainText(browserReportTitle, { timeout: 30_000 });
-    await page.locator('#rp-v2-recent-list .rp-v2-recent-item').filter({ hasText: browserReportTitle }).first().click();
-    await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
+      // A new authenticated browser session must be able to reopen the same
+      // report after an explicit logout, not only after an in-place reload.
+      await signOut(page);
+      await login(page, credentials.a);
+      await page.evaluate(() => window.switchPage('report'));
+      await expect(page.locator('#rp-v2-recent-list')).toContainText(browserReportTitle, { timeout: 30_000 });
+      await page.locator('#rp-v2-recent-list .rp-v2-recent-item').filter({ hasText: browserReportTitle }).first().click();
+      await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
+      reportContentGate = { mode: 'formal', formal_save: true, formal_exports: true, missing_rule_dimensions: [] };
+    } else {
+      expect(cloudSave.state).toBe('blocked');
+      await expect(page.locator('#rp-v2-save-status')).toContainText('未保存草稿');
+      await expect(page.locator('#rp-v2-publish-status')).toHaveClass(/is-blocked/);
+      const draftState = await page.evaluate(() => ({
+        publishable: window.rpLastReportModel?.publishable === true,
+        publicationBlocks: window.rpLastReportModel?.publicationBlocks || [],
+        cloudSaved: window.rpLastReportRecord?.cloudSaved === true,
+        dbId: window.rpLastReportRecord?.dbId || null,
+      }));
+      expect(draftState.publishable).toBe(false);
+      expect(draftState.cloudSaved).toBe(false);
+      expect(draftState.dbId).toBeNull();
+      expect(draftState.publicationBlocks.some((item) => (
+        item.code === 'QUALITY_PLATFORM_RULE_COVERAGE_MISSING' || item.code === 'QUALITY_REQUIRED_DATA_MISSING'
+      ))).toBe(true);
+      expect(await rows(page, 'generated_reports', { title: browserReportTitle })).toEqual([]);
+
+      const formalRequests = [];
+      const captureFormalRequest = (request) => {
+        if (/\/functions\/v1\/(report-export|report-docx)(?:\?|$)/.test(request.url())) formalRequests.push(request.url());
+      };
+      page.on('request', captureFormalRequest);
+      await page.locator('#rp-panel-step3 button[onclick="rpV2Export(\'pdf\')"]').click();
+      await page.locator('#rp-panel-step3 button[onclick="rpV2Export(\'docx\')"]').click();
+      await expect.poll(() => page.evaluate(() => window.__productionAcceptanceToasts.slice(-6)))
+        .toEqual(expect.arrayContaining([
+          expect.stringContaining('不能创建正式 PDF'),
+          expect.stringContaining('不能创建正式 DOCX'),
+        ]));
+      page.off('request', captureFormalRequest);
+      expect(formalRequests).toEqual([]);
+
+      // Collaboration and RLS checks use an explicitly marked test fixture.
+      // The generated report itself remains local and never becomes formal.
+      const fixtureTitle = `${browserReportTitle}（协作草稿夹具）`;
+      reportRow = await page.evaluate(async ({ workspaceId, title, runId, platformKey }) => {
+        const result = await window.supabaseClient.from('generated_reports').insert({
+          user_id: window.jayUser.id,
+          workspace_id: workspaceId,
+          acceptance_run_id: runId,
+          client_id: `production-browser-collaboration-draft:${runId}`,
+          report_type: 'market',
+          title,
+          content: { text: '生产浏览器协作权限验收草稿。', publishable: false, test_fixture: true },
+          status: 'completed',
+          generation_status: 'completed',
+          save_status: 'pending',
+          publication_status: 'draft',
+          scope_snapshot: { marketCodes: ['US'], platformKeys: [platformKey], categoryCodes: ['generic'] },
+        }).select('*').single();
+        if (result.error) throw new Error(result.error.message);
+        return result.data;
+      }, { workspaceId: workspaceA, title: fixtureTitle, runId, platformKey: reportPlatform.key });
+      expect(reportRow.publication_status).toBe('draft');
+      expect(reportRow.save_status).toBe('pending');
+      reportId = reportRow.id;
+      reportContentGate = {
+        mode: 'blocked',
+        formal_save: false,
+        formal_exports: false,
+        reason_codes: [...new Set(draftState.publicationBlocks.map((item) => item.code).filter(Boolean))],
+        missing_rule_dimensions: reportPlatform.missingRuleDimensions,
+        browser_formal_requests: formalRequests.length,
+      };
+    }
 
     const contextB = await browser.newContext({ acceptDownloads: true });
     const pageB = await contextB.newPage();
@@ -424,11 +515,23 @@ test.describe('production authenticated browser acceptance', () => {
       (row) => row.user_id === userB
     );
     expect(editorWatchlist.user_id).toBe(userB);
-    const sharedExport = await pageB.evaluate((sharedReportId) => window.jayFunctionRequest('report-export', {
-      report_id: sharedReportId,
-      idempotency_key: `production-browser-shared:${sharedReportId}:pdf`,
-    }, { timeout: 90_000, requestId: `production-browser-shared:${sharedReportId}` }), reportId);
-    expect(sharedExport.status).toBe('completed');
+    const sharedExport = await pageB.evaluate(async (sharedReportId) => {
+      try {
+        const result = await window.jayFunctionRequest('report-export', {
+          report_id: sharedReportId,
+          idempotency_key: `production-browser-shared:${sharedReportId}:pdf`,
+        }, { timeout: 90_000, requestId: `production-browser-shared:${sharedReportId}` });
+        return { ok: true, result };
+      } catch (error) {
+        return { ok: false, status: error.status, code: error.code };
+      }
+    }, reportId);
+    if (formalReady) {
+      expect(sharedExport).toMatchObject({ ok: true, result: { status: 'completed' } });
+    } else {
+      expect(sharedExport).toEqual({ ok: false, status: 409, code: 'REPORT_NOT_SAVED' });
+      expect(await rows(pageB, 'report_exports', { report_id: reportId })).toEqual([]);
+    }
 
     const membership = await waitForRow(page, 'workspace_members', { workspace_id: workspaceA, user_id: userB }, (row) => row.status === 'active');
     await page.evaluate((membershipId) => window.jayUpdateWorkspaceMember(membershipId, 'viewer'), membership.id);
@@ -485,7 +588,8 @@ test.describe('production authenticated browser acceptance', () => {
         },
         report_id: reportId,
         invite_id: invitation.id,
-        exports: { pdf: pdfExport.id, docx: docxExport.id },
+        report_content_gate: reportContentGate,
+        exports: pdfExport && docxExport ? { pdf: pdfExport.id, docx: docxExport.id } : {},
       }, null, 2));
     }
   });

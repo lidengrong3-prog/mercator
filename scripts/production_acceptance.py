@@ -39,6 +39,7 @@ SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "").strip()
 SITE_URL = os.environ.get("PRODUCTION_SITE_URL", "").strip().rstrip("/")
 ACTIVE_ACCEPTANCE_RUN_ID = ""
 ACCEPTANCE_FINAL_STATE: dict = {}
+PLATFORM_RULE_DIMENSIONS = ("fee", "commission", "deposit", "fulfillment", "prohibited", "settlement", "penalty")
 
 
 def _acceptance_payload(body):
@@ -330,6 +331,23 @@ def source_appendix_line(source: dict) -> str:
     return line
 
 
+def rule_dimension_keys(row: dict) -> list[str]:
+    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+    raw = row.get("rule_dimensions") or row.get("ruleDimensions") or payload.get("rule_dimensions") or payload.get("ruleDimensions") or {}
+    raw = raw if isinstance(raw, dict) else {}
+    covered = {
+        str(key).strip().lower()
+        for key, value in raw.items()
+        if str(key).strip().lower() in PLATFORM_RULE_DIMENSIONS
+        and value is not None
+        and str(value).strip()
+    }
+    topic = str(row.get("rule_topic") or row.get("topic") or payload.get("rule_topic") or payload.get("topic") or "").strip().lower()
+    if topic in PLATFORM_RULE_DIMENSIONS:
+        covered.add(topic)
+    return [dimension for dimension in PLATFORM_RULE_DIMENSIONS if dimension in covered]
+
+
 def build_server_validated_report_content(token: str, ai_text: str) -> dict:
     market_code, platform_key, category_code = "US", "amazon", "generic"
     templates = select_rows("report_template_catalog", token, {
@@ -345,7 +363,24 @@ def build_server_validated_report_content(token: str, ai_text: str) -> dict:
         "market_code": f"eq.{market_code}", "status": "eq.active",
         "verification_status": "in.(verified,uploaded)", "limit": "10000",
     })
+    configured_platforms = ("amazon", "tiktok-shop", "aliexpress", "ebay")
+    platform_scores = []
+    for index, candidate_platform in enumerate(configured_platforms):
+        rule_rows = [
+            row for row in evidence
+            if str(row.get("domain") or "").lower() == "rule"
+            and str(row.get("platform_key") or "").lower() == candidate_platform
+            and (not row.get("category_code") or str(row.get("category_code")).lower() == category_code)
+        ]
+        dimensions = {
+            dimension
+            for row in rule_rows
+            for dimension in rule_dimension_keys(row)
+        }
+        platform_scores.append((len(dimensions) == len(PLATFORM_RULE_DIMENSIONS), len(dimensions), len(rule_rows), -index, candidate_platform))
+    platform_key = max(platform_scores)[-1]
 
+    candidates_by_domain: dict[str, list[dict]] = {}
     selected: dict[str, list[dict]] = {}
     for domain in required_domains:
         candidates = []
@@ -367,11 +402,11 @@ def build_server_validated_report_content(token: str, ai_text: str) -> dict:
             if verification != "uploaded" and not source_url.startswith("https://"):
                 continue
             candidates.append(row)
-        expect(candidates, f"production evidence is missing for {market_code}|{platform_key}|{category_code}|{domain}")
         candidates.sort(key=lambda row: (
             str(row.get("published_at") or row.get("verified_at") or ""),
             str(row.get("source_record_id") or row.get("record_key") or ""),
         ), reverse=True)
+        candidates_by_domain[domain] = candidates
         # Acceptance proves every required domain is exportable; it must not
         # turn the entire production history into one oversized test report.
         selected[domain] = candidates[:3]
@@ -399,26 +434,55 @@ def build_server_validated_report_content(token: str, ai_text: str) -> dict:
         })
     citations = " ".join(f"[{source['citation']}]" for source in appendix)
     safe_ai_text = " ".join(str(ai_text or "").split()).strip()
-    section_text = (safe_ai_text + "\n\n" if safe_ai_text else "") + f"当前所选范围的必需数据域均有服务端可追溯记录。 {citations}"
+    section_text = (safe_ai_text + "\n\n" if safe_ai_text else "") + "当前所选范围使用服务端正式数据重新计算覆盖；缺失项保持为草稿，不补造记录。"
+    if citations:
+        section_text += f" {citations}"
     sections = [{"id": "executive_summary", "title": "执行摘要", "domain": "summary", "text": section_text}]
     pairs = [{"marketCode": market_code, "platformKey": platform_key}]
     cells = []
+    requires_rule_dimensions = "platform" in required_domains and "rule" in required_domains
     for domain in required_domains:
         domain_rows = selected[domain]
+        all_domain_rows = candidates_by_domain[domain]
+        covered_dimensions = []
+        missing_dimensions = []
+        if domain == "platform" and requires_rule_dimensions:
+            covered_set = {
+                dimension
+                for row in all_domain_rows
+                for dimension in rule_dimension_keys(row)
+            }
+            covered_dimensions = [dimension for dimension in PLATFORM_RULE_DIMENSIONS if dimension in covered_set]
+            missing_dimensions = [dimension for dimension in PLATFORM_RULE_DIMENSIONS if dimension not in covered_set]
+        source_record_ids = list(dict.fromkeys(
+            row.get("source_record_id") or row.get("record_key") for row in domain_rows
+        ))
         cells.append({
             "id": f"{market_code}|{platform_key}|{category_code}|{domain}",
             "marketCode": market_code, "platformKey": platform_key, "categoryCode": category_code,
-            "domain": domain, "covered": True, "recordCount": len(domain_rows),
-            "sourceRecordIds": list(dict.fromkeys(row.get("source_record_id") or row.get("record_key") for row in domain_rows)),
+            "domain": domain,
+            "covered": bool(all_domain_rows) and not missing_dimensions,
+            "recordCount": len(source_record_ids),
+            "sourceRecordIds": source_record_ids,
+            "ruleDimensions": covered_dimensions,
+            "missingRuleDimensions": missing_dimensions,
         })
+    missing_cells = [cell for cell in cells if not cell["covered"]]
+    covered_cells = len(cells) - len(missing_cells)
     matrix = {
         "version": "1.0", "requiredDomains": required_domains,
+        "requiredPlatformRuleDimensions": list(PLATFORM_RULE_DIMENSIONS) if requires_rule_dimensions else [],
         "dimensions": {"marketCodes": [market_code], "platformKeys": [platform_key], "categoryCodes": [category_code], "marketPlatformPairs": pairs},
-        "cells": cells, "missingCells": [], "totalCells": len(cells), "coveredCells": len(cells), "coveragePercent": 100, "ok": True,
+        "cells": cells,
+        "missingCells": missing_cells,
+        "totalCells": len(cells),
+        "coveredCells": covered_cells,
+        "coveragePercent": round(covered_cells / len(cells) * 100) if cells else 0,
+        "ok": bool(cells) and not missing_cells,
     }
     gate = current_quality_gate(token)
     content = {
-        "publishable": True,
+        "publishable": matrix["ok"],
         "template": template["code"], "template_id": template["code"], "template_version": template["version"],
         "market_codes": [market_code], "platform_keys": [platform_key], "category_codes": [category_code],
         "scope_snapshot": {"marketCodes": [market_code], "platformKeys": [platform_key], "categoryCodes": [category_code]},
@@ -444,8 +508,8 @@ def owned_workspace(token: str, user_id: str) -> str:
     return str(memberships[0]["workspace_id"])
 
 
-def save_formal_report(token: str, user_id: str, workspace_id: str, client_id: str, title: str, content: dict, report_run_id: str | None = None) -> dict:
-    report = {
+def formal_report_payload(user_id: str, workspace_id: str, client_id: str, title: str, content: dict, report_run_id: str | None = None) -> dict:
+    return {
         "user_id": user_id,
         "workspace_id": workspace_id,
         "acceptance_run_id": ACTIVE_ACCEPTANCE_RUN_ID or None,
@@ -463,12 +527,89 @@ def save_formal_report(token: str, user_id: str, workspace_id: str, client_id: s
         "scope_snapshot": content.get("scope_snapshot"),
         "report_run_id": report_run_id,
     }
+
+
+def save_formal_report(token: str, user_id: str, workspace_id: str, client_id: str, title: str, content: dict, report_run_id: str | None = None) -> dict:
+    report = formal_report_payload(user_id, workspace_id, client_id, title, content, report_run_id)
     status, result, _ = function("report-save", token, {"report": report, "request_id": f"save:{client_id}"})
     expect(status == 200 and isinstance(result, dict) and isinstance(result.get("report"), dict), f"report-save failed: {status} {result}")
     saved = result["report"]
     expect(saved.get("save_status") == "saved" and saved.get("publication_status") == "formal", f"report-save returned a non-formal row: {saved}")
     expect(saved.get("server_validation_version") and saved.get("server_validated_at"), "report-save omitted server validation metadata")
     return saved
+
+
+def expect_formal_save_blocked(token: str, user_id: str, workspace_id: str, client_id: str, title: str, content: dict, report_run_id: str | None = None) -> dict:
+    report = formal_report_payload(user_id, workspace_id, client_id, title, content, report_run_id)
+    status, result, _ = function("report-save", token, {"report": report, "request_id": f"save-blocked:{client_id}"})
+    expect(status == 409 and isinstance(result, dict) and result.get("error") == "REPORT_SERVER_VALIDATION_FAILED",
+           f"incomplete formal report was not rejected by report-save: {status} {result}")
+    validation = result.get("validation") if isinstance(result.get("validation"), dict) else {}
+    reasons = validation.get("reasons") if isinstance(validation.get("reasons"), list) else []
+    reason_codes = sorted({str(reason.get("code") or "") for reason in reasons if isinstance(reason, dict) and reason.get("code")})
+    expected_codes = {"QUALITY_REQUIRED_DATA_MISSING", "QUALITY_PLATFORM_RULE_COVERAGE_MISSING"}
+    expect(expected_codes.intersection(reason_codes), f"report-save rejection omitted a required coverage reason: {result}")
+    rows = select_rows("generated_reports", token, {"select": "id", "client_id": f"eq.{client_id}", "limit": "1"})
+    expect(rows == [], "rejected formal report created a generated_reports row")
+    return {"status": status, "error": result["error"], "reason_codes": reason_codes}
+
+
+def save_acceptance_draft(token: str, user_id: str, workspace_id: str, client_id: str, title: str, content: dict, report_run_id: str | None = None) -> dict:
+    draft_content = {**content, "publishable": False}
+    return upsert("generated_reports", token, {
+        "user_id": user_id,
+        "workspace_id": workspace_id,
+        "client_id": client_id,
+        "report_type": "market",
+        "title": title,
+        "content": draft_content,
+        "status": "completed",
+        "generation_status": "completed",
+        "save_status": "pending",
+        "publication_status": "draft",
+        "template_version": str(content.get("template_version") or ""),
+        "data_version": "production-acceptance",
+        "quality_report_version": content.get("quality_report_version"),
+        "data_snapshot_at": content.get("data_snapshot_at"),
+        "scope_snapshot": content.get("scope_snapshot"),
+        "report_run_id": report_run_id,
+    }, "workspace_id,client_id")
+
+
+def verify_storage_guards(token_a: str, token_b: str, user_a: str, acceptance_run_id: str) -> dict:
+    status, bucket, _ = request(
+        "GET",
+        f"{SUPABASE_URL}/storage/v1/bucket/reports",
+        token=SERVICE_KEY,
+        headers={"apikey": SERVICE_KEY},
+    )
+    expect(status == 200 and isinstance(bucket, dict) and str(bucket.get("id") or bucket.get("name") or "") == "reports",
+           f"reports Storage bucket is unavailable: {status} {bucket}")
+    path = f"{user_a}/acceptance/{acceptance_run_id}/client-write-probe.json"
+    encoded_path = "/".join(urllib.parse.quote(part, safe="") for part in path.split("/"))
+    write_status, write_body, _ = request(
+        "POST",
+        f"{SUPABASE_URL}/storage/v1/object/reports/{encoded_path}",
+        token=token_a,
+        body={"probe": True},
+        headers={"x-upsert": "false"},
+    )
+    if write_status in (200, 201):
+        request(
+            "DELETE",
+            f"{SUPABASE_URL}/storage/v1/object/reports/{encoded_path}",
+            token=SERVICE_KEY,
+            headers={"apikey": SERVICE_KEY},
+        )
+    expect(write_status in (400, 401, 403), f"authenticated client bypassed report Storage write policy: {write_status} {write_body}")
+    sign_status, _, _ = request(
+        "POST",
+        f"{SUPABASE_URL}/storage/v1/object/sign/reports/{encoded_path}",
+        token=token_b,
+        body={"expiresIn": 60},
+    )
+    expect(sign_status in (400, 401, 403, 404), f"account B can sign account A report path: HTTP {sign_status}")
+    return {"bucket": "reports", "client_write_status": write_status, "cross_account_sign_status": sign_status}
 
 
 def reusable_export_key(token: str, report_id: str, export_format: str) -> str | None:
@@ -741,24 +882,57 @@ def main() -> int:
         }
 
     report_content = build_server_validated_report_content(token_a, report_text)
-    report = save_formal_report(
-        token_a, user_a, workspace_a, f"production-acceptance-report:{acceptance_run_id}",
-        "生产端到端验收报告", report_content, run["id"],
-    )
-    report_b = save_formal_report(
-        token_b, user_b, workspace_b, f"production-acceptance-report-b:{acceptance_run_id}",
-        "生产验收B隔离报告", report_content,
-    )
+    formal_ready = report_content.get("publishable") is True
+    report_gate: dict = {"mode": "formal" if formal_ready else "blocked"}
+    if formal_ready:
+        report = save_formal_report(
+            token_a, user_a, workspace_a, f"production-acceptance-report:{acceptance_run_id}",
+            "生产端到端验收报告", report_content, run["id"],
+        )
+        report_b = save_formal_report(
+            token_b, user_b, workspace_b, f"production-acceptance-report-b:{acceptance_run_id}",
+            "生产验收B隔离报告", report_content,
+        )
+        report_gate.update({"formal_save": True, "formal_exports": True, "reason_codes": []})
+    else:
+        rejected = expect_formal_save_blocked(
+            token_a, user_a, workspace_a, f"production-acceptance-formal-blocked:{acceptance_run_id}",
+            "生产端到端验收报告", report_content, run["id"],
+        )
+        report = save_acceptance_draft(
+            token_a, user_a, workspace_a, f"production-acceptance-draft:{acceptance_run_id}",
+            "生产端到端验收草稿", report_content, run["id"],
+        )
+        report_b = save_acceptance_draft(
+            token_b, user_b, workspace_b, f"production-acceptance-draft-b:{acceptance_run_id}",
+            "生产验收B隔离草稿", report_content,
+        )
+        report_gate.update({
+            "formal_save": False,
+            "formal_exports": False,
+            "save_rejection": rejected,
+            "reason_codes": rejected["reason_codes"],
+            "missing_cells": [cell.get("id") for cell in report_content.get("coverage_matrix", {}).get("missingCells", [])],
+        })
 
     rest("PATCH", "report_runs", token_a, query=urllib.parse.urlencode({"id": f"eq.{run['id']}", "user_id": f"eq.{user_a}"}), body={
         "status": "completed", "report_id": report["id"], "duration_ms": round((time.monotonic() - started) * 1000),
+        "save_status": "saved" if formal_ready else "blocked",
+        "publication_status": "formal" if formal_ready else "draft",
         "completed_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     })
 
     # A fresh session proves refresh/re-login recovery rather than memory reuse.
     fresh_a = sign_in(email_a, password_a)["access_token"]
-    status, rows, _ = rest("GET", "generated_reports", fresh_a, query=urllib.parse.urlencode({"select": "id,client_id,title,save_status,content", "id": f"eq.{report['id']}"}))
-    expect(status == 200 and len(rows) == 1 and rows[0]["save_status"] == "saved", "saved report did not recover after re-login")
+    status, rows, _ = rest("GET", "generated_reports", fresh_a, query=urllib.parse.urlencode({"select": "id,client_id,title,save_status,publication_status,content", "id": f"eq.{report['id']}"}))
+    expected_save_status = "saved" if formal_ready else "pending"
+    expected_publication_status = "formal" if formal_ready else "draft"
+    expect(
+        status == 200 and len(rows) == 1
+        and rows[0]["save_status"] == expected_save_status
+        and rows[0]["publication_status"] == expected_publication_status,
+        "saved report did not recover after re-login with the expected formal/draft state",
+    )
 
     status, rows, _ = rest("GET", "generated_reports", token_b, query=urllib.parse.urlencode({"select": "id", "id": f"eq.{report['id']}"}))
     expect(status == 200 and rows == [], "account B can read account A report")
@@ -767,66 +941,91 @@ def main() -> int:
 
     exported = {}
     duplicate_export_checks = {}
-    for name, extension, signature in (("report-export", "pdf", b"%PDF"), ("report-docx", "docx", b"PK")):
-        export_key = reusable_export_key(fresh_a, report["id"], extension) or f"production-acceptance:{acceptance_run_id}:{user_a}:{extension}"
-        export_payload = {
-            "title": "生产端到端验收报告", "text": report_text, "report_id": report["id"],
-            "request_id": f"production-acceptance-{extension}",
-            "idempotency_key": export_key,
-        }
-        with ThreadPoolExecutor(max_workers=2) as executor:
-            export_responses = list(executor.map(
-                lambda _: function(name, fresh_a, export_payload),
-                range(2),
-            ))
-        expect(all(response[0] in (200, 202) for response in export_responses),
-               f"duplicate {extension} export failed: {export_responses}")
-        export_ids = {str(response[1].get("id") or "") for response in export_responses}
-        expect(len(export_ids) == 1 and "" not in export_ids,
-               f"duplicate {extension} export created different jobs: {export_responses}")
-        completed = [response[1] for response in export_responses if response[1].get("status") == "completed" and response[1].get("file_url")]
-        expect(completed, f"{extension} export did not complete: {export_responses}")
-        result = completed[0]
-        idempotent_rows = select_rows("report_exports", fresh_a, {
-            "select": "id,idempotency_key,status,file_path",
-            "idempotency_key": f"eq.{export_key}",
-            "limit": "10",
-        })
-        expect(len(idempotent_rows) == 1 and str(idempotent_rows[0].get("id")) in export_ids,
-               f"duplicate {extension} export persisted {len(idempotent_rows)} jobs")
-        file_status, file_body, _ = request("GET", result["file_url"], headers={})
-        expect(file_status == 200 and file_body.startswith(signature), f"{extension} download is invalid")
-        exported[extension] = result["id"]
-        duplicate_export_checks[extension] = {
-            "id": result["id"],
-            "row_count": len(idempotent_rows),
-            "duplicate_response": any(response[1].get("duplicate") is True for response in export_responses),
-        }
-        expect(duplicate_export_checks[extension]["duplicate_response"],
-               f"duplicate {extension} export was not identified as a duplicate")
-        status, export_rows, _ = rest("GET", "report_exports", fresh_a, query=urllib.parse.urlencode({"select": "id,file_path", "id": f"eq.{result['id']}"}))
-        expect(status == 200 and export_rows and export_rows[0].get("file_path"), f"{extension} export path is missing")
-        encoded_path = "/".join(urllib.parse.quote(part, safe="") for part in export_rows[0]["file_path"].split("/"))
-        sign_status, _, _ = request("POST", f"{SUPABASE_URL}/storage/v1/object/sign/reports/{encoded_path}", token=token_b, body={"expiresIn": 60})
-        expect(sign_status in (400, 401, 403, 404), f"account B can sign account A {extension} file: HTTP {sign_status}")
+    blocked_export_checks = {}
+    b_export = None
+    if formal_ready:
+        for name, extension, signature in (("report-export", "pdf", b"%PDF"), ("report-docx", "docx", b"PK")):
+            export_key = reusable_export_key(fresh_a, report["id"], extension) or f"production-acceptance:{acceptance_run_id}:{user_a}:{extension}"
+            export_payload = {
+                "title": "生产端到端验收报告", "text": report_text, "report_id": report["id"],
+                "request_id": f"production-acceptance-{extension}",
+                "idempotency_key": export_key,
+            }
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                export_responses = list(executor.map(
+                    lambda _: function(name, fresh_a, export_payload),
+                    range(2),
+                ))
+            expect(all(response[0] in (200, 202) for response in export_responses),
+                   f"duplicate {extension} export failed: {export_responses}")
+            export_ids = {str(response[1].get("id") or "") for response in export_responses}
+            expect(len(export_ids) == 1 and "" not in export_ids,
+                   f"duplicate {extension} export created different jobs: {export_responses}")
+            completed = [response[1] for response in export_responses if response[1].get("status") == "completed" and response[1].get("file_url")]
+            expect(completed, f"{extension} export did not complete: {export_responses}")
+            result = completed[0]
+            idempotent_rows = select_rows("report_exports", fresh_a, {
+                "select": "id,idempotency_key,status,file_path",
+                "idempotency_key": f"eq.{export_key}",
+                "limit": "10",
+            })
+            expect(len(idempotent_rows) == 1 and str(idempotent_rows[0].get("id")) in export_ids,
+                   f"duplicate {extension} export persisted {len(idempotent_rows)} jobs")
+            file_status, file_body, _ = request("GET", result["file_url"], headers={})
+            expect(file_status == 200 and file_body.startswith(signature), f"{extension} download is invalid")
+            exported[extension] = result["id"]
+            duplicate_export_checks[extension] = {
+                "id": result["id"],
+                "row_count": len(idempotent_rows),
+                "duplicate_response": any(response[1].get("duplicate") is True for response in export_responses),
+            }
+            expect(duplicate_export_checks[extension]["duplicate_response"],
+                   f"duplicate {extension} export was not identified as a duplicate")
+            status, export_rows, _ = rest("GET", "report_exports", fresh_a, query=urllib.parse.urlencode({"select": "id,file_path", "id": f"eq.{result['id']}"}))
+            expect(status == 200 and export_rows and export_rows[0].get("file_path"), f"{extension} export path is missing")
+            encoded_path = "/".join(urllib.parse.quote(part, safe="") for part in export_rows[0]["file_path"].split("/"))
+            sign_status, _, _ = request("POST", f"{SUPABASE_URL}/storage/v1/object/sign/reports/{encoded_path}", token=token_b, body={"expiresIn": 60})
+            expect(sign_status in (400, 401, 403, 404), f"account B can sign account A {extension} file: HTTP {sign_status}")
 
-    # Generate one B-owned export so both report history and private Storage
-    # paths are checked in the reverse direction too.
-    b_export_key = reusable_export_key(token_b, report_b["id"], "pdf") or f"production-acceptance:{acceptance_run_id}:{user_b}:pdf"
-    b_export_status, b_export, _ = function("report-export", token_b, {
-        "title": "生产验收B隔离报告", "text": "仅用于验证反向账号隔离。", "report_id": report_b["id"],
-        "request_id": "production-acceptance-b-pdf",
-        "idempotency_key": b_export_key,
-    })
-    expect(b_export_status == 200 and b_export.get("status") == "completed" and b_export.get("file_url"), f"B PDF export failed: {b_export_status} {b_export}")
-    status, b_export_rows, _ = rest("GET", "report_exports", token_b, query=urllib.parse.urlencode({"select": "id,file_path,report_id", "id": f"eq.{b_export['id']}"}))
-    expect(status == 200 and b_export_rows and b_export_rows[0].get("file_path"), f"B PDF export path is missing: {status} {b_export_rows}")
-    b_export_row = b_export_rows[0]
-    status, rows, _ = rest("GET", "report_exports", token_a, query=urllib.parse.urlencode({"select": "id", "id": f"eq.{b_export_row['id']}"}))
-    expect(status == 200 and rows == [], "account A can read account B export history")
-    b_encoded_path = "/".join(urllib.parse.quote(part, safe="") for part in b_export_row["file_path"].split("/"))
-    sign_status, _, _ = request("POST", f"{SUPABASE_URL}/storage/v1/object/sign/reports/{b_encoded_path}", token=token_a, body={"expiresIn": 60})
-    expect(sign_status in (400, 401, 403, 404), f"account A can sign account B PDF file: HTTP {sign_status}")
+        # Generate one B-owned export so both report history and private Storage
+        # paths are checked in the reverse direction too.
+        b_export_key = reusable_export_key(token_b, report_b["id"], "pdf") or f"production-acceptance:{acceptance_run_id}:{user_b}:pdf"
+        b_export_status, b_export, _ = function("report-export", token_b, {
+            "title": "生产验收B隔离报告", "text": "仅用于验证反向账号隔离。", "report_id": report_b["id"],
+            "request_id": "production-acceptance-b-pdf",
+            "idempotency_key": b_export_key,
+        })
+        expect(b_export_status == 200 and b_export.get("status") == "completed" and b_export.get("file_url"), f"B PDF export failed: {b_export_status} {b_export}")
+        status, b_export_rows, _ = rest("GET", "report_exports", token_b, query=urllib.parse.urlencode({"select": "id,file_path,report_id", "id": f"eq.{b_export['id']}"}))
+        expect(status == 200 and b_export_rows and b_export_rows[0].get("file_path"), f"B PDF export path is missing: {status} {b_export_rows}")
+        b_export_row = b_export_rows[0]
+        status, rows, _ = rest("GET", "report_exports", token_a, query=urllib.parse.urlencode({"select": "id", "id": f"eq.{b_export_row['id']}"}))
+        expect(status == 200 and rows == [], "account A can read account B export history")
+        b_encoded_path = "/".join(urllib.parse.quote(part, safe="") for part in b_export_row["file_path"].split("/"))
+        sign_status, _, _ = request("POST", f"{SUPABASE_URL}/storage/v1/object/sign/reports/{b_encoded_path}", token=token_a, body={"expiresIn": 60})
+        expect(sign_status in (400, 401, 403, 404), f"account A can sign account B PDF file: HTTP {sign_status}")
+    else:
+        for name, extension in (("report-export", "pdf"), ("report-docx", "docx")):
+            blocked_status, blocked_result, _ = function(name, fresh_a, {
+                "title": "生产端到端验收草稿", "text": report_text, "report_id": report["id"],
+                "request_id": f"production-acceptance-blocked-{extension}",
+                "idempotency_key": f"production-acceptance:{acceptance_run_id}:{user_a}:blocked-{extension}",
+            })
+            expect(blocked_status == 409 and blocked_result.get("error") == "REPORT_NOT_SAVED",
+                   f"draft {extension} export was not blocked: {blocked_status} {blocked_result}")
+            blocked_export_checks[extension] = {"status": blocked_status, "error": blocked_result["error"]}
+        expect(select_rows("report_exports", fresh_a, {"select": "id", "report_id": f"eq.{report['id']}"}) == [],
+               "blocked draft export created a report_exports row")
+        b_export_status, b_export_result, _ = function("report-export", token_b, {
+            "report_id": report_b["id"],
+            "request_id": "production-acceptance-b-blocked-pdf",
+            "idempotency_key": f"production-acceptance:{acceptance_run_id}:{user_b}:blocked-pdf",
+        })
+        expect(b_export_status == 409 and b_export_result.get("error") == "REPORT_NOT_SAVED",
+               f"B draft PDF export was not blocked: {b_export_status} {b_export_result}")
+        report_gate["blocked_exports"] = blocked_export_checks
+
+    storage_checks = verify_storage_guards(token_a, token_b, user_a, acceptance_run_id)
 
     status, rows, _ = rest("GET", "report_exports", token_b, query=urllib.parse.urlencode({"select": "id", "report_id": f"eq.{report['id']}"}))
     expect(status == 200 and rows == [], "account B can read account A export history")
@@ -897,8 +1096,12 @@ def main() -> int:
         "report_id": report["id"], "request_id": "production-acceptance-shared-pdf",
         "idempotency_key": shared_export_key,
     })
-    expect(shared_export_status == 200 and shared_export.get("status") == "completed" and shared_export.get("file_url"),
-           f"workspace editor cannot export shared report: {shared_export_status} {shared_export}")
+    if formal_ready:
+        expect(shared_export_status == 200 and shared_export.get("status") == "completed" and shared_export.get("file_url"),
+               f"workspace editor cannot export shared report: {shared_export_status} {shared_export}")
+    else:
+        expect(shared_export_status == 409 and shared_export.get("error") == "REPORT_NOT_SAVED",
+               f"workspace editor bypassed the draft export gate: {shared_export_status} {shared_export}")
 
     viewer_status, viewer_rows, _ = rest(
         "PATCH", "workspace_members", token_a,
@@ -935,11 +1138,14 @@ def main() -> int:
         "api_workspace_id": workspace_a, "browser_workspace_id": workspace_b,
         "user_isolation": True, "workspace_collaboration": True, "report_id": report["id"],
         "report_run_id": run["id"], "exports": exported, "invite_id": invite_id,
-        "shared_export_id": shared_export["id"], "reverse_export_id": b_export["id"], "ai_request_id": ai_request_id,
+        "shared_export_id": shared_export.get("id"), "reverse_export_id": b_export.get("id") if b_export else None,
+        "ai_request_id": ai_request_id,
+        "report_content_gate": report_gate,
         "production_exceptions": {
             **exception_checks,
             "duplicate_generation": {"run_id": run["id"], "row_count": len(run_rows)},
             "duplicate_exports": duplicate_export_checks,
+            "blocked_exports": blocked_export_checks,
         },
         "release_sha": os.environ.get("RELEASE_SHA", ""),
         "checks": {
@@ -949,6 +1155,7 @@ def main() -> int:
             "production_exceptions": True,
             "edge_functions": ["ai-proxy", "report-save", "report-export", "report-docx", "workspace-invite"],
         },
+        "storage": storage_checks,
     }
     ACCEPTANCE_FINAL_STATE["status"] = "passed"
     ACCEPTANCE_FINAL_STATE["result_summary"] = {
@@ -958,6 +1165,7 @@ def main() -> int:
         "report_id": report["id"],
         "report_run_id": run["id"],
         "exports": exported,
+        "report_content_gate": report_gate,
         "invite_id": invite_id,
         "checks": result["checks"],
     }

@@ -62,7 +62,7 @@ class ProductionAcceptanceTests(unittest.TestCase):
         def select_rows(table, _token, _query):
             if table == "report_template_catalog":
                 return [{"id": "template", "code": "market-research", "version": 1,
-                         "required_domains": ["policy", "platform"], "status": "active"}]
+                         "required_domains": ["policy", "platform", "rule"], "status": "active"}]
             if table == "market_data_applicability":
                 return evidence
             if table == "market_data":
@@ -76,7 +76,22 @@ class ProductionAcceptanceTests(unittest.TestCase):
 
         self.assertEqual(len(content["source_appendix"]), 6)
         self.assertTrue(all(cell["recordCount"] == 3 for cell in content["coverage_matrix"]["cells"]))
+        platform_cell = next(cell for cell in content["coverage_matrix"]["cells"] if cell["domain"] == "platform")
+        self.assertFalse(platform_cell["covered"])
+        self.assertEqual(platform_cell["ruleDimensions"], [])
+        self.assertEqual(platform_cell["missingRuleDimensions"], list(production_acceptance.PLATFORM_RULE_DIMENSIONS))
+        self.assertFalse(content["coverage_matrix"]["ok"])
+        self.assertFalse(content["publishable"])
         self.assertLess(len(content["text"]), 80_000)
+
+    def test_rule_dimension_keys_reads_normalized_payload(self):
+        row = {
+            "payload": {
+                "rule_dimensions": {"fee": "official fee", "penalty": "official penalty", "deposit": ""},
+                "topic": "settlement",
+            }
+        }
+        self.assertEqual(production_acceptance.rule_dimension_keys(row), ["fee", "settlement", "penalty"])
 
 
 if __name__ == "__main__":
