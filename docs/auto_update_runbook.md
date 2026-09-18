@@ -203,7 +203,7 @@ select cron.schedule(
 | 仓库 | `https://github.com/lidengrong3-prog/mercator`（public，默认分支 `main`） |
 | Actions「Mercator Data Update」 | **正常运行**，每 4h，最近 `2026-08-10T05:11Z` success |
 | Supabase secret | **已配置生效**（`market_data.updated_at` 与 Action 运行时刻吻合） |
-| GitHub Pages | **已启用在线**：`https://lidengrong3-prog.github.io/mercator/`，每次 push 到 main 自动重新部署 |
+| GitHub Pages | **已启用在线**：`https://jayguanhai.com/`，每次 push 到 main 自动重新部署 |
 
 > 早期文档中「Actions 未运行」的判断已作废，以本表为准。
 

@@ -38,7 +38,7 @@ Pages 数据验收必须确认 10 个白名单 JSON 均可读取，且 `_cfd_par
 - 通知 Secrets：`NOTIFICATION_CONFIG_ENCRYPTION_KEY`、`NOTIFICATION_FROM_EMAIL`。通知发件地址必须与 `WORKSPACE_INVITE_FROM_EMAIL` 独立。
 - 通知 Variables：`NOTIFICATION_CHANNELS_ENABLED`、`NOTIFICATION_LIVE_ACCEPTANCE_MODE`、`NOTIFICATION_ACCEPTANCE_WORKSPACE_ID`、`NOTIFICATION_ACCEPTANCE_RUN_ID` 和 `NOTIFICATION_ALERT_MAX_AGE_DAYS`（默认 `7`，允许 `1-30`）。完成 15 项真实渠道验收前 `NOTIFICATION_CHANNELS_ENABLED` 必须保持 `false`。
 - 双账号验收：`PROD_TEST_USER_A_EMAIL`、`PROD_TEST_USER_A_PASSWORD`、`PROD_TEST_USER_B_EMAIL`、`PROD_TEST_USER_B_PASSWORD`。
-- Variable：`PRODUCTION_SITE_URL`，例如 `https://lidengrong3-prog.github.io/mercator/`。
+- Variable：`PRODUCTION_SITE_URL`，设置为 `https://jayguanhai.com/`。
 
 Stripe 后台的 webhook URL 必须配置为 `https://<project-ref>.supabase.co/functions/v1/billing-webhook`，并订阅 `checkout.session.completed`、`checkout.session.async_payment_succeeded`、`checkout.session.async_payment_failed`、`customer.subscription.created`、`customer.subscription.updated`、`customer.subscription.deleted`、`invoice.paid`、`invoice.payment_failed`、`invoice.payment_action_required`、`invoice.marked_uncollectible`、`charge.refunded` 和 `refund.updated`。只有签名验证成功的 live-mode 事件可以更新会员；重复事件按 Stripe event ID 去重，失败事件和超过 5 分钟未完成的处理事件可以安全重试，旧事件不得覆盖较新的订阅状态。生产环境不得设置 `STRIPE_ALLOW_TEST_EVENTS=true`。完整的 live 验收、开启顺序和回滚流程见 [STRIPE_LIVE_BILLING.md](STRIPE_LIVE_BILLING.md)。
 
