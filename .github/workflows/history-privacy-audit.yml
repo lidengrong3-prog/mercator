@@ -1,0 +1,42 @@
+name: History privacy audit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: history-privacy-audit
+  cancel-in-progress: false
+
+jobs:
+  scan-branches-and-tags:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch every branch and tag
+        run: |
+          git fetch --force --prune origin \
+            '+refs/heads/*:refs/remotes/origin/*' \
+            '+refs/tags/*:refs/tags/*'
+
+      - name: Require clean reachable history
+        run: |
+          python scripts/history_privacy_scan.py \
+            --root . \
+            --output history-privacy-report.json \
+            --require-clean
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: history-privacy-report
+          path: history-privacy-report.json
+          if-no-files-found: warn
+          retention-days: 14

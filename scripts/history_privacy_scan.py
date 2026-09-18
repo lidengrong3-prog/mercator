@@ -188,11 +188,35 @@ def scan_history(root):
     }
 
 
+def cleanliness_failures(result):
+    """Return non-sensitive reasons a historical scan is not release-clean."""
+    failures = []
+    if not result.get("repository_complete"):
+        failures.append("repository is shallow or partial")
+    scan_errors = result.get("scan_errors") or []
+    if scan_errors:
+        failures.append(f"scan errors: {len(scan_errors)}")
+    if not result.get("secret_scan_complete"):
+        failures.append("secret scan is incomplete")
+    restricted_paths = result.get("restricted_paths") or []
+    if restricted_paths:
+        failures.append(f"restricted paths: {len(restricted_paths)}")
+    secret_findings = result.get("secret_findings") or []
+    if secret_findings:
+        failures.append(f"high-confidence secret findings: {len(secret_findings)}")
+    return failures
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--fail-on-secrets", action="store_true")
+    parser.add_argument(
+        "--require-clean",
+        action="store_true",
+        help="fail unless the repository is complete and all findings are zero",
+    )
     args = parser.parse_args()
     result = scan_history(args.root)
     with open(args.output, "w", encoding="utf-8") as handle:
@@ -210,6 +234,10 @@ def main():
         "secret_scan_complete": result["secret_scan_complete"],
         "scan_error_count": len(result["scan_errors"]),
     }, ensure_ascii=False))
+    failures = cleanliness_failures(result)
+    if args.require_clean and failures:
+        print("history privacy requirements failed: " + "; ".join(failures), file=sys.stderr)
+        return 1
     if args.fail_on_secrets and result["secret_findings"]:
         return 1
     return 0

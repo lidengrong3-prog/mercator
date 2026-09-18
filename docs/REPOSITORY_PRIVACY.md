@@ -34,11 +34,20 @@ Actions 只上传质量报告、健康检查和无内容诊断摘要。加密备
 python scripts/history_privacy_scan.py --root . --output history-privacy-report.json
 ```
 
+发布或清理验收必须使用严格模式。它会在仓库不完整、blob 漏扫、pickaxe 扫描未完成、存在受限历史路径、密钥或扫描错误时失败：
+
+```bash
+python scripts/history_privacy_scan.py \
+  --root . \
+  --output history-privacy-report.json \
+  --require-clean
+```
+
 扫描器会枚举所有分支和标签可达的 blob，使用批量对象读取执行高置信度密钥正则扫描，并用禁用 PDF textconv 的 pickaxe 扫描交叉检查。只有仓库既不是 shallow clone、也不是 partial clone，全部可达 blob 均已读取且没有扫描错误时，`secret_scan_complete` 才会为 `true`。
 
 2026-09-15 使用全量 bare mirror 完成的扫描结果：471 个历史路径、2,746 个可达 blob 全部读取；发现 99 个受限历史路径，其中包括 68 个同步日志、14 个原始/隔离/运行/基线文件、8 个美国品类数据文件和 9 个旧 PDF。8 类高置信度密钥模式未命中，扫描错误为 0。当前公共 `main` 已不再跟踪这些文件，但旧提交中的对象仍可通过提交哈希读取。
 
-历史改写会更改所有相关提交哈希，并要求所有协作者重新克隆，因此不自动执行 `git filter-repo` 或强推。如负责人授权清理历史：
+历史改写会更改所有相关提交哈希，并要求所有协作者重新克隆。2026-09-18 的授权清理记录、99 条路径分类、备份校验、分支哈希和 GitHub Pull Request 引用残留见 `docs/HISTORY_CLEANUP_2026-09-18.md` 与 `docs/history_cleanup_inventory_2026-09-18.json`。如负责人再次授权清理历史：
 
 1. 立即在对应供应商/Supabase/GitHub 中撤销并轮换密钥。
 2. 由负责人书面授权后，使用 `git filter-repo` 清理所有分支和标签，并强制推送新的历史。

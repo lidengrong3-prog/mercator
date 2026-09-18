@@ -1,0 +1,536 @@
+{
+  "schema_version": 1,
+  "authorized_date": "2026-09-18",
+  "path_count": 99,
+  "classification_counts": {
+    "sync_logs": 68,
+    "raw_intermediate_operational_data": 10,
+    "baseline_quarantine_data": 4,
+    "private_us_category_data": 8,
+    "legacy_pdfs": 9
+  },
+  "categories": [
+    {
+      "id": "sync_logs",
+      "count": 68,
+      "impact": "Operational sync logs may contain source diagnostics and must remain private."
+    },
+    {
+      "id": "raw_intermediate_operational_data",
+      "count": 10,
+      "impact": "Raw, intermediate, detailed, or run-level datasets are not approved public projections."
+    },
+    {
+      "id": "baseline_quarantine_data",
+      "count": 4,
+      "impact": "Baseline and quarantine records may contain unverified or superseded facts."
+    },
+    {
+      "id": "private_us_category_data",
+      "count": 8,
+      "impact": "Full US category datasets are service-private; only approved public projections may be committed."
+    },
+    {
+      "id": "legacy_pdfs",
+      "count": 9,
+      "impact": "Legacy generated reports are binary exports outside the public repository allowlist."
+    }
+  ],
+  "paths": [
+    {
+      "path": "data/_cfd_part1.json",
+      "category": "raw_intermediate_operational_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/_ext_part1.json",
+      "category": "raw_intermediate_operational_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/_new_cfd_js.txt",
+      "category": "raw_intermediate_operational_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/_new_ext_js.txt",
+      "category": "raw_intermediate_operational_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260819_092403.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260819_094458.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260819_131338.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260819_165039.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260819_204853.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260820_015729.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260820_045630.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260820_090228.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260820_131525.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260820_165451.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260820_204933.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260821_020511.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260821_045852.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260821_090256.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260821_131421.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260821_165619.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260821_204424.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260822_015316.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260822_045304.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260822_085123.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260822_130522.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260822_164456.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260822_204242.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260823_020325.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260823_045704.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260823_085240.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260823_130648.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260823_164802.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260823_204222.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260824_020334.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260824_050556.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260824_090902.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260824_131826.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260824_170208.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260824_205151.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260825_015540.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260825_045754.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260825_091341.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260825_131610.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260825_170203.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260825_204911.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260826_020740.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260826_050221.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260827_015821.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260827_095214.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260827_221839.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260828_112846.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260828_222323.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260830_052805.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260830_135208.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260830_192137.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260830_224644.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260831_053802.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260831_161330.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260831_213131.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260910_104412.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260910_104930.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260911_042034.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260911_044146.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260911_125043.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260911_223635.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260912_043540.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260913_044914.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260913_131925.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260913_184808.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260913_222530.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260914_045758.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/_sync_logs/sync_20260914_201935.json",
+      "category": "sync_logs",
+      "reason": "restricted directory"
+    },
+    {
+      "path": "data/alerts_detailed.json",
+      "category": "raw_intermediate_operational_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/collection_run.json",
+      "category": "raw_intermediate_operational_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/countries_new.json",
+      "category": "raw_intermediate_operational_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/macro_raw.json",
+      "category": "raw_intermediate_operational_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/policies_baseline.json",
+      "category": "baseline_quarantine_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/quarantine_future_records.json",
+      "category": "baseline_quarantine_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/quarantine_unverified_baseline.json",
+      "category": "baseline_quarantine_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/rules_baseline.json",
+      "category": "baseline_quarantine_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/us_market/apparel.json",
+      "category": "private_us_category_data",
+      "reason": "private US category dataset"
+    },
+    {
+      "path": "data/us_market/auto.json",
+      "category": "private_us_category_data",
+      "reason": "private US category dataset"
+    },
+    {
+      "path": "data/us_market/beauty.json",
+      "category": "private_us_category_data",
+      "reason": "private US category dataset"
+    },
+    {
+      "path": "data/us_market/cpsc_recalls.json",
+      "category": "raw_intermediate_operational_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/us_market/electronics.json",
+      "category": "private_us_category_data",
+      "reason": "private US category dataset"
+    },
+    {
+      "path": "data/us_market/home.json",
+      "category": "private_us_category_data",
+      "reason": "private US category dataset"
+    },
+    {
+      "path": "data/us_market/index.json",
+      "category": "raw_intermediate_operational_data",
+      "reason": "restricted data path"
+    },
+    {
+      "path": "data/us_market/sports.json",
+      "category": "private_us_category_data",
+      "reason": "private US category dataset"
+    },
+    {
+      "path": "data/us_market/supplements.json",
+      "category": "private_us_category_data",
+      "reason": "private US category dataset"
+    },
+    {
+      "path": "data/us_market/toys.json",
+      "category": "private_us_category_data",
+      "reason": "private US category dataset"
+    },
+    {
+      "path": "reports/us_jewelry_market_report.pdf",
+      "category": "legacy_pdfs",
+      "reason": "legacy generated PDF"
+    },
+    {
+      "path": "reports/us_market/apparel_report.pdf",
+      "category": "legacy_pdfs",
+      "reason": "legacy generated PDF"
+    },
+    {
+      "path": "reports/us_market/auto_report.pdf",
+      "category": "legacy_pdfs",
+      "reason": "legacy generated PDF"
+    },
+    {
+      "path": "reports/us_market/beauty_report.pdf",
+      "category": "legacy_pdfs",
+      "reason": "legacy generated PDF"
+    },
+    {
+      "path": "reports/us_market/electronics_report.pdf",
+      "category": "legacy_pdfs",
+      "reason": "legacy generated PDF"
+    },
+    {
+      "path": "reports/us_market/home_report.pdf",
+      "category": "legacy_pdfs",
+      "reason": "legacy generated PDF"
+    },
+    {
+      "path": "reports/us_market/sports_report.pdf",
+      "category": "legacy_pdfs",
+      "reason": "legacy generated PDF"
+    },
+    {
+      "path": "reports/us_market/supplements_report.pdf",
+      "category": "legacy_pdfs",
+      "reason": "legacy generated PDF"
+    },
+    {
+      "path": "reports/us_market/toys_report.pdf",
+      "category": "legacy_pdfs",
+      "reason": "legacy generated PDF"
+    }
+  ]
+}

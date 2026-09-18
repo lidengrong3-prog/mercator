@@ -140,6 +140,23 @@ class DataPrivacyTests(unittest.TestCase):
         self.assertEqual(result["reachable_blob_count"], result["scanned_blob_count"])
         self.assertTrue(any(item["path"] == "data/_sync_logs/run.json" for item in result["restricted_paths"]))
         self.assertTrue(any(item["path"] == "reports/legacy.pdf" for item in result["restricted_paths"]))
+        self.assertIn("restricted paths: 2", history_privacy_scan.cleanliness_failures(result))
+
+    def test_history_cleanliness_requires_complete_zero_finding_scan(self):
+        clean = {
+            "repository_complete": True,
+            "secret_scan_complete": True,
+            "scan_errors": [],
+            "restricted_paths": [],
+            "secret_findings": [],
+        }
+        self.assertEqual(history_privacy_scan.cleanliness_failures(clean), [])
+
+        incomplete = dict(clean, repository_complete=False, secret_scan_complete=False)
+        self.assertEqual(
+            history_privacy_scan.cleanliness_failures(incomplete),
+            ["repository is shallow or partial", "secret scan is incomplete"],
+        )
 
 
 if __name__ == "__main__":
