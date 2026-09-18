@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-18T12:46:29.907218+08:00",
+  "updated_at": "2026-09-18T21:01:21.922068+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -640,7 +640,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Creating a listing Creating a listing is the first step in getting your item in front of buyers. We have a range of tools and options to help make sure your listing ends in a sale. 3 min article",
-      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Getting started Item description Item condition Item specifics Our listing tools Completing your listing Creating a listing is the first step in getting your item in front of buyers. We have a range of tools and options to help make sure your listing ends in a sale. From A...",
+      "summary": "",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -655,23 +655,22 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-09-18T03:46:05.910610+08:00",
-      "collected_at": "2026-09-18T03:46:05.910610+08:00",
+      "verified_at": "2026-09-18T21:01:21.922068+08:00",
+      "collected_at": "2026-09-18T21:01:21.922068+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "2",
+      "rule_version": "3",
       "effective_from": "2026-09-18",
       "changed_fields": [
-        "published_at",
-        "effective_from"
+        "summary"
       ],
-      "change_summary": "规则字段变化：published_at、effective_from",
+      "change_summary": "规则字段变化：summary",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-09-18T03:46:05.910610+08:00",
+      "retrieved_at": "2026-09-18T21:01:21.922068+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "6084106e975fc8b37a77f85a7ea68a86ccd655a6cf5bfa639d6a9e8a5d5d9704",
       "version_history": [
@@ -693,9 +692,31 @@
           "verified_at": "2026-09-17T22:11:14.889161+08:00",
           "changed_fields": [],
           "change_summary": "首次采集版本"
+        },
+        {
+          "id": "r20260918-fa2d6fd6",
+          "rule_key": "ebay:4105",
+          "rule_version": "2",
+          "title": "Creating a listing Creating a listing is the first step in getting your item in front of buyers. We have a range of tools and options to help make sure your listing ends in a sale. 3 min article",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Getting started Item description Item condition Item specifics Our listing tools Completing your listing Creating a listing is the first step in getting your item in front of buyers. We have a range of tools and options to help make sure your listing ends in a sale. From A...",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/listings/creating-listing?id=4105",
+          "published_at": "2026-09-18",
+          "effective_from": "2026-09-18",
+          "source_record_id": "ebay:4105",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "6084106e975fc8b37a77f85a7ea68a86ccd655a6cf5bfa639d6a9e8a5d5d9704",
+          "collected_at": "2026-09-18T03:46:05.910610+08:00",
+          "verified_at": "2026-09-18T03:46:05.910610+08:00",
+          "changed_fields": [
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：published_at、effective_from"
         }
       ],
-      "previous_version": "1",
+      "previous_version": "2",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -983,7 +1004,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-09-18T12:46:29.907218+08:00",
+  "last_checked_at": "2026-09-18T21:01:21.922068+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -1278,7 +1299,7 @@
           "last_verified_at": "2026-09-18T03:46:05.910610+08:00"
         }
       },
-      "last_verified_at": "2026-09-18T03:46:05.910610+08:00",
+      "last_verified_at": "2026-09-18T21:01:21.922068+08:00",
       "reason": "缺少主题：佣金、保证金、履约、禁售"
     }
   },
@@ -1570,7 +1591,7 @@
           "last_verified_at": "2026-09-18T03:46:05.910610+08:00"
         }
       },
-      "last_verified_at": "2026-09-18T03:46:05.910610+08:00",
+      "last_verified_at": "2026-09-18T21:01:21.922068+08:00",
       "reason": "缺少主题：佣金、保证金、履约、禁售"
     }
   }

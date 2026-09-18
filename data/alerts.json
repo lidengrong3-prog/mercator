@@ -590,8 +590,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "567caed03d49bca089c357ca29ce5a30b96ffa4a0740d1d8c08c7afd4a412d2c",
-      "dataset_snapshot_at": "2026-09-18T04:47:31.367378+00:00",
+      "dataset_snapshot_id": "52642e78c7756f5e09c585165fd87f01af9ea96e61115e54738f5200809a4516",
+      "dataset_snapshot_at": "2026-09-18T13:02:30.920636+00:00",
       "dataset_record_count": 161,
       "window_start": "2026-06-20",
       "window_end": "2026-09-18",
@@ -601,7 +601,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "14ac6cca0f0a7b3ce5d0ae489d6488c9a8e4a5e813f52047cc16b9e107620668"
+      "evidence_hash": "f56b3048afd103cef5455764c8284778794b94ba1109a39bcb1aaf2c3385fbe5"
     }
   ],
   [
@@ -673,8 +673,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "567caed03d49bca089c357ca29ce5a30b96ffa4a0740d1d8c08c7afd4a412d2c",
-      "dataset_snapshot_at": "2026-09-18T04:47:31.367378+00:00",
+      "dataset_snapshot_id": "52642e78c7756f5e09c585165fd87f01af9ea96e61115e54738f5200809a4516",
+      "dataset_snapshot_at": "2026-09-18T13:02:30.920636+00:00",
       "dataset_record_count": 161,
       "window_start": "2026-06-20",
       "window_end": "2026-09-18",
@@ -684,7 +684,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "1a2388fcf727f96cbd51be3059ca18c53e58dfdd4a49d1fe751070c78022f595"
+      "evidence_hash": "e1deac261393d4518fb7f7c36266f60c3d1afb251a9c7c9d92dafa2c9168459c"
     }
   ],
   [
@@ -846,8 +846,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "567caed03d49bca089c357ca29ce5a30b96ffa4a0740d1d8c08c7afd4a412d2c",
-      "dataset_snapshot_at": "2026-09-18T04:47:31.367378+00:00",
+      "dataset_snapshot_id": "52642e78c7756f5e09c585165fd87f01af9ea96e61115e54738f5200809a4516",
+      "dataset_snapshot_at": "2026-09-18T13:02:30.920636+00:00",
       "dataset_record_count": 161,
       "window_start": "2026-06-20",
       "window_end": "2026-09-18",
@@ -857,7 +857,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "ab6531ef67a97def8dba5d25305a2df7610963a9b36673b568df76ac3413fe72"
+      "evidence_hash": "5e591ae5beae87561753f0af9738a3b4409fdd2207707a29d2206881855656dc"
     }
   ],
   [
@@ -3909,18 +3909,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "b2333eb72fab9afd4b09203e0b66d7451541945a50ba7a6c6ffa242f8ead5f9d",
-      "dataset_snapshot_at": "2026-09-17T22:11:14.889161+08:00",
-      "dataset_record_count": 298,
+      "dataset_snapshot_id": "b0d7a837e67ee1eadd3fd4f6921028d1a2a979e6cfe0304a7556493a4dffdd3b",
+      "dataset_snapshot_at": "2026-09-18T21:01:21.922068+08:00",
+      "dataset_record_count": 304,
       "window_start": "2026-08-19",
       "window_end": "2026-09-18",
-      "input_record_count": 298,
+      "input_record_count": 304,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "b236e29e39acd0a948334d06499348a50f631c8023d9bba44cddac9ae61ce6ff"
+      "evidence_hash": "88c3b4b9a13f6847643af741b3187779b6e4cb6689a545ff6c5b1a2fc780f7de"
     }
   ],
   [
