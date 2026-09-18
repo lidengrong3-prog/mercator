@@ -64,7 +64,7 @@
 4. 观察 **Collection Worker Health** 工作流的摘要，确认任务被 Worker 领取和完成。
 5. 小范围切换时在 production Environment 设置 `COLLECTION_WORKER_CUTOVER=true` 和 `COLLECTION_WORKER_PILOT_ONLY=true`，运行 `Collection Worker Pilot Cutover`；通过 24 小时运行证据后再关闭 `COLLECTION_WORKER_PILOT_ONLY`。
 6. 验证自动回退时暂停 Worker，等待心跳超过两分钟，运行 `Collection Worker Failover Drill`，确认 artifact 中 `mode=legacy`、`worker_ready=false`，再恢复 Worker。
-7. Worker 稳定运行至少 168 小时后运行 `Collection Worker Stability Gate`。通过前保留 `legacy-update-data`；通过后也只进入人工评估，不自动删除旧路径。
+7. Worker 稳定运行至少 168 小时后人工运行 `Collection Worker Stability Gate`。它查询 169 小时证据窗口并要求至少 168 小时连续覆盖；通过前保留 `legacy-update-data`，通过后也只进入人工评估，不自动删除旧路径。
 
 “每 4 小时运行”表示每 4 小时尝试检查，不等于数据一定刷新。美国品类文件中的 `last_attempted_at` 可随运行推进；只有完整成功才推进 `last_checked_at`，只有事实内容变化才推进 `content_updated_at`/`generated_at`。若使用缓存，检查 `collection_status` 与 `cached_sections`；`failed` 或 `skipped` 会阻断发布，`degraded` 会进入质量告警。
 

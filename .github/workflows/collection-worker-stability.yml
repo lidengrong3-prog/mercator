@@ -2,8 +2,6 @@ name: Collection Worker Stability Gate
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '25 2 * * *'
 
 permissions:
   contents: read
@@ -39,7 +37,7 @@ jobs:
           echo "::add-mask::$service_key"
           echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
       - name: Verify seven-day Worker evidence before legacy removal
-        run: python scripts/collection_worker_stability.py --window-hours 168 --output collection-worker-stability.json
+        run: python scripts/collection_worker_stability.py --window-hours 169 --required-hours 168 --output collection-worker-stability.json
       - name: Publish stability evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@v4

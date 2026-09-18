@@ -71,11 +71,12 @@ test('Worker outage failover is an executable, fail-closed drill', () => {
 });
 
 test('legacy collector cannot be retired before the seven-day stability gate', () => {
-  assert.match(stabilityScript, /DEFAULT_WINDOW_HOURS = 24 \* 7/);
+  assert.match(stabilityScript, /DEFAULT_REQUIRED_HOURS = 24 \* 7/);
+  assert.match(stabilityScript, /DEFAULT_WINDOW_HOURS = DEFAULT_REQUIRED_HOURS \+ 1/);
   assert.match(stabilityScript, /duplicate_request_count/);
   assert.match(stabilityScript, /no_dead_letter/);
-  assert.match(stabilityScript, /--window-hours must cover at least seven days/);
-  assert.match(stabilityWorkflow, /--window-hours 168/);
+  assert.match(stabilityScript, /--required-hours must cover at least seven days/);
+  assert.match(stabilityWorkflow, /--window-hours 169 --required-hours 168/);
   assert.match(stabilityWorkflow, /before legacy removal/);
   assert.match(stabilityWorkflow, /retention-days: 90/);
   assert.match(dataWorkflow, /legacy-update-data:/);

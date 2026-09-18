@@ -117,4 +117,4 @@ python scripts/collection_worker.py --runtime-evidence --window-hours 24
 
 验证第 16 项时，先在 Render 暂停 `mercator-collection-worker`，等待数据库实例心跳超过两分钟，再手动运行 `Collection Worker Failover Drill`。该 workflow 只读健康状态，要求路由结果为 `legacy` 且 `worker_ready=false`，并上传 `collection-routing-decision.json`。完成后恢复 Worker，确认新的心跳恢复，再运行一次正常调度。
 
-第 17 项的旧采集路径由 `.github/workflows/data-update.yml` 中的 `legacy-update-data` job 保留。`Collection Worker Stability Gate` 要求至少 168 小时连续心跳证据、单一启动会话、心跳最大间隔不超过 300 秒、无重复 request/attempt、无 dead-letter 且当前 Worker 健康；在该 gate 通过并由负责人审阅 artifact 前，不得删除或禁用 `legacy-update-data`。即使 gate 通过，也只代表可以评估移除，不会自动删除旧路径。
+第 17 项的旧采集路径由 `.github/workflows/data-update.yml` 中的 `legacy-update-data` job 保留。满一周后人工运行 `Collection Worker Stability Gate`；它查询 169 小时窗口以覆盖首尾心跳边界，并要求至少 168 小时连续证据、单一启动会话、心跳最大间隔不超过 300 秒、无重复 request/attempt、无 dead-letter 且当前 Worker 健康。在该 gate 通过并由负责人审阅 artifact 前，不得删除或禁用 `legacy-update-data`。即使 gate 通过，也只代表可以评估移除，不会自动删除旧路径。
