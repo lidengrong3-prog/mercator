@@ -54,8 +54,8 @@
         "https://fred.stlouisfed.org/series/RSAFS"
       ],
       [
-        "10Y国债收益率(2026-09-15)",
-        "5 %",
+        "10Y国债收益率(2026-09-16)",
+        "5.01 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/DGS10"
       ],
@@ -66,8 +66,8 @@
         "https://fred.stlouisfed.org/series/HOUST"
       ],
       [
-        "30Y抵押贷款利率(2026-09-10)",
-        "6.76 %",
+        "30Y抵押贷款利率(2026-09-17)",
+        "6.95 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/MORTGAGE30US"
       ],
@@ -349,6 +349,6 @@
         ]
       ]
     },
-    "macro_updated": "2026-09-17 14:32 UTC"
+    "macro_updated": "2026-09-17 22:54 UTC"
   }
 }

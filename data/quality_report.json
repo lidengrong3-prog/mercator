@@ -58,14 +58,14 @@
     "manifest": "data/market_scope.json"
   },
   "provenance_schema": "data/provenance_schema.json",
-  "generated_at": "2026-09-17T14:32:44.177637+00:00",
+  "generated_at": "2026-09-17T22:54:00.859809+00:00",
   "status": "degraded",
   "publishable": true,
   "collection_run": {
     "quality_status": "degraded",
     "ledger_schema_version": 2,
     "ledger_status": "degraded",
-    "completed_at": "2026-09-17T14:32:43.811164+00:00",
+    "completed_at": "2026-09-17T22:54:00.223255+00:00",
     "scope": {
       "market_codes": [
         "US"
@@ -97,9 +97,9 @@
   },
   "summary": {
     "datasets": 11,
-    "raw_records": 747,
-    "scoped_records": 562,
-    "formal_records": 540,
+    "raw_records": 759,
+    "scoped_records": 574,
+    "formal_records": 552,
     "demo_records": 0,
     "unverified_records": 93,
     "missing_source_records": 52,
@@ -138,7 +138,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-17T14:32:43.811164+00:00",
+      "updated_at": "2026-09-17T22:54:00.223255+00:00",
       "freshness_hours": 0.0,
       "connected": true,
       "errors": [],
@@ -149,7 +149,7 @@
       "metrics": {
         "ledger_schema_version": 2,
         "ledger_status": "degraded",
-        "ledger_completed_at": "2026-09-17T14:32:43.811164+00:00",
+        "ledger_completed_at": "2026-09-17T22:54:00.223255+00:00",
         "ledger_scope": {
           "market_codes": [
             "US"
@@ -216,8 +216,8 @@
           "degraded": 5,
           "failed": 1,
           "core_failures": [],
-          "records_collected": 453,
-          "records_in_scope": 444
+          "records_collected": 454,
+          "records_in_scope": 451
         }
       }
     },
@@ -239,7 +239,7 @@
         "unverified": 41,
         "out_of_scope": 38
       },
-      "updated_at": "2026-09-17T14:31:10.526249+00:00",
+      "updated_at": "2026-09-17T22:53:16.911919+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -249,7 +249,7 @@
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-17T22:31:10.526249+08:00",
+        "content_updated_at": "2026-09-18T06:53:16.911919+08:00",
         "formal_records": 257,
         "demo_records": 0,
         "unverified_records": 41,
@@ -316,13 +316,13 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-17T08:08:18.530274+00:00",
-      "freshness_hours": 6.4,
+      "freshness_hours": 14.8,
       "connected": true,
       "errors": [],
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-17T14:32:18.524654+00:00",
+        "content_updated_at": "2026-09-17T22:53:46.811840+00:00",
         "formal_records": 5,
         "demo_records": 0,
         "unverified_records": 0,
@@ -385,13 +385,13 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-17T08:15:08.346719+00:00",
-      "freshness_hours": 6.3,
+      "freshness_hours": 14.6,
       "connected": true,
       "errors": [],
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-17T14:32:18.912434+00:00",
+        "content_updated_at": "2026-09-17T22:53:47.292502+00:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 0,
@@ -459,7 +459,7 @@
         "out_of_scope_platform": 45,
         "missing_provenance_fields": 52
       },
-      "updated_at": "2026-09-17T14:31:10.526249+00:00",
+      "updated_at": "2026-09-17T22:53:16.911919+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -472,7 +472,7 @@
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-17T22:31:10.526249+08:00",
+        "content_updated_at": "2026-09-18T06:53:16.911919+08:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 52,
@@ -531,22 +531,22 @@
       "label": "风险预警",
       "status": "healthy",
       "path": "data/alerts.json",
-      "records": 15,
-      "raw_records": 15,
-      "scoped_records": 15,
-      "formal_records": 15,
+      "records": 18,
+      "raw_records": 18,
+      "scoped_records": 18,
+      "formal_records": 18,
       "demo_records": 0,
       "unverified_records": 0,
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-17T14:32:43.860363+00:00",
+      "updated_at": "2026-09-17T22:54:00.300039+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
       "warnings": [],
       "metrics": {
-        "formal_records": 15,
+        "formal_records": 18,
         "demo_records": 0,
         "unverified_records": 0,
         "missing_source_records": 0,
@@ -557,11 +557,11 @@
           "official": 0,
           "traceable": 0,
           "uploaded": 0,
-          "derived": 15,
+          "derived": 18,
           "demo": 0
         },
         "verification_status_counts": {
-          "verified": 15,
+          "verified": 18,
           "uploaded": 0,
           "pending": 0,
           "rejected": 0
@@ -574,12 +574,12 @@
           "industry_association": 0,
           "licensed_provider": 0,
           "user_upload": 0,
-          "derived": 15,
+          "derived": 18,
           "demo": 0,
           "unknown": 0
         },
         "official_or_traceable_records": 0,
-        "provenance_complete_records": 15,
+        "provenance_complete_records": 18,
         "malformed_records": 0,
         "missing_ids": 0,
         "missing_titles": 0,
@@ -604,7 +604,7 @@
       "missing_source_records": 0,
       "excluded_records": 38,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-17T14:32:43.810315+00:00",
+      "updated_at": "2026-09-17T22:54:00.222259+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -656,7 +656,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-17T14:32:19.038396+00:00",
+      "updated_at": "2026-09-17T22:53:47.488667+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -709,7 +709,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-17T14:32:43.810315+00:00",
+      "updated_at": "2026-09-17T22:54:00.222259+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -761,22 +761,22 @@
       "label": "CPSC 产品召回",
       "status": "healthy",
       "path": "data/us_market/cpsc_recalls.json",
-      "records": 199,
-      "raw_records": 199,
-      "scoped_records": 199,
-      "formal_records": 199,
+      "records": 208,
+      "raw_records": 208,
+      "scoped_records": 208,
+      "formal_records": 208,
       "demo_records": 0,
       "unverified_records": 0,
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-17T14:32:24.092314+00:00",
+      "updated_at": "2026-09-17T22:53:51.777922+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
       "warnings": [],
       "metrics": {
-        "formal_records": 199,
+        "formal_records": 208,
         "demo_records": 0,
         "unverified_records": 0,
         "missing_source_records": 0,
@@ -784,14 +784,14 @@
         "exclusion_reasons": {},
         "legacy_inferred_records": 0,
         "source_kind_counts": {
-          "official": 199,
+          "official": 208,
           "traceable": 0,
           "uploaded": 0,
           "derived": 0,
           "demo": 0
         },
         "verification_status_counts": {
-          "verified": 199,
+          "verified": 208,
           "uploaded": 0,
           "pending": 0,
           "rejected": 0
@@ -800,7 +800,7 @@
           "government": 0,
           "regulator": 0,
           "platform": 0,
-          "official_feed": 199,
+          "official_feed": 208,
           "industry_association": 0,
           "licensed_provider": 0,
           "user_upload": 0,
@@ -808,15 +808,15 @@
           "demo": 0,
           "unknown": 0
         },
-        "official_or_traceable_records": 199,
-        "provenance_complete_records": 199,
+        "official_or_traceable_records": 208,
+        "provenance_complete_records": 208,
         "malformed_records": 0,
         "duplicate_ids": 0,
         "missing_titles": 0,
         "missing_sources": 0,
         "missing_or_invalid_urls": 0,
         "future_dated_records": 0,
-        "china_related_records": 155
+        "china_related_records": 161
       }
     }
   }
