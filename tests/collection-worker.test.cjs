@@ -10,6 +10,10 @@ const publish = fs.readFileSync(path.join(root, 'scripts', 'publish_collection.p
 const migration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20260920000000_collection_worker.sql'), 'utf8');
 const dataWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'data-update.yml'), 'utf8');
 const healthWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'collection-health.yml'), 'utf8');
+const routeScript = fs.readFileSync(path.join(root, 'scripts', 'route_collection_schedule.py'), 'utf8');
+const stabilityScript = fs.readFileSync(path.join(root, 'scripts', 'collection_worker_stability.py'), 'utf8');
+const failoverWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'collection-worker-failover-drill.yml'), 'utf8');
+const stabilityWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'collection-worker-stability.yml'), 'utf8');
 const dockerfile = fs.readFileSync(path.join(root, 'Dockerfile.worker'), 'utf8');
 const entrypoint = fs.readFileSync(path.join(root, 'deploy', 'worker-entrypoint.sh'), 'utf8');
 const runtimeMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20261002000000_collection_worker_runtime.sql'), 'utf8');
@@ -37,9 +41,11 @@ test('scheduled cutover preserves the legacy collector until a Worker is healthy
   assert.match(dataWorkflow, /enqueue_collection_tasks\.py/);
   assert.match(dataWorkflow, /COLLECTION_WORKER_CUTOVER/);
   assert.match(dataWorkflow, /COLLECTION_WORKER_PILOT_ONLY/);
-  assert.match(dataWorkflow, /pilot_only and scheduled/);
+  assert.match(routeScript, /pilot_only and scheduled/);
   assert.match(dataWorkflow, /active_workers/);
   assert.match(dataWorkflow, /legacy-update-data:/);
+  assert.match(dataWorkflow, /route_collection_schedule\.py/);
+  assert.match(dataWorkflow, /seven-day stability gate/);
   assert.match(dataWorkflow, /if: \$\{\{ needs\.route\.outputs\.mode == 'worker' \}\}/);
   assert.match(dataWorkflow, /if: \$\{\{ needs\.route\.outputs\.mode == 'legacy' \}\}/);
   assert.match(dataWorkflow, /bootstrap_worker_data\.py --required/);
@@ -52,6 +58,27 @@ test('scheduled cutover preserves the legacy collector until a Worker is healthy
   assert.match(publish, /REGULATORY_TRANSLATION_PROVIDER/);
   assert.match(publish, /\("--provider", "argos"\)/);
   assert.match(publish, /generate_alerts\.py/);
+});
+
+test('Worker outage failover is an executable, fail-closed drill', () => {
+  assert.match(routeScript, /health_read_failed/);
+  assert.match(routeScript, /worker_unavailable/);
+  assert.match(routeScript, /mode = "legacy"/);
+  assert.match(failoverWorkflow, /Collection Worker Failover Drill/);
+  assert.match(failoverWorkflow, /Read Worker health after the operator stops heartbeats/);
+  assert.match(failoverWorkflow, /collection-routing-decision\.json.*\["mode"\].*legacy/s);
+  assert.match(failoverWorkflow, /collection-routing-decision\.json/);
+});
+
+test('legacy collector cannot be retired before the seven-day stability gate', () => {
+  assert.match(stabilityScript, /DEFAULT_WINDOW_HOURS = 24 \* 7/);
+  assert.match(stabilityScript, /duplicate_request_count/);
+  assert.match(stabilityScript, /no_dead_letter/);
+  assert.match(stabilityScript, /--window-hours must cover at least seven days/);
+  assert.match(stabilityWorkflow, /--window-hours 168/);
+  assert.match(stabilityWorkflow, /before legacy removal/);
+  assert.match(stabilityWorkflow, /retention-days: 90/);
+  assert.match(dataWorkflow, /legacy-update-data:/);
 });
 
 test('production Worker image restores private state and advertises runtime presence', () => {

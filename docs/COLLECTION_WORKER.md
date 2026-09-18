@@ -110,3 +110,11 @@ python scripts/collection_worker.py --runtime-evidence --window-hours 24
 4. 后续定时任务在心跳正常时只入队，不再在 Actions 中采集；如果 Worker 心跳超过两分钟，下一次定时任务会自动回退旧直采。
 
 因此不要删除 `legacy-update-data`，也不要在 Worker 心跳和完整批次证据出现前设置切换变量。生产 Worker 的 service key 只放托管平台 Secret；Actions 使用 Supabase CLI 临时解析的密钥，不写入产物或仓库。
+
+## 自动回退演练与旧路径保留
+
+调度路由由 `scripts/route_collection_schedule.py` 统一决定，并把健康快照和路由结果作为 workflow artifact 保存。路由是 fail-closed 的：健康查询失败、响应无法解析、`active_workers=0` 或 Worker 心跳过期时，结果只能是 `legacy`。下一次定时运行会执行 `legacy-update-data`，完成原有直采、质量校验、同步和公共投影更新；不会因为 Worker 暂时掉线而静默跳过数据更新。
+
+验证第 16 项时，先在 Render 暂停 `mercator-collection-worker`，等待数据库实例心跳超过两分钟，再手动运行 `Collection Worker Failover Drill`。该 workflow 只读健康状态，要求路由结果为 `legacy` 且 `worker_ready=false`，并上传 `collection-routing-decision.json`。完成后恢复 Worker，确认新的心跳恢复，再运行一次正常调度。
+
+第 17 项的旧采集路径由 `.github/workflows/data-update.yml` 中的 `legacy-update-data` job 保留。`Collection Worker Stability Gate` 要求至少 168 小时连续心跳证据、单一启动会话、心跳最大间隔不超过 300 秒、无重复 request/attempt、无 dead-letter 且当前 Worker 健康；在该 gate 通过并由负责人审阅 artifact 前，不得删除或禁用 `legacy-update-data`。即使 gate 通过，也只代表可以评估移除，不会自动删除旧路径。

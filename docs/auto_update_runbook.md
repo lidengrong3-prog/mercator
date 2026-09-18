@@ -14,7 +14,7 @@
 4. `collection-health.yml` 每 6 小时检查实例心跳、积压、租约、死信、熔断和预算，只上传摘要。
 5. 容器使用 `Dockerfile.worker`，把持久卷挂载到 `/app/data`。首次启动从私有 Storage 恢复完整状态并校验哈希，恢复失败时不会领取生产任务。
 
-`data-update.yml` 继续保留每 4 小时调度。默认执行旧直采；仅当 `COLLECTION_WORKER_CUTOVER=true`、`COLLECTION_WORKER_PILOT_ONLY=false` 且最近两分钟存在活跃 Worker 时改为入队。Pilot 阶段把 `COLLECTION_WORKER_PILOT_ONLY=true`，定时调度会继续走旧路径，只有 `Collection Worker Pilot Cutover` workflow 能手动验证单一来源。Worker 掉线后下一周期自动回退旧直采，避免新服务尚未可用就停止旧采集。
+`data-update.yml` 继续保留每 4 小时调度。`scripts/route_collection_schedule.py` 对健康响应采用 fail-closed 路由：仅当 `COLLECTION_WORKER_CUTOVER=true`、`COLLECTION_WORKER_PILOT_ONLY=false` 且最近两分钟存在活跃 Worker 时改为入队；健康查询失败或 `active_workers=0` 时下一周期自动回退 `legacy-update-data`。Pilot 阶段把 `COLLECTION_WORKER_PILOT_ONLY=true`，定时调度会继续走旧路径，只有 `Collection Worker Pilot Cutover` workflow 能手动验证单一来源。
 
 ---
 
@@ -51,7 +51,7 @@
 
 ## 方案 A：GitHub Actions（已停用高频采集）
 
-文件 `.github/workflows/data-update.yml` 现在只保留手动 `workflow_dispatch` 入队；高频执行请使用上面的独立 Worker。
+文件 `.github/workflows/data-update.yml` 在迁移期保留每 4 小时调度：健康 Worker 可用时入队，健康检查失败时执行 `legacy-update-data` 旧采集兜底；高频执行的主路径仍是上面的独立 Worker。
 
 ### 启用步骤
 1. 把本仓库推到 GitHub（见下方「推送命令」）。
@@ -63,6 +63,8 @@
 3. 需要紧急采集时，在 **Actions → Mercator Emergency Collection Enqueue → Run workflow** 选择采集器并提交；工作流只写入队列，不直接访问供应商 API。
 4. 观察 **Collection Worker Health** 工作流的摘要，确认任务被 Worker 领取和完成。
 5. 小范围切换时在 production Environment 设置 `COLLECTION_WORKER_CUTOVER=true` 和 `COLLECTION_WORKER_PILOT_ONLY=true`，运行 `Collection Worker Pilot Cutover`；通过 24 小时运行证据后再关闭 `COLLECTION_WORKER_PILOT_ONLY`。
+6. 验证自动回退时暂停 Worker，等待心跳超过两分钟，运行 `Collection Worker Failover Drill`，确认 artifact 中 `mode=legacy`、`worker_ready=false`，再恢复 Worker。
+7. Worker 稳定运行至少 168 小时后运行 `Collection Worker Stability Gate`。通过前保留 `legacy-update-data`；通过后也只进入人工评估，不自动删除旧路径。
 
 “每 4 小时运行”表示每 4 小时尝试检查，不等于数据一定刷新。美国品类文件中的 `last_attempted_at` 可随运行推进；只有完整成功才推进 `last_checked_at`，只有事实内容变化才推进 `content_updated_at`/`generated_at`。若使用缓存，检查 `collection_status` 与 `cached_sections`；`failed` 或 `skipped` 会阻断发布，`degraded` 会进入质量告警。
 

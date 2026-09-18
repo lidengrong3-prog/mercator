@@ -14,6 +14,8 @@ from collection_worker import (  # noqa: E402
     build_collector_command,
 )
 from enqueue_collection_tasks import enqueue  # noqa: E402
+from collection_worker_stability import evaluate_stability  # noqa: E402
+from route_collection_schedule import decide_route  # noqa: E402
 
 
 def task(**overrides):
@@ -330,6 +332,73 @@ class CollectionWorkerTests(unittest.TestCase):
         self.assertEqual(publish["depends_on_task_keys"], [
             "regulatory-1:collect_us_taxes", "regulatory-1:collect_us_access",
         ])
+
+    def test_scheduler_routes_to_legacy_when_worker_heartbeat_is_missing(self):
+        result = decide_route(
+            {"active_workers": 0, "queued": 2, "dead_letter": 0},
+            cutover=True,
+            pilot_only=False,
+            event_name="schedule",
+        )
+        self.assertEqual(result["mode"], "legacy")
+        self.assertFalse(result["worker_ready"])
+        self.assertEqual(result["reason"], "worker_unavailable")
+
+    def test_scheduler_health_errors_fail_closed_to_legacy(self):
+        result = decide_route(
+            {"active_workers": 1},
+            cutover=True,
+            pilot_only=False,
+            event_name="schedule",
+            health_error="health_read_failed:JSONDecodeError",
+        )
+        self.assertEqual(result["mode"], "legacy")
+        self.assertFalse(result["worker_ready"])
+
+    def test_pilot_only_keeps_scheduled_route_on_legacy(self):
+        result = decide_route(
+            {"active_workers": 1},
+            cutover=True,
+            pilot_only=True,
+            event_name="schedule",
+        )
+        self.assertEqual(result["mode"], "legacy")
+        self.assertEqual(result["reason"], "pilot_only_scheduled")
+
+    def test_seven_day_stability_gate_requires_all_operational_evidence(self):
+        evidence = {
+            "coverage_seconds": 604800,
+            "boot_count": 1,
+            "max_gap_seconds": 120,
+            "duplicate_request_count": 0,
+            "duplicate_attempt_count": 0,
+            "task_status_counts": {"succeeded": 4},
+        }
+        result = evaluate_stability(
+            evidence,
+            {"active_workers": 1, "dead_letter": 0},
+            window_hours=168,
+            max_gap_seconds=300,
+        )
+        self.assertEqual(result["status"], "passed")
+
+    def test_seven_day_stability_gate_blocks_dead_letters_and_gaps(self):
+        evidence = {
+            "coverage_seconds": 604800,
+            "boot_count": 2,
+            "max_gap_seconds": 301,
+            "duplicate_request_count": 0,
+            "duplicate_attempt_count": 1,
+            "task_status_counts": {"dead_letter": 1},
+        }
+        result = evaluate_stability(
+            evidence,
+            {"active_workers": 1, "dead_letter": 1},
+            window_hours=168,
+            max_gap_seconds=300,
+        )
+        self.assertEqual(result["status"], "blocked")
+        self.assertFalse(result["checks"]["no_dead_letter"])
 
 
 if __name__ == "__main__":

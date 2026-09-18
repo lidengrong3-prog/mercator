@@ -79,30 +79,12 @@ jobs:
           if ! python scripts/collection_worker.py --health-check > collection-worker-health.json; then
             printf '%s\n' '{"active_workers":0,"queued":null,"dead_letter":null,"health_error":true}' > collection-worker-health.json
           fi
-          python - <<'PY'
-          import json
-          import os
-
-          with open('collection-worker-health.json', encoding='utf-8') as handle:
-              health = json.load(handle)
-          ready = int(health.get('active_workers') or 0) > 0
-          cutover = os.environ.get('COLLECTION_WORKER_CUTOVER', '').strip().lower() == 'true'
-          pilot_only = os.environ.get('COLLECTION_WORKER_PILOT_ONLY', '').strip().lower() == 'true'
-          scheduled = os.environ.get('EVENT_NAME', '').strip().lower() == 'schedule'
-          mode = 'worker' if cutover and ready and not (pilot_only and scheduled) else 'legacy'
-          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
-              output.write(f"worker_ready={'true' if ready else 'false'}\n")
-              output.write(f"mode={mode}\n")
-          print(json.dumps({
-              'mode': mode,
-              'cutover_requested': cutover,
-              'pilot_only': pilot_only,
-              'scheduled': scheduled,
-              'active_workers': health.get('active_workers', 0),
-              'queued': health.get('queued', 0),
-              'dead_letter': health.get('dead_letter', 0),
-          }))
-          PY
+          python scripts/route_collection_schedule.py \
+            --health-file collection-worker-health.json \
+            --event-name "$EVENT_NAME" \
+            --cutover "$COLLECTION_WORKER_CUTOVER" \
+            --pilot-only "$COLLECTION_WORKER_PILOT_ONLY" \
+            --output collection-routing-decision.json
       - name: Publish routing health summary
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
@@ -110,6 +92,14 @@ jobs:
           name: collection-routing-health-${{ github.run_id }}
           path: collection-worker-health.json
           if-no-files-found: error
+          retention-days: 30
+      - name: Publish routing decision
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: collection-routing-decision-${{ github.run_id }}
+          path: collection-routing-decision.json
+          if-no-files-found: warn
           retention-days: 30
 
   enqueue:
@@ -157,10 +147,11 @@ jobs:
           if [ "$selected" != "all" ]; then args+=(--collector "$selected"); fi
           python scripts/enqueue_collection_tasks.py "${args[@]}"
 
-  # Fail-safe migration path: until cutover is explicitly enabled and a
-  # replacement Worker has a recent heartbeat, run the existing collector.
-  # If the Worker later disappears, the next scheduled run automatically uses
-  # this path again instead of silently leaving production data stale.
+  # Fail-safe migration path: keep this job while the Worker rollout is being
+  # evaluated. If the Worker later disappears, the next scheduled run routes
+  # here instead of silently leaving production data stale. Do not remove this
+  # job until the seven-day stability gate has passed and an owner has reviewed
+  # the evidence.
   legacy-update-data:
     needs: route
     if: ${{ needs.route.outputs.mode == 'legacy' }}
