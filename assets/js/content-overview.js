@@ -118,17 +118,17 @@ function ctRenderAI() {
     return;
   }
   var borderColor = ctActiveAI === 'risk' ? '#e53935' : ctActiveAI === 'trend' ? '#4a90d9' : 'var(--green)';
-  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px">';
+  var html = '<div data-ui-style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px">';
   list.forEach(function(item) {
-    html += '<div style="border:1px solid ' + borderColor + ';border-radius:8px;padding:14px;background:var(--paper)">';
-    html += '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">';
-    html += '<strong style="font-size:14px;color:var(--ink)">' + escapeHtml(item.title) + '</strong>';
-    html += '<span style="font-size:11px;color:var(--muted);white-space:nowrap;margin-left:8px">' + escapeHtml(item.time) + '</span>';
+    html += '<div data-ui-style="border:1px solid ' + borderColor + ';border-radius:8px;padding:14px;background:var(--paper)">';
+    html += '<div data-ui-style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">';
+    html += '<strong data-ui-style="font-size:14px;color:var(--ink)">' + escapeHtml(item.title) + '</strong>';
+    html += '<span data-ui-style="font-size:11px;color:var(--muted);white-space:nowrap;margin-left:8px">' + escapeHtml(item.time) + '</span>';
     html += '</div>';
-    html += '<p style="font-size:12px;color:#555;line-height:1.6;margin:0 0 10px">' + escapeHtml(item.desc) + '</p>';
-    html += '<div style="display:flex;gap:8px">';
-    html += '<button class="ct-ai-src" data-idx="' + item.idx + '" style="font-size:11px;padding:3px 8px;border:1px solid ' + borderColor + ';color:' + borderColor + ';border-radius:4px;background:transparent;cursor:pointer">溯源定位</button>';
-    html += '<button class="ct-ai-report" data-title="' + encodeURIComponent(item.title) + '" data-desc="' + encodeURIComponent(item.desc) + '" style="font-size:11px;padding:3px 8px;border:1px solid var(--orange);color:var(--orange);border-radius:4px;background:transparent;cursor:pointer">+ 加入素材</button>';
+    html += '<p data-ui-style="font-size:12px;color:#555;line-height:1.6;margin:0 0 10px">' + escapeHtml(item.desc) + '</p>';
+    html += '<div data-ui-style="display:flex;gap:8px">';
+    html += '<button class="ct-ai-src" data-idx="' + item.idx + '" data-ui-style="font-size:11px;padding:3px 8px;border:1px solid ' + borderColor + ';color:' + borderColor + ';border-radius:4px;background:transparent;cursor:pointer">溯源定位</button>';
+    html += '<button class="ct-ai-report" data-title="' + encodeURIComponent(item.title) + '" data-desc="' + encodeURIComponent(item.desc) + '" data-ui-style="font-size:11px;padding:3px 8px;border:1px solid var(--orange);color:var(--orange);border-radius:4px;background:transparent;cursor:pointer">+ 加入素材</button>';
     html += '</div></div>';
   });
   html += '</div>';
@@ -216,7 +216,7 @@ function ctSourceBadge(record){
   var meta=ctRecordMeta(record),system=record&&record._sourceKind==='system',kind=system?(meta.source_kind==='traceable'?'第三方采集':'系统采集'):'工作区上传';
   var stamp=meta.collected_at||meta.snapshot_at||record&&record[6]||'';
   var age=stamp&&Date.now()-new Date(stamp).getTime()>3*86400000?' · 已过期':'';
-  return '<span style="display:inline-block;font-size:10px;line-height:1.4;padding:0 4px;border:1px solid '+(system?'#236b52':'#5b6472')+';color:'+(system?'#236b52':'#5b6472')+';border-radius:3px">'+kind+escapeHtml(age)+'</span>';
+  return '<span data-ui-style="display:inline-block;font-size:10px;line-height:1.4;padding:0 4px;border:1px solid '+(system?'#236b52':'#5b6472')+';color:'+(system?'#236b52':'#5b6472')+';border-radius:3px">'+kind+escapeHtml(age)+'</span>';
 }
 
 // S-07 标题兜底：缺标题时用带货商品+类型生成可读标题
@@ -253,12 +253,12 @@ function ctThumbHtml(c, idx) {
   var likesW = parseFloat(c[4]) || 0;
   var engage = String(c[4]===undefined?'':c[4]).trim()==='' ? '未提供' : (likesW >= 1000 ? (likesW/10000).toFixed(1) + 'w' : (likesW >= 1 ? likesW + 'w' : Math.round(likesW*10)/10 + 'w'));
 
-  return '<div class="ct-thumb" style="--ct-grad:' + grad + '">' +
+  return '<div class="ct-thumb" data-ui-style="--ct-grad:' + grad + '">' +
     '<div class="ct-thumb-bg"></div>' +
     '<div class="ct-thumb-deco"></div>' +
     '<div class="ct-thumb-deco2"></div>' +
     '<span class="ct-thumb-type ' + (isLive ? 'is-live' : '') + '">' +
-      (isLive ? '<span class="dot"></span>LIVE' : '<span class="dot" style="background:rgba(255,255,255,.7)"></span>' + escapeHtml(typeLabel)) +
+      (isLive ? '<span class="dot"></span>LIVE' : '<span class="dot" data-ui-style="background:rgba(255,255,255,.7)"></span>' + escapeHtml(typeLabel)) +
     '</span>' +
     '<span class="ct-thumb-engage">' +
       '<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-9.5-9.5C.5 7 4 3 8 3c2 0 3.5 1 4 2 1-1 2-2 4-2 4 0 7.5 4 5.5 8.5C19 16.65 12 21 12 21z"/></svg>' +
@@ -283,17 +283,17 @@ function ctRenderCards(list) {
     return '<article class="ct-card-new">' +
       '<div class="ct-card-check"><input type="checkbox" class="ct-cb" data-idx="' + idx + '" ' + checked + ' data-change-action="ctToggleOne(' + idx + ',this.checked)"></div>' +
       ctThumbHtml(c, idx) +
-      '<div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">' +
-        '<span class="tag ' + (c[3]==='直播'?'hot':c[3]==='短视频'?'watch':'') + '" style="font-size:10px">' + escapeHtml(c[3]) + '</span>' +
-        '<span class="tag ' + ctSignalCls(c[14]) + '" style="font-size:10px">' + escapeHtml(c[14]) + '</span>' +
-        '<span style="font-size:10px;padding:1px 6px;border:1px solid ' + tierColor + ';color:' + tierColor + ';border-radius:3px">' + escapeHtml(tier) + '</span>' +
+      '<div data-ui-style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">' +
+        '<span class="tag ' + (c[3]==='直播'?'hot':c[3]==='短视频'?'watch':'') + '" data-ui-style="font-size:10px">' + escapeHtml(c[3]) + '</span>' +
+        '<span class="tag ' + ctSignalCls(c[14]) + '" data-ui-style="font-size:10px">' + escapeHtml(c[14]) + '</span>' +
+        '<span data-ui-style="font-size:10px;padding:1px 6px;border:1px solid ' + tierColor + ';color:' + tierColor + ';border-radius:3px">' + escapeHtml(tier) + '</span>' +
       '</div>' +
-      '<h3 class="ct-card-title" data-idx="' + idx + '" style="cursor:pointer">' + escapeHtml(ctTitle(c)) + '</h3>' +
+      '<h3 class="ct-card-title" data-idx="' + idx + '" data-ui-style="cursor:pointer">' + escapeHtml(ctTitle(c)) + '</h3>' +
       '<p class="ct-meta">' + escapeHtml(c[1]) + ' · ' + escapeHtml(c[2]) + ' · ' + escapeHtml(jayFmtTime(c[6])) + ' '+ctSourceBadge(c)+'</p>' +
-      '<p class="ct-meta">创作者: ' + escapeHtml(c[7]) + ' <span style="color:var(--muted);font-size:11px">(' + escapeHtml(c[12]) + '粉)</span></p>' +
+      '<p class="ct-meta">创作者: ' + escapeHtml(c[7]) + ' <span data-ui-style="color:var(--muted);font-size:11px">(' + escapeHtml(c[12]) + '粉)</span></p>' +
       '<p class="ct-meta">脚本: ' + escapeHtml(c[11]) + ' | 类目: ' + escapeHtml(c[10]) + '</p>' +
       '<p class="ct-product">带货: ' + escapeHtml(c[8]) + '</p>' +
-      '<p class="ct-meta" style="font-size:11px">关联店铺: <span class="ct-shop-link" style="color:var(--green);cursor:pointer">' + escapeHtml(c[13]) + '</span></p>' +
+      '<p class="ct-meta" data-ui-style="font-size:11px">关联店铺: <span class="ct-shop-link" data-ui-style="color:var(--green);cursor:pointer">' + escapeHtml(c[13]) + '</span></p>' +
       '<div class="ct-stats">' +
         '<span>点赞 <b>' + escapeHtml(ctMetric(c[4])) + (ctMetric(c[4])==='未提供'?'':'万') + '</b></span>' +
         '<span>播放 <b>' + escapeHtml(ctMetric(c[5])) + (ctMetric(c[5])==='未提供'?'':'万') + '</b></span>' +
@@ -305,7 +305,7 @@ function ctRenderCards(list) {
         '<button class="ct-act-copy" data-idx="' + idx + '" title="复制标题">📎</button>' +
       '</div>' +
     '</article>';
-  }).join('') || '<p style="color:#888;padding:20px">暂无已验证内容数据</p>';
+  }).join('') || '<p data-ui-style="color:#888;padding:20px">暂无已验证内容数据</p>';
 
   // Event listeners
   grid.querySelectorAll('.ct-card-title').forEach(function(el) {
@@ -357,12 +357,12 @@ function ctShowDetail(idx) {
   var plays = ctMetric(c[5]);
 
   var html = '';
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">';
+  html += '<div data-ui-style="display:grid;grid-template-columns:1fr 1fr;gap:16px">';
 
   // Block 1: Script breakdown
-  html += '<div style="border:1px solid #ddd;border-radius:8px;padding:14px">';
-  html += '<h4 style="margin:0 0 10px;font-size:13px">🎬 内容脚本拆解</h4>';
-  html += '<div style="font-size:12px;line-height:1.8">';
+  html += '<div data-ui-style="border:1px solid #ddd;border-radius:8px;padding:14px">';
+  html += '<h4 data-ui-style="margin:0 0 10px;font-size:13px">🎬 内容脚本拆解</h4>';
+  html += '<div data-ui-style="font-size:12px;line-height:1.8">';
   html += '<div><strong>脚本类型:</strong> ' + escapeHtml(c[11]) + '</div>';
   html += '<div><strong>内容类型:</strong> ' + escapeHtml(c[3]) + '</div>';
   html += '<div><strong>带货类目:</strong> ' + escapeHtml(c[10]) + '</div>';
@@ -373,42 +373,42 @@ function ctShowDetail(idx) {
   html += '</div></div>';
 
   // Block 2: source fields
-  html += '<div style="border:1px solid #ddd;border-radius:8px;padding:14px">';
-  html += '<h4 style="margin:0 0 10px;font-size:13px">📈 数据时间序列</h4>';
-  html += '<p style="font-size:12px;color:var(--muted);line-height:1.7">未提供可验证的时间序列字段。当前记录：播放 ' + escapeHtml(plays) + (plays==='未提供'?'':'万') + ' · 点赞 ' + escapeHtml(likes) + (likes==='未提供'?'':'万') + ' · 转化 ' + escapeHtml(ctMetric(c[9])) + (ctMetric(c[9])==='未提供'?'':'%') + '。</p></div>';
+  html += '<div data-ui-style="border:1px solid #ddd;border-radius:8px;padding:14px">';
+  html += '<h4 data-ui-style="margin:0 0 10px;font-size:13px">📈 数据时间序列</h4>';
+  html += '<p data-ui-style="font-size:12px;color:var(--muted);line-height:1.7">未提供可验证的时间序列字段。当前记录：播放 ' + escapeHtml(plays) + (plays==='未提供'?'':'万') + ' · 点赞 ' + escapeHtml(likes) + (likes==='未提供'?'':'万') + ' · 转化 ' + escapeHtml(ctMetric(c[9])) + (ctMetric(c[9])==='未提供'?'':'%') + '。</p></div>';
 
   // Block 3: Similar content
-  html += '<div style="border:1px solid #ddd;border-radius:8px;padding:14px">';
-  html += '<h4 style="margin:0 0 10px;font-size:13px">🔗 同款内容聚合</h4>';
+  html += '<div data-ui-style="border:1px solid #ddd;border-radius:8px;padding:14px">';
+  html += '<h4 data-ui-style="margin:0 0 10px;font-size:13px">🔗 同款内容聚合</h4>';
   var similarItems = ctScopedData().filter(function(x){ return x !== c && x[10] === c[10]; }).slice(0,4);
   if(similarItems.length === 0) {
-    html += '<p style="font-size:12px;color:var(--muted)">暂无同类目同款内容</p>';
+    html += '<p data-ui-style="font-size:12px;color:var(--muted)">暂无同类目同款内容</p>';
   } else {
     similarItems.forEach(function(s) {
-      html += '<div style="padding:4px 0;border-bottom:1px solid #f0f0f0;font-size:12px">';
+      html += '<div data-ui-style="padding:4px 0;border-bottom:1px solid #f0f0f0;font-size:12px">';
       html += '<span>' + escapeHtml(String(s[0]||'').substring(0,25)) + '...</span>';
-      html += '<span style="float:right;color:var(--green)">' + escapeHtml(ctMetric(s[5])) + (ctMetric(s[5])==='未提供'?'':'万') + '播放</span>';
+      html += '<span data-ui-style="float:right;color:var(--green)">' + escapeHtml(ctMetric(s[5])) + (ctMetric(s[5])==='未提供'?'':'万') + '播放</span>';
       html += '</div>';
     });
   }
   html += '</div>';
 
   // Block 4: Actions
-  html += '<div style="border:1px solid #ddd;border-radius:8px;padding:14px">';
-  html += '<h4 style="margin:0 0 10px;font-size:13px">⚡ 快捷操作</h4>';
-  html += '<div style="display:flex;flex-direction:column;gap:8px">';
-  html += '<button id="ct-detail-product" type="button" style="padding:6px 12px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🔗 跳转产品雷达查看带货商品</button>';
-  html += '<button data-action="ctCloseModal();switchPage(\'shops\')" style="padding:6px 12px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🏪 跳转店铺追踪 (' + escapeHtml(c[13]) + ')</button>';
-  html += '<button data-action="ctCloseModal();switchPage(\'alerts\')" style="padding:6px 12px;border:1px solid #e53935;color:#e53935;border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🔔 设置达人/商品异动预警</button>';
-  html += '<button data-action="ctCloseModal();switchPage(\'countries\')" style="padding:6px 12px;border:1px solid var(--muted);color:var(--muted);border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🌍 查看' + escapeHtml(c[2]) + '内容电商行情</button>';
+  html += '<div data-ui-style="border:1px solid #ddd;border-radius:8px;padding:14px">';
+  html += '<h4 data-ui-style="margin:0 0 10px;font-size:13px">⚡ 快捷操作</h4>';
+  html += '<div data-ui-style="display:flex;flex-direction:column;gap:8px">';
+  html += '<button id="ct-detail-product" type="button" data-ui-style="padding:6px 12px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🔗 跳转产品雷达查看带货商品</button>';
+  html += '<button data-action="ctCloseModal();switchPage(\'shops\')" data-ui-style="padding:6px 12px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🏪 跳转店铺追踪 (' + escapeHtml(c[13]) + ')</button>';
+  html += '<button data-action="ctCloseModal();switchPage(\'alerts\')" data-ui-style="padding:6px 12px;border:1px solid #e53935;color:#e53935;border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🔔 设置达人/商品异动预警</button>';
+  html += '<button data-action="ctCloseModal();switchPage(\'countries\')" data-ui-style="padding:6px 12px;border:1px solid var(--muted);color:var(--muted);border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🌍 查看' + escapeHtml(c[2]) + '内容电商行情</button>';
   html += '</div></div>';
 
   html += '</div>';
 
   // Bottom actions
-  html += '<div style="display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid #eee">';
-  html += '<button data-action="ctAddToReport(' + idx + ')" style="padding:6px 14px;border:1px solid var(--orange);color:var(--orange);border-radius:6px;background:transparent;cursor:pointer;font-size:12px">+ 加入报告素材</button>';
-  html += '<button data-action="ctAddToFav(' + idx + ')" style="padding:6px 14px;border:1px solid var(--green);color:var(--green);border-radius:6px;background:transparent;cursor:pointer;font-size:12px">⭐ 加入收藏夹</button>';
+  html += '<div data-ui-style="display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid #eee">';
+  html += '<button data-action="ctAddToReport(' + idx + ')" data-ui-style="padding:6px 14px;border:1px solid var(--orange);color:var(--orange);border-radius:6px;background:transparent;cursor:pointer;font-size:12px">+ 加入报告素材</button>';
+  html += '<button data-action="ctAddToFav(' + idx + ')" data-ui-style="padding:6px 14px;border:1px solid var(--green);color:var(--green);border-radius:6px;background:transparent;cursor:pointer;font-size:12px">⭐ 加入收藏夹</button>';
   html += '</div>';
 
   body.innerHTML = html;
@@ -452,7 +452,7 @@ function ctSwitchMain(tab) {
   document.getElementById('ct-tab-live').style.display = tab==='live' ? 'block' : 'none';
   document.getElementById('ct-tab-similar').style.display = tab==='similar' ? 'block' : 'none';
   var titles = {all:'全域热门内容', creator:'达人榜单库', live:'直播专场追踪', similar:'同款内容素材库'};
-  document.getElementById('ct-main-title').innerHTML = (titles[tab]||'') + ' <span id="ct-count" style="font-size:14px;color:var(--muted)"></span>';
+  document.getElementById('ct-main-title').innerHTML = (titles[tab]||'') + ' <span id="ct-count" data-ui-style="font-size:14px;color:var(--muted)"></span>';
   if(tab==='creator') ctRenderCreator();
   if(tab==='live') ctRenderLive();
   if(tab==='all') ctApplyFilters();
@@ -500,7 +500,7 @@ function ctRenderCreator() {
       '<td>' + escapeHtml(cr.cats.join('/')) + '</td>' +
       '<td class="growth">' + avgConv + '</td>' +
       '<td>' + cr.count + '</td>' +
-      '<td><button data-action="toast(\'已添加监控: '+escInline(cr.name)+'\')" style="font-size:11px;padding:3px 8px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer">+ 监控</button></td>' +
+      '<td><button data-action="toast(\'已添加监控: '+escInline(cr.name)+'\')" data-ui-style="font-size:11px;padding:3px 8px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer">+ 监控</button></td>' +
       '</tr>';
   }).join('');
 }
@@ -521,19 +521,19 @@ function ctRenderLive() {
   }
   grid.innerHTML = validLive.map(function(live) {
     return '<article class="ct-live-card">' +
-      '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">' +
-        '<span class="tag hot" style="font-size:10px">LIVE</span>' +
-        '<span style="font-size:11px;color:var(--muted)">' + escapeHtml(jayFmtTime(live.date)) + '</span>' +
+      '<div data-ui-style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">' +
+        '<span class="tag hot" data-ui-style="font-size:10px">LIVE</span>' +
+        '<span data-ui-style="font-size:11px;color:var(--muted)">' + escapeHtml(jayFmtTime(live.date)) + '</span>' +
       '</div>' +
-      '<h3 style="font-size:14px;margin:0 0 6px">' + escapeHtml(live.title) + '</h3>' +
+      '<h3 data-ui-style="font-size:14px;margin:0 0 6px">' + escapeHtml(live.title) + '</h3>' +
       '<p class="ct-meta">' + escapeHtml(live.creator) + ' · ' + escapeHtml(live.platform) + ' · ' + escapeHtml(live.market) + '</p>' +
       '<p class="ct-meta">时长: ' + escapeHtml(live.duration) + ' | 风格: ' + escapeHtml(live.style) + '</p>' +
-      '<div class="ct-stats" style="margin-top:8px">' +
+      '<div class="ct-stats" data-ui-style="margin-top:8px">' +
         '<span>峰值在线 <b>' + escapeHtml(live.peakViewers) + '</b></span>' +
         '<span>场观 <b>' + escapeHtml(live.totalViews) + '</b></span>' +
         '<span>GMV <b>' + escapeHtml(live.gmv) + '</b></span>' +
       '</div>' +
-      '<p style="font-size:11px;color:var(--muted);margin:6px 0 0">带货: ' + escapeHtml(live.products) + '</p>' +
+      '<p data-ui-style="font-size:11px;color:var(--muted);margin:6px 0 0">带货: ' + escapeHtml(live.products) + '</p>' +
     '</article>';
   }).join('');
 }
@@ -542,18 +542,18 @@ function ctRenderLive() {
 function ctSearchSimilar() {
   var kw = document.getElementById('ct-similar-input').value.trim().toLowerCase();
   var results = document.getElementById('ct-similar-results');
-  if(!kw) { results.innerHTML = '<p style="color:var(--muted)">请输入商品名称</p>'; return; }
+  if(!kw) { results.innerHTML = '<p data-ui-style="color:var(--muted)">请输入商品名称</p>'; return; }
   var displayKw=escapeHtml(kw);
   var matches = ctScopedData().filter(function(c){ return String(c[8]||'').toLowerCase().indexOf(kw)>=0 || String(c[0]||'').toLowerCase().indexOf(kw)>=0 || String(c[10]||'').toLowerCase().indexOf(kw)>=0; });
-  if(matches.length === 0) { results.innerHTML = '<p style="color:var(--muted)">未找到与 "' + displayKw + '" 相关的同款内容</p>'; return; }
-  var html = '<p style="font-size:13px;margin-bottom:12px">找到 <b>' + matches.length + '</b> 条与 "' + displayKw + '" 相关的同款内容</p>';
+  if(matches.length === 0) { results.innerHTML = '<p data-ui-style="color:var(--muted)">未找到与 "' + displayKw + '" 相关的同款内容</p>'; return; }
+  var html = '<p data-ui-style="font-size:13px;margin-bottom:12px">找到 <b>' + matches.length + '</b> 条与 "' + displayKw + '" 相关的同款内容</p>';
   html += '<div class="ct-card-grid">';
   matches.forEach(function(c) {
     var idx = contentData.indexOf(c);
-    html += '<article class="ct-card-new" style="cursor:pointer" data-action="ctShowDetail(' + idx + ')">' +
+    html += '<article class="ct-card-new" data-ui-style="cursor:pointer" data-action="ctShowDetail(' + idx + ')">' +
       ctThumbHtml(c, idx) +
-      '<span class="tag ' + (c[3]==='直播'?'hot':'watch') + '" style="font-size:10px">' + escapeHtml(c[3]) + '</span>' +
-      '<h3 style="font-size:13px;margin:6px 0">' + escapeHtml(ctTitle(c)) + '</h3>' +
+      '<span class="tag ' + (c[3]==='直播'?'hot':'watch') + '" data-ui-style="font-size:10px">' + escapeHtml(c[3]) + '</span>' +
+      '<h3 data-ui-style="font-size:13px;margin:6px 0">' + escapeHtml(ctTitle(c)) + '</h3>' +
       '<p class="ct-meta">' + escapeHtml(c[7]) + ' · ' + escapeHtml(c[1]) + ' · ' + escapeHtml(jayFmtTime(c[6])) + '</p>' +
       '<div class="ct-stats"><span>播放 <b>' + escapeHtml(c[5]) + '万</b></span><span>转化 <b>' + escapeHtml(c[9]) + '%</b></span></div>' +
     '</article>';
@@ -572,7 +572,7 @@ function ctRenderFavFolders() {
   var el = document.getElementById('ct-fav-folders');
   el.innerHTML = ctFavFolders.map(function(f, i) {
     var items = ctFavItems[f] || [];
-    return '<button class="ct-fav-folder" data-folder="' + escapeHtml(f) + '" data-action="ctSelectFolder(\'' + escInline(f) + '\')" style="padding:5px 14px;border:1px solid #ddd;border-radius:16px;background:transparent;cursor:pointer;font-size:12px;margin-right:6px;margin-bottom:4px">' + escapeHtml(f) + ' (' + items.length + ')</button>';
+    return '<button class="ct-fav-folder" data-folder="' + escapeHtml(f) + '" data-action="ctSelectFolder(\'' + escInline(f) + '\')" data-ui-style="padding:5px 14px;border:1px solid #ddd;border-radius:16px;background:transparent;cursor:pointer;font-size:12px;margin-right:6px;margin-bottom:4px">' + escapeHtml(f) + ' (' + items.length + ')</button>';
   }).join('');
   ctRenderFavItems();
 }
@@ -596,13 +596,13 @@ function ctSelectFolder(name) {
 }
 function ctRenderFavItems() {
   var el = document.getElementById('ct-fav-items');
-  if(!ctActiveFolder) { el.innerHTML = '<p style="color:var(--muted);font-size:12px">选择一个文件夹查看收藏内容</p>'; return; }
+  if(!ctActiveFolder) { el.innerHTML = '<p data-ui-style="color:var(--muted);font-size:12px">选择一个文件夹查看收藏内容</p>'; return; }
   var items = ctFavItems[ctActiveFolder] || [];
-  if(items.length === 0) { el.innerHTML = '<p style="color:var(--muted);font-size:12px">该文件夹暂无收藏，在内容卡片上点击⭐收藏</p>'; return; }
+  if(items.length === 0) { el.innerHTML = '<p data-ui-style="color:var(--muted);font-size:12px">该文件夹暂无收藏，在内容卡片上点击⭐收藏</p>'; return; }
   el.innerHTML = items.map(function(item, i) {
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0">' +
-      '<span style="font-size:12px">' + escapeHtml(item.title) + '</span>' +
-      '<button data-action="ctRemoveFav(\'' + escInline(ctActiveFolder) + '\',' + i + ')" style="font-size:10px;color:#e53935;background:none;border:none;cursor:pointer">移除</button>' +
+    return '<div data-ui-style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0">' +
+      '<span data-ui-style="font-size:12px">' + escapeHtml(item.title) + '</span>' +
+      '<button data-action="ctRemoveFav(\'' + escInline(ctActiveFolder) + '\',' + i + ')" data-ui-style="font-size:10px;color:#e53935;background:none;border:none;cursor:pointer">移除</button>' +
     '</div>';
   }).join('');
 }

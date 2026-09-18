@@ -265,7 +265,7 @@ function rpV2RefreshPoolUI(){
     var items=groups[type];
     html+='<div class="rp-v2-pool-group">';
     html+='<div class="rp-v2-pool-group-header" data-action="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">';
-    html+='<span style="color:'+(typeColors[type]||'#64748b')+'">●</span> '+escapeHtml(typeLabels[type]||type);
+    html+='<span data-ui-style="color:'+(typeColors[type]||'#64748b')+'">●</span> '+escapeHtml(typeLabels[type]||type);
     html+=' <span class="rp-v2-pool-gcount">('+items.length+')</span></div>';
     html+='<div>';
     items.forEach(function(m){
@@ -276,7 +276,7 @@ function rpV2RefreshPoolUI(){
       html+='<div class="rp-v2-pool-item-body">';
       html+='<p class="rp-v2-pool-item-title">'+escapeHtml(m.title)+'</p>';
       html+='<div class="rp-v2-pool-item-meta">';
-      html+='<span class="rp-v2-pool-item-type" style="background:'+(typeColors[m.type]||'var(--muted)')+'">'+escapeHtml(typeLabels[m.type]||m.type)+'</span>';
+      html+='<span class="rp-v2-pool-item-type" data-ui-style="background:'+(typeColors[m.type]||'var(--muted)')+'">'+escapeHtml(typeLabels[m.type]||m.type)+'</span>';
       var sourceLabel=m.source_kind==='official'?'官方':m.source_kind==='traceable'?'第三方可追溯':m.source_kind==='uploaded'?'工作区上传':(m.source_kind||'未知来源');
       html+='<span class="rp-v2-pool-source">'+escapeHtml(sourceLabel)+'</span>';
       html+='<span>'+escapeHtml(m.source)+'</span>';
@@ -513,7 +513,7 @@ async function rpV2Generate(){
   var title=topic?('《'+topic+'》'+jayConfiguredMarketNames().join('、')+'市场调研报告'):(rpV2TplNames[rpV2SelectedTpl]||jayConfiguredMarketNames().join('、')+'市场调研报告');
   document.getElementById('rp-v2-preview-title').textContent=title;
   var status=document.getElementById('rp-v2-publish-status');if(status){status.className='rp-v2-publish-status';status.textContent='分章节生成中';}
-  body.innerHTML='<div class="rp-v2-generating"><div style="font-size:32px;color:var(--green)">✦</div><h3 style="margin:12px 0 4px;font-weight:bold;font-size:16px">正在按章节生成报告</h3><p style="font-size:12px;color:var(--muted)">共 '+plan.sections.length+' 个章节，AI 只负责分析表达，数字由已核验数据提供...</p></div>';
+  body.innerHTML='<div class="rp-v2-generating"><div data-ui-style="font-size:32px;color:var(--green)">✦</div><h3 data-ui-style="margin:12px 0 4px;font-weight:bold;font-size:16px">正在按章节生成报告</h3><p data-ui-style="font-size:12px;color:var(--muted)">共 '+plan.sections.length+' 个章节，AI 只负责分析表达，数字由已核验数据提供...</p></div>';
   var customEl=document.getElementById('rp-v2-custom-prompt');var customText=customEl?customEl.value.trim():'';
   var results=[];
   function renderProgress(index){var p=body.querySelector('.rp-v2-generating p');if(p)p.textContent='正在生成第 '+(index+1)+'/'+plan.sections.length+' 章：'+plan.sections[index].title;}
@@ -588,7 +588,7 @@ async function rpV2Generate(){
       results.push({id:section.id,title:section.title,domain:section.domain,text:output,claims:[]});await next(index+1);
     }).catch(async function(error){
        var aiFailure=window.jayAIErrorDetails?window.jayAIErrorDetails(error,requestOptions&&requestOptions.requestId):{code:error.code||'UNKNOWN_ERROR',text:error.message||'AI 请求失败',requestId:requestOptions&&requestOptions.requestId||'',provider:'未确定',retryable:true,suggestion:'请稍后重试'};
-       body.innerHTML='<div class="rp-v2-rpt"><p style="color:#ef4444">第 '+(index+1)+' 章生成失败：'+escapeHtml(aiFailure.text)+'</p><dl class="rp-ai-error-meta"><dt>错误类型</dt><dd>'+escapeHtml(aiFailure.code)+'</dd><dt>请求编号</dt><dd>'+escapeHtml(aiFailure.requestId||'未生成')+'</dd><dt>供应商</dt><dd>'+escapeHtml(aiFailure.provider||'未确定')+'</dd></dl><p>'+escapeHtml(aiFailure.retryable?('建议：'+aiFailure.suggestion):'请按提示处理后再试')+'</p><p>已停止组装，未保存为正式报告。</p></div>';
+       body.innerHTML='<div class="rp-v2-rpt"><p data-ui-style="color:#ef4444">第 '+(index+1)+' 章生成失败：'+escapeHtml(aiFailure.text)+'</p><dl class="rp-ai-error-meta"><dt>错误类型</dt><dd>'+escapeHtml(aiFailure.code)+'</dd><dt>请求编号</dt><dd>'+escapeHtml(aiFailure.requestId||'未生成')+'</dd><dt>供应商</dt><dd>'+escapeHtml(aiFailure.provider||'未确定')+'</dd></dl><p>'+escapeHtml(aiFailure.retryable?('建议：'+aiFailure.suggestion):'请按提示处理后再试')+'</p><p>已停止组装，未保存为正式报告。</p></div>';
       if(status){status.textContent='生成失败';status.className='rp-v2-publish-status is-blocked';}
       try{await jayFinishReportRun(rpActiveReportRun&&rpActiveReportRun.id,'failed',{durationMs:Date.now()-generationStartedAt,failedSection:section.id,errorCode:error.code||error.message,errorMessage:error.message,saveStatus:'failed',publicationStatus:'draft'});}catch(runError){console.warn('[JAY观海] report run failure logging failed:',runError);}
       rpActiveReportRun=null;rpGenInterval=false;rpV2SetToolbarBusy(false);toast('报告生成失败：'+(window.jayServiceErrorText?window.jayServiceErrorText(error):(error.message==='AUTH_REQUIRED'?'请先登录':String(error.message||'未知错误'))));
@@ -637,7 +637,7 @@ async function rpV2GeneratePlan(){
   if(rpPlanBusy){ return; }
   if(!AI_ENGINE.hasKey()){ toast('请先登录后使用 AI 报告服务'); return; }
   rpPlanBusy = true;
-  showAIModal('电商执行计划', '<div class="rp-v2-generating"><div style="font-size:28px;color:var(--green)">⚡</div><h3 style="margin:12px 0 4px;font-weight:bold;font-size:16px">AI 正在制定执行计划</h3><p style="font-size:12px;color:var(--muted)">基于已生成的调研报告...</p></div>');
+  showAIModal('电商执行计划', '<div class="rp-v2-generating"><div data-ui-style="font-size:28px;color:var(--green)">⚡</div><h3 data-ui-style="margin:12px 0 4px;font-weight:bold;font-size:16px">AI 正在制定执行计划</h3><p data-ui-style="font-size:12px;color:var(--muted)">基于已生成的调研报告...</p></div>');
   try {
     var system = [
       '你是资深跨境电商运营顾问。基于给定的市场调研报告，输出可落地的电商执行计划，使用简体中文。',
@@ -656,7 +656,7 @@ async function rpV2GeneratePlan(){
     toast('执行计划已生成');
   } catch(e){
     var b = document.getElementById('rp-ai-modal-body');
-    if(b) b.innerHTML = '<p style="color:#ef4444">生成失败：' + (e.message === 'AUTH_REQUIRED' ? '请先登录' : escapeHtml(e.message)) + '</p>';
+    if(b) b.innerHTML = '<p data-ui-style="color:#ef4444">生成失败：' + (e.message === 'AUTH_REQUIRED' ? '请先登录' : escapeHtml(e.message)) + '</p>';
     if(e.message !== 'AUTH_REQUIRED') toast('执行计划生成失败');
   } finally {
     rpPlanBusy = false;
@@ -765,7 +765,7 @@ function rpV2LoadRecent(){
   var reports=rpV2GetReports();
   var statEl=document.getElementById('rp-stat-reports');
   if(statEl)statEl.textContent=reports.length;
-  if(reports.length===0){list.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font:12px \'Noto Sans SC\'">暂无历史报告</div>';return}
+  if(reports.length===0){list.innerHTML='<div data-ui-style="text-align:center;padding:16px;color:var(--muted);font:12px \'Noto Sans SC\'">暂无历史报告</div>';return}
   var h='';
   var capabilities=typeof jayWorkspaceCapabilities==='function'?jayWorkspaceCapabilities():null;
   var canEdit=capabilities?capabilities.canEdit:(typeof jayWorkspaceCanEdit==='function'&&jayWorkspaceCanEdit());
@@ -843,7 +843,7 @@ function rpV2CompareReports(index){
     var oldSections=report.model&&Array.isArray(report.model.sections)?report.model.sections:[];
     var newSections=current.sections&&Array.isArray(current.sections)?current.sections:[];
     var changed=[];newSections.forEach(function(section){var previous=oldSections.find(function(item){return item.id===section.id;});if(!previous||String(previous.text||'')!==String(section.text||''))changed.push(section.title||section.id);});
-    body+='<p style="color:var(--muted);font-size:12px">版本链：'+escapeHtml(String(report.seriesId||'未记录'))+' · 变化章节：'+escapeHtml(changed.length?changed.join('、'):'无')+'</p>';
+    body+='<p data-ui-style="color:var(--muted);font-size:12px">版本链：'+escapeHtml(String(report.seriesId||'未记录'))+' · 变化章节：'+escapeHtml(changed.length?changed.join('、'):'无')+'</p>';
   }
   showAIModal('报告版本对比',body);
 }
@@ -854,9 +854,9 @@ function rpV2AiTool(type){
   if(pool.length === 0){ toast('请先勾选素材'); return; }
   var resultEl = document.getElementById('rp-ai-' + type + '-result');
   if(!resultEl) return;
-  if(rpV2IsReadOnlyWorkspace()){resultEl.innerHTML='<div class="rp-v2-ai-result"><p style="color:#ef4444">查看者只能读取共享内容，不能发起 AI 分析</p></div>';return;}
-  if(!AI_ENGINE.hasKey()){ resultEl.innerHTML = '<div class="rp-v2-ai-result"><p style="color:#ef4444">请登录后使用 AI 分析服务</p></div>'; return; }
-  resultEl.innerHTML = '<div class="rp-v2-ai-result"><p style="color:var(--muted);text-align:center;padding:10px">AI 分析中...</p></div>';
+  if(rpV2IsReadOnlyWorkspace()){resultEl.innerHTML='<div class="rp-v2-ai-result"><p data-ui-style="color:#ef4444">查看者只能读取共享内容，不能发起 AI 分析</p></div>';return;}
+  if(!AI_ENGINE.hasKey()){ resultEl.innerHTML = '<div class="rp-v2-ai-result"><p data-ui-style="color:#ef4444">请登录后使用 AI 分析服务</p></div>'; return; }
+  resultEl.innerHTML = '<div class="rp-v2-ai-result"><p data-ui-style="color:var(--muted);text-align:center;padding:10px">AI 分析中...</p></div>';
   var titles = pool.map(function(m){ return (m.title || '') + '（' + (m.type || '') + '）：' + (m.summary || m.source || ''); }).join('\n');
   var sys, usr;
   if(type === 'summary'){ sys = '你是跨境电商分析助手，请仅基于当前工作区范围及素材提炼核心结论。中文，要点式。'; usr = '素材：\n' + titles + '\n\n请提炼 3-5 条'+jayConfiguredMarketNames().join('、')+'市场核心发现与数据洞察，不得扩展到其他市场或平台。'; }
@@ -866,7 +866,7 @@ function rpV2AiTool(type){
   sys += dateNote; usr += dateNote;
   callAI(sys, usr, { temperature: 0.5, max_tokens: 1400, search: true, entryPoint:'report.comparison', operation:'report.comparison', timeout:60000 })
     .then(function(out){ resultEl.innerHTML = '<div class="rp-v2-ai-result">' + renderMarkdownSafe(out) + '</div>'; toast('AI 分析完成'); })
-    .catch(function(e){ resultEl.innerHTML = '<div class="rp-v2-ai-result"><p style="color:#ef4444">分析失败：' + (e.message === 'AUTH_REQUIRED' ? '请先登录' : escapeHtml(e.message)) + '</p></div>'; });
+    .catch(function(e){ resultEl.innerHTML = '<div class="rp-v2-ai-result"><p data-ui-style="color:#ef4444">分析失败：' + (e.message === 'AUTH_REQUIRED' ? '请先登录' : escapeHtml(e.message)) + '</p></div>'; });
 }
 
 
@@ -1385,7 +1385,7 @@ function jayChartLine(labels, values, series){
   dataset.forEach(function(s, si){ var col=jayChartColor(si);
     paths+='<polyline points="'+s.values.map(function(v,i){ return px(i)+','+py(v); }).join(' ')+'" fill="none" stroke="'+col+'" stroke-width="2.5"/>';
     s.values.forEach(function(v,i){ paths+='<circle cx="'+px(i)+'" cy="'+py(v)+'" r="3" fill="'+col+'"/>'; });
-    if(series) legend+='<span class="jay-chart-legend-item"><i style="background:'+col+'"></i>'+escapeHtml(s.name||('序列'+(si+1)))+'</span>';
+    if(series) legend+='<span class="jay-chart-legend-item"><i data-ui-style="background:'+col+'"></i>'+escapeHtml(s.name||('序列'+(si+1)))+'</span>';
   });
   var xl=''; labels.forEach(function(l,i){ xl+='<text x="'+px(i)+'" y="'+(H-pb+16)+'" text-anchor="middle" font-size="10" fill="#6b7a89">'+escapeHtml(l)+'</text>'; });
   var legendHtml=series?'<div class="jay-chart-legend jay-chart-legend-inline">'+legend+'</div>':'';
@@ -1715,7 +1715,7 @@ function renderRecommendTracks(){
     return;
   }
   container.innerHTML=recommendTracks.map(function(t){
-    return '<div class="wl-rec-card"><span style="font-size:22px">'+t.flag+'</span><div class="wl-rec-info"><h5>'+t.name+'</h5><p>'+t.platforms+' \u00b7 '+t.reason+'</p></div><button class="wl-rec-add" data-action="addFromSearch(this, &#39;"+t.flag+"&#39; &#39;"+t.name+"&#39;,&#39;track&#39;)>\u6dfb\u52a0</button></div>';
+    return '<div class="wl-rec-card"><span data-ui-style="font-size:22px">'+t.flag+'</span><div class="wl-rec-info"><h5>'+t.name+'</h5><p>'+t.platforms+' \u00b7 '+t.reason+'</p></div><button class="wl-rec-add" data-action="addFromSearch(this, &#39;"+t.flag+"&#39; &#39;"+t.name+"&#39;,&#39;track&#39;)>\u6dfb\u52a0</button></div>';
   }).join('');
 }
 
@@ -1771,9 +1771,9 @@ function closeAddWatchModal(){var m=document.getElementById('wl-modal-overlay');
 function renderModalTab(tab){
   var body=document.getElementById('wl-modal-content');
   if(tab==='search'){
-    body.innerHTML='<div class="wl-search-row"><input type="text" id="wl-search-input" placeholder="搜索当前市场、平台、店铺或单品..."><button data-action="doModalSearch()">搜索</button></div><div id="wl-search-results"><p style="font-size:11px;color:#999;text-align:center;padding:20px 0">输入关键词搜索当前市场中可监控的平台、店铺或单品</p></div>';
+    body.innerHTML='<div class="wl-search-row"><input type="text" id="wl-search-input" placeholder="搜索当前市场、平台、店铺或单品..."><button data-action="doModalSearch()">搜索</button></div><div id="wl-search-results"><p data-ui-style="font-size:11px;color:#999;text-align:center;padding:20px 0">输入关键词搜索当前市场中可监控的平台、店铺或单品</p></div>';
   }else if(tab==='ai'){
-    body.innerHTML='<p style="font-size:12px;color:#4a6a8a;margin:0 0 14px">基于当前市场已验证记录生成推荐；当前暂无可用推荐数据。</p>'+recommendTracks.map(function(t){
+    body.innerHTML='<p data-ui-style="font-size:12px;color:#4a6a8a;margin:0 0 14px">基于当前市场已验证记录生成推荐；当前暂无可用推荐数据。</p>'+recommendTracks.map(function(t){
       return '<div class="wl-rec-item"><div class="wl-rec-item-info"><h5>'+t.flag+' '+t.name+'</h5><p>'+t.platforms+'</p></div><button data-action="addFromSearch(this, &#39;"+t.flag+"&#39; &#39;"+t.name+"&#39;,&#39;track&#39;)>\u4e00\u952e\u6dfb\u52a0</button></div>';
     }).join('');
   }else if(tab==='template'){
@@ -2014,11 +2014,11 @@ function toolsCalcScore(){
   for(var k in dims){
     var v=dims[k];
     if(v==null||!isFinite(v)){
-      bars+='<div class="tools-dim"><span>'+k+'</span><span>暂无已验证数据</span></div><div class="tools-bar"><i style="width:0%"></i></div>';
+      bars+='<div class="tools-dim"><span>'+k+'</span><span>暂无已验证数据</span></div><div class="tools-bar"><i data-ui-style="width:0%"></i></div>';
       continue;
     }
     v=Math.max(0,Math.min(20,Number(v))); total+=v; available++;
-    bars+='<div class="tools-dim"><span>'+k+'</span><span>'+v.toFixed(0)+'/20</span></div><div class="tools-bar"><i style="width:'+(v/20*100)+'%"></i></div>';
+    bars+='<div class="tools-dim"><span>'+k+'</span><span>'+v.toFixed(0)+'/20</span></div><div class="tools-bar"><i data-ui-style="width:'+(v/20*100)+'%"></i></div>';
   }
   var complete=available===Object.keys(dims).length;
   var grade=complete?(total>=80?'good':(total>=60?'warn':'bad')):'warn';
@@ -2061,7 +2061,7 @@ function jayBarChart(items,opts){
     var color=JAY_CMP_COLORS[i%JAY_CMP_COLORS.length];
     var tip=(it.label||'')+'：'+(opts.fmt?opts.fmt(it.value):it.value)+(unit||'');
     rows+='<div class="jay-bar-row"><span class="jay-bar-name" title="'+escapeHtml(it.label||'')+'">'+escapeHtml(it.label||'')+'</span>'+
-      '<span class="jay-bar-track"><span class="jay-bar-fill" style="width:'+pct+'%;background:'+color+'" title="'+escapeHtml(tip)+'"></span></span>'+
+      '<span class="jay-bar-track"><span class="jay-bar-fill" data-ui-style="width:'+pct+'%;background:'+color+'" title="'+escapeHtml(tip)+'"></span></span>'+
       '<span class="jay-bar-val">'+escapeHtml(opts.fmt?opts.fmt(it.value):String(it.value))+(unit?'<small>'+escapeHtml(unit)+'</small>':'')+'</span></div>';
   });
   return '<div class="jay-bar-chart">'+rows+'</div>';

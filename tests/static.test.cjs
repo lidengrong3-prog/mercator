@@ -57,6 +57,11 @@ test('frontend uses delegated events and a strict script policy', () => {
   assert.match(html, /script-src 'self' https:\/\/cdn\.jsdelivr\.net/);
   assert.match(html, /script-src-attr 'none'/);
   assert.doesNotMatch(html, /script-src[^;]*'unsafe-inline'/);
+  assert.match(html, /style-src 'self' https:\/\/cdn\.jsdelivr\.net/);
+  assert.match(html, /style-src-attr 'none'/);
+  assert.doesNotMatch(html, /style-src[^;]*'unsafe-inline'/);
+  assert.equal(document.querySelectorAll('[style]').length, 0);
+  assert.match(html, /assets\/strict-style\.js/);
   assert.match(html, /@supabase\/supabase-js@2\.116\.0\/dist\/umd\/supabase\.js/);
   assert.match(html, /integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s\/\/pP"/);
   assert.match(html, /integrity="sha384-uTYyvsSSUZeaPhb5RbKlQa0zY\/WpX\/QHfvg2mczXyBQOpkWPEDy9lczyp\+w7SKXu"/);
@@ -64,6 +69,14 @@ test('frontend uses delegated events and a strict script policy', () => {
   for (const header of ['Content-Security-Policy:', 'Strict-Transport-Security:', 'X-Content-Type-Options:', 'Referrer-Policy:', 'Permissions-Policy:']) {
     assert.match(headers, new RegExp(`^\\s*${header.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}`, 'm'));
   }
+  const edgeone = JSON.parse(fs.readFileSync(path.join(root, 'edgeone.json'), 'utf8'));
+  const responseHeaders = Object.fromEntries(edgeone.headers[0].headers.map(({ key, value }) => [key, value]));
+  assert.equal(edgeone.headers[0].source, '/*');
+  assert.match(responseHeaders['Content-Security-Policy'], /frame-ancestors 'none'/);
+  assert.match(responseHeaders['Content-Security-Policy'], /style-src-attr 'none'/);
+  assert.equal(responseHeaders['Strict-Transport-Security'], 'max-age=31536000; includeSubDomains; preload');
+  assert.equal(responseHeaders['X-Content-Type-Options'], 'nosniff');
+  assert.equal(responseHeaders['X-Frame-Options'], 'DENY');
   assert.equal(fs.readFileSync(path.join(root, 'CNAME'), 'utf8').trim(), 'jayguanhai.com');
 });
 

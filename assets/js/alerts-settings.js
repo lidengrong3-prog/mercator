@@ -1222,11 +1222,6 @@ function stToast(msg){
 
   // ---- UI：侧边栏状态组件 + 平台/预警页时间戳 + 日志弹窗（全部动态注入，不改动原 HTML 结构） ----
   function jayBuildRefreshUI(){
-    if(!document.getElementById('jay-refresh-style')){
-      var s=document.createElement('style'); s.id='jay-refresh-style';
-      s.textContent='.jay-refresh-widget{margin-top:auto;padding:10px 14px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;color:#cfe3f5}.jay-refresh-widget .jrw-head{display:flex;justify-content:space-between;align-items:center;color:#fff;font-weight:600;margin-bottom:6px}.jay-refresh-widget .jrw-head button{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;padding:2px 8px;cursor:pointer;font-size:11px}.jay-refresh-widget .jrw-row{display:flex;align-items:center;gap:6px;padding:2px 0;color:#dce9f5}.jrw-dot{width:8px;height:8px;border-radius:50%;background:#8aa;flex:0 0 auto}.jrw-dot.ok{background:#39d98a}.jrw-dot.fail{background:#ff6b6b}.jrw-dot.run{background:#4a9eff;animation:jrwPulse 1s infinite}.jrw-dot.pend{background:#9aa}.jrw-name{flex:1}.jrw-last{color:#9fb6c9;font-size:11px}@keyframes jrwPulse{0%,100%{opacity:1}50%{opacity:.3}}.jrw-actions{margin-top:8px}.jrw-actions button{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:5px;cursor:pointer;font-size:12px}.jay-modal-overlay{position:fixed;inset:0;background:rgba(15,30,50,.55);display:flex;align-items:center;justify-content:center;z-index:9999}.jay-modal{background:#fff;border-radius:12px;width:min(680px,92vw);max-height:82vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3)}.jay-modal-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #eee;font-size:15px;color:#1e3a5f}.jay-modal-head button{background:none;border:none;font-size:18px;cursor:pointer;color:#888}.jay-modal-body{padding:8px 14px;overflow:auto}.jrw-log{width:100%;border-collapse:collapse;font-size:12px}.jrw-log th{text-align:left;padding:8px 6px;border-bottom:2px solid #e3eefb;color:#1e3a5f}.jrw-log td{padding:7px 6px;border-bottom:1px solid #f0f0f0;color:#334}.jrw-log tr.ok td:first-child{border-left:3px solid #39d98a;padding-left:6px}.jrw-log tr.fail td:first-child{border-left:3px solid #ff6b6b;padding-left:6px}.jrw-log .err{color:#d33;font-size:11px}';
-      document.head.appendChild(s);
-    }
     var sb=document.querySelector('.sidebar');
     if(sb && !document.getElementById('jay-refresh-widget')){
       var w=document.createElement('div'); w.id='jay-refresh-widget'; w.className='jay-refresh-widget';
@@ -1262,7 +1257,7 @@ function stToast(msg){
   }
   function jayRenderRefreshLog(){
     var b=document.getElementById('jay-refresh-log-body'); if(!b) return;
-    if(!JAY_REFRESH_LOG.length){ b.innerHTML='<p style="color:#888;font-size:12px;padding:12px">暂无更新记录。</p>'; return; }
+    if(!JAY_REFRESH_LOG.length){ b.innerHTML='<p data-ui-style="color:#888;font-size:12px;padding:12px">暂无更新记录。</p>'; return; }
     var html='<table class="jrw-log"><tr><th>板块</th><th>时间</th><th>状态</th><th>变更条数</th><th>来源</th></tr>';
     JAY_REFRESH_LOG.slice().reverse().forEach(function(e){
       var stc=e.status==='ok'?'ok':'fail';

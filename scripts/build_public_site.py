@@ -60,7 +60,7 @@ def build_public_site(output, root=ROOT):
         raise ValueError(f"Output directory must be empty: {output}")
     output.mkdir(parents=True, exist_ok=True)
 
-    for filename in ("index.html", ".nojekyll"):
+    for filename in ("index.html", ".nojekyll", "_headers", "edgeone.json"):
         shutil.copy2(root / filename, output / filename)
     shutil.copytree(root / "assets", output / "assets")
 

@@ -502,7 +502,7 @@ function prSourceBadge(row){
   var system=prIsSystemRow(row),meta=row&&row._sourceMeta||{},fresh=meta.freshness||'current';
   var label=system?'系统采集':'工作区上传',color=system?'#236b52':'#5b6472';
   var state=system&&fresh==='expired'?' · 已过期':system&&(!meta.collected_at)?' · 时间缺失':'';
-  return '<span class="pr-source-badge" style="display:inline-block;margin-top:3px;font-size:10px;line-height:1.4;color:'+color+';border:1px solid '+color+';border-radius:3px;padding:0 4px">'+label+escapeHtml(state)+'</span>';
+  return '<span class="pr-source-badge" data-ui-style="display:inline-block;margin-top:3px;font-size:10px;line-height:1.4;color:'+color+';border:1px solid '+color+';border-radius:3px;padding:0 4px">'+label+escapeHtml(state)+'</span>';
 }
 
 function prRenderTable(list){
@@ -526,15 +526,15 @@ function prRenderTable(list){
     return '<tr>'+
       '<td><input type="checkbox" class="pr-chk" data-idx="'+idx+'" '+checked+'></td>'+
       '<td>'+(i+1)+'</td>'+
-      '<td><div class="product-cell"><span class="product-thumb">'+escapeHtml(prDisplay(p[0]))+'</span><strong class="pr-prod-link" data-idx="'+idx+'" style="cursor:pointer" title="'+nameEsc+'">'+escapeHtml(prDisplay(p[1]))+'</strong></div></td>'+
+      '<td><div class="product-cell"><span class="product-thumb">'+escapeHtml(prDisplay(p[0]))+'</span><strong class="pr-prod-link" data-idx="'+idx+'" data-ui-style="cursor:pointer" title="'+nameEsc+'">'+escapeHtml(prDisplay(p[1]))+'</strong></div></td>'+
       '<td>'+escapeHtml(prDisplay(p[2]))+' · '+escapeHtml(prDisplay(p[3]))+'<br>'+prSourceBadge(p)+'</td>'+
       '<td><div class="pr-dual-price"><span class="pr-local">'+escapeHtml(prDisplay(p[6]))+'</span><br><span class="pr-rmb">'+(prText(p[7])?'≈ ¥'+escapeHtml(p[7])+' RMB':'未提供人民币价格')+'</span></div></td>'+
-      '<td><span style="font-size:11px;color:var(--muted)">'+escapeHtml(prDisplay(p[5]))+'</span></td>'+
+      '<td><span data-ui-style="font-size:11px;color:var(--muted)">'+escapeHtml(prDisplay(p[5]))+'</span></td>'+
       '<td><span class="pr-shop-link" data-shop="'+escapeHtml(prText(p[11]))+'">'+escapeHtml(prDisplay(p[11]))+'</span></td>'+
       '<td>'+escapeHtml(prDisplay(p[8]))+'</td>'+
       '<td class="growth">'+escapeHtml(prDisplay(p[9]))+'</td>'+
       '<td><span class="pr-signal"><span class="pr-signal-dot '+sc+'"></span><span class="tag '+tagClass+'">'+escapeHtml(prDisplay(p[10]))+'</span></span></td>'+
-      '<td><span class="pr-time-col">'+(isNaN(age)?'未提供':escapeHtml(String(age))+'天')+'<br><small style="color:'+ageColor+'">'+ageLabel+'</small></span></td>'+
+      '<td><span class="pr-time-col">'+(isNaN(age)?'未提供':escapeHtml(String(age))+'天')+'<br><small data-ui-style="color:'+ageColor+'">'+ageLabel+'</small></span></td>'+
       '<td><span class="pr-time-col">'+escapeHtml(prDisplay(p[13]))+'</span></td>'+
       '</tr>';
   }).join('');
@@ -565,12 +565,12 @@ function prShowDetail(idx){
   if(!p)return;
   var age=parseInt(p[12]);
   var trend=prParseTrend(p._trend);
-  var trendHtml=trend.length?'<div class="pr-m-chart">'+trend.map(function(v){var n=Number(v);return '<i style="height:'+Math.max(8,Math.min(90,isNaN(n)?8:n))+'%;background:var(--green)"></i>';}).join('')+'</div>':'<p class="pr-empty-note">未提供 30 天销量趋势字段</p>';
+  var trendHtml=trend.length?'<div class="pr-m-chart">'+trend.map(function(v){var n=Number(v);return '<i data-ui-style="height:'+Math.max(8,Math.min(90,isNaN(n)?8:n))+'%;background:var(--green)"></i>';}).join('')+'</div>':'<p class="pr-empty-note">未提供 30 天销量趋势字段</p>';
   var sameCount=prDisplay(p._samePlatforms),linkCount=prDisplay(p._links);
   var compliance=prText(p._compliance)?'<span class="pr-m-tag">'+escapeHtml(prText(p._compliance))+'</span>':'<span class="pr-m-tag">未提供合规字段</span>';
   var categoryRule=p._categoryRule||{status:'unconfigured',missingFields:[]};
   var categoryRuleHtml='<div class="pr-m-section"><h4>📋 品类规则包</h4><p><strong>'+escapeHtml(categoryRule.name||prDisplay(p[4]))+'</strong> · '+escapeHtml(prCategoryRuleLabel(categoryRule))+'</p>';
-  if(categoryRule.missingFields&&categoryRule.missingFields.length)categoryRuleHtml+='<p style="font-size:12px;color:var(--muted)">待补字段：'+escapeHtml(categoryRule.missingFields.map(function(key){return prCategoryFieldLabels[key]||key;}).join('、'))+'</p>';
+  if(categoryRule.missingFields&&categoryRule.missingFields.length)categoryRuleHtml+='<p data-ui-style="font-size:12px;color:var(--muted)">待补字段：'+escapeHtml(categoryRule.missingFields.map(function(key){return prCategoryFieldLabels[key]||key;}).join('、'))+'</p>';
   categoryRuleHtml+='</div>';
   var summaryStr='售价'+prDisplay(p[6])+',销量'+prDisplay(p[8])+',增速'+prDisplay(p[9]);
 
@@ -579,19 +579,19 @@ function prShowDetail(idx){
     '<div class="pr-m-sub">'+escapeHtml(prDisplay(p[2]))+' · '+escapeHtml(prDisplay(p[3]))+' · '+escapeHtml(prDisplay(p[5]))+' · '+(prIsSystemRow(p)?'系统采集快照':'工作区上传')+' · 更新时间: '+escapeHtml(prDisplay(p[13]))+'</div>'+
     '<div class="pr-m-stats">'+
       '<div class="pr-m-stat"><b>'+escapeHtml(prDisplay(p[8]))+'</b><span>累计销量</span></div>'+
-      '<div class="pr-m-stat"><b style="color:#3a6ea8">'+escapeHtml(prDisplay(p[9]))+'</b><span>增速</span></div>'+
+      '<div class="pr-m-stat"><b data-ui-style="color:#3a6ea8">'+escapeHtml(prDisplay(p[9]))+'</b><span>增速</span></div>'+
       '<div class="pr-m-stat"><b>'+escapeHtml(prDisplay(p[6]))+'</b><span>售价区间</span></div>'+
       '<div class="pr-m-stat"><b>'+(isNaN(age)?'未提供':escapeHtml(String(age))+'天')+'</b><span>上架周期</span></div>'+
     '</div>'+
       '<div class="pr-m-section"><h4>📈 历史快照趋势</h4>'+trendHtml+(p._history&&p._history.length?'<p class="pr-empty-note">已保存 '+p._history.length+' 个历史快照，可在正式历史来源中按时间查看。</p>':'')+'</div>'+
-    '<div class="pr-m-section"><h4>🏪 竞品店铺</h4><p>店铺: <strong>'+escapeHtml(prDisplay(p[11]))+'</strong> · <span style="color:var(--green);cursor:pointer;text-decoration:underline" id="pr-detail-shop">查看店铺详情 ↗</span></p></div>'+
+    '<div class="pr-m-section"><h4>🏪 竞品店铺</h4><p>店铺: <strong>'+escapeHtml(prDisplay(p[11]))+'</strong> · <span data-ui-style="color:var(--green);cursor:pointer;text-decoration:underline" id="pr-detail-shop">查看店铺详情 ↗</span></p></div>'+
     '<div class="pr-m-section"><h4>🌐 全网同款分布</h4><p>平台数量: <strong>'+escapeHtml(sameCount)+'</strong> · 链接数量: <strong>'+escapeHtml(linkCount)+'</strong></p></div>'+
     '<div class="pr-m-section"><h4>⚠️ 合规风险提示</h4><div class="pr-m-tags">'+compliance+'</div></div>'+
     categoryRuleHtml+
-    '<div style="margin-top:16px;display:flex;gap:8px">'+
-      '<button class="filter-button" style="padding:8px 18px" id="pr-detail-add">✦ 加入报告素材</button>'+
-      '<button style="background:none;border:1px solid var(--line);padding:8px 18px;border-radius:4px;font:12px Noto Sans SC;cursor:pointer" id="pr-detail-monitor">📡 创建商品监控</button>'+
-      '<button style="background:none;border:1px solid var(--line);padding:8px 18px;border-radius:4px;font:12px Noto Sans SC;cursor:pointer" id="pr-detail-country">🌍 查看对应国家市场</button>'+
+    '<div data-ui-style="margin-top:16px;display:flex;gap:8px">'+
+      '<button class="filter-button" data-ui-style="padding:8px 18px" id="pr-detail-add">✦ 加入报告素材</button>'+
+      '<button data-ui-style="background:none;border:1px solid var(--line);padding:8px 18px;border-radius:4px;font:12px Noto Sans SC;cursor:pointer" id="pr-detail-monitor">📡 创建商品监控</button>'+
+      '<button data-ui-style="background:none;border:1px solid var(--line);padding:8px 18px;border-radius:4px;font:12px Noto Sans SC;cursor:pointer" id="pr-detail-country">🌍 查看对应国家市场</button>'+
     '</div>';
 
   $('#pr-modal').classList.add('open');
@@ -617,7 +617,7 @@ function prRenderAI(){
   var tabLabel=prAiTab==='short'?'短期机会洞察（7日）':'长期赛道分析（3月）';
   var subLabel=prAiTab==='short'?'即时机会':'赛道规划';
   var poolType=prAiTab==='short'?'短期机会':'长期赛道';
-  var html='<div class="ai-insight" style="padding:16px 18px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:16px">'+
+  var html='<div class="ai-insight" data-ui-style="padding:16px 18px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:16px">'+
     '<div class="ai-insight-head"><span class="ai-icon">✨</span><h4>AI '+tabLabel+'</h4><small>仅基于已核验系统快照和工作区上传字段</small></div>';
   items.forEach(function(item,idx){
     html+='<div class="pr-ai-item"><span class="pr-ai-text">'+escapeHtml(item.text)+'</span>';
@@ -843,8 +843,8 @@ function prExportPDF(){
     var hotCount=shopProducts.filter(function(p){return p[10]==='爆发'||p[10]==='上升'}).length;
     $('#pr-shop-stats').innerHTML=
       '<div class="pr-shop-stat"><b>'+shopProducts.length+'</b><span>在售商品</span></div>'+
-      '<div class="pr-shop-stat"><b style="color:#3a6ea8">'+hotCount+'</b><span>热销款</span></div>'+
-      '<div class="pr-shop-stat"><b style="color:var(--orange)">'+(shopProducts.length-hotCount)+'</b><span>滞销款</span></div>';
+      '<div class="pr-shop-stat"><b data-ui-style="color:#3a6ea8">'+hotCount+'</b><span>热销款</span></div>'+
+      '<div class="pr-shop-stat"><b data-ui-style="color:var(--orange)">'+(shopProducts.length-hotCount)+'</b><span>滞销款</span></div>';
     prRenderTable(shopProducts);
     $('#pr-count').textContent='● '+shopProducts.length+' 件商品 | 店铺: '+shop;
     toast('已加载 '+shop+' 商品库');
@@ -886,18 +886,18 @@ function shRenderAI() {
     return;
   }
   var list = shBuildAIItems(shActiveAI);
-  var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px">';
+  var html = '<div data-ui-style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px">';
   list.forEach(function(item, i) {
     var borderColor = shActiveAI === 'benchmark' ? 'var(--green)' : '#e53935';
-    html += '<div style="border:1px solid ' + borderColor + ';border-radius:8px;padding:14px;background:var(--paper)">';
-    html += '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">';
-    html += '<strong style="font-size:14px;color:var(--ink)">' + escapeHtml(item.title) + '</strong>';
-    html += '<span style="font-size:11px;color:var(--muted);white-space:nowrap;margin-left:8px">' + escapeHtml(item.time||'文件') + '</span>';
+    html += '<div data-ui-style="border:1px solid ' + borderColor + ';border-radius:8px;padding:14px;background:var(--paper)">';
+    html += '<div data-ui-style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">';
+    html += '<strong data-ui-style="font-size:14px;color:var(--ink)">' + escapeHtml(item.title) + '</strong>';
+    html += '<span data-ui-style="font-size:11px;color:var(--muted);white-space:nowrap;margin-left:8px">' + escapeHtml(item.time||'文件') + '</span>';
     html += '</div>';
-    html += '<p style="font-size:12px;color:#555;line-height:1.6;margin:0 0 10px">' + escapeHtml(item.desc) + '</p>';
-    html += '<div style="display:flex;gap:8px">';
-    if(item.idx!==undefined)html += '<button class="sh-ai-src" data-idx="' + item.idx + '" style="font-size:11px;padding:3px 8px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer">🔗 溯源定位</button>';
-    if(item.addable)html += '<button class="sh-ai-report" data-title="' + encodeURIComponent(item.title) + '" data-desc="' + encodeURIComponent(item.desc) + '" style="font-size:11px;padding:3px 8px;border:1px solid var(--orange);color:var(--orange);border-radius:4px;background:transparent;cursor:pointer">+ 加入素材</button>';
+    html += '<p data-ui-style="font-size:12px;color:#555;line-height:1.6;margin:0 0 10px">' + escapeHtml(item.desc) + '</p>';
+    html += '<div data-ui-style="display:flex;gap:8px">';
+    if(item.idx!==undefined)html += '<button class="sh-ai-src" data-idx="' + item.idx + '" data-ui-style="font-size:11px;padding:3px 8px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer">🔗 溯源定位</button>';
+    if(item.addable)html += '<button class="sh-ai-report" data-title="' + encodeURIComponent(item.title) + '" data-desc="' + encodeURIComponent(item.desc) + '" data-ui-style="font-size:11px;padding:3px 8px;border:1px solid var(--orange);color:var(--orange);border-radius:4px;background:transparent;cursor:pointer">+ 加入素材</button>';
     html += '</div></div>';
   });
   html += '</div>';
@@ -937,13 +937,13 @@ function shRenderCompareTab(){
   prScopedShops().forEach(function(x){if(prText(x[6]))cats[x[6]]=1;if(prText(x[2]))markets[x[2]]=1;if(prText(x[1]))plats[x[1]]=1;});
   function opts(o,all){return '<option value="">'+escapeHtml(all)+'</option>'+Object.keys(o).map(function(k){return '<option>'+escapeHtml(k)+'</option>';}).join('');}
   var html='';
-  html+='<div style="border:1px solid var(--wave);background:var(--sea-soft);border-radius:8px;padding:14px;margin-bottom:14px">';
-  html+='<p style="margin:0 0 10px;font-size:13px;color:var(--ink)"><b>竞品对标</b><span style="color:var(--muted);font-weight:400"> · 仅基于已导入店铺记录</span></p>';
-  html+='<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">';
-  html+='<select id="sh-cmp-cat" style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(cats,'全部品类')+'</select>';
-  html+='<select id="sh-cmp-market" style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(markets,'当前范围全部市场')+'</select>';
-  html+='<select id="sh-cmp-plat" style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(plats,'全部平台')+'</select>';
-  html+='<button data-action="shRunCompare()" style="padding:8px 18px;background:var(--sea-deep);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px">对标分析</button>';
+  html+='<div data-ui-style="border:1px solid var(--wave);background:var(--sea-soft);border-radius:8px;padding:14px;margin-bottom:14px">';
+  html+='<p data-ui-style="margin:0 0 10px;font-size:13px;color:var(--ink)"><b>竞品对标</b><span data-ui-style="color:var(--muted);font-weight:400"> · 仅基于已导入店铺记录</span></p>';
+  html+='<div data-ui-style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">';
+  html+='<select id="sh-cmp-cat" data-ui-style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(cats,'全部品类')+'</select>';
+  html+='<select id="sh-cmp-market" data-ui-style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(markets,'当前范围全部市场')+'</select>';
+  html+='<select id="sh-cmp-plat" data-ui-style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(plats,'全部平台')+'</select>';
+  html+='<button data-action="shRunCompare()" data-ui-style="padding:8px 18px;background:var(--sea-deep);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px">对标分析</button>';
   html+='</div></div>';
   html+='<div id="sh-cmp-result"></div>';
   el.innerHTML=html;
@@ -955,22 +955,22 @@ function shRunCompare(){
   var plat=document.getElementById('sh-cmp-plat')?document.getElementById('sh-cmp-plat').value:'';
   var res=document.getElementById('sh-cmp-result'); if(!res) return;
   var peers=prScopedShops().filter(function(x){return (!cat||x[6]===cat)&&(!market||x[2]===market)&&(!plat||x[1]===plat);});
-  if(!peers.length){ res.innerHTML='<p style="color:var(--muted);font-size:13px">该条件下暂无已导入店铺。</p>'; return; }
+  if(!peers.length){ res.innerHTML='<p data-ui-style="color:var(--muted);font-size:13px">该条件下暂无已导入店铺。</p>'; return; }
   peers.sort(function(a,b){return shParseGMV(b[3])-shParseGMV(a[3]);});
   var top5=peers.slice(0,5);
   var n=peers.length;
   var growthValues=peers.map(function(x){return parseFloat(x[4]);}).filter(function(v){return !isNaN(v);});
   var avgGrow=growthValues.length?growthValues.reduce(function(a,v){return a+v;},0)/growthValues.length:NaN;
   var html='';
-  html+='<div style="font-size:12px;color:var(--muted);margin-bottom:10px">匹配 <b style="color:var(--ink)">'+n+'</b> 家店铺 · 平均增速 <b style="color:var(--ink)">'+(isNaN(avgGrow)?'未提供':(avgGrow>=0?'+':'')+avgGrow.toFixed(1)+'%')+'</b></div>';
-  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">';
+  html+='<div data-ui-style="font-size:12px;color:var(--muted);margin-bottom:10px">匹配 <b data-ui-style="color:var(--ink)">'+n+'</b> 家店铺 · 平均增速 <b data-ui-style="color:var(--ink)">'+(isNaN(avgGrow)?'未提供':(avgGrow>=0?'+':'')+avgGrow.toFixed(1)+'%')+'</b></div>';
+  html+='<div data-ui-style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">';
   top5.forEach(function(x){
     var bi=shops.indexOf(x);
-    html+='<div style="border:1px solid #ddd;border-radius:8px;padding:14px;background:var(--paper)">';
-    html+='<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px"><strong style="font-size:14px;color:var(--ink)">'+escapeHtml(prDisplay(x[0]))+'</strong><span style="font-size:11px;color:var(--muted)">'+escapeHtml(prDisplay(x[1]))+'</span></div>';
-    html+='<div style="font-size:12px;color:#555;line-height:1.7">月GMV <b>'+escapeHtml(prDisplay(x[3]))+'</b> · 增速 <b style="color:var(--green)">'+escapeHtml(prDisplay(x[4]))+'</b><br>主营 '+escapeHtml(prDisplay(x[6]))+' · 粉丝 '+escapeHtml(prText(x[10])?jayFmtCount(x[10]):'未提供')+' · 评分 '+escapeHtml(prDisplay(x[11]))+'</div>';
-    html+='<div style="display:flex;gap:8px;margin-top:10px">';
-    html+='<button data-action="shShowDetail('+bi+')" style="font-size:11px;padding:4px 10px;border:1px solid var(--sea-deep);color:var(--sea-deep);border-radius:4px;background:transparent;cursor:pointer">🔍 查看导入字段</button>';
+    html+='<div data-ui-style="border:1px solid #ddd;border-radius:8px;padding:14px;background:var(--paper)">';
+    html+='<div data-ui-style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px"><strong data-ui-style="font-size:14px;color:var(--ink)">'+escapeHtml(prDisplay(x[0]))+'</strong><span data-ui-style="font-size:11px;color:var(--muted)">'+escapeHtml(prDisplay(x[1]))+'</span></div>';
+    html+='<div data-ui-style="font-size:12px;color:#555;line-height:1.7">月GMV <b>'+escapeHtml(prDisplay(x[3]))+'</b> · 增速 <b data-ui-style="color:var(--green)">'+escapeHtml(prDisplay(x[4]))+'</b><br>主营 '+escapeHtml(prDisplay(x[6]))+' · 粉丝 '+escapeHtml(prText(x[10])?jayFmtCount(x[10]):'未提供')+' · 评分 '+escapeHtml(prDisplay(x[11]))+'</div>';
+    html+='<div data-ui-style="display:flex;gap:8px;margin-top:10px">';
+    html+='<button data-action="shShowDetail('+bi+')" data-ui-style="font-size:11px;padding:4px 10px;border:1px solid var(--sea-deep);color:var(--sea-deep);border-radius:4px;background:transparent;cursor:pointer">🔍 查看导入字段</button>';
     html+='</div></div>';
   });
   html+='</div>';
@@ -1078,18 +1078,18 @@ function shRenderTable(list) {
     var s = o.s; var idx = o.idx;
     var checked = shSelected.has(idx) ? 'checked' : '';
     var growthCls = prText(s[4]).charAt(0) === '-' ? '' : 'growth';
-    var waveCls = prText(s[8]).charAt(0) === '-' ? 'style="color:#e53935"' : 'style="color:var(--green)"';
+    var waveCls = prText(s[8]).charAt(0) === '-' ? 'data-ui-style="color:#e53935"' : 'data-ui-style="color:var(--green)"';
     var tagsHtml = '';
     if(prText(s[9])) {
       s[9].split(',').forEach(function(t) {
         t = t.trim();
         var tc = t === '对标头部' ? 'var(--green)' : t === '低价竞品' ? 'var(--orange)' : 'var(--muted)';
-        tagsHtml += '<span style="display:inline-block;font-size:10px;padding:1px 6px;border:1px solid ' + tc + ';color:' + tc + ';border-radius:3px;margin-right:3px">' + escapeHtml(t) + '</span>';
+        tagsHtml += '<span data-ui-style="display:inline-block;font-size:10px;padding:1px 6px;border:1px solid ' + tc + ';color:' + tc + ';border-radius:3px;margin-right:3px">' + escapeHtml(t) + '</span>';
       });
     }
     return '<tr>' +
       '<td><input type="checkbox" class="sh-cb" data-idx="' + idx + '" ' + checked + ' data-change-action="shToggleOne(' + idx + ',this.checked)"></td>' +
-      '<td><strong style="cursor:pointer;color:var(--green)" class="sh-shop-link" data-idx="' + idx + '">' + escapeHtml(prDisplay(s[0])) + '</strong><br>'+prSourceBadge(s)+'</td>' +
+      '<td><strong data-ui-style="cursor:pointer;color:var(--green)" class="sh-shop-link" data-idx="' + idx + '">' + escapeHtml(prDisplay(s[0])) + '</strong><br>'+prSourceBadge(s)+'</td>' +
       '<td>' + escapeHtml(prDisplay(s[1])) + '</td>' +
       '<td>' + escapeHtml(prDisplay(s[2])) + '</td>' +
       '<td>' + escapeHtml(prDisplay(s[6])) + '</td>' +
@@ -1097,10 +1097,10 @@ function shRenderTable(list) {
       '<td ' + waveCls + '>' + escapeHtml(prDisplay(s[8])) + '</td>' +
       '<td>' + escapeHtml(prDisplay(s[7])) + '</td>' +
       '<td class="' + growthCls + '">' + escapeHtml(prDisplay(s[4])) + '</td>' +
-      '<td style="font-size:12px">' + (prText(s[10])?escapeHtml(jayFmtCount(s[10])):'未提供') + '</td>' +
+      '<td data-ui-style="font-size:12px">' + (prText(s[10])?escapeHtml(jayFmtCount(s[10])):'未提供') + '</td>' +
       '<td>' + tagsHtml + '</td>' +
       '<td><span class="tag ' + shStatusCls(s[5]) + '">' + escapeHtml(prDisplay(s[5])) + '</span></td>' +
-      '<td style="font-size:11px;color:var(--muted)">' + escapeHtml(prDisplay(s[12])) + '</td>' +
+      '<td data-ui-style="font-size:11px;color:var(--muted)">' + escapeHtml(prDisplay(s[12])) + '</td>' +
       '</tr>';
   }).join('');
 
@@ -1146,8 +1146,8 @@ function shShowDetail(idx) {
   // Imported/manual/cloud records only show fields that actually exist in the source.
   {
     var history=s._history||[];
-    var historyHtml=history.length?'<div class="pr-m-chart">'+history.map(function(item){var p=prSystemPayload(item),n=Number(p.gmv??p.sales??0);return '<i title="'+escapeHtml(item.collected_at||'')+'" style="height:'+Math.max(8,Math.min(90,isNaN(n)?8:n))+'%;background:var(--green)"></i>';}).join('')+'</div><p class="pr-empty-note">已保存 '+history.length+' 个快照，最新值来自 '+escapeHtml(s[12]||'未提供')+'。</p>':'<p class="pr-empty-note">暂无可验证历史快照；未提供可验证的时间序列</p>';
-    body.innerHTML='<div class="pr-empty-note" style="text-align:left;padding:0 0 14px">数据来源：'+escapeHtml(prDisplay(s._source))+'。以下空白字段表示源文件未提供，系统不会估算。</div>'+
+    var historyHtml=history.length?'<div class="pr-m-chart">'+history.map(function(item){var p=prSystemPayload(item),n=Number(p.gmv??p.sales??0);return '<i title="'+escapeHtml(item.collected_at||'')+'" data-ui-style="height:'+Math.max(8,Math.min(90,isNaN(n)?8:n))+'%;background:var(--green)"></i>';}).join('')+'</div><p class="pr-empty-note">已保存 '+history.length+' 个快照，最新值来自 '+escapeHtml(s[12]||'未提供')+'。</p>':'<p class="pr-empty-note">暂无可验证历史快照；未提供可验证的时间序列</p>';
+    body.innerHTML='<div class="pr-empty-note" data-ui-style="text-align:left;padding:0 0 14px">数据来源：'+escapeHtml(prDisplay(s._source))+'。以下空白字段表示源文件未提供，系统不会估算。</div>'+
       '<div class="pr-m-stats">'+
       '<div class="pr-m-stat"><b>'+escapeHtml(prDisplay(s[3]))+'</b><span>月 GMV</span></div>'+
       '<div class="pr-m-stat"><b>'+escapeHtml(prDisplay(s[4]))+'</b><span>增速</span></div>'+
@@ -1157,7 +1157,7 @@ function shShowDetail(idx) {
       '<div class="pr-m-section"><h4>店铺信息</h4><p>平台：'+escapeHtml(prDisplay(s[1]))+' · 市场：'+escapeHtml(prDisplay(s[2]))+' · 类目：'+escapeHtml(prDisplay(s[6]))+'</p><p>粉丝：'+escapeHtml(prDisplay(s[10]))+' · 评分：'+escapeHtml(prDisplay(s[11]))+' · 标签：'+escapeHtml(prDisplay(s[9]))+'</p></div>'+
       '<div class="pr-m-section"><h4>品类规则包</h4><p>'+escapeHtml(prCategoryRuleLabel(s._categoryRule))+'</p></div>'+
       '<div class="pr-m-section"><h4>历史状态与趋势</h4>'+historyHtml+'</div>'+
-      '<div style="display:flex;gap:8px;margin-top:16px"><button class="filter-button" style="padding:8px 18px" data-action="shAddToReport('+idx+')">加入报告素材</button><button class="filter-button" style="padding:8px 18px" data-action="shCreateShopMonitor('+idx+')">📡 创建店铺监控</button></div>';
+      '<div data-ui-style="display:flex;gap:8px;margin-top:16px"><button class="filter-button" data-ui-style="padding:8px 18px" data-action="shAddToReport('+idx+')">加入报告素材</button><button class="filter-button" data-ui-style="padding:8px 18px" data-action="shCreateShopMonitor('+idx+')">📡 创建店铺监控</button></div>';
     document.getElementById('sh-modal-overlay').classList.add('show');
     return;
   }
@@ -1248,7 +1248,7 @@ function shRenderGroups() {
   var html = '<button class="sh-grp ' + (shActiveGroup==='all'?'active':'') + '" data-grp="all" data-action="shSwitchGroup(\'all\')">全部店铺</button>';
   Object.keys(shGroups).forEach(function(k) {
     if(k === 'all') return;
-    html += '<button class="sh-grp ' + (shActiveGroup===k?'active':'') + '" data-grp="' + escapeHtml(k) + '" data-action="shSwitchGroup(\'' + escInline(k) + '\')">' + escapeHtml(k) + ' <span style="font-size:10px;color:var(--muted)">(' + (shGroupShops[k]||[]).length + ')</span></button>';
+    html += '<button class="sh-grp ' + (shActiveGroup===k?'active':'') + '" data-grp="' + escapeHtml(k) + '" data-action="shSwitchGroup(\'' + escInline(k) + '\')">' + escapeHtml(k) + ' <span data-ui-style="font-size:10px;color:var(--muted)">(' + (shGroupShops[k]||[]).length + ')</span></button>';
   });
   el.innerHTML = html;
 }

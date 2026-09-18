@@ -5,9 +5,10 @@
   "description": "JAY观海 cross-border market decision intelligence workspace",
   "scripts": {
     "dev": "python -m http.server 4173 --bind 127.0.0.1",
-    "test": "npm run test:syntax && npm run test:data && npm run test:xss && node --test tests/static.test.cjs tests/report-engine.test.cjs tests/report-quality.test.cjs tests/report-scenarios.test.cjs tests/billing.test.cjs tests/notification.test.cjs tests/notification-live-acceptance.test.cjs tests/workspace-collaboration.test.cjs tests/workspace-billing.test.cjs tests/production-exceptions.test.cjs tests/production-acceptance-isolation.test.cjs tests/private-data-boundaries.test.cjs tests/security-operations.test.cjs tests/staged-rollout.test.cjs tests/source-governance.test.cjs tests/permanent-history.test.cjs tests/history-backfill.test.cjs tests/collection-worker.test.cjs tests/tikhub-pilot.test.cjs tests/platform-rule-coverage.test.cjs tests/server-history-search.test.cjs tests/multi-ai-gateway.test.cjs tests/resource-center.test.cjs",
+    "test": "npm run test:syntax && npm run test:events && npm run test:styles && npm run test:data && npm run test:xss && node --test tests/static.test.cjs tests/report-engine.test.cjs tests/report-quality.test.cjs tests/report-scenarios.test.cjs tests/billing.test.cjs tests/notification.test.cjs tests/notification-live-acceptance.test.cjs tests/workspace-collaboration.test.cjs tests/workspace-billing.test.cjs tests/production-exceptions.test.cjs tests/production-acceptance-isolation.test.cjs tests/private-data-boundaries.test.cjs tests/security-operations.test.cjs tests/staged-rollout.test.cjs tests/source-governance.test.cjs tests/permanent-history.test.cjs tests/history-backfill.test.cjs tests/collection-worker.test.cjs tests/tikhub-pilot.test.cjs tests/platform-rule-coverage.test.cjs tests/server-history-search.test.cjs tests/multi-ai-gateway.test.cjs tests/resource-center.test.cjs",
     "test:xss": "node scripts/xss_verify.js",
     "test:events": "node scripts/onclick_scan.js",
+    "test:styles": "node scripts/style_attribute_scan.js",
     "test:syntax": "node scripts/js_syntax_check.js",
     "test:data": "python -m unittest discover -s tests -p \"test_*.py\"",
     "test:browser": "playwright test",

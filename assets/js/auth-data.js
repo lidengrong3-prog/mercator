@@ -207,10 +207,10 @@ function jayRenderBriefCard(){
   });
   var body = document.getElementById('ov-brief-body');
   if(!body) return;
-  if(!best){ var marketText=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames().join('、'):'当前'; body.innerHTML = '<p style="color:var(--muted);font-size:12px">暂无实时简报。点击「刷新实时数据」，AI 将联网检索并生成最新'+marketText+'市场动态。</p>'; return; }
+  if(!best){ var marketText=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames().join('、'):'当前'; body.innerHTML = '<p data-ui-style="color:var(--muted);font-size:12px">暂无实时简报。点击「刷新实时数据」，AI 将联网检索并生成最新'+marketText+'市场动态。</p>'; return; }
   var d = new Date(best.ts);
   var label = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
-  body.innerHTML = '<div class="rp-v2-rpt" style="box-shadow:none;padding:0">' + renderMarkdownSafe(best.text) + '</div><div style="font-size:11px;color:var(--muted);margin-top:8px">生成时间：'+label+'</div>';
+  body.innerHTML = '<div class="rp-v2-rpt" data-ui-style="box-shadow:none;padding:0">' + renderMarkdownSafe(best.text) + '</div><div data-ui-style="font-size:11px;color:var(--muted);margin-top:8px">生成时间：'+label+'</div>';
 }
 
 // 初始化总览页数据印章与 AI 实时情报卡（依赖 JAY_DATA_META / JAY_CORE_KEYS，必须在数据层定义后调用）
@@ -2323,11 +2323,11 @@ function showUpgradePrompt(feature) {
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(26,35,50,.6);z-index:999;display:flex;align-items:center;justify-content:center';
   var card = document.createElement('div');
   card.style.cssText = 'background:#fff;border-radius:8px;padding:32px;max-width:400px;text-align:center';
-  card.innerHTML = '<div style="font-size:32px;margin-bottom:16px">★</div>'
-    + '<h3 style="margin:0 0 8px;font-size:18px">升级到 Pro 版</h3>'
-    + '<p style="color:#6b7b8d;font-size:13px;line-height:1.6;margin:0 0 20px">' + (names[feature]||'该功能') + ' 为 Pro 版专属功能。<br>解锁全部高级功能，深度洞察当前市场。</p>'
-    + '<button id="upgrade-ok" style="border:0;background:#3b7ab8;color:#fff;padding:10px 24px;border-radius:4px;cursor:pointer;font-size:13px">了解 Pro 版 →</button>'
-    + '<br><button id="upgrade-cancel" style="border:0;background:none;color:#6b7b8d;padding:8px;cursor:pointer;font-size:12px;margin-top:8px">稍后再说</button>';
+  card.innerHTML = '<div data-ui-style="font-size:32px;margin-bottom:16px">★</div>'
+    + '<h3 data-ui-style="margin:0 0 8px;font-size:18px">升级到 Pro 版</h3>'
+    + '<p data-ui-style="color:#6b7b8d;font-size:13px;line-height:1.6;margin:0 0 20px">' + (names[feature]||'该功能') + ' 为 Pro 版专属功能。<br>解锁全部高级功能，深度洞察当前市场。</p>'
+    + '<button id="upgrade-ok" data-ui-style="border:0;background:#3b7ab8;color:#fff;padding:10px 24px;border-radius:4px;cursor:pointer;font-size:13px">了解 Pro 版 →</button>'
+    + '<br><button id="upgrade-cancel" data-ui-style="border:0;background:none;color:#6b7b8d;padding:8px;cursor:pointer;font-size:12px;margin-top:8px">稍后再说</button>';
   overlay.appendChild(card);
   document.body.appendChild(overlay);
   card.querySelector('#upgrade-ok').onclick = function(){ overlay.remove(); };

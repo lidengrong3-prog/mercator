@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' https://cdn.jsdelivr.net; script-src-attr 'none'; connect-src 'self' https://ftlzofrnosgvdvwajhuz.supabase.co wss://ftlzofrnosgvdvwajhuz.supabase.co; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' https://cdn.jsdelivr.net; style-src-attr 'none'; script-src 'self' https://cdn.jsdelivr.net; script-src-attr 'none'; connect-src 'self' https://ftlzofrnosgvdvwajhuz.supabase.co wss://ftlzofrnosgvdvwajhuz.supabase.co; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
 <title>JAY观海 - 跨境市场决策情报</title>
 <link rel="stylesheet" href="assets/styles/legacy-foundation.css">
 <link rel="stylesheet" href="assets/styles/workspaces.css">
@@ -13,6 +13,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js" integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s//pP" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js" integrity="sha384-uTYyvsSSUZeaPhb5RbKlQa0zY/WpX/QHfvg2mczXyBQOpkWPEDy9lczyp+w7SKXu" crossorigin="anonymous"></script>
+<script src="assets/strict-style.js" defer></script>
 <script src="assets/app-shell.js" defer></script>
 <script src="assets/event-delegation.js" defer></script>
 <script src="assets/js/market-scope.js" defer></script>
@@ -105,7 +106,7 @@
         <p class="nav-section-label">工作台</p>
         <button class="nav-item active" type="button" data-page="overview"><i data-lucide="layout-dashboard"></i><span class="nav-text">决策总览</span></button>
         <button class="nav-item" type="button" data-page="watchlist"><i data-lucide="bookmark"></i><span class="nav-text">我的看板</span></button>
-        <button class="nav-item" type="button" data-page="alerts"><i data-lucide="bell-ring"></i><span class="nav-text">预警中心</span><span class="nav-badge" id="al-nav-badge" style="display:none"></span></button>
+        <button class="nav-item" type="button" data-page="alerts"><i data-lucide="bell-ring"></i><span class="nav-text">预警中心</span><span class="nav-badge" id="al-nav-badge" data-ui-style="display:none"></span></button>
       </div>
       <div class="nav-section">
         <p class="nav-section-label">市场情报</p>
@@ -181,7 +182,7 @@
   <main>
     <button id="jay-hamburger" class="jay-hamburger" aria-label="打开菜单" data-action="toggleSidebar()">☰</button>
     <div id="jay-overlay" class="jay-overlay" data-action="closeSidebar()"></div>
-    <button id="bell" style="display:none">🔔</button><div id="bell-panel"></div>
+    <button id="bell" data-ui-style="display:none">🔔</button><div id="bell-panel"></div>
 <div class="page-head">
   <p class="eyebrow" id="breadcrumb">工作台 / 决策总览</p>
   <h1 id="page-title">决策工作台</h1>
@@ -229,7 +230,7 @@
             <button type="button" data-q="对比当前市场已配置平台的费用和入驻门槛">平台对比</button>
             <button type="button" data-q="检查我的产品进入当前市场需要注意的认证和关税风险">合规筛查</button>
           </div>
-          <div id="ov-hero-result" class="ov-hero-result" style="display:none"></div>
+          <div id="ov-hero-result" class="ov-hero-result" data-ui-style="display:none"></div>
         </article>
 
         <aside class="today-signals">
@@ -264,7 +265,7 @@
           <button type="button" data-page="watchlist"><span class="queue-icon"><i data-lucide="bookmark"></i></span><span><b>复核我的看板</b><small>确认重点市场与类目变化</small></span><i data-lucide="chevron-right"></i></button>
           <button type="button" data-page="policies"><span class="queue-icon amber"><i data-lucide="landmark"></i></span><span><b>处理政策影响</b><small>查看高风险政策和生效日期</small></span><i data-lucide="chevron-right"></i></button>
           <button type="button" data-page="report"><span class="queue-icon blue"><i data-lucide="file-chart-column"></i></span><span><b>输出决策报告</b><small>将证据整理成团队方案</small></span><i data-lucide="chevron-right"></i></button>
-          <div id="jay-stale-hint" class="stale-hint" style="display:none"><i data-lucide="triangle-alert"></i><span id="jay-stale-text">部分数据需要核对质量报告。</span></div>
+          <div id="jay-stale-hint" class="stale-hint" data-ui-style="display:none"><i data-lucide="triangle-alert"></i><span id="jay-stale-text">部分数据需要核对质量报告。</span></div>
         </section>
       </div>
 
@@ -311,12 +312,12 @@
   <button class="pr-tab" data-tab="content">内容种草单品</button>
 </div>
 
-<div class="pr-shop-input-row" id="pr-shop-selector" style="display:none">
-  <span style="font-size:12px;color:var(--muted)">选择竞品店铺：</span>
+<div class="pr-shop-input-row" id="pr-shop-selector" data-ui-style="display:none">
+  <span data-ui-style="font-size:12px;color:var(--muted)">选择竞品店铺：</span>
   <select id="pr-shop-select"><option value="">-- 请选择已监控店铺 --</option></select>
-  <button class="filter-button" id="pr-shop-load" style="padding:8px 18px">加载商品库</button>
+  <button class="filter-button" id="pr-shop-load" data-ui-style="padding:8px 18px">加载商品库</button>
 </div>
-<div class="pr-shop-stats" id="pr-shop-stats" style="display:none"></div>
+<div class="pr-shop-stats" id="pr-shop-stats" data-ui-style="display:none"></div>
 
 <div class="pr-filter-advanced" id="pr-filters">
   <div class="pr-filter-group">
@@ -374,9 +375,9 @@
     </select>
   </div>
   <div class="pr-filter-actions">
-    <button class="filter-button" id="pr-apply-filter" style="padding:8px 24px">应用筛选</button>
+    <button class="filter-button" id="pr-apply-filter" data-ui-style="padding:8px 24px">应用筛选</button>
     <button class="pr-save-tpl" id="pr-save-tpl-btn">💾 保存筛选模板</button>
-    <button style="background:none;border:none;color:var(--muted);font:11px 'Noto Sans SC';cursor:pointer" id="pr-reset-filter">重置</button>
+    <button data-ui-style="background:none;border:none;color:var(--muted);font:11px 'Noto Sans SC';cursor:pointer" id="pr-reset-filter">重置</button>
   </div>
   <div class="pr-tpl-list" id="pr-tpl-list"></div>
 </div>
@@ -386,7 +387,7 @@
   <button id="pr-batch-add">✦ 加入报告素材</button>
   <button id="pr-batch-monitor">📡 加入店铺监控</button>
   <button id="pr-batch-export">📋 导出数据</button>
-  <button id="pr-batch-clear" style="margin-left:4px">取消选择</button>
+  <button id="pr-batch-clear" data-ui-style="margin-left:4px">取消选择</button>
   <div class="pr-export-group">
     <button class="pr-export-btn excel" id="pr-export-excel">📊 简易 Excel</button>
     <button class="pr-export-btn pdf" id="pr-export-pdf">📄 导出 PDF</button>
@@ -404,7 +405,7 @@
   <table>
     <thead>
       <tr>
-        <th style="width:32px"><input type="checkbox" class="pr-chk" id="pr-check-all"></th>
+        <th data-ui-style="width:32px"><input type="checkbox" class="pr-chk" id="pr-check-all"></th>
         <th>#</th>
         <th>商品</th>
         <th>市场 / 平台</th>
@@ -474,14 +475,14 @@
 
 <!-- AI Insights -->
 <div id="ai-shops"></div>
-<div class="ai-insight-panel" style="margin:0 0 18px">
-  <div style="display:flex;gap:8px;margin-bottom:12px">
+<div class="ai-insight-panel" data-ui-style="margin:0 0 18px">
+  <div data-ui-style="display:flex;gap:8px;margin-bottom:12px">
     <button class="sh-ai-tab active" data-aitab="benchmark" data-action="shSwitchAI('benchmark')">标杆店铺参考</button>
     <button class="sh-ai-tab" data-aitab="risk" data-action="shSwitchAI('risk')">风险异动提醒</button>
     <button class="sh-ai-tab" data-aitab="compare" data-action="shSwitchAI('compare')">竞品对标</button>
   </div>
   <div id="sh-ai-content"></div>
-  <div id="sh-compare-panel" style="display:none"></div>
+  <div id="sh-compare-panel" data-ui-style="display:none"></div>
 </div>
 
 <!-- Group Tabs -->
@@ -504,7 +505,7 @@
     <option value="500+">$500万+</option>
   </select>
   <select id="sh-f-tag"><option value="">全部标签</option></select>
-  <input type="text" id="sh-f-keyword" placeholder="搜索店铺名/类目..." style="min-width:160px">
+  <input type="text" id="sh-f-keyword" placeholder="搜索店铺名/类目..." data-ui-style="min-width:160px">
   <select id="sh-f-sort">
     <option value="gmv_desc">GMV 降序</option>
     <option value="gmv_asc">GMV 升序</option>
@@ -518,11 +519,11 @@
 
 <!-- Action Bar -->
 <div class="sh-action-bar">
-  <div style="display:flex;align-items:center;gap:10px">
-    <p class="eyebrow" style="margin:0">SHOP TRACKER</p>
-    <h2 style="margin:0">已监控店铺 <span id="sh-count" style="font-size:14px;color:var(--muted)"></span></h2>
+  <div data-ui-style="display:flex;align-items:center;gap:10px">
+    <p class="eyebrow" data-ui-style="margin:0">SHOP TRACKER</p>
+    <h2 data-ui-style="margin:0">已监控店铺 <span id="sh-count" data-ui-style="font-size:14px;color:var(--muted)"></span></h2>
   </div>
-  <div style="display:flex;gap:8px;align-items:center">
+  <div data-ui-style="display:flex;gap:8px;align-items:center">
     <button class="export" data-action="shOpenAddModal()">+ 添加店铺</button>
     <button class="export" data-action="jaySyncShopsToCloud()" title="同步到云端">☁ 同步云端</button>
     <button class="export" data-action="shExportExcel()" title="导出Excel">📊 Excel</button>
@@ -531,7 +532,7 @@
 </div>
 
 <!-- Batch Bar -->
-<div class="sh-batch-bar" id="sh-batch-bar" style="display:none">
+<div class="sh-batch-bar" id="sh-batch-bar" data-ui-style="display:none">
   <span id="sh-batch-count">已选 0 家</span>
   <button data-action="shBatchAddReport()">加入报告素材</button>
   <button data-action="shBatchSetAlert()">设置预警</button>
@@ -543,7 +544,7 @@
 <article class="panel table-panel">
 <table>
 <thead><tr>
-  <th style="width:36px"><input type="checkbox" id="sh-select-all" data-change-action="shToggleAll(this.checked)"></th>
+  <th data-ui-style="width:36px"><input type="checkbox" id="sh-select-all" data-change-action="shToggleAll(this.checked)"></th>
   <th>店铺</th>
   <th>平台</th>
   <th>市场</th>
@@ -574,33 +575,33 @@
 
 <!-- Add Shop Modal -->
 <div class="sh-modal-overlay" id="sh-add-overlay" data-action="if(event.target===this)shCloseAddModal()">
-  <div class="sh-modal" style="max-width:520px">
+  <div class="sh-modal" data-ui-style="max-width:520px">
     <div class="sh-modal-head">
       <h3>添加店铺</h3>
       <button data-action="shCloseAddModal()">✕</button>
     </div>
-    <div class="sh-modal-body" style="padding:20px">
-      <div style="display:flex;gap:8px;margin-bottom:14px">
+    <div class="sh-modal-body" data-ui-style="padding:20px">
+      <div data-ui-style="display:flex;gap:8px;margin-bottom:14px">
         <button class="sh-add-tab active" data-addtab="single" data-action="shSwitchAddTab('single')">单个添加</button>
         <button class="sh-add-tab" data-addtab="batch" data-action="shSwitchAddTab('batch')">批量导入</button>
         <button class="sh-add-tab" data-addtab="link" data-action="shSwitchAddTab('link')">从商品雷达添加</button>
       </div>
       <div id="sh-add-single">
-        <label>店铺名称</label><input type="text" id="sh-add-name" placeholder="例: GLOW LAB Official" style="width:100%;margin-bottom:8px">
-        <label>平台</label><select id="sh-add-platform" style="width:100%;margin-bottom:8px"><option value="">请选择平台</option><option>Amazon</option><option>TikTok Shop</option><option>AliExpress</option><option>eBay</option></select>
-        <label>市场</label><input type="text" id="sh-add-market" value="当前市场" readonly style="width:100%;margin-bottom:8px">
-        <label>主营类目</label><input type="text" id="sh-add-cat" placeholder="例: 美妆个护" style="width:100%;margin-bottom:8px">
-        <label>标签（逗号分隔）</label><input type="text" id="sh-add-tags" placeholder="例: 对标头部,美妆" style="width:100%;margin-bottom:12px">
-        <button class="export" data-action="shDoAddSingle()" style="width:100%">确认添加</button>
+        <label>店铺名称</label><input type="text" id="sh-add-name" placeholder="例: GLOW LAB Official" data-ui-style="width:100%;margin-bottom:8px">
+        <label>平台</label><select id="sh-add-platform" data-ui-style="width:100%;margin-bottom:8px"><option value="">请选择平台</option><option>Amazon</option><option>TikTok Shop</option><option>AliExpress</option><option>eBay</option></select>
+        <label>市场</label><input type="text" id="sh-add-market" value="当前市场" readonly data-ui-style="width:100%;margin-bottom:8px">
+        <label>主营类目</label><input type="text" id="sh-add-cat" placeholder="例: 美妆个护" data-ui-style="width:100%;margin-bottom:8px">
+        <label>标签（逗号分隔）</label><input type="text" id="sh-add-tags" placeholder="例: 对标头部,美妆" data-ui-style="width:100%;margin-bottom:12px">
+        <button class="export" data-action="shDoAddSingle()" data-ui-style="width:100%">确认添加</button>
       </div>
-      <div id="sh-add-batch" style="display:none">
-      <p style="color:var(--muted);font-size:13px;margin-bottom:12px">批量店铺数据需通过类目机会页上传 CSV 或 JSON，并提供店铺名、当前市场和平台字段。</p>
-        <textarea id="sh-add-batch-text" rows="4" style="display:none"></textarea>
-        <button class="export" data-action="shCloseAddModal();switchPage('products')" style="width:100%">前往上传数据</button>
+      <div id="sh-add-batch" data-ui-style="display:none">
+      <p data-ui-style="color:var(--muted);font-size:13px;margin-bottom:12px">批量店铺数据需通过类目机会页上传 CSV 或 JSON，并提供店铺名、当前市场和平台字段。</p>
+        <textarea id="sh-add-batch-text" rows="4" data-ui-style="display:none"></textarea>
+        <button class="export" data-action="shCloseAddModal();switchPage('products')" data-ui-style="width:100%">前往上传数据</button>
       </div>
-      <div id="sh-add-link" style="display:none">
-        <p style="color:var(--muted);font-size:13px;margin-bottom:10px">在「产品全域雷达」中点击商品所属店铺名即可自动添加到监控列表。</p>
-        <button class="export" data-action="shCloseAddModal();switchPage('products')" style="width:100%">前往产品全域雷达</button>
+      <div id="sh-add-link" data-ui-style="display:none">
+        <p data-ui-style="color:var(--muted);font-size:13px;margin-bottom:10px">在「产品全域雷达」中点击商品所属店铺名即可自动添加到监控列表。</p>
+        <button class="export" data-action="shCloseAddModal();switchPage('products')" data-ui-style="width:100%">前往产品全域雷达</button>
       </div>
     </div>
   </div>
@@ -611,14 +612,14 @@
       <div class="al-header">
         <div class="al-title-group">
           <h2>⚠️ 预警中心</h2>
-          <span class="al-badge" id="al-unread-badge" style="display:none"></span>
+          <span class="al-badge" id="al-unread-badge" data-ui-style="display:none"></span>
         </div>
         <label class="al-search" for="al-search-input">
           <span aria-hidden="true">⌕</span>
           <input id="al-search-input" type="search" placeholder="搜索预警标题、平台或详情" data-input-action="alSearch()">
         </label>
       </div>
-      <p id="al-scope-note" style="color:#6b7280;margin-bottom:20px;">当前范围：当前市场 · 仅展示已接入数据源的预警</p>
+      <p id="al-scope-note" data-ui-style="color:#6b7280;margin-bottom:20px;">当前范围：当前市场 · 仅展示已接入数据源的预警</p>
       <div class="al-toolbar">
         <select id="al-filter-type" class="al-filter-select" data-change-action="alFilterChange()">
           <option value="all">全部类型</option>
@@ -653,11 +654,11 @@
         </div>
         <button class="al-btn" id="al-mark-all" type="button" data-action="alMarkAllRead()">全部标为已读</button>
         <button class="al-btn" type="button" data-action="alExport()">导出</button>
-        <span id="al-data-info" style="font-size:.78rem;color:#888;padding:4px 0 8px"></span>
+        <span id="al-data-info" data-ui-style="font-size:.78rem;color:#888;padding:4px 0 8px"></span>
       </div>
       <div id="al-summary" class="al-summary"></div>
       <div id="al-tabs" class="al-tabs" role="tablist" aria-label="预警类型"></div>
-      <div id="al-batch" class="al-batch" style="display:none">
+      <div id="al-batch" class="al-batch" data-ui-style="display:none">
         <label><input type="checkbox" data-change-action="alToggleSelectAll(this.checked)"> 全选本页</label>
         <span id="al-batch-info" class="al-batch-info"></span>
         <button class="al-btn" type="button" data-action="alBatchArchive()">批量归档</button>
@@ -744,7 +745,7 @@
         <div class="pl-search-box">
           <input type="text" id="pl-search" placeholder="搜索政策名称/地区...">
           <button class="filter-button" data-action="plSearch()">搜索</button>
-          <button class="filter-button" data-action="plExportReport()" style="background:var(--green)">导出报告</button>
+          <button class="filter-button" data-action="plExportReport()" data-ui-style="background:var(--green)">导出报告</button>
         </div>
       </div>
       <div class="pl-domain-tabs" role="tablist" aria-label="法规数据域">
@@ -752,7 +753,7 @@
         <button type="button" class="pl-domain-tab" data-domain="tax" role="tab" aria-selected="false" data-action="plSwitchDomain('tax')">税收费用</button>
         <button type="button" class="pl-domain-tab" data-domain="access" role="tab" aria-selected="false" data-action="plSwitchDomain('access')">市场准入</button>
       </div>
-      <div class="pl-data-info" id="pl-data-info" style="font-size:.78rem;color:#888;padding:0 0 8px"></div>
+      <div class="pl-data-info" id="pl-data-info" data-ui-style="font-size:.78rem;color:#888;padding:0 0 8px"></div>
       <div class="pl-ai-panel" id="pl-ai-panel">
         <div class="pl-ai-tabs" id="pl-ai-tabs"></div>
         <div class="pl-ai-content" id="pl-ai-content"></div>
@@ -769,20 +770,20 @@
         <span class="pl-filter-label">影响等级</span>
         <select id="pl-f-impact"><option value="all">全部等级</option><option value="high">🔴 高</option><option value="medium">🟡 中</option><option value="low">🔵 低</option></select>
         <button class="filter-button" data-action="plFilterChange()">筛选</button>
-        <button class="filter-button" data-action="plClearFilters()" style="background:#eee;color:#666">重置</button>
-        <span id="pl-filter-count" style="font-size:.78rem;color:#888;margin-left:auto"></span>
+        <button class="filter-button" data-action="plClearFilters()" data-ui-style="background:#eee;color:#666">重置</button>
+        <span id="pl-filter-count" data-ui-style="font-size:.78rem;color:#888;margin-left:auto"></span>
       </div>
       <div class="pl-batch-bar" id="pl-batch-bar">
-        <button class="filter-button" data-action="plToggleCompliance()" style="background:var(--sea);color:#fff">📋 合规清单</button>
+        <button class="filter-button" data-action="plToggleCompliance()" data-ui-style="background:var(--sea);color:#fff">📋 合规清单</button>
         <button data-action="plBatchAlert()">批量开启预警</button>
         <button data-action="plBatchWatch()">加入看板监控</button>
         <button data-action="plBatchArchive()">批量归档</button>
         <span class="pl-selected-count" id="pl-selected-count"></span>
       </div>
-      <div id="pl-compliance" style="display:none"></div>
+      <div id="pl-compliance" data-ui-style="display:none"></div>
       <div class="pl-list" id="pl-list"></div>
       <div class="pl-pagination" id="pl-pagination"></div>
-      <div class="pl-empty" id="pl-empty" style="display:none">
+      <div class="pl-empty" id="pl-empty" data-ui-style="display:none">
         <p>当前筛选条件下暂无匹配政策</p>
         <button data-action="plClearFilters()">清除筛选条件</button>
       </div>
@@ -793,9 +794,9 @@
 
     <section id="rules" class="page">
       <div id="ai-rules"><div class="ai-panel" data-ai-state="loading"><div class="ai-header"><div class="ai-tabs"><span class="ai-tab active">规则变动洞察</span></div></div><div class="ai-loading-state">正在读取当前市场已验证的平台规则...</div></div></div>
-      <div class="pl-data-info" id="rl-data-info" style="font-size:.78rem;color:#888;padding:0 0 8px"></div>
+      <div class="pl-data-info" id="rl-data-info" data-ui-style="font-size:.78rem;color:#888;padding:0 0 8px"></div>
       <div class="rl-platform-coverage" id="rl-platform-coverage" aria-label="平台规则接入状态"></div>
-      <div class="filter-row" style="flex-wrap:wrap;gap:8px">
+      <div class="filter-row" data-ui-style="flex-wrap:wrap;gap:8px">
         <select id="rl-platform"><option value="all">全部平台</option></select>
         <select id="rl-market"><option value="all">当前范围全部市场</option></select>
         <select id="rl-topic"><option value="all">全部主题</option></select>
@@ -806,11 +807,11 @@
         <select id="rl-version"><option value="all">全部版本</option></select>
         <select id="rl-act-type"><option value="all">全部活动类型</option></select>
         <button class="filter-button" id="apply-rl">应用筛选</button>
-        <button class="filter-button" id="reset-rl" style="background:#999">重置</button>
-        <span id="rl-count" style="margin-left:auto;font-size:13px;color:#888"></span>
+        <button class="filter-button" id="reset-rl" data-ui-style="background:#999">重置</button>
+        <span id="rl-count" data-ui-style="margin-left:auto;font-size:13px;color:#888"></span>
       </div>
       <div class="rl-batch-bar">
-        <label style="font-size:13px;display:flex;align-items:center;gap:4px"><input type="checkbox" id="rl-select-all"> 全选</label>
+        <label data-ui-style="font-size:13px;display:flex;align-items:center;gap:4px"><input type="checkbox" id="rl-select-all"> 全选</label>
         <button data-action="rlBatchAlert()">批量开启预警</button>
         <button data-action="rlBatchWatch()">批量加入看板</button>
         <button data-action="rlExport()">导出报表</button>
@@ -924,22 +925,22 @@
             <div class="rp-v2-generate-bar"><span class="rp-v2-generate-info">已选 <b id="rp-v2-cfg-count">0</b> 条素材</span><button type="button" class="rp-v2-gen-btn go" id="rp-v2-next-btn" data-action="rpV2GoStep(2)" disabled>继续配置</button></div>
           </section>
 
-          <section class="rp-v2-panel" id="rp-panel-step2" style="display:none">
+          <section class="rp-v2-panel" id="rp-panel-step2" data-ui-style="display:none">
             <h3 class="rp-v2-panel-title">配置报告范围</h3>
             <p class="rp-v2-panel-desc">模板：<b id="rp-v2-cfg-tpl">-</b></p>
             <div class="rp-v2-config-grid">
-              <div class="rp-v2-config-group" style="grid-column:1/-1"><label for="rp-v2-topic">行业或产品</label><input id="rp-v2-topic" type="text" placeholder="例如：便携式储能电源 / 当前市场宠物用品"></div>
+              <div class="rp-v2-config-group" data-ui-style="grid-column:1/-1"><label for="rp-v2-topic">行业或产品</label><input id="rp-v2-topic" type="text" placeholder="例如：便携式储能电源 / 当前市场宠物用品"></div>
               <div class="rp-v2-config-group"><label>数据周期</label><div class="rp-v2-toggle-row"><button type="button" class="rp-v2-toggle active" data-cfg="period" data-val="7d" data-action="rpV2Toggle(this)">近 7 天</button><button type="button" class="rp-v2-toggle" data-cfg="period" data-val="1m" data-action="rpV2Toggle(this)">近 1 月</button><button type="button" class="rp-v2-toggle" data-cfg="period" data-val="3m" data-action="rpV2Toggle(this)">近 3 月</button></div></div>
               <div class="rp-v2-config-group"><label>输出侧重</label><div class="rp-v2-toggle-row"><button type="button" class="rp-v2-toggle active" data-cfg="focus" data-val="data" data-action="rpV2Toggle(this)">数据</button><button type="button" class="rp-v2-toggle" data-cfg="focus" data-val="strategy" data-action="rpV2Toggle(this)">策略</button><button type="button" class="rp-v2-toggle" data-cfg="focus" data-val="balance" data-action="rpV2Toggle(this)">均衡</button></div></div>
               <div class="rp-v2-config-group"><label>报告受众</label><div class="rp-v2-toggle-row"><button type="button" class="rp-v2-toggle active" data-cfg="audience" data-val="boss" data-action="rpV2Toggle(this)">决策层</button><button type="button" class="rp-v2-toggle" data-cfg="audience" data-val="ops" data-action="rpV2Toggle(this)">运营</button><button type="button" class="rp-v2-toggle" data-cfg="audience" data-val="client" data-action="rpV2Toggle(this)">客户</button></div></div>
               <div class="rp-v2-config-group"><label>输出格式</label><div class="rp-v2-toggle-row"><button type="button" class="rp-v2-toggle active" data-cfg="format" data-val="full" data-action="rpV2Toggle(this)">完整报告</button><button type="button" class="rp-v2-toggle" data-cfg="format" data-val="exec" data-action="rpV2Toggle(this)">执行摘要</button><button type="button" class="rp-v2-toggle" data-cfg="format" data-val="slides" data-action="rpV2Toggle(this)">演示大纲</button></div></div>
-              <div class="rp-v2-config-group" style="grid-column:1/-1"><label for="rp-v2-custom-prompt">特别要求</label><textarea id="rp-v2-custom-prompt" placeholder="补充希望重点回答的问题"></textarea><div style="display:flex;gap:8px"><select id="rp-v2-tpl-sel" class="rp-v2-tpl-sel"><option value="">选择已保存模板</option></select><button type="button" class="rp-v2-tpl-btn" data-action="rpV2ApplyTpl()">应用</button><button type="button" class="rp-v2-tpl-btn" data-action="rpV2SaveTpl()">保存</button></div></div>
+              <div class="rp-v2-config-group" data-ui-style="grid-column:1/-1"><label for="rp-v2-custom-prompt">特别要求</label><textarea id="rp-v2-custom-prompt" placeholder="补充希望重点回答的问题"></textarea><div data-ui-style="display:flex;gap:8px"><select id="rp-v2-tpl-sel" class="rp-v2-tpl-sel"><option value="">选择已保存模板</option></select><button type="button" class="rp-v2-tpl-btn" data-action="rpV2ApplyTpl()">应用</button><button type="button" class="rp-v2-tpl-btn" data-action="rpV2SaveTpl()">保存</button></div></div>
             </div>
             <div id="rp-v2-data-check" class="rp-v2-data-check" aria-live="polite"></div>
             <div class="rp-v2-generate-bar"><button type="button" class="rp-v2-gen-btn" data-action="rpV2GoStep(1)">返回</button><button type="button" class="rp-v2-gen-btn go" data-action="rpV2Questionnaire()">生成报告</button></div>
           </section>
 
-          <section class="rp-v2-preview-panel" id="rp-panel-step3" style="display:none">
+          <section class="rp-v2-preview-panel" id="rp-panel-step3" data-ui-style="display:none">
             <div class="rp-v2-preview-toolbar"><div class="rp-v2-preview-toolbar-left"><i data-lucide="file-chart-column"></i><h4 id="rp-v2-preview-title">报告预览</h4><span id="rp-v2-publish-status" class="rp-v2-publish-status">未生成</span><span id="rp-v2-save-status" class="rp-v2-save-status" aria-live="polite"></span></div><div class="rp-v2-preview-toolbar-right"><button type="button" data-action="rpV2GoStep(2)">修改</button><button type="button" data-action="rpV2CopyReport()">复制</button><button type="button" data-action="rpV2Export('md')">导出 MD</button><button type="button" data-action="rpV2Export('pdf')">导出 PDF</button><button type="button" data-action="rpV2Export('docx')">导出 DOCX</button></div></div>
             <div id="rp-v2-quality-gate" class="rp-v2-quality-gate" aria-live="polite"></div>
             <div id="rp-v2-content-quality" class="rp-v2-content-quality" aria-live="polite"></div>
@@ -950,8 +951,8 @@
         <aside class="rp-v2-right">
           <section class="rp-v2-recent"><h4><i data-lucide="history"></i> 最近报告</h4><div id="rp-v2-recent-list"></div></section>
           <section class="rp-v2-recent rp-v2-export-history"><h4><i data-lucide="download-cloud"></i> 导出历史</h4><div id="rp-v2-export-history"><div class="rp-v2-history-empty">暂无导出记录</div></div></section>
-          <section class="rp-v2-ai-tool"><div class="rp-v2-ai-tool-header"><div class="rp-v2-ai-tool-icon" style="background:var(--sage);color:var(--green)"><i data-lucide="list-todo"></i></div><div><h4>执行计划</h4><p>由当前报告拆解任务</p></div></div><button type="button" class="rp-v2-ai-tool-btn" data-action="rpV2GeneratePlan()">生成执行计划</button></section>
-          <section class="rp-v2-ai-tool"><div class="rp-v2-ai-tool-header"><div class="rp-v2-ai-tool-icon" style="background:#eef2ff;color:#4f46e5"><i data-lucide="shield-alert"></i></div><div><h4>风险扫描</h4><p>基于已选素材</p></div></div><button type="button" class="rp-v2-ai-tool-btn" data-action="rpV2AiTool('risk')">扫描风险</button><div id="rp-ai-risk-result"></div></section>
+          <section class="rp-v2-ai-tool"><div class="rp-v2-ai-tool-header"><div class="rp-v2-ai-tool-icon" data-ui-style="background:var(--sage);color:var(--green)"><i data-lucide="list-todo"></i></div><div><h4>执行计划</h4><p>由当前报告拆解任务</p></div></div><button type="button" class="rp-v2-ai-tool-btn" data-action="rpV2GeneratePlan()">生成执行计划</button></section>
+          <section class="rp-v2-ai-tool"><div class="rp-v2-ai-tool-header"><div class="rp-v2-ai-tool-icon" data-ui-style="background:#eef2ff;color:#4f46e5"><i data-lucide="shield-alert"></i></div><div><h4>风险扫描</h4><p>基于已选素材</p></div></div><button type="button" class="rp-v2-ai-tool-btn" data-action="rpV2AiTool('risk')">扫描风险</button><div id="rp-ai-risk-result"></div></section>
         </aside>
       </div>
     </section>
@@ -961,7 +962,7 @@
     <section id="myfit" class="page">
 
       <div class="page-header"><h2>🤖 AI工具</h2></div>
-      <p style="color:#6b7280;margin-bottom:20px;">AI驱动的智能选品、文案生成、数据分析工具</p>
+      <p data-ui-style="color:#6b7280;margin-bottom:20px;">AI驱动的智能选品、文案生成、数据分析工具</p>
       <div class="quick-cards">
         <div class="quick-card"><div class="qc-icon purple">🎯</div><div class="qc-title">AI智能选品</div><div class="qc-desc">基于多维度数据推荐潜力品类</div></div>
         <div class="quick-card"><div class="qc-icon blue">✍️</div><div class="qc-title">AI文案生成</div><div class="qc-desc">Listing标题、五点描述、广告文案</div></div>
@@ -975,7 +976,7 @@
         <div class="prc-hero">
           <h2>JAY观海 定价方案</h2>
           <p>从「免费看清机会」到「PRO 深度决策」再到「企业级出海服务」，按出海阶段选择。</p>
-          <div id="prc-current-tier" class="prc-current-tier" style="margin-top:10px;font-size:13px;color:var(--ink)"></div>
+          <div id="prc-current-tier" class="prc-current-tier" data-ui-style="margin-top:10px;font-size:13px;color:var(--ink)"></div>
           <div id="prc-billing-notice" class="prc-billing-notice is-disabled" role="status">正式收费状态：未启用。本页面当前不会创建订单或扣款。</div>
           <div id="prc-provider-sync" class="prc-provider-sync" role="status"></div>
           <div id="prc-usage-summary" class="prc-usage-summary"></div>
@@ -1032,7 +1033,7 @@
         </div>
         <p class="prc-note">* 正式收费由服务端开关控制；未启用时不会创建订单、扣款或修改会员等级。启用后的实际价格、取消和退款规则以 Stripe 支付页及上线公告为准。</p>
       </div>
-      <div id="ent-modal-overlay" class="ent-modal-overlay" style="display:none">
+      <div id="ent-modal-overlay" class="ent-modal-overlay" data-ui-style="display:none">
         <div class="ent-modal">
           <h3>🤝 企服对接 · 让 JAY观海替你做</h3>
           <p class="ent-sub">留下需求，专属顾问将在 1 个工作日内联系你。提交后线索会按登录账号保存，用于本次商务回访。</p>
@@ -1199,7 +1200,7 @@
       <div class="admin-console">
         <div class="admin-head"><div><span class="section-label">OPERATIONS CONSOLE</span><h2>管理与运维后台</h2><p id="admin-generated">仅平台管理员可读取；权限由服务端校验。</p></div><button type="button" class="st-btn st-btn-outline" data-action="adminLoad()">刷新</button></div>
         <div class="st-inline-notice" id="admin-access-note">正在校验管理员权限…</div>
-        <div id="admin-content" style="display:none">
+        <div id="admin-content" data-ui-style="display:none">
         <div class="admin-metrics"><article><span>注册用户</span><b id="admin-users">--</b></article><article><span>有效订阅</span><b id="admin-subs">--</b></article><article><span>工作区</span><b id="admin-workspaces">--</b></article><article><span>近100次报告失败率</span><b id="admin-report-failure">--</b></article><article><span>近500次 AI Token</span><b id="admin-ai-tokens">--</b></article><article><span>近500次 AI 输入 Token</span><b id="admin-ai-input-tokens">--</b></article><article><span>近500次 AI 输出 Token</span><b id="admin-ai-output-tokens">--</b></article><article><span>近500次联网检索</span><b id="admin-ai-searches">--</b></article><article><span>近500次 AI 估算成本</span><b id="admin-ai-cost">--</b></article><article><span>近100次平均报告耗时</span><b id="admin-report-duration">--</b></article><article><span>近100次导出失败</span><b id="admin-export-failures">--</b></article><article><span>未解决事件</span><b id="admin-incidents-count">--</b></article><article><span>待处理投递</span><b id="admin-deliveries">--</b></article></div>
           <div class="admin-grid"><article class="admin-card"><h3>分阶段开放</h3><div id="admin-production-rollout" class="admin-list"></div></article><article class="admin-card"><h3>外部通知正式验收</h3><div id="admin-notification-acceptance" class="admin-list"></div></article><article class="admin-card"><h3>Stripe 正式收费验收</h3><div id="admin-stripe-acceptance" class="admin-list"></div></article><article class="admin-card"><h3>最近报告运行</h3><div id="admin-report-runs" class="admin-list"></div></article><article class="admin-card"><h3>最近 AI 请求</h3><div id="admin-ai-requests" class="admin-list"></div></article><article class="admin-card"><h3>AI 供应商目录</h3><div id="admin-ai-providers" class="admin-list"></div></article><article class="admin-card"><h3>系统事件</h3><div id="admin-incidents" class="admin-list"></div></article><article class="admin-card"><h3>备份运行</h3><div id="admin-backups" class="admin-list"></div></article></div>
         </div>
@@ -1326,7 +1327,7 @@
 
 
 <!-- FAQ / 帮助弹窗 -->
-<div id="jay-faq" style="display:none;position:fixed;inset:0;background:rgba(15,28,52,.5);z-index:2000;align-items:center;justify-content:center">
+<div id="jay-faq" data-ui-style="display:none;position:fixed;inset:0;background:rgba(15,28,52,.5);z-index:2000;align-items:center;justify-content:center">
   <div class="jo-card">
     <h2>❓ 常见问题（FAQ）</h2>
     <p class="jo-sub">关于 JAY观海 的使用与数据说明</p>
