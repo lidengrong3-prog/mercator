@@ -45,6 +45,18 @@ class PublicSiteTests(unittest.TestCase):
         self.assertTrue((self.output / "index.html").is_file())
         self.assertTrue((self.output / ".nojekyll").is_file())
         self.assertTrue((self.output / "assets").is_dir())
+        verification_dir = self.output / ".well-known" / "teo-verification"
+        self.assertEqual(
+            {
+                path.name: path.read_text(encoding="utf-8").strip()
+                for path in verification_dir.iterdir()
+                if path.is_file()
+            },
+            {
+                "fp8muni2ew.txt": "sl8saatid7b97j02mfs2yxbpnoyv52tv",
+                "s13g6oebjj.txt": "pzqv0hdtvdndremvzg4thmc3u9q9t7rs",
+            },
+        )
 
         denied = {
             "_cfd_part1.json",

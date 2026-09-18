@@ -63,6 +63,7 @@ def build_public_site(output, root=ROOT):
     for filename in ("index.html", ".nojekyll", "_headers", "edgeone.json"):
         shutil.copy2(root / filename, output / filename)
     shutil.copytree(root / "assets", output / "assets")
+    shutil.copytree(root / ".well-known", output / ".well-known")
 
     manifest_datasets = {}
     for key, relative_path in PUBLIC_DATASETS.items():
