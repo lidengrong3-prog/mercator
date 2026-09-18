@@ -13,6 +13,9 @@ const healthWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', '
 const dockerfile = fs.readFileSync(path.join(root, 'Dockerfile.worker'), 'utf8');
 const entrypoint = fs.readFileSync(path.join(root, 'deploy', 'worker-entrypoint.sh'), 'utf8');
 const runtimeMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20261002000000_collection_worker_runtime.sql'), 'utf8');
+const observabilityMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20261012000000_collection_worker_observability.sql'), 'utf8');
+const pilotScript = fs.readFileSync(path.join(root, 'scripts', 'collection_worker_pilot.py'), 'utf8');
+const pilotWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'collection-worker-pilot.yml'), 'utf8');
 
 test('worker has queue lifecycle, lease renewal, retry, budget and allowlist contracts', () => {
   for (const fragment of [
@@ -33,12 +36,15 @@ test('scheduled cutover preserves the legacy collector until a Worker is healthy
   assert.match(dataWorkflow, /workflow_dispatch:/);
   assert.match(dataWorkflow, /enqueue_collection_tasks\.py/);
   assert.match(dataWorkflow, /COLLECTION_WORKER_CUTOVER/);
+  assert.match(dataWorkflow, /COLLECTION_WORKER_PILOT_ONLY/);
+  assert.match(dataWorkflow, /pilot_only and scheduled/);
   assert.match(dataWorkflow, /active_workers/);
   assert.match(dataWorkflow, /legacy-update-data:/);
   assert.match(dataWorkflow, /if: \$\{\{ needs\.route\.outputs\.mode == 'worker' \}\}/);
   assert.match(dataWorkflow, /if: \$\{\{ needs\.route\.outputs\.mode == 'legacy' \}\}/);
   assert.match(dataWorkflow, /bootstrap_worker_data\.py --required/);
   assert.match(healthWorkflow, /collection_worker\.py --health-check/);
+  assert.match(healthWorkflow, /--runtime-evidence --window-hours 24/);
   assert.match(healthWorkflow, /upload-artifact@v4/);
   assert.match(publish, /validate_data\.py/);
   assert.match(publish, /sync_to_supabase\.py/);
@@ -58,6 +64,30 @@ test('production Worker image restores private state and advertises runtime pres
   assert.match(runtimeMigration, /'active_workers'/);
   assert.match(runtimeMigration, /INTERVAL '2 minutes'/);
   assert.match(runtimeMigration, /REVOKE ALL ON public\.collection_worker_instances FROM PUBLIC, anon, authenticated/);
+});
+
+test('Worker runtime evidence proves a 24-hour heartbeat and idempotent task window', () => {
+  for (const fragment of [
+    'collection_worker_heartbeat_samples', 'boot_id', 'get_collection_worker_runtime_evidence',
+    'coverage_seconds', 'max_gap_seconds', 'duplicate_request_count', 'duplicate_attempt_count',
+    "INTERVAL '35 days'",
+  ]) assert.match(observabilityMigration, new RegExp(fragment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(worker, /worker_poll_failed/);
+  assert.match(worker, /MAX_POLL_ERROR_BACKOFF_SECONDS/);
+  assert.match(worker, /--runtime-evidence/);
+});
+
+test('pilot cutover is single-source, fail-closed and waits for publication', () => {
+  assert.match(pilotScript, /COLLECTION_WORKER_CUTOVER/);
+  assert.match(pilotScript, /len\(rows\) != 2/);
+  assert.match(pilotScript, /publish_formal/);
+  assert.match(pilotScript, /duplicate request IDs/);
+  assert.match(pilotScript, /duplicate attempt numbers/);
+  assert.match(pilotScript, /dead_letter/);
+  assert.match(pilotWorkflow, /workflow_dispatch:/);
+  assert.match(pilotWorkflow, /Refuse pilot unless queue cutover is explicitly enabled/);
+  assert.match(pilotWorkflow, /collection_worker_pilot\.py/);
+  assert.match(pilotWorkflow, /default: collect_cpsc/);
 });
 
 test('worker migration includes per-source limits, leases, budgets and service-only grants', () => {

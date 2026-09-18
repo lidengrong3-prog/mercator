@@ -46,6 +46,7 @@ Render 可通过根目录的 `render.yaml` 创建一个 Background Worker 和 5 
 - `COLLECTION_WORKER_RELEASE_ID`：提交 SHA 或发布版本，用于定位当前运行代码。
 - `COLLECTION_WORKER_LEASE_SECONDS`：任务租约，默认 900 秒。
 - `COLLECTION_WORKER_POLL_SECONDS`：空队列轮询间隔，默认 30 秒。
+- `COLLECTION_WORKER_BOOT_ID`：可选进程启动标识；不设置时每次进程启动自动生成，用于运行证据区分重启。
 - 采集器所需的 `FRED_API_KEY`、`CENSUS_API_KEY`、`TIKHUB_API_KEY` 等供应商密钥。
 - `ENABLE_BROWSER_PLATFORM_RULES=true`：当 TikTok Shop 首屏 HTML 没有规则记录时，允许使用无头浏览器读取官方动态页面；未启用或渲染失败时，该来源明确记为 `degraded`。
 - `PLATFORM_BROWSER_TIMEOUT_SECONDS`：浏览器兜底超时，默认 90 秒。
@@ -62,6 +63,12 @@ python scripts/enqueue_collection_tasks.py --collector backfill_history \
 ```
 
 入队脚本只接受登记的采集器和显式参数，数据库任务中的 `command` 字段不会被执行。批量入队会自动追加一个依赖所有采集任务的 `publish_formal` 任务，只有质量闸门通过后才同步正式投影。相同 `--run-id` 会生成相同的 `task_key`，可用于人工重试时避免重复入队。
+
+### 单来源小范围 Pilot
+
+部署 Worker 后，先在 GitHub Environment `production` 中同时设置 `COLLECTION_WORKER_CUTOVER=true` 和 `COLLECTION_WORKER_PILOT_ONLY=true`，再手动运行 `Collection Worker Pilot Cutover` workflow。Pilot-only 会让定时调度继续走旧路径，只允许手动 pilot 入队；默认只运行 `collect_cpsc`。workflow 只允许选择一个登记的采集器，自动追加该批次的 `publish_formal` 依赖，并等待两个任务都进入 `succeeded`。它会拒绝没有新鲜 Worker 心跳的环境，并在完成后检查任务尝试号、请求 ID、死信和重复尝试。
+
+Pilot 失败时不要直接把任务批量改回 `queued`。先查看 workflow 产物中的 `collection-worker-pilot-result.json` 和 Worker 日志，确认失败来源、租约和预算状态，再使用新的 `run_id` 重试。
 
 ## 执行与恢复语义
 
@@ -85,13 +92,21 @@ python scripts/collection_worker.py --health-check
 
 该命令返回队列积压、有效租约、死信、打开的熔断来源、TikHub 当日用量，以及两分钟内有心跳的 `active_workers`。`.github/workflows/collection-health.yml` 每 6 小时运行一次并只上传摘要产物。处理死信前先确认供应商恢复，再将任务状态改回 `queued` 并清理租约；暂停来源应把 `collection_source_policies.enabled` 设为 `false`。
 
+验证 24 小时运行证据：
+
+```bash
+python scripts/collection_worker.py --runtime-evidence --window-hours 24
+```
+
+`collection_worker_heartbeat_samples` 保存带 `boot_id` 的心跳样本；证据输出包含心跳覆盖时长、最大间隔、启动会话数、任务尝试去重计数和窗口内任务状态。只有 `coverage_seconds >= 86400`、`boot_count=1`、最大间隔符合运维阈值、`duplicate_request_count=0`、`duplicate_attempt_count=0` 且没有 `dead_letter` 时，才可把“连续运行至少 24 小时、无丢任务和重复写入”记为通过。一次数据库/网络瞬时错误会记录 `worker_poll_failed` 并指数退避，Worker 继续运行；租约续期失败仍由数据库租约和过期回收保证不重复领取。
+
 ## 无中断切换
 
 `.github/workflows/data-update.yml` 在迁移期继续保留旧的每 4 小时直采。安全切换顺序固定为：
 
-1. 先部署 `20261002000000_collection_worker_runtime.sql`，保持 GitHub Environment 变量 `COLLECTION_WORKER_CUTOVER=false` 或不创建该变量。
-2. 部署新容器，确认 `active_workers >= 1`，并人工入队一个完整批次验证采集、发布和重启恢复。
-3. 观察至少一个完整调度周期后，把 GitHub Environment `production` 中的变量 `COLLECTION_WORKER_CUTOVER` 设置为 `true`。
+1. 先部署 `20261002000000_collection_worker_runtime.sql` 和 `20261012000000_collection_worker_observability.sql`，保持 `COLLECTION_WORKER_CUTOVER=false` 或不创建该变量。
+2. 部署新容器，确认 `active_workers >= 1`；设置 `COLLECTION_WORKER_CUTOVER=true`、`COLLECTION_WORKER_PILOT_ONLY=true`，运行单来源 Pilot，验证采集、质量校验、同步、发布和重启恢复。
+3. 连续观察至少 24 小时运行证据；通过后关闭 `COLLECTION_WORKER_PILOT_ONLY`，让定时调度开始全量入队，保留 `COLLECTION_WORKER_CUTOVER=true`。
 4. 后续定时任务在心跳正常时只入队，不再在 Actions 中采集；如果 Worker 心跳超过两分钟，下一次定时任务会自动回退旧直采。
 
 因此不要删除 `legacy-update-data`，也不要在 Worker 心跳和完整批次证据出现前设置切换变量。生产 Worker 的 service key 只放托管平台 Secret；Actions 使用 Supabase CLI 临时解析的密钥，不写入产物或仓库。

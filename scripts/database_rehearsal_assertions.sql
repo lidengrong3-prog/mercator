@@ -29,6 +29,7 @@ BEGIN
       ('public.formal_publications'),
       ('public.collection_tasks'),
       ('public.collection_worker_instances'),
+      ('public.collection_worker_heartbeat_samples'),
       ('public.resource_items'),
       ('public.courses'),
       ('public.notification_channel_configs'),
@@ -57,7 +58,10 @@ BEGIN
      WHERE n.nspname = 'public' AND p.proname = 'heartbeat_collection_worker'
   ) OR NOT EXISTS (
     SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-     WHERE n.nspname = 'public' AND p.proname = 'get_collection_worker_health'
+      WHERE n.nspname = 'public' AND p.proname = 'get_collection_worker_health'
+   ) OR NOT EXISTS (
+     SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+      WHERE n.nspname = 'public' AND p.proname = 'get_collection_worker_runtime_evidence'
   ) OR NOT EXISTS (
     SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
      WHERE n.nspname = 'public' AND p.proname = 'search_formal_publications'
@@ -70,7 +74,7 @@ BEGIN
       FROM (VALUES
         ('profiles'), ('workspaces'), ('workspace_members'),
         ('generated_reports'), ('formal_publications'),
-        ('collection_tasks'), ('collection_worker_instances'),
+        ('collection_tasks'), ('collection_worker_instances'), ('collection_worker_heartbeat_samples'),
         ('resource_items'), ('courses')
       ) AS required(table_name)
       LEFT JOIN pg_class c

@@ -274,6 +274,41 @@ class CollectionWorkerTests(unittest.TestCase):
         self.assertEqual([entry[1] for entry in client.heartbeats], ["busy", "ready"])
         self.assertEqual(client.heartbeats[0][2]["current_task_id"], task()["id"])
 
+    def test_worker_keeps_polling_after_transient_claim_failure(self):
+        class FlakyClient(FakeClient):
+            def __init__(self):
+                super().__init__()
+                self.claim_calls = 0
+
+            def claim_task(self, worker_id, lease_seconds):
+                self.claim_calls += 1
+                if self.claim_calls == 1:
+                    raise RuntimeError("temporary database outage")
+                return None
+
+        client = FlakyClient()
+        sleeps = []
+
+        def sleep(seconds):
+            sleeps.append(seconds)
+            if len(sleeps) == 2:
+                raise KeyboardInterrupt
+
+        worker = CollectionWorker(
+            client, worker_id="resilient-worker", poll_seconds=7,
+            process_runner=lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout="", stderr=""),
+            sleep_fn=sleep,
+        )
+        with self.assertRaises(KeyboardInterrupt):
+            worker.run_forever()
+        self.assertEqual(client.claim_calls, 2)
+        self.assertEqual(sleeps, [7, 7])
+        self.assertEqual(
+            [entry[1] for entry in client.heartbeats],
+            ["starting", "ready", "error", "ready"],
+        )
+        self.assertTrue(worker.runtime_metadata["boot_id"])
+
     def test_enqueue_adds_publish_task_after_collection_dependencies(self):
         rows = enqueue(None, ["collect_data", "collect_cpsc"], run_id="run-1", dry_run=True)
         publish = next(row for row in rows if row["collector_key"] == "publish_formal")

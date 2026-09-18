@@ -50,6 +50,7 @@ jobs:
       SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
       SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
       COLLECTION_WORKER_CUTOVER: ${{ vars.COLLECTION_WORKER_CUTOVER || 'false' }}
+      COLLECTION_WORKER_PILOT_ONLY: ${{ vars.COLLECTION_WORKER_PILOT_ONLY || 'false' }}
       EVENT_NAME: ${{ github.event_name }}
     steps:
       - uses: actions/checkout@v4
@@ -86,13 +87,17 @@ jobs:
               health = json.load(handle)
           ready = int(health.get('active_workers') or 0) > 0
           cutover = os.environ.get('COLLECTION_WORKER_CUTOVER', '').strip().lower() == 'true'
-          mode = 'worker' if cutover and ready else 'legacy'
+          pilot_only = os.environ.get('COLLECTION_WORKER_PILOT_ONLY', '').strip().lower() == 'true'
+          scheduled = os.environ.get('EVENT_NAME', '').strip().lower() == 'schedule'
+          mode = 'worker' if cutover and ready and not (pilot_only and scheduled) else 'legacy'
           with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
               output.write(f"worker_ready={'true' if ready else 'false'}\n")
               output.write(f"mode={mode}\n")
           print(json.dumps({
               'mode': mode,
               'cutover_requested': cutover,
+              'pilot_only': pilot_only,
+              'scheduled': scheduled,
               'active_workers': health.get('active_workers', 0),
               'queued': health.get('queued', 0),
               'dead_letter': health.get('dead_letter', 0),

@@ -34,6 +34,7 @@ from typing import Any, Callable, Mapping, Sequence
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_LEASE_SECONDS = 900
 DEFAULT_POLL_SECONDS = 30
+MAX_POLL_ERROR_BACKOFF_SECONDS = 300
 MAX_DIAGNOSTIC_LENGTH = 1200
 
 
@@ -245,6 +246,15 @@ class SupabaseClient:
 
     def health_check(self) -> dict[str, Any]:
         result = self.rpc("get_collection_worker_health", {})
+        if isinstance(result, list):
+            result = result[0] if result else {}
+        return result if isinstance(result, dict) else {}
+
+    def runtime_evidence(self, worker_id: str | None = None, window_hours: int = 24) -> dict[str, Any]:
+        result = self.rpc("get_collection_worker_runtime_evidence", {
+            "p_worker_id": worker_id,
+            "p_window_hours": window_hours,
+        })
         if isinstance(result, list):
             result = result[0] if result else {}
         return result if isinstance(result, dict) else {}
@@ -470,8 +480,13 @@ class CollectionWorker:
         self.python_executable = python_executable
         self.deployment_id = os.environ.get("COLLECTION_WORKER_DEPLOYMENT_ID", "").strip() or None
         self.release_id = os.environ.get("COLLECTION_WORKER_RELEASE_ID", "").strip() or None
+        self.boot_id = (
+            os.environ.get("COLLECTION_WORKER_BOOT_ID", "").strip()
+            or f"{self.worker_id}-{uuid.uuid4().hex}"
+        )
         self.runtime_metadata = {
             "runtime": "collection_worker.py",
+            "boot_id": self.boot_id,
             "browser_rules": str(os.environ.get("ENABLE_BROWSER_PLATFORM_RULES", "")).strip().lower()
                 in {"1", "true", "yes"},
         }
@@ -748,9 +763,32 @@ class CollectionWorker:
 
     def run_forever(self, *, max_tasks_per_poll: int = 1) -> None:
         self._heartbeat("starting")
+        poll_error_streak = 0
         while True:
             self._heartbeat("ready")
-            results = self.run_once(max_tasks=max_tasks_per_poll)
+            try:
+                results = self.run_once(max_tasks=max_tasks_per_poll)
+                poll_error_streak = 0
+            except KeyboardInterrupt:
+                raise
+            except Exception as error:
+                # A transient Supabase/DNS outage must not terminate the
+                # long-lived process. The claimed task, if any, remains under
+                # its database lease and can be recovered after expiry.
+                poll_error_streak += 1
+                backoff = min(
+                    MAX_POLL_ERROR_BACKOFF_SECONDS,
+                    max(self.poll_seconds, 5) * (2 ** min(poll_error_streak - 1, 6)),
+                )
+                print(json.dumps({
+                    "event": "worker_poll_failed",
+                    "error": _safe_text(error),
+                    "consecutive_failures": poll_error_streak,
+                    "backoff_seconds": backoff,
+                }, ensure_ascii=False), flush=True)
+                self._heartbeat("error")
+                self.sleep_fn(backoff)
+                continue
             if not results:
                 self.sleep_fn(self.poll_seconds)
 
@@ -770,6 +808,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--worker-id", default=os.environ.get("COLLECTION_WORKER_ID"))
     parser.add_argument("--lease-seconds", type=int, default=int(os.environ.get("COLLECTION_WORKER_LEASE_SECONDS", DEFAULT_LEASE_SECONDS)))
     parser.add_argument("--health-check", action="store_true", help="只输出队列和预算健康摘要")
+    parser.add_argument("--runtime-evidence", action="store_true", help="输出 Worker 运行连续性和任务去重证据")
+    parser.add_argument("--window-hours", type=int, default=24, help="运行证据窗口，默认 24 小时")
     args = parser.parse_args(argv)
     worker = None
     try:
@@ -778,6 +818,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                                    poll_seconds=args.poll_seconds)
         if args.health_check:
             print(json.dumps(worker.health_check(), ensure_ascii=False, indent=2))
+            return 0
+        if args.runtime_evidence:
+            evidence_worker_id = args.worker_id or os.environ.get("COLLECTION_WORKER_ID") or None
+            print(json.dumps(worker.client.runtime_evidence(evidence_worker_id, args.window_hours), ensure_ascii=False, indent=2))
             return 0
         if args.once:
             results = worker.run_once(max_tasks=args.max_tasks)
@@ -795,7 +839,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"[collection-worker] {_safe_text(error)}", file=sys.stderr)
         return 2
     finally:
-        if worker is not None and not args.health_check:
+        if worker is not None and not args.health_check and not args.runtime_evidence:
             worker._heartbeat("stopped")
     return 0
 
