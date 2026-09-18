@@ -525,7 +525,7 @@ function renderAlTabs(){
   tabs.forEach(function(t){
     var cnt=t.k==='all'?all.length:all.filter(function(a){return a.type===t.k}).length;
     var cls=alCurrentTab===t.k?'al-tab active':'al-tab';
-    html+='<button class="'+cls+'" onclick="alSwitchTab(\''+escInline(t.k)+'\')">'+ escapeHtml(t.l) +'<span class="tab-count">'+cnt+'</span></button>';
+    html+='<button class="'+cls+'" data-action="alSwitchTab(\''+escInline(t.k)+'\')">'+ escapeHtml(t.l) +'<span class="tab-count">'+cnt+'</span></button>';
   });
   document.getElementById('al-tabs').innerHTML=html;
 }
@@ -562,7 +562,7 @@ function renderAlList(filtered){
     var readCls=read?'read':'unread';
     var safeSourceUrl=typeof jaySafeHttpsUrl==='function'?jaySafeHttpsUrl(a.sourceUrl):'';
     html+='<div class="al-card '+readCls+'" id="al-card-'+escapeHtml(id)+'">';
-    html+='<div class="al-card-check"><input type="checkbox" '+checked+' onchange="alToggleSelect(\''+escInline(id)+'\',this.checked)"></div>';
+    html+='<div class="al-card-check"><input type="checkbox" '+checked+' data-change-action="alToggleSelect(\''+escInline(id)+'\',this.checked)"></div>';
     html+='<div class="al-card-icon type-'+type+'">'+icon+'</div>';
     html+='<div class="al-card-body">';
     html+='<div class="al-card-title">'+escapeHtml(title)+'</div>';
@@ -578,9 +578,9 @@ function renderAlList(filtered){
     html+='<div class="al-card-detail">'+parseDetail(detail)+'</div>';
     html+='</div>';
     html+='<div class="al-card-actions">';
-    html+='<button onclick="alViewDetail(\''+escInline(id)+'\')">查看详情</button>';
-    html+='<button class="al-ai-btn" onclick="alAiAnalysis(\''+escInline(id)+'\')">AI 解读</button>';
-    html+='<button onclick="alArchive(\''+escInline(id)+'\')">归档</button>';
+    html+='<button data-action="alViewDetail(\''+escInline(id)+'\')">查看详情</button>';
+    html+='<button class="al-ai-btn" data-action="alAiAnalysis(\''+escInline(id)+'\')">AI 解读</button>';
+    html+='<button data-action="alArchive(\''+escInline(id)+'\')">归档</button>';
     html+='</div>';
     html+='</div>';
   });
@@ -604,7 +604,7 @@ function renderAlPagination(filtered){
   var html='<span>共 '+total+' 条，第 '+alCurrentPage+'/'+pages+' 页</span><div class="al-page-btns">';
   for(var i=1;i<=pages;i++){
     var cls=i===alCurrentPage?'al-page-btn active':'al-page-btn';
-    html+='<button class="'+cls+'" onclick="alGoPage('+i+')">'+i+'</button>';
+    html+='<button class="'+cls+'" data-action="alGoPage('+i+')">'+i+'</button>';
   }
   html+='</div>';
   el.innerHTML=html;
@@ -964,8 +964,8 @@ function stRenderTeam(){
     else tbody.innerHTML=ctx.members.map(function(m){
       var p=m.profiles||{};var label=p.display_name||p.email||m.user_id||'未命名成员';
       var memberBill=memberUsage[String(m.user_id||'')]||{};
-      var roleHtml=manager&&m.user_id!==jayUser.id?'<select class="st-member-select" onchange="stChangeMemberRole(\''+stTeamEsc(m.id)+'\',this.value)"><option value="admin" '+(m.role==='admin'?'selected':'')+'>管理员</option><option value="editor" '+(m.role==='editor'?'selected':'')+'>编辑者</option><option value="viewer" '+(m.role==='viewer'?'selected':'')+'>查看者</option></select>':'<span class="st-role-text">'+stTeamEsc(jayWorkspaceRoleLabel(m.role))+'</span>';
-      var stateHtml=manager&&m.user_id!==jayUser.id?'<select class="st-member-select" onchange="stChangeMemberStatus(\''+stTeamEsc(m.id)+'\',this.value)"><option value="active" '+(m.status==='active'?'selected':'')+'>已加入</option><option value="suspended" '+(m.status==='suspended'?'selected':'')+'>已停用</option></select>':'<span class="st-status-text '+(m.status==='active'?'ok':'muted')+'">'+stTeamEsc(jayWorkspaceStatusLabel(m.status))+'</span>';
+      var roleHtml=manager&&m.user_id!==jayUser.id?'<select class="st-member-select" data-change-action="stChangeMemberRole(\''+stTeamEsc(m.id)+'\',this.value)"><option value="admin" '+(m.role==='admin'?'selected':'')+'>管理员</option><option value="editor" '+(m.role==='editor'?'selected':'')+'>编辑者</option><option value="viewer" '+(m.role==='viewer'?'selected':'')+'>查看者</option></select>':'<span class="st-role-text">'+stTeamEsc(jayWorkspaceRoleLabel(m.role))+'</span>';
+      var stateHtml=manager&&m.user_id!==jayUser.id?'<select class="st-member-select" data-change-action="stChangeMemberStatus(\''+stTeamEsc(m.id)+'\',this.value)"><option value="active" '+(m.status==='active'?'selected':'')+'>已加入</option><option value="suspended" '+(m.status==='suspended'?'selected':'')+'>已停用</option></select>':'<span class="st-status-text '+(m.status==='active'?'ok':'muted')+'">'+stTeamEsc(jayWorkspaceStatusLabel(m.status))+'</span>';
       return '<tr><td><div class="st-member-name">'+stTeamEsc(label)+'</div><small>'+stTeamEsc(p.email||m.user_id||'')+'</small></td><td>'+roleHtml+'</td><td>'+stateHtml+'</td><td>'+Number(memberBill.ai_tokens||0).toLocaleString('zh-CN')+'</td><td>'+Number(memberBill.reports||0)+'</td><td>'+Number(memberBill.exports||0)+'</td><td>'+stTeamDate(m.joined_at)+'</td></tr>';
     }).join('');
   }
@@ -974,8 +974,8 @@ function stRenderTeam(){
     var rows=ctx.invites||[];
     invites.innerHTML=rows.length?rows.map(function(i){
       var action='-';
-      if(i.status==='pending'&&manager)action='<button type="button" class="st-btn st-btn-outline st-btn-sm" onclick="stRevokeInvite(\''+stTeamEsc(i.id)+'\')">撤回</button>';
-      else if(i.status==='pending'&&String(i.email||'').toLowerCase()===String(jayUser&&jayUser.email||'').toLowerCase())action='<button type="button" class="st-btn st-btn-primary st-btn-sm" onclick="stAcceptInvite(\''+stTeamEsc(i.id)+'\')">接受邀请</button>';
+      if(i.status==='pending'&&manager)action='<button type="button" class="st-btn st-btn-outline st-btn-sm" data-action="stRevokeInvite(\''+stTeamEsc(i.id)+'\')">撤回</button>';
+      else if(i.status==='pending'&&String(i.email||'').toLowerCase()===String(jayUser&&jayUser.email||'').toLowerCase())action='<button type="button" class="st-btn st-btn-primary st-btn-sm" data-action="stAcceptInvite(\''+stTeamEsc(i.id)+'\')">接受邀请</button>';
       var deliveryClass=i.delivery_status==='sent'?'ok':(i.delivery_status==='failed'?'muted':'pending');
       var delivery='<span class="st-status-text '+deliveryClass+'">'+stTeamEsc(stTeamDeliveryLabel(i.delivery_status))+'</span>'+(i.delivery_error?'<small title="'+stTeamEsc(i.delivery_error)+'">'+stTeamEsc(i.delivery_error)+'</small>':'');
       return '<tr><td>'+stTeamEsc(i.email)+'</td><td>'+stTeamEsc(jayWorkspaceRoleLabel(i.role))+'</td><td><span class="st-status-text '+(i.status==='pending'?'pending':i.status==='accepted'?'ok':'muted')+'">'+stTeamEsc(jayWorkspaceStatusLabel(i.status))+'</span></td><td>'+delivery+'</td><td>'+stTeamDate(i.expires_at)+'</td><td>'+action+'</td></tr>';

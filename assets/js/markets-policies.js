@@ -1131,8 +1131,8 @@ function renderPlStats(){
 function renderPlAi(){
   let tabsHtml='';
   if(plActiveDomain==='policy'){
-    tabsHtml=plAiTabs.map((t,i)=>`<span class="pl-ai-tab${i===plAiTab?' active':''}" onclick="plSwitchAiTab(${i})">${t}</span>`).join('');
-    tabsHtml+=`<span style="margin-left:auto;font-size:.72rem;color:#888;cursor:pointer" onclick="plSwitchAiTab(${(plAiTab+1)%plAiTabs.length})">切换视图</span>`;
+    tabsHtml=plAiTabs.map((t,i)=>`<span class="pl-ai-tab${i===plAiTab?' active':''}" data-action="plSwitchAiTab(${i})">${t}</span>`).join('');
+    tabsHtml+=`<span style="margin-left:auto;font-size:.72rem;color:#888;cursor:pointer" data-action="plSwitchAiTab(${(plAiTab+1)%plAiTabs.length})">切换视图</span>`;
   }else{
     tabsHtml=`<span class="pl-ai-tab active">${plDomainLabels[plActiveDomain].label}重点记录</span>`;
   }
@@ -1153,7 +1153,7 @@ function renderPlAi(){
   const items=tabItems.slice(0,4).map(function(p){
     var summary=plDisplaySummary(p).replace(/\s+/g,' ').slice(0,180);
     var source=p.source_url?(' · 来源：'+plSourceLabel(p)):'';
-    return `<div class="ai-item"><span class="ai-tag-red">${escapeHtml(plMarketLabel(plRecordMarketCode(p)))}</span> ${escapeHtml(plDisplayTitle(p))}<br><span style="color:#566;">${escapeHtml(summary)}${escapeHtml(source)}</span><span class="ai-btn" onclick="plAiLocatePolicy(${p._idx})">定位记录</span><span class="ai-btn" onclick="toast('已添加预警')">添加预警</span></div>`;
+    return `<div class="ai-item"><span class="ai-tag-red">${escapeHtml(plMarketLabel(plRecordMarketCode(p)))}</span> ${escapeHtml(plDisplayTitle(p))}<br><span style="color:#566;">${escapeHtml(summary)}${escapeHtml(source)}</span><span class="ai-btn" data-action="plAiLocatePolicy(${p._idx})">定位记录</span><span class="ai-btn" data-action="toast('已添加预警')">添加预警</span></div>`;
   }).join('');
   $('#pl-ai-content').innerHTML=items || '<div class="ai-item">'+plDomainLabels[plActiveDomain].empty+'。</div>';
 }
@@ -1229,7 +1229,7 @@ function renderPlList(){
     const vBadge=p._advisory?`<span class="pl-verify-badge advisory" title="${escapeHtml(evidence.label)}" style="font-size:11px;padding:1px 6px;border-radius:8px;background:#eef5ff;color:#286090;margin-left:6px;vertical-align:middle">↗ 可追溯参考</span>`:vFlag==='pass'?`<span class="pl-verify-badge pass" title="${escapeHtml(evidence.label)}" style="font-size:11px;padding:1px 6px;border-radius:8px;background:#eafaf1;color:#1e8449;margin-left:6px;vertical-align:middle">✓ 已核验</span>`:`<span class="pl-verify-badge warn" title="${escapeHtml(vIssues.join('；'))}" style="font-size:11px;padding:1px 6px;border-radius:8px;background:#fef9e7;color:#b7950b;margin-left:6px;vertical-align:middle">⚠ 待核</span>`;
     return `<div class="pl-card" style="${cardBorder}">
       <div class="pl-risk-bar ${levelClass}"></div>
-      <input type="checkbox" class="pl-card-check" ${checked} onclick="event.stopPropagation();plToggleSelect(${p._idx})">
+      <input type="checkbox" class="pl-card-check" ${checked} data-action="event.stopPropagation();plToggleSelect(${p._idx})">
       <div class="pl-card-body">
         <h3>${titleLink}${vBadge}</h3>
         <div class="pl-meta">
@@ -1256,23 +1256,23 @@ function renderPlList(){
       <div class="pl-card-right">
          <span class="pl-level-badge ${badgeClass}">${escapeHtml(impactLabel)}</span>
         <div class="pl-card-ops">
-          <button onclick="event.stopPropagation();openPlDetail(${p._idx})">查看详情</button>
-          <button onclick="event.stopPropagation();toast('已添加预警')">添加预警</button>
+          <button data-action="event.stopPropagation();openPlDetail(${p._idx})">查看详情</button>
+          <button data-action="event.stopPropagation();toast('已添加预警')">添加预警</button>
         </div>
       </div>
     </div>`;
   }).join('');
 
   // Pagination
-  let pagHtml=`<button ${plCurrentPage<=1?'disabled':''} onclick="plGoPage(${plCurrentPage-1})">‹</button>`;
+  let pagHtml=`<button ${plCurrentPage<=1?'disabled':''} data-action="plGoPage(${plCurrentPage-1})">‹</button>`;
   for(let i=1;i<=totalPages;i++){
     if(totalPages>7 && i>2 && i<totalPages-1 && Math.abs(i-plCurrentPage)>1){
       if(i===3||i===totalPages-2)pagHtml+=`<span>…</span>`;
       continue;
     }
-    pagHtml+=`<button class="${i===plCurrentPage?'active':''}" onclick="plGoPage(${i})">${i}</button>`;
+    pagHtml+=`<button class="${i===plCurrentPage?'active':''}" data-action="plGoPage(${i})">${i}</button>`;
   }
-  pagHtml+=`<button ${plCurrentPage>=totalPages?'disabled':''} onclick="plGoPage(${plCurrentPage+1})">›</button>`;
+  pagHtml+=`<button ${plCurrentPage>=totalPages?'disabled':''} data-action="plGoPage(${plCurrentPage+1})">›</button>`;
   $('#pl-pagination').innerHTML=pagHtml;
 }
 
@@ -1382,7 +1382,7 @@ function openPlDetail(idx){
   const effectiveFrom=p.effective_from||p.effective_date||'';
   const effectiveTo=p.effective_to||p.expire_date||'';
   const originalTitle=String(p.title||'').trim();
-  let html=`<button class="pl-detail-close" onclick="closePlDetail()">✕</button>
+  let html=`<button class="pl-detail-close" data-action="closePlDetail()">✕</button>
     <h2>${escapeHtml(title)}</h2>
     <div class="pl-detail-sub">${escapeHtml(regionLabel)} · ${escapeHtml(plDomainLabels[plActiveDomain].label)} · ${escapeHtml(plTranslationLabel(p))}</div>
     <div class="pl-detail-section"><h4>来源与核验</h4>
@@ -1400,7 +1400,7 @@ function openPlDetail(idx){
     <div class="pl-detail-section"><h4>${escapeHtml(plDomainLabels[plActiveDomain].label)}字段</h4>${plDetailFacts(p,plActiveDomain)}</div>
     <div class="pl-detail-section"><h4>中文内容</h4><div class="pl-detail-item" style="line-height:1.8">${escapeHtml(summary||'中文摘要尚未接入')}</div></div>
     ${originalTitle&&originalTitle!==title?`<details class="pl-detail-section"><summary>查看原文标题</summary><div class="pl-detail-item">${escapeHtml(originalTitle)}</div></details>`:''}
-    <div class="pl-detail-section"><button class="filter-button" onclick="toast('已添加预警')">添加预警监控</button><button class="filter-button" onclick="toast('已加入看板')">加入看板</button></div>`;
+    <div class="pl-detail-section"><button class="filter-button" data-action="toast('已添加预警')">添加预警监控</button><button class="filter-button" data-action="toast('已加入看板')">加入看板</button></div>`;
   $('#pl-detail-modal').innerHTML=html;
   $('#pl-detail-overlay').classList.add('show');
 }
@@ -1755,7 +1755,7 @@ function renderRlStats(){
 
 // AI
 function renderRlAi(){
-  $('#ai-rules').innerHTML='<div class="ai-panel"><div class="ai-header"><div class="ai-tabs" id="rl-ai-tabs"><span class="ai-tab active" data-t="rule" onclick="switchRlAiTab(\'rule\')">规则变动洞察</span><span class="ai-tab" data-t="act" onclick="switchRlAiTab(\'act\')">平台活动洞察</span></div><button class="ai-regen" onclick="renderRlAi()">🔄 刷新</button></div><div id="rl-ai-content"></div><small style="color:#999;font-size:11px">内容仅来自当前范围规则记录</small></div>';
+  $('#ai-rules').innerHTML='<div class="ai-panel"><div class="ai-header"><div class="ai-tabs" id="rl-ai-tabs"><span class="ai-tab active" data-t="rule" data-action="switchRlAiTab(\'rule\')">规则变动洞察</span><span class="ai-tab" data-t="act" data-action="switchRlAiTab(\'act\')">平台活动洞察</span></div><button class="ai-regen" data-action="renderRlAi()">🔄 刷新</button></div><div id="rl-ai-content"></div><small style="color:#999;font-size:11px">内容仅来自当前范围规则记录</small></div>';
   switchRlAiTab('rule');
 }
 function switchRlAiTab(t){
@@ -1763,14 +1763,14 @@ function switchRlAiTab(t){
   if(t==='rule'){
     const items=getFilteredRules();
     const highItems=items.filter(r=>r.impact_level==='high').slice(0,3);
-    const aiHtml=highItems.length?highItems.map(r=>'<li>⚠️ <strong>'+escapeHtml(r.platform)+'</strong> '+escapeHtml((r.title||r.summary||'').substring(0,60))+' <button class="ai-action" onclick="rlLocate(\'rule\',\''+escInline(r.platform)+'\')">定位</button><button class="ai-action" onclick="toast(\'已加入预警\')">加入预警</button></li>').join(''):'<li>暂无高影响规则</li>';
+    const aiHtml=highItems.length?highItems.map(r=>'<li>⚠️ <strong>'+escapeHtml(r.platform)+'</strong> '+escapeHtml((r.title||r.summary||'').substring(0,60))+' <button class="ai-action" data-action="rlLocate(\'rule\',\''+escInline(r.platform)+'\')">定位</button><button class="ai-action" data-action="toast(\'已加入预警\')">加入预警</button></li>').join(''):'<li>暂无高影响规则</li>';
     $('#rl-ai-content').innerHTML='<ul>'+aiHtml+'</ul>';
   } else {
     const acts=getFilteredActs().filter(a=>parseInt(a[11])>0).slice(0,5);
     const aiHtml=acts.length?acts.map((a,i)=>{
       const label=rlActTypeLabels[rlActTypeGroup(a[1])] || a[1];
       const countdown=rlCountdown(a[11]);
-      return '<li>'+(i===0?'🔥':i===1?'🆕':'💡')+' <strong>'+escapeHtml(a[0])+'</strong> '+label+' — '+a[7].substring(0,45)+(a[7].length>45?'…':'')+' '+countdown+' <button class="ai-action" onclick="rlLocate(\'act\',\''+escInline(a[0])+'\')">定位</button><button class="ai-action" onclick="toast(\'已加入预警\')">报名预警</button></li>';
+      return '<li>'+(i===0?'🔥':i===1?'🆕':'💡')+' <strong>'+escapeHtml(a[0])+'</strong> '+label+' — '+a[7].substring(0,45)+(a[7].length>45?'…':'')+' '+countdown+' <button class="ai-action" data-action="rlLocate(\'act\',\''+escInline(a[0])+'\')">定位</button><button class="ai-action" data-action="toast(\'已加入预警\')">报名预警</button></li>';
     }).join(''):'<li>暂无近期活动</li>';
     $('#rl-ai-content').innerHTML='<ul>'+aiHtml+'</ul>';
   }
@@ -1842,7 +1842,7 @@ function renderRlRules(){
   const slice=filtered.slice(start,start+RL_PAGE);
   const list=$('#rl-rules-list');
   $('#rl-count').textContent='规则 '+total+' 条 | 活动 '+getFilteredActs().length+' 条';
-  if(!slice.length){list.innerHTML='<div class="empty-state"><p>暂无匹配规则</p><button onclick="resetRlFilters()" class="btn-primary">清除筛选</button></div>';$('#rl-rules-pagination').innerHTML='';return}
+  if(!slice.length){list.innerHTML='<div class="empty-state"><p>暂无匹配规则</p><button data-action="resetRlFilters()" class="btn-primary">清除筛选</button></div>';$('#rl-rules-pagination').innerHTML='';return}
   list.innerHTML=slice.map((r,si)=>{
     const globalIdx=rlGetJsonItems().findIndex(item=>item.id===r.id);
     const riskLevel=r.impact_level==='high'?'high':r.impact_level==='medium'?'mid':'low';
@@ -1860,7 +1860,7 @@ function renderRlRules(){
     return '<div class="rl-rule-card" data-idx="'+globalIdx+'">'
     +'<div class="rl-risk-bar rl-risk-'+riskLevel+'"></div>'
     +'<div class="rl-card-body">'
-    +'<h4><input type="checkbox" class="rl-check" data-idx="'+escapeHtml(String(r.id||''))+'" '+((rlChecked.has(r.id))?'checked':'')+' onchange="rlToggleCheck(\''+escInline(r.id||'')+'\')"> '+titleLink+' <span class="tag" style="color:'+impactColor+';border-color:'+impactColor+'">'+escapeHtml(catLabel)+'</span></h4>'
+    +'<h4><input type="checkbox" class="rl-check" data-idx="'+escapeHtml(String(r.id||''))+'" '+((rlChecked.has(r.id))?'checked':'')+' data-change-action="rlToggleCheck(\''+escInline(r.id||'')+'\')"> '+titleLink+' <span class="tag" style="color:'+impactColor+';border-color:'+impactColor+'">'+escapeHtml(catLabel)+'</span></h4>'
     +'<div class="rl-card-meta"><span>📅 '+escapeHtml(r.published_at||'')+'</span><span class="tag watch">'+escapeHtml(marketLabel)+'</span><span>'+escapeHtml(r.platform||'')+'</span><span class="tag">主题：'+escapeHtml(topicLabel)+'</span>'
     +(isFuture?'<span class="rl-countdown '+(days<=7?(days<=3?'rl-countdown-urgent':'rl-countdown-warn'):'rl-countdown-ok')+'">'+days+'天后生效</span>':'<span class="rl-countdown rl-countdown-ok">已生效</span>')
     +'<span class="rl-rule-version" data-rule-version="'+escapeHtml(rlRuleVersionLabel(r))+'">版本：'+escapeHtml(rlRuleVersionLabel(r))+'</span>'
@@ -1871,13 +1871,13 @@ function renderRlRules(){
     +(r.change_summary?'<div class="rl-card-change">变更：'+escapeHtml(r.change_summary)+'</div>':'')
     +'</div>'
     +'<div class="rl-card-actions">'
-    +'<button onclick="openRlRuleDetail('+globalIdx+')">查看详情</button>'
-    +'<button onclick="toast(\'已添加预警\')">添加预警</button>'
+    +'<button data-action="openRlRuleDetail('+globalIdx+')">查看详情</button>'
+    +'<button data-action="toast(\'已添加预警\')">添加预警</button>'
     +'</div></div>';
   }).join('');
   // pagination
   let pHtml='';
-  for(let i=1;i<=pages;i++)pHtml+='<button class="'+(i===rlRulesPage?'active':'')+'" onclick="rlRulesPage='+i+';renderRlRules()">'+i+'</button>';
+  for(let i=1;i<=pages;i++)pHtml+='<button class="'+(i===rlRulesPage?'active':'')+'" data-action="rlRulesPage='+i+';renderRlRules()">'+i+'</button>';
   $('#rl-rules-pagination').innerHTML=pHtml;
 }
 
@@ -1890,26 +1890,26 @@ function renderRlActs(){
   const start=(rlActPage-1)*RL_PAGE;
   const slice=filtered.slice(start,start+RL_PAGE);
   const list=$('#rl-activities-list');
-  if(!slice.length){list.innerHTML='<div class="empty-state"><p>暂无匹配活动</p><button onclick="resetRlFilters()" class="btn-primary">清除筛选</button></div>';$('#rl-act-pagination').innerHTML='';return}
+  if(!slice.length){list.innerHTML='<div class="empty-state"><p>暂无匹配活动</p><button data-action="resetRlFilters()" class="btn-primary">清除筛选</button></div>';$('#rl-act-pagination').innerHTML='';return}
   list.innerHTML=slice.map((a,si)=>{
     const globalIdx=activitiesData.indexOf(a);
     const ext=actExtData[globalIdx]||{hotLevel:'mid',lastGMV:'-',avgROI:'-',riskWarn:'',benefit:a[7]};
     return '<div class="rl-act-card" data-idx="'+globalIdx+'">'
     +'<div class="rl-risk-bar rl-risk-'+(ext.hotLevel==='high'?'high':ext.hotLevel==='mid'?'mid':'low')+'"></div>'
     +'<div class="rl-card-body">'
-    +'<h4><input type="checkbox" class="rl-check" data-idx="a'+globalIdx+'" onchange="rlToggleCheck(\'a'+globalIdx+'\')"> '+a[0]+' · '+rlActTypeLabels[rlActTypeGroup(a[1])]+' <span class="rl-act-type '+rlActTypeClass(a[1])+'">'+rlActTypeLabels[rlActTypeGroup(a[1])]+'</span></h4>'
+    +'<h4><input type="checkbox" class="rl-check" data-idx="a'+globalIdx+'" data-change-action="rlToggleCheck(\'a'+globalIdx+'\')"> '+a[0]+' · '+rlActTypeLabels[rlActTypeGroup(a[1])]+' <span class="rl-act-type '+rlActTypeClass(a[1])+'">'+rlActTypeLabels[rlActTypeGroup(a[1])]+'</span></h4>'
     +'<div class="rl-card-meta"><span>📅 '+a[3]+' ~ '+a[4]+'</span><span class="tag watch">'+a[5]+'</span><span>主推: '+a[10]+'</span>'+rlCountdown(a[11])+'</div>'
     +'<div class="rl-card-summary">'+a[7].substring(0,80)+(a[7].length>80?'…':'')+'</div>'
     +(ext.riskWarn?'<div class="rl-act-risk-warn">⚠️ '+ext.riskWarn+'</div>':'')
     +'</div>'
     +'<div class="rl-card-actions">'
-    +'<button onclick="openRlActDetail('+globalIdx+')">活动详情</button>'
-    +'<button onclick="toast(\'已添加报名预警\')">报名预警</button>'
-    +'<button class="btn-primary" onclick="switchPage(\'products\');toast(\'已跳转爆款雷达\')">热销品</button>'
+    +'<button data-action="openRlActDetail('+globalIdx+')">活动详情</button>'
+    +'<button data-action="toast(\'已添加报名预警\')">报名预警</button>'
+    +'<button class="btn-primary" data-action="switchPage(\'products\');toast(\'已跳转爆款雷达\')">热销品</button>'
     +'</div></div>';
   }).join('');
   let pHtml='';
-  for(let i=1;i<=pages;i++)pHtml+='<button class="'+(i===rlActPage?'active':'')+'" onclick="rlActPage='+i+';renderRlActs()">'+i+'</button>';
+  for(let i=1;i<=pages;i++)pHtml+='<button class="'+(i===rlActPage?'active':'')+'" data-action="rlActPage='+i+';renderRlActs()">'+i+'</button>';
   $('#rl-act-pagination').innerHTML=pHtml;
 }
 
@@ -1999,7 +1999,7 @@ function openRlRuleDetail(idx){
   const overlay=document.createElement('div');
   overlay.className='rl-detail-overlay';
   overlay.onclick=e=>{if(e.target===overlay)overlay.remove()};
-  overlay.innerHTML='<div class="rl-detail-modal"><button class="close-btn" onclick="this.closest(\'.rl-detail-overlay\').remove()">×</button>'
+  overlay.innerHTML='<div class="rl-detail-modal"><button class="close-btn" data-action="this.closest(\'.rl-detail-overlay\').remove()">×</button>'
   +'<h2>'+escapeHtml(r.title||'')+'</h2>'
    +'<div class="rl-detail-section"><h3>📋 基础信息</h3><div class="info-grid">'
    +'<div class="info-item"><div class="lbl">平台</div><div class="val">'+escapeHtml(r.platform||'')+'</div></div>'
@@ -2017,9 +2017,9 @@ function openRlRuleDetail(idx){
    +'<div class="rl-detail-section"><h3>🕘 版本与历史变化</h3>'+rlRuleVersionHistoryHtml(r)+'</div>'
   +'<div class="rl-detail-section"><h3>✅ 后续动作</h3><p>请根据原始来源、发布日期和生效日期复核该规则，再制定平台合规动作。</p></div>'
   +'<div class="rl-detail-section"><h3>🔗 关联联动</h3><p>'
-  +'<button onclick="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'alerts\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看预警中心</button>'
-  +'<button onclick="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'policies\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看政策动态</button>'
-  +'<button onclick="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'platforms\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看平台档案</button>'
+  +'<button data-action="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'alerts\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看预警中心</button>'
+  +'<button data-action="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'policies\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看政策动态</button>'
+  +'<button data-action="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'platforms\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看平台档案</button>'
   +'</p></div>'
   +'</div>';
   document.body.appendChild(overlay);
@@ -2032,7 +2032,7 @@ function openRlActDetail(idx){
   const overlay=document.createElement('div');
   overlay.className='rl-detail-overlay';
   overlay.onclick=e=>{if(e.target===overlay)overlay.remove()};
-  overlay.innerHTML='<div class="rl-detail-modal"><button class="close-btn" onclick="this.closest(\'.rl-detail-overlay\').remove()">×</button>'
+  overlay.innerHTML='<div class="rl-detail-modal"><button class="close-btn" data-action="this.closest(\'.rl-detail-overlay\').remove()">×</button>'
   +'<h2>'+a[0]+' · '+a[1]+'</h2>'
   +'<div class="rl-detail-section"><h3>📋 活动基础信息</h3><div class="info-grid">'
   +'<div class="info-item"><div class="lbl">平台</div><div class="val">'+a[0]+'</div></div>'
@@ -2058,9 +2058,9 @@ function openRlActDetail(idx){
   +(ext.hotLevel==='high'?'高热度活动，建议重点参与。提前备货主推类目商品，预留广告投放预算。':'建议参与，关注准入条件和报名截止时间。')
   +' 结合爆款雷达查看活动热销商品数据，优化选品策略。</p></div>'
   +'<div class="rl-detail-section"><h3>🔗 关联联动</h3><p>'
-  +'<button onclick="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'products\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看爆款雷达</button>'
-  +'<button onclick="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'platforms\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看平台档案</button>'
-  +'<button onclick="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'alerts\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">添加报名预警</button>'
+  +'<button data-action="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'products\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看爆款雷达</button>'
+  +'<button data-action="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'platforms\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看平台档案</button>'
+  +'<button data-action="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'alerts\')" style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">添加报名预警</button>'
   +'</p></div>'
   +'</div>';
   document.body.appendChild(overlay);

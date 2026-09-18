@@ -281,7 +281,7 @@ function ctRenderCards(list) {
     var tier = ctHasNumericMetric(c,12) ? ctGetCreatorTier(c[12]) : '未提供';
     var tierColor = tier==='头部KOL' ? 'var(--orange)' : tier==='中腰部达人' ? 'var(--green)' : 'var(--muted)';
     return '<article class="ct-card-new">' +
-      '<div class="ct-card-check"><input type="checkbox" class="ct-cb" data-idx="' + idx + '" ' + checked + ' onchange="ctToggleOne(' + idx + ',this.checked)"></div>' +
+      '<div class="ct-card-check"><input type="checkbox" class="ct-cb" data-idx="' + idx + '" ' + checked + ' data-change-action="ctToggleOne(' + idx + ',this.checked)"></div>' +
       ctThumbHtml(c, idx) +
       '<div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">' +
         '<span class="tag ' + (c[3]==='直播'?'hot':c[3]==='短视频'?'watch':'') + '" style="font-size:10px">' + escapeHtml(c[3]) + '</span>' +
@@ -398,17 +398,17 @@ function ctShowDetail(idx) {
   html += '<h4 style="margin:0 0 10px;font-size:13px">⚡ 快捷操作</h4>';
   html += '<div style="display:flex;flex-direction:column;gap:8px">';
   html += '<button id="ct-detail-product" type="button" style="padding:6px 12px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🔗 跳转产品雷达查看带货商品</button>';
-  html += '<button onclick="ctCloseModal();switchPage(\'shops\')" style="padding:6px 12px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🏪 跳转店铺追踪 (' + escapeHtml(c[13]) + ')</button>';
-  html += '<button onclick="ctCloseModal();switchPage(\'alerts\')" style="padding:6px 12px;border:1px solid #e53935;color:#e53935;border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🔔 设置达人/商品异动预警</button>';
-  html += '<button onclick="ctCloseModal();switchPage(\'countries\')" style="padding:6px 12px;border:1px solid var(--muted);color:var(--muted);border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🌍 查看' + escapeHtml(c[2]) + '内容电商行情</button>';
+  html += '<button data-action="ctCloseModal();switchPage(\'shops\')" style="padding:6px 12px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🏪 跳转店铺追踪 (' + escapeHtml(c[13]) + ')</button>';
+  html += '<button data-action="ctCloseModal();switchPage(\'alerts\')" style="padding:6px 12px;border:1px solid #e53935;color:#e53935;border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🔔 设置达人/商品异动预警</button>';
+  html += '<button data-action="ctCloseModal();switchPage(\'countries\')" style="padding:6px 12px;border:1px solid var(--muted);color:var(--muted);border-radius:4px;background:transparent;cursor:pointer;font-size:12px;text-align:left">🌍 查看' + escapeHtml(c[2]) + '内容电商行情</button>';
   html += '</div></div>';
 
   html += '</div>';
 
   // Bottom actions
   html += '<div style="display:flex;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid #eee">';
-  html += '<button onclick="ctAddToReport(' + idx + ')" style="padding:6px 14px;border:1px solid var(--orange);color:var(--orange);border-radius:6px;background:transparent;cursor:pointer;font-size:12px">+ 加入报告素材</button>';
-  html += '<button onclick="ctAddToFav(' + idx + ')" style="padding:6px 14px;border:1px solid var(--green);color:var(--green);border-radius:6px;background:transparent;cursor:pointer;font-size:12px">⭐ 加入收藏夹</button>';
+  html += '<button data-action="ctAddToReport(' + idx + ')" style="padding:6px 14px;border:1px solid var(--orange);color:var(--orange);border-radius:6px;background:transparent;cursor:pointer;font-size:12px">+ 加入报告素材</button>';
+  html += '<button data-action="ctAddToFav(' + idx + ')" style="padding:6px 14px;border:1px solid var(--green);color:var(--green);border-radius:6px;background:transparent;cursor:pointer;font-size:12px">⭐ 加入收藏夹</button>';
   html += '</div>';
 
   body.innerHTML = html;
@@ -500,7 +500,7 @@ function ctRenderCreator() {
       '<td>' + escapeHtml(cr.cats.join('/')) + '</td>' +
       '<td class="growth">' + avgConv + '</td>' +
       '<td>' + cr.count + '</td>' +
-      '<td><button onclick="toast(\'已添加监控: '+escInline(cr.name)+'\')" style="font-size:11px;padding:3px 8px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer">+ 监控</button></td>' +
+      '<td><button data-action="toast(\'已添加监控: '+escInline(cr.name)+'\')" style="font-size:11px;padding:3px 8px;border:1px solid var(--green);color:var(--green);border-radius:4px;background:transparent;cursor:pointer">+ 监控</button></td>' +
       '</tr>';
   }).join('');
 }
@@ -550,7 +550,7 @@ function ctSearchSimilar() {
   html += '<div class="ct-card-grid">';
   matches.forEach(function(c) {
     var idx = contentData.indexOf(c);
-    html += '<article class="ct-card-new" style="cursor:pointer" onclick="ctShowDetail(' + idx + ')">' +
+    html += '<article class="ct-card-new" style="cursor:pointer" data-action="ctShowDetail(' + idx + ')">' +
       ctThumbHtml(c, idx) +
       '<span class="tag ' + (c[3]==='直播'?'hot':'watch') + '" style="font-size:10px">' + escapeHtml(c[3]) + '</span>' +
       '<h3 style="font-size:13px;margin:6px 0">' + escapeHtml(ctTitle(c)) + '</h3>' +
@@ -572,7 +572,7 @@ function ctRenderFavFolders() {
   var el = document.getElementById('ct-fav-folders');
   el.innerHTML = ctFavFolders.map(function(f, i) {
     var items = ctFavItems[f] || [];
-    return '<button class="ct-fav-folder" data-folder="' + escapeHtml(f) + '" onclick="ctSelectFolder(\'' + escInline(f) + '\')" style="padding:5px 14px;border:1px solid #ddd;border-radius:16px;background:transparent;cursor:pointer;font-size:12px;margin-right:6px;margin-bottom:4px">' + escapeHtml(f) + ' (' + items.length + ')</button>';
+    return '<button class="ct-fav-folder" data-folder="' + escapeHtml(f) + '" data-action="ctSelectFolder(\'' + escInline(f) + '\')" style="padding:5px 14px;border:1px solid #ddd;border-radius:16px;background:transparent;cursor:pointer;font-size:12px;margin-right:6px;margin-bottom:4px">' + escapeHtml(f) + ' (' + items.length + ')</button>';
   }).join('');
   ctRenderFavItems();
 }
@@ -602,7 +602,7 @@ function ctRenderFavItems() {
   el.innerHTML = items.map(function(item, i) {
     return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0">' +
       '<span style="font-size:12px">' + escapeHtml(item.title) + '</span>' +
-      '<button onclick="ctRemoveFav(\'' + escInline(ctActiveFolder) + '\',' + i + ')" style="font-size:10px;color:#e53935;background:none;border:none;cursor:pointer">移除</button>' +
+      '<button data-action="ctRemoveFav(\'' + escInline(ctActiveFolder) + '\',' + i + ')" style="font-size:10px;color:#e53935;background:none;border:none;cursor:pointer">移除</button>' +
     '</div>';
   }).join('');
 }
@@ -788,7 +788,7 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
     }
     return '<div class="ovr-card"><div class="ovr-head"><span>AI</span><h4>分析结果：'+escapeHtml(q)+'<small>优先基于当前工作区已核验数据</small></h4></div>'+
       bodyHtml+disclosure+
-      '<div class="ovr-foot"><button class="primary" onclick="switchPage(\'platforms\')">查看平台详情</button><button onclick="switchPage(\'policies\')">查看政策动态</button></div>'+
+      '<div class="ovr-foot"><button class="primary" data-action="switchPage(\'platforms\')">查看平台详情</button><button data-action="switchPage(\'policies\')">查看政策动态</button></div>'+
       '<div class="ovr-note">结论仅在服务端 AI 成功返回后展示；数据不足时不会使用内置规则补造结果。</div></div>';
   }
   function buildHeroErrorCard(q, error, requestId){

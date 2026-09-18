@@ -264,7 +264,7 @@ function rpV2RefreshPoolUI(){
   Object.keys(groups).forEach(function(type){
     var items=groups[type];
     html+='<div class="rp-v2-pool-group">';
-    html+='<div class="rp-v2-pool-group-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">';
+    html+='<div class="rp-v2-pool-group-header" data-action="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'block\':\'none\'">';
     html+='<span style="color:'+(typeColors[type]||'#64748b')+'">●</span> '+escapeHtml(typeLabels[type]||type);
     html+=' <span class="rp-v2-pool-gcount">('+items.length+')</span></div>';
     html+='<div>';
@@ -272,7 +272,7 @@ function rpV2RefreshPoolUI(){
       var date=new Date(m.addedAt);
       var dateStr=(date.getMonth()+1)+'/'+date.getDate();
       html+='<div class="rp-v2-pool-item'+(m.selected?' selected':'')+'" data-id="'+escInline(m.id)+'">';
-      html+='<input type="checkbox" '+((m.selected)?'checked':'')+' onchange="rpV2ToggleSelect(\''+escInline(m.id)+'\')">';
+      html+='<input type="checkbox" '+((m.selected)?'checked':'')+' data-change-action="rpV2ToggleSelect(\''+escInline(m.id)+'\')">';
       html+='<div class="rp-v2-pool-item-body">';
       html+='<p class="rp-v2-pool-item-title">'+escapeHtml(m.title)+'</p>';
       html+='<div class="rp-v2-pool-item-meta">';
@@ -282,7 +282,7 @@ function rpV2RefreshPoolUI(){
       html+='<span>'+escapeHtml(m.source)+'</span>';
       if(m.snapshot_type)html+='<span>快照 '+escapeHtml(m.snapshot_source||m.source||'当前记录')+'</span>';
       html+='<span>'+escapeHtml(m.snapshot_at?jayFmtTime(m.snapshot_at):dateStr)+'</span></div></div>';
-      html+='<button class="rp-v2-pool-item-remove" onclick="event.stopPropagation();rpRemoveMaterial(\''+escInline(m.id)+'\')" title="移除">×</button>';
+      html+='<button class="rp-v2-pool-item-remove" data-action="event.stopPropagation();rpRemoveMaterial(\''+escInline(m.id)+'\')" title="移除">×</button>';
       html+='</div>';
     });
     html+='</div></div>';
@@ -772,7 +772,7 @@ function rpV2LoadRecent(){
   reports.forEach(function(r,i){
     var d=new Date(r.date);
     var ds=(d.getMonth()+1)+'/'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
-    h+='<div class="rp-v2-recent-item" onclick="rpV2OpenReport('+i+')">';
+    h+='<div class="rp-v2-recent-item" data-action="rpV2OpenReport('+i+')">';
     h+='<div class="rp-v2-recent-icon">◈</div>';
     var saveLabel=r.saveStatus==='saved'&&r.cloudSaved!==false?'已保存到云端':(r.saveStatus==='saving'?'云端保存中':(r.saveStatus==='blocked'?'未保存草稿':(r.saveStatus==='failed'?'仅本地暂存':'待云端保存')));
     var creator=r.createdByName||r.creatorEmail||(r.createdBy&&jayUser&&r.createdBy===jayUser.id?'当前用户':('成员 '+String(r.createdBy||'未知').slice(0,8)));
@@ -780,9 +780,9 @@ function rpV2LoadRecent(){
     var workspace=r.workspaceName||(jayWorkspaceContext&&jayWorkspaceContext.workspace&&jayWorkspaceContext.workspace.name)||'当前工作区';
     var operations=canEdit?'查看、对比、重新生成、保存、导出':'查看、对比';
     h+='<div class="rp-v2-recent-info"><strong>'+escapeHtml(r.name)+'</strong><small>'+ds+' · v'+Number(r.revision||1)+' · '+(r.publishable===true?'可发布':'草稿')+' · '+saveLabel+'</small><small class="rp-v2-recent-meta">创建人：'+escapeHtml(creator)+' · 工作区：'+escapeHtml(workspace)+'</small><small class="rp-v2-recent-meta">可执行：'+escapeHtml(operations)+'</small></div>';
-    if(canEdit)h+='<button type="button" class="rp-v2-recent-action" onclick="event.stopPropagation();rpV2RegenerateReport('+i+')" title="按当前数据重新生成">↻</button>';
-    if(canEdit&&(r.saveStatus==='failed' || (r.cloudSaved===false&&r.saveStatus!=='blocked'))) h+='<button type="button" class="rp-v2-recent-action" onclick="event.stopPropagation();rpV2RetrySaveReport('+i+')" title="重试云端保存">☁</button>';
-    h+='<button type="button" class="rp-v2-recent-action" onclick="event.stopPropagation();rpV2CompareReports('+i+')" title="与当前预览对比">⇄</button></div>';
+    if(canEdit)h+='<button type="button" class="rp-v2-recent-action" data-action="event.stopPropagation();rpV2RegenerateReport('+i+')" title="按当前数据重新生成">↻</button>';
+    if(canEdit&&(r.saveStatus==='failed' || (r.cloudSaved===false&&r.saveStatus!=='blocked'))) h+='<button type="button" class="rp-v2-recent-action" data-action="event.stopPropagation();rpV2RetrySaveReport('+i+')" title="重试云端保存">☁</button>';
+    h+='<button type="button" class="rp-v2-recent-action" data-action="event.stopPropagation();rpV2CompareReports('+i+')" title="与当前预览对比">⇄</button></div>';
   });
   list.innerHTML=h;
 }
@@ -1704,7 +1704,7 @@ function renderAlertBanner(){
     return;
   }
   banner.innerHTML='<div class="wl-alert-title">\u26a0\ufe0f \u5f02\u52a8\u63d0\u9192\uff08'+alertMessages.length+'\u6761\uff09<span class="wl-alert-count">'+alertMessages.length+'</span></div>'+alertMessages.map(function(a){
-    return '<div class="wl-alert-item '+a.level+'"><span>'+a.icon+'</span><p>'+a.text+'</p><button class="wl-ai-btn" onclick="toast(\'\u5b8c\u6574\u98ce\u9669\u5206\u6790\u5df2\u751f\u6210\u3002PRO\u7248\u67e5\u770b\u5e94\u5bf9\u65b9\u6848\')">\u2728 AI\u89e3\u8bfb</button></div>';
+    return '<div class="wl-alert-item '+a.level+'"><span>'+a.icon+'</span><p>'+a.text+'</p><button class="wl-ai-btn" data-action="toast(\'\u5b8c\u6574\u98ce\u9669\u5206\u6790\u5df2\u751f\u6210\u3002PRO\u7248\u67e5\u770b\u5e94\u5bf9\u65b9\u6848\')">\u2728 AI\u89e3\u8bfb</button></div>';
   }).join('');
 }
 
@@ -1715,7 +1715,7 @@ function renderRecommendTracks(){
     return;
   }
   container.innerHTML=recommendTracks.map(function(t){
-    return '<div class="wl-rec-card"><span style="font-size:22px">'+t.flag+'</span><div class="wl-rec-info"><h5>'+t.name+'</h5><p>'+t.platforms+' \u00b7 '+t.reason+'</p></div><button class="wl-rec-add" onclick="addFromSearch(this, &#39;"+t.flag+"&#39; &#39;"+t.name+"&#39;,&#39;track&#39;)>\u6dfb\u52a0</button></div>';
+    return '<div class="wl-rec-card"><span style="font-size:22px">'+t.flag+'</span><div class="wl-rec-info"><h5>'+t.name+'</h5><p>'+t.platforms+' \u00b7 '+t.reason+'</p></div><button class="wl-rec-add" data-action="addFromSearch(this, &#39;"+t.flag+"&#39; &#39;"+t.name+"&#39;,&#39;track&#39;)>\u6dfb\u52a0</button></div>';
   }).join('');
 }
 
@@ -1754,7 +1754,7 @@ function showAddWatchModal(){
   var div=document.createElement('div');
   div.id='wl-modal-overlay';
   div.className='wl-modal-overlay show';
-  div.innerHTML='<div class="wl-modal"><div class="wl-modal-head"><h3>\u6dfb\u52a0\u5173\u6ce8\u9879</h3><button class="wl-modal-close" onclick="closeAddWatchModal()">\u2715</button></div><div class="wl-modal-tabs"><button class="wl-modal-tab active" data-mtab="search">\u624b\u52a8\u641c\u7d22</button><button class="wl-modal-tab" data-mtab="ai">\u2728 AI\u63a8\u8350</button><button class="wl-modal-tab" data-mtab="template">\u884c\u4e1a\u6a21\u677f</button></div><div class="wl-modal-body" id="wl-modal-content"></div><div class="wl-modal-foot"><button onclick="closeAddWatchModal()">\u6682\u4e0d\u6dfb\u52a0</button></div></div>';
+  div.innerHTML='<div class="wl-modal"><div class="wl-modal-head"><h3>\u6dfb\u52a0\u5173\u6ce8\u9879</h3><button class="wl-modal-close" data-action="closeAddWatchModal()">\u2715</button></div><div class="wl-modal-tabs"><button class="wl-modal-tab active" data-mtab="search">\u624b\u52a8\u641c\u7d22</button><button class="wl-modal-tab" data-mtab="ai">\u2728 AI\u63a8\u8350</button><button class="wl-modal-tab" data-mtab="template">\u884c\u4e1a\u6a21\u677f</button></div><div class="wl-modal-body" id="wl-modal-content"></div><div class="wl-modal-foot"><button data-action="closeAddWatchModal()">\u6682\u4e0d\u6dfb\u52a0</button></div></div>';
   document.body.appendChild(div);
   div.onclick=function(e){if(e.target===div)closeAddWatchModal();};
   renderModalTab('search');
@@ -1771,10 +1771,10 @@ function closeAddWatchModal(){var m=document.getElementById('wl-modal-overlay');
 function renderModalTab(tab){
   var body=document.getElementById('wl-modal-content');
   if(tab==='search'){
-    body.innerHTML='<div class="wl-search-row"><input type="text" id="wl-search-input" placeholder="搜索当前市场、平台、店铺或单品..."><button onclick="doModalSearch()">搜索</button></div><div id="wl-search-results"><p style="font-size:11px;color:#999;text-align:center;padding:20px 0">输入关键词搜索当前市场中可监控的平台、店铺或单品</p></div>';
+    body.innerHTML='<div class="wl-search-row"><input type="text" id="wl-search-input" placeholder="搜索当前市场、平台、店铺或单品..."><button data-action="doModalSearch()">搜索</button></div><div id="wl-search-results"><p style="font-size:11px;color:#999;text-align:center;padding:20px 0">输入关键词搜索当前市场中可监控的平台、店铺或单品</p></div>';
   }else if(tab==='ai'){
     body.innerHTML='<p style="font-size:12px;color:#4a6a8a;margin:0 0 14px">基于当前市场已验证记录生成推荐；当前暂无可用推荐数据。</p>'+recommendTracks.map(function(t){
-      return '<div class="wl-rec-item"><div class="wl-rec-item-info"><h5>'+t.flag+' '+t.name+'</h5><p>'+t.platforms+'</p></div><button onclick="addFromSearch(this, &#39;"+t.flag+"&#39; &#39;"+t.name+"&#39;,&#39;track&#39;)>\u4e00\u952e\u6dfb\u52a0</button></div>';
+      return '<div class="wl-rec-item"><div class="wl-rec-item-info"><h5>'+t.flag+' '+t.name+'</h5><p>'+t.platforms+'</p></div><button data-action="addFromSearch(this, &#39;"+t.flag+"&#39; &#39;"+t.name+"&#39;,&#39;track&#39;)>\u4e00\u952e\u6dfb\u52a0</button></div>';
     }).join('');
   }else if(tab==='template'){
     body.innerHTML='<div class="wl-alert-none">当前工作区没有已验证的看板模板。请先导入数据或手动添加当前市场的真实记录。</div>';
@@ -1968,7 +1968,7 @@ function showProModal(){
   var div=document.createElement('div');
   div.id='pro-modal-overlay';
   div.className='pro-modal-overlay show';
-  div.innerHTML='<div class="pro-modal"><h3>升级专业版</h3><p>专业版包含 AI 深度报告、完整预警和批量决策能力。只有支付服务配置完成并由支付回调确认后，会员状态才会改变。</p><div class="pro-modal-btns"><button class="pro-btn" onclick="closeProModal();switchPage(\'pricing\')">查看套餐与账单</button><button class="pro-dismiss" onclick="closeProModal()">稍后再说</button></div></div>';
+  div.innerHTML='<div class="pro-modal"><h3>升级专业版</h3><p>专业版包含 AI 深度报告、完整预警和批量决策能力。只有支付服务配置完成并由支付回调确认后，会员状态才会改变。</p><div class="pro-modal-btns"><button class="pro-btn" data-action="closeProModal();switchPage(\'pricing\')">查看套餐与账单</button><button class="pro-dismiss" data-action="closeProModal()">稍后再说</button></div></div>';
   document.body.appendChild(div);
   div.onclick=function(e){if(e.target===div)closeProModal();};
 }
@@ -2181,7 +2181,7 @@ function cmpRunCountry(r){
   html+='<table class="cmp-table"><thead><tr><th>国家</th><th>市场规模</th><th>增速</th><th>主流平台</th></tr></thead><tbody>';
   rows.forEach(function(c){html+='<tr><td>'+escapeHtml(c[2])+'</td><td>'+escapeHtml(c[3])+'</td><td class="'+(jayParseGrowth(c[4])>=0?'up':'down')+'">'+escapeHtml(c[4])+'</td><td>'+escapeHtml(c[5])+'</td></tr>';});
   html+='</tbody></table>';
-  html+='<button class="cmp-ai-btn" onclick="cmpAiRead()">🤖 让 AI 对比解读这 '+cmpState.sel.length+' 个国家</button>';
+  html+='<button class="cmp-ai-btn" data-action="cmpAiRead()">🤖 让 AI 对比解读这 '+cmpState.sel.length+' 个国家</button>';
   r.innerHTML=html;
 }
 function cmpRunPlatform(r){
@@ -2193,7 +2193,7 @@ function cmpRunPlatform(r){
   html+='<table class="cmp-table"><thead><tr><th>平台</th><th>月活</th><th>增速</th><th>风险</th><th>入驻</th></tr></thead><tbody>';
   keys.forEach(function(k){var d=pfExtData[k]||{};var rv=d.risk||'-';html+='<tr><td>'+escapeHtml(k)+'</td><td>'+escapeHtml(d.users||'-')+'</td><td class="'+(jayParseGrowth(d.growth)>=0?'up':'down')+'">'+escapeHtml(d.growth||'-')+'</td><td><span class="cmp-risk cmp-risk-'+escapeHtml(rv)+'">'+escapeHtml(rv)+'</span></td><td>'+escapeHtml(d.entry||'-')+'</td></tr>';});
   html+='</tbody></table>';
-  html+='<button class="cmp-ai-btn" onclick="cmpAiRead()">🤖 让 AI 对比解读这 '+cmpState.sel.length+' 个平台</button>';
+  html+='<button class="cmp-ai-btn" data-action="cmpAiRead()">🤖 让 AI 对比解读这 '+cmpState.sel.length+' 个平台</button>';
   r.innerHTML=html;
 }
 function cmpRunProduct(r){
@@ -2205,7 +2205,7 @@ function cmpRunProduct(r){
   html+='<table class="cmp-table"><thead><tr><th>商品</th><th>售价(RMB)</th><th>月销</th><th>增速</th><th>评价数</th></tr></thead><tbody>';
   rows.forEach(function(p){html+='<tr><td>'+escapeHtml(p[1])+'</td><td>'+escapeHtml(p[7])+'</td><td>'+escapeHtml(p[8])+'</td><td class="'+(jayParseGrowth(p[9])>=0?'up':'down')+'">'+escapeHtml(p[9])+'</td><td>'+escapeHtml(p[12])+'</td></tr>';});
   html+='</tbody></table>';
-  html+='<button class="cmp-ai-btn" onclick="cmpAiRead()">🤖 让 AI 对比解读这 '+cmpState.sel.length+' 个商品</button>';
+  html+='<button class="cmp-ai-btn" data-action="cmpAiRead()">🤖 让 AI 对比解读这 '+cmpState.sel.length+' 个商品</button>';
   r.innerHTML=html;
 }
 function cmpAiRead(){

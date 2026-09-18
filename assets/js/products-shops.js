@@ -943,7 +943,7 @@ function shRenderCompareTab(){
   html+='<select id="sh-cmp-cat" style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(cats,'全部品类')+'</select>';
   html+='<select id="sh-cmp-market" style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(markets,'当前范围全部市场')+'</select>';
   html+='<select id="sh-cmp-plat" style="border:1px solid var(--line);padding:8px 12px;border-radius:4px;font:12px \'Noto Sans SC\'">'+opts(plats,'全部平台')+'</select>';
-  html+='<button onclick="shRunCompare()" style="padding:8px 18px;background:var(--sea-deep);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px">对标分析</button>';
+  html+='<button data-action="shRunCompare()" style="padding:8px 18px;background:var(--sea-deep);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px">对标分析</button>';
   html+='</div></div>';
   html+='<div id="sh-cmp-result"></div>';
   el.innerHTML=html;
@@ -970,7 +970,7 @@ function shRunCompare(){
     html+='<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:6px"><strong style="font-size:14px;color:var(--ink)">'+escapeHtml(prDisplay(x[0]))+'</strong><span style="font-size:11px;color:var(--muted)">'+escapeHtml(prDisplay(x[1]))+'</span></div>';
     html+='<div style="font-size:12px;color:#555;line-height:1.7">月GMV <b>'+escapeHtml(prDisplay(x[3]))+'</b> · 增速 <b style="color:var(--green)">'+escapeHtml(prDisplay(x[4]))+'</b><br>主营 '+escapeHtml(prDisplay(x[6]))+' · 粉丝 '+escapeHtml(prText(x[10])?jayFmtCount(x[10]):'未提供')+' · 评分 '+escapeHtml(prDisplay(x[11]))+'</div>';
     html+='<div style="display:flex;gap:8px;margin-top:10px">';
-    html+='<button onclick="shShowDetail('+bi+')" style="font-size:11px;padding:4px 10px;border:1px solid var(--sea-deep);color:var(--sea-deep);border-radius:4px;background:transparent;cursor:pointer">🔍 查看导入字段</button>';
+    html+='<button data-action="shShowDetail('+bi+')" style="font-size:11px;padding:4px 10px;border:1px solid var(--sea-deep);color:var(--sea-deep);border-radius:4px;background:transparent;cursor:pointer">🔍 查看导入字段</button>';
     html+='</div></div>';
   });
   html+='</div>';
@@ -1088,7 +1088,7 @@ function shRenderTable(list) {
       });
     }
     return '<tr>' +
-      '<td><input type="checkbox" class="sh-cb" data-idx="' + idx + '" ' + checked + ' onchange="shToggleOne(' + idx + ',this.checked)"></td>' +
+      '<td><input type="checkbox" class="sh-cb" data-idx="' + idx + '" ' + checked + ' data-change-action="shToggleOne(' + idx + ',this.checked)"></td>' +
       '<td><strong style="cursor:pointer;color:var(--green)" class="sh-shop-link" data-idx="' + idx + '">' + escapeHtml(prDisplay(s[0])) + '</strong><br>'+prSourceBadge(s)+'</td>' +
       '<td>' + escapeHtml(prDisplay(s[1])) + '</td>' +
       '<td>' + escapeHtml(prDisplay(s[2])) + '</td>' +
@@ -1157,7 +1157,7 @@ function shShowDetail(idx) {
       '<div class="pr-m-section"><h4>店铺信息</h4><p>平台：'+escapeHtml(prDisplay(s[1]))+' · 市场：'+escapeHtml(prDisplay(s[2]))+' · 类目：'+escapeHtml(prDisplay(s[6]))+'</p><p>粉丝：'+escapeHtml(prDisplay(s[10]))+' · 评分：'+escapeHtml(prDisplay(s[11]))+' · 标签：'+escapeHtml(prDisplay(s[9]))+'</p></div>'+
       '<div class="pr-m-section"><h4>品类规则包</h4><p>'+escapeHtml(prCategoryRuleLabel(s._categoryRule))+'</p></div>'+
       '<div class="pr-m-section"><h4>历史状态与趋势</h4>'+historyHtml+'</div>'+
-      '<div style="display:flex;gap:8px;margin-top:16px"><button class="filter-button" style="padding:8px 18px" onclick="shAddToReport('+idx+')">加入报告素材</button><button class="filter-button" style="padding:8px 18px" onclick="shCreateShopMonitor('+idx+')">📡 创建店铺监控</button></div>';
+      '<div style="display:flex;gap:8px;margin-top:16px"><button class="filter-button" style="padding:8px 18px" data-action="shAddToReport('+idx+')">加入报告素材</button><button class="filter-button" style="padding:8px 18px" data-action="shCreateShopMonitor('+idx+')">📡 创建店铺监控</button></div>';
     document.getElementById('sh-modal-overlay').classList.add('show');
     return;
   }
@@ -1245,10 +1245,10 @@ function shDoAddBatch() {
 // ========== GROUPS ==========
 function shRenderGroups() {
   var el = document.getElementById('sh-group-tabs');
-  var html = '<button class="sh-grp ' + (shActiveGroup==='all'?'active':'') + '" data-grp="all" onclick="shSwitchGroup(\'all\')">全部店铺</button>';
+  var html = '<button class="sh-grp ' + (shActiveGroup==='all'?'active':'') + '" data-grp="all" data-action="shSwitchGroup(\'all\')">全部店铺</button>';
   Object.keys(shGroups).forEach(function(k) {
     if(k === 'all') return;
-    html += '<button class="sh-grp ' + (shActiveGroup===k?'active':'') + '" data-grp="' + escapeHtml(k) + '" onclick="shSwitchGroup(\'' + escInline(k) + '\')">' + escapeHtml(k) + ' <span style="font-size:10px;color:var(--muted)">(' + (shGroupShops[k]||[]).length + ')</span></button>';
+    html += '<button class="sh-grp ' + (shActiveGroup===k?'active':'') + '" data-grp="' + escapeHtml(k) + '" data-action="shSwitchGroup(\'' + escInline(k) + '\')">' + escapeHtml(k) + ' <span style="font-size:10px;color:var(--muted)">(' + (shGroupShops[k]||[]).length + ')</span></button>';
   });
   el.innerHTML = html;
 }

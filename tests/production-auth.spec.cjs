@@ -309,7 +309,7 @@ test.describe('production authenticated browser acceptance', () => {
     await expect(page.locator('#rp-v2-next-btn')).toBeEnabled();
     await page.locator('#rp-v2-next-btn').click();
     await page.locator('#rp-v2-topic').fill(browserTopic);
-    await page.locator('#rp-panel-step2 button[onclick="rpV2Questionnaire()"]')
+    await page.locator('#rp-panel-step2 button[data-action="rpV2Questionnaire()"]')
       .click();
     await expect(page.locator('#rp-questionnaire')).toHaveClass(/show/);
     await page.locator('#rp-q-category').fill('通用');
@@ -342,10 +342,10 @@ test.describe('production authenticated browser acceptance', () => {
 
       // Trigger both authenticated server exports from the report toolbar and
       // wait for their cloud history rows, rather than trusting a pre-seeded row.
-      await page.locator('#rp-panel-step3 button[onclick="rpV2Export(\'pdf\')"]').click();
+      await page.locator('#rp-panel-step3 button[data-action="rpV2Export(\'pdf\')"]').click();
       pdfExport = await waitForRow(page, 'report_exports', { report_id: reportId, format: 'pdf' }, (row) => row.status === 'completed', 90_000);
       expect(pdfExport.file_path).toBeTruthy();
-      await page.locator('#rp-panel-step3 button[onclick="rpV2Export(\'docx\')"]').click();
+      await page.locator('#rp-panel-step3 button[data-action="rpV2Export(\'docx\')"]').click();
       docxExport = await waitForRow(page, 'report_exports', { report_id: reportId, format: 'docx' }, (row) => row.status === 'completed', 90_000);
       expect(docxExport.file_path).toBeTruthy();
       await expect(page.locator('#rp-v2-export-history')).toContainText('PDF', { timeout: 30_000 });
@@ -392,8 +392,8 @@ test.describe('production authenticated browser acceptance', () => {
         if (/\/functions\/v1\/(report-export|report-docx)(?:\?|$)/.test(request.url())) formalRequests.push(request.url());
       };
       page.on('request', captureFormalRequest);
-      await page.locator('#rp-panel-step3 button[onclick="rpV2Export(\'pdf\')"]').click();
-      await page.locator('#rp-panel-step3 button[onclick="rpV2Export(\'docx\')"]').click();
+      await page.locator('#rp-panel-step3 button[data-action="rpV2Export(\'pdf\')"]').click();
+      await page.locator('#rp-panel-step3 button[data-action="rpV2Export(\'docx\')"]').click();
       await expect.poll(() => page.evaluate(() => window.__productionAcceptanceToasts.slice(-6)))
         .toEqual(expect.arrayContaining([
           expect.stringContaining('不能创建正式 PDF'),

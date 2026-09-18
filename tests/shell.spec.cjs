@@ -764,7 +764,7 @@ test('report and operating tools stay within the configured US scope', async ({ 
   await expect(page.locator('#rp-questionnaire')).toHaveClass(/show/);
   await expect(page.locator('#rp-q-market option')).toHaveText(['美国']);
   await expect(page.locator('#rp-q-market')).toHaveValue('US');
-  await expect(page.locator('#rp-panel-step3 button[onclick*="docx"]')).toHaveCount(1);
+  await expect(page.locator('#rp-panel-step3 button[data-action*="rpV2Export(\'docx\')"]')).toHaveCount(1);
   await expect(page.locator('#rp-v2-export-history')).toContainText('暂无导出记录');
   await expect(page.locator('#report')).not.toContainText(/东南亚|北美|欧洲|中东|拉美|日韩|印尼/);
 

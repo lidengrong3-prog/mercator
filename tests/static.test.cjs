@@ -47,6 +47,26 @@ test('production shell exposes the primary decision workflow', () => {
   }
 });
 
+test('frontend uses delegated events and a strict script policy', () => {
+  const eventSources = [html, ...fs.readdirSync(path.join(root, 'assets', 'js'))
+    .filter((name) => name.endsWith('.js'))
+    .map((name) => fs.readFileSync(path.join(root, 'assets', 'js', name), 'utf8'))]
+    .join('\n');
+  assert.doesNotMatch(eventSources, /(^|[^A-Za-z0-9_.])on(?:click|change|input|submit)\s*=/);
+  assert.match(html, /assets\/event-delegation\.js/);
+  assert.match(html, /script-src 'self' https:\/\/cdn\.jsdelivr\.net/);
+  assert.match(html, /script-src-attr 'none'/);
+  assert.doesNotMatch(html, /script-src[^;]*'unsafe-inline'/);
+  assert.match(html, /@supabase\/supabase-js@2\.116\.0\/dist\/umd\/supabase\.js/);
+  assert.match(html, /integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s\/\/pP"/);
+  assert.match(html, /integrity="sha384-uTYyvsSSUZeaPhb5RbKlQa0zY\/WpX\/QHfvg2mczXyBQOpkWPEDy9lczyp\+w7SKXu"/);
+  const headers = fs.readFileSync(path.join(root, '_headers'), 'utf8');
+  for (const header of ['Content-Security-Policy:', 'Strict-Transport-Security:', 'X-Content-Type-Options:', 'Referrer-Policy:', 'Permissions-Policy:']) {
+    assert.match(headers, new RegExp(`^\\s*${header.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}`, 'm'));
+  }
+  assert.equal(fs.readFileSync(path.join(root, 'CNAME'), 'utf8').trim(), 'jayguanhai.com');
+});
+
 test('browser source contains no plaintext account store or provider secret flow', () => {
   assert.equal(browserSource.includes("localStorage.setItem('jay_accounts'"), false);
   assert.equal(browserSource.includes("localStorage.getItem('jay_accounts'"), false);
