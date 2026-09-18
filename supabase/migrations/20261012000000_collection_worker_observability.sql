@@ -125,19 +125,26 @@ AS $$
            COUNT(DISTINCT boot_id) AS boot_count
       FROM sample_rows
   ),
+  attempt_rows AS (
+    SELECT attempt.status, attempt.request_id, attempt.task_id, attempt.attempt_number
+      FROM public.collection_task_attempts AS attempt
+      CROSS JOIN bounds
+     WHERE (NULLIF(TRIM(p_worker_id), '') IS NULL OR attempt.worker_id = LEFT(TRIM(p_worker_id), 160))
+       AND attempt.started_at >= bounds.checked_at - make_interval(hours => bounds.window_hours)
+  ),
   task_stats AS (
     SELECT COUNT(*) AS attempt_count,
            COUNT(DISTINCT request_id) AS distinct_request_count,
            COUNT(DISTINCT task_id::TEXT || ':' || attempt_number::TEXT) AS distinct_attempt_count,
-           COALESCE(jsonb_object_agg(status, status_count), '{}'::jsonb) AS status_counts
-      FROM (
-        SELECT attempt.status, COUNT(*) AS status_count
-          FROM public.collection_task_attempts AS attempt
-          CROSS JOIN bounds
-         WHERE (NULLIF(TRIM(p_worker_id), '') IS NULL OR attempt.worker_id = LEFT(TRIM(p_worker_id), 160))
-           AND attempt.started_at >= bounds.checked_at - make_interval(hours => bounds.window_hours)
-         GROUP BY attempt.status
-      ) grouped_attempts
+           COALESCE((
+             SELECT jsonb_object_agg(grouped.status, grouped.status_count)
+               FROM (
+                 SELECT status, COUNT(*) AS status_count
+                   FROM attempt_rows
+                  GROUP BY status
+               ) grouped
+           ), '{}'::jsonb) AS status_counts
+      FROM attempt_rows
   ),
   queue_stats AS (
     SELECT COALESCE(jsonb_object_agg(status, status_count), '{}'::jsonb) AS status_counts
