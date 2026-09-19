@@ -58,14 +58,14 @@
     "manifest": "data/market_scope.json"
   },
   "provenance_schema": "data/provenance_schema.json",
-  "generated_at": "2026-09-19T04:41:26.758495+00:00",
+  "generated_at": "2026-09-19T12:33:50.355436+00:00",
   "status": "degraded",
   "publishable": true,
   "collection_run": {
     "quality_status": "degraded",
     "ledger_schema_version": 2,
     "ledger_status": "degraded",
-    "completed_at": "2026-09-19T04:41:26.116631+00:00",
+    "completed_at": "2026-09-19T12:33:49.801856+00:00",
     "scope": {
       "market_codes": [
         "US"
@@ -97,13 +97,13 @@
   },
   "summary": {
     "datasets": 11,
-    "raw_records": 765,
+    "raw_records": 766,
     "scoped_records": 580,
     "formal_records": 558,
     "demo_records": 0,
-    "unverified_records": 93,
+    "unverified_records": 94,
     "missing_source_records": 52,
-    "excluded_records": 193,
+    "excluded_records": 194,
     "healthy": 8,
     "degraded": 3,
     "not_connected": 0,
@@ -138,7 +138,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T04:41:26.116631+00:00",
+      "updated_at": "2026-09-19T12:33:49.801856+00:00",
       "freshness_hours": 0.0,
       "connected": true,
       "errors": [],
@@ -149,7 +149,7 @@
       "metrics": {
         "ledger_schema_version": 2,
         "ledger_status": "degraded",
-        "ledger_completed_at": "2026-09-19T04:41:26.116631+00:00",
+        "ledger_completed_at": "2026-09-19T12:33:49.801856+00:00",
         "ledger_scope": {
           "market_codes": [
             "US"
@@ -216,8 +216,8 @@
           "degraded": 5,
           "failed": 1,
           "core_failures": [],
-          "records_collected": 447,
-          "records_in_scope": 450
+          "records_collected": 453,
+          "records_in_scope": 452
         }
       }
     },
@@ -226,44 +226,44 @@
       "label": "政策动态",
       "status": "degraded",
       "path": "data/policies.json",
-      "records": 304,
-      "raw_records": 304,
+      "records": 305,
+      "raw_records": 305,
       "scoped_records": 266,
       "formal_records": 263,
       "demo_records": 0,
-      "unverified_records": 41,
+      "unverified_records": 42,
       "missing_source_records": 0,
-      "excluded_records": 41,
+      "excluded_records": 42,
       "exclusion_reasons": {
-        "industry_advisory": 34,
-        "unverified": 41,
-        "out_of_scope": 38
+        "industry_advisory": 35,
+        "unverified": 42,
+        "out_of_scope": 39
       },
-      "updated_at": "2026-09-19T04:40:32.074361+00:00",
+      "updated_at": "2026-09-19T12:32:17.501844+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
       "warnings": [
-        "存在 41 条未核验数据，未进入正式统计",
-        "存在 34 条第三方行业资讯，仅作可追溯参考，不视为官方核验"
+        "存在 42 条未核验数据，未进入正式统计",
+        "存在 35 条第三方行业资讯，仅作可追溯参考，不视为官方核验"
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-19T12:40:32.074361+08:00",
+        "content_updated_at": "2026-09-19T20:32:17.501844+08:00",
         "formal_records": 263,
         "demo_records": 0,
-        "unverified_records": 41,
+        "unverified_records": 42,
         "missing_source_records": 0,
-        "excluded_records": 41,
+        "excluded_records": 42,
         "exclusion_reasons": {
-          "industry_advisory": 34,
-          "unverified": 41,
-          "out_of_scope": 38
+          "industry_advisory": 35,
+          "unverified": 42,
+          "out_of_scope": 39
         },
         "legacy_inferred_records": 0,
         "source_kind_counts": {
           "official": 268,
-          "traceable": 36,
+          "traceable": 37,
           "uploaded": 0,
           "derived": 0,
           "demo": 0
@@ -271,7 +271,7 @@
         "verification_status_counts": {
           "verified": 263,
           "uploaded": 0,
-          "pending": 41,
+          "pending": 42,
           "rejected": 0
         },
         "source_type_counts": {
@@ -280,14 +280,14 @@
           "platform": 0,
           "official_feed": 0,
           "industry_association": 0,
-          "licensed_provider": 36,
+          "licensed_provider": 37,
           "user_upload": 0,
           "derived": 0,
           "demo": 0,
           "unknown": 0
         },
-        "official_or_traceable_records": 304,
-        "provenance_complete_records": 304,
+        "official_or_traceable_records": 305,
+        "provenance_complete_records": 305,
         "malformed_records": 0,
         "missing_ids": 0,
         "missing_titles": 0,
@@ -316,13 +316,13 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-17T08:08:18.530274+00:00",
-      "freshness_hours": 44.6,
+      "freshness_hours": 52.4,
       "connected": true,
       "errors": [],
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-19T04:41:08.233293+00:00",
+        "content_updated_at": "2026-09-19T12:33:31.391520+00:00",
         "formal_records": 5,
         "demo_records": 0,
         "unverified_records": 0,
@@ -385,13 +385,13 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-17T08:15:08.346719+00:00",
-      "freshness_hours": 44.4,
+      "freshness_hours": 52.3,
       "connected": true,
       "errors": [],
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-19T04:41:08.715673+00:00",
+        "content_updated_at": "2026-09-19T12:33:31.936857+00:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 0,
@@ -459,7 +459,7 @@
         "out_of_scope_platform": 45,
         "missing_provenance_fields": 52
       },
-      "updated_at": "2026-09-19T04:40:32.074361+00:00",
+      "updated_at": "2026-09-19T12:32:17.501844+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -472,7 +472,7 @@
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-19T12:40:32.074361+08:00",
+        "content_updated_at": "2026-09-19T20:32:17.501844+08:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 52,
@@ -540,7 +540,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T04:41:26.188931+00:00",
+      "updated_at": "2026-09-19T12:33:49.865320+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -604,7 +604,7 @@
       "missing_source_records": 0,
       "excluded_records": 38,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T04:41:26.115557+00:00",
+      "updated_at": "2026-09-19T12:33:49.800778+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -656,7 +656,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T04:41:08.911512+00:00",
+      "updated_at": "2026-09-19T12:33:32.108169+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -709,7 +709,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T04:41:26.115557+00:00",
+      "updated_at": "2026-09-19T12:33:49.800778+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -770,7 +770,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T04:41:18.088135+00:00",
+      "updated_at": "2026-09-19T12:33:41.349966+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
