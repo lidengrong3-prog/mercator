@@ -1,0 +1,8 @@
+{
+  "environment": "development",
+  "supabase": {
+    "url": "${JAY_DEV_SUPABASE_URL}",
+    "anonKey": "${JAY_DEV_SUPABASE_ANON_KEY}",
+    "required": false
+  }
+}

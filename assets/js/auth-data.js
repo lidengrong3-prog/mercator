@@ -280,6 +280,8 @@ var jayProfile = null;
 var supabaseClient = null;
 var jayIsDemo = false;
 var authMode = 'login';
+var jayPendingLegalAcceptance = null;
+var jayLastLegalTrigger = null;
 var jayReportPoolCache = [];
 var jayReportsCache = [];
 var jayReportExportsCache = [];
@@ -371,7 +373,8 @@ function jayClearWorkspaceData() {
 }
 
 function initJayAuth() {
-  if (typeof supabase !== 'undefined' && JAY_SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+  jayRenderLegalVersion();
+  if (typeof supabase !== 'undefined' && JAY_SUPABASE_URL && JAY_SUPABASE_KEY) {
     supabaseClient = supabase.createClient(JAY_SUPABASE_URL, JAY_SUPABASE_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
     });
@@ -379,9 +382,10 @@ function initJayAuth() {
     supabaseClient.auth.onAuthStateChange(function(event, session) {
       if (event === 'SIGNED_IN' && session) {
         if (jayUser && jayUser.id && jayUser.id !== session.user.id) jayResetUserWorkspace(jayUser.id);
-        jayIsDemo = false;
-        jayUser = session.user;
-        loadJayProfile().then(onAuthSuccess);
+        completeJayAuthenticatedSession(session.user, jayPendingLegalAcceptance).catch(function(error){
+          console.warn('[JAY观海] legal consent verification failed:', error.message || error);
+          showLegalConsentGate('暂时无法验证协议记录，请稍后重试。');
+        });
       } else if (event === 'SIGNED_OUT') {
         var signedOutUserId = jayUser && jayUser.id;
         jayUser = null; jayProfile = null; jayResetUserWorkspace(signedOutUserId); showLoginScreen();
@@ -418,10 +422,7 @@ async function checkJaySession() {
   if (!supabaseClient) return;
   var r = await supabaseClient.auth.getSession();
   if (r.data.session) {
-    jayIsDemo = false;
-    jayUser = r.data.session.user;
-    await loadJayProfile();
-    onAuthSuccess();
+    await completeJayAuthenticatedSession(r.data.session.user, null);
   } else if (!jayIsDemo) {
     showLoginScreen();
   }
@@ -439,6 +440,154 @@ async function loadJayProfile() {
   }
 }
 
+function jayLegalVersions() {
+  var config = window.JAY_APP_CONFIG || {};
+  var legal = config.legal || {};
+  return {
+    privacyPolicy: String(legal.privacyPolicy || ''),
+    termsOfService: String(legal.termsOfService || '')
+  };
+}
+
+function jayRenderLegalVersion() {
+  var versions = jayLegalVersions();
+  var target = document.getElementById('auth-legal-version');
+  if (!target) return;
+  target.textContent = versions.privacyPolicy && versions.termsOfService
+    ? '隐私政策 ' + versions.privacyPolicy + ' · 服务条款 ' + versions.termsOfService
+    : '协议版本配置不可用';
+}
+
+function jayLegalAcceptanceFromMetadata(user) {
+  var metadata = user && user.user_metadata ? user.user_metadata : {};
+  var versions = jayLegalVersions();
+  if (metadata.legal_privacy_policy_version !== versions.privacyPolicy
+      || metadata.legal_terms_version !== versions.termsOfService) return null;
+  return {
+    source: 'registration',
+    acceptedAt: metadata.legal_accepted_at || null
+  };
+}
+
+async function jayHasCurrentLegalConsent() {
+  if (!supabaseClient || !jayUser) return false;
+  var versions = jayLegalVersions();
+  var result = await supabaseClient.from('user_legal_consents')
+    .select('id')
+    .eq('user_id', jayUser.id)
+    .eq('privacy_policy_version', versions.privacyPolicy)
+    .eq('terms_version', versions.termsOfService)
+    .limit(1);
+  if (result.error) throw result.error;
+  return Array.isArray(result.data) && result.data.length > 0;
+}
+
+async function jayRecordLegalConsent(acceptance) {
+  if (!supabaseClient || !jayUser) throw new Error('AUTH_REQUIRED');
+  var versions = jayLegalVersions();
+  if (!versions.privacyPolicy || !versions.termsOfService) throw new Error('LEGAL_VERSION_MISSING');
+  var payload = {
+    user_id: jayUser.id,
+    privacy_policy_version: versions.privacyPolicy,
+    terms_version: versions.termsOfService,
+    acceptance_source: String((acceptance && acceptance.source) || 'session-gate').slice(0, 40)
+  };
+  if (acceptance && acceptance.acceptedAt) payload.accepted_at = acceptance.acceptedAt;
+  var result = await supabaseClient.from('user_legal_consents').insert(payload);
+  if (result.error && result.error.code !== '23505') throw result.error;
+  return true;
+}
+
+async function jayEnsureCurrentLegalConsent(acceptance) {
+  if (acceptance) {
+    await jayRecordLegalConsent(acceptance);
+    return true;
+  }
+  var metadataAcceptance = jayLegalAcceptanceFromMetadata(jayUser);
+  if (metadataAcceptance) {
+    await jayRecordLegalConsent(metadataAcceptance);
+    return true;
+  }
+  return jayHasCurrentLegalConsent();
+}
+
+async function completeJayAuthenticatedSession(user, acceptance) {
+  jayIsDemo = false;
+  jayUser = user;
+  await loadJayProfile();
+  var accepted = await jayEnsureCurrentLegalConsent(acceptance);
+  if (!accepted) {
+    showLegalConsentGate();
+    return false;
+  }
+  jayPendingLegalAcceptance = null;
+  onAuthSuccess();
+  return true;
+}
+
+function showLegalConsentGate(message) {
+  var login = document.getElementById('login-screen') || document.getElementById('loginPage');
+  var app = document.getElementById('mainApp');
+  var gate = document.getElementById('auth-consent-gate');
+  if (login) login.style.display = 'grid';
+  if (app) app.classList.remove('active');
+  var tabs = document.querySelector('.auth-tabs');
+  var form = document.querySelector('.auth-form');
+  var demo = document.querySelector('.auth-demo-row');
+  if (tabs) tabs.hidden = true;
+  if (form) form.hidden = true;
+  if (demo) demo.hidden = true;
+  if (gate) gate.hidden = false;
+  var title = document.getElementById('auth-title');
+  if (title) title.textContent = '确认最新协议';
+  var error = document.getElementById('auth-consent-error');
+  error.textContent = message || '';
+  error.classList.toggle('show', !!message);
+}
+
+async function acceptCurrentLegalConsent() {
+  var checkbox = document.getElementById('auth-session-legal-consent');
+  var button = document.getElementById('auth-consent-submit');
+  var error = document.getElementById('auth-consent-error');
+  if (!checkbox.checked) {
+    error.textContent = '请先阅读并同意当前版本的服务条款与隐私政策。';
+    error.classList.add('show');
+    checkbox.focus();
+    return;
+  }
+  button.disabled = true;
+  error.classList.remove('show');
+  try {
+    await jayRecordLegalConsent({ source: 'session-gate', acceptedAt: new Date().toISOString() });
+    checkbox.checked = false;
+    onAuthSuccess();
+  } catch (cause) {
+    console.warn('[JAY观海] record legal consent failed:', cause.message || cause);
+    error.textContent = '协议记录保存失败，请稍后重试。';
+    error.classList.add('show');
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function openAuthLegalDocument(pageId) {
+  var source = document.querySelector('#' + pageId + ' .legal-page');
+  var modal = document.getElementById('auth-legal-modal');
+  var body = document.getElementById('auth-legal-modal-body');
+  if (!source || !modal || !body) return;
+  body.replaceChildren(source.cloneNode(true));
+  document.getElementById('auth-legal-modal-title').textContent = pageId === 'privacy' ? '隐私政策' : '服务条款';
+  modal.hidden = false;
+  jayLastLegalTrigger = document.activeElement;
+  modal.querySelector('button').focus();
+}
+
+function closeAuthLegalDocument() {
+  var modal = document.getElementById('auth-legal-modal');
+  if (modal) modal.hidden = true;
+  if (jayLastLegalTrigger && typeof jayLastLegalTrigger.focus === 'function') jayLastLegalTrigger.focus();
+}
+
 function switchAuthTab(mode) {
   authMode = mode;
   var tabs = document.querySelectorAll('.auth-tabs button');
@@ -446,7 +595,7 @@ function switchAuthTab(mode) {
   document.getElementById('field-name').classList.toggle('show', mode==='register');
   document.getElementById('field-company').classList.toggle('show', mode==='register');
   var activeMarketText=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames().join('、'):'市场';
-  document.getElementById('auth-title').textContent = mode==='login' ? '进入'+activeMarketText+'情报台' : '创建免费账号';
+  document.getElementById('auth-title').textContent = mode==='login' ? '进入'+activeMarketText+'市场情报台' : '创建免费账号';
   document.getElementById('auth-submit-btn').textContent = mode==='login' ? '登录 →' : '注册 →';
   document.getElementById('auth-reset-link').style.display = mode==='login' ? '' : 'none';
   document.getElementById('auth-error').classList.remove('show');
@@ -458,22 +607,34 @@ async function handleAuthSubmit(e) {
   var password = document.getElementById('auth-password').value;
   var btn = document.getElementById('auth-submit-btn');
   var errEl = document.getElementById('auth-error');
+  var consent = document.getElementById('auth-legal-consent');
   errEl.classList.remove('show');
+  if (!consent.checked) {
+    errEl.textContent = '请先阅读并同意当前版本的服务条款与隐私政策。';
+    errEl.classList.add('show');
+    consent.focus();
+    return;
+  }
+  jayPendingLegalAcceptance = {
+    source: authMode === 'register' ? 'registration' : 'login',
+    acceptedAt: new Date().toISOString()
+  };
   btn.classList.add('loading');
   btn.disabled = true;
 
   try {
     if (authMode === 'login') {
       var r = await doLogin(email, password);
-      if (!r.success) { errEl.textContent = r.error; errEl.classList.add('show'); }
+      if (!r.success) { jayPendingLegalAcceptance = null; errEl.textContent = r.error; errEl.classList.add('show'); }
     } else {
       var name = document.getElementById('auth-display-name').value.trim();
       var company = document.getElementById('auth-company').value.trim();
       var r = await doRegister(email, password, name, company);
-      if (!r.success) { errEl.textContent = r.error; errEl.classList.add('show'); }
+      if (!r.success) { jayPendingLegalAcceptance = null; errEl.textContent = r.error; errEl.classList.add('show'); }
       else if (r.needsEmailConfirm) { errEl.textContent = '注册成功！请查收验证邮件后登录。'; errEl.style.color='#27ae60'; errEl.classList.add('show'); }
     }
   } catch(err) {
+    jayPendingLegalAcceptance = null;
     errEl.textContent = '网络错误，请重试';
     errEl.classList.add('show');
   }
@@ -489,9 +650,8 @@ async function doLogin(email, password) {
   if (r.error) return { success: false, error: translateAuthErr(r.error.message) };
   jayIsDemo = false;
   jayUser = r.data.user;
-  await loadJayProfile();
   supabaseClient.from('profiles').update({ last_login_at: new Date().toISOString() }).eq('id', jayUser.id).then().catch(function(e){ console.warn('[JAY观海] update last_login failed:', e.message); });
-  onAuthSuccess();
+  await completeJayAuthenticatedSession(r.data.user, jayPendingLegalAcceptance);
   return { success: true };
 }
 
@@ -499,10 +659,18 @@ async function doRegister(email, password, name, company) {
   if (!supabaseClient) {
     return { success: false, error: '认证服务暂不可用，请稍后重试' };
   }
-  var r = await supabaseClient.auth.signUp({ email: email, password: password, options: { data: { display_name: name || email.split('@')[0], company: company } } });
+  var acceptance = jayPendingLegalAcceptance || { source: 'registration', acceptedAt: new Date().toISOString() };
+  var versions = jayLegalVersions();
+  var r = await supabaseClient.auth.signUp({ email: email, password: password, options: { data: {
+    display_name: name || email.split('@')[0],
+    company: company,
+    legal_privacy_policy_version: versions.privacyPolicy,
+    legal_terms_version: versions.termsOfService,
+    legal_accepted_at: acceptance.acceptedAt
+  } } });
   if (r.error) return { success: false, error: translateAuthErr(r.error.message) };
   if (company && r.data.user) await supabaseClient.from('profiles').update({ company: company, display_name: name || email.split('@')[0] }).eq('id', r.data.user.id);
-  if (r.data.session) { jayIsDemo = false; jayUser = r.data.user; await loadJayProfile(); onAuthSuccess(); }
+  if (r.data.session) { jayIsDemo = false; jayUser = r.data.user; await completeJayAuthenticatedSession(r.data.user, acceptance); }
   else return { success: true, needsEmailConfirm: true };
   return { success: true };
 }
@@ -538,6 +706,8 @@ function translateAuthErr(m) {
 function onAuthSuccess() {
   var ls = document.getElementById('login-screen') || document.getElementById('loginPage');
   if (ls) ls.style.display = 'none';
+  var gate = document.getElementById('auth-consent-gate');
+  if (gate) gate.hidden = true;
   var app = document.getElementById('mainApp');
   if (app) app.classList.add('active');
   updateSidebarUserInfo();
@@ -558,6 +728,7 @@ function onAuthSuccess() {
   if (typeof prReloadImportedDataForCurrentUser === 'function') prReloadImportedDataForCurrentUser();
   if (typeof updateAlBadge === 'function') updateAlBadge();
   if (typeof stInitAccount === 'function') stInitAccount();
+  window.dispatchEvent(new CustomEvent('jay:auth-ready'));
 }
 
 // ========== JAY观海 User Service ==========
@@ -2290,6 +2461,15 @@ function showLoginScreen() {
   if (ls) ls.style.display = 'grid';
   var app = document.getElementById('mainApp');
   if (app) app.classList.remove('active');
+  var tabs = document.querySelector('.auth-tabs');
+  var form = document.querySelector('.auth-form');
+  var demo = document.querySelector('.auth-demo-row');
+  var gate = document.getElementById('auth-consent-gate');
+  if (tabs) tabs.hidden = false;
+  if (form) form.hidden = false;
+  if (demo) demo.hidden = false;
+  if (gate) gate.hidden = true;
+  switchAuthTab(authMode);
 }
 
 function updateSidebarUserInfo() {

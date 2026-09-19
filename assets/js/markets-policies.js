@@ -1229,7 +1229,7 @@ function renderPlList(){
     const vBadge=p._advisory?`<span class="pl-verify-badge advisory" title="${escapeHtml(evidence.label)}" data-ui-style="font-size:11px;padding:1px 6px;border-radius:8px;background:#eef5ff;color:#286090;margin-left:6px;vertical-align:middle">↗ 可追溯参考</span>`:vFlag==='pass'?`<span class="pl-verify-badge pass" title="${escapeHtml(evidence.label)}" data-ui-style="font-size:11px;padding:1px 6px;border-radius:8px;background:#eafaf1;color:#1e8449;margin-left:6px;vertical-align:middle">✓ 已核验</span>`:`<span class="pl-verify-badge warn" title="${escapeHtml(vIssues.join('；'))}" data-ui-style="font-size:11px;padding:1px 6px;border-radius:8px;background:#fef9e7;color:#b7950b;margin-left:6px;vertical-align:middle">⚠ 待核</span>`;
     return `<div class="pl-card" data-ui-style="${cardBorder}">
       <div class="pl-risk-bar ${levelClass}"></div>
-      <input type="checkbox" class="pl-card-check" ${checked} data-action="event.stopPropagation();plToggleSelect(${p._idx})">
+      <input type="checkbox" class="pl-card-check" ${checked} aria-label="选择政策 ${escapeHtml(title)}" data-action="event.stopPropagation();plToggleSelect(${p._idx})">
       <div class="pl-card-body">
         <h3>${titleLink}${vBadge}</h3>
         <div class="pl-meta">
@@ -1264,7 +1264,7 @@ function renderPlList(){
   }).join('');
 
   // Pagination
-  let pagHtml=`<button ${plCurrentPage<=1?'disabled':''} data-action="plGoPage(${plCurrentPage-1})">‹</button>`;
+  let pagHtml=`<button ${plCurrentPage<=1?'disabled':''} aria-label="上一页政策" title="上一页" data-action="plGoPage(${plCurrentPage-1})">‹</button>`;
   for(let i=1;i<=totalPages;i++){
     if(totalPages>7 && i>2 && i<totalPages-1 && Math.abs(i-plCurrentPage)>1){
       if(i===3||i===totalPages-2)pagHtml+=`<span>…</span>`;
@@ -1272,7 +1272,7 @@ function renderPlList(){
     }
     pagHtml+=`<button class="${i===plCurrentPage?'active':''}" data-action="plGoPage(${i})">${i}</button>`;
   }
-  pagHtml+=`<button ${plCurrentPage>=totalPages?'disabled':''} data-action="plGoPage(${plCurrentPage+1})">›</button>`;
+  pagHtml+=`<button ${plCurrentPage>=totalPages?'disabled':''} aria-label="下一页政策" title="下一页" data-action="plGoPage(${plCurrentPage+1})">›</button>`;
   $('#pl-pagination').innerHTML=pagHtml;
 }
 
@@ -1382,7 +1382,7 @@ function openPlDetail(idx){
   const effectiveFrom=p.effective_from||p.effective_date||'';
   const effectiveTo=p.effective_to||p.expire_date||'';
   const originalTitle=String(p.title||'').trim();
-  let html=`<button class="pl-detail-close" data-action="closePlDetail()">✕</button>
+  let html=`<button class="pl-detail-close" aria-label="关闭政策详情" title="关闭" data-action="closePlDetail()">✕</button>
     <h2>${escapeHtml(title)}</h2>
     <div class="pl-detail-sub">${escapeHtml(regionLabel)} · ${escapeHtml(plDomainLabels[plActiveDomain].label)} · ${escapeHtml(plTranslationLabel(p))}</div>
     <div class="pl-detail-section"><h4>来源与核验</h4>
@@ -1860,7 +1860,7 @@ function renderRlRules(){
     return '<div class="rl-rule-card" data-idx="'+globalIdx+'">'
     +'<div class="rl-risk-bar rl-risk-'+riskLevel+'"></div>'
     +'<div class="rl-card-body">'
-    +'<h4><input type="checkbox" class="rl-check" data-idx="'+escapeHtml(String(r.id||''))+'" '+((rlChecked.has(r.id))?'checked':'')+' data-change-action="rlToggleCheck(\''+escInline(r.id||'')+'\')"> '+titleLink+' <span class="tag" data-ui-style="color:'+impactColor+';border-color:'+impactColor+'">'+escapeHtml(catLabel)+'</span></h4>'
+    +'<h4><input type="checkbox" class="rl-check" data-idx="'+escapeHtml(String(r.id||''))+'" '+((rlChecked.has(r.id))?'checked':'')+' aria-label="选择规则 '+escapeHtml(r.title||'')+'" data-change-action="rlToggleCheck(\''+escInline(r.id||'')+'\')"> '+titleLink+' <span class="tag" data-ui-style="color:'+impactColor+';border-color:'+impactColor+'">'+escapeHtml(catLabel)+'</span></h4>'
     +'<div class="rl-card-meta"><span>📅 '+escapeHtml(r.published_at||'')+'</span><span class="tag watch">'+escapeHtml(marketLabel)+'</span><span>'+escapeHtml(r.platform||'')+'</span><span class="tag">主题：'+escapeHtml(topicLabel)+'</span>'
     +(isFuture?'<span class="rl-countdown '+(days<=7?(days<=3?'rl-countdown-urgent':'rl-countdown-warn'):'rl-countdown-ok')+'">'+days+'天后生效</span>':'<span class="rl-countdown rl-countdown-ok">已生效</span>')
     +'<span class="rl-rule-version" data-rule-version="'+escapeHtml(rlRuleVersionLabel(r))+'">版本：'+escapeHtml(rlRuleVersionLabel(r))+'</span>'
@@ -1897,7 +1897,7 @@ function renderRlActs(){
     return '<div class="rl-act-card" data-idx="'+globalIdx+'">'
     +'<div class="rl-risk-bar rl-risk-'+(ext.hotLevel==='high'?'high':ext.hotLevel==='mid'?'mid':'low')+'"></div>'
     +'<div class="rl-card-body">'
-    +'<h4><input type="checkbox" class="rl-check" data-idx="a'+globalIdx+'" data-change-action="rlToggleCheck(\'a'+globalIdx+'\')"> '+a[0]+' · '+rlActTypeLabels[rlActTypeGroup(a[1])]+' <span class="rl-act-type '+rlActTypeClass(a[1])+'">'+rlActTypeLabels[rlActTypeGroup(a[1])]+'</span></h4>'
+    +'<h4><input type="checkbox" class="rl-check" data-idx="a'+globalIdx+'" aria-label="选择活动 '+escapeHtml(a[0]+' '+a[1])+'" data-change-action="rlToggleCheck(\'a'+globalIdx+'\')"> '+a[0]+' · '+rlActTypeLabels[rlActTypeGroup(a[1])]+' <span class="rl-act-type '+rlActTypeClass(a[1])+'">'+rlActTypeLabels[rlActTypeGroup(a[1])]+'</span></h4>'
     +'<div class="rl-card-meta"><span>📅 '+a[3]+' ~ '+a[4]+'</span><span class="tag watch">'+a[5]+'</span><span>主推: '+a[10]+'</span>'+rlCountdown(a[11])+'</div>'
     +'<div class="rl-card-summary">'+a[7].substring(0,80)+(a[7].length>80?'…':'')+'</div>'
     +(ext.riskWarn?'<div class="rl-act-risk-warn">⚠️ '+ext.riskWarn+'</div>':'')
@@ -1999,7 +1999,7 @@ function openRlRuleDetail(idx){
   const overlay=document.createElement('div');
   overlay.className='rl-detail-overlay';
   overlay.onclick=e=>{if(e.target===overlay)overlay.remove()};
-  overlay.innerHTML='<div class="rl-detail-modal"><button class="close-btn" data-action="this.closest(\'.rl-detail-overlay\').remove()">×</button>'
+  overlay.innerHTML='<div class="rl-detail-modal"><button class="close-btn" aria-label="关闭规则详情" title="关闭" data-action="this.closest(\'.rl-detail-overlay\').remove()">×</button>'
   +'<h2>'+escapeHtml(r.title||'')+'</h2>'
    +'<div class="rl-detail-section"><h3>📋 基础信息</h3><div class="info-grid">'
    +'<div class="info-item"><div class="lbl">平台</div><div class="val">'+escapeHtml(r.platform||'')+'</div></div>'
@@ -2032,7 +2032,7 @@ function openRlActDetail(idx){
   const overlay=document.createElement('div');
   overlay.className='rl-detail-overlay';
   overlay.onclick=e=>{if(e.target===overlay)overlay.remove()};
-  overlay.innerHTML='<div class="rl-detail-modal"><button class="close-btn" data-action="this.closest(\'.rl-detail-overlay\').remove()">×</button>'
+  overlay.innerHTML='<div class="rl-detail-modal"><button class="close-btn" aria-label="关闭活动详情" title="关闭" data-action="this.closest(\'.rl-detail-overlay\').remove()">×</button>'
   +'<h2>'+a[0]+' · '+a[1]+'</h2>'
   +'<div class="rl-detail-section"><h3>📋 活动基础信息</h3><div class="info-grid">'
   +'<div class="info-item"><div class="lbl">平台</div><div class="val">'+a[0]+'</div></div>'

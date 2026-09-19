@@ -562,7 +562,7 @@ function renderAlList(filtered){
     var readCls=read?'read':'unread';
     var safeSourceUrl=typeof jaySafeHttpsUrl==='function'?jaySafeHttpsUrl(a.sourceUrl):'';
     html+='<div class="al-card '+readCls+'" id="al-card-'+escapeHtml(id)+'">';
-    html+='<div class="al-card-check"><input type="checkbox" '+checked+' data-change-action="alToggleSelect(\''+escInline(id)+'\',this.checked)"></div>';
+    html+='<div class="al-card-check"><input type="checkbox" '+checked+' aria-label="选择预警 '+escapeHtml(title)+'" data-change-action="alToggleSelect(\''+escInline(id)+'\',this.checked)"></div>';
     html+='<div class="al-card-icon type-'+type+'">'+icon+'</div>';
     html+='<div class="al-card-body">';
     html+='<div class="al-card-title">'+escapeHtml(title)+'</div>';
@@ -1236,7 +1236,7 @@ function stToast(msg){
     var al=document.querySelector('#alerts .al-toolbar'); if(al && !document.getElementById('al-data-info')){ var d2=document.createElement('div'); d2.id='al-data-info'; d2.style.cssText='font-size:.78rem;color:#888;padding:4px 0 8px'; if(al.nextSibling) al.parentNode.insertBefore(d2, al.nextSibling); else al.parentNode.appendChild(d2); }
     if(!document.getElementById('jay-refresh-log-modal')){
       var m=document.createElement('div'); m.id='jay-refresh-log-modal'; m.className='jay-modal-overlay'; m.style.display='none';
-      m.innerHTML='<div class="jay-modal"><div class="jay-modal-head"><b>数据更新日志</b><button id="jay-refresh-log-close">✕</button></div><div class="jay-modal-body" id="jay-refresh-log-body"></div></div>';
+      m.innerHTML='<div class="jay-modal"><div class="jay-modal-head"><b>数据更新日志</b><button id="jay-refresh-log-close" aria-label="关闭数据更新日志" title="关闭">✕</button></div><div class="jay-modal-body" id="jay-refresh-log-body"></div></div>';
       document.body.appendChild(m);
       m.querySelector('#jay-refresh-log-close').onclick=function(){ m.style.display='none'; };
       m.onclick=function(e){ if(e.target===m) m.style.display='none'; };

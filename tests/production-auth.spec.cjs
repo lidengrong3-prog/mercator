@@ -31,6 +31,7 @@ test.describe('production authenticated browser acceptance', () => {
     await expect(page.locator('#loginPage')).toBeVisible({ timeout: 30_000 });
     await page.locator('#auth-email').fill(account.email);
     await page.locator('#auth-password').fill(account.password);
+    await page.locator('#auth-legal-consent').check();
     await page.locator('#auth-submit-btn').click();
     await expect(page.locator('#mainApp')).toHaveClass(/active/, { timeout: 30_000 });
     await page.waitForFunction(() => window.jayUser && !window.jayIsDemo, null, { timeout: 30_000 });
@@ -478,7 +479,7 @@ test.describe('production authenticated browser acceptance', () => {
 
     await page.evaluate(async () => {
       await window.jayLoadWorkspaceContext();
-      window.switchPage('settings');
+      await window.switchPage('settings');
       window.stSwitchTab('team');
     });
     await page.locator('#st-invite-email').fill(credentials.b.email);
@@ -499,7 +500,7 @@ test.describe('production authenticated browser acceptance', () => {
     await expect.poll(() => pageB.evaluate(() => window.jayActiveWorkspaceId())).toBe(workspaceA);
     expect((await rows(pageB, 'report_materials', { title: importedProductTitle })).length).toBeGreaterThan(0);
     expect((await rows(pageB, 'generated_reports', { id: reportId })).length).toBe(1);
-    await pageB.evaluate(() => { window.switchPage('settings'); window.stSwitchTab('team'); });
+    await pageB.evaluate(async () => { await window.switchPage('settings'); window.stSwitchTab('team'); });
     await expect(pageB.locator(`#st-workspace-select option[value="${workspaceA}"]`)).toHaveCount(1);
     await expect(pageB.locator(`#st-workspace-select option[value="${workspaceB}"]`)).toHaveCount(1);
 

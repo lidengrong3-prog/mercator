@@ -45,6 +45,15 @@ class PublicSiteTests(unittest.TestCase):
         self.assertTrue((self.output / "index.html").is_file())
         self.assertTrue((self.output / ".nojekyll").is_file())
         self.assertTrue((self.output / "assets").is_dir())
+        asset_manifest = json.loads((self.output / "asset-manifest.json").read_text(encoding="utf-8"))
+        self.assertTrue(asset_manifest)
+        self.assertTrue(all("." in Path(value).stem for value in asset_manifest.values()))
+        self.assertTrue(all((self.output / value).is_file() for value in asset_manifest.values()))
+        built_html = (self.output / "index.html").read_text(encoding="utf-8")
+        self.assertIn(asset_manifest["assets/runtime-config.js"], built_html)
+        self.assertNotIn('src="assets/js/catalog.js"', built_html)
+        performance = json.loads((self.output / "performance-budget-report.json").read_text(encoding="utf-8"))
+        self.assertEqual(performance["status"], "passed")
         verification_dir = self.output / ".well-known" / "teo-verification"
         self.assertEqual(
             {
@@ -105,7 +114,7 @@ class PublicSiteTests(unittest.TestCase):
 
     def test_workflow_uses_public_builder_instead_of_copying_data_directory(self):
         workflow = (ROOT / ".github" / "workflows" / "deploy-production.yml").read_text(encoding="utf-8")
-        self.assertIn("python scripts/build_public_site.py --output _site", workflow)
+        self.assertIn("python scripts/build_public_site.py --output _site --environment production", workflow)
         self.assertNotRegex(workflow, r"cp\s+-R\s+assets\s+data\s+_site")
 
     def test_pages_deployment_receives_the_validated_production_site_url(self):
@@ -127,6 +136,38 @@ class PublicSiteTests(unittest.TestCase):
             (output / "stale.json").write_text("{}", encoding="utf-8")
             with self.assertRaises(ValueError):
                 build_public_site.build_public_site(output, ROOT)
+
+    def test_production_builder_requires_environment_specific_public_config(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "site"
+            with self.assertRaises(ValueError):
+                build_public_site.build_public_site(
+                    output,
+                    ROOT,
+                    environment="production",
+                    environ={},
+                )
+
+    def test_production_builder_injects_config_and_csp_only_into_output(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "site"
+            build_public_site.build_public_site(
+                output,
+                ROOT,
+                environment="production",
+                environ={
+                    "SUPABASE_URL": "https://project.supabase.co",
+                    "SUPABASE_ANON_KEY": "sb_publishable_test",
+                },
+            )
+            asset_manifest = json.loads((output / "asset-manifest.json").read_text(encoding="utf-8"))
+            runtime = (output / asset_manifest["assets/runtime-config.js"]).read_text(encoding="utf-8")
+            self.assertIn("https://project.supabase.co", runtime)
+            self.assertIn("sb_publishable_test", runtime)
+            self.assertIn('"privacyPolicy":"2026-08-26"', runtime)
+            self.assertIn('"termsOfService":"2026-08-26"', runtime)
+            self.assertIn("https://project.supabase.co", (output / "index.html").read_text(encoding="utf-8"))
+            self.assertNotIn("https://project.supabase.co", (ROOT / "index.html").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

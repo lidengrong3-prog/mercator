@@ -281,7 +281,7 @@ function ctRenderCards(list) {
     var tier = ctHasNumericMetric(c,12) ? ctGetCreatorTier(c[12]) : '未提供';
     var tierColor = tier==='头部KOL' ? 'var(--orange)' : tier==='中腰部达人' ? 'var(--green)' : 'var(--muted)';
     return '<article class="ct-card-new">' +
-      '<div class="ct-card-check"><input type="checkbox" class="ct-cb" data-idx="' + idx + '" ' + checked + ' data-change-action="ctToggleOne(' + idx + ',this.checked)"></div>' +
+      '<div class="ct-card-check"><input type="checkbox" class="ct-cb" data-idx="' + idx + '" ' + checked + ' aria-label="选择内容 ' + escapeHtml(ctTitle(c)) + '" data-change-action="ctToggleOne(' + idx + ',this.checked)"></div>' +
       ctThumbHtml(c, idx) +
       '<div data-ui-style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">' +
         '<span class="tag ' + (c[3]==='直播'?'hot':c[3]==='短视频'?'watch':'') + '" data-ui-style="font-size:10px">' + escapeHtml(c[3]) + '</span>' +
@@ -882,7 +882,8 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
     var title=$('.ov-hero-title');
     var wrap=$('.ov-hero-input-wrap');
     if(!title||!wrap)return;
-    if(window.innerWidth<=600){ wrap.style.width=''; return; }
+    var phoneMax=window.JAY_BREAKPOINTS?window.JAY_BREAKPOINTS.phoneMax:640;
+    if(window.innerWidth<=phoneMax){ wrap.style.width=''; return; }
     var w=title.offsetWidth;
     if(w>0) wrap.style.width=w+'px';
   }

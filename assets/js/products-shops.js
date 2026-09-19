@@ -524,7 +524,7 @@ function prRenderTable(list){
     var tagClass=p[10]==='爆发'?'hot':'watch';
     var nameEsc=escapeHtml(prDisplay(p[1])).replace(/"/g,'&quot;');
     return '<tr>'+
-      '<td><input type="checkbox" class="pr-chk" data-idx="'+idx+'" '+checked+'></td>'+
+      '<td><input type="checkbox" class="pr-chk" data-idx="'+idx+'" '+checked+' aria-label="选择商品 '+nameEsc+'"></td>'+
       '<td>'+(i+1)+'</td>'+
       '<td><div class="product-cell"><span class="product-thumb">'+escapeHtml(prDisplay(p[0]))+'</span><strong class="pr-prod-link" data-idx="'+idx+'" data-ui-style="cursor:pointer" title="'+nameEsc+'">'+escapeHtml(prDisplay(p[1]))+'</strong></div></td>'+
       '<td>'+escapeHtml(prDisplay(p[2]))+' · '+escapeHtml(prDisplay(p[3]))+'<br>'+prSourceBadge(p)+'</td>'+
@@ -1088,7 +1088,7 @@ function shRenderTable(list) {
       });
     }
     return '<tr>' +
-      '<td><input type="checkbox" class="sh-cb" data-idx="' + idx + '" ' + checked + ' data-change-action="shToggleOne(' + idx + ',this.checked)"></td>' +
+      '<td><input type="checkbox" class="sh-cb" data-idx="' + idx + '" ' + checked + ' aria-label="选择店铺 ' + escapeHtml(prDisplay(s[0])) + '" data-change-action="shToggleOne(' + idx + ',this.checked)"></td>' +
       '<td><strong data-ui-style="cursor:pointer;color:var(--green)" class="sh-shop-link" data-idx="' + idx + '">' + escapeHtml(prDisplay(s[0])) + '</strong><br>'+prSourceBadge(s)+'</td>' +
       '<td>' + escapeHtml(prDisplay(s[1])) + '</td>' +
       '<td>' + escapeHtml(prDisplay(s[2])) + '</td>' +

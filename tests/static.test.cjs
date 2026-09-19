@@ -14,9 +14,15 @@ const localScriptSources = [...document.querySelectorAll('script[src]')]
 const localStyleSources = [...document.querySelectorAll('link[rel="stylesheet"][href]')]
   .map((node) => node.getAttribute('href'))
   .filter((source) => source && !/^(?:https?:)?\/\//i.test(source));
-const browserSource = [html, ...localScriptSources.map((source) => (
-  fs.readFileSync(path.join(root, source.split(/[?#]/)[0]), 'utf8')
-))].join('\n');
+const browserSource = [
+  html,
+  ...localScriptSources.map((source) => (
+    fs.readFileSync(path.join(root, source.split(/[?#]/)[0]), 'utf8')
+  )),
+  ...fs.readdirSync(path.join(root, 'assets', 'js'))
+    .filter((name) => name.endsWith('.js'))
+    .map((name) => fs.readFileSync(path.join(root, 'assets', 'js', name), 'utf8')),
+].join('\n');
 
 test('production shell exposes the primary decision workflow', () => {
   assert.ok(document.querySelector('#loginPage #auth-email'));
@@ -47,6 +53,35 @@ test('production shell exposes the primary decision workflow', () => {
   }
 });
 
+test('FAQ and architecture document the supported report exports and runtime order', () => {
+  const exportFaq = [...document.querySelectorAll('#jay-faq li')]
+    .find((item) => item.querySelector('b')?.textContent.trim() === '报告怎么导出？');
+  assert.ok(exportFaq, 'missing report export FAQ');
+  assert.match(exportFaq.textContent, /PDF/);
+  assert.match(exportFaq.textContent, /DOCX/);
+  assert.doesNotMatch(exportFaq.textContent, /HTML 格式报告/);
+
+  const architecture = fs.readFileSync(path.join(root, 'docs', 'FRONTEND_ARCHITECTURE.md'), 'utf8');
+  const runtimeSection = architecture.slice(
+    architecture.indexOf('## Runtime order'),
+    architecture.indexOf('## Verification'),
+  );
+  const documentedOrder = [...runtimeSection.matchAll(/^\d+\. `([^`]+)`/gm)]
+    .map((match) => match[1]);
+  const expectedOrder = [
+    'assets/js/report-quality.js',
+    'assets/js/report-engine.js',
+    'assets/js/reports-decisions.js',
+    'assets/js/auth-data.js',
+    'assets/js/unified-search.js',
+    'assets/js/product-enhancements.js',
+  ];
+  assert.deepEqual(
+    documentedOrder.filter((source) => expectedOrder.includes(source)),
+    expectedOrder,
+  );
+});
+
 test('frontend uses delegated events and a strict script policy', () => {
   const eventSources = [html, ...fs.readdirSync(path.join(root, 'assets', 'js'))
     .filter((name) => name.endsWith('.js'))
@@ -74,7 +109,7 @@ test('frontend uses delegated events and a strict script policy', () => {
   assert.equal(edgeone.headers[0].source, '/*');
   assert.match(responseHeaders['Content-Security-Policy'], /frame-ancestors 'none'/);
   assert.match(responseHeaders['Content-Security-Policy'], /style-src-attr 'none'/);
-  assert.equal(responseHeaders['Strict-Transport-Security'], 'max-age=31536000; includeSubDomains; preload');
+  assert.equal(responseHeaders['Strict-Transport-Security'], 'max-age=31536000');
   assert.equal(responseHeaders['X-Content-Type-Options'], 'nosniff');
   assert.equal(responseHeaders['X-Frame-Options'], 'DENY');
   assert.equal(fs.readFileSync(path.join(root, 'CNAME'), 'utf8').trim(), 'jayguanhai.com');
@@ -115,7 +150,6 @@ test('legacy US category PDFs are not regenerated or included in GitHub Pages', 
 test('frontend assets are externalized and loaded in dependency order', () => {
   const expectedStyles = [
     'assets/styles/legacy-foundation.css',
-    'assets/styles/workspaces.css',
     'assets/styles/legacy-theme.css',
     'assets/app-shell.css',
     'assets/styles/market-scope.css',
@@ -125,15 +159,12 @@ test('frontend assets are externalized and loaded in dependency order', () => {
     'assets/js/catalog.js',
     'assets/js/report-quality.js',
     'assets/js/report-engine.js',
-    'assets/js/products-shops.js',
     'assets/js/markets-policies.js',
     'assets/js/content-overview.js',
     'assets/js/reports-decisions.js',
     'assets/js/auth-data.js',
-    'assets/js/alerts-settings.js',
     'assets/js/unified-search.js',
     'assets/js/product-enhancements.js',
-    'assets/js/resource-center.js',
   ];
   assert.deepEqual(localStyleSources, expectedStyles);
   assert.deepEqual(localScriptSources.filter((source) => source.startsWith('assets/js/')), expectedModules);
@@ -142,6 +173,105 @@ test('frontend assets are externalized and loaded in dependency order', () => {
   for (const source of expectedStyles.concat(expectedModules)) {
     assert.equal(fs.existsSync(path.join(root, source)), true, `missing ${source}`);
   }
+  const pageLoader = fs.readFileSync(path.join(root, 'assets', 'page-loader.js'), 'utf8');
+  for (const source of [
+    'assets/styles/workspaces.css',
+    'assets/js/products-shops.js',
+    'assets/js/alerts-settings.js',
+    'assets/js/resource-center.js',
+  ]) {
+    assert.match(pageLoader, new RegExp(source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+});
+
+test('frontend runtime configuration and responsive contracts are centralized', () => {
+  const frontendSources = [
+    html,
+    ...fs.readdirSync(path.join(root, 'assets', 'js'))
+      .filter((name) => name.endsWith('.js'))
+      .map((name) => fs.readFileSync(path.join(root, 'assets', 'js', name), 'utf8')),
+    ...fs.readdirSync(path.join(root, 'assets'))
+      .filter((name) => name.endsWith('.js'))
+      .map((name) => fs.readFileSync(path.join(root, 'assets', name), 'utf8')),
+  ].join('\n');
+  assert.doesNotMatch(frontendSources, /https:\/\/[a-z0-9-]+\.supabase\.co/i);
+  assert.match(fs.readFileSync(path.join(root, 'assets', 'js', 'catalog.js'), 'utf8'), /JAY_APP_CONFIG/);
+  assert.match(html, /assets\/runtime-config\.js/);
+  assert.match(html, /assets\/responsive\.js/);
+  assert.match(html, /assets\/page-loader\.js/);
+
+  const environmentDir = path.join(root, 'config', 'environments');
+  assert.deepEqual(
+    fs.readdirSync(environmentDir).filter((name) => name.endsWith('.json')).sort(),
+    ['development.json', 'production.json', 'test.json'],
+  );
+  const css = [
+    ...fs.readdirSync(path.join(root, 'assets', 'styles'))
+      .filter((name) => name.endsWith('.css'))
+      .map((name) => fs.readFileSync(path.join(root, 'assets', 'styles', name), 'utf8')),
+    fs.readFileSync(path.join(root, 'assets', 'app-shell.css'), 'utf8'),
+  ].join('\n');
+  const mediaWidths = [...css.matchAll(/@media([^\{]*)\{/gi)]
+    .flatMap((media) => [...media[1].matchAll(/(?:min|max)-width\s*:\s*(\d+)px/gi)])
+    .map((match) => Number(match[1]));
+  assert.ok(mediaWidths.length > 0);
+  assert.deepEqual([...new Set(mediaWidths)].sort((a, b) => a - b), [640, 641, 1024]);
+});
+
+test('filters, search controls, checkboxes and icon buttons have accessible names', () => {
+  const labels = [...document.querySelectorAll('label[for]')];
+  const hasName = (element) => (
+    element.hasAttribute('aria-label')
+    || element.hasAttribute('aria-labelledby')
+    || Boolean(element.id && labels.some((label) => label.htmlFor === element.id))
+    || Boolean(element.closest('label'))
+    || Boolean(element.title)
+  );
+  const controls = [...document.querySelectorAll([
+    'select',
+    'input[type="search"]',
+    'input[type="checkbox"]',
+    'input[id*="search"]',
+    'input[id*="keyword"]',
+  ].join(','))];
+  assert.deepEqual(
+    controls.filter((element) => !hasName(element)).map((element) => element.id || element.outerHTML),
+    [],
+  );
+
+  const iconButtons = [...document.querySelectorAll('button')].filter((button) => {
+    const text = button.textContent.replace(/\s+/g, ' ').trim();
+    return !/[\p{L}\p{N}]/u.test(text);
+  });
+  assert.deepEqual(
+    iconButtons.filter((button) => !hasName(button)).map((button) => button.id || button.outerHTML),
+    [],
+  );
+
+  const dynamicSources = [
+    'alerts-settings.js',
+    'content-overview.js',
+    'markets-policies.js',
+    'products-shops.js',
+    'reports-decisions.js',
+  ].map((name) => fs.readFileSync(path.join(root, 'assets', 'js', name), 'utf8')).join('\n');
+  for (const phrase of [
+    '选择预警 ', '选择内容 ', '选择政策 ', '选择规则 ', '选择活动 ',
+    '选择商品 ', '选择店铺 ', '选择报告素材 ', '关闭对话框',
+  ]) {
+    assert.match(dynamicSources, new RegExp(phrase));
+  }
+});
+
+test('repository root excludes retired one-off generation and review artifacts', () => {
+  const retired = [
+    'add_report_material_feature.py', 'build.py', 'fix_onclick.py',
+    'gen_all_countries.py', 'gen_countries.py', 'gen_part2.py',
+    'iterate_countries_report.py', 'modify_html.py', 'modify_html2.py',
+    'report_extracted.txt', 'logo_preview.html', 'image_1784192983728_0_95gr.png',
+    '部署修复报告.md', '代码审查报告.md', 'JAY观海_上线优化任务清单.html',
+  ];
+  assert.deepEqual(retired.filter((name) => fs.existsSync(path.join(root, name))), []);
 });
 
 test('market scope is centralized before data modules load', () => {
@@ -746,6 +876,38 @@ test('legal pages explain data processing and service limitations', () => {
   assert.match(browserSource, /不构成投资、法律、税务、海关或合规意见/);
 });
 
+test('legal consent versions are explicit and records are append-only per user version', () => {
+  const versions = JSON.parse(fs.readFileSync(path.join(root, 'config', 'legal-versions.json'), 'utf8'));
+  const authSource = fs.readFileSync(path.join(root, 'assets', 'js', 'auth-data.js'), 'utf8');
+  const runtimeSource = fs.readFileSync(path.join(root, 'assets', 'runtime-config.js'), 'utf8');
+  const builder = fs.readFileSync(path.join(root, 'scripts', 'build_public_site.py'), 'utf8');
+  const migration = fs.readFileSync(
+    path.join(root, 'supabase', 'migrations', '20261013000000_user_legal_consents.sql'),
+    'utf8',
+  );
+
+  assert.deepEqual(versions, {
+    privacyPolicy: '2026-08-26',
+    termsOfService: '2026-08-26',
+  });
+  assert.ok(document.querySelector('#auth-legal-consent[required]'));
+  assert.ok(document.querySelector('#auth-consent-gate'));
+  assert.match(runtimeSource, /legal:/);
+  assert.match(builder, /legal-versions\.json/);
+  assert.match(authSource, /user_legal_consents/);
+  assert.match(authSource, /legal_privacy_policy_version/);
+  assert.match(authSource, /legal_terms_version/);
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.user_legal_consents/);
+  assert.match(migration, /accepted_at TIMESTAMPTZ NOT NULL/);
+  assert.match(migration, /recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW\(\)/);
+  assert.match(migration, /UNIQUE \(\s*user_id, privacy_policy_version, terms_version\s*\)/);
+  assert.match(migration, /user_legal_consents ENABLE ROW LEVEL SECURITY/);
+  assert.match(migration, /FOR SELECT TO authenticated USING \(auth\.uid\(\) = user_id\)/);
+  assert.match(migration, /FOR INSERT TO authenticated WITH CHECK \(auth\.uid\(\) = user_id\)/);
+  assert.match(migration, /GRANT SELECT, INSERT ON public\.user_legal_consents TO authenticated/);
+  assert.doesNotMatch(migration, /GRANT[^;]*(?:UPDATE|DELETE)[^;]*authenticated/i);
+});
+
 test('automated Supabase sync cannot silently pass', () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'data-update.yml'), 'utf8');
   const syncStep = workflow.slice(workflow.indexOf('name: Sync data to Supabase'));
@@ -1011,8 +1173,8 @@ test('production release deploys database and functions before the frontend', ()
   assert.match(releaseCheck, /release manifest unavailable/);
   assert.match(releaseCheck, /frontend release/);
   assert.match(releaseCheck, /backend acceptance result does not match/);
-  assert.match(releaseCheck, /JAY_SUPABASE_URL/);
-  assert.match(releaseCheck, /assets\/js\/catalog\.js/);
+  assert.match(releaseCheck, /asset-manifest\.json/);
+  assert.match(releaseCheck, /assets\/runtime-config\.js/);
   assert.match(releaseCheck, /Edge Function/);
   assert.match(releaseCheck, /X-JAY-Release/);
   assert.match(releaseCheck, /storage_bucket/);

@@ -95,8 +95,10 @@ class ProductionReleaseCheckTests(unittest.TestCase):
                 return 404, b"not found", {}
             if url == "https://example.com/":
                 return 200, b"JAY", {}
-            if url.endswith("/assets/js/catalog.js"):
-                return 200, b"var JAY_SUPABASE_URL = 'https://project.supabase.co';", {}
+            if url.endswith("/asset-manifest.json"):
+                return 200, b'{"assets/runtime-config.js":"assets/runtime-config.abc123.js"}', {}
+            if url.endswith("/assets/runtime-config.abc123.js"):
+                return 200, b'window.JAY_APP_CONFIG = Object.freeze({"environment":"production","supabase":{"url":"https://project.supabase.co","anonKey":"anon"}});', {}
             if "/auth/v1/token" in url:
                 return 200, b'{"access_token":"token"}', {}
             if "/rest/v1/" in url:

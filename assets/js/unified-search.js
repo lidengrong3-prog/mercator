@@ -1073,6 +1073,9 @@
   }
 
   function openUnifiedSearch(query, patch) {
+    if (typeof global.prApplyImportedPayload !== 'function' && typeof global.jayEnsurePageAssets === 'function') {
+      return global.jayEnsurePageAssets('products').then(function () { return openUnifiedSearch(query, patch); });
+    }
     resetServerPaging();
     searchState = sanitizeState(Object.assign(defaultState(), patch || {}, { q: text(query), page: 1 }));
     searchRecords = buildIndex();
@@ -1179,7 +1182,14 @@
     var input = document.getElementById('global-search');
     var dropdown = document.getElementById('search-results');
     if (!input || !dropdown) return;
-    input.oninput = function () { renderQuickResults(input.value); };
+    input.oninput = function () {
+      var query = input.value;
+      if (typeof global.prApplyImportedPayload === 'function') {
+        renderQuickResults(query);
+      } else if (typeof global.jayEnsurePageAssets === 'function') {
+        global.jayEnsurePageAssets('products').then(function () { renderQuickResults(query); });
+      } else renderQuickResults(query);
+    };
     input.addEventListener('keydown', function (event) {
       if (event.key === 'Enter') {
         event.preventDefault();

@@ -56,6 +56,45 @@ test('authenticated entry and read-only demo shell work on desktop', async ({ pa
   await page.screenshot({ path: path.join(os.tmpdir(), 'jay-guanhai-desktop.png'), fullPage: true });
 });
 
+test('legal documents are readable before login and rendered controls keep accessible names', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#auth-legal-version')).toContainText('2026-08-26');
+  await page.locator('.auth-consent button', { hasText: '服务条款' }).first().click();
+  await expect(page.locator('#auth-legal-modal')).toBeVisible();
+  await expect(page.locator('#auth-legal-modal-body')).toContainText('服务性质');
+  await page.getByRole('button', { name: '关闭法律文件' }).click();
+
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(async () => {
+    for (const route of ['products', 'shops', 'alerts', 'policies', 'rules', 'content', 'report', 'watchlist']) {
+      if (typeof window.jayEnsurePageAssets === 'function') await window.jayEnsurePageAssets(route);
+      window.switchPage(route);
+    }
+  });
+  await page.waitForTimeout(250);
+
+  const unnamed = await page.evaluate(() => {
+    function hasName(element) {
+      if (element.getAttribute('aria-label')?.trim()) return true;
+      const labelledBy = element.getAttribute('aria-labelledby');
+      if (labelledBy && labelledBy.split(/\s+/).some((id) => document.getElementById(id)?.textContent.trim())) return true;
+      if (element.labels && [...element.labels].some((label) => label.textContent.trim())) return true;
+      return Boolean(element.title?.trim());
+    }
+    const controls = [...document.querySelectorAll([
+      'select', 'input[type="search"]', 'input[type="checkbox"]',
+      'input[id*="search"]', 'input[id*="keyword"]',
+    ].join(','))];
+    const iconButtons = [...document.querySelectorAll('button')].filter((button) => (
+      !/[\p{L}\p{N}]/u.test(button.textContent.replace(/\s+/g, ' ').trim())
+    ));
+    return controls.concat(iconButtons)
+      .filter((element) => !hasName(element))
+      .map((element) => element.outerHTML.slice(0, 240));
+  });
+  expect(unnamed).toEqual([]);
+});
+
 test('first load initializes country data without a dependency race', async ({ page }) => {
   const pageErrors = [];
   const countryLoadErrors = [];
@@ -222,6 +261,7 @@ test('unified search aggregates sourced records and preserves market context', a
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => window.jayEnsurePageAssets('products'));
   await page.waitForFunction(() => (
     window.policiesJsonData && window.policiesJsonData.items && window.policiesJsonData.items.length
     && window.rulesJsonData && window.rulesJsonData.items && window.rulesJsonData.items.length
@@ -556,6 +596,7 @@ test('decision overview is constrained to the configured US market scope', async
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => window.jayEnsurePageAssets('overview'));
 
   const metrics = page.locator('#ov-metrics .ov-metric-card');
   await expect(metrics).toHaveCount(4);
@@ -1608,6 +1649,7 @@ test('uploaded catalog cache is account-scoped and service errors are explicit',
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => window.jayEnsurePageAssets('products'));
   const state = await page.evaluate(() => {
     window.jayIsDemo = true;
     window.jayUser = { id: 'account-a', email: 'a@example.com' };
@@ -1956,7 +1998,7 @@ test('market without platform relations shows an explicit platform empty state',
       platformKeys: [], categoryKeys: [], dataStatus: 'configured',
     }, []);
     api.setActiveMarket('JP');
-    window.switchPage('platforms');
+    return window.switchPage('platforms');
   });
   await expect(page.locator('#platforms .platform-card:visible')).toHaveCount(0);
   await expect(page.locator('#platforms .platform-scope-empty')).toBeVisible();
@@ -2066,6 +2108,7 @@ test('platform and category selectors update the shared scope without stale sele
 test('category rules, provenance gates, and report snapshots stay explicit', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => window.jayEnsurePageAssets('products'));
   const result = await page.evaluate(() => {
     window.jayWorkspaceContext = {
       available: true,

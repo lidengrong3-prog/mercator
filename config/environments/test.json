@@ -1,0 +1,8 @@
+{
+  "environment": "test",
+  "supabase": {
+    "url": "${JAY_TEST_SUPABASE_URL}",
+    "anonKey": "${JAY_TEST_SUPABASE_ANON_KEY}",
+    "required": false
+  }
+}

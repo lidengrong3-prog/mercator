@@ -1,0 +1,8 @@
+{
+  "environment": "production",
+  "supabase": {
+    "url": "${SUPABASE_URL}",
+    "anonKey": "${SUPABASE_ANON_KEY}",
+    "required": true
+  }
+}

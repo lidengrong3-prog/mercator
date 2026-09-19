@@ -190,19 +190,19 @@
 .data-lineage-detail-grid a:hover { text-decoration: underline; }
 .data-lineage-detail-grid code { font-family: 'DM Mono', monospace; }
 .data-lineage-detail-wide { grid-column: 1 / -1; }
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .data-lineage-summary { align-items: flex-start; gap: 4px 8px; }
   .data-lineage-source, .data-lineage-time, .data-lineage-tier { white-space: normal; }
   .data-lineage-detail-grid { grid-template-columns: 1fr; }
   .data-lineage-detail-wide { grid-column: auto; }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .scope-summary-grid, .scope-platform-status { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .scope-card { grid-template-columns: 4px minmax(0, 1fr); }
   .scope-card-side { grid-column: 2; padding: 0 12px 12px 0; }
 }
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .market-scope-control span { display: none; }
   .market-scope-control { min-width: 0; padding: 0 6px; }
   .market-scope-control select { max-width: 92px; }

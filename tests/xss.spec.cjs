@@ -5,6 +5,7 @@ test('untrusted search, upload, template, and source values stay inert', async (
   page.on('pageerror', (error) => pageErrors.push(error.message));
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => window.jayEnsurePageAssets('products'));
 
   const result = await page.evaluate(() => {
     const attack = '<img src=x onerror=alert(1)><script>window.__xss=1</script>';
@@ -164,6 +165,10 @@ test('persisted reports, collections, schemes, imports, content, alerts, and not
   page.on('pageerror', (error) => pageErrors.push(error.message));
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => Promise.all([
+    window.jayEnsurePageAssets('products'),
+    window.jayEnsurePageAssets('alerts'),
+  ]));
   await page.waitForFunction(() => window.alertsDataLoaded === true && window.alertsDataState === 'ready');
 
   const result = await page.evaluate(async () => {

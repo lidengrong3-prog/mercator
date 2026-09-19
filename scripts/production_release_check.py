@@ -258,12 +258,27 @@ def main() -> int:
     if status != 200 or "JAY" not in raw.decode("utf-8", "replace"):
         raise ReleaseCheckError(f"production frontend is unavailable: HTTP {status}")
 
-    status, raw, _ = request("GET", site + "assets/js/catalog.js")
-    catalog = raw.decode("utf-8", "replace")
-    match = re.search(r"JAY_SUPABASE_URL\s*=\s*['\"]([^'\"]+)['\"]", catalog)
-    if status != 200 or not match or match.group(1).rstrip("/") != supabase:
-        actual = match.group(1) if match else "missing"
-        raise ReleaseCheckError(f"frontend Supabase URL {actual} does not match {supabase}")
+    status, raw, _ = request("GET", site + "asset-manifest.json")
+    if status != 200:
+        raise ReleaseCheckError(f"frontend asset manifest unavailable: HTTP {status}")
+    asset_manifest = parse_json(raw, "frontend asset manifest")
+    runtime_path = asset_manifest.get("assets/runtime-config.js")
+    if not runtime_path:
+        raise ReleaseCheckError("frontend runtime configuration asset is missing")
+    status, raw, _ = request("GET", site + runtime_path)
+    runtime_source = raw.decode("utf-8", "replace")
+    match = re.search(r"window\.JAY_APP_CONFIG\s*=\s*Object\.freeze\((\{.*\})\);", runtime_source)
+    if status != 200 or not match:
+        raise ReleaseCheckError("frontend runtime configuration is unavailable or invalid")
+    try:
+        runtime_config = json.loads(match.group(1))
+    except json.JSONDecodeError as error:
+        raise ReleaseCheckError("frontend runtime configuration is not valid JSON") from error
+    actual = str((runtime_config.get("supabase") or {}).get("url") or "").rstrip("/")
+    if actual != supabase:
+        raise ReleaseCheckError(f"frontend Supabase URL {actual or 'missing'} does not match {supabase}")
+    if runtime_config.get("environment") != "production":
+        raise ReleaseCheckError("frontend runtime environment is not production")
 
     status, raw, _ = request(
         "POST",

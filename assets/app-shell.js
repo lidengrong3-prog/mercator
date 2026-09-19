@@ -23,7 +23,8 @@
 
     document.querySelectorAll('.sidebar [data-page]').forEach(function (item) {
       item.addEventListener('click', function () {
-        if (window.innerWidth <= 900 && typeof window.closeSidebar === 'function') {
+        var tabletMax = window.JAY_BREAKPOINTS ? window.JAY_BREAKPOINTS.tabletMax : 1024;
+        if (window.innerWidth <= tabletMax && typeof window.closeSidebar === 'function') {
           window.closeSidebar();
         }
       });

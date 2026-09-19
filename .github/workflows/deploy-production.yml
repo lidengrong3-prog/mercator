@@ -496,6 +496,8 @@ jobs:
     env:
       PRODUCTION_SITE_URL: ${{ needs.authenticated-acceptance.outputs.production_site_url }}
       RELEASE_SHA: ${{ github.sha }}
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -503,7 +505,7 @@ jobs:
           python-version: '3.11'
       - uses: actions/configure-pages@v5
       - name: Assemble static site after backend acceptance
-        run: python scripts/build_public_site.py --output _site
+        run: python scripts/build_public_site.py --output _site --environment production
       - name: Write release manifest
         shell: bash
         run: |

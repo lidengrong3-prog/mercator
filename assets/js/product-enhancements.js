@@ -252,7 +252,17 @@
   // ================= N-19 全局搜索：回车 -> 统一搜索结果页 =================
   var gs=document.getElementById('global-search');
   if(gs){
-    gs.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); var v=gs.value.trim(); if(v) jayAddSearchHistory(v); if(typeof jayOpenUnifiedSearch==='function')jayOpenUnifiedSearch(v); jayHideSearchHistory(); } });
+    gs.addEventListener('keydown',function(e){ if(e.key==='Enter'){
+      e.preventDefault();
+      var v=gs.value.trim();
+      var openSearch=function(){
+        if(v&&typeof jayAddSearchHistory==='function')jayAddSearchHistory(v);
+        if(typeof jayOpenUnifiedSearch==='function')jayOpenUnifiedSearch(v);
+        if(typeof jayHideSearchHistory==='function')jayHideSearchHistory();
+      };
+      if(typeof jayEnsurePageAssets==='function')jayEnsurePageAssets('search').then(openSearch);
+      else openSearch();
+    } });
     gs.addEventListener('focus',function(){ if(!gs.value.trim()) jayShowSearchHistory(); });
     gs.addEventListener('blur',function(){ setTimeout(jayHideSearchHistory,180); });
   }

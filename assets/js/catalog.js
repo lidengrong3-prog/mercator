@@ -79,8 +79,12 @@ function jayApplyPlatformDataScope(){
 jaySyncCountryIdentityRecords();
 
 // -- 动态加载平台数据 --
-var JAY_SUPABASE_URL = 'https://ftlzofrnosgvdvwajhuz.supabase.co';
-var JAY_SUPABASE_KEY = 'sb_publishable_y2zfDKmuW9Lj4gUqIYKpxw_COuX1JQQ';
+// Public browser credentials are injected by the selected environment during
+// the static build. Source modules never identify a Supabase project.
+var JAY_RUNTIME_CONFIG = window.JAY_APP_CONFIG || {};
+var JAY_SUPABASE_CONFIG = JAY_RUNTIME_CONFIG.supabase || {};
+var JAY_SUPABASE_URL = String(JAY_SUPABASE_CONFIG.url || '').replace(/\/$/, '');
+var JAY_SUPABASE_KEY = String(JAY_SUPABASE_CONFIG.anonKey || '');
 // 提前初始化数据层基址，避免顶层 loadXxx() 调用时 JAY_API_URL 仍为 undefined（var 提升 bug 导致 Supabase 主路径失效，每次启动白费 4 次废请求）
 var JAY_API_URL = JAY_SUPABASE_URL + '/rest/v1';
 var JAY_ANON_KEY = JAY_SUPABASE_KEY;
