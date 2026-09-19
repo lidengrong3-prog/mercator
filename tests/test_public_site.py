@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+import re
 import sys
 import tempfile
 import unittest
@@ -45,6 +46,11 @@ class PublicSiteTests(unittest.TestCase):
         self.assertTrue((self.output / "index.html").is_file())
         self.assertTrue((self.output / ".nojekyll").is_file())
         self.assertTrue((self.output / "assets").is_dir())
+        middleware = (self.output / "middleware.js").read_text(encoding="utf-8")
+        middleware_paths = set(re.findall(r"'(/data/[^']+\.json)'", middleware))
+        self.assertEqual(middleware_paths, {"/" + path for path in PUBLIC_PAGE_DATA_PATHS})
+        self.assertIn("matcher: [{ source: '/data/:path*' }]", middleware)
+        self.assertIn("status: 404", middleware)
         asset_manifest = json.loads((self.output / "asset-manifest.json").read_text(encoding="utf-8"))
         self.assertTrue(asset_manifest)
         self.assertTrue(all("." in Path(value).stem for value in asset_manifest.values()))

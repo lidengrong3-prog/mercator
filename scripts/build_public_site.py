@@ -231,6 +231,7 @@ def build_public_site(output, root=ROOT, environment="development", environ=None
     for filename in (".nojekyll", "CNAME"):
         shutil.copy2(root / filename, output / filename)
     shutil.copytree(root / ".well-known", output / ".well-known")
+    shutil.copy2(root / "deploy" / "edgeone-middleware.js", output / "middleware.js")
 
     asset_manifest = {}
     for source in sorted((root / "assets").rglob("*")):
