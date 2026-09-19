@@ -486,13 +486,11 @@ jobs:
           esac
           python scripts/cleanup_production_acceptance.py --run-id "$ACCEPTANCE_RUN_ID" --mark "$terminal_status"
 
-  deploy-frontend:
+  build-frontend:
     needs: authenticated-acceptance
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    environment: production
     env:
       PRODUCTION_SITE_URL: ${{ needs.authenticated-acceptance.outputs.production_site_url }}
       RELEASE_SHA: ${{ github.sha }}
@@ -503,7 +501,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - uses: actions/configure-pages@v5
       - name: Assemble static site after backend acceptance
         run: python scripts/build_public_site.py --output _site --environment production
       - name: Write release manifest
@@ -533,6 +530,16 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+
+  deploy-frontend:
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
       - name: Deploy GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

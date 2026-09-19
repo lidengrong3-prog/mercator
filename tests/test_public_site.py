@@ -128,6 +128,13 @@ class PublicSiteTests(unittest.TestCase):
             workflow,
         )
         self.assertIn('echo "production_site_url=$PRODUCTION_SITE_URL" >> "$GITHUB_OUTPUT"', workflow)
+        build_job = workflow[workflow.index("  build-frontend:"):workflow.index("  deploy-frontend:")]
+        deploy_job = workflow[workflow.index("  deploy-frontend:"):workflow.index("  browser-authenticated-acceptance:")]
+        self.assertIn("environment: production", build_job)
+        self.assertIn("SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}", build_job)
+        self.assertIn("needs: build-frontend", deploy_job)
+        self.assertIn("name: github-pages", deploy_job)
+        self.assertNotIn("SUPABASE_ANON_KEY", deploy_job)
 
     def test_builder_rejects_nonempty_output_to_prevent_stale_files(self):
         with tempfile.TemporaryDirectory() as temp_dir:
