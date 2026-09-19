@@ -58,14 +58,14 @@
     "manifest": "data/market_scope.json"
   },
   "provenance_schema": "data/provenance_schema.json",
-  "generated_at": "2026-09-19T18:40:27.206846+00:00",
+  "generated_at": "2026-09-19T22:22:35.757372+00:00",
   "status": "degraded",
   "publishable": true,
   "collection_run": {
     "quality_status": "degraded",
     "ledger_schema_version": 2,
     "ledger_status": "degraded",
-    "completed_at": "2026-09-19T18:40:26.726707+00:00",
+    "completed_at": "2026-09-19T22:22:35.139632+00:00",
     "scope": {
       "market_codes": [
         "US"
@@ -97,9 +97,9 @@
   },
   "summary": {
     "datasets": 11,
-    "raw_records": 765,
-    "scoped_records": 579,
-    "formal_records": 557,
+    "raw_records": 766,
+    "scoped_records": 580,
+    "formal_records": 558,
     "demo_records": 0,
     "unverified_records": 94,
     "missing_source_records": 52,
@@ -138,18 +138,18 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T18:40:26.726707+00:00",
+      "updated_at": "2026-09-19T22:22:35.139632+00:00",
       "freshness_hours": 0.0,
       "connected": true,
       "errors": [],
       "warnings": [
-        "部分请求失败，来源降级：aliexpress_rules, amazon_rules, fred_bls_macro, tiktok_shop_rules, us_access_official, us_tax_official",
+        "部分请求失败，来源降级：aliexpress_rules, amazon_rules, tiktok_shop_rules, us_access_official, us_tax_official",
         "非核心来源采集失败：ustr"
       ],
       "metrics": {
         "ledger_schema_version": 2,
         "ledger_status": "degraded",
-        "ledger_completed_at": "2026-09-19T18:40:26.726707+00:00",
+        "ledger_completed_at": "2026-09-19T22:22:35.139632+00:00",
         "ledger_scope": {
           "market_codes": [
             "US"
@@ -189,8 +189,8 @@
           "pet-supplies"
         ],
         "source_status_counts": {
-          "succeeded": 7,
-          "degraded": 6,
+          "succeeded": 8,
+          "degraded": 5,
           "failed": 1,
           "skipped": 0
         },
@@ -212,12 +212,12 @@
         "unconnected_platform_keys": [],
         "ledger_summary": {
           "sources": 14,
-          "succeeded": 7,
-          "degraded": 6,
+          "succeeded": 8,
+          "degraded": 5,
           "failed": 1,
           "core_failures": [],
-          "records_collected": 452,
-          "records_in_scope": 451
+          "records_collected": 453,
+          "records_in_scope": 452
         }
       }
     },
@@ -239,7 +239,7 @@
         "unverified": 42,
         "out_of_scope": 39
       },
-      "updated_at": "2026-09-19T18:39:16.590015+00:00",
+      "updated_at": "2026-09-19T22:21:51.061270+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -249,7 +249,7 @@
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-20T02:39:16.590015+08:00",
+        "content_updated_at": "2026-09-20T06:21:51.061270+08:00",
         "formal_records": 263,
         "demo_records": 0,
         "unverified_records": 42,
@@ -316,13 +316,13 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-17T08:08:18.530274+00:00",
-      "freshness_hours": 58.5,
+      "freshness_hours": 62.2,
       "connected": true,
       "errors": [],
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-19T18:39:48.149818+00:00",
+        "content_updated_at": "2026-09-19T22:22:18.424818+00:00",
         "formal_records": 5,
         "demo_records": 0,
         "unverified_records": 0,
@@ -385,13 +385,13 @@
       "excluded_records": 0,
       "exclusion_reasons": {},
       "updated_at": "2026-09-17T08:15:08.346719+00:00",
-      "freshness_hours": 58.4,
+      "freshness_hours": 62.1,
       "connected": true,
       "errors": [],
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-19T18:39:48.718230+00:00",
+        "content_updated_at": "2026-09-19T22:22:18.939541+00:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 0,
@@ -459,7 +459,7 @@
         "out_of_scope_platform": 45,
         "missing_provenance_fields": 52
       },
-      "updated_at": "2026-09-19T18:39:16.590015+00:00",
+      "updated_at": "2026-09-19T22:21:51.061270+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -472,7 +472,7 @@
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-20T02:39:16.590015+08:00",
+        "content_updated_at": "2026-09-20T06:21:51.061270+08:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 52,
@@ -540,7 +540,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T18:40:26.784622+00:00",
+      "updated_at": "2026-09-19T22:22:35.208347+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -604,7 +604,7 @@
       "missing_source_records": 0,
       "excluded_records": 38,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T18:40:26.725734+00:00",
+      "updated_at": "2026-09-19T22:22:35.138553+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -656,7 +656,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T18:39:48.876352+00:00",
+      "updated_at": "2026-09-19T22:22:19.125581+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -700,22 +700,22 @@
       "label": "美国宏观指标",
       "status": "healthy",
       "path": "data/us_market/macro_indicators.json",
-      "records": 29,
-      "raw_records": 29,
-      "scoped_records": 29,
-      "formal_records": 29,
+      "records": 30,
+      "raw_records": 30,
+      "scoped_records": 30,
+      "formal_records": 30,
       "demo_records": 0,
       "unverified_records": 0,
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T18:40:26.725734+00:00",
+      "updated_at": "2026-09-19T22:22:35.138553+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
       "warnings": [],
       "metrics": {
-        "formal_records": 29,
+        "formal_records": 30,
         "demo_records": 0,
         "unverified_records": 0,
         "missing_source_records": 0,
@@ -723,14 +723,14 @@
         "exclusion_reasons": {},
         "legacy_inferred_records": 0,
         "source_kind_counts": {
-          "official": 29,
+          "official": 30,
           "traceable": 0,
           "uploaded": 0,
           "derived": 0,
           "demo": 0
         },
         "verification_status_counts": {
-          "verified": 29,
+          "verified": 30,
           "uploaded": 0,
           "pending": 0,
           "rejected": 0
@@ -739,7 +739,7 @@
           "government": 0,
           "regulator": 0,
           "platform": 0,
-          "official_feed": 29,
+          "official_feed": 30,
           "industry_association": 0,
           "licensed_provider": 0,
           "user_upload": 0,
@@ -747,13 +747,13 @@
           "demo": 0,
           "unknown": 0
         },
-        "official_or_traceable_records": 29,
-        "provenance_complete_records": 29,
+        "official_or_traceable_records": 30,
+        "provenance_complete_records": 30,
         "malformed_records": 0,
         "missing_sources": 0,
         "missing_or_invalid_urls": 0,
-        "collector_fetched": 29,
-        "collector_failed": 1
+        "collector_fetched": 30,
+        "collector_failed": 0
       }
     },
     "cpsc": {
@@ -770,7 +770,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-19T18:39:56.413735+00:00",
+      "updated_at": "2026-09-19T22:22:27.779798+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
