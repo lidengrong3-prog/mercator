@@ -710,7 +710,7 @@ Deno.serve(async (request) => {
   // bounded slice so a slow primary leaves time for its configured fallback.
   const providerTimeout = acceptanceScenario === 'provider_timeout'
     ? 1
-    : Math.max(5_000, Math.min(30_000, Number(Deno.env.get('AI_PROVIDER_TIMEOUT_MS') || 25_000)));
+    : Math.max(5_000, Math.min(50_000, Number(Deno.env.get('AI_PROVIDER_TIMEOUT_MS') || 50_000)));
   const providerDeadline = Date.now() + (acceptanceScenario === 'provider_timeout'
     ? 1 : Math.max(providerTimeout, Math.min(60_000, Number(Deno.env.get('AI_GATEWAY_TIMEOUT_MS') || 55_000))));
   const cozeIdentity = await cozeScopedIdentity(workspaceId, String(user.id));
