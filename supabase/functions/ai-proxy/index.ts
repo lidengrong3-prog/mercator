@@ -7,8 +7,11 @@ import {
   providerRequestBody,
   parseProviderResult,
   providerTaskAllowed,
+  providerConfigFingerprint,
+  cozeScopedIdentity,
 } from '../_shared/ai-gateway.ts';
 import type { GatewayProvider } from '../_shared/ai-gateway.ts';
+import { invokeCozeChat } from '../_shared/coze-chat.ts';
 
 const defaultOrigins = [
   'https://lidengrong3-prog.github.io',
@@ -267,9 +270,13 @@ Deno.serve(async (request) => {
   });
   if (acceptance.error) return jsonResponse(gatewayErrorBody(acceptance.error, requestId, provider), 403, origin);
   const acceptanceScenario = acceptance.scenario;
-  const acceptanceRunId = typeof payload.acceptance_run_id === 'string'
+  const acceptanceRunIdValue = typeof payload.acceptance_run_id === 'string'
     ? payload.acceptance_run_id.trim().slice(0, 160)
-    : null;
+    : '';
+  const acceptanceRunId = acceptanceRunIdValue || null;
+  if (acceptanceScenario && !acceptanceRunId) {
+    return jsonResponse(gatewayErrorBody('ACCEPTANCE_RUN_REQUIRED', requestId, provider), 400, origin);
+  }
 
   const requestedWorkspaceId = uuid(payload.workspace_id);
   const resource = async (table: 'report_runs' | 'generated_reports', value: unknown): Promise<{ id: string; workspace_id: string; user_id: string } | null> => {
@@ -513,6 +520,7 @@ Deno.serve(async (request) => {
   dataDisclosure.scope = Array.from(inferredDisclosureScope).slice(0, 20);
   let activeModel = requestedModel || '';
   const providerAttempts: Array<Record<string, unknown>> = [];
+  const providerConfigFingerprints: Record<string, string> = {};
   let fallbackUsed = false;
 
   const logRequest = async (values: Record<string, unknown>) => {
@@ -527,7 +535,7 @@ Deno.serve(async (request) => {
         acceptance_run_id: acceptanceRunId,
         operation, entry_point: entryPoint, task_type: taskType, agent_key: agentKey,
         requested_provider: requestedProvider, provider, model: String(values.model || activeModel || ''), data_version: dataVersion,
-        provider_attempts: providerAttempts, fallback_used: fallbackUsed,
+        provider_attempts: providerAttempts, provider_config_fingerprints: providerConfigFingerprints, fallback_used: fallbackUsed,
         retry_count: Math.max(0, providerAttempts.length - 1), data_disclosure: dataDisclosure,
         search_enabled: Boolean(values.search_enabled == null ? searchRequested : values.search_enabled),
         duration_ms: Date.now() - startedAt, metadata: {
@@ -548,6 +556,7 @@ Deno.serve(async (request) => {
   const logProviderAttempt = async (attempt: Record<string, unknown>) => {
     providerAttempts.push({
       provider: String(attempt.provider || ''), model: String(attempt.model || ''),
+      config_fingerprint: attempt.config_fingerprint ? String(attempt.config_fingerprint) : null,
       status: String(attempt.status || 'failed'), http_status: Number(attempt.http_status || 0) || null,
       error_code: attempt.error_code ? String(attempt.error_code) : null,
       duration_ms: Math.max(0, Number(attempt.duration_ms || 0)),
@@ -557,7 +566,9 @@ Deno.serve(async (request) => {
       method: 'POST', headers: { ...serviceHeaders, Prefer: 'resolution=ignore-duplicates' },
       body: JSON.stringify({
         request_id: requestId, attempt_no: providerAttempts.length, user_id: user.id, workspace_id: workspaceId,
+        acceptance_run_id: acceptanceRunId,
         task_type: taskType, agent_key: agentKey, provider: attempt.provider, model: attempt.model || '',
+        config_fingerprint: attempt.config_fingerprint || null,
         status: attempt.status || 'failed', http_status: attempt.http_status || null,
         input_tokens: Math.max(0, Number(attempt.input_tokens || 0)), output_tokens: Math.max(0, Number(attempt.output_tokens || 0)),
         total_tokens: Math.max(0, Number(attempt.total_tokens || 0)), estimated_cost_usd: Math.max(0, Number(attempt.estimated_cost_usd || 0)),
@@ -702,18 +713,31 @@ Deno.serve(async (request) => {
     : Math.max(5_000, Math.min(30_000, Number(Deno.env.get('AI_PROVIDER_TIMEOUT_MS') || 25_000)));
   const providerDeadline = Date.now() + (acceptanceScenario === 'provider_timeout'
     ? 1 : Math.max(providerTimeout, Math.min(60_000, Number(Deno.env.get('AI_GATEWAY_TIMEOUT_MS') || 55_000))));
+  const cozeIdentity = await cozeScopedIdentity(workspaceId, String(user.id));
   async function invokeProvider(config: NonNullable<ReturnType<typeof providerConfig>>, withSearch: boolean): Promise<Response> {
     const remaining = providerDeadline - Date.now();
     if (remaining <= 0) throw new DOMException('The AI provider request timed out', 'AbortError');
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), Math.max(1, Math.min(providerTimeout, remaining)));
     try {
+      const body = providerRequestBody(config, providerMessages as Array<{ role: string; content: string }>, {
+        maxTokens, temperature, withSearch,
+        userId: config.provider === 'coze' ? cozeIdentity.userId : String(user.id),
+        workspaceId: config.provider === 'coze' ? cozeIdentity.workspaceId : (workspaceId || undefined),
+        taskType, agentKey: agentKey || '',
+      });
+      if (config.provider === 'coze') {
+        return await invokeCozeChat(config, {
+          body,
+          signal: controller.signal,
+          pollIntervalMs: Number(Deno.env.get('COZE_POLL_INTERVAL_MS') || 500),
+          pollMaxAttempts: Number(Deno.env.get('COZE_POLL_MAX_ATTEMPTS') || 60),
+        });
+      }
       return await fetch(providerEndpoint(config), {
         method: 'POST',
         headers: { Authorization: `Bearer ${config.key}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(providerRequestBody(config, providerMessages as Array<{ role: string; content: string }>, {
-          maxTokens, temperature, withSearch, userId: String(user.id),
-        })),
+        body: JSON.stringify(body),
         signal: controller.signal,
       });
     } finally { clearTimeout(timer); }
@@ -728,7 +752,7 @@ Deno.serve(async (request) => {
   let retryAfter = '60';
   for (let candidateIndex = 0; candidateIndex < enabledCandidates.length && !successfulResult; candidateIndex += 1) {
     const candidate = enabledCandidates[candidateIndex];
-    const config = providerConfig(candidate);
+    const config = providerConfig(candidate, { taskType, agentKey: agentKey || '' });
     activeModel = requestedModel || config?.model || '';
     if (candidateIndex > 0) fallbackUsed = true;
     if (!config) {
@@ -744,6 +768,20 @@ Deno.serve(async (request) => {
       continue;
     }
     configuredProviderAttempted = true;
+    const configFingerprint = await providerConfigFingerprint(config);
+    providerConfigFingerprints[candidate] = configFingerprint;
+    // Fault only the selected primary during the live acceptance. The next
+    // candidate still goes through its real upstream adapter.
+    if (acceptanceScenario === 'provider_fallback' && candidateIndex === 0) {
+      lastErrorCode = 'AI_PROVIDER_UNAVAILABLE';
+      lastErrorStatus = 503;
+      await logProviderAttempt({
+        provider: candidate, model: activeModel, config_fingerprint: configFingerprint,
+        status: 'failed', http_status: 503, error_code: lastErrorCode,
+        duration_ms: 0, fallback_reason: 'acceptance_primary_fault',
+      });
+      continue;
+    }
     const searchVariants = searchRequested && candidate === 'deepseek' ? [true, false] : [searchRequested && candidate === 'openai'];
     let providerFinished = false;
     for (let variantIndex = 0; variantIndex < searchVariants.length && !providerFinished && !successfulResult; variantIndex += 1) {
@@ -757,20 +795,20 @@ Deno.serve(async (request) => {
         const aborted = error instanceof DOMException && error.name === 'AbortError';
         lastErrorCode = aborted ? 'AI_PROVIDER_TIMEOUT' : 'AI_PROVIDER_UNREACHABLE';
         lastErrorStatus = aborted ? 504 : 502;
-        await logProviderAttempt({ provider: candidate, model: activeModel, status: 'failed', http_status: lastErrorStatus, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'primary_provider_failed' : null });
+        await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: lastErrorStatus, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'primary_provider_failed' : null });
         providerFinished = true;
         continue;
       }
       if (!upstream.ok) {
         if (withSearch && await responseRejectsSearch(upstream)) {
           fallbackUsed = true;
-          await logProviderAttempt({ provider: candidate, model: activeModel, status: 'failed', http_status: upstream.status, error_code: 'AI_SEARCH_UNSUPPORTED', duration_ms: Date.now() - attemptStarted, fallback_reason: 'retry_without_web_search' });
+          await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: upstream.status, error_code: 'AI_SEARCH_UNSUPPORTED', duration_ms: Date.now() - attemptStarted, fallback_reason: 'retry_without_web_search' });
           continue;
         }
         lastErrorCode = providerErrorCode(upstream.status);
         lastErrorStatus = lastErrorCode === 'AI_RATE_LIMITED' ? 429 : (lastErrorCode === 'AI_QUOTA_EXCEEDED' ? 402 : (lastErrorCode === 'AI_PROVIDER_AUTH_FAILED' || lastErrorCode === 'AI_PROVIDER_FORBIDDEN' ? 502 : (lastErrorCode === 'AI_PROVIDER_UNAVAILABLE' ? 502 : 400)));
         retryAfter = upstream.headers.get('retry-after') || '60';
-        await logProviderAttempt({ provider: candidate, model: activeModel, status: 'failed', http_status: upstream.status, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
+        await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: upstream.status, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
         providerFinished = true;
         continue;
       }
@@ -780,14 +818,14 @@ Deno.serve(async (request) => {
       } catch {
         lastErrorCode = 'AI_PROVIDER_INVALID_RESPONSE';
         lastErrorStatus = 502;
-        await logProviderAttempt({ provider: candidate, model: activeModel, status: 'failed', http_status: 502, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
+        await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: 502, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
         providerFinished = true;
         continue;
       }
       if (candidate === 'coze' && Number(rawResult.code || 0) !== 0) {
         lastErrorCode = Number(rawResult.code) === 429 ? 'AI_RATE_LIMITED' : 'AI_PROVIDER_ERROR';
         lastErrorStatus = Number(rawResult.code) === 429 ? 429 : 502;
-        await logProviderAttempt({ provider: candidate, model: activeModel, status: 'failed', http_status: lastErrorStatus, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
+        await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: lastErrorStatus, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
         providerFinished = true;
         continue;
       }
@@ -795,14 +833,14 @@ Deno.serve(async (request) => {
       if (!parsed.content) {
         lastErrorCode = 'AI_EMPTY_RESPONSE';
         lastErrorStatus = 502;
-        await logProviderAttempt({ provider: candidate, model: activeModel, status: 'failed', http_status: 502, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
+        await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: 502, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
         providerFinished = true;
         continue;
       }
       provider = candidate;
       successfulResult = rawResult;
       parsedResult = parsed;
-      await logProviderAttempt({ provider: candidate, model: activeModel, status: 'completed', http_status: 200, input_tokens: parsed.inputTokens, output_tokens: parsed.outputTokens, total_tokens: parsed.totalTokens, estimated_cost_usd: estimateCost(parsed.inputTokens, parsed.outputTokens, candidate), duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
+      await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'completed', http_status: 200, input_tokens: parsed.inputTokens, output_tokens: parsed.outputTokens, total_tokens: parsed.totalTokens, estimated_cost_usd: estimateCost(parsed.inputTokens, parsed.outputTokens, candidate), duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
       providerFinished = true;
     }
   }
@@ -812,7 +850,7 @@ Deno.serve(async (request) => {
     return jsonResponse(gatewayErrorBody(lastErrorCode, requestId, provider, {
       provider_status: lastErrorStatus, entry_point: entryPoint, operation, task_type: taskType,
       agent_key: agentKey, route_source: routeSource, fallback_used: fallbackUsed,
-      attempts: providerAttempts.map((item) => ({ provider: item.provider, status: item.status, error_code: item.error_code })),
+      attempts: providerAttempts.map((item) => ({ provider: item.provider, model: item.model, config_fingerprint: item.config_fingerprint, status: item.status, http_status: item.http_status, error_code: item.error_code, duration_ms: item.duration_ms })),
     }), lastErrorStatus, origin, lastErrorStatus === 429 ? { 'Retry-After': retryAfter } : {});
   }
 
@@ -855,6 +893,8 @@ Deno.serve(async (request) => {
       search_used: usedSearch,
       fallback_used: fallbackUsed,
       providers_attempted: providerAttempts.map((item) => item.provider),
+      provider_config_fingerprints: providerConfigFingerprints,
+      attempts: providerAttempts.map((item) => ({ provider: item.provider, model: item.model, config_fingerprint: item.config_fingerprint, status: item.status, http_status: item.http_status, error_code: item.error_code, duration_ms: item.duration_ms })),
       data_disclosure: dataDisclosure,
       retrieval_count: formalRetrieval.citations.length,
     };

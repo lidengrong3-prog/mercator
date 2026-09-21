@@ -30,6 +30,10 @@ Pages 数据验收必须确认 10 个白名单 JSON 均可读取，且 `_cfd_par
 
 - Secrets：`SUPABASE_ACCESS_TOKEN`、`SUPABASE_PROJECT_ID`、`SUPABASE_DB_PASSWORD`、`SUPABASE_URL`、`SUPABASE_ANON_KEY`。
 - AI Secrets：`DEEPSEEK_API_URL`、`DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL`、`ALLOWED_ORIGINS`。
+- 第 31 项真实多 AI 验收：`AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER=deepseek`，以及
+  `AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER`（`coze`、`doubao` 或 `openai`）。必须同时
+  配置所选备用供应商的真实 Secrets；发布工作流会先验证 DeepSeek 真实成功，再只
+  故障注入主供应商并验证备用供应商真实成功，缺少任一项直接阻断发布。
 - 定时法规翻译默认复用上述 DeepSeek Secrets；如需独立翻译服务，可配置 `REGULATORY_TRANSLATION_API_URL`、`REGULATORY_TRANSLATION_API_KEY`、`REGULATORY_TRANSLATION_MODEL`，独立配置优先。
 - 限流与成本：`AI_REQUESTS_PER_MINUTE`、`AI_MONTHLY_TOKEN_LIMIT`、`AI_INPUT_COST_PER_MILLION_USD`、`AI_OUTPUT_COST_PER_MILLION_USD`。
 - Stripe（正式收费前）：`STRIPE_SECRET_KEY`、`STRIPE_PRICE_PRO_MONTHLY`、`STRIPE_WEBHOOK_SECRET`。
@@ -127,6 +131,7 @@ python scripts/cleanup_production_acceptance.py --expired --retention-days 7
 
 - `report_runs`：用户、报告 ID、市场/平台/品类范围、数据版本、章节数、总耗时和失败章节。
 - `ai_request_logs`：运行 ID、模型、输入/输出 Token、估算成本、耗时、HTTP 状态和错误码。
+- `ai_provider_attempt_logs`：同一请求的供应商顺序、模型、状态、错误码、耗时和不含密钥的 `sha256:` 配置指纹；验收请求带 `acceptance_run_id`，不进入生产每日用量汇总。
 - `report_exports`：报告 ID、格式、幂等键、耗时、状态和失败原因。
 
 日志不保存 Prompt、报告正文或原始上传文件。AI 成本只有在配置供应商每百万 Token 单价后才具有财务意义；未配置时为 `0`，不能当作免费调用结论。

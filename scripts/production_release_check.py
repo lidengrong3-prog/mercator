@@ -164,6 +164,45 @@ def validate_browser_report_content_gate(browser_acceptance: dict) -> str:
     raise ReleaseCheckError("browser acceptance omitted the report content gate mode")
 
 
+def validate_multi_ai_acceptance(acceptance: dict) -> dict:
+    evidence = acceptance.get("multi_ai_acceptance") or {}
+    if evidence.get("status") != "passed":
+        raise ReleaseCheckError("multi-AI live acceptance did not pass")
+    if evidence.get("primary_provider") != "deepseek":
+        raise ReleaseCheckError("multi-AI live acceptance primary provider must be DeepSeek")
+    if evidence.get("fallback_provider") not in {"coze", "doubao", "openai"}:
+        raise ReleaseCheckError("multi-AI live acceptance fallback provider is not an approved provider")
+    if evidence.get("primary_provider") == evidence.get("fallback_provider"):
+        raise ReleaseCheckError("multi-AI live acceptance requires distinct primary and fallback providers")
+    for key in ("primary_real_call", "fallback_real_call", "primary_fault_injected",
+                "fallback_used", "request_id_consistent", "quota_settled_once"):
+        if evidence.get(key) is not True:
+            raise ReleaseCheckError(f"multi-AI live acceptance omitted {key} evidence")
+    if evidence.get("attempt_count") != 2:
+        raise ReleaseCheckError("multi-AI live acceptance did not record exactly two provider attempts")
+    attempts = evidence.get("attempts") or []
+    if len(attempts) != 2:
+        raise ReleaseCheckError("multi-AI live acceptance attempt evidence is incomplete")
+    primary, fallback = attempts
+    if (primary.get("provider") != evidence.get("primary_provider")
+            or primary.get("status") != "failed"
+            or primary.get("error_code") != "AI_PROVIDER_UNAVAILABLE"):
+        raise ReleaseCheckError("multi-AI live acceptance primary failure evidence is invalid")
+    if (fallback.get("provider") != evidence.get("fallback_provider")
+            or fallback.get("status") != "completed"
+            or fallback.get("http_status") != 200):
+        raise ReleaseCheckError("multi-AI live acceptance fallback success evidence is invalid")
+    for attempt in attempts:
+        fingerprint = str(attempt.get("config_fingerprint") or "")
+        if not re.fullmatch(r"sha256:[0-9a-f]{64}", fingerprint):
+            raise ReleaseCheckError("multi-AI live acceptance contains an invalid provider configuration fingerprint")
+        if not attempt.get("model"):
+            raise ReleaseCheckError("multi-AI live acceptance attempt omitted the model")
+    if not evidence.get("primary_request_id") or not evidence.get("fallback_request_id"):
+        raise ReleaseCheckError("multi-AI live acceptance omitted request IDs")
+    return evidence
+
+
 def main() -> int:
     site = required("PRODUCTION_SITE_URL").rstrip("/") + "/"
     supabase = required("SUPABASE_URL").rstrip("/")
@@ -208,6 +247,7 @@ def main() -> int:
     if duplicate_generation.get("row_count") != 1 or not duplicate_generation.get("run_id"):
         raise ReleaseCheckError("duplicate report generation did not collapse to one run")
     report_content_gate = validate_report_content_gate(acceptance)
+    multi_ai_acceptance = validate_multi_ai_acceptance(acceptance)
 
     browser_acceptance = parse_json(browser_acceptance_file.read_bytes(), "browser exception acceptance result")
     if browser_acceptance.get("status") != "passed":
@@ -399,6 +439,7 @@ def main() -> int:
         "notification_channels": "enabled" if notification_expected else "disabled",
         "history_search": True,
         "webhook_signature_guard": webhook_guard,
+        "multi_ai_acceptance": multi_ai_acceptance,
         "public_data_isolated": True,
         "frontend": True,
     }, ensure_ascii=False, indent=2))

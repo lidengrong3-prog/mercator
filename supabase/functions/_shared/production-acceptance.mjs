@@ -2,6 +2,9 @@ export const PRODUCTION_ACCEPTANCE_SCENARIOS = Object.freeze([
   'rate_limit',
   'quota',
   'provider_timeout',
+  // Fail only the explicitly selected primary provider. The next provider
+  // must still make a real upstream request and return a successful response.
+  'provider_fallback',
 ]);
 
 const encoder = new TextEncoder();
