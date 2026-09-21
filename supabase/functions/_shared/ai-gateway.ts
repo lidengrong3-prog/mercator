@@ -208,12 +208,12 @@ function decodeEscapedText(value: string): string {
 
 function textFrom(value: unknown, depth = 0): string {
   if (typeof value === 'string') {
-    const normalized = decodeEscapedText(value.trim());
+    const raw = value.trim();
     // Coze may return a text message as a JSON-encoded string. Unwrap only
     // known structured text values and cap recursion for untrusted responses.
-    if (depth < 3 && /^[\[{\"]/.test(normalized)) {
+    if (depth < 3 && /^[\[{\"]/.test(raw)) {
       try {
-        const parsed = JSON.parse(normalized);
+        const parsed = JSON.parse(raw);
         if (parsed !== value) {
           const nested = textFrom(parsed, depth + 1);
           if (nested) return nested;
@@ -222,7 +222,7 @@ function textFrom(value: unknown, depth = 0): string {
         // Ordinary Markdown beginning with a bracket is valid text; preserve it.
       }
     }
-    return normalized;
+    return decodeEscapedText(raw);
   }
   if (Array.isArray(value)) {
     return value.map((item) => {
