@@ -382,10 +382,21 @@ function initJayAuth() {
     supabaseClient.auth.onAuthStateChange(function(event, session) {
       if (event === 'SIGNED_IN' && session) {
         if (jayUser && jayUser.id && jayUser.id !== session.user.id) jayResetUserWorkspace(jayUser.id);
-        completeJayAuthenticatedSession(session.user, jayPendingLegalAcceptance).catch(function(error){
-          console.warn('[JAY观海] legal consent verification failed:', error.message || error);
-          showLegalConsentGate('暂时无法验证协议记录，请稍后重试。');
-        });
+        jayUser = session.user;
+        // signInWithPassword/signUp complete the interactive flow themselves so
+        // the checked legal-consent payload is used exactly once. For implicit
+        // sign-ins (magic links, cross-tab sessions), defer all Supabase queries
+        // until after the auth callback releases the client's internal lock.
+        // Starting a profile/consent query synchronously here can leave the
+        // sign-in promise and UI waiting on each other indefinitely.
+        if (jayPendingLegalAcceptance) return;
+        setTimeout(function() {
+          if (!jayUser || jayUser.id !== session.user.id || jayPendingLegalAcceptance) return;
+          completeJayAuthenticatedSession(session.user, null).catch(function(error){
+            console.warn('[JAY观海] legal consent verification failed:', error.message || error);
+            showLegalConsentGate('暂时无法验证协议记录，请稍后重试。');
+          });
+        }, 0);
       } else if (event === 'SIGNED_OUT') {
         var signedOutUserId = jayUser && jayUser.id;
         jayUser = null; jayProfile = null; jayResetUserWorkspace(signedOutUserId); showLoginScreen();

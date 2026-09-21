@@ -897,6 +897,10 @@ test('legal consent versions are explicit and records are append-only per user v
   assert.match(authSource, /user_legal_consents/);
   assert.match(authSource, /legal_privacy_policy_version/);
   assert.match(authSource, /legal_terms_version/);
+  assert.match(
+    authSource,
+    /if \(jayPendingLegalAcceptance\) return;[\s\S]*setTimeout\(function\(\) \{[\s\S]*completeJayAuthenticatedSession\(session\.user, null\)/,
+  );
   assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.user_legal_consents/);
   assert.match(migration, /accepted_at TIMESTAMPTZ NOT NULL/);
   assert.match(migration, /recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW\(\)/);
