@@ -9,7 +9,7 @@ request ID, provider, retryability and a user-facing suggestion. Prompt and
 response bodies are never copied into operational logs.
 
 ```bash
-supabase secrets set DEEPSEEK_API_KEY=... DEEPSEEK_MODEL=deepseek-chat AI_REQUESTS_PER_MINUTE=20 AI_PROVIDER_TIMEOUT_MS=25000 AI_GATEWAY_TIMEOUT_MS=55000
+supabase secrets set DEEPSEEK_API_KEY=... DEEPSEEK_MODEL=deepseek-chat AI_REQUESTS_PER_MINUTE=20 AI_PROVIDER_TIMEOUT_MS=50000 AI_GATEWAY_TIMEOUT_MS=55000
 supabase secrets set COZE_API_TOKEN=... COZE_BOT_ID_MARKET_QA=... COZE_POLL_INTERVAL_MS=500 COZE_POLL_MAX_ATTEMPTS=100 DOUBAO_API_KEY=... DOUBAO_MODEL=... OPENAI_API_KEY=... OPENAI_MODEL=...
 supabase secrets set ALLOWED_ORIGINS=https://lidengrong3-prog.github.io
 supabase functions deploy ai-proxy
