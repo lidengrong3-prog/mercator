@@ -136,7 +136,7 @@ function firstString(value: unknown): string | null {
 
 function singleScopeValue(value: unknown): string | null {
   if (Array.isArray(value)) {
-    const values = Array.from(new Set(value.filter((item): item is string => typeof item === 'string' && item.trim()).map((item) => item.trim())));
+    const values = Array.from(new Set(value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).map((item) => item.trim())));
     return values.length === 1 ? values[0] : null;
   }
   return firstString(value);
