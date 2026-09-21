@@ -14,6 +14,20 @@ export type ProviderConfig = {
   botId?: string;
 };
 
+export type ProviderConfigOptions = {
+  taskType?: string;
+  agentKey?: string;
+};
+
+export async function cozeScopedIdentity(workspaceId: string, userId: string): Promise<{ userId: string; workspaceId: string }> {
+  const digest = async (label: string, value: string) => {
+    const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`jay-coze:${label}:${value}`));
+    return Array.from(new Uint8Array(bytes)).map((item) => item.toString(16).padStart(2, '0')).join('');
+  };
+  const [scope, subject] = await Promise.all([digest('workspace', workspaceId), digest('user', `${workspaceId}:${userId}`)]);
+  return { workspaceId: `scope_${scope.slice(0, 48)}`, userId: `user_${subject.slice(0, 48)}` };
+}
+
 function env(name: string): string {
   return String(Deno.env.get(name) || '').trim();
 }
@@ -22,7 +36,20 @@ function baseUrl(value: string, fallback: string): string {
   return (value || fallback).replace(/\/$/, '');
 }
 
-export function providerConfig(provider: GatewayProvider): ProviderConfig | null {
+function cozeBotId(taskType = '', agentKey = ''): string {
+  const task = String(taskType).toLowerCase();
+  const agent = String(agentKey).toLowerCase();
+  const taskEnv = task === 'report' || agent === 'report_generator'
+    ? 'COZE_BOT_ID_REPORT'
+    : task === 'course_qa' || agent === 'course_assistant'
+      ? 'COZE_BOT_ID_COURSE'
+      : task === 'market_qa' || agent === 'market_analyst'
+        ? 'COZE_BOT_ID_MARKET_QA'
+        : '';
+  return (taskEnv ? env(taskEnv) : '') || env('COZE_BOT_ID');
+}
+
+export function providerConfig(provider: GatewayProvider, options: ProviderConfigOptions = {}): ProviderConfig | null {
   switch (provider) {
     case 'deepseek': {
       const key = env('DEEPSEEK_API_KEY');
@@ -58,7 +85,7 @@ export function providerConfig(provider: GatewayProvider): ProviderConfig | null
     }
     case 'coze': {
       const key = env('COZE_API_TOKEN') || env('COZE_API_KEY');
-      const botId = env('COZE_BOT_ID');
+      const botId = cozeBotId(options.taskType, options.agentKey);
       return key && botId ? {
         provider, style: 'coze_chat', key, botId,
         url: baseUrl(env('COZE_API_URL'), 'https://api.coze.cn'),
@@ -75,8 +102,19 @@ export function providerConfig(provider: GatewayProvider): ProviderConfig | null
 
 export function providerEndpoint(config: ProviderConfig): string {
   if (config.style === 'openai_responses') return `${config.url}/responses`;
-  if (config.style === 'coze_chat') return `${config.url}/open_api/v3/chat`;
+  if (config.style === 'coze_chat') return `${config.url}/v3/chat`;
   return `${config.url}/chat/completions`;
+}
+
+/**
+ * Return a stable, non-secret identity for the active adapter configuration.
+ * The API key is deliberately excluded so this value is safe to persist in
+ * request and provider-attempt audit rows.
+ */
+export async function providerConfigFingerprint(config: ProviderConfig): Promise<string> {
+  const material = [config.provider, config.style, config.url, config.model, config.botId || ''].join('|');
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(material));
+  return `sha256:${Array.from(new Uint8Array(digest)).map((value) => value.toString(16).padStart(2, '0')).join('')}`;
 }
 
 function responsesInput(messages: Array<{ role: string; content: string }>) {
@@ -89,7 +127,7 @@ function responsesInput(messages: Array<{ role: string; content: string }>) {
 export function providerRequestBody(
   config: ProviderConfig,
   messages: Array<{ role: string; content: string }>,
-  options: { maxTokens: number; temperature: number; withSearch: boolean; userId: string },
+  options: { maxTokens: number; temperature: number; withSearch: boolean; userId: string; workspaceId?: string; taskType?: string; agentKey?: string },
 ): Record<string, unknown> {
   if (config.style === 'openai_responses') {
     const body: Record<string, unknown> = {
@@ -112,8 +150,19 @@ export function providerRequestBody(
       user_id: options.userId.slice(0, 128),
       stream: false,
       auto_save_history: false,
+      ...(options.workspaceId || options.taskType || options.agentKey ? {
+        custom_variables: {
+          workspace_id: String(options.workspaceId || '').slice(0, 128),
+          task_type: String(options.taskType || '').slice(0, 60),
+          agent_key: String(options.agentKey || '').slice(0, 80),
+          locale: 'zh-CN',
+        },
+      } : {}),
       additional_messages: messages.map((message) => ({
-        role: message.role === 'assistant' ? 'assistant' : message.role,
+        // Coze Chat v3 accepts user/assistant message roles. System
+        // instructions are already configured on the Bot; send request-scoped
+        // context as a user message instead of producing an invalid payload.
+        role: message.role === 'assistant' ? 'assistant' : 'user',
         content: message.content,
         content_type: 'text',
       })),
@@ -180,7 +229,13 @@ export function parseProviderResult(config: ProviderConfig, result: Record<strin
     const dataRow = data && typeof data === 'object' ? data as Record<string, unknown> : {};
     content = textFrom(result.content) || textFrom(result.message) || textFrom(dataRow.content) || textFrom(dataRow.message);
     if (!content && Array.isArray(dataRow.messages)) {
-      content = dataRow.messages.map((item) => item && typeof item === 'object'
+      const answerMessages = dataRow.messages.filter((item) => {
+        if (!item || typeof item !== 'object') return false;
+        const row = item as Record<string, unknown>;
+        return String(row.type || '').toLowerCase() === 'answer'
+          || String(row.role || '').toLowerCase() === 'assistant';
+      });
+      content = (answerMessages.length ? answerMessages : dataRow.messages).map((item) => item && typeof item === 'object'
         ? textFrom((item as Record<string, unknown>).content)
         : '').filter(Boolean).join('\n').trim();
     }
@@ -189,10 +244,12 @@ export function parseProviderResult(config: ProviderConfig, result: Record<strin
     const message = choice && typeof choice === 'object' ? (choice as Record<string, unknown>).message : null;
     content = textFrom(message) || textFrom(result.content);
   }
-  const usage = result.usage && typeof result.usage === 'object' ? result.usage as Record<string, unknown> : {};
-  const inputTokens = Math.max(0, Number(usage.prompt_tokens || usage.input_tokens || 0));
-  const outputTokens = Math.max(0, Number(usage.completion_tokens || usage.output_tokens || 0));
-  const totalTokens = Math.max(0, Number(usage.total_tokens || 0), inputTokens + outputTokens);
+  const resultData = result.data && typeof result.data === 'object' ? result.data as Record<string, unknown> : {};
+  const usageValue = result.usage || resultData.usage;
+  const usage = usageValue && typeof usageValue === 'object' ? usageValue as Record<string, unknown> : {};
+  const inputTokens = Math.max(0, Number(usage.prompt_tokens || usage.input_tokens || usage.input_count || 0));
+  const outputTokens = Math.max(0, Number(usage.completion_tokens || usage.output_tokens || usage.output_count || 0));
+  const totalTokens = Math.max(0, Number(usage.total_tokens || usage.token_count || 0), inputTokens + outputTokens);
   return { content, inputTokens, outputTokens, totalTokens };
 }
 

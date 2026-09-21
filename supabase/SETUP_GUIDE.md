@@ -20,9 +20,9 @@ npx supabase db reset
 工作流提供 `migration-rehearsal` 手动操作，在 GitHub Runner 的临时 Supabase
 数据库中执行以下检查：
 
-1. 从空库依次应用当前全部 49 个迁移，并校验迁移账本、关键表、视图、函数、
+1. 从空库依次应用当前全部 62 个迁移，并校验迁移账本、关键表、视图、函数、
    扩展、RLS、Storage 私有桶和授权。
-2. 重建至第 48 个迁移，写入不含生产数据的代表性旧记录，再升级至第 49 个迁移。
+2. 重建至第 61 个迁移，写入不含生产数据的代表性旧记录，再升级至第 62 个迁移。
 3. 验证旧记录保留、Worker 心跳可写以及第二次迁移检查不存在待应用版本。
 
 演练数据库随 Runner 销毁，结果以不含连接信息的
@@ -114,9 +114,14 @@ AI_REQUESTS_PER_MINUTE
 AI_MONTHLY_TOKEN_LIMIT
 AI_INPUT_COST_PER_MILLION_USD
 AI_OUTPUT_COST_PER_MILLION_USD
-# 可选：Coze 专用智能体
+# Coze 主生成（市场分析、报告、课程问答）
+COZE_API_URL=https://api.coze.cn
 COZE_API_TOKEN
-COZE_BOT_ID
+COZE_BOT_ID_MARKET_QA
+COZE_BOT_ID_REPORT
+COZE_BOT_ID_COURSE
+COZE_POLL_INTERVAL_MS=500
+COZE_POLL_MAX_ATTEMPTS=60
 # 可选：豆包/火山方舟
 DOUBAO_API_KEY
 DOUBAO_MODEL
@@ -128,11 +133,19 @@ CODEX_API_KEY
 CODEX_MODEL
 AI_FALLBACK_PROVIDERS
 AI_GATEWAY_TIMEOUT_MS
+# 发布前真实多 AI 验收（主供应商固定 DeepSeek，备用三选一）
+AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER=deepseek
+AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER=coze
 ```
 
 随后部署 `supabase/functions/ai-proxy`、`supabase/functions/report-export`、`supabase/functions/report-docx` 和 `supabase/functions/admin-summary`。函数需要服务端专用的 `SUPABASE_SERVICE_ROLE_KEY`，不得暴露到浏览器。`ALLOWED_ORIGINS` 应至少包含正式 GitHub Pages 域名；生产环境不要使用通配符。未配置密钥的可选供应商会保持 `pending_config`，不会被当作可用供应商；WorkBuddy 在正式 API、Webhook 或 MCP 契约确认前保持 `disabled`。
 
 AI 路由会先匹配当前工作区策略，再匹配全局任务策略；每条策略可指定一个主供应商和有序备用供应商。主供应商失败时只切换到下一候选，不会向所有供应商群发同一请求。部署后应在独立测试工作区逐一验证主备切换、请求编号一致、额度只结算一次，以及管理员后台的供应商尝试日志和成本统计。
+
+正式发布工作流会自动执行第 31 项真实验收：先验证 DeepSeek 真实返回，再注入一次主供应商故障并验证 Coze、豆包或 OpenAI 的真实返回。必须配置 `AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER` 及对应供应商密钥；缺失时发布直接失败，不能用模拟数据绕过。验收工件仅包含不含密钥的配置指纹和运行元数据，验收工作区、请求、供应商尝试和额度预占会按 `acceptance_run_id` 清理。
+
+Coze 三 Bot 的创建、提示词、Token 最小权限、GitHub/Supabase 配置和真实验收步骤见
+[Coze 正式接入手册](../docs/COZE_INTEGRATION.md)。
 
 工作区套餐迁移 `20260914000000_workspace_billing.sql` 会为每个工作区建立一条
 `workspace_subscriptions`，并以 `workspace_usage_monthly` 原子记录 AI Token、报告和

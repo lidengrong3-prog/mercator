@@ -39,9 +39,9 @@ jobs:
         run: npm test
       - name: Validate Edge Functions
         run: |
-          deno check supabase/functions/_shared/report-document.ts supabase/functions/_shared/report-pdf.ts supabase/functions/_shared/report-docx.ts supabase/functions/_shared/report-validation.ts supabase/functions/_shared/security.ts supabase/functions/_shared/ai-gateway.ts supabase/functions/report-save/index.ts supabase/functions/report-export/index.ts supabase/functions/report-docx/index.ts supabase/functions/workspace-invite/index.ts supabase/functions/data-subject-request/index.ts supabase/functions/security-gate/index.ts supabase/functions/history-search/index.ts supabase/functions/resource-library/index.ts supabase/functions/notification-dispatch/index.ts
+          deno check supabase/functions/_shared/report-document.ts supabase/functions/_shared/report-pdf.ts supabase/functions/_shared/report-docx.ts supabase/functions/_shared/report-validation.ts supabase/functions/_shared/security.ts supabase/functions/_shared/ai-gateway.ts supabase/functions/_shared/coze-chat.ts supabase/functions/report-save/index.ts supabase/functions/report-export/index.ts supabase/functions/report-docx/index.ts supabase/functions/workspace-invite/index.ts supabase/functions/data-subject-request/index.ts supabase/functions/security-gate/index.ts supabase/functions/history-search/index.ts supabase/functions/resource-library/index.ts supabase/functions/notification-dispatch/index.ts
           deno check supabase/functions/ai-proxy/index.ts supabase/functions/billing-checkout/index.ts supabase/functions/billing-status/index.ts supabase/functions/billing-portal/index.ts supabase/functions/billing-webhook/index.ts
-          deno test --allow-env supabase/functions/_shared/report-export.test.ts supabase/functions/_shared/report-quality.test.ts supabase/functions/_shared/report-validation.test.ts supabase/functions/_shared/ai-gateway.test.ts supabase/functions/workspace-invite/index.test.ts
+          deno test --allow-env supabase/functions/_shared/report-export.test.ts supabase/functions/_shared/report-quality.test.ts supabase/functions/_shared/report-validation.test.ts supabase/functions/_shared/ai-gateway.test.ts supabase/functions/_shared/coze-chat.test.ts supabase/functions/workspace-invite/index.test.ts
       - name: Reject stale or non-publishable data
         run: python scripts/validate_data.py --public-projection
       - name: Validate Python syntax
@@ -116,11 +116,16 @@ jobs:
       DEEPSEEK_API_URL: ${{ secrets.DEEPSEEK_API_URL }}
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       DEEPSEEK_MODEL: ${{ secrets.DEEPSEEK_MODEL }}
-      COZE_API_URL: ${{ secrets.COZE_API_URL }}
+      COZE_API_URL: ${{ vars.COZE_API_URL || secrets.COZE_API_URL || 'https://api.coze.cn' }}
       COZE_API_TOKEN: ${{ secrets.COZE_API_TOKEN }}
       COZE_API_KEY: ${{ secrets.COZE_API_KEY }}
       COZE_BOT_ID: ${{ secrets.COZE_BOT_ID }}
+      COZE_BOT_ID_MARKET_QA: ${{ secrets.COZE_BOT_ID_MARKET_QA }}
+      COZE_BOT_ID_REPORT: ${{ secrets.COZE_BOT_ID_REPORT }}
+      COZE_BOT_ID_COURSE: ${{ secrets.COZE_BOT_ID_COURSE }}
       COZE_MODEL: ${{ secrets.COZE_MODEL }}
+      COZE_POLL_INTERVAL_MS: ${{ vars.COZE_POLL_INTERVAL_MS || secrets.COZE_POLL_INTERVAL_MS || '500' }}
+      COZE_POLL_MAX_ATTEMPTS: ${{ vars.COZE_POLL_MAX_ATTEMPTS || secrets.COZE_POLL_MAX_ATTEMPTS || '60' }}
       DOUBAO_API_URL: ${{ secrets.DOUBAO_API_URL }}
       DOUBAO_API_KEY: ${{ secrets.DOUBAO_API_KEY }}
       ARK_API_KEY: ${{ secrets.ARK_API_KEY }}
@@ -135,6 +140,8 @@ jobs:
       CODEX_API_KEY: ${{ secrets.CODEX_API_KEY }}
       CODEX_MODEL: ${{ secrets.CODEX_MODEL }}
       AI_FALLBACK_PROVIDERS: ${{ vars.AI_FALLBACK_PROVIDERS || secrets.AI_FALLBACK_PROVIDERS || '' }}
+      AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || 'deepseek' }}
+      AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || '' }}
       AI_PROVIDER_TIMEOUT_MS: ${{ vars.AI_PROVIDER_TIMEOUT_MS || secrets.AI_PROVIDER_TIMEOUT_MS || '25000' }}
       AI_GATEWAY_TIMEOUT_MS: ${{ vars.AI_GATEWAY_TIMEOUT_MS || secrets.AI_GATEWAY_TIMEOUT_MS || '55000' }}
       ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
@@ -179,6 +186,21 @@ jobs:
           done
           [[ "$APP_PUBLIC_URL" == https://* ]] || { echo "APP_PUBLIC_URL must use https" >&2; exit 1; }
           [[ "$WORKSPACE_INVITE_FROM_EMAIL" == *@* ]] || { echo "WORKSPACE_INVITE_FROM_EMAIL must be a valid Resend sender" >&2; exit 1; }
+          [[ "$AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER" == deepseek ]] || { echo "AI live acceptance primary must be deepseek" >&2; exit 1; }
+          case "$AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER" in
+            coze)
+              test -n "${COZE_API_TOKEN:-}${COZE_API_KEY:-}" || { echo "Coze live acceptance requires COZE_API_TOKEN or COZE_API_KEY" >&2; exit 1; }
+              test -n "${COZE_BOT_ID_MARKET_QA:-${COZE_BOT_ID:-}}" || { echo "Coze live acceptance requires COZE_BOT_ID_MARKET_QA or COZE_BOT_ID" >&2; exit 1; }
+              ;;
+            doubao)
+              test -n "${DOUBAO_API_KEY:-}${ARK_API_KEY:-}" || { echo "Doubao live acceptance requires DOUBAO_API_KEY or ARK_API_KEY" >&2; exit 1; }
+              test -n "${DOUBAO_MODEL:-}${ARK_MODEL:-}" || { echo "Doubao live acceptance requires DOUBAO_MODEL or ARK_MODEL" >&2; exit 1; }
+              ;;
+            openai)
+              test -n "${OPENAI_API_KEY:-}" || { echo "OpenAI live acceptance requires OPENAI_API_KEY" >&2; exit 1; }
+              ;;
+            *) echo "AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER must be coze, doubao, or openai" >&2; exit 1 ;;
+          esac
       - name: Resolve ephemeral Supabase service key
         shell: bash
         run: |
@@ -307,7 +329,7 @@ jobs:
             "NOTIFICATION_ACCEPTANCE_RUN_ID=$NOTIFICATION_ACCEPTANCE_RUN_ID"
             "NOTIFICATION_ALERT_MAX_AGE_DAYS=$NOTIFICATION_ALERT_MAX_AGE_DAYS"
           )
-          for optional_name in COZE_API_URL COZE_API_TOKEN COZE_API_KEY COZE_BOT_ID COZE_MODEL DOUBAO_API_URL DOUBAO_API_KEY ARK_API_KEY ARK_BASE_URL ARK_MODEL DOUBAO_MODEL OPENAI_API_URL OPENAI_API_KEY OPENAI_MODEL CODEX_API_URL CODEX_API_KEY CODEX_MODEL; do
+          for optional_name in COZE_API_URL COZE_API_TOKEN COZE_API_KEY COZE_BOT_ID COZE_BOT_ID_MARKET_QA COZE_BOT_ID_REPORT COZE_BOT_ID_COURSE COZE_MODEL COZE_POLL_INTERVAL_MS COZE_POLL_MAX_ATTEMPTS DOUBAO_API_URL DOUBAO_API_KEY ARK_API_KEY ARK_BASE_URL ARK_MODEL DOUBAO_MODEL OPENAI_API_URL OPENAI_API_KEY OPENAI_MODEL CODEX_API_URL CODEX_API_KEY CODEX_MODEL; do
             if [ -n "${!optional_name:-}" ]; then args+=("$optional_name=${!optional_name}"); fi
           done
           if [ "$BILLING_ENABLED" = true ] || [ "$BILLING_LIVE_ACCEPTANCE_MODE" = true ]; then
@@ -420,6 +442,8 @@ jobs:
       DEFER_ACCEPTANCE_CLEANUP: '1'
       PRODUCTION_ACCEPTANCE_OUTPUT: production-acceptance-result.json
       RELEASE_SHA: ${{ github.sha }}
+      AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || 'deepseek' }}
+      AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

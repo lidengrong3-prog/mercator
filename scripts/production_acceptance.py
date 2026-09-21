@@ -13,6 +13,7 @@ import hmac
 import json
 import os
 from pathlib import Path
+import re
 import sys
 import time
 from datetime import datetime
@@ -40,6 +41,8 @@ SITE_URL = os.environ.get("PRODUCTION_SITE_URL", "").strip().rstrip("/")
 ACTIVE_ACCEPTANCE_RUN_ID = ""
 ACCEPTANCE_FINAL_STATE: dict = {}
 PLATFORM_RULE_DIMENSIONS = ("fee", "commission", "deposit", "fulfillment", "prohibited", "settlement", "penalty")
+LIVE_AI_PRIMARY_DEFAULT = "deepseek"
+LIVE_AI_FALLBACK_PROVIDERS = {"coze", "doubao", "openai"}
 
 
 def _acceptance_payload(body):
@@ -285,6 +288,16 @@ def expect_ai_failure_log(token: str, request_id: str, error_code: str) -> dict:
     expect(rows and rows[0].get("status") == "failed", f"AI failure log is missing for {request_id}")
     expect(rows[0].get("error_code") == error_code, f"AI failure log has the wrong error code: {rows[0]}")
     return rows[0]
+
+
+def provider_attempt_rows(request_id: str, acceptance_run_id: str) -> list[dict]:
+    return service_select_rows("ai_provider_attempt_logs", {
+        "select": "request_id,attempt_no,provider,model,status,http_status,error_code,duration_ms,config_fingerprint,acceptance_run_id",
+        "request_id": f"eq.{request_id}",
+        "acceptance_run_id": f"eq.{acceptance_run_id}",
+        "order": "attempt_no.asc",
+        "limit": "10",
+    })
 
 
 def current_quality_gate(token: str) -> dict:
@@ -646,6 +659,12 @@ def main() -> int:
         github_attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "1").strip() or "1"
         acceptance_run_id = f"{github_run}-{github_attempt}" if github_run else f"local-{int(time.time())}-{uuid.uuid4().hex[:8]}"
     ACTIVE_ACCEPTANCE_RUN_ID = acceptance_run_id
+    live_primary_provider = os.environ.get("AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER", LIVE_AI_PRIMARY_DEFAULT).strip().lower()
+    live_fallback_provider = os.environ.get("AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER", "").strip().lower()
+    expect(live_primary_provider == LIVE_AI_PRIMARY_DEFAULT,
+           "live multi-AI acceptance must use DeepSeek as the primary provider")
+    expect(live_fallback_provider in LIVE_AI_FALLBACK_PROVIDERS,
+           "live multi-AI acceptance requires Coze, Doubao, or OpenAI as the fallback provider")
 
     status, site_body, _ = request("GET", SITE_URL, headers={})
     expect(status == 200 and b"JAY" in site_body, f"production site is unavailable: {status}")
@@ -798,7 +817,11 @@ def main() -> int:
     started = time.monotonic()
     status, ai_body, _ = function("ai-proxy", token_a, {
         "request_id": ai_request_id,
+        "acceptance_run_id": acceptance_run_id,
         "operation": "production.acceptance",
+        "task_type": "market_qa",
+        "provider": live_primary_provider,
+        "fallback_providers": [live_fallback_provider],
         "report_run_id": run["id"],
         "client_report_id": "production-acceptance-report",
         "data_version": "production-acceptance",
@@ -811,7 +834,87 @@ def main() -> int:
         "stream": False,
     })
     expect(status == 200 and ai_body.get("choices"), f"AI generation failed: {status} {ai_body}")
+    primary_gateway = ai_body.get("jay_gateway") or {}
+    expect(primary_gateway.get("provider") == live_primary_provider
+           and primary_gateway.get("fallback_used") is False
+           and primary_gateway.get("providers_attempted") == [live_primary_provider],
+           f"DeepSeek live acceptance did not complete on the primary provider: {primary_gateway}")
+    expect(primary_gateway.get("model"), "primary live AI acceptance did not return a model")
     report_text = ai_body["choices"][0]["message"]["content"]
+
+    # The primary is deliberately failed at the gateway boundary for this one
+    # request. The fallback is not mocked and must complete a real upstream
+    # call, leaving two attempts under the same request ID.
+    fallback_request_id = f"production-acceptance-provider-fallback:{acceptance_run_id}"
+    fallback_started = time.monotonic()
+    status, fallback_body, _ = function("ai-proxy", token_a, {
+        "request_id": fallback_request_id,
+        "acceptance_run_id": acceptance_run_id,
+        "workspace_id": workspace_a,
+        "operation": "production.acceptance.multi_ai_fallback",
+        "task_type": "market_qa",
+        "provider": live_primary_provider,
+        "fallback_providers": [live_fallback_provider],
+        "messages": [{"role": "user", "content": "请用一句很短的话确认多 AI 故障切换。"}],
+        "temperature": 0,
+        "max_tokens": 128,
+        "stream": False,
+    }, headers=acceptance_fault_headers(user_a, "provider_fallback", fallback_request_id), timeout=60)
+    expect(status == 200 and fallback_body.get("choices"),
+           f"AI provider fallback did not return a real response: {status} {fallback_body}")
+    fallback_gateway = fallback_body.get("jay_gateway") or {}
+    expect(fallback_gateway.get("provider") == live_fallback_provider
+           and fallback_gateway.get("fallback_used") is True
+           and fallback_gateway.get("providers_attempted") == [live_primary_provider, live_fallback_provider],
+           f"AI gateway did not record the expected fallback route: {fallback_gateway}")
+    expect(fallback_gateway.get("model"), "fallback live AI acceptance did not return a model")
+    fallback_attempts = provider_attempt_rows(fallback_request_id, acceptance_run_id)
+    expect(len(fallback_attempts) == 2
+           and fallback_attempts[0].get("provider") == live_primary_provider
+           and fallback_attempts[0].get("status") == "failed"
+           and fallback_attempts[0].get("error_code") == "AI_PROVIDER_UNAVAILABLE"
+           and fallback_attempts[1].get("provider") == live_fallback_provider
+           and fallback_attempts[1].get("status") == "completed"
+           and fallback_attempts[1].get("http_status") == 200,
+           f"provider attempt audit did not contain one failed primary and one successful fallback: {fallback_attempts}")
+    for attempt in fallback_attempts:
+        fingerprint = str(attempt.get("config_fingerprint") or "")
+        expect(re.fullmatch(r"sha256:[0-9a-f]{64}", fingerprint),
+               f"provider attempt omitted a non-secret configuration fingerprint: {attempt}")
+    fallback_reservations = service_select_rows("ai_token_reservations", {
+        "select": "request_id,status,reserved_tokens,actual_tokens",
+        "user_id": f"eq.{user_a}",
+        "request_id": f"eq.{fallback_request_id}",
+        "acceptance_run_id": f"eq.{acceptance_run_id}",
+        "limit": "10",
+    })
+    expect(len(fallback_reservations) == 1 and fallback_reservations[0].get("status") == "completed"
+           and int(fallback_reservations[0].get("actual_tokens") or 0) > 0,
+           f"fallback request did not settle exactly one token reservation: {fallback_reservations}")
+    multi_ai_acceptance = {
+        "status": "passed",
+        "primary_provider": live_primary_provider,
+        "fallback_provider": live_fallback_provider,
+        "primary_request_id": ai_request_id,
+        "fallback_request_id": fallback_request_id,
+        "primary_model": primary_gateway.get("model"),
+        "fallback_model": fallback_gateway.get("model"),
+        "primary_real_call": True,
+        "fallback_real_call": True,
+        "primary_fault_injected": True,
+        "fallback_used": True,
+        "request_id_consistent": all(row.get("request_id") == fallback_request_id for row in fallback_attempts),
+        "attempt_count": len(fallback_attempts),
+        "attempts": [{
+            "provider": row.get("provider"), "model": row.get("model"), "status": row.get("status"),
+            "http_status": row.get("http_status"), "error_code": row.get("error_code"),
+            "duration_ms": row.get("duration_ms"), "config_fingerprint": row.get("config_fingerprint"),
+        } for row in fallback_attempts],
+        "quota_settled_once": len(fallback_reservations) == 1,
+        "duration_ms": round((time.monotonic() - fallback_started) * 1000),
+    }
+    expect(multi_ai_acceptance["request_id_consistent"] is True,
+           "fallback attempt audit changed the logical request ID")
 
     fault_body = {
         "workspace_id": workspace_a,
@@ -1140,6 +1243,7 @@ def main() -> int:
         "report_run_id": run["id"], "exports": exported, "invite_id": invite_id,
         "shared_export_id": shared_export.get("id"), "reverse_export_id": b_export.get("id") if b_export else None,
         "ai_request_id": ai_request_id,
+        "multi_ai_acceptance": multi_ai_acceptance,
         "report_content_gate": report_gate,
         "production_exceptions": {
             **exception_checks,
@@ -1165,6 +1269,7 @@ def main() -> int:
         "report_id": report["id"],
         "report_run_id": run["id"],
         "exports": exported,
+        "multi_ai_acceptance": multi_ai_acceptance,
         "report_content_gate": report_gate,
         "invite_id": invite_id,
         "checks": result["checks"],

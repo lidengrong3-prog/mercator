@@ -24,13 +24,25 @@ test('multi-provider gateway migration has governed providers, agents, routes an
 test('provider adapters cover DeepSeek, Coze, Doubao, OpenAI Responses and Codex policy', () => {
   const adapter = read('supabase', 'functions', '_shared', 'ai-gateway.ts');
   assert.match(adapter, /api\.deepseek\.com/);
-  assert.match(adapter, /open_api\/v3\/chat/);
+  assert.match(adapter, /\/v3\/chat/);
+  assert.match(adapter, /COZE_BOT_ID_REPORT/);
+  assert.match(adapter, /COZE_BOT_ID_MARKET_QA/);
+  assert.match(adapter, /COZE_BOT_ID_COURSE/);
   assert.match(adapter, /ark\.cn-beijing\.volces\.com\/api\/v3/);
   assert.match(adapter, /api\.openai\.com\/v1/);
   assert.match(adapter, /max_output_tokens/);
   assert.match(adapter, /output_text/);
   assert.match(adapter, /providerTaskAllowed/);
   assert.match(adapter, /system_maintenance/);
+  assert.match(adapter, /providerConfigFingerprint/);
+});
+
+test('live acceptance migration isolates provider evidence from production rollups', () => {
+  const migration = read('supabase', 'migrations', '20261013100000_multi_ai_live_acceptance.sql');
+  assert.match(migration, /config_fingerprint/);
+  assert.match(migration, /acceptance_run_id/);
+  assert.match(migration, /IF NEW\.acceptance_run_id IS NOT NULL/);
+  assert.match(migration, /provider_config_fingerprints/);
 });
 
 test('gateway routes one logical request through ordered fallbacks and reserves quota once', () => {
@@ -43,6 +55,30 @@ test('gateway routes one logical request through ordered fallbacks and reserves 
   assert.equal((edge.match(/finalize_workspace_ai_token_reservation/g) || []).length, 1);
   assert.match(edge, /data_disclosure/);
   assert.match(edge, /fallback_used/);
+  assert.match(edge, /providerConfigFingerprint/);
+  assert.match(edge, /provider_config_fingerprints/);
+  assert.match(edge, /invokeCozeChat/);
+  assert.match(edge, /acceptance_primary_fault/);
+  assert.match(edge, /acceptance_run_id: acceptanceRunId/);
+});
+
+test('live multi-AI acceptance requires a real primary and a real fallback', () => {
+  const acceptance = read('scripts', 'production_acceptance.py');
+  const releaseCheck = read('scripts', 'production_release_check.py');
+  const workflow = read('.github', 'workflows', 'deploy-production.yml');
+  assert.match(acceptance, /AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER/);
+  assert.match(acceptance, /AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER/);
+  assert.match(acceptance, /provider_fallback/);
+  assert.match(acceptance, /fallback_real_call/);
+  assert.match(acceptance, /config_fingerprint/);
+  assert.match(acceptance, /quota_settled_once/);
+  assert.match(releaseCheck, /validate_multi_ai_acceptance/);
+  assert.match(releaseCheck, /primary_fault_injected/);
+  assert.match(workflow, /AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER/);
+  assert.match(workflow, /Coze live acceptance requires/);
+  assert.match(workflow, /COZE_BOT_ID_MARKET_QA/);
+  assert.match(workflow, /Doubao live acceptance requires/);
+  assert.match(workflow, /OpenAI live acceptance requires/);
 });
 
 test('unconfigured optional fallbacks preserve the last configured provider failure', () => {
@@ -86,5 +122,8 @@ test('admin observability exposes provider catalog and attempt aggregates', () =
   assert.match(edge, /ai_provider_catalog/);
   assert.match(edge, /ai_provider_usage_daily/);
   assert.match(edge, /ai_provider_attempt_logs/);
+  assert.match(edge, /provider_config_fingerprints/);
+  assert.match(edge, /config_fingerprint/);
+  assert.match(edge, /acceptance_run_id/);
   assert.match(browser, /adminRenderProviderRows/);
 });
