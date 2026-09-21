@@ -834,7 +834,7 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
          // the formal server-side history projection is always queried first.
          var wantsLive=/实时|最新|今日|今天|政策更新|规则变动|最近/.test(q);
          var activeScope=scopeApi&&scopeApi.getActiveContext?scopeApi.getActiveContext():{};
-         var answer=await callAI(systemPrompt, q, {max_tokens:800, timeout:60000, search:wantsLive, entryPoint:'overview.decision', operation:'decision_assistant', retrievalMode:wantsLive?'formal_first':'formal_only', retrievalQuery:q, requestId:requestId, context:{market_codes:activeScope.marketCodes||[],platform_keys:activeScope.platformKeys||[],data_snapshot_at:(window.JAY_QUALITY_REPORT&&window.JAY_QUALITY_REPORT.generated_at)||null}});
+         var answer=await callAI(systemPrompt, q, {max_tokens:800, timeout:60000, search:wantsLive, entryPoint:'overview.decision', operation:'decision_assistant', retrievalMode:wantsLive?'formal_first':'formal_only', retrievalQuery:q, requestId:requestId, context:{market_codes:activeScope.marketCodes||[],platform_keys:activeScope.platformKeys||[],category_codes:activeScope.categoryCodes||[],data_snapshot_at:(window.JAY_QUALITY_REPORT&&window.JAY_QUALITY_REPORT.generated_at)||null}});
         setHeroStep(3);
         var rendered=renderHistoryCitations(answer,requestId);
         var bodyHtml='<div class="ovr-section">'+rendered.html+'</div>';
@@ -843,6 +843,12 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
           card = card.replace('<div class="ovr-note">', '<div class="ovr-note">已检索 '+rendered.count+' 条正式历史记录，点击 [Hxxx] 可返回对应记录。');
         }
         resultEl.innerHTML=card;
+        var retrievalMeta=window.jayGetAIRetrieval?window.jayGetAIRetrieval(requestId):null;
+        if(retrievalMeta&&retrievalMeta.fallback&&rendered.count){
+          var notes=resultEl.querySelectorAll('.ovr-note');
+          var fallbackNote=notes[notes.length-1];
+          if(fallbackNote)fallbackNote.textContent='未找到问题的精确历史匹配，已加载当前范围 '+rendered.count+' 条最新正式背景记录；结论会标明证据缺口。';
+        }
         finish();
         return;
       }catch(e){

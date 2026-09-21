@@ -134,13 +134,21 @@ function firstString(value: unknown): string | null {
   return null;
 }
 
+function singleScopeValue(value: unknown): string | null {
+  if (Array.isArray(value)) {
+    const values = Array.from(new Set(value.filter((item): item is string => typeof item === 'string' && item.trim()).map((item) => item.trim())));
+    return values.length === 1 ? values[0] : null;
+  }
+  return firstString(value);
+}
+
 async function retrieveFormalHistory(options: {
   supabaseUrl: string;
   serviceHeaders: Record<string, string>;
   payload: Record<string, unknown>;
   messages: unknown[];
   retrieval: Record<string, unknown>;
-}): Promise<{ citations: FormalCitation[]; prompt: string; error: string | null }> {
+}): Promise<{ citations: FormalCitation[]; prompt: string; error: string | null; fallback: boolean }> {
   const context = options.payload.context && typeof options.payload.context === 'object'
     ? options.payload.context as Record<string, unknown>
     : {};
@@ -148,37 +156,52 @@ async function retrieveFormalHistory(options: {
     message && typeof message === 'object' && String((message as Record<string, unknown>).role) === 'user'
   )) as Record<string, unknown> | undefined;
   const query = String(options.retrieval.query || lastUserMessage?.content || '').trim().slice(0, 200);
-  if (!query) return { citations: [], prompt: '', error: null };
+  if (!query) return { citations: [], prompt: '', error: null, fallback: false };
   const yearValue = Number(options.retrieval.year || context.year || 0);
-  const rpcResponse = await fetch(`${options.supabaseUrl}/rest/v1/rpc/search_formal_publications`, {
-    method: 'POST',
-    headers: options.serviceHeaders,
-    body: JSON.stringify({
-      p_query: query,
-      p_type: firstString(options.retrieval.type),
-      p_market_code: firstString(options.retrieval.market_code || context.market_codes),
-      p_platform_key: firstString(options.retrieval.platform_key || context.platform_keys),
-      p_category_code: firstString(options.retrieval.category_code || context.category_codes),
-      p_year: Number.isInteger(yearValue) && yearValue >= 1900 && yearValue <= 2200 ? yearValue : null,
-      p_source_key: firstString(options.retrieval.source_key),
-      p_verification_status: null,
-      p_from: firstString(options.retrieval.from),
-      p_to: firstString(options.retrieval.to),
-      p_sort: 'relevance',
-      p_cursor: null,
-      p_snapshot_at: null,
-      p_limit: Math.max(1, Math.min(8, Number(options.retrieval.limit || 6))),
-      p_record_id: null,
-    }),
-  });
-  if (!rpcResponse.ok) return { citations: [], prompt: '', error: `RAG_RPC_${rpcResponse.status}` };
-  let result: Record<string, unknown>;
-  try {
-    result = await rpcResponse.json();
-  } catch {
-    return { citations: [], prompt: '', error: 'RAG_INVALID_RESPONSE' };
+  const scope = {
+    p_type: firstString(options.retrieval.type),
+    p_market_code: singleScopeValue(options.retrieval.market_code || context.market_codes),
+    p_platform_key: singleScopeValue(options.retrieval.platform_key || context.platform_keys),
+    p_category_code: singleScopeValue(options.retrieval.category_code || context.category_codes),
+    p_year: Number.isInteger(yearValue) && yearValue >= 1900 && yearValue <= 2200 ? yearValue : null,
+    p_source_key: firstString(options.retrieval.source_key),
+    p_verification_status: null,
+    p_from: firstString(options.retrieval.from),
+    p_to: firstString(options.retrieval.to),
+    p_cursor: null,
+    p_snapshot_at: null,
+    p_limit: Math.max(1, Math.min(8, Number(options.retrieval.limit || 6))),
+    p_record_id: null,
+  };
+  async function search(queryText: string, sort: 'relevance' | 'newest') {
+    const rpcResponse = await fetch(`${options.supabaseUrl}/rest/v1/rpc/search_formal_publications`, {
+      method: 'POST',
+      headers: options.serviceHeaders,
+      body: JSON.stringify({ ...scope, p_query: queryText, p_sort: sort }),
+    });
+    if (!rpcResponse.ok) return { rows: [] as unknown[], error: `RAG_RPC_${rpcResponse.status}` };
+    try {
+      const result = await rpcResponse.json() as Record<string, unknown>;
+      return { rows: Array.isArray(result?.items) ? result.items : [], error: null };
+    } catch {
+      return { rows: [] as unknown[], error: 'RAG_INVALID_RESPONSE' };
+    }
   }
-  const rows = Array.isArray(result?.items) ? result.items : [];
+  const exact = await search(query, 'relevance');
+  let rows = exact.rows;
+  let retrievalFallback = false;
+  let retrievalError = exact.error;
+  // Chinese natural-language questions do not tokenize reliably under the
+  // database's simple FTS configuration. Preserve the selected scope and
+  // provide recent formal records as background instead of sending Coze an
+  // empty context. The prompt below tells the model these are not exact hits.
+  if (!rows.length && !exact.error && query) {
+    const scoped = await search('', 'newest');
+    rows = scoped.rows;
+    retrievalFallback = rows.length > 0;
+    retrievalError = scoped.error;
+  }
+  if (retrievalError && !rows.length) return { citations: [], prompt: '', error: retrievalError, fallback: false };
   const citations = rows.slice(0, 8).map((item, index) => {
     const row = item && typeof item === 'object' ? item as Record<string, unknown> : {};
     const sourceId = String(row.source_id || row.id || '');
@@ -199,7 +222,7 @@ async function retrieveFormalHistory(options: {
       excerpt: String(row.content_excerpt || row.summary || '').replace(/\s+/g, ' ').slice(0, 1200),
     };
   }).filter((item) => /^[0-9a-f-]{36}$/i.test(item.source_id) && item.title);
-  if (!citations.length) return { citations: [], prompt: '', error: null };
+  if (!citations.length) return { citations: [], prompt: '', error: retrievalError, fallback: false };
   const lines = citations.map((citation) => (
     `[${citation.citation_id}] ${citation.title}; 来源=${citation.source_name}; ` +
     `时间=${citation.published_at || citation.collected_at || '未提供'}; 来源ID=${citation.source_id}; ` +
@@ -207,9 +230,13 @@ async function retrieveFormalHistory(options: {
   ));
   return {
     citations,
-    prompt: '【JAY观海正式历史投影】\n' + lines.join('\n') +
-      '\n回答中的事实只能引用上述正式记录；使用事实时保留对应的 [Hxxx] 编号。不得把未列出的本地缓存或原始响应当作知识库来源。',
-    error: null,
+    prompt: (retrievalFallback
+      ? '【JAY观海正式历史投影：当前范围最新背景记录，未找到问题的精确匹配】\n'
+      : '【JAY观海正式历史投影】\n') + lines.join('\n') +
+      '\n回答中的事实只能引用上述正式记录；使用事实时保留对应的 [Hxxx] 编号。不得把未列出的本地缓存或原始响应当作知识库来源。' +
+      (retrievalFallback ? '\n这些记录仅用于当前范围背景，不得声称它们直接证明用户问题；如果不能支持结论，必须明确标注证据缺口。' : ''),
+    error: retrievalError,
+    fallback: retrievalFallback,
   };
 }
 
@@ -441,8 +468,8 @@ Deno.serve(async (request) => {
   );
 
   const retrievalMode = String(retrieval.mode || 'disabled').toLowerCase();
-  let formalRetrieval: { citations: FormalCitation[]; prompt: string; error: string | null } = {
-    citations: [], prompt: '', error: null,
+  let formalRetrieval: { citations: FormalCitation[]; prompt: string; error: string | null; fallback: boolean } = {
+    citations: [], prompt: '', error: null, fallback: false,
   };
   if (taskType !== 'course_qa' && !['disabled', 'none', 'off'].includes(retrievalMode)) {
     try {
@@ -545,6 +572,7 @@ Deno.serve(async (request) => {
           retrieval_count: formalRetrieval.citations.length,
           retrieval_source_ids: formalRetrieval.citations.map((item) => item.source_id),
           retrieval_error: formalRetrieval.error,
+          retrieval_fallback: formalRetrieval.fallback,
           course_id: courseContext.course_id,
           course_lesson_ids: courseContext.lesson_ids,
           ...valueMetadata,
@@ -905,6 +933,7 @@ Deno.serve(async (request) => {
       source_ids: formalRetrieval.citations.map((item) => item.source_id),
       citations: formalRetrieval.citations,
       error: formalRetrieval.error,
+      fallback: formalRetrieval.fallback,
     };
   }
   return jsonResponse(result, 200, origin);

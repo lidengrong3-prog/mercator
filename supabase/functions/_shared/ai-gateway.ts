@@ -194,21 +194,49 @@ export type ParsedProviderResult = {
   totalTokens: number;
 };
 
-function textFrom(value: unknown): string {
-  if (typeof value === 'string') return value.trim();
+function decodeEscapedText(value: string): string {
+  return value
+    .replace(/\\u\{([0-9a-f]{1,6})\}/gi, (_match, codePoint: string) => {
+      const value = Number.parseInt(codePoint, 16);
+      return Number.isFinite(value) && value <= 0x10ffff ? String.fromCodePoint(value) : _match;
+    })
+    .replace(/\\u([0-9a-f]{4})/gi, (_match, codeUnit: string) => String.fromCharCode(Number.parseInt(codeUnit, 16)))
+    .replace(/\\n/g, '\n')
+    .replace(/\\r/g, '\r')
+    .replace(/\\t/g, '\t');
+}
+
+function textFrom(value: unknown, depth = 0): string {
+  if (typeof value === 'string') {
+    const normalized = decodeEscapedText(value.trim());
+    // Coze may return a text message as a JSON-encoded string. Unwrap only
+    // known structured text values and cap recursion for untrusted responses.
+    if (depth < 3 && /^[\[{\"]/.test(normalized)) {
+      try {
+        const parsed = JSON.parse(normalized);
+        if (parsed !== value) {
+          const nested = textFrom(parsed, depth + 1);
+          if (nested) return nested;
+        }
+      } catch {
+        // Ordinary Markdown beginning with a bracket is valid text; preserve it.
+      }
+    }
+    return normalized;
+  }
   if (Array.isArray(value)) {
     return value.map((item) => {
       if (typeof item === 'string') return item;
       if (item && typeof item === 'object') {
         const row = item as Record<string, unknown>;
-        return textFrom(row.text || row.content || row.output_text);
+        return textFrom(row.text || row.content || row.output_text || row.answer, depth + 1);
       }
       return '';
     }).filter(Boolean).join('\n').trim();
   }
   if (value && typeof value === 'object') {
     const row = value as Record<string, unknown>;
-    return textFrom(row.text || row.content || row.output_text);
+    return textFrom(row.text || row.content || row.output_text || row.answer || row.message, depth + 1);
   }
   return '';
 }

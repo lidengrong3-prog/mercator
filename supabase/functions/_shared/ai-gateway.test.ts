@@ -31,6 +31,15 @@ Deno.test('Coze adapter carries bot chat messages and parses assistant content',
   if (parsed.content !== 'Coze 回答') throw new Error('invalid Coze result parsing');
 });
 
+Deno.test('Coze adapter unwraps escaped structured and Unicode text', () => {
+  const config: ProviderConfig = { provider: 'coze', style: 'coze_chat', key: 'test', url: 'https://api.coze.cn', model: 'bot:test', botId: 'bot-1' };
+  const parsed = parseProviderResult(config, {
+    code: 0,
+    data: { messages: [{ type: 'answer', content: '{"content":"\\u5e02\\u573a\\n\\u6570\\u636e"}' }] },
+  });
+  if (parsed.content !== '市场\n数据') throw new Error(`escaped Coze content was not normalized: ${parsed.content}`);
+});
+
 Deno.test('Coze scoped identity is deterministic and does not expose UUIDs', async () => {
   const first = await cozeScopedIdentity('workspace-123', 'user-456');
   const second = await cozeScopedIdentity('workspace-123', 'user-456');

@@ -1288,7 +1288,7 @@ async function callAI(systemPrompt, userPrompt, opts){
       throw emptyError;
     }
      window.JAY_AI_RETRIEVAL_BY_REQUEST=window.JAY_AI_RETRIEVAL_BY_REQUEST||{};
-     window.JAY_AI_RETRIEVAL_BY_REQUEST[requestId]=data&&data.jay_retrieval&&typeof data.jay_retrieval==='object'?data.jay_retrieval:{mode:'formal_publications',source_ids:[],citations:[]};
+     window.JAY_AI_RETRIEVAL_BY_REQUEST[requestId]=data&&data.jay_retrieval&&typeof data.jay_retrieval==='object'?data.jay_retrieval:{mode:'formal_publications',source_ids:[],citations:[],fallback:false};
      window.JAY_AI_GATEWAY_BY_REQUEST=window.JAY_AI_GATEWAY_BY_REQUEST||{};
      window.JAY_AI_GATEWAY_BY_REQUEST[requestId]=data&&data.jay_gateway&&typeof data.jay_gateway==='object'?data.jay_gateway:{request_id:requestId,provider:'未确定',agent_key:agentKey,data_disclosure:{scope:['formal_publications','request_context']}};
     var retrievalKeys=Object.keys(window.JAY_AI_RETRIEVAL_BY_REQUEST);
