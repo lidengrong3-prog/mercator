@@ -75,6 +75,7 @@ test('gateway routes one logical request through ordered fallbacks and reserves 
   assert.match(edge, /acceptance_primary_fault/);
   assert.match(edge, /acceptance_run_id: acceptanceRunId/);
   assert.match(edge, /Math\.min\(50_000, Number\(Deno\.env\.get\('AI_PROVIDER_TIMEOUT_MS'\)/);
+  assert.match(edge, /x-jay-provider-error-code/);
 });
 
 test('live multi-AI acceptance requires a real primary and a real fallback', () => {

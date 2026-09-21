@@ -10,10 +10,14 @@ export type CozeChatOptions = {
   fetcher?: typeof fetch;
 };
 
-function jsonResponse(body: JsonObject, status: number): Response {
+function jsonResponse(body: JsonObject, status: number, providerErrorCode = ''): Response {
+  const safeProviderCode = String(providerErrorCode || '').replace(/[^A-Za-z0-9._-]/g, '').slice(0, 80);
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      ...(safeProviderCode ? { 'X-JAY-Provider-Error-Code': safeProviderCode } : {}),
+    },
   });
 }
 
@@ -38,7 +42,7 @@ async function readCozeResponse(response: Response): Promise<{ result: JsonObjec
     return { result: {}, error: jsonResponse({ code: 'COZE_INVALID_RESPONSE', message: 'Coze returned invalid JSON' }, 502) };
   }
   if (!response.ok || Number(result.code || 0) !== 0) {
-    return { result, error: jsonResponse(result, cozeErrorStatus(result, response.status)) };
+    return { result, error: jsonResponse(result, cozeErrorStatus(result, response.status), String(result.code || response.status)) };
   }
   return { result, error: null };
 }
@@ -89,7 +93,10 @@ export async function invokeCozeChat(config: ProviderConfig, options: CozeChatOp
   const pollMaxAttempts = Math.max(1, Math.min(120, Number(options.pollMaxAttempts || 60)));
   for (let attempt = 0; status !== 'completed' && attempt < pollMaxAttempts; attempt += 1) {
     if (terminalFailure.has(status)) {
-      return jsonResponse({ code: 'COZE_CHAT_FAILED', message: String(chatData.last_error || chatData.error || status), data: chatData }, 502);
+      const lastError = objectValue(chatData.last_error || chatData.error);
+      const upstreamCode = String(lastError.code || lastError.error_code || status);
+      const message = String(lastError.msg || lastError.message || status);
+      return jsonResponse({ code: 'COZE_CHAT_FAILED', message, data: chatData }, 502, upstreamCode);
     }
     await waitForPoll(pollIntervalMs, options.signal);
     const retrieveResponse = await fetcher(queryUrl(config.url, '/v3/chat/retrieve', conversationId, chatId), {

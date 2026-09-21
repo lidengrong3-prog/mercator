@@ -85,6 +85,16 @@ def expect(condition: bool, message: str):
         raise AcceptanceError(message)
 
 
+def github_error(title: str, details: dict) -> None:
+    """Publish only allowlisted diagnostics; never provider bodies or secrets."""
+    if os.environ.get("GITHUB_ACTIONS", "").lower() != "true":
+        return
+    message = json.dumps(details, ensure_ascii=False, separators=(",", ":"))[:1500]
+    message = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+    safe_title = re.sub(r"[^A-Za-z0-9 _-]", "", title)[:80]
+    print(f"::error title={safe_title}::{message}", flush=True)
+
+
 def sign_in(email: str, password: str) -> dict:
     status, body, _ = request(
         "POST",
@@ -860,6 +870,21 @@ def main() -> int:
         "max_tokens": 128,
         "stream": False,
     }, headers=acceptance_fault_headers(user_a, "provider_fallback", fallback_request_id), timeout=60)
+    if not (status == 200 and fallback_body.get("choices")):
+        safe_body = fallback_body if isinstance(fallback_body, dict) else {}
+        attempts = safe_body.get("attempts") if isinstance(safe_body.get("attempts"), list) else []
+        github_error("Coze live acceptance failed", {
+            "http_status": status,
+            "error": str(safe_body.get("error") or "")[:100],
+            "provider_status": safe_body.get("provider_status"),
+            "attempts": [{
+                "provider": str(item.get("provider") or "")[:30],
+                "status": str(item.get("status") or "")[:30],
+                "http_status": item.get("http_status"),
+                "error_code": str(item.get("error_code") or "")[:160],
+                "duration_ms": item.get("duration_ms"),
+            } for item in attempts if isinstance(item, dict)][:4],
+        })
     expect(status == 200 and fallback_body.get("choices"),
            f"AI provider fallback did not return a real response: {status} {fallback_body}")
     fallback_gateway = fallback_body.get("jay_gateway") or {}

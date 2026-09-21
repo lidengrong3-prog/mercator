@@ -807,8 +807,10 @@ Deno.serve(async (request) => {
         }
         lastErrorCode = providerErrorCode(upstream.status);
         lastErrorStatus = lastErrorCode === 'AI_RATE_LIMITED' ? 429 : (lastErrorCode === 'AI_QUOTA_EXCEEDED' ? 402 : (lastErrorCode === 'AI_PROVIDER_AUTH_FAILED' || lastErrorCode === 'AI_PROVIDER_FORBIDDEN' ? 502 : (lastErrorCode === 'AI_PROVIDER_UNAVAILABLE' ? 502 : 400)));
+        const providerError = String(upstream.headers.get('x-jay-provider-error-code') || '').replace(/[^A-Za-z0-9._-]/g, '').slice(0, 80);
+        const attemptErrorCode = providerError ? `${lastErrorCode}:${candidate.toUpperCase()}_${providerError}` : lastErrorCode;
         retryAfter = upstream.headers.get('retry-after') || '60';
-        await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: upstream.status, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
+        await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: upstream.status, error_code: attemptErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
         providerFinished = true;
         continue;
       }

@@ -38,4 +38,5 @@ Deno.test('Coze v3 adapter maps API authentication errors', async () => {
     fetcher: (async () => new Response(JSON.stringify({ code: 4101, msg: 'invalid token' }), { status: 200 })) as typeof fetch,
   });
   if (result.status !== 401) throw new Error(`expected 401, received ${result.status}`);
+  if (result.headers.get('X-JAY-Provider-Error-Code') !== '4101') throw new Error('Coze error code was not preserved safely');
 });
