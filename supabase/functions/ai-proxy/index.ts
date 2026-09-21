@@ -759,7 +759,10 @@ Deno.serve(async (request) => {
           body,
           signal: controller.signal,
           pollIntervalMs: Number(Deno.env.get('COZE_POLL_INTERVAL_MS') || 500),
-          pollMaxAttempts: Number(Deno.env.get('COZE_POLL_MAX_ATTEMPTS') || 60),
+          // Coze runs asynchronously. Keep the default polling window aligned
+          // with the gateway's 50-second provider deadline so slower bots do
+          // not fail the live fallback before the gateway timeout expires.
+          pollMaxAttempts: Number(Deno.env.get('COZE_POLL_MAX_ATTEMPTS') || 100),
         });
       }
       return await fetch(providerEndpoint(config), {

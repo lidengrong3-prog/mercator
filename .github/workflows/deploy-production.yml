@@ -125,7 +125,7 @@ jobs:
       COZE_BOT_ID_COURSE: ${{ secrets.COZE_BOT_ID_COURSE }}
       COZE_MODEL: ${{ secrets.COZE_MODEL }}
       COZE_POLL_INTERVAL_MS: ${{ vars.COZE_POLL_INTERVAL_MS || secrets.COZE_POLL_INTERVAL_MS || '500' }}
-      COZE_POLL_MAX_ATTEMPTS: ${{ vars.COZE_POLL_MAX_ATTEMPTS || secrets.COZE_POLL_MAX_ATTEMPTS || '60' }}
+      COZE_POLL_MAX_ATTEMPTS: ${{ vars.COZE_POLL_MAX_ATTEMPTS || secrets.COZE_POLL_MAX_ATTEMPTS || '100' }}
       DOUBAO_API_URL: ${{ secrets.DOUBAO_API_URL }}
       DOUBAO_API_KEY: ${{ secrets.DOUBAO_API_KEY }}
       ARK_API_KEY: ${{ secrets.ARK_API_KEY }}

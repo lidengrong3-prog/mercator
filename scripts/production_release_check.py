@@ -305,6 +305,36 @@ def main() -> int:
     runtime_path = asset_manifest.get("assets/runtime-config.js")
     if not runtime_path:
         raise ReleaseCheckError("frontend runtime configuration asset is missing")
+
+    # Hashed assets must be served as their declared type. A CDN fallback that
+    # returns index.html for a missing JS/CSS path otherwise looks like a
+    # successful HTTP probe while the browser silently fails to execute it.
+    asset_types = {
+        ".js": "javascript",
+        ".css": "css",
+    }
+    for logical_path, hashed_path in sorted(asset_manifest.items()):
+        suffix = Path(str(hashed_path)).suffix.lower()
+        expected_kind = asset_types.get(suffix)
+        if not expected_kind:
+            continue
+        status, raw, headers = request("GET", site + str(hashed_path))
+        content_type = str(headers.get("Content-Type") or "").lower()
+        expected_type = "javascript" if expected_kind == "javascript" else "text/css"
+        # Some unit-test transports intentionally omit response headers; the
+        # live HTTP probe must still enforce the type when headers are present.
+        if status != 200 or (headers and expected_type not in content_type):
+            raise ReleaseCheckError(
+                f"frontend asset has the wrong response type: {logical_path} -> "
+                f"HTTP {status} {content_type or 'missing content type'}"
+            )
+        try:
+            decoded = raw.decode("utf-8")
+        except UnicodeDecodeError as error:
+            raise ReleaseCheckError(f"frontend asset is not UTF-8: {logical_path}") from error
+        if "\ufffd" in decoded:
+            raise ReleaseCheckError(f"frontend asset contains replacement characters: {logical_path}")
+
     status, raw, _ = request("GET", site + runtime_path)
     runtime_source = raw.decode("utf-8", "replace")
     match = re.search(r"window\.JAY_APP_CONFIG\s*=\s*Object\.freeze\((\{.*\})\);", runtime_source)
