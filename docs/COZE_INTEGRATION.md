@@ -1,10 +1,10 @@
 # Coze 正式接入手册
 
-本手册只处理 Coze。当前目标是让 Coze 成为 JAY观海的市场分析、报告生成和课程问答主生成方，DeepSeek 仅作为 Coze 不可用时的生成回退。浏览器不直接调用 Coze，所有调用统一经过 Supabase `ai-proxy`。
+本手册只处理 Coze。当前阶段只上线市场分析 Bot；报告生成和课程问答需要在市场分析真实验收通过后分别配置、测试和切换。浏览器不直接调用 Coze，所有调用统一经过 Supabase `ai-proxy`。
 
 ## 1. Coze 控制台需要准备的内容
 
-使用中国区 Coze（`coze.cn`），在同一个工作空间创建并发布三个 Bot：
+使用中国区 Coze（`coze.cn`）。当前只需创建并发布市场分析 Bot；其余两个 Bot 是后续阶段的预留配置：
 
 | Bot | 建议名称 | 系统任务 | 环境变量 |
 | --- | --- | --- | --- |
@@ -20,7 +20,7 @@
 4. 不依赖 Coze 自有知识库；正式资料和已授权课程内容由 JAY观海后端随请求注入。
 5. 建立四个文本变量：`workspace_id`、`task_type`、`agent_key`、`locale`。其中 `workspace_id` 是后端生成的匿名作用域，不是真实数据库 UUID。
 6. 发布到 API 可调用的正式版本。只保存草稿不足以供生产 API 调用。
-7. 分别记录三个 Bot ID。
+7. 当前记录市场分析 Bot ID；报告和课程 Bot 准备完成后再分别记录。
 
 ### 市场分析 Bot 提示词
 
@@ -82,7 +82,7 @@
 
 ```text
 POST /v3/chat
-GET  /v3/chat/retrieve
+POST /v3/chat/retrieve
 GET  /v3/chat/message/list
 ```
 
@@ -95,9 +95,9 @@ GET  /v3/chat/message/list
 ```text
 COZE_API_TOKEN=<真实 Personal Access Token>
 COZE_BOT_ID_MARKET_QA=<市场分析 Bot ID>
-COZE_BOT_ID_REPORT=<报告生成 Bot ID>
-COZE_BOT_ID_COURSE=<课程助手 Bot ID>
 ```
+
+`COZE_BOT_ID_REPORT` 和 `COZE_BOT_ID_COURSE` 在对应任务进入独立验收阶段时再添加。
 
 添加 Variables（也可放 Secrets，但这些值本身不属于密码）：
 
@@ -109,7 +109,7 @@ AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER=deepseek
 AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER=coze
 ```
 
-当前发布验收仍先验证现有 DeepSeek 基线，再真实调用 Coze，目的是在切换主路由前证明 Coze API、Token 和 Bot 均可工作。数据库迁移完成后，普通市场分析、报告和课程请求的生产路由是 `Coze → DeepSeek`。
+当前发布验收先验证现有 DeepSeek 基线，再通过故障注入真实调用 Coze 市场分析 Bot。验收通过后，市场分析生产路由是 `Coze → DeepSeek`；报告继续使用 DeepSeek，报告和课程不在本阶段切换范围内。
 
 ## 4. Supabase 配置方式
 
@@ -120,8 +120,6 @@ supabase secrets set \
   COZE_API_URL=https://api.coze.cn \
   COZE_API_TOKEN=REPLACE_LOCALLY \
   COZE_BOT_ID_MARKET_QA=REPLACE_LOCALLY \
-  COZE_BOT_ID_REPORT=REPLACE_LOCALLY \
-  COZE_BOT_ID_COURSE=REPLACE_LOCALLY \
   COZE_POLL_INTERVAL_MS=500 \
   COZE_POLL_MAX_ATTEMPTS=60
 ```
@@ -135,7 +133,7 @@ supabase secrets set \
   → Supabase ai-proxy（鉴权、工作区权限、额度、资料检索）
   → 按 task_type 选择 Coze Bot
   → POST /v3/chat
-  → GET /v3/chat/retrieve 轮询到 completed
+  → POST /v3/chat/retrieve 轮询到 completed
   → GET /v3/chat/message/list 读取 type=answer
   → 统一响应、审计供应商/耗时/Token
   → 本系统保存或展示结果
@@ -145,14 +143,12 @@ supabase secrets set \
 
 ## 6. 上线验收清单
 
-每个 Bot 至少执行一次真实请求：
+当前阶段执行以下真实请求：
 
 - 市场分析：返回简体中文，并保留后端注入的 `[Hxxx]`。
-- 报告生成：生成指定章节，无虚构来源；资料不足时明确标记缺口。
-- 课程助手：只使用授权内容并保留 `[Cxxx]`；越权课程请求被后端拒绝。
 - Coze 暂停或超时：同一请求自动回退 DeepSeek，额度只结算一次。
 - Coze 返回 401：发布失败并提示检查 Token，不允许静默绕过。
 - Coze 返回空答案或 failed：记录失败尝试并执行回退。
 - 管理后台能看到供应商、Bot 模型标识、耗时、状态和配置指纹，但看不到 Token、提示词或完整回答。
 
-只有生产工作流的真实调用和故障切换均通过后，才能宣布 Coze 正式接入完成。
+只有生产工作流的真实调用和故障切换均通过后，才能宣布 Coze 市场分析接入完成。报告和课程必须各自完成同等验收后再切换路由。

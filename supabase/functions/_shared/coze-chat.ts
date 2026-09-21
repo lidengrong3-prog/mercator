@@ -93,7 +93,8 @@ export async function invokeCozeChat(config: ProviderConfig, options: CozeChatOp
     }
     await waitForPoll(pollIntervalMs, options.signal);
     const retrieveResponse = await fetcher(queryUrl(config.url, '/v3/chat/retrieve', conversationId, chatId), {
-      method: 'GET', headers, signal: options.signal,
+      // Coze's official SDK uses POST for retrieve; GET returns 405.
+      method: 'POST', headers, signal: options.signal,
     });
     const retrieved = await readCozeResponse(retrieveResponse);
     if (retrieved.error) return retrieved.error;

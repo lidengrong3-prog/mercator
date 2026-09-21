@@ -7,6 +7,7 @@ const config: ProviderConfig = {
 
 Deno.test('Coze v3 adapter creates, polls, and reads answer messages', async () => {
   const calls: string[] = [];
+  const methods: string[] = [];
   const responses = [
     { code: 0, data: { id: 'chat-1', conversation_id: 'conversation-1', status: 'in_progress' } },
     { code: 0, data: { id: 'chat-1', conversation_id: 'conversation-1', status: 'completed' } },
@@ -14,6 +15,7 @@ Deno.test('Coze v3 adapter creates, polls, and reads answer messages', async () 
   ];
   const fetcher = (async (input: RequestInfo | URL, init?: RequestInit) => {
     calls.push(String(input));
+    methods.push(String(init?.method || 'GET'));
     return new Response(JSON.stringify(responses.shift()), { status: 200, headers: { 'Content-Type': 'application/json' } });
   }) as typeof fetch;
   const result = await invokeCozeChat(config, {
@@ -26,6 +28,7 @@ Deno.test('Coze v3 adapter creates, polls, and reads answer messages', async () 
   const body = await result.json();
   if (result.status !== 200 || body.data.messages[0].content !== '报告已完成') throw new Error('Coze async flow failed');
   if (!calls[0].endsWith('/v3/chat') || !calls[1].includes('/v3/chat/retrieve?') || !calls[2].includes('/v3/chat/message/list?')) throw new Error(`unexpected Coze endpoints: ${calls}`);
+  if (methods.join(',') !== 'POST,POST,GET') throw new Error(`unexpected Coze methods: ${methods}`);
 });
 
 Deno.test('Coze v3 adapter maps API authentication errors', async () => {

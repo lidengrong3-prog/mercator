@@ -17,7 +17,7 @@
 | 供应商 | 适配方式 | Secrets | 允许任务 |
 | --- | --- | --- | --- |
 | DeepSeek | OpenAI 兼容 `/chat/completions` | `DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL` | 市场问答、报告、分析、翻译、预警 |
-| Coze | `/v3/chat` + retrieve/message list | `COZE_API_TOKEN`、按任务的 `COZE_BOT_ID_*` | 市场分析、报告、课程问答 |
+| Coze | `/v3/chat` + retrieve/message list | `COZE_API_TOKEN`、按任务的 `COZE_BOT_ID_*` | 当前上线市场分析；报告和课程待独立验收 |
 | 豆包 | 火山方舟 OpenAI 兼容 `/chat/completions` | `DOUBAO_API_KEY`、`DOUBAO_MODEL` | 中文分析、市场问答、报告、翻译 |
 | OpenAI | Responses API `/v1/responses` | `OPENAI_API_KEY`、`OPENAI_MODEL` | 通用推理、市场问答、报告、翻译 |
 | Codex | Responses API | `CODEX_API_KEY`、`CODEX_MODEL` | 代码、自动化、系统维护 |
@@ -27,9 +27,9 @@ OpenAI Responses 的请求和输出字段以[官方 OpenAI Responses API 文档]
 
 ## 路由和额度
 
-`ai_routing_policies` 先匹配工作区，再匹配全局任务策略；当前全局策略将 Coze 作为
-`market_qa`、`report` 和 `course_qa` 的主生成方，DeepSeek 作为故障回退。不会把同一
-问题群发给所有供应商。Codex 只接受代码和维护任务，WorkBuddy 即使被客户端指定也会被拒绝。
+`ai_routing_policies` 先匹配工作区，再匹配全局任务策略；当前阶段只将 Coze 作为
+`market_qa` 的主生成方，DeepSeek 作为故障回退。报告仍由 DeepSeek 处理，课程和报告
+需在各自完成真实验收后再切换。不会把同一问题群发给所有供应商。Codex 只接受代码和维护任务，WorkBuddy 即使被客户端指定也会被拒绝。
 
 一个逻辑请求只使用一个 `request_id`。网关在调用供应商前执行一次 `reserve_workspace_ai_token_quota`，主供应商失败时复用该预留调用备用供应商，最终只执行一次 `finalize_workspace_ai_token_reservation`（成功结算或失败释放）。
 
@@ -37,7 +37,7 @@ OpenAI Responses 的请求和输出字段以[官方 OpenAI Responses API 文档]
 
 ## 启停和验证
 
-供应商是否可用由两层共同决定：目录中的 `status` 不能是 `disabled`，且 Edge Function Secret 必须完整。管理员可在 `ai_provider_catalog` 停用供应商，不需要重新发布前端。Coze Chat v3 是异步接口：网关创建 chat、轮询 `/v3/chat/retrieve`，完成后读取 `/v3/chat/message/list`。三个 Bot ID 按任务从 `COZE_BOT_ID_MARKET_QA`、`COZE_BOT_ID_REPORT`、`COZE_BOT_ID_COURSE` 读取，也兼容单一 `COZE_BOT_ID`。
+供应商是否可用由两层共同决定：目录中的 `status` 不能是 `disabled`，且 Edge Function Secret 必须完整。管理员可在 `ai_provider_catalog` 停用供应商，不需要重新发布前端。Coze Chat v3 是异步接口：网关创建 chat、使用 `POST /v3/chat/retrieve` 轮询，完成后读取 `GET /v3/chat/message/list`。三个 Bot ID 按任务从 `COZE_BOT_ID_MARKET_QA`、`COZE_BOT_ID_REPORT`、`COZE_BOT_ID_COURSE` 读取，也兼容单一 `COZE_BOT_ID`。
 
 部署后应验证：
 

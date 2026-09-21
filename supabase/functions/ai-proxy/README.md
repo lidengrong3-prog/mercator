@@ -10,14 +10,14 @@ response bodies are never copied into operational logs.
 
 ```bash
 supabase secrets set DEEPSEEK_API_KEY=... DEEPSEEK_MODEL=deepseek-chat AI_REQUESTS_PER_MINUTE=20 AI_PROVIDER_TIMEOUT_MS=25000 AI_GATEWAY_TIMEOUT_MS=55000
-supabase secrets set COZE_API_TOKEN=... COZE_BOT_ID_MARKET_QA=... COZE_BOT_ID_REPORT=... COZE_BOT_ID_COURSE=... COZE_POLL_INTERVAL_MS=500 COZE_POLL_MAX_ATTEMPTS=60 DOUBAO_API_KEY=... DOUBAO_MODEL=... OPENAI_API_KEY=... OPENAI_MODEL=...
+supabase secrets set COZE_API_TOKEN=... COZE_BOT_ID_MARKET_QA=... COZE_POLL_INTERVAL_MS=500 COZE_POLL_MAX_ATTEMPTS=60 DOUBAO_API_KEY=... DOUBAO_MODEL=... OPENAI_API_KEY=... OPENAI_MODEL=...
 supabase secrets set ALLOWED_ORIGINS=https://lidengrong3-prog.github.io
 supabase functions deploy ai-proxy
 ```
 
 DeepSeek and Doubao use their OpenAI-compatible Chat Completions endpoints;
 OpenAI and Codex use the Responses API; Coze uses asynchronous Chat v3:
-`/v3/chat`, `/v3/chat/retrieve`, and `/v3/chat/message/list`.
+`/v3/chat`, `POST /v3/chat/retrieve`, and `GET /v3/chat/message/list`.
 Credentials are read only from Edge Function Secrets. WorkBuddy is registered
 as disabled until an official API, webhook, or MCP contract is confirmed.
 

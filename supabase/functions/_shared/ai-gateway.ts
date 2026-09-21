@@ -149,7 +149,9 @@ export function providerRequestBody(
       bot_id: config.botId,
       user_id: options.userId.slice(0, 128),
       stream: false,
-      auto_save_history: false,
+      // Message list is read after the asynchronous chat completes. Coze
+      // only exposes that conversation history when auto-save is enabled.
+      auto_save_history: true,
       ...(options.workspaceId || options.taskType || options.agentKey ? {
         custom_variables: {
           workspace_id: String(options.workspaceId || '').slice(0, 128),

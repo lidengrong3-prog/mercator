@@ -24,6 +24,7 @@ Deno.test('Coze adapter carries bot chat messages and parses assistant content',
   const config: ProviderConfig = { provider: 'coze', style: 'coze_chat', key: 'test', url: 'https://api.coze.cn', model: 'bot:test', botId: 'bot-1' };
   const body = providerRequestBody(config, messages, { maxTokens: 500, temperature: 0.2, withSearch: false, userId: 'user-1', workspaceId: 'workspace-1', taskType: 'report', agentKey: 'report_generator' });
   if (body.bot_id !== 'bot-1' || !Array.isArray(body.additional_messages)) throw new Error('invalid Coze request body');
+  if (body.auto_save_history !== true) throw new Error('Coze chat history must be saved for message retrieval');
   if ((body.additional_messages as Array<Record<string, unknown>>)[0]?.role !== 'user') throw new Error('Coze must map system context to user messages');
   if ((body.custom_variables as Record<string, unknown>)?.task_type !== 'report') throw new Error('Coze custom variables missing');
   const parsed = parseProviderResult(config, { code: 0, data: { messages: [{ role: 'assistant', content: 'Coze 回答' }] } });

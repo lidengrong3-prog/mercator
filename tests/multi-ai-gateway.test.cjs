@@ -23,6 +23,7 @@ test('multi-provider gateway migration has governed providers, agents, routes an
 
 test('provider adapters cover DeepSeek, Coze, Doubao, OpenAI Responses and Codex policy', () => {
   const adapter = read('supabase', 'functions', '_shared', 'ai-gateway.ts');
+  const cozeChat = read('supabase', 'functions', '_shared', 'coze-chat.ts');
   assert.match(adapter, /api\.deepseek\.com/);
   assert.match(adapter, /\/v3\/chat/);
   assert.match(adapter, /COZE_BOT_ID_REPORT/);
@@ -35,6 +36,19 @@ test('provider adapters cover DeepSeek, Coze, Doubao, OpenAI Responses and Codex
   assert.match(adapter, /providerTaskAllowed/);
   assert.match(adapter, /system_maintenance/);
   assert.match(adapter, /providerConfigFingerprint/);
+  assert.match(adapter, /auto_save_history:\s*true/);
+  assert.match(cozeChat, /\/v3\/chat\/retrieve[\s\S]*method:\s*'POST'/);
+});
+
+test('Coze rollout is limited to market analysis until report acceptance', () => {
+  const migration = read('supabase', 'migrations', '20261015000000_market_only_coze_routing.sql');
+  assert.match(migration, /allowed_task_types = ARRAY\['agent','market_qa'\]/);
+  assert.match(migration, /WHERE agent_key = 'report_generator'/);
+  assert.match(migration, /WHERE agent_key = 'course_assistant'/);
+  assert.match(migration, /WHERE workspace_id IS NULL[\s\S]*task_type = 'report'/);
+  assert.match(migration, /WHERE workspace_id IS NULL[\s\S]*task_type = 'course_qa'/);
+  assert.equal((migration.match(/primary_provider = 'deepseek'/g) || []).length, 4);
+  assert.doesNotMatch(migration, /primary_provider = 'coze'/);
 });
 
 test('live acceptance migration isolates provider evidence from production rollups', () => {
