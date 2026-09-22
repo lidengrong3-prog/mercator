@@ -243,7 +243,7 @@ async function retrieveFormalHistory(options: {
   // category sales rows yet. Add only official macro records as background;
   // never turn apparel or another category into a jewelry claim.
   if (isMarketQuestion(query) && (isCategoryQuestion(query) || !rows.length)) {
-    const macroResults = await Promise.all(['fred', 'bls'].map((sourceKey) => (
+    const macroResults = await Promise.all(['fred', 'bls', 'macro-official'].map((sourceKey) => (
       search('', 'newest', { p_source_key: sourceKey, p_limit: 24 })
     )));
     const macroRows = macroResults.flatMap((result) => result.rows);
