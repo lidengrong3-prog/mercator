@@ -47,6 +47,22 @@ test('authenticated entry and read-only demo shell work on desktop', async ({ pa
   await expect(page.locator('#ov-workspace-title')).toHaveText('美国市场决策工作台');
   await expect(page.locator('aside.sidebar')).toHaveCSS('width', '248px');
 
+  const footerLayout = await page.locator('footer.jay-footer').evaluate((footer) => {
+    const footerRect = footer.getBoundingClientRect();
+    const sidebarRect = document.querySelector('aside.sidebar').getBoundingClientRect();
+    const style = getComputedStyle(footer);
+    return {
+      display: style.display,
+      footerLeft: footerRect.left,
+      sidebarRight: sidebarRect.right,
+      footerRight: footerRect.right,
+      viewportRight: window.innerWidth,
+    };
+  });
+  expect(footerLayout.display).toBe('flex');
+  expect(footerLayout.footerLeft).toBeGreaterThanOrEqual(footerLayout.sidebarRight - 1);
+  expect(footerLayout.footerRight).toBeLessThanOrEqual(footerLayout.viewportRight + 1);
+
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(1);
   await page.evaluate(() => window.rpAddMaterial('country', 'demo item', 'test', 'test'));
@@ -388,6 +404,12 @@ test('mobile shell uses a drawer without horizontal overflow', async ({ page }) 
   await page.getByRole('button', { name: '浏览只读演示' }).click();
   await expect(page.locator('#ov-workspace-title')).toHaveText('美国市场决策工作台');
   await expect(page.locator('#jay-hamburger')).toBeVisible();
+  const mobileFooter = await page.locator('footer.jay-footer').evaluate((footer) => {
+    const rect = footer.getBoundingClientRect();
+    return { left: rect.left, right: rect.right, viewport: window.innerWidth };
+  });
+  expect(mobileFooter.left).toBeGreaterThanOrEqual(-1);
+  expect(mobileFooter.right).toBeLessThanOrEqual(mobileFooter.viewport + 1);
   await page.locator('#jay-hamburger').click();
   await expect(page.locator('aside.sidebar')).toHaveClass(/open/);
 

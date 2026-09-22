@@ -40,6 +40,18 @@ Deno.test('Coze adapter unwraps escaped structured and Unicode text', () => {
   if (parsed.content !== '市场\n数据') throw new Error(`escaped Coze content was not normalized: ${parsed.content}`);
 });
 
+Deno.test('Coze adapter removes workflow lifecycle events from visible answers', () => {
+  const config: ProviderConfig = { provider: 'coze', style: 'coze_chat', key: 'test', url: 'https://api.coze.cn', model: 'bot:test', botId: 'bot-1' };
+  const event = '{"msg_type":"generate_answer_finish","data":"{\\"finish_reason\\":0,\\"FinData\\":\\"\\"}","from_module":null,"from_unit":null}';
+  const parsed = parseProviderResult(config, {
+    code: 0,
+    data: { messages: [{ type: 'answer', content: `现有资料不足，无法确认。\n${event}` }] },
+  });
+  if (parsed.content !== '现有资料不足，无法确认。') throw new Error(`Coze lifecycle event leaked: ${parsed.content}`);
+  const empty = parseProviderResult(config, { code: 0, data: { messages: [{ type: 'verbose', content: event }] } });
+  if (empty.content) throw new Error('control-only Coze response must be empty');
+});
+
 Deno.test('Coze scoped identity is deterministic and does not expose UUIDs', async () => {
   const first = await cozeScopedIdentity('workspace-123', 'user-456');
   const second = await cozeScopedIdentity('workspace-123', 'user-456');

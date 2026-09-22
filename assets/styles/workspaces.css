@@ -630,13 +630,6 @@
   background:linear-gradient(135deg,#3b7ab8,#2c5f8a);color:#fff;border:0;font-size:20px;cursor:pointer;
   box-shadow:0 6px 18px rgba(59,125,216,.4);display:none;align-items:center;justify-content:center;z-index:900}
 #jay-totop:hover{transform:translateY(-2px)}
-/* 页脚 */
-.jay-footer{margin-top:40px;padding:22px 28px;border-top:1px solid var(--line);
-  background:#fff;color:var(--muted);font-size:12px;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center}
-.jay-footer b{color:var(--ink)}
-.jay-footer a{color:#3b7ab8;text-decoration:none}
-.jay-footer .jay-f-sep{flex:1}
-
 /* ===== WAVE2: 趋势箭头配色 + 移动端快捷标签换行 + 铃铛面板 + 引导/FAQ + 数据源 + 模块清理 ===== */
 /* 趋势箭头：涨绿跌红 */
 .up{color:var(--green)!important}

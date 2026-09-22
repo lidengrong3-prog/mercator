@@ -187,6 +187,26 @@ async function retrieveFormalHistory(options: {
       return { rows: [] as unknown[], error: 'RAG_INVALID_RESPONSE' };
     }
   }
+  function querySignals(value: string): string[] {
+    const aliases = [
+      '珠宝', '首饰', 'jewelry', 'apparel', '服装', '鞋', '箱包', '家居', '家具',
+      '电子', 'electronics', '美容', '美妆', '食品', '玩具', '宠物', '户外', '运动',
+      'amazon', '亚马逊', 'ebay', 'tiktok', '沃尔玛', 'walmart', '独立站', 'shopify',
+    ];
+    const normalized = value.toLowerCase();
+    return Array.from(new Set(aliases.filter((term) => normalized.includes(term))));
+  }
+  function filterFallbackRows(rowsToFilter: unknown[]): unknown[] {
+    const signals = querySignals(query);
+    if (!signals.length) return [];
+    return rowsToFilter.filter((item) => {
+      if (!item || typeof item !== 'object') return false;
+      const row = item as Record<string, unknown>;
+      const haystack = [row.title, row.summary, row.content_excerpt, row.source_name, row.source_key]
+        .map((part) => String(part || '').toLowerCase()).join(' ');
+      return signals.some((term) => haystack.includes(term));
+    });
+  }
   const exact = await search(query, 'relevance');
   let rows = exact.rows;
   let retrievalFallback = false;
@@ -197,7 +217,7 @@ async function retrieveFormalHistory(options: {
   // empty context. The prompt below tells the model these are not exact hits.
   if (!rows.length && !exact.error && query) {
     const scoped = await search('', 'newest');
-    rows = scoped.rows;
+    rows = filterFallbackRows(scoped.rows);
     retrievalFallback = rows.length > 0;
     retrievalError = scoped.error;
   }

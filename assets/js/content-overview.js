@@ -832,7 +832,7 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
         var systemPrompt='你是 JAY观海（跨境电商市场情报系统）的 AI 分析师。服务端会提供正式历史投影作为检索上下文；引用事实时必须保留 [Hxxx] 来源编号，不得把浏览器缓存当作知识库。对用户输入的品类或市场问题，给出简洁的市场机会、风险提醒和下一步建议。优先使用列表，控制在 300 字以内。';
          // Only explicitly time-sensitive questions opt into provider search;
          // the formal server-side history projection is always queried first.
-         var wantsLive=/实时|最新|今日|今天|政策更新|规则变动|最近/.test(q);
+         var wantsLive=/实时|最新|今日|今天|政策更新|规则变动|最近|销售|销量|市场表现|趋势|电商中|卖得|怎么样/.test(q);
          var activeScope=scopeApi&&scopeApi.getActiveContext?scopeApi.getActiveContext():{};
          var answer=await callAI(systemPrompt, q, {max_tokens:800, timeout:60000, search:wantsLive, entryPoint:'overview.decision', operation:'decision_assistant', retrievalMode:wantsLive?'formal_first':'formal_only', retrievalQuery:q, requestId:requestId, context:{market_codes:activeScope.marketCodes||[],platform_keys:activeScope.platformKeys||[],category_codes:activeScope.categoryCodes||[],data_snapshot_at:(window.JAY_QUALITY_REPORT&&window.JAY_QUALITY_REPORT.generated_at)||null}});
         setHeroStep(3);

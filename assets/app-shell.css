@@ -1453,6 +1453,53 @@ main > .page {
   margin-right: auto;
 }
 
+/* The footer is outside <main>, so keep it in the same content column as the
+   fixed sidebar instead of allowing it to render beneath the navigation. */
+body > .main-app > .jay-footer {
+  width: calc(100% - 248px);
+  margin-left: 248px;
+  margin-top: 0;
+  padding: 22px 32px 28px;
+  border-top: 1px solid var(--shell-line);
+  background: var(--shell-card);
+  color: var(--shell-muted);
+  font-size: 12px;
+  line-height: 1.6;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 22px;
+}
+
+body > .main-app > .jay-footer > span:first-child {
+  color: var(--shell-ink);
+  font-weight: 600;
+}
+
+body > .main-app > .jay-footer > span:nth-child(2) {
+  flex: 1 1 320px;
+  min-width: min(320px, 100%);
+}
+
+body > .main-app > .jay-footer b {
+  color: var(--shell-ink);
+}
+
+body > .main-app > .jay-footer a {
+  color: var(--shell-primary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+body > .main-app > .jay-footer a:hover,
+body > .main-app > .jay-footer a:focus-visible {
+  text-decoration: underline;
+}
+
+body > .main-app > .jay-footer .jay-f-sep {
+  display: none;
+}
+
 .page-head {
   margin-bottom: 20px;
 }
@@ -3439,6 +3486,13 @@ main > .page.active {
     padding: 88px 16px 38px;
   }
 
+  body > .main-app > .jay-footer {
+    width: 100%;
+    margin-left: 0;
+    padding: 20px 16px 26px;
+    gap: 8px 14px;
+  }
+
   #jay-hamburger {
     top: 11px;
     left: 12px;
@@ -3479,6 +3533,16 @@ main > .page.active {
 
   main {
     padding: 84px 12px 32px;
+  }
+
+  body > .main-app > .jay-footer {
+    padding: 18px 12px 24px;
+    align-items: flex-start;
+  }
+
+  body > .main-app > .jay-footer > span:nth-child(2) {
+    flex-basis: 100%;
+    min-width: 0;
   }
 
   .page-head h1 {

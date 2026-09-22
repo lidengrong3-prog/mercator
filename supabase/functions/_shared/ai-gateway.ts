@@ -206,9 +206,48 @@ function decodeEscapedText(value: string): string {
     .replace(/\\t/g, '\t');
 }
 
+const COZE_CONTROL_TYPES = new Set([
+  'generate_answer_finish',
+  'generate_answer_start',
+  'message_start',
+  'message_end',
+  'chat_start',
+  'chat_end',
+  'workflow_start',
+  'workflow_finish',
+  'workflow_finished',
+]);
+
+function controlEnvelope(value: unknown): boolean {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const row = value as Record<string, unknown>;
+  const type = String(row.msg_type || '').trim().toLowerCase();
+  return Boolean(type) && (COZE_CONTROL_TYPES.has(type) || /(?:^|_)(?:start|finish|finished|end)$/.test(type));
+}
+
+function stripCozeControlEvents(value: string): string {
+  const lines = value.split(/\r?\n/).filter((line) => {
+    const raw = line.trim();
+    if (!raw) return true;
+    try {
+      const parsed = JSON.parse(raw);
+      return !controlEnvelope(parsed);
+    } catch {
+      const normalized = raw.replace(/\\"/g, '"');
+      return !/^\{\s*["']msg_type["']\s*:\s*["'][^"']+["'][\s\S]*\}\s*$/.test(normalized);
+    }
+  });
+  // Workflow nodes occasionally concatenate the event to an answer line.
+  return lines.join('\n')
+    .replace(/\{\s*["']msg_type["']\s*:\s*["'][^"']+["'][^{}]*\}/g, '')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 function textFrom(value: unknown, depth = 0): string {
   if (typeof value === 'string') {
-    const raw = value.trim();
+    const raw = stripCozeControlEvents(value.trim());
     // Coze may return a text message as a JSON-encoded string. Unwrap only
     // known structured text values and cap recursion for untrusted responses.
     if (depth < 3 && /^[\[{\"]/.test(raw)) {
@@ -236,6 +275,7 @@ function textFrom(value: unknown, depth = 0): string {
   }
   if (value && typeof value === 'object') {
     const row = value as Record<string, unknown>;
+    if (controlEnvelope(row)) return '';
     return textFrom(row.text || row.content || row.output_text || row.answer || row.message, depth + 1);
   }
   return '';
