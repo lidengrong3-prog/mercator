@@ -115,7 +115,8 @@ test('category market questions receive macro context and an explicit evidence g
   assert.match(ai, /function isMacroRow/);
   assert.match(ai, /美国整体电商和零售宏观指标只能作为背景/);
   assert.match(ai, /function marketEvidenceGapSupplement/);
-  assert.match(ai, /珠宝专属销售额、销量、消费者画像、平台竞争或价格带记录/);
+  assert.match(ai, /专属销售额、销量、消费者画像、平台竞争或价格带记录/);
+  assert.match(ai, /当前正式资料未提供\$\{categoryLabel\}的专属记录/);
   assert.match(ai, /categoryEvidenceMissing/);
   assert.match(overview, /无正式记录时正常回答/);
 });

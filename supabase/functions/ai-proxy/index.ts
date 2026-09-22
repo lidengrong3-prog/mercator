@@ -332,6 +332,9 @@ async function retrieveFormalHistory(options: {
 }
 
 function marketEvidenceGapSupplement(query: string, citations: FormalCitation[]): string {
+  const categoryLabel = /宠物/.test(query) ? '宠物用品'
+    : /玩具/.test(query) ? '玩具'
+      : /珠宝|首饰|jewelry/i.test(query) ? '珠宝/首饰' : '该类目';
   const macroRows = citations.filter((citation) => {
     const haystack = `${citation.record_key} ${citation.title} ${citation.excerpt}`.toLowerCase();
     return ['fred', 'bls', 'macro-official'].includes(citation.source_key.toLowerCase())
@@ -349,9 +352,9 @@ function marketEvidenceGapSupplement(query: string, citations: FormalCitation[])
     '补充说明（由服务端证据边界生成）：',
     facts.length ? '一、当前可确认的美国宏观背景：' : '一、当前可确认的美国宏观背景：本次未检索到可引用的宏观记录。',
     ...facts,
-    '二、珠宝/首饰类证据缺口：现有正式库没有珠宝专属销售额、销量、消费者画像、平台竞争或价格带记录。',
-    '三、暂不能确认：不能仅凭美国整体电商或零售指标判断珠宝类目的销售规模、增长率、平台排名或盈利空间。',
-    '四、下一步应补充：珠宝类目在目标平台的关键词/销量样本、价格带与竞品、消费者与转化数据，并标注采集时间、平台和样本口径。',
+    `二、${categoryLabel}证据缺口：现有正式库没有${categoryLabel}专属销售额、销量、消费者画像、平台竞争或价格带记录。`,
+    `三、暂不能确认：不能仅凭美国整体电商或零售指标判断${categoryLabel}的销售规模、增长率、平台排名或盈利空间。`,
+    `四、下一步应补充：${categoryLabel}在目标平台的关键词/销量样本、价格带与竞品、消费者与转化数据，并标注采集时间、平台和样本口径。`,
     `问题“${query.slice(0, 120)}”的结论应以以上证据为边界，不能用猜测填补缺口。`,
   ].join('\n');
 }
@@ -1071,8 +1074,16 @@ Deno.serve(async (request) => {
   const marketQuery = String(retrieval.query || lastUserContent?.content || '').trim();
   const categoryEvidenceMissing = formalRetrieval.prompt.includes('【类目证据边界】');
   const refusalOnly = /资料不足|无法确认|没有足够|无法判断|数据不足/i.test(content);
-  if (taskType === 'market_qa' && /珠宝|首饰|jewelry/i.test(marketQuery)
+  const categoryQuestion = /珠宝|首饰|jewelry|宠物|玩具|服装|鞋|箱包|家居|家具|电子|美容|美妆|食品|户外|运动/i.test(marketQuery);
+  if (taskType === 'market_qa' && categoryQuestion
     && categoryEvidenceMissing && (refusalOnly || !/\[H\d{3}\]/.test(content))) {
+    if (refusalOnly) {
+      const categoryLabel = /宠物/.test(marketQuery) ? '宠物用品'
+        : /玩具/.test(marketQuery) ? '玩具'
+          : /珠宝|首饰|jewelry/i.test(marketQuery) ? '珠宝/首饰' : '该类目';
+      content = content.replace(/^\s*(?:现有资料不足，无法确认|资料不足，无法确认|无法确认)\s*[。.!！]?\s*/i,
+        `当前正式资料未提供${categoryLabel}的专属记录，以下为通用参考。\n\n`);
+    }
     content = `${content.trim()}\n\n${marketEvidenceGapSupplement(marketQuery, formalRetrieval.citations)}`;
   }
   if (taskType === 'market_qa' && isBusinessDataQuery(marketQuery)
