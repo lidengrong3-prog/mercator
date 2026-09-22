@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-22T04:27:50.284494+08:00",
+  "updated_at": "2026-09-22T12:59:11.434909+08:00",
   "source_count": 2,
   "items": [
     {
@@ -9575,7 +9575,7 @@
     "target_language": "zh-CN",
     "translation_metadata_field": "translation"
   },
-  "last_checked_at": "2026-09-22T04:27:50.284494+08:00",
+  "last_checked_at": "2026-09-22T12:59:11.434909+08:00",
   "source_checks": {
     "federal_register": "succeeded",
     "ustr": "failed",
