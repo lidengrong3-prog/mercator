@@ -117,7 +117,7 @@ test('category market questions receive macro context and an explicit evidence g
   assert.match(ai, /function marketEvidenceGapSupplement/);
   assert.match(ai, /珠宝专属销售额、销量、消费者画像、平台竞争或价格带记录/);
   assert.match(ai, /categoryEvidenceMissing/);
-  assert.match(overview, /资料不足时不能只回复“现有资料不足，无法确认”/);
+  assert.match(overview, /无正式记录时正常回答/);
 });
 
 test('a 100k-row SQL performance and pagination acceptance fixture is available', () => {

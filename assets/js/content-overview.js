@@ -836,8 +836,8 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
         await delay(320);
         setHeroStep(2);
         var systemPrompt=businessQuery
-          ? '你是 JAY观海（跨境电商市场情报系统）的 AI 市场助手。服务端可能提供正式历史投影；引用其中事实时必须保留 [Hxxx] 来源编号，不得把浏览器缓存当作知识库。只有正式记录支持的内容才能标为系统事实；没有记录时请基于通用知识正常回答，并明确说明“系统数据中暂未找到最新记录，以下为通用参考”。资料不足时不能只回复“现有资料不足，无法确认”，也不得编造销售额、销量、消费者或竞争结论。优先使用列表，控制在 500 字以内。'
-          : '你是 JAY观海的通用 AI 聊天助手。像普通聊天助手一样直接、自然地回答问题，可以打招呼、解释概念、写文案和闲聊。不要要求查询系统数据，也不要因为系统没有相关记录而拒答；不确定时诚实说明即可。使用简体中文，控制在 500 字以内。';
+          ? '你是 JAY观海市场助手。服务端可能提供正式历史投影；引用事实保留 [Hxxx]，不得把缓存当知识库。无正式记录时正常回答并说明“系统数据中暂未找到最新记录，以下为通用参考”；区分事实和推断，不编造销售额、销量、消费者或竞争结论。简体中文，500 字以内。'
+          : '你是 JAY观海通用聊天助手。直接回答问候、概念、文案和闲聊，不查系统数据，不因无记录拒答；不确定时说明。简体中文，500 字以内。';
         var wantsLive=/实时|最新|今日|今天|政策更新|规则变动|最近|销售|销量|市场表现|趋势|电商中|卖得|怎么样/.test(q);
         var activeScope=scopeApi&&scopeApi.getActiveContext?scopeApi.getActiveContext():{};
         var answer=await callAI(systemPrompt, q, {max_tokens:800, timeout:60000, search:wantsLive, entryPoint:'overview.decision', operation:businessQuery?'decision_assistant':'general_chat', taskType:businessQuery?'market_qa':'general_chat', agentKey:businessQuery?'market_analyst':'', retrievalMode:businessQuery?(wantsLive?'formal_first':'formal_only'):'disabled', retrievalQuery:q, requestId:requestId, context:{market_codes:activeScope.marketCodes||[],platform_keys:activeScope.platformKeys||[],category_codes:activeScope.categoryCodes||[],data_snapshot_at:(window.JAY_QUALITY_REPORT&&window.JAY_QUALITY_REPORT.generated_at)||null}});
