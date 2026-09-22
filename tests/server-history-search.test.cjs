@@ -108,6 +108,18 @@ test('browser search and AI gateway share formal history identifiers', () => {
   assert.doesNotMatch(read('assets', 'js', 'reports-decisions.js'), /function jayRagBuildCorpus/);
 });
 
+test('category market questions receive macro context and an explicit evidence gap', () => {
+  const ai = read('supabase', 'functions', 'ai-proxy', 'index.ts');
+  const overview = read('assets', 'js', 'content-overview.js');
+  assert.match(ai, /p_source_key: sourceKey/);
+  assert.match(ai, /function isMacroRow/);
+  assert.match(ai, /美国整体电商和零售宏观指标只能作为背景/);
+  assert.match(ai, /function marketEvidenceGapSupplement/);
+  assert.match(ai, /珠宝专属销售额、销量、消费者画像、平台竞争或价格带记录/);
+  assert.match(ai, /categoryEvidenceMissing/);
+  assert.match(overview, /资料不足时不能只回复“现有资料不足，无法确认”/);
+});
+
 test('a 100k-row SQL performance and pagination acceptance fixture is available', () => {
   const benchmark = read('scripts', 'history_search_benchmark.sql');
   assert.match(benchmark, /generate_series\(1, 100000\)/);

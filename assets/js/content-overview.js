@@ -829,7 +829,7 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
       try{
         await delay(320);
         setHeroStep(2);
-        var systemPrompt='你是 JAY观海（跨境电商市场情报系统）的 AI 分析师。服务端会提供正式历史投影作为检索上下文；引用事实时必须保留 [Hxxx] 来源编号，不得把浏览器缓存当作知识库。对用户输入的品类或市场问题，给出简洁的市场机会、风险提醒和下一步建议。优先使用列表，控制在 300 字以内。';
+        var systemPrompt='你是 JAY观海（跨境电商市场情报系统）的 AI 分析师。服务端会提供正式历史投影作为检索上下文；引用事实时必须保留 [Hxxx] 来源编号，不得把浏览器缓存当作知识库。对用户输入的品类或市场问题，按“可确认事实—类目证据缺口—暂不能确认的结论—下一步应补充的数据”输出，给出简洁的市场机会和风险提醒；资料不足时不能只回复“现有资料不足，无法确认”，也不能编造销售额、销量、消费者或竞争结论。优先使用列表，控制在 500 字以内。';
          // Only explicitly time-sensitive questions opt into provider search;
          // the formal server-side history projection is always queried first.
          var wantsLive=/实时|最新|今日|今天|政策更新|规则变动|最近|销售|销量|市场表现|趋势|电商中|卖得|怎么样/.test(q);

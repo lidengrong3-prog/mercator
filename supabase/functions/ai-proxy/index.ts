@@ -114,6 +114,7 @@ type FormalCitation = {
   citation_id: string;
   source_id: string;
   source_record_id: string;
+  record_key: string;
   title: string;
   source_name: string;
   source_key: string;
@@ -173,11 +174,11 @@ async function retrieveFormalHistory(options: {
     p_limit: Math.max(1, Math.min(8, Number(options.retrieval.limit || 6))),
     p_record_id: null,
   };
-  async function search(queryText: string, sort: 'relevance' | 'newest') {
+  async function search(queryText: string, sort: 'relevance' | 'newest', overrides: Record<string, unknown> = {}) {
     const rpcResponse = await fetch(`${options.supabaseUrl}/rest/v1/rpc/search_formal_publications`, {
       method: 'POST',
       headers: options.serviceHeaders,
-      body: JSON.stringify({ ...scope, p_query: queryText, p_sort: sort }),
+      body: JSON.stringify({ ...scope, ...overrides, p_query: queryText, p_sort: sort }),
     });
     if (!rpcResponse.ok) return { rows: [] as unknown[], error: `RAG_RPC_${rpcResponse.status}` };
     try {
@@ -196,8 +197,24 @@ async function retrieveFormalHistory(options: {
     const normalized = value.toLowerCase();
     return Array.from(new Set(aliases.filter((term) => normalized.includes(term))));
   }
-  function filterFallbackRows(rowsToFilter: unknown[]): unknown[] {
+  function isMarketQuestion(value: string): boolean {
+    return /销售|销量|市场|趋势|电商|消费|规模|表现|增长|机会|卖得|怎么样/i.test(value);
+  }
+  function isCategoryQuestion(value: string): boolean {
+    return /珠宝|首饰|jewelry|apparel|服装|鞋|箱包|家居|家具|电子|electronics|美容|美妆|食品|玩具|宠物|户外|运动/i.test(value);
+  }
+  function isMacroRow(item: unknown): boolean {
+    if (!item || typeof item !== 'object') return false;
+    const row = item as Record<string, unknown>;
+    const source = String(row.source_key || '').toLowerCase();
+    if (!['fred', 'bls', 'macro-official'].includes(source)) return false;
+    const key = [row.record_key, row.title, row.content_excerpt, row.summary]
+      .map((part) => String(part || '').toLowerCase()).join(' ');
+    return /ecomsa|ecompctsa|rsafs|umcsent|dspic96|pcec96|cpi|mrtssm|retail|零售|电商|消费|收入|信心/.test(key);
+  }
+  function filterFallbackRows(rowsToFilter: unknown[], macroOnly = false): unknown[] {
     const signals = querySignals(query);
+    if (macroOnly) return rowsToFilter.filter(isMacroRow);
     if (!signals.length) return [];
     return rowsToFilter.filter((item) => {
       if (!item || typeof item !== 'object') return false;
@@ -211,6 +228,7 @@ async function retrieveFormalHistory(options: {
   let rows = exact.rows;
   let retrievalFallback = false;
   let retrievalError = exact.error;
+  let macroBackgroundIncluded = false;
   // Chinese natural-language questions do not tokenize reliably under the
   // database's simple FTS configuration. Preserve the selected scope and
   // provide recent formal records as background instead of sending Coze an
@@ -221,7 +239,44 @@ async function retrieveFormalHistory(options: {
     retrievalFallback = rows.length > 0;
     retrievalError = scoped.error;
   }
-  if (retrievalError && !rows.length) return { citations: [], prompt: '', error: retrievalError, fallback: false };
+  // Category questions such as "珠宝在美国销售怎么样" have no governed
+  // category sales rows yet. Add only official macro records as background;
+  // never turn apparel or another category into a jewelry claim.
+  if (isMarketQuestion(query) && (isCategoryQuestion(query) || !rows.length)) {
+    const macroResults = await Promise.all(['fred', 'bls'].map((sourceKey) => (
+      search('', 'newest', { p_source_key: sourceKey, p_limit: 24 })
+    )));
+    const macroRows = macroResults.flatMap((result) => result.rows);
+    const selectedMacroRows = filterFallbackRows(macroRows, true);
+    const existingIds = new Set(rows.map((item) => {
+      if (!item || typeof item !== 'object') return '';
+      const row = item as Record<string, unknown>;
+      return String(row.source_id || row.id || row.source_record_id || '');
+    }));
+    const additions = selectedMacroRows.filter((item) => {
+      if (!item || typeof item !== 'object') return false;
+      const row = item as Record<string, unknown>;
+      const id = String(row.source_id || row.id || row.source_record_id || '');
+      return id && !existingIds.has(id);
+    }).slice(0, 8);
+    if (additions.length) {
+      rows = [...rows, ...additions];
+      macroBackgroundIncluded = true;
+      retrievalFallback = retrievalFallback || !exact.rows.length;
+      retrievalError = macroResults.find((result) => result.error)?.error || retrievalError;
+    }
+  }
+  if (retrievalError && !rows.length) {
+    if (isMarketQuestion(query) && isCategoryQuestion(query)) {
+      return {
+        citations: [],
+        prompt: '【类目证据边界】当前正式库未提供该类目的专属销售额、销量、消费者画像、平台竞争或价格带记录。回答必须明确证据缺口和下一步数据，不得只回复“现有资料不足，无法确认”。',
+        error: retrievalError,
+        fallback: true,
+      };
+    }
+    return { citations: [], prompt: '', error: retrievalError, fallback: false };
+  }
   const citations = rows.slice(0, 8).map((item, index) => {
     const row = item && typeof item === 'object' ? item as Record<string, unknown> : {};
     const sourceId = String(row.source_id || row.id || '');
@@ -229,6 +284,7 @@ async function retrieveFormalHistory(options: {
       citation_id: `H${String(index + 1).padStart(3, '0')}`,
       source_id: sourceId,
       source_record_id: String(row.source_record_id || ''),
+      record_key: String(row.record_key || '').slice(0, 120),
       title: String(row.title || row.record_key || '').slice(0, 300),
       source_name: String(row.source_name || row.source_key || '').slice(0, 200),
       source_key: String(row.source_key || '').slice(0, 120),
@@ -242,7 +298,17 @@ async function retrieveFormalHistory(options: {
       excerpt: String(row.content_excerpt || row.summary || '').replace(/\s+/g, ' ').slice(0, 1200),
     };
   }).filter((item) => /^[0-9a-f-]{36}$/i.test(item.source_id) && item.title);
-  if (!citations.length) return { citations: [], prompt: '', error: retrievalError, fallback: false };
+  if (!citations.length) {
+    if (isMarketQuestion(query) && isCategoryQuestion(query)) {
+      return {
+        citations: [],
+        prompt: '【类目证据边界】当前正式库未提供该类目的专属销售额、销量、消费者画像、平台竞争或价格带记录。回答必须明确证据缺口和下一步数据，不得只回复“现有资料不足，无法确认”。',
+        error: retrievalError,
+        fallback: true,
+      };
+    }
+    return { citations: [], prompt: '', error: retrievalError, fallback: false };
+  }
   const lines = citations.map((citation) => (
     `[${citation.citation_id}] ${citation.title}; 来源=${citation.source_name}; ` +
     `时间=${citation.published_at || citation.collected_at || '未提供'}; 来源ID=${citation.source_id}; ` +
@@ -254,10 +320,36 @@ async function retrieveFormalHistory(options: {
       ? '【JAY观海正式历史投影：当前范围最新背景记录，未找到问题的精确匹配】\n'
       : '【JAY观海正式历史投影】\n') + lines.join('\n') +
       '\n回答中的事实只能引用上述正式记录；使用事实时保留对应的 [Hxxx] 编号。不得把未列出的本地缓存或原始响应当作知识库来源。' +
-      (retrievalFallback ? '\n这些记录仅用于当前范围背景，不得声称它们直接证明用户问题；如果不能支持结论，必须明确标注证据缺口。' : ''),
+      (retrievalFallback ? '\n这些记录仅用于当前范围背景，不得声称它们直接证明用户问题；如果不能支持结论，必须明确标注证据缺口。' : '') +
+      (macroBackgroundIncluded ? '\n【类目证据边界】当前正式库未提供该类目的专属销售额、销量、消费者画像、平台竞争或价格带记录。美国整体电商和零售宏观指标只能作为背景，不能直接证明该类目的表现。回答必须依次给出：可确认的宏观事实、该类目证据缺口、暂不能确认的结论、下一步应补充的数据；禁止只回复“现有资料不足，无法确认”。' : ''),
     error: retrievalError,
     fallback: retrievalFallback,
   };
+}
+
+function marketEvidenceGapSupplement(query: string, citations: FormalCitation[]): string {
+  const macroRows = citations.filter((citation) => {
+    const haystack = `${citation.record_key} ${citation.title} ${citation.excerpt}`.toLowerCase();
+    return ['fred', 'bls', 'macro-official'].includes(citation.source_key.toLowerCase())
+      && /ecomsa|ecompctsa|rsafs|umcsent|dspic96|pcec96|cpi|retail|零售|电商|消费|收入|信心/.test(haystack);
+  });
+  const facts = macroRows.slice(0, 4).map((citation) => {
+    const raw = `${citation.title} ${citation.excerpt}`;
+    const name = raw.match(/"name"\s*:\s*"([^"]+)"/)?.[1] || citation.title || citation.record_key;
+    const value = raw.match(/"value"\s*:\s*([-+]?\d+(?:\.\d+)?)/)?.[1];
+    const unit = raw.match(/"unit"\s*:\s*"([^"]+)"/)?.[1];
+    const date = raw.match(/"date"\s*:\s*"([^"]+)"/)?.[1] || citation.published_at || citation.collected_at;
+    return `- ${name}${value ? `：${value}${unit ? ` ${unit}` : ''}` : ''}${date ? `（${date}）` : ''} [${citation.citation_id}]`;
+  });
+  return [
+    '补充说明（由服务端证据边界生成）：',
+    facts.length ? '一、当前可确认的美国宏观背景：' : '一、当前可确认的美国宏观背景：本次未检索到可引用的宏观记录。',
+    ...facts,
+    '二、珠宝/首饰类证据缺口：现有正式库没有珠宝专属销售额、销量、消费者画像、平台竞争或价格带记录。',
+    '三、暂不能确认：不能仅凭美国整体电商或零售指标判断珠宝类目的销售规模、增长率、平台排名或盈利空间。',
+    '四、下一步应补充：珠宝类目在目标平台的关键词/销量样本、价格带与竞品、消费者与转化数据，并标注采集时间、平台和样本口径。',
+    `问题“${query.slice(0, 120)}”的结论应以以上证据为边界，不能用猜测填补缺口。`,
+  ].join('\n');
 }
 
 Deno.serve(async (request) => {
@@ -907,7 +999,17 @@ Deno.serve(async (request) => {
     }), lastErrorStatus, origin, lastErrorStatus === 429 ? { 'Retry-After': retryAfter } : {});
   }
 
-  const content = parsedResult.content;
+  let content = parsedResult.content;
+  const lastUserContent = [...messages].reverse().find((message) => (
+    message && typeof message === 'object' && String((message as Record<string, unknown>).role) === 'user'
+  )) as Record<string, unknown> | undefined;
+  const marketQuery = String(retrieval.query || lastUserContent?.content || '').trim();
+  const categoryEvidenceMissing = formalRetrieval.prompt.includes('【类目证据边界】');
+  const refusalOnly = /资料不足|无法确认|没有足够|无法判断|数据不足/i.test(content);
+  if (taskType === 'market_qa' && /珠宝|首饰|jewelry/i.test(marketQuery)
+    && categoryEvidenceMissing && (refusalOnly || !/\[H\d{3}\]/.test(content))) {
+    content = `${content.trim()}\n\n${marketEvidenceGapSupplement(marketQuery, formalRetrieval.citations)}`;
+  }
   const inputTokens = parsedResult.inputTokens;
   const outputTokens = parsedResult.outputTokens;
   const totalTokens = Math.max(1, parsedResult.totalTokens, inputTokens + outputTokens, estimatedInputTokens);
