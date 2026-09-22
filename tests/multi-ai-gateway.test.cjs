@@ -125,6 +125,14 @@ test('frontend sends task and disclosure metadata and renders selected gateway',
   assert.match(overview, /发送给第三方 AI 的数据范围/);
 });
 
+test('Coze category refusals fall through to the governed provider fallback', () => {
+  const edge = read('supabase', 'functions', 'ai-proxy', 'index.ts');
+  assert.match(edge, /function isRefusalStyleAnswer/);
+  assert.match(edge, /candidate === 'coze' && taskType === 'market_qa'/);
+  assert.match(edge, /fallback_reason: 'empty_category_retrieval'/);
+  assert.match(edge, /lastErrorCode = 'AI_CONTENT_REFUSAL'/);
+});
+
 test('general chat is not forced through workspace data retrieval or technical error details', () => {
   const edge = read('supabase', 'functions', 'ai-proxy', 'index.ts');
   const overview = read('assets', 'js', 'content-overview.js');

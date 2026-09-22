@@ -139,6 +139,10 @@ function isBusinessDataQuery(value: string): boolean {
   return /最近|最新|今日|今天|当前|目前|趋势|销售|销量|市场表现|卖得|怎么样|召回|cpsc|佣金|政策|规则|关税|税率|准入|合规|平台费|竞争|竞品|市场规模|消费者|市场机会|市场风险/i.test(value);
 }
 
+function isRefusalStyleAnswer(value: string): boolean {
+  return /^\s*(?:现有)?(?:资料|数据)(?:仍然|仍|暂时|暂)?不足[，,、 ]*(?:因此|所以)?(?:无法|不能)(?:确认|判断|回答)|^\s*(?:无法|不能)(?:确认|判断|回答)/i.test(value);
+}
+
 function singleScopeValue(value: unknown): string | null {
   if (Array.isArray(value)) {
     const values = Array.from(new Set(value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).map((item) => item.trim())));
@@ -1047,6 +1051,21 @@ Deno.serve(async (request) => {
         lastErrorCode = 'AI_EMPTY_RESPONSE';
         lastErrorStatus = 502;
         await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: 502, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
+        providerFinished = true;
+        continue;
+      }
+      // A successful HTTP response is not a usable answer when the Coze bot
+      // terminates on an empty category lookup. Continue through the governed
+      // fallback route so the user receives a normal general-knowledge answer.
+      if (candidate === 'coze' && taskType === 'market_qa'
+        && formalRetrieval.prompt.includes('【类目证据边界】') && isRefusalStyleAnswer(parsed.content)) {
+        lastErrorCode = 'AI_CONTENT_REFUSAL';
+        lastErrorStatus = 502;
+        await logProviderAttempt({
+          provider: candidate, model: activeModel, config_fingerprint: configFingerprint,
+          status: 'failed', http_status: 502, error_code: lastErrorCode,
+          duration_ms: Date.now() - attemptStarted, fallback_reason: 'empty_category_retrieval',
+        });
         providerFinished = true;
         continue;
       }
