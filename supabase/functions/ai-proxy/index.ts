@@ -135,6 +135,10 @@ function firstString(value: unknown): string | null {
   return null;
 }
 
+function isBusinessDataQuery(value: string): boolean {
+  return /最近|最新|今日|今天|当前|目前|趋势|销售|销量|市场表现|卖得|怎么样|召回|cpsc|佣金|政策|规则|关税|税率|准入|合规|平台费|竞争|竞品|市场规模|消费者|市场机会|市场风险/i.test(value);
+}
+
 function singleScopeValue(value: unknown): string | null {
   if (Array.isArray(value)) {
     const values = Array.from(new Set(value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0).map((item) => item.trim())));
@@ -402,6 +406,18 @@ Deno.serve(async (request) => {
   }
   if (totalLength > 30_000) return jsonResponse(gatewayErrorBody('PROMPT_TOO_LARGE', requestId, provider), 413, origin);
 
+  const latestUserMessage = [...messages].reverse().find((message) => (
+    message && typeof message === 'object' && String((message as Record<string, unknown>).role) === 'user'
+  )) as Record<string, unknown> | undefined;
+  const latestUserQuery = String(latestUserMessage?.content || '').trim().slice(0, 200);
+  const inferredTaskType = operation.startsWith('report') ? 'report'
+    : operation.startsWith('translation') ? 'translation'
+      : (entryPoint.startsWith('code') || entryPoint.startsWith('system')) ? 'code'
+        : operation.startsWith('course') ? 'course_qa'
+          : operation.startsWith('general') ? 'general_chat' : 'market_qa';
+  const taskType = String(payload.task_type || inferredTaskType).toLowerCase().slice(0, 60);
+  const isGeneralChat = taskType === 'general_chat';
+
   const acceptance = await verifyProductionAcceptanceFault(request.headers, {
     serviceKey: Deno.env.get('ACCEPTANCE_HMAC_SECRET') || serviceKey,
     userId: String(user.id || ''),
@@ -426,20 +442,37 @@ Deno.serve(async (request) => {
     const row = rows?.[0];
     return row?.id && uuid(row.workspace_id) ? { id: row.id, workspace_id: row.workspace_id, user_id: String(row.user_id || '') } : null;
   };
-  const [reportRunResource, reportResource] = await Promise.all([
-    resource('report_runs', payload.report_run_id),
-    resource('generated_reports', payload.report_id),
-  ]);
-  const resourceWorkspaceIds = [reportRunResource?.workspace_id, reportResource?.workspace_id].filter(Boolean) as string[];
-  const workspaceId = requestedWorkspaceId || resourceWorkspaceIds[0] || null;
-  if (!workspaceId || resourceWorkspaceIds.some((id) => id !== workspaceId)) {
-    return jsonResponse(gatewayErrorBody(workspaceId ? 'WORKSPACE_FORBIDDEN' : 'WORKSPACE_REQUIRED', requestId, provider), workspaceId ? 403 : 400, origin);
+  let reportRunResource: { id: string; workspace_id: string; user_id: string } | null = null;
+  let reportResource: { id: string; workspace_id: string; user_id: string } | null = null;
+  if (!isGeneralChat) {
+    [reportRunResource, reportResource] = await Promise.all([
+      resource('report_runs', payload.report_run_id),
+      resource('generated_reports', payload.report_id),
+    ]);
   }
-  const membershipResponse = await fetch(`${supabaseUrl}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&select=role&limit=1`, { headers: serviceHeaders });
-  if (!membershipResponse.ok) return jsonResponse(gatewayErrorBody('WORKSPACE_FORBIDDEN', requestId, provider), 403, origin);
-  const memberships = await membershipResponse.json();
-  if (!memberships?.length) return jsonResponse(gatewayErrorBody('WORKSPACE_FORBIDDEN', requestId, provider), 403, origin);
-  if (!['owner', 'admin', 'editor'].includes(String(memberships[0]?.role || ''))) return jsonResponse(gatewayErrorBody('WORKSPACE_READ_ONLY', requestId, provider), 403, origin);
+  const resourceWorkspaceIds = [reportRunResource?.workspace_id, reportResource?.workspace_id].filter(Boolean) as string[];
+  let workspaceId = requestedWorkspaceId || resourceWorkspaceIds[0] || null;
+  if (isGeneralChat) {
+    // General chat does not require a selected workspace. Use an active one
+    // only when available so existing audit tables can remain workspace-scoped.
+    const membershipsResponse = await fetch(`${supabaseUrl}/rest/v1/workspace_members?user_id=eq.${encodeURIComponent(String(user.id))}&status=eq.active&select=workspace_id,role,joined_at&order=joined_at.asc&limit=20`, { headers: serviceHeaders });
+    const memberships = membershipsResponse.ok ? await membershipsResponse.json() : [];
+    const activeMembership = Array.isArray(memberships)
+      ? memberships.find((row) => uuid(row?.workspace_id) === workspaceId)
+        || memberships.find((row) => ['owner', 'admin', 'editor'].includes(String(row?.role || '')))
+        || memberships[0]
+      : null;
+    workspaceId = uuid(activeMembership?.workspace_id) || workspaceId;
+  } else {
+    if (!workspaceId || resourceWorkspaceIds.some((id) => id !== workspaceId)) {
+      return jsonResponse(gatewayErrorBody(workspaceId ? 'WORKSPACE_FORBIDDEN' : 'WORKSPACE_REQUIRED', requestId, provider), workspaceId ? 403 : 400, origin);
+    }
+    const membershipResponse = await fetch(`${supabaseUrl}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(String(user.id))}&status=eq.active&select=role&limit=1`, { headers: serviceHeaders });
+    if (!membershipResponse.ok) return jsonResponse(gatewayErrorBody('WORKSPACE_FORBIDDEN', requestId, provider), 403, origin);
+    const memberships = await membershipResponse.json();
+    if (!memberships?.length) return jsonResponse(gatewayErrorBody('WORKSPACE_FORBIDDEN', requestId, provider), 403, origin);
+    if (!['owner', 'admin', 'editor'].includes(String(memberships[0]?.role || ''))) return jsonResponse(gatewayErrorBody('WORKSPACE_READ_ONLY', requestId, provider), 403, origin);
+  }
 
   // Resolve one agent and an ordered provider route. Explicit provider choices
   // are honored, while `auto` uses the workspace policy and then the global
@@ -449,12 +482,9 @@ Deno.serve(async (request) => {
     const candidate = String(value || '').toLowerCase() as GatewayProvider;
     return knownProviders.includes(candidate) ? candidate : null;
   };
-  const inferredTaskType = operation.startsWith('report') ? 'report'
-    : operation.startsWith('translation') ? 'translation'
-      : (entryPoint.startsWith('code') || entryPoint.startsWith('system')) ? 'code'
-        : operation.startsWith('course') ? 'course_qa' : 'market_qa';
-  const taskType = String(payload.task_type || inferredTaskType).toLowerCase().slice(0, 60);
-  const requestedAgentKey = String(payload.agent_key || '').toLowerCase().slice(0, 80);
+  // General chat is intentionally provider-neutral. A market/report agent
+  // must never be selected just because the client omitted an agent key.
+  const requestedAgentKey = isGeneralChat ? '' : String(payload.agent_key || '').toLowerCase().slice(0, 80);
   const readRows = async (path: string): Promise<Record<string, unknown>[]> => {
     const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, { headers: serviceHeaders });
     if (!response.ok) return [];
@@ -539,13 +569,14 @@ Deno.serve(async (request) => {
   const providerCandidates = Array.from(new Set([routePrimary, ...routeFallbacks].filter(Boolean))) as GatewayProvider[];
   if (!providerCandidates.length) return jsonResponse(gatewayErrorBody('AI_PROVIDER_NOT_CONFIGURED', requestId, provider), 503, origin);
   provider = providerCandidates[0];
-  if (providerCandidates.some((candidate) => !providerTaskAllowed(candidate, taskType))) {
+  if (!isGeneralChat && providerCandidates.some((candidate) => !providerTaskAllowed(candidate, taskType))) {
     const allowed = providerCandidates.filter((candidate) => providerTaskAllowed(candidate, taskType));
     if (!allowed.length) return jsonResponse(gatewayErrorBody('AI_PROVIDER_FORBIDDEN', requestId, provider), 403, origin);
   }
   const providerCatalogRows = await readRows(`ai_provider_catalog?provider_key=in.(${providerCandidates.join(',')})&limit=20`);
   const disabledProviders = new Set(providerCatalogRows.filter((row) => row.status === 'disabled').map((row) => String(row.provider_key)));
-  const enabledCandidates = providerCandidates.filter((candidate) => !disabledProviders.has(candidate) && providerTaskAllowed(candidate, taskType));
+  const enabledCandidates = providerCandidates.filter((candidate) => !disabledProviders.has(candidate)
+    && (isGeneralChat || providerTaskAllowed(candidate, taskType)));
   if (!enabledCandidates.length) return jsonResponse(gatewayErrorBody('AI_PROVIDER_FORBIDDEN', requestId, provider), 403, origin);
   provider = enabledCandidates[0];
   const requestedModel = payload.model ? String(payload.model).slice(0, 120) : null;
@@ -571,19 +602,23 @@ Deno.serve(async (request) => {
   const retrieval = payload.retrieval && typeof payload.retrieval === 'object'
     ? payload.retrieval as Record<string, unknown>
     : {};
+  const requestedRetrievalMode = String(retrieval.mode || 'disabled').toLowerCase();
+  // Only clearly data-oriented market questions should enter the formal
+  // publication path. Concepts, drafting and conversation stay ordinary chat.
+  const retrievalMode = isGeneralChat || (taskType === 'market_qa' && !isBusinessDataQuery(latestUserQuery))
+    ? 'disabled' : requestedRetrievalMode;
   const searchRequested = Boolean(
-    taskType !== 'course_qa'
+    !isGeneralChat && taskType !== 'course_qa'
     && (payload.web_search === true || (payload.web_search && typeof payload.web_search === 'object')
       || (Array.isArray(payload.plugins) && payload.plugins.length > 0)
       || retrieval.allow_web_search === true)
     && !['formal_only', 'disabled', 'none'].includes(String(retrieval.mode || '').toLowerCase()),
   );
 
-  const retrievalMode = String(retrieval.mode || 'disabled').toLowerCase();
   let formalRetrieval: { citations: FormalCitation[]; prompt: string; error: string | null; fallback: boolean } = {
     citations: [], prompt: '', error: null, fallback: false,
   };
-  if (taskType !== 'course_qa' && !['disabled', 'none', 'off'].includes(retrievalMode)) {
+  if (!isGeneralChat && taskType !== 'course_qa' && !['disabled', 'none', 'off'].includes(retrievalMode)) {
     try {
       formalRetrieval = await retrieveFormalHistory({
         supabaseUrl, serviceHeaders, payload, messages, retrieval,
@@ -592,6 +627,12 @@ Deno.serve(async (request) => {
       console.error('formal history retrieval failed', error);
       formalRetrieval.error = 'RAG_UNAVAILABLE';
     }
+  }
+  if (taskType === 'market_qa' && isBusinessDataQuery(latestUserQuery) && !formalRetrieval.citations.length) {
+    const noDataNotice = '系统数据中暂未找到最新记录，以下为通用参考。请基于通用知识回答，并明确区分通用参考和系统正式数据。';
+    formalRetrieval.prompt = formalRetrieval.prompt
+      ? `${noDataNotice}\n${formalRetrieval.prompt}`
+      : noDataNotice;
   }
   const providerMessages = messages.map((message) => ({ ...(message as Record<string, unknown>) }));
   let courseContext: { course_id: string | null; lesson_ids: string[]; prompt: string } = { course_id: null, lesson_ids: [], prompt: '' };
@@ -604,7 +645,7 @@ Deno.serve(async (request) => {
     let courseAllowed = Boolean(course && course.status === 'published' && course.access_level === 'public');
     if (course && course.status === 'published' && course.access_level === 'workspace') courseAllowed = String(course.workspace_id || '') === workspaceId;
     if (course && course.status === 'published' && course.access_level === 'plan') {
-      const subscriptions = await readRows(`workspace_subscriptions?workspace_id=eq.${encodeURIComponent(workspaceId)}&select=plan,status&limit=1`);
+      const subscriptions = await readRows(`workspace_subscriptions?workspace_id=eq.${encodeURIComponent(workspaceId || '')}&select=plan,status&limit=1`);
       const subscription = subscriptions[0] || {};
       const planRank: Record<string, number> = { free: 1, pro: 2, enterprise: 3 };
       courseAllowed = ['trialing', 'active'].includes(String(subscription.status || '')) && (planRank[String(subscription.plan || 'free')] || 0) >= (planRank[String(course.required_plan || 'free')] || 1);
@@ -663,6 +704,15 @@ Deno.serve(async (request) => {
   let fallbackUsed = false;
 
   const logRequest = async (values: Record<string, unknown>) => {
+    // The public chat path may have no workspace. The audit tables are
+    // workspace-scoped, so keep the provider response usable and log only to
+    // server logs when there is no valid workspace row to attach.
+    if (!workspaceId) {
+      console.info('AI request audit skipped: no workspace', {
+        request_id: requestId, task_type: taskType, status: values.status,
+      });
+      return;
+    }
     const valueMetadata = values.metadata && typeof values.metadata === 'object' ? values.metadata as Record<string, unknown> : {};
     const logValues: Record<string, unknown> = { ...values };
     delete logValues.metadata;
@@ -702,6 +752,12 @@ Deno.serve(async (request) => {
       duration_ms: Math.max(0, Number(attempt.duration_ms || 0)),
       fallback_reason: attempt.fallback_reason ? String(attempt.fallback_reason).slice(0, 160) : null,
     });
+    if (!workspaceId) {
+      console.info('AI provider attempt audit skipped: no workspace', {
+        request_id: requestId, provider: attempt.provider, status: attempt.status,
+      });
+      return;
+    }
     await fetch(`${supabaseUrl}/rest/v1/ai_provider_attempt_logs`, {
       method: 'POST', headers: { ...serviceHeaders, Prefer: 'resolution=ignore-duplicates' },
       body: JSON.stringify({
@@ -721,13 +777,37 @@ Deno.serve(async (request) => {
   // Legacy contract referenced billing_plan_entitlements and
   // reserve_ai_token_quota/finalize_ai_token_reservation; workspace RPCs below
   // keep those names available as compatibility wrappers in the migration.
-  const effectivePlanResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/workspace_effective_entitlement`, {
-    method: 'POST', headers: serviceHeaders, body: JSON.stringify({ p_workspace_id: workspaceId, p_user_id: user.id }),
-  });
-  if (!effectivePlanResponse.ok) return jsonResponse(gatewayErrorBody('BILLING_ENTITLEMENTS_UNAVAILABLE', requestId, provider), 503, origin);
-  const entitlement = await effectivePlanResponse.json();
-  const effectivePlan = String(entitlement?.plan || 'free');
-  if (!entitlement) return jsonResponse(gatewayErrorBody('BILLING_ENTITLEMENTS_UNAVAILABLE', requestId, provider), 503, origin);
+  // General chat deliberately bypasses workspace billing. It still keeps the
+  // authenticated, process-wide limiter above so the public endpoint cannot
+  // be abused as an unlimited anonymous relay.
+  let effectivePlan = 'free';
+  let reservation: Record<string, unknown> = { allowed: true, limit: 0, used_tokens: 0, reserved_tokens: 0, reset_at: '' };
+  let rolloutQuotaEnforced = false;
+  const estimatedInputTokens = Math.max(1, totalLength);
+  const requestedTokens = estimatedInputTokens + maxTokens;
+  const finalizeWorkspaceReservation = async (status: 'completed' | 'released', actualTokens = 0) => {
+    if (isGeneralChat || !workspaceId) return true;
+    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/finalize_workspace_ai_token_reservation`, {
+      method: 'POST',
+      headers: serviceHeaders,
+      body: JSON.stringify({
+        p_workspace_id: workspaceId,
+        p_user_id: user.id,
+        p_request_id: requestId,
+        p_status: status,
+        p_actual_tokens: Math.max(0, Math.floor(actualTokens)),
+      }),
+    });
+    return response.ok;
+  };
+  if (!isGeneralChat) {
+    const effectivePlanResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/workspace_effective_entitlement`, {
+      method: 'POST', headers: serviceHeaders, body: JSON.stringify({ p_workspace_id: workspaceId, p_user_id: user.id }),
+    });
+    if (!effectivePlanResponse.ok) return jsonResponse(gatewayErrorBody('BILLING_ENTITLEMENTS_UNAVAILABLE', requestId, provider), 503, origin);
+    const entitlement = await effectivePlanResponse.json();
+    effectivePlan = String(entitlement?.plan || 'free');
+    if (!entitlement) return jsonResponse(gatewayErrorBody('BILLING_ENTITLEMENTS_UNAVAILABLE', requestId, provider), 503, origin);
 
   const configuredMinuteCap = Math.max(0, Number(Deno.env.get('AI_REQUESTS_PER_MINUTE') || 0));
   const planMinuteLimit = Math.max(1, Number(entitlement.ai_requests_per_minute || 1));
@@ -745,8 +825,6 @@ Deno.serve(async (request) => {
     return jsonResponse(gatewayErrorBody('AI_RATE_LIMITED', requestId, provider, { plan: effectivePlan, limit: perMinuteLimit, retry_after: 60 }), 429, origin, { 'Retry-After': '60' });
   }
 
-  const estimatedInputTokens = Math.max(1, totalLength);
-  const requestedTokens = estimatedInputTokens + maxTokens;
   const reservationResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/reserve_workspace_ai_token_quota`, {
     method: 'POST',
     headers: serviceHeaders,
@@ -760,9 +838,9 @@ Deno.serve(async (request) => {
     }),
   });
   if (!reservationResponse.ok) return jsonResponse(gatewayErrorBody('BILLING_USAGE_UNAVAILABLE', requestId, provider), 503, origin);
-  const reservation = await reservationResponse.json();
+  reservation = await reservationResponse.json();
   if (reservation?.allowed === true && acceptanceRunId) {
-    await fetch(`${supabaseUrl}/rest/v1/ai_token_reservations?workspace_id=eq.${encodeURIComponent(workspaceId)}&request_id=eq.${encodeURIComponent(requestId)}`, {
+    await fetch(`${supabaseUrl}/rest/v1/ai_token_reservations?workspace_id=eq.${encodeURIComponent(workspaceId || '')}&request_id=eq.${encodeURIComponent(requestId)}`, {
       method: 'PATCH', headers: { ...serviceHeaders, Prefer: 'return=minimal' },
       body: JSON.stringify({ acceptance_run_id: acceptanceRunId }),
     });
@@ -792,20 +870,6 @@ Deno.serve(async (request) => {
     }), 402, origin);
   }
 
-  const finalizeWorkspaceReservation = async (status: 'completed' | 'released', actualTokens = 0) => {
-    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/finalize_workspace_ai_token_reservation`, {
-      method: 'POST',
-      headers: serviceHeaders,
-      body: JSON.stringify({
-        p_workspace_id: workspaceId,
-        p_user_id: user.id,
-        p_request_id: requestId,
-        p_status: status,
-        p_actual_tokens: Math.max(0, Math.floor(actualTokens)),
-      }),
-    });
-    return response.ok;
-  };
   const rolloutReservationResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/reserve_rollout_ai_daily_quota`, {
     method: 'POST', headers: serviceHeaders,
     body: JSON.stringify({ p_user_id: user.id, p_request_id: requestId, p_requested_tokens: requestedTokens }),
@@ -832,7 +896,8 @@ Deno.serve(async (request) => {
       retry_after: retryAfter,
     }), status, origin, retryAfter ? { 'Retry-After': String(retryAfter) } : {});
   }
-  const rolloutQuotaEnforced = rolloutReservation?.enforced === true;
+  rolloutQuotaEnforced = rolloutReservation?.enforced === true;
+  }
   const finalizeReservation = async (status: 'completed' | 'released', actualTokens = 0) => {
     const workspaceFinalized = await finalizeWorkspaceReservation(status, actualTokens);
     if (!rolloutQuotaEnforced) return workspaceFinalized;
@@ -853,7 +918,7 @@ Deno.serve(async (request) => {
     : Math.max(5_000, Math.min(50_000, Number(Deno.env.get('AI_PROVIDER_TIMEOUT_MS') || 50_000)));
   const providerDeadline = Date.now() + (acceptanceScenario === 'provider_timeout'
     ? 1 : Math.max(providerTimeout, Math.min(60_000, Number(Deno.env.get('AI_GATEWAY_TIMEOUT_MS') || 55_000))));
-  const cozeIdentity = await cozeScopedIdentity(workspaceId, String(user.id));
+  const cozeIdentity = await cozeScopedIdentity(workspaceId || '', String(user.id));
   async function invokeProvider(config: NonNullable<ReturnType<typeof providerConfig>>, withSearch: boolean): Promise<Response> {
     const remaining = providerDeadline - Date.now();
     if (remaining <= 0) throw new DOMException('The AI provider request timed out', 'AbortError');
@@ -1010,6 +1075,11 @@ Deno.serve(async (request) => {
     && categoryEvidenceMissing && (refusalOnly || !/\[H\d{3}\]/.test(content))) {
     content = `${content.trim()}\n\n${marketEvidenceGapSupplement(marketQuery, formalRetrieval.citations)}`;
   }
+  if (taskType === 'market_qa' && isBusinessDataQuery(marketQuery)
+    && formalRetrieval.citations.length === 0
+    && !content.includes('系统数据中暂未找到最新记录')) {
+    content = `系统数据中暂未找到最新记录，以下为通用参考。\n\n${content.trim()}`;
+  }
   const inputTokens = parsedResult.inputTokens;
   const outputTokens = parsedResult.outputTokens;
   const totalTokens = Math.max(1, parsedResult.totalTokens, inputTokens + outputTokens, estimatedInputTokens);
@@ -1028,14 +1098,16 @@ Deno.serve(async (request) => {
     const quotaLimit = Math.max(0, Number(reservation?.limit || 0));
     const usedAfter = Math.max(0, Number(reservation?.used_tokens || 0)) + totalTokens;
     const otherReserved = Math.max(0, Number(reservation?.reserved_tokens || 0) - requestedTokens);
-    result.jay_quota = {
-      plan: effectivePlan,
-      used_tokens: usedAfter,
-      reserved_tokens: otherReserved,
-      limit: quotaLimit,
-      remaining_tokens: Math.max(0, quotaLimit - usedAfter - otherReserved),
-      reset_at: String(reservation?.reset_at || ''),
-    };
+    if (!isGeneralChat) {
+      result.jay_quota = {
+        plan: effectivePlan,
+        used_tokens: usedAfter,
+        reserved_tokens: otherReserved,
+        limit: quotaLimit,
+        remaining_tokens: Math.max(0, quotaLimit - usedAfter - otherReserved),
+        reset_at: String(reservation?.reset_at || ''),
+      };
+    }
     result.jay_gateway = {
       request_id: requestId,
       entry_point: entryPoint,

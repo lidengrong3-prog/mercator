@@ -747,13 +747,17 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
     return escapeHtml(md).split(/\n\s*\n/).filter(function(s){return s.trim();}).map(function(s){return '<p>'+s.replace(/\n/g,'<br>')+'</p>';}).join('');
   }
 
-  function showHeroLoading(q){
+  function isHeroBusinessQuery(q){
+    return /最近|最新|今日|今天|当前|目前|趋势|销售|销量|市场表现|卖得|怎么样|召回|cpsc|佣金|政策|规则|关税|税率|准入|合规|平台费|竞争|竞品|市场规模|消费者|市场机会|市场风险/i.test(q);
+  }
+
+  function showHeroLoading(q,businessQuery){
     if(!resultEl)return;
     var wrap=document.querySelector('.ov-hero-input-wrap');
     if(wrap)wrap.classList.add('busy');
     resultEl.style.display='';
     var scopeLabel=scopeApi&&scopeApi.getScopeLabel?scopeApi.getScopeLabel():'当前市场范围';
-    resultEl.innerHTML='<div class="ovr-card"><div class="ovr-head"><span>🤖</span><h4>AI 正在分析「'+escapeHtml(q)+'」<small>结合'+escapeHtml(scopeLabel)+'数据</small></h4></div>'+
+    resultEl.innerHTML='<div class="ovr-card"><div class="ovr-head"><span>AI</span><h4>AI 正在'+(businessQuery?'分析':'回答')+'「'+escapeHtml(q)+'」<small>'+(businessQuery?'结合'+escapeHtml(scopeLabel)+'数据':'通用对话')+'</small></h4></div>'+
       '<div class="ovr-steps">'+
         '<div class="ovr-step" data-step="1"><span class="ovr-dot">1</span><div><b>关键词解析</b><small>理解你的品类与市场意图</small></div></div>'+
         '<div class="ovr-step" data-step="2"><span class="ovr-dot">2</span><div><b>匹配市场 / 政策 / 规则</b><small>交叉检索'+escapeHtml(scopeLabel)+'</small></div></div>'+
@@ -781,21 +785,22 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
 
   function buildHeroResultCard(q, bodyHtml, requestId){
     var gateway=window.jayGetAIGateway?window.jayGetAIGateway(requestId):null;
+    var generalChat=gateway&&gateway.task_type==='general_chat';
     var disclosure='';
     if(gateway){
       var scope=gateway.data_disclosure&&Array.isArray(gateway.data_disclosure.scope)?gateway.data_disclosure.scope.join('、'):'正式历史投影、当前问题上下文';
       disclosure='<div class="ovr-note ovr-ai-disclosure">本次由 '+escapeHtml(String(gateway.provider||'服务端 AI'))+'（'+escapeHtml(String(gateway.agent_key||'市场分析助手'))+'）处理；发送给第三方 AI 的数据范围：'+escapeHtml(scope)+(gateway.fallback_used?'；主供应商不可用，已按策略切换备用供应商':'')+'。</div>';
     }
-    return '<div class="ovr-card"><div class="ovr-head"><span>AI</span><h4>分析结果：'+escapeHtml(q)+'<small>优先基于当前工作区已核验数据</small></h4></div>'+
+    return '<div class="ovr-card"><div class="ovr-head"><span>AI</span><h4>'+(generalChat?'回答：':'分析结果：')+escapeHtml(q)+'<small>'+(generalChat?'通用 AI 对话':'优先基于当前工作区已核验数据')+'</small></h4></div>'+
       bodyHtml+disclosure+
-      '<div class="ovr-foot"><button class="primary" data-action="switchPage(\'platforms\')">查看平台详情</button><button data-action="switchPage(\'policies\')">查看政策动态</button></div>'+
-      '<div class="ovr-note">结论仅在服务端 AI 成功返回后展示；数据不足时不会使用内置规则补造结果。</div></div>';
+      (generalChat?'':'<div class="ovr-foot"><button class="primary" data-action="switchPage(\'platforms\')">查看平台详情</button><button data-action="switchPage(\'policies\')">查看政策动态</button></div>')+
+      '<div class="ovr-note">'+(generalChat?'内容由 AI 生成，请结合实际情况判断。':'结论仅在服务端 AI 成功返回后展示；数据不足时不会使用内置规则补造结果。')+'</div></div>';
   }
   function buildHeroErrorCard(q, error, requestId){
     var info=window.jayAIErrorDetails?window.jayAIErrorDetails(error,requestId):{code:error&&error.code||'UNKNOWN_ERROR',text:error&&error.message||'AI 服务请求失败',requestId:requestId||'',provider:'未确定',retryable:true,suggestion:'请稍后重试'};
-    var retry=info.retryable?'建议：'+escapeHtml(info.suggestion||'请稍后重试'):'请按提示处理后再试';
-    return '<div class="ovr-card ovr-card-error"><div class="ovr-head"><span>AI</span><h4>本次分析未完成<small>'+escapeHtml(info.text)+'</small></h4></div>'+
-      '<div class="ovr-section"><p>'+escapeHtml(info.text)+'</p><dl class="ovr-error-meta"><dt>错误类型</dt><dd>'+escapeHtml(info.code)+'</dd><dt>请求编号</dt><dd>'+escapeHtml(info.requestId||'未生成')+'</dd><dt>供应商</dt><dd>'+escapeHtml(info.provider||'未确定')+'</dd></dl><p>'+retry+'</p></div>'+
+    var friendly=String(info.code||'').toUpperCase()==='AUTH_REQUIRED'?'请先登录后再试':'我现在有点忙，请稍后再试。';
+    return '<div class="ovr-card ovr-card-error"><div class="ovr-head"><span>AI</span><h4>暂时无法回答<small>'+escapeHtml(friendly)+'</small></h4></div>'+
+      '<div class="ovr-section"><p>'+escapeHtml(friendly)+'</p></div>'+
       '<div class="ovr-foot"><button class="primary" type="button" data-ov-retry="1">重新分析</button></div></div>';
   }
   function renderHistoryCitations(answer, requestId){
@@ -821,7 +826,8 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
   }
   async function renderHeroResponse(q){
     if(!resultEl)return;
-    showHeroLoading(q);
+    var businessQuery=isHeroBusinessQuery(q);
+    showHeroLoading(q,businessQuery);
     var s=$('#global-search');if(s)s.value=q;
     function finish(){ var wrap=document.querySelector('.ov-hero-input-wrap'); if(wrap)wrap.classList.remove('busy'); }
     var requestId='overview.decision:'+Date.now()+':'+Math.random().toString(36).slice(2,8);
@@ -829,12 +835,12 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
       try{
         await delay(320);
         setHeroStep(2);
-        var systemPrompt='你是 JAY观海（跨境电商市场情报系统）的 AI 分析师。服务端会提供正式历史投影作为检索上下文；引用事实时必须保留 [Hxxx] 来源编号，不得把浏览器缓存当作知识库。对用户输入的品类或市场问题，按“可确认事实—类目证据缺口—暂不能确认的结论—下一步应补充的数据”输出，给出简洁的市场机会和风险提醒；资料不足时不能只回复“现有资料不足，无法确认”，也不能编造销售额、销量、消费者或竞争结论。优先使用列表，控制在 500 字以内。';
-         // Only explicitly time-sensitive questions opt into provider search;
-         // the formal server-side history projection is always queried first.
-         var wantsLive=/实时|最新|今日|今天|政策更新|规则变动|最近|销售|销量|市场表现|趋势|电商中|卖得|怎么样/.test(q);
-         var activeScope=scopeApi&&scopeApi.getActiveContext?scopeApi.getActiveContext():{};
-         var answer=await callAI(systemPrompt, q, {max_tokens:800, timeout:60000, search:wantsLive, entryPoint:'overview.decision', operation:'decision_assistant', retrievalMode:wantsLive?'formal_first':'formal_only', retrievalQuery:q, requestId:requestId, context:{market_codes:activeScope.marketCodes||[],platform_keys:activeScope.platformKeys||[],category_codes:activeScope.categoryCodes||[],data_snapshot_at:(window.JAY_QUALITY_REPORT&&window.JAY_QUALITY_REPORT.generated_at)||null}});
+        var systemPrompt=businessQuery
+          ? '你是 JAY观海（跨境电商市场情报系统）的 AI 市场助手。服务端可能提供正式历史投影；引用其中事实时必须保留 [Hxxx] 来源编号，不得把浏览器缓存当作知识库。只有正式记录支持的内容才能标为系统事实；没有记录时请基于通用知识正常回答，并明确说明“系统数据中暂未找到最新记录，以下为通用参考”。资料不足时不能只回复“现有资料不足，无法确认”，也不得编造销售额、销量、消费者或竞争结论。优先使用列表，控制在 500 字以内。'
+          : '你是 JAY观海的通用 AI 聊天助手。像普通聊天助手一样直接、自然地回答问题，可以打招呼、解释概念、写文案和闲聊。不要要求查询系统数据，也不要因为系统没有相关记录而拒答；不确定时诚实说明即可。使用简体中文，控制在 500 字以内。';
+        var wantsLive=/实时|最新|今日|今天|政策更新|规则变动|最近|销售|销量|市场表现|趋势|电商中|卖得|怎么样/.test(q);
+        var activeScope=scopeApi&&scopeApi.getActiveContext?scopeApi.getActiveContext():{};
+        var answer=await callAI(systemPrompt, q, {max_tokens:800, timeout:60000, search:wantsLive, entryPoint:'overview.decision', operation:businessQuery?'decision_assistant':'general_chat', taskType:businessQuery?'market_qa':'general_chat', agentKey:businessQuery?'market_analyst':'', retrievalMode:businessQuery?(wantsLive?'formal_first':'formal_only'):'disabled', retrievalQuery:q, requestId:requestId, context:{market_codes:activeScope.marketCodes||[],platform_keys:activeScope.platformKeys||[],category_codes:activeScope.categoryCodes||[],data_snapshot_at:(window.JAY_QUALITY_REPORT&&window.JAY_QUALITY_REPORT.generated_at)||null}});
         setHeroStep(3);
         var rendered=renderHistoryCitations(answer,requestId);
         var bodyHtml='<div class="ovr-section">'+rendered.html+'</div>';

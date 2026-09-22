@@ -1351,6 +1351,7 @@ async function jayUserHeaders(prefer) {
 
 var JAY_SERVICE_ERROR_MESSAGES = {
   AUTH_REQUIRED: '登录状态已失效，请重新登录',
+  WORKSPACE_REQUIRED: '请先选择工作区再试',
   ORIGIN_NOT_ALLOWED: '当前访问地址未获服务端授权，请联系管理员检查生产域名配置',
   ADMIN_FORBIDDEN: '当前账号没有管理员权限',
   WORKSPACE_FORBIDDEN: '当前账号没有执行此操作的权限',

@@ -1198,7 +1198,6 @@ function jayOpenRulesFilter(filters){
 function jayNowDate(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 function jayNowHuman(){ var d=new Date(); return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日'; }
 
-// Generic AI call. Third-party credentials remain inside the Edge Function.
 async function callAI(systemPrompt, userPrompt, opts){
   opts = opts || {};
   if(!AI_ENGINE.hasKey()){ throw new Error('AUTH_REQUIRED'); }
@@ -1211,7 +1210,8 @@ async function callAI(systemPrompt, userPrompt, opts){
   var entryPoint=String(opts.entryPoint||((opts.operation||'').indexOf('overview')===0?'overview.decision':((opts.operation||'').indexOf('report')===0?'report.generation':'ai.analysis')));
   var operationName=String(opts.operation||'analysis');
   var taskType=String(opts.taskType||((operationName.indexOf('report')===0||entryPoint.indexOf('report')===0)?'report':(operationName.indexOf('translation')===0?'translation':(operationName.indexOf('course')===0?'course_qa':(entryPoint.indexOf('code')===0?'code':'market_qa')))));
-  var agentKey=String(opts.agentKey||((taskType==='report')?'report_generator':(taskType==='course_qa'?'course_assistant':(taskType==='translation'?'translator':(taskType==='code'?'code_maintainer':'market_analyst')))));
+  var hasAgentKey=Object.prototype.hasOwnProperty.call(opts,'agentKey');
+  var agentKey=String(hasAgentKey?opts.agentKey:((taskType==='report')?'report_generator':(taskType==='course_qa'?'course_assistant':(taskType==='translation'?'translator':(taskType==='code'?'code_maintainer':(taskType==='general_chat'?'':'market_analyst'))))));
   var requestedTimeout=Number(opts.timeout);
   var totalTimeout=Math.max(1000,isFinite(requestedTimeout)?requestedTimeout:60000);
   var requestDeadline=Date.now()+totalTimeout;
@@ -1290,7 +1290,7 @@ async function callAI(systemPrompt, userPrompt, opts){
      window.JAY_AI_RETRIEVAL_BY_REQUEST=window.JAY_AI_RETRIEVAL_BY_REQUEST||{};
      window.JAY_AI_RETRIEVAL_BY_REQUEST[requestId]=data&&data.jay_retrieval&&typeof data.jay_retrieval==='object'?data.jay_retrieval:{mode:'formal_publications',source_ids:[],citations:[],fallback:false};
      window.JAY_AI_GATEWAY_BY_REQUEST=window.JAY_AI_GATEWAY_BY_REQUEST||{};
-     window.JAY_AI_GATEWAY_BY_REQUEST[requestId]=data&&data.jay_gateway&&typeof data.jay_gateway==='object'?data.jay_gateway:{request_id:requestId,provider:'未确定',agent_key:agentKey,data_disclosure:{scope:['formal_publications','request_context']}};
+     window.JAY_AI_GATEWAY_BY_REQUEST[requestId]=data&&data.jay_gateway&&typeof data.jay_gateway==='object'?data.jay_gateway:{request_id:requestId,provider:'未确定',task_type:taskType,agent_key:agentKey,data_disclosure:{scope:taskType==='general_chat'?['request_context']:['formal_publications','request_context']}};
     var retrievalKeys=Object.keys(window.JAY_AI_RETRIEVAL_BY_REQUEST);
     if(retrievalKeys.length>40)delete window.JAY_AI_RETRIEVAL_BY_REQUEST[retrievalKeys[0]];
     // strip markdown code fences if present

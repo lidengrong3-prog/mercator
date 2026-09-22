@@ -125,6 +125,21 @@ test('frontend sends task and disclosure metadata and renders selected gateway',
   assert.match(overview, /发送给第三方 AI 的数据范围/);
 });
 
+test('general chat is not forced through workspace data retrieval or technical error details', () => {
+  const edge = read('supabase', 'functions', 'ai-proxy', 'index.ts');
+  const overview = read('assets', 'js', 'content-overview.js');
+  const client = read('assets', 'js', 'reports-decisions.js');
+  assert.match(edge, /const isGeneralChat = taskType === 'general_chat'/);
+  assert.match(edge, /retrievalMode = isGeneralChat ||/);
+  assert.match(edge, /if \(!isGeneralChat\) \{/);
+  assert.match(edge, /if \(!workspaceId\) \{[\s\S]*AI request audit skipped/);
+  assert.match(overview, /taskType:businessQuery\?'market_qa':'general_chat'/);
+  assert.match(overview, /系统数据中暂未找到最新记录，以下为通用参考/);
+  assert.match(overview, /我现在有点忙，请稍后再试/);
+  assert.doesNotMatch(overview, /<dt>错误类型<\/dt>/);
+  assert.match(client, /taskType==='general_chat'\?'':'market_analyst'/);
+});
+
 test('production workflow exposes optional provider secrets without replacing absent values', () => {
   const workflow = read('.github', 'workflows', 'deploy-production.yml');
   for (const name of ['COZE_API_TOKEN', 'COZE_BOT_ID', 'DOUBAO_API_KEY', 'OPENAI_API_KEY', 'CODEX_API_KEY']) assert.match(workflow, new RegExp(name));
