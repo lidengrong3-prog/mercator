@@ -590,8 +590,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "124eebef7fb18d3f373e1d4c4e7d291c95adf3e39bb0c9843f8798b053d3af7a",
-      "dataset_snapshot_at": "2026-09-23T04:48:11.568428+00:00",
+      "dataset_snapshot_id": "8f03af998b1d31ae0b9f462974e80a87435a3f1e8dd35434aa59a867b967f1d9",
+      "dataset_snapshot_at": "2026-09-23T13:41:14.296960+00:00",
       "dataset_record_count": 161,
       "window_start": "2026-06-25",
       "window_end": "2026-09-23",
@@ -601,7 +601,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "559e36c38e2beaf9061763cd8df83a97184e96e16e33cc37e7629480f108dbc6"
+      "evidence_hash": "50cd5ebdf087cbdf3da5db3881b8fe8f832c96cd63130ed1c328c0cc5b45e744"
     }
   ],
   [
@@ -673,8 +673,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "124eebef7fb18d3f373e1d4c4e7d291c95adf3e39bb0c9843f8798b053d3af7a",
-      "dataset_snapshot_at": "2026-09-23T04:48:11.568428+00:00",
+      "dataset_snapshot_id": "8f03af998b1d31ae0b9f462974e80a87435a3f1e8dd35434aa59a867b967f1d9",
+      "dataset_snapshot_at": "2026-09-23T13:41:14.296960+00:00",
       "dataset_record_count": 161,
       "window_start": "2026-06-25",
       "window_end": "2026-09-23",
@@ -684,7 +684,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "3273b94c55e47ca2ee01a478ec6e5c8a737518b8acae68454f908198680a03e4"
+      "evidence_hash": "de662a61bd9a8dca934c92df9248d414496ab041c88c6c7e98047e9691cc6e8d"
     }
   ],
   [
@@ -846,8 +846,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "124eebef7fb18d3f373e1d4c4e7d291c95adf3e39bb0c9843f8798b053d3af7a",
-      "dataset_snapshot_at": "2026-09-23T04:48:11.568428+00:00",
+      "dataset_snapshot_id": "8f03af998b1d31ae0b9f462974e80a87435a3f1e8dd35434aa59a867b967f1d9",
+      "dataset_snapshot_at": "2026-09-23T13:41:14.296960+00:00",
       "dataset_record_count": 161,
       "window_start": "2026-06-25",
       "window_end": "2026-09-23",
@@ -857,7 +857,58 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "6eeb460ad4c4fdcdf1f4ae43d7c24ee2582bcebd1055bdfe71e94d4a4f4088d0"
+      "evidence_hash": "023b9ae7c94d36918e426ad2ca6a3661c528b17c0369f972bbecacf1e11a35ab"
+    }
+  ],
+  [
+    "pol-20260923-13c80c01",
+    "policy",
+    "high",
+    "政策更新：关于实施特种药品及相关药物成分关税调整的指导与程序，以及对根据第11020号公告征收关税的美国协调关税表的技术更正",
+    "美国",
+    "tariff",
+    "本通知界定了药品范围，并列出了根据2026年4月2日第11020号总统公告《调整药品及药物成分进口至美国》（Proc）有资格享受零从价关税税率的司法管辖区。",
+    "2026-09-23",
+    false,
+    {
+      "source": "Federal Register / 政策分析",
+      "source_url": "https://www.federalregister.gov/documents/2026/09/23/2026-19498/guidance-and-procedures-for-implementing-tariff-adjustments-for-specialty-pharmaceuticals-and",
+      "source_kind": "derived",
+      "source_type": "derived",
+      "source_record_id": "2026-19498",
+      "verification_status": "verified",
+      "published_at": "2026-09-23",
+      "collected_at": "2026-09-23T21:40:16.586547+08:00",
+      "verified_at": "2026-09-23T21:40:16.586547+08:00",
+      "verification_notes": "由已核验来源生成的动态预警；正文事实应回溯到 source_record_id。",
+      "category_codes": [],
+      "source_record_ids": [
+        "2026-19498"
+      ],
+      "upstream_evidence_hash": "23062fb232ed6a59c233f65daef76fb18fb392ec7a3b69d9d6f8db81befa11d4",
+      "upstream_evidence_hashes": [
+        "23062fb232ed6a59c233f65daef76fb18fb392ec7a3b69d9d6f8db81befa11d4"
+      ],
+      "source_record_evidence": [
+        {
+          "source_record_id": "2026-19498",
+          "evidence_hash": "23062fb232ed6a59c233f65daef76fb18fb392ec7a3b69d9d6f8db81befa11d4"
+        }
+      ],
+      "lineage_type": "record",
+      "input_dataset": "data/policies.json",
+      "dataset_snapshot_id": "b124213c4b76e7680272da7db4fdafcca8e9757a341eb95b7dd5949d2c17d19d",
+      "dataset_snapshot_at": "2026-09-23T21:40:16.586547+08:00",
+      "dataset_record_count": 321,
+      "window_start": "2026-08-24",
+      "window_end": "2026-09-23",
+      "input_record_count": 321,
+      "matched_record_count": 1,
+      "aggregate_count": null,
+      "schema_version": "2.1",
+      "display_locale": "zh-CN",
+      "generator_version": "2026.09.08.1",
+      "evidence_hash": "c4535cafc4dbc92236525cc517048a1c70b49ab2fcb5b6b9250ad9d92619a2b1"
     }
   ],
   [
@@ -3909,18 +3960,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "edd6c06157ed0681d629eb6c768010c5faebfd4f75c6dc45bc1b2d1576331b67",
-      "dataset_snapshot_at": "2026-09-22T21:26:08.152723+08:00",
-      "dataset_record_count": 315,
+      "dataset_snapshot_id": "b124213c4b76e7680272da7db4fdafcca8e9757a341eb95b7dd5949d2c17d19d",
+      "dataset_snapshot_at": "2026-09-23T21:40:16.586547+08:00",
+      "dataset_record_count": 321,
       "window_start": "2026-08-24",
       "window_end": "2026-09-23",
-      "input_record_count": 315,
+      "input_record_count": 321,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "79f4b76822863f230766511ba950e44acd40958534d24cc8226bcf93a4027caf"
+      "evidence_hash": "0c80f25786619c5a770b16c88c186d661e6f9072fa79710a30ad9d2ef8b25f84"
     }
   ],
   [
