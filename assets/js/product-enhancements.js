@@ -243,7 +243,14 @@
 
   // 包装 switchPage：路由后自动术语化并同步当前范围统计
   var _switchPage=switchPage;
-  switchPage=function(name,opts){ _switchPage(name,opts); try{jayGlossifyActive();jaySyncPlatformCount();jayNormalizeProducts();}catch(e){} };
+  switchPage=function(name,opts){
+    var result=_switchPage(name,opts);
+    var afterSwitch=function(value){
+      try{jayGlossifyActive();jaySyncPlatformCount();jayNormalizeProducts();}catch(e){}
+      return value;
+    };
+    return result&&typeof result.then==='function'?result.then(afterSwitch):afterSwitch(result);
+  };
 
   // ================= N-01 回到顶部 =================
   var totop=document.getElementById('jay-totop');
@@ -342,7 +349,16 @@
     if(ok)toast('已切换为「'+label+'」视图');
     else{jayPreferenceCache.workspace_prefs=previous;jayApplyPreferencesToUi();toast('角色设置同步失败，请重试')}
   };
-  if(typeof switchPage==='function'){ var _jayOrigSp=switchPage; window.switchPage=function(n,o){ try{ _jayOrigSp(n,o); }catch(e){ if(typeof console!=='undefined')console.warn(e); } try{ jaySetFbCtx(n); }catch(e){} }; }
+  if(typeof switchPage==='function'){
+    var _jayOrigSp=switchPage;
+    window.switchPage=function(n,o){
+      var result;
+      try{ result=_jayOrigSp(n,o); }
+      catch(e){ if(typeof console!=='undefined')console.warn(e); return Promise.reject(e); }
+      var afterSwitch=function(value){ try{ jaySetFbCtx(n); }catch(e){} return value; };
+      return result&&typeof result.then==='function'?result.then(afterSwitch):afterSwitch(result);
+    };
+  }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',function(){ jayInitFrontendOnce(); jayBoot(); }); }
   else { jayInitFrontendOnce(); jayBoot(); }
 })();

@@ -83,11 +83,9 @@ test('legal documents are readable before login and rendered controls keep acces
   await page.getByRole('button', { name: '浏览只读演示' }).click();
   await page.evaluate(async () => {
     for (const route of ['products', 'shops', 'alerts', 'policies', 'rules', 'content', 'report', 'watchlist']) {
-      if (typeof window.jayEnsurePageAssets === 'function') await window.jayEnsurePageAssets(route);
-      window.switchPage(route);
+      await window.switchPage(route);
     }
   });
-  await page.waitForTimeout(250);
 
   const unnamed = await page.evaluate(() => {
     function hasName(element) {
@@ -127,6 +125,50 @@ test('first load initializes country data without a dependency race', async ({ p
 
   expect(pageErrors).toEqual([]);
   expect(countryLoadErrors).toEqual([]);
+});
+
+test('page asset loader exposes a deterministic navigation promise before auth boot', async ({ page }) => {
+  const pageErrors = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.goto('/');
+  await expect.poll(() => page.evaluate(() => typeof window.jayEnsurePageAssets)).toBe('function');
+  await expect.poll(() => page.evaluate(() => typeof window.switchPage)).toBe('function');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+
+  const result = await page.evaluate(async () => {
+    const ready = new Promise((resolve) => {
+      const handler = (event) => {
+        if (event.detail?.page !== 'products') return;
+        window.removeEventListener('jay:page-assets-ready', handler);
+        resolve(event.detail);
+      };
+      window.addEventListener('jay:page-assets-ready', handler);
+    });
+    const navigation = window.switchPage('products');
+    const isThenable = Boolean(navigation && typeof navigation.then === 'function');
+    await navigation;
+    const detail = await ready;
+    return {
+      isThenable,
+      activePage: document.querySelector('.page.active')?.id || '',
+      eventPage: detail.page,
+      eventAssets: detail.assets,
+      styleLoaded: Boolean(document.querySelector('[data-page-asset="assets/styles/workspaces.css"]')),
+      scriptLoaded: Boolean(document.querySelector('[data-page-asset="assets/js/products-shops.js"]')),
+      productApiReady: typeof window.prApplyImportedPayload === 'function',
+    };
+  });
+
+  expect(result).toEqual({
+    isThenable: true,
+    activePage: 'products',
+    eventPage: 'products',
+    eventAssets: ['assets/styles/workspaces.css', 'assets/js/products-shops.js'],
+    styleLoaded: true,
+    scriptLoaded: true,
+    productApiReady: true,
+  });
+  expect(pageErrors).toEqual([]);
 });
 
 test('team settings switch workspaces and expose viewer read-only state', async ({ page }) => {
@@ -277,7 +319,8 @@ test('unified search aggregates sourced records and preserves market context', a
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
-  await page.evaluate(() => window.jayEnsurePageAssets('products'));
+  await page.waitForFunction(() => typeof window.jayEnsurePageAssets === 'function');
+  await page.evaluate(() => window.switchPage('products'));
   await page.waitForFunction(() => (
     window.policiesJsonData && window.policiesJsonData.items && window.policiesJsonData.items.length
     && window.rulesJsonData && window.rulesJsonData.items && window.rulesJsonData.items.length
