@@ -752,13 +752,17 @@ def collect_domain(
         dict(item) for item in existing_items
         if str(item.get("source_record_id") or "") not in managed_ids
     )
-    all_sources_ok = not errors and len(successful_record_ids) == len(specs)
-    updated_at = collected_at if successful_record_ids else existing.get("updated_at")
+    has_fresh_evidence = bool(successful_record_ids)
+    updated_at = collected_at if has_fresh_evidence else existing.get("updated_at")
     dataset = {
         "schema_version": str(existing.get("schema_version") or "1.0"),
         "domain": domain,
         "updated_at": updated_at,
-        "last_checked_at": collected_at if all_sources_ok else existing.get("last_checked_at"),
+        # A partial refresh is still a real successful check: fresh official
+        # evidence was retrieved and the per-source failures remain explicit in
+        # source_checks and collection telemetry. Only a total refresh failure
+        # preserves the previous check time.
+        "last_checked_at": collected_at if has_fresh_evidence else existing.get("last_checked_at"),
         "source_count": len({str(item.get("source_key") or item.get("source") or "") for item in items}),
         config["types_key"]: allowed_types,
         "source_checks": {

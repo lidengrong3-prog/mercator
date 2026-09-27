@@ -92,6 +92,31 @@ class UsRegulatoryCollectorTests(unittest.TestCase):
         self.assertEqual(telemetry["status"], "degraded")
         self.assertTrue(telemetry["cache_used"])
 
+    def test_partial_refresh_advances_check_and_keeps_failed_source_cached(self):
+        existing, _ = collect_us_regulatory.collect_domain(
+            "tax", fetcher=self.fetcher, now="2026-09-02T00:00:00+00:00"
+        )
+        failed_url = collect_us_regulatory.TAX_RECORDS[0]["source_url"]
+        failed_record_id = collect_us_regulatory.TAX_RECORDS[0]["source_record_id"]
+
+        def partial(url, *, timeout):
+            if url == failed_url:
+                raise RuntimeError("blocked by upstream")
+            return self.fetcher(url, timeout=timeout)
+
+        refreshed, telemetry = collect_us_regulatory.collect_domain(
+            "tax", existing=existing, fetcher=partial, now="2026-09-03T00:00:00+00:00"
+        )
+        previous = {item["source_record_id"]: item for item in existing["items"]}
+        current = {item["source_record_id"]: item for item in refreshed["items"]}
+
+        self.assertEqual(refreshed["updated_at"], "2026-09-03T00:00:00+00:00")
+        self.assertEqual(refreshed["last_checked_at"], "2026-09-03T00:00:00+00:00")
+        self.assertEqual(current[failed_record_id]["evidence_hash"], previous[failed_record_id]["evidence_hash"])
+        self.assertEqual(telemetry["status"], "degraded")
+        self.assertTrue(telemetry["cache_used"])
+        self.assertIn(failed_record_id, telemetry["cached_sections"])
+
     def test_governance_blocks_a_source_before_the_http_request(self):
         calls = []
 
