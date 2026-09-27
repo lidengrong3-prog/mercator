@@ -95,6 +95,44 @@ class ProductionAcceptanceTests(unittest.TestCase):
         }
         self.assertEqual(production_acceptance.rule_dimension_keys(row), ["fee", "settlement", "penalty"])
 
+    def test_bls_report_uses_dedicated_formal_macro_template(self):
+        snapshot = {
+            "name": production_acceptance.BLS_NONFARM_NAME,
+            "value": "159075",
+            "unit": production_acceptance.BLS_NONFARM_UNIT,
+            "date": "2026-08-01",
+            "source_url": "https://api.bls.gov/publicAPI/v2/timeseries/data/CES0000000001",
+            "evidence_hash": "a" * 64,
+        }
+        evidence = {
+            "domain": "market", "market_code": "US", "source_record_id": "CES0000000001",
+            "source_url": snapshot["source_url"], "verification_status": "verified",
+            "evidence_hash": snapshot["evidence_hash"], "retrieved_at": "2026-09-27T08:00:00Z",
+            "payload": snapshot,
+        }
+
+        def select_rows(table, _token, _query):
+            if table == "report_template_catalog":
+                return [{"id": "macro-indicator-v1", "code": "macro-indicator", "version": 1,
+                         "required_domains": ["market"], "status": "active"}]
+            if table == "market_data":
+                return [{"data": {"schema_version": 1, "data_contract_version": "3.0",
+                                   "generated_at": datetime.now().astimezone().isoformat(),
+                                   "status": "healthy", "publishable": True, "datasets": {}}}]
+            raise AssertionError(f"unexpected table: {table}")
+
+        with patch.object(production_acceptance, "select_rows", side_effect=select_rows):
+            content = production_acceptance.build_server_validated_bls_report_content("token", snapshot, evidence)
+
+        self.assertTrue(content["publishable"])
+        self.assertEqual(content["template_id"], "macro-indicator")
+        self.assertEqual(content["platform_keys"], [])
+        self.assertEqual(content["coverage_matrix"]["cells"][0]["id"], "US|*|generic|market")
+        self.assertEqual(content["coverage_matrix"]["cells"][0]["sourceRecordIds"], ["CES0000000001"])
+        self.assertIn(production_acceptance.BLS_NONFARM_NAME, content["text"])
+        self.assertIn("来源类别：官方统计数据", content["text"])
+        self.assertNotIn("平均" + "时薪", content["text"])
+
     def test_bls_nonfarm_snapshot_rejects_legacy_hourly_earnings_label(self):
         record = {
             "series_id": production_acceptance.BLS_NONFARM_SERIES_ID,

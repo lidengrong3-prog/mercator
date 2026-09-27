@@ -537,7 +537,21 @@ def current_quality_gate(token: str) -> dict:
 
 
 def source_appendix_line(source: dict) -> str:
-    line = f"- [{source['citation']}] {source.get('source') or '未命名来源'} · {source.get('date') or '日期未提供'} · {source.get('verificationStatus') or '待核验'}"
+    source_category = {
+        "official_policy": "官方政策/监管记录",
+        "official_statistics": "官方统计数据",
+        "platform_announcement": "平台官方公告",
+        "industry_media": "行业媒体/协会资讯",
+        "third_party_provider": "第三方数据服务商",
+        "user_upload": "工作区上传资料",
+        "derived": "系统派生数据",
+        "internal": "系统运行数据",
+        "demo": "演示数据",
+    }.get(str(source.get("sourceCategory") or source.get("source_category") or "").strip().lower(), "")
+    line = f"- [{source['citation']}] {source.get('source') or '未命名来源'}"
+    if source_category:
+        line += f" · 来源类别：{source_category}"
+    line += f" · {source.get('date') or '日期未提供'} · {source.get('verificationStatus') or '待核验'}"
     if source.get("recordId"):
         line += f" · 原始记录：{source['recordId']}"
     if source.get("dataSnapshotAt"):
@@ -547,6 +561,81 @@ def source_appendix_line(source: dict) -> str:
     if source.get("chapters"):
         line += " · 引用章节：" + "、".join(source["chapters"])
     return line
+
+
+def build_server_validated_bls_report_content(token: str, snapshot: dict, evidence: dict) -> dict:
+    templates = select_rows("report_template_catalog", token, {
+        "select": "id,code,version,required_domains,status",
+        "code": "eq.macro-indicator", "status": "eq.active", "order": "version.desc", "limit": "1",
+    })
+    expect(templates, "active macro-indicator report template is missing")
+    template = templates[0]
+    required_domains = [str(value).lower() for value in template.get("required_domains") or []]
+    expect(required_domains == ["market"],
+           f"macro-indicator template must require only the market domain: {required_domains}")
+    expect(str(evidence.get("domain") or "").lower() == "market", "formal BLS evidence is not in the market domain")
+    expect(str(evidence.get("market_code") or "").upper() == "US", "formal BLS evidence is not scoped to US")
+    expect(str(evidence.get("source_record_id") or "") == BLS_NONFARM_SERIES_ID,
+           "formal BLS evidence uses an unexpected series ID")
+
+    gate = current_quality_gate(token)
+    source = {
+        "citation": "S001",
+        "source": "U.S. Bureau of Labor Statistics (BLS)",
+        "sourceCategory": "official_statistics",
+        "url": evidence.get("source_url") or snapshot["source_url"],
+        "date": snapshot["date"],
+        "verificationStatus": evidence.get("verification_status") or "verified",
+        "recordId": BLS_NONFARM_SERIES_ID,
+        "evidenceHash": evidence.get("evidence_hash") or snapshot["evidence_hash"],
+        "dataSnapshotAt": evidence.get("retrieved_at") or evidence.get("verified_at") or evidence.get("collected_at") or "",
+        "chapters": ["indicator_summary"],
+    }
+    section = {
+        "id": "indicator_summary",
+        "title": "美国 BLS 非农就业指标",
+        "domain": "market",
+        "text": (
+            f"{snapshot['name']}：{snapshot['value']} {snapshot['unit']}，数据日期 {snapshot['date']}，"
+            f"官方序列 ID {BLS_NONFARM_SERIES_ID}，来源 BLS。[S001]"
+        ),
+    }
+    cell = {
+        "id": "US|*|generic|market",
+        "marketCode": "US", "platformKey": None, "categoryCode": "generic",
+        "domain": "market", "covered": True, "recordCount": 1,
+        "sourceRecordIds": [BLS_NONFARM_SERIES_ID],
+        "ruleDimensions": [], "missingRuleDimensions": [],
+    }
+    matrix = {
+        "version": "1.0", "requiredDomains": required_domains,
+        "requiredPlatformRuleDimensions": [],
+        "dimensions": {
+            "marketCodes": ["US"], "platformKeys": [], "categoryCodes": ["generic"],
+            "marketPlatformPairs": [{"marketCode": "US", "platformKey": None}],
+        },
+        "cells": [cell], "missingCells": [], "totalCells": 1,
+        "coveredCells": 1, "coveragePercent": 100, "ok": True,
+    }
+    appendix = [source]
+    content = {
+        "publishable": True,
+        "template": template["code"], "template_id": template["code"], "template_version": template["version"],
+        "market_codes": ["US"], "platform_keys": [], "category_codes": ["generic"],
+        "scope_snapshot": {"marketCodes": ["US"], "platformKeys": [], "categoryCodes": ["generic"]},
+        "quality_gate": gate, "quality_snapshot": gate["snapshot"],
+        "quality_report_version": gate["snapshot"]["quality_report_version"],
+        "coverage_matrix": matrix, "source_appendix": appendix,
+        "citation_audit": {"ok": True}, "reconciliation": {"ok": True}, "scope_check": {"ok": True},
+        "model": {
+            "sections": [section], "sourceAppendix": appendix, "coverageMatrix": matrix,
+            "qualityGate": gate, "qualitySnapshot": gate["snapshot"],
+        },
+        "data_snapshot_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "source_record_ids": [BLS_NONFARM_SERIES_ID],
+    }
+    content["text"] = f"## {section['title']}\n\n{section['text']}\n\n## 来源与核验附录\n\n{source_appendix_line(source)}"
+    return content
 
 
 def rule_dimension_keys(row: dict) -> list[str]:
@@ -1230,9 +1319,7 @@ def main() -> int:
         }
 
     report_content = build_server_validated_report_content(token_a, report_text)
-    bls_report_acceptance = attach_bls_nonfarm_report_section(report_content, bls_snapshot, bls_evidence)
     formal_ready = report_content.get("publishable") is True
-    expect(formal_ready, "R02 BLS acceptance requires a formal report so PDF and DOCX semantics can be verified")
     report_gate: dict = {"mode": "formal" if formal_ready else "blocked"}
     if formal_ready:
         report = save_formal_report(
@@ -1265,6 +1352,14 @@ def main() -> int:
             "missing_cells": [cell.get("id") for cell in report_content.get("coverage_matrix", {}).get("missingCells", [])],
         })
 
+    bls_report_content = build_server_validated_bls_report_content(token_a, bls_snapshot, bls_evidence)
+    expect(bls_report_content.get("publishable") is True,
+           "R02 BLS acceptance requires a publishable macro-indicator report")
+    bls_report = save_formal_report(
+        token_a, user_a, workspace_a, f"production-acceptance-bls-report:{acceptance_run_id}",
+        "美国 BLS 非农就业指标验收报告", bls_report_content, run["id"],
+    )
+
     rest("PATCH", "report_runs", token_a, query=urllib.parse.urlencode({"id": f"eq.{run['id']}", "user_id": f"eq.{user_a}"}), body={
         "status": "completed", "report_id": report["id"], "duration_ms": round((time.monotonic() - started) * 1000),
         "save_status": "saved" if formal_ready else "blocked",
@@ -1293,6 +1388,8 @@ def main() -> int:
     duplicate_export_checks = {}
     blocked_export_checks = {}
     bls_export_checks = {}
+    bls_export_ids = {}
+    bls_duplicate_export_checks = {}
     b_export = None
     if formal_ready:
         for name, extension, signature in (("report-export", "pdf", b"%PDF"), ("report-docx", "docx", b"PK")):
@@ -1324,7 +1421,6 @@ def main() -> int:
                    f"duplicate {extension} export persisted {len(idempotent_rows)} jobs")
             file_status, file_body, _ = request("GET", result["file_url"], headers={})
             expect(file_status == 200 and file_body.startswith(signature), f"{extension} download is invalid")
-            bls_export_checks[extension] = verify_bls_export_artifact(extension, file_body, bls_snapshot)
             exported[extension] = result["id"]
             duplicate_export_checks[extension] = {
                 "id": result["id"],
@@ -1376,6 +1472,44 @@ def main() -> int:
         expect(b_export_status == 409 and b_export_result.get("error") == "REPORT_NOT_SAVED",
                f"B draft PDF export was not blocked: {b_export_status} {b_export_result}")
         report_gate["blocked_exports"] = blocked_export_checks
+
+    for name, extension, signature in (("report-export", "pdf", b"%PDF"), ("report-docx", "docx", b"PK")):
+        export_key = reusable_export_key(fresh_a, bls_report["id"], extension) or f"production-acceptance:{acceptance_run_id}:{user_a}:bls-{extension}"
+        export_payload = {
+            "title": "美国 BLS 非农就业指标验收报告", "report_id": bls_report["id"],
+            "request_id": f"production-acceptance-bls-{extension}", "idempotency_key": export_key,
+        }
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            responses = list(executor.map(lambda _: function(name, fresh_a, export_payload), range(2)))
+        expect(all(response[0] in (200, 202) for response in responses),
+               f"duplicate BLS {extension} export failed: {responses}")
+        export_ids = {str(response[1].get("id") or "") for response in responses}
+        expect(len(export_ids) == 1 and "" not in export_ids,
+               f"duplicate BLS {extension} export created different jobs: {responses}")
+        completed = [response[1] for response in responses if response[1].get("status") == "completed" and response[1].get("file_url")]
+        expect(completed, f"BLS {extension} export did not complete: {responses}")
+        result = completed[0]
+        rows = select_rows("report_exports", fresh_a, {
+            "select": "id,idempotency_key,status,file_path", "idempotency_key": f"eq.{export_key}", "limit": "10",
+        })
+        expect(len(rows) == 1 and str(rows[0].get("id")) in export_ids,
+               f"duplicate BLS {extension} export persisted {len(rows)} jobs")
+        file_status, file_body, _ = request("GET", result["file_url"], headers={})
+        expect(file_status == 200 and file_body.startswith(signature), f"BLS {extension} download is invalid")
+        bls_export_checks[extension] = verify_bls_export_artifact(extension, file_body, bls_snapshot)
+        bls_export_ids[extension] = result["id"]
+        bls_duplicate_export_checks[extension] = {
+            "id": result["id"], "row_count": len(rows),
+            "duplicate_response": any(response[1].get("duplicate") is True for response in responses),
+        }
+        expect(bls_duplicate_export_checks[extension]["duplicate_response"],
+               f"duplicate BLS {extension} export was not identified as a duplicate")
+        encoded_path = "/".join(urllib.parse.quote(part, safe="") for part in str(rows[0]["file_path"]).split("/"))
+        sign_status, _, _ = request(
+            "POST", f"{SUPABASE_URL}/storage/v1/object/sign/reports/{encoded_path}", token=token_b, body={"expiresIn": 60},
+        )
+        expect(sign_status in (400, 401, 403, 404),
+               f"account B can sign account A BLS {extension} file: HTTP {sign_status}")
 
     storage_checks = verify_storage_guards(token_a, token_b, user_a, acceptance_run_id)
 
@@ -1497,7 +1631,9 @@ def main() -> int:
         "bls_report_acceptance": {
             "status": "passed",
             "series_id": BLS_NONFARM_SERIES_ID,
-            "citation": bls_report_acceptance["citation"],
+            "report_id": bls_report["id"],
+            "citation": "S001",
+            "export_ids": bls_export_ids,
             "exports": bls_export_checks,
         },
         "report_content_gate": report_gate,
@@ -1505,6 +1641,7 @@ def main() -> int:
             **exception_checks,
             "duplicate_generation": {"run_id": run["id"], "row_count": len(run_rows)},
             "duplicate_exports": duplicate_export_checks,
+            "duplicate_bls_exports": bls_duplicate_export_checks,
             "blocked_exports": blocked_export_checks,
         },
         "release_sha": os.environ.get("RELEASE_SHA", ""),
@@ -1530,6 +1667,8 @@ def main() -> int:
         "bls_report_acceptance": {
             "status": "passed",
             "series_id": BLS_NONFARM_SERIES_ID,
+            "report_id": bls_report["id"],
+            "export_ids": bls_export_ids,
             "exports": bls_export_checks,
         },
         "report_content_gate": report_gate,

@@ -24,6 +24,25 @@ const browserSource = [
     .map((name) => fs.readFileSync(path.join(root, 'assets', 'js', name), 'utf8')),
 ].join('\n');
 
+test('official macro indicator reports use a dedicated formal template', () => {
+  const scope = JSON.parse(fs.readFileSync(path.join(root, 'data', 'market_scope.json'), 'utf8'));
+  const template = scope.report_templates.find((item) => item.code === 'macro-indicator');
+  assert.ok(template);
+  assert.deepEqual(template.market_codes, ['US']);
+  assert.deepEqual(template.platform_keys, []);
+  assert.deepEqual(template.category_codes, ['generic']);
+  assert.deepEqual(template.required_domains, ['market']);
+  assert.equal(template.data_status, 'verified');
+
+  const migration = fs.readFileSync(
+    path.join(root, 'supabase', 'migrations', '20261016000000_macro_indicator_report_template.sql'),
+    'utf8',
+  );
+  assert.match(migration, /'macro-indicator-v1', 'macro-indicator'/);
+  assert.match(migration, /ARRAY\['market'\]/);
+  assert.match(migration, /'active', 'verified'/);
+});
+
 test('production shell exposes the primary decision workflow', () => {
   assert.ok(document.querySelector('#loginPage #auth-email'));
   assert.ok(document.querySelector('#loginPage #auth-password'));

@@ -134,6 +134,24 @@ Deno.test('server validation accepts a complete server-backed coverage matrix', 
   if (!result.ok) throw new Error(result.reasons.map((reason) => reason.code).join(','));
 });
 
+Deno.test('official macro evidence supports a formal report without platform scope', () => {
+  const evidence = [{
+    domain: 'market', market_code: 'US', source_record_id: 'CES0000000001',
+    source_url: 'https://api.bls.gov/publicAPI/v2/timeseries/data/CES0000000001',
+    verification_status: 'verified', evidence_hash: 'hash-bls',
+    payload: { name: '美国非农就业人数：全部雇员（季调）', value: '159075', unit: '千人', date: '2026-08-01' },
+  }];
+  const report = content({ platforms: [], domains: ['market'], evidence });
+  const result = validateFormalReportContent(
+    report,
+    quality,
+    context({ platforms: [], domains: ['market'], evidence }),
+    { now },
+  );
+  if (!result.ok) throw new Error(result.reasons.map((reason) => reason.code).join(','));
+  if (result.coverage.total_cells !== 1 || result.coverage.missing_cell_ids.length) throw new Error('macro coverage was not exact');
+});
+
 Deno.test('canonical report text matches the browser source-category appendix contract', () => {
   const value: Row = {
     model: { sections: [{ id: 'summary', title: '摘要', text: '正式平台规则已核验 [S001]' }] },
