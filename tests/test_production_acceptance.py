@@ -1,6 +1,8 @@
 import unittest
 from datetime import datetime
+from io import BytesIO
 from unittest.mock import patch
+import zipfile
 
 from scripts import production_acceptance
 
@@ -92,6 +94,71 @@ class ProductionAcceptanceTests(unittest.TestCase):
             }
         }
         self.assertEqual(production_acceptance.rule_dimension_keys(row), ["fee", "settlement", "penalty"])
+
+    def test_bls_nonfarm_snapshot_rejects_legacy_hourly_earnings_label(self):
+        record = {
+            "series_id": production_acceptance.BLS_NONFARM_SERIES_ID,
+            "name": "美国非农" + "平均" + "时薪",
+            "official_name": production_acceptance.BLS_NONFARM_OFFICIAL_NAME,
+            "value": "159075",
+            "unit": production_acceptance.BLS_NONFARM_UNIT,
+            "date": "2026-08-01",
+            "source": "BLS",
+            "source_url": "https://api.bls.gov/publicAPI/v2/timeseries/data/CES0000000001",
+            "metadata_url": "https://data.bls.gov/timeseries/CES0000000001",
+            "evidence_hash": "a" * 64,
+        }
+        with self.assertRaises(production_acceptance.AcceptanceError):
+            production_acceptance.validate_bls_nonfarm_snapshot(record)
+
+    def test_bls_ai_response_requires_formal_series_and_correct_semantics(self):
+        snapshot = {
+            "value": "159075", "unit": "千人", "date": "2026-08-01",
+        }
+        body = {
+            "choices": [{"message": {"content": "CES0000000001 是美国非农就业人数（全部雇员），最新为 159,075 千人，数据日期 2026-08-01，来源 BLS。[H001]"}}],
+            "jay_gateway": {"provider": "deepseek", "model": "test"},
+            "jay_retrieval": {"citations": [{"source_record_id": "CES0000000001", "record_key": "BLS_CES0000000001"}]},
+        }
+        result = production_acceptance.verify_bls_ai_response(body, snapshot)
+        self.assertEqual(result["series_id"], "CES0000000001")
+        self.assertEqual(result["citation_count"], 1)
+
+    def test_bls_report_section_and_docx_artifact_keep_canonical_semantics(self):
+        snapshot = {
+            "name": production_acceptance.BLS_NONFARM_NAME,
+            "value": "159075",
+            "unit": "千人",
+            "date": "2026-08-01",
+            "source_url": "https://api.bls.gov/publicAPI/v2/timeseries/data/CES0000000001",
+            "evidence_hash": "a" * 64,
+        }
+        content = {
+            "source_appendix": [],
+            "source_record_ids": [],
+            "model": {"sections": [], "sourceAppendix": []},
+        }
+        evidence = {
+            "source_url": snapshot["source_url"],
+            "verification_status": "verified",
+            "evidence_hash": snapshot["evidence_hash"],
+        }
+        attached = production_acceptance.attach_bls_nonfarm_report_section(content, snapshot, evidence)
+        self.assertEqual(attached["citation"], "S001")
+        self.assertIn(production_acceptance.BLS_NONFARM_NAME, content["text"])
+        self.assertNotIn("平均" + "时薪", content["text"])
+
+        document_xml = (
+            "<w:document>" + production_acceptance.BLS_NONFARM_NAME
+            + " 159075 千人 2026-08-01 BLS</w:document>"
+        ).encode("utf-8")
+        relationships = f'<Relationships Target="{snapshot["source_url"]}"/>'.encode("utf-8")
+        buffer = BytesIO()
+        with zipfile.ZipFile(buffer, "w") as archive:
+            archive.writestr("word/document.xml", document_xml)
+            archive.writestr("word/_rels/document.xml.rels", relationships)
+        result = production_acceptance.verify_bls_export_artifact("docx", buffer.getvalue(), snapshot)
+        self.assertEqual(result["status"], "passed")
 
 
 if __name__ == "__main__":

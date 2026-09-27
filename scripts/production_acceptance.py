@@ -10,6 +10,8 @@ import atexit
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import hmac
+import html
+import io
 import json
 import os
 from pathlib import Path
@@ -21,6 +23,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
+import zipfile
 
 
 class AcceptanceError(RuntimeError):
@@ -43,6 +46,16 @@ ACCEPTANCE_FINAL_STATE: dict = {}
 PLATFORM_RULE_DIMENSIONS = ("fee", "commission", "deposit", "fulfillment", "prohibited", "settlement", "penalty")
 LIVE_AI_PRIMARY_DEFAULT = "deepseek"
 LIVE_AI_FALLBACK_PROVIDERS = {"coze", "doubao", "openai"}
+BLS_NONFARM_SERIES_ID = "CES0000000001"
+BLS_NONFARM_RECORD_KEY = f"BLS_{BLS_NONFARM_SERIES_ID}"
+BLS_NONFARM_NAME = "美国非农就业人数：全部雇员（季调）"
+BLS_NONFARM_OFFICIAL_NAME = "All employees, thousands, total nonfarm, seasonally adjusted"
+BLS_NONFARM_UNIT = "千人"
+BLS_FORBIDDEN_LABELS = (
+    "美国非农" + "平均" + "时薪",
+    "非农" + "平均" + "时薪",
+    "平均" + "时薪",
+)
 
 
 def _acceptance_payload(body):
@@ -308,6 +321,188 @@ def provider_attempt_rows(request_id: str, acceptance_run_id: str) -> list[dict]
         "order": "attempt_no.asc",
         "limit": "10",
     })
+
+
+def validate_bls_nonfarm_snapshot(record: dict) -> dict:
+    expect(isinstance(record, dict), "production BLS nonfarm record is missing")
+    expect(str(record.get("series_id") or record.get("source_record_id") or "") == BLS_NONFARM_SERIES_ID,
+           f"production BLS series ID is incorrect: {record}")
+    expect(str(record.get("name") or "") == BLS_NONFARM_NAME,
+           f"production BLS Chinese name is incorrect: {record.get('name')}")
+    expect(str(record.get("official_name") or "") == BLS_NONFARM_OFFICIAL_NAME,
+           f"production BLS official name is incorrect: {record.get('official_name')}")
+    expect(str(record.get("unit") or "") == BLS_NONFARM_UNIT,
+           f"production BLS unit is incorrect: {record.get('unit')}")
+    expect(re.fullmatch(r"\d+(?:\.\d+)?", str(record.get("value") or "")) is not None,
+           f"production BLS value is invalid: {record.get('value')}")
+    expect(re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(record.get("date") or "")) is not None,
+           f"production BLS date is invalid: {record.get('date')}")
+    expect(str(record.get("source") or "").upper() == "BLS",
+           f"production BLS source is incorrect: {record.get('source')}")
+    expect(str(record.get("source_url") or "").startswith("https://api.bls.gov/")
+           and BLS_NONFARM_SERIES_ID in str(record.get("source_url") or ""),
+           f"production BLS source URL is incorrect: {record.get('source_url')}")
+    expect(str(record.get("metadata_url") or "").startswith("https://data.bls.gov/")
+           and BLS_NONFARM_SERIES_ID in str(record.get("metadata_url") or ""),
+           f"production BLS metadata URL is incorrect: {record.get('metadata_url')}")
+    expect(re.fullmatch(r"[0-9a-f]{64}", str(record.get("evidence_hash") or "")) is not None,
+           "production BLS evidence hash is missing or invalid")
+    serialized = json.dumps(record, ensure_ascii=False)
+    expect(not any(label in serialized for label in BLS_FORBIDDEN_LABELS),
+           f"legacy BLS hourly-earnings label leaked into production data: {serialized}")
+    return record
+
+
+def production_bls_nonfarm_snapshot() -> dict:
+    status, payload, _ = request(
+        "GET",
+        f"{SITE_URL}/data/us_market/macro_indicators.json",
+        headers={},
+    )
+    expect(status == 200 and isinstance(payload, dict),
+           f"production macro projection is unavailable: {status}")
+    meta = payload.get("meta") if isinstance(payload.get("meta"), dict) else {}
+    expect(meta.get("bls_metadata_verified") is True,
+           f"production macro projection did not pass BLS metadata verification: {meta}")
+    indicators = payload.get("indicators") if isinstance(payload.get("indicators"), dict) else {}
+    record = indicators.get(BLS_NONFARM_RECORD_KEY)
+    return validate_bls_nonfarm_snapshot(record)
+
+
+def production_bls_nonfarm_evidence(token: str, snapshot: dict) -> dict:
+    rows = select_rows("market_data_applicability", token, {
+        "select": "domain,record_key,market_code,platform_key,category_code,source_record_id,source_url,source_kind,source_type,verification_status,evidence_hash,collected_at,retrieved_at,published_at,verified_at,status,payload",
+        "source_record_id": f"eq.{BLS_NONFARM_SERIES_ID}",
+        "market_code": "eq.US",
+        "status": "eq.active",
+        "verification_status": "in.(verified,uploaded)",
+        "order": "verified_at.desc",
+        "limit": "10",
+    })
+    expect(rows, f"formal BLS record {BLS_NONFARM_SERIES_ID} is missing")
+    row = rows[0]
+    payload = row.get("payload") if isinstance(row.get("payload"), dict) else {}
+    validate_bls_nonfarm_snapshot(payload)
+    for field in ("name", "official_name", "value", "unit", "date", "source_url", "evidence_hash"):
+        expected = str(snapshot.get(field) or "")
+        actual = str(payload.get(field) or row.get(field) or "")
+        expect(actual == expected, f"formal BLS {field} does not match the public projection: expected={expected!r} actual={actual!r}")
+    expect(str(row.get("source_url") or "") == str(snapshot.get("source_url") or ""),
+           "formal BLS source URL does not match the public projection")
+    expect(str(row.get("evidence_hash") or "") == str(snapshot.get("evidence_hash") or ""),
+           "formal BLS evidence hash does not match the public projection")
+    return row
+
+
+def verify_bls_ai_response(body: dict, snapshot: dict) -> dict:
+    choices = body.get("choices") if isinstance(body, dict) else None
+    expect(isinstance(choices, list) and choices and isinstance(choices[0], dict),
+           f"BLS AI acceptance returned no answer: {body}")
+    message = choices[0].get("message") if isinstance(choices[0].get("message"), dict) else {}
+    content = str(message.get("content") or "").strip()
+    compact = content.replace(",", "").replace("，", "").replace(" ", "")
+    expect("非农" in content and ("就业" in content or "雇员" in content),
+           f"AI did not describe {BLS_NONFARM_SERIES_ID} as nonfarm employment: {content}")
+    expect(str(snapshot["value"]).replace(",", "") in compact,
+           f"AI omitted or changed the official BLS value: {content}")
+    expect(BLS_NONFARM_UNIT in content, f"AI omitted the BLS unit {BLS_NONFARM_UNIT}: {content}")
+    date = str(snapshot["date"])
+    chinese_month = f"{date[:4]}年{int(date[5:7])}月"
+    expect(date in content or date[:7] in content or chinese_month in content,
+           f"AI omitted the BLS data date {date}: {content}")
+    expect("[H" in content, f"AI omitted the formal-history citation marker: {content}")
+    expect(not any(label in content for label in BLS_FORBIDDEN_LABELS),
+           f"AI mislabeled nonfarm employment as hourly earnings: {content}")
+    retrieval = body.get("jay_retrieval") if isinstance(body.get("jay_retrieval"), dict) else {}
+    citations = retrieval.get("citations") if isinstance(retrieval.get("citations"), list) else []
+    matching = [item for item in citations if isinstance(item, dict)
+                and (str(item.get("source_record_id") or "") == BLS_NONFARM_SERIES_ID
+                     or BLS_NONFARM_SERIES_ID in str(item.get("record_key") or ""))]
+    expect(matching, f"AI response did not retrieve the formal BLS series: {retrieval}")
+    return {
+        "status": "passed",
+        "series_id": BLS_NONFARM_SERIES_ID,
+        "value": snapshot["value"],
+        "unit": snapshot["unit"],
+        "date": snapshot["date"],
+        "citation_count": len(matching),
+        "provider": (body.get("jay_gateway") or {}).get("provider"),
+        "model": (body.get("jay_gateway") or {}).get("model"),
+    }
+
+
+def attach_bls_nonfarm_report_section(content: dict, snapshot: dict, evidence: dict) -> dict:
+    appendix = content.get("source_appendix") if isinstance(content.get("source_appendix"), list) else []
+    source = next((item for item in appendix if isinstance(item, dict)
+                   and str(item.get("recordId") or "") == BLS_NONFARM_SERIES_ID), None)
+    if source is None:
+        source = {
+            "citation": f"S{len(appendix) + 1:03d}",
+            "source": "BLS",
+            "sourceCategory": "official_statistics",
+            "url": evidence.get("source_url") or snapshot["source_url"],
+            "date": snapshot["date"],
+            "verificationStatus": evidence.get("verification_status") or "verified",
+            "recordId": BLS_NONFARM_SERIES_ID,
+            "evidenceHash": evidence.get("evidence_hash") or snapshot["evidence_hash"],
+            "chapters": ["bls_semantics"],
+        }
+        appendix.append(source)
+    else:
+        chapters = source.get("chapters") if isinstance(source.get("chapters"), list) else []
+        if "bls_semantics" not in chapters:
+            chapters.append("bls_semantics")
+        source["chapters"] = chapters
+    citation = str(source["citation"])
+    section = {
+        "id": "bls_semantics",
+        "title": "BLS 非农就业指标核验",
+        "domain": "market",
+        "text": (
+            f"{snapshot['name']}：{snapshot['value']} {snapshot['unit']}，数据日期 {snapshot['date']}，"
+            f"官方序列 ID {BLS_NONFARM_SERIES_ID}，来源 BLS。[{citation}]"
+        ),
+    }
+    model = content.get("model") if isinstance(content.get("model"), dict) else {}
+    sections = model.get("sections") if isinstance(model.get("sections"), list) else []
+    sections = [item for item in sections if not isinstance(item, dict) or item.get("id") != "bls_semantics"]
+    sections.append(section)
+    model["sections"] = sections
+    model["sourceAppendix"] = appendix
+    content["model"] = model
+    content["source_appendix"] = appendix
+    content["source_record_ids"] = list(dict.fromkeys(
+        [str(item.get("recordId") or "") for item in appendix if isinstance(item, dict) and item.get("recordId")]
+    ))
+    body = "\n\n".join(f"## {item['title']}\n\n{str(item['text']).strip()}" for item in sections)
+    content["text"] = body + "\n\n## 来源与核验附录\n\n" + "\n".join(source_appendix_line(item) for item in appendix)
+    return {"citation": citation, "section": section, "source": source}
+
+
+def verify_bls_export_artifact(export_format: str, raw: bytes, snapshot: dict) -> dict:
+    expect(isinstance(raw, bytes) and raw, f"{export_format} BLS export is empty")
+    source_url = str(snapshot["source_url"])
+    required_tokens = [BLS_NONFARM_NAME, str(snapshot["value"]), BLS_NONFARM_UNIT, str(snapshot["date"]), "BLS"]
+    if export_format == "pdf":
+        serialized = raw.decode("latin-1", "ignore")
+        contains = lambda value: "".join(f"{ord(char):04x}" for char in value).lower() in serialized.lower()
+        source_present = source_url in serialized
+        forbidden_present = any(contains(label) for label in BLS_FORBIDDEN_LABELS)
+    elif export_format == "docx":
+        with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+            document_xml = archive.read("word/document.xml").decode("utf-8", "replace")
+            relationships = archive.read("word/_rels/document.xml.rels").decode("utf-8", "replace")
+        visible_text = html.unescape(re.sub(r"<[^>]+>", "", document_xml))
+        contains = lambda value: value in visible_text
+        source_present = source_url in visible_text or source_url in relationships
+        forbidden_present = any(label in visible_text for label in BLS_FORBIDDEN_LABELS)
+    else:
+        raise AcceptanceError(f"unsupported BLS export format: {export_format}")
+    missing = [token for token in required_tokens if not contains(token)]
+    expect(not missing, f"{export_format} BLS export omitted required content: {missing}")
+    expect(source_present, f"{export_format} BLS export omitted the official source URL")
+    expect(not forbidden_present, f"{export_format} BLS export contains a legacy hourly-earnings label")
+    return {"status": "passed", "format": export_format, "tokens": required_tokens, "source_url": source_url}
 
 
 def current_quality_gate(token: str) -> dict:
@@ -823,6 +1018,9 @@ def main() -> int:
     expect(len(run_rows) == 1, f"duplicate report generation created {len(run_rows)} run rows")
     run = duplicate_runs[0]
 
+    bls_snapshot = production_bls_nonfarm_snapshot()
+    bls_evidence = production_bls_nonfarm_evidence(token_a, bls_snapshot)
+
     ai_request_id = f"production-acceptance:{int(time.time())}:{uuid.uuid4().hex[:8]}"
     started = time.monotonic()
     status, ai_body, _ = function("ai-proxy", token_a, {
@@ -941,6 +1139,28 @@ def main() -> int:
     expect(multi_ai_acceptance["request_id_consistent"] is True,
            "fallback attempt audit changed the logical request ID")
 
+    bls_ai_request_id = f"production-acceptance-bls:{acceptance_run_id}"
+    status, bls_ai_body, _ = function("ai-proxy", token_a, {
+        "request_id": bls_ai_request_id,
+        "acceptance_run_id": acceptance_run_id,
+        "workspace_id": workspace_a,
+        "operation": "production.acceptance.r02_bls_semantics",
+        "task_type": "market_qa",
+        "provider": live_primary_provider,
+        "fallback_providers": [live_fallback_provider],
+        "retrieval": {"mode": "formal_only", "limit": 8},
+        "messages": [
+            {"role": "system", "content": "只根据系统正式记录回答，必须给出指标名称、最新数值、单位、数据日期、来源和引用编号，不得把就业人数描述成时薪。"},
+            {"role": "user", "content": f"{BLS_NONFARM_SERIES_ID} 代表什么指标？最新数值是多少？"},
+        ],
+        "temperature": 0,
+        "max_tokens": 256,
+        "stream": False,
+    }, timeout=90)
+    expect(status == 200 and isinstance(bls_ai_body, dict),
+           f"BLS AI semantic acceptance failed: {status} {bls_ai_body}")
+    bls_ai_acceptance = verify_bls_ai_response(bls_ai_body, bls_snapshot)
+
     fault_body = {
         "workspace_id": workspace_a,
         "operation": "production.acceptance.failure",
@@ -1010,7 +1230,9 @@ def main() -> int:
         }
 
     report_content = build_server_validated_report_content(token_a, report_text)
+    bls_report_acceptance = attach_bls_nonfarm_report_section(report_content, bls_snapshot, bls_evidence)
     formal_ready = report_content.get("publishable") is True
+    expect(formal_ready, "R02 BLS acceptance requires a formal report so PDF and DOCX semantics can be verified")
     report_gate: dict = {"mode": "formal" if formal_ready else "blocked"}
     if formal_ready:
         report = save_formal_report(
@@ -1070,6 +1292,7 @@ def main() -> int:
     exported = {}
     duplicate_export_checks = {}
     blocked_export_checks = {}
+    bls_export_checks = {}
     b_export = None
     if formal_ready:
         for name, extension, signature in (("report-export", "pdf", b"%PDF"), ("report-docx", "docx", b"PK")):
@@ -1101,6 +1324,7 @@ def main() -> int:
                    f"duplicate {extension} export persisted {len(idempotent_rows)} jobs")
             file_status, file_body, _ = request("GET", result["file_url"], headers={})
             expect(file_status == 200 and file_body.startswith(signature), f"{extension} download is invalid")
+            bls_export_checks[extension] = verify_bls_export_artifact(extension, file_body, bls_snapshot)
             exported[extension] = result["id"]
             duplicate_export_checks[extension] = {
                 "id": result["id"],
@@ -1269,6 +1493,13 @@ def main() -> int:
         "shared_export_id": shared_export.get("id"), "reverse_export_id": b_export.get("id") if b_export else None,
         "ai_request_id": ai_request_id,
         "multi_ai_acceptance": multi_ai_acceptance,
+        "bls_ai_acceptance": bls_ai_acceptance,
+        "bls_report_acceptance": {
+            "status": "passed",
+            "series_id": BLS_NONFARM_SERIES_ID,
+            "citation": bls_report_acceptance["citation"],
+            "exports": bls_export_checks,
+        },
         "report_content_gate": report_gate,
         "production_exceptions": {
             **exception_checks,
@@ -1295,6 +1526,12 @@ def main() -> int:
         "report_run_id": run["id"],
         "exports": exported,
         "multi_ai_acceptance": multi_ai_acceptance,
+        "bls_ai_acceptance": bls_ai_acceptance,
+        "bls_report_acceptance": {
+            "status": "passed",
+            "series_id": BLS_NONFARM_SERIES_ID,
+            "exports": bls_export_checks,
+        },
         "report_content_gate": report_gate,
         "invite_id": invite_id,
         "checks": result["checks"],
