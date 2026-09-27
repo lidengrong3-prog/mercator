@@ -61,6 +61,18 @@
     }, Promise.resolve());
   }
 
+  function dispatchPageAssetsReady(pageName) {
+    global.dispatchEvent(new CustomEvent('jay:page-assets-ready', {
+      detail: {
+        page: pageName,
+        assets: (PAGE_ASSETS[pageName] || []).slice()
+      }
+    }));
+  }
+
+  global.jayEnsurePageAssets = ensurePageAssets;
+  global.JAY_PAGE_ASSETS = PAGE_ASSETS;
+
   var baseSwitchPage = global.switchPage;
   if (typeof baseSwitchPage === 'function') {
     global.switchPage = function (pageName, options) {
@@ -69,16 +81,12 @@
       var paths = PAGE_ASSETS[pageName] || [];
       if (paths.every(function (path) { return loaded[path]; })) {
         var immediateResult = baseSwitchPage.apply(context, args);
-        global.dispatchEvent(new CustomEvent('jay:page-assets-ready', {
-          detail: { page: pageName }
-        }));
+        dispatchPageAssetsReady(pageName);
         return Promise.resolve(immediateResult);
       }
       return ensurePageAssets(pageName).then(function () {
         var result = baseSwitchPage.apply(context, args);
-        global.dispatchEvent(new CustomEvent('jay:page-assets-ready', {
-          detail: { page: pageName }
-        }));
+        dispatchPageAssetsReady(pageName);
         return result;
       }).catch(function (error) {
         console.error('[JAY观海] Page asset loading failed:', error);
@@ -92,9 +100,7 @@
     var activePage = document.querySelector('.page.active');
     var pageName = activePage ? activePage.id : 'overview';
     return ensurePageAssets(pageName).then(function () {
-      global.dispatchEvent(new CustomEvent('jay:page-assets-ready', {
-        detail: { page: pageName }
-      }));
+      dispatchPageAssetsReady(pageName);
     }).catch(function (error) {
       console.error('[JAY观海] Initial page asset loading failed:', error);
     });
@@ -105,7 +111,4 @@
     var app = document.getElementById('mainApp');
     if (app && app.classList.contains('active')) loadActivePageAssets();
   });
-
-  global.jayEnsurePageAssets = ensurePageAssets;
-  global.JAY_PAGE_ASSETS = PAGE_ASSETS;
 })(window);
