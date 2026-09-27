@@ -42,8 +42,8 @@
         "https://fred.stlouisfed.org/series/CPIAUCSL"
       ],
       [
-        "消费者信心指数(2026-07-01)",
-        "55.2 指数",
+        "消费者信心指数(2026-08-01)",
+        "51.7 指数",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/UMCSENT"
       ],
@@ -54,8 +54,8 @@
         "https://fred.stlouisfed.org/series/RSAFS"
       ],
       [
-        "10Y国债收益率(2026-09-22)",
-        "4.96 %",
+        "10Y国债收益率(2026-09-24)",
+        "5.18 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/DGS10"
       ],
@@ -66,8 +66,8 @@
         "https://fred.stlouisfed.org/series/HOUST"
       ],
       [
-        "30Y抵押贷款利率(2026-09-17)",
-        "6.95 %",
+        "30Y抵押贷款利率(2026-09-24)",
+        "7.03 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/MORTGAGE30US"
       ],
@@ -349,6 +349,6 @@
         ]
       ]
     },
-    "macro_updated": "2026-09-24 04:55 UTC"
+    "macro_updated": "2026-09-27 02:26 UTC"
   }
 }
