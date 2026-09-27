@@ -110,9 +110,11 @@ test('browser search and AI gateway share formal history identifiers', () => {
 
 test('category market questions receive macro context and an explicit evidence gap', () => {
   const ai = read('supabase', 'functions', 'ai-proxy', 'index.ts');
+  const macro = read('supabase', 'functions', '_shared', 'macro-retrieval.ts');
   const overview = read('assets', 'js', 'content-overview.js');
   assert.match(ai, /p_source_key: sourceKey/);
-  assert.match(ai, /function isMacroRow/);
+  assert.match(ai, /isMacroHistoryRow, isMacroQuestion, selectRelevantMacroRows/);
+  assert.match(macro, /function isMacroHistoryRow/);
   assert.match(ai, /美国整体电商和零售宏观指标只能作为背景/);
   assert.match(ai, /function marketEvidenceGapSupplement/);
   assert.match(ai, /专属销售额、销量、消费者画像、平台竞争或价格带记录/);
@@ -122,10 +124,12 @@ test('category market questions receive macro context and an explicit evidence g
 });
 
 test('employment macro rows remain eligible for AI evidence retrieval', () => {
-  const ai = read('supabase', 'functions', 'ai-proxy', 'index.ts');
-  assert.match(ai, /ces0000000001\|payems\|unrate/);
-  assert.match(ai, /employment\|nonfarm/);
-  assert.match(ai, /就业\|非农\|失业/);
+  const macro = read('supabase', 'functions', '_shared', 'macro-retrieval.ts');
+  assert.match(macro, /MACRO_ROW_PATTERN/);
+  assert.match(macro, /payems\|unrate/);
+  assert.match(macro, /employment\|nonfarm/);
+  assert.match(macro, /就业\|非农\|失业/);
+  assert.match(macro, /selectRelevantMacroRows/);
 });
 
 test('a 100k-row SQL performance and pagination acceptance fixture is available', () => {

@@ -12,6 +12,7 @@ import {
 } from '../_shared/ai-gateway.ts';
 import type { GatewayProvider } from '../_shared/ai-gateway.ts';
 import { invokeCozeChat } from '../_shared/coze-chat.ts';
+import { isMacroHistoryRow, isMacroQuestion, selectRelevantMacroRows } from '../_shared/macro-retrieval.ts';
 
 const defaultOrigins = [
   'https://lidengrong3-prog.github.io',
@@ -136,7 +137,7 @@ function firstString(value: unknown): string | null {
 }
 
 function isBusinessDataQuery(value: string): boolean {
-  return /最近|最新|今日|今天|当前|目前|趋势|销售|销量|市场表现|卖得|怎么样|召回|cpsc|佣金|政策|规则|关税|税率|准入|合规|平台费|竞争|竞品|市场规模|消费者|市场机会|市场风险/i.test(value);
+  return isMacroQuestion(value) || /最近|最新|今日|今天|当前|目前|趋势|销售|销量|市场表现|卖得|怎么样|召回|cpsc|佣金|政策|规则|关税|税率|准入|合规|平台费|竞争|竞品|市场规模|消费者|市场机会|市场风险/i.test(value);
 }
 
 function isRefusalStyleAnswer(value: string): boolean {
@@ -211,18 +212,9 @@ async function retrieveFormalHistory(options: {
   function isCategoryQuestion(value: string): boolean {
     return /珠宝|首饰|jewelry|apparel|服装|鞋|箱包|家居|家具|电子|electronics|美容|美妆|食品|玩具|宠物|户外|运动/i.test(value);
   }
-  function isMacroRow(item: unknown): boolean {
-    if (!item || typeof item !== 'object') return false;
-    const row = item as Record<string, unknown>;
-    const source = String(row.source_key || '').toLowerCase();
-    if (!['fred', 'bls', 'macro-official'].includes(source)) return false;
-    const key = [row.record_key, row.title, row.content_excerpt, row.summary]
-      .map((part) => String(part || '').toLowerCase()).join(' ');
-    return /ecomsa|ecompctsa|rsafs|umcsent|dspic96|pcec96|cpi|mrtssm|ces0000000001|payems|unrate|retail|employment|nonfarm|零售|电商|消费|收入|信心|就业|非农|失业/.test(key);
-  }
   function filterFallbackRows(rowsToFilter: unknown[], macroOnly = false): unknown[] {
     const signals = querySignals(query);
-    if (macroOnly) return rowsToFilter.filter(isMacroRow);
+    if (macroOnly) return rowsToFilter.filter(isMacroHistoryRow);
     if (!signals.length) return [];
     return rowsToFilter.filter((item) => {
       if (!item || typeof item !== 'object') return false;
@@ -250,12 +242,12 @@ async function retrieveFormalHistory(options: {
   // Category questions such as "珠宝在美国销售怎么样" have no governed
   // category sales rows yet. Add only official macro records as background;
   // never turn apparel or another category into a jewelry claim.
-  if (isMarketQuestion(query) && (isCategoryQuestion(query) || !rows.length)) {
+  if (isMacroQuestion(query) || (isMarketQuestion(query) && (isCategoryQuestion(query) || !rows.length))) {
     const macroResults = await Promise.all(['fred', 'bls', 'macro-official'].map((sourceKey) => (
       search('', 'newest', { p_source_key: sourceKey, p_limit: 24 })
     )));
     const macroRows = macroResults.flatMap((result) => result.rows);
-    const selectedMacroRows = filterFallbackRows(macroRows, true);
+    const selectedMacroRows = selectRelevantMacroRows(macroRows, query, 8);
     const existingIds = new Set(rows.map((item) => {
       if (!item || typeof item !== 'object') return '';
       const row = item as Record<string, unknown>;
@@ -268,8 +260,8 @@ async function retrieveFormalHistory(options: {
       return id && !existingIds.has(id);
     }).slice(0, 8);
     if (additions.length) {
-      rows = [...rows, ...additions];
-      macroBackgroundIncluded = true;
+      rows = isMacroQuestion(query) ? [...additions, ...rows] : [...rows, ...additions];
+      macroBackgroundIncluded = isMarketQuestion(query) && isCategoryQuestion(query);
       retrievalFallback = retrievalFallback || !exact.rows.length;
       retrievalError = macroResults.find((result) => result.error)?.error || retrievalError;
     }
