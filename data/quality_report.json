@@ -58,14 +58,14 @@
     "manifest": "data/market_scope.json"
   },
   "provenance_schema": "data/provenance_schema.json",
-  "generated_at": "2026-09-27T07:53:20.691791+00:00",
+  "generated_at": "2026-09-27T14:01:52.913983+00:00",
   "status": "degraded",
   "publishable": true,
   "collection_run": {
     "quality_status": "degraded",
     "ledger_schema_version": 2,
     "ledger_status": "degraded",
-    "completed_at": "2026-09-27T07:53:20.174256+00:00",
+    "completed_at": "2026-09-27T14:01:52.244997+00:00",
     "scope": {
       "market_codes": [
         "US"
@@ -97,9 +97,9 @@
   },
   "summary": {
     "datasets": 11,
-    "raw_records": 803,
-    "scoped_records": 615,
-    "formal_records": 593,
+    "raw_records": 802,
+    "scoped_records": 614,
+    "formal_records": 592,
     "demo_records": 0,
     "unverified_records": 96,
     "missing_source_records": 52,
@@ -138,18 +138,18 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-27T07:53:20.174256+00:00",
+      "updated_at": "2026-09-27T14:01:52.244997+00:00",
       "freshness_hours": 0.0,
       "connected": true,
       "errors": [],
       "warnings": [
-        "部分请求失败，来源降级：aliexpress_rules, amazon_rules, tiktok_shop_rules, us_access_official, us_tax_official",
+        "部分请求失败，来源降级：aliexpress_rules, amazon_rules, fred_bls_macro, tiktok_shop_rules, us_access_official, us_tax_official",
         "非核心来源采集失败：ustr"
       ],
       "metrics": {
         "ledger_schema_version": 2,
         "ledger_status": "degraded",
-        "ledger_completed_at": "2026-09-27T07:53:20.174256+00:00",
+        "ledger_completed_at": "2026-09-27T14:01:52.244997+00:00",
         "ledger_scope": {
           "market_codes": [
             "US"
@@ -189,8 +189,8 @@
           "pet-supplies"
         ],
         "source_status_counts": {
-          "succeeded": 8,
-          "degraded": 5,
+          "succeeded": 7,
+          "degraded": 6,
           "failed": 1,
           "skipped": 0
         },
@@ -212,12 +212,12 @@
         "unconnected_platform_keys": [],
         "ledger_summary": {
           "sources": 14,
-          "succeeded": 8,
-          "degraded": 5,
+          "succeeded": 7,
+          "degraded": 6,
           "failed": 1,
           "core_failures": [],
-          "records_collected": 470,
-          "records_in_scope": 485
+          "records_collected": 465,
+          "records_in_scope": 482
         }
       }
     },
@@ -239,7 +239,7 @@
         "unverified": 44,
         "out_of_scope": 41
       },
-      "updated_at": "2026-09-27T07:51:51.621683+00:00",
+      "updated_at": "2026-09-27T13:59:55.099708+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -249,7 +249,7 @@
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-27T15:51:51.621683+08:00",
+        "content_updated_at": "2026-09-27T21:59:55.099708+08:00",
         "formal_records": 284,
         "demo_records": 0,
         "unverified_records": 44,
@@ -315,14 +315,14 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-27T07:53:04.291022+00:00",
+      "updated_at": "2026-09-27T14:00:37.260696+00:00",
       "freshness_hours": 0.0,
       "connected": true,
       "errors": [],
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-27T07:53:04.291022+00:00",
+        "content_updated_at": "2026-09-27T14:00:37.260696+00:00",
         "formal_records": 5,
         "demo_records": 0,
         "unverified_records": 0,
@@ -384,14 +384,14 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-27T07:53:05.042788+00:00",
+      "updated_at": "2026-09-27T14:00:37.617229+00:00",
       "freshness_hours": 0.0,
       "connected": true,
       "errors": [],
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-27T07:53:05.042788+00:00",
+        "content_updated_at": "2026-09-27T14:00:37.617229+00:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 0,
@@ -459,7 +459,7 @@
         "out_of_scope_platform": 45,
         "missing_provenance_fields": 52
       },
-      "updated_at": "2026-09-27T07:51:51.621683+00:00",
+      "updated_at": "2026-09-27T13:59:55.099708+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -472,7 +472,7 @@
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-09-27T15:51:51.621683+08:00",
+        "content_updated_at": "2026-09-27T21:59:55.099708+08:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 52,
@@ -540,7 +540,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-27T07:53:20.239854+00:00",
+      "updated_at": "2026-09-27T14:01:52.326972+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -604,7 +604,7 @@
       "missing_source_records": 0,
       "excluded_records": 38,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-27T07:53:20.173244+00:00",
+      "updated_at": "2026-09-27T14:01:52.243742+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -656,7 +656,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-27T07:53:05.202184+00:00",
+      "updated_at": "2026-09-27T14:00:37.818815+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
@@ -700,22 +700,22 @@
       "label": "美国宏观指标",
       "status": "healthy",
       "path": "data/us_market/macro_indicators.json",
-      "records": 30,
-      "raw_records": 30,
-      "scoped_records": 30,
-      "formal_records": 30,
+      "records": 29,
+      "raw_records": 29,
+      "scoped_records": 29,
+      "formal_records": 29,
       "demo_records": 0,
       "unverified_records": 0,
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-27T07:53:20.173244+00:00",
+      "updated_at": "2026-09-27T14:01:52.243742+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
       "warnings": [],
       "metrics": {
-        "formal_records": 30,
+        "formal_records": 29,
         "demo_records": 0,
         "unverified_records": 0,
         "missing_source_records": 0,
@@ -723,14 +723,14 @@
         "exclusion_reasons": {},
         "legacy_inferred_records": 0,
         "source_kind_counts": {
-          "official": 30,
+          "official": 29,
           "traceable": 0,
           "uploaded": 0,
           "derived": 0,
           "demo": 0
         },
         "verification_status_counts": {
-          "verified": 30,
+          "verified": 29,
           "uploaded": 0,
           "pending": 0,
           "rejected": 0
@@ -739,7 +739,7 @@
           "government": 0,
           "regulator": 0,
           "platform": 0,
-          "official_feed": 30,
+          "official_feed": 29,
           "industry_association": 0,
           "licensed_provider": 0,
           "user_upload": 0,
@@ -747,13 +747,13 @@
           "demo": 0,
           "unknown": 0
         },
-        "official_or_traceable_records": 30,
-        "provenance_complete_records": 30,
+        "official_or_traceable_records": 29,
+        "provenance_complete_records": 29,
         "malformed_records": 0,
         "missing_sources": 0,
         "missing_or_invalid_urls": 0,
-        "collector_fetched": 30,
-        "collector_failed": 0,
+        "collector_fetched": 29,
+        "collector_failed": 1,
         "bls_semantic_errors": 0,
         "missing_bls_series": [],
         "unexpected_bls_series": []
@@ -773,7 +773,7 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-09-27T07:53:13.199282+00:00",
+      "updated_at": "2026-09-27T14:00:42.617323+00:00",
       "freshness_hours": 0.0,
       "connected": null,
       "errors": [],
