@@ -245,11 +245,8 @@
   var _switchPage=switchPage;
   switchPage=function(name,opts){
     var result=_switchPage(name,opts);
-    var afterSwitch=function(value){
-      try{jayGlossifyActive();jaySyncPlatformCount();jayNormalizeProducts();}catch(e){}
-      return value;
-    };
-    return result&&typeof result.then==='function'?result.then(afterSwitch):afterSwitch(result);
+    function done(value){try{jayGlossifyActive();jaySyncPlatformCount();jayNormalizeProducts();}catch(e){}return value}
+    return result&&typeof result.then==='function'?result.then(done):done(result);
   };
 
   // ================= N-01 回到顶部 =================
@@ -355,8 +352,8 @@
       var result;
       try{ result=_jayOrigSp(n,o); }
       catch(e){ if(typeof console!=='undefined')console.warn(e); return Promise.reject(e); }
-      var afterSwitch=function(value){ try{ jaySetFbCtx(n); }catch(e){} return value; };
-      return result&&typeof result.then==='function'?result.then(afterSwitch):afterSwitch(result);
+      function done(value){try{jaySetFbCtx(n)}catch(e){}return value}
+      return result&&typeof result.then==='function'?result.then(done):done(result);
     };
   }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',function(){ jayInitFrontendOnce(); jayBoot(); }); }

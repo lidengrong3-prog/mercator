@@ -61,13 +61,10 @@
     }, Promise.resolve());
   }
 
-  function dispatchPageAssetsReady(pageName) {
-    global.dispatchEvent(new CustomEvent('jay:page-assets-ready', {
-      detail: {
-        page: pageName,
-        assets: (PAGE_ASSETS[pageName] || []).slice()
-      }
-    }));
+  function dispatchReady(pageName) {
+    global.dispatchEvent(new CustomEvent('jay:page-assets-ready',{detail:{
+      page:pageName,assets:(PAGE_ASSETS[pageName]||[]).slice()
+    }}));
   }
 
   global.jayEnsurePageAssets = ensurePageAssets;
@@ -75,18 +72,18 @@
 
   var baseSwitchPage = global.switchPage;
   if (typeof baseSwitchPage === 'function') {
-    global.switchPage = function (pageName, options) {
+    global.switchPage = function (pageName) {
       var context = this;
       var args = arguments;
       var paths = PAGE_ASSETS[pageName] || [];
       if (paths.every(function (path) { return loaded[path]; })) {
         var immediateResult = baseSwitchPage.apply(context, args);
-        dispatchPageAssetsReady(pageName);
+        dispatchReady(pageName);
         return Promise.resolve(immediateResult);
       }
       return ensurePageAssets(pageName).then(function () {
         var result = baseSwitchPage.apply(context, args);
-        dispatchPageAssetsReady(pageName);
+        dispatchReady(pageName);
         return result;
       }).catch(function (error) {
         console.error('[JAY观海] Page asset loading failed:', error);
@@ -100,7 +97,7 @@
     var activePage = document.querySelector('.page.active');
     var pageName = activePage ? activePage.id : 'overview';
     return ensurePageAssets(pageName).then(function () {
-      dispatchPageAssetsReady(pageName);
+      dispatchReady(pageName);
     }).catch(function (error) {
       console.error('[JAY观海] Initial page asset loading failed:', error);
     });
