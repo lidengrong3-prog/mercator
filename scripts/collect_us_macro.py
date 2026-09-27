@@ -22,8 +22,10 @@ collect_us_macro.py — 美国宏观经济数据实时采集器
 
 import json
 import csv
+import html
 import io
 import os
+import re
 import time
 import sys
 import urllib.request
@@ -33,6 +35,7 @@ import ssl
 from datetime import datetime, timezone, timedelta
 
 from collect_data import annotate_provenance
+from bls_series import BLS_METADATA_PAGE_BASE, BLS_SERIES, bls_evidence_hash
 from collection_telemetry import append_collection_source
 from source_governance import SourceGovernanceError, assert_source_collectable
 
@@ -88,14 +91,6 @@ FRED_SERIES = {
     "MRTSSM442USS": {"name": "家具和家居用品门店零售", "unit": "百万美元", "seasonal": "SA"},
 }
 
-# BLS 系列 (补充 FRED)
-BLS_SERIES = {
-    "CUSR0000SA0": "CPI 全部商品",
-    "CUSR0000SA0L1E": "CPI 食品",
-    "CUSR0000SA0L5": "CPI 能源",
-    "CES0000000001": "平均时薪 (全部雇员)",
-}
-
 try:
     SSL_CTX = ssl.create_default_context()
 except Exception:
@@ -113,6 +108,86 @@ def http_get_json(url, timeout=30):
     except Exception as e:
         print(f"  [WARN] HTTP GET failed: {url} -> {e}")
         return None
+
+
+def http_get_text(url, timeout=30):
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    try:
+        kwargs = {"timeout": timeout}
+        if SSL_CTX:
+            kwargs["context"] = SSL_CTX
+        with urllib.request.urlopen(req, **kwargs) as resp:
+            return resp.read().decode("utf-8-sig")
+    except Exception as exc:
+        print(f"  [WARN] HTTP GET failed: {url} -> {exc}")
+        return None
+
+
+def _normalized_bls_text(value):
+    return " ".join(str(value or "").split()).casefold()
+
+
+def _extract_bls_catalog_field(body, label):
+    match = re.search(
+        rf"<th[^>]*>\s*{re.escape(label)}:\s*</th>\s*<td[^>]*>(.*?)</td>",
+        body,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if not match:
+        return ""
+    without_tags = re.sub(r"<[^>]+>", " ", match.group(1))
+    return " ".join(html.unescape(without_tags).split())
+
+
+def fetch_bls_series_metadata(series_ids=None):
+    """Fetch authoritative catalog fields from each BLS official series page."""
+    requested = set(series_ids or BLS_SERIES)
+    metadata = {}
+    for series_id in requested:
+        configured = BLS_SERIES.get(series_id, {})
+        url = f"{BLS_METADATA_PAGE_BASE}/{series_id}"
+        body = http_get_text(url, timeout=30)
+        if not body:
+            continue
+        official_id = _extract_bls_catalog_field(body, "Series Id")
+        official_title = _extract_bls_catalog_field(body, "Series Title")
+        if official_id != series_id or not official_title:
+            continue
+        metadata[series_id] = {
+            "series_id": official_id,
+            "series_title": official_title,
+            "seasonal": "S" if re.search(r">\s*Seasonally Adjusted\s*<", body, re.IGNORECASE) else "U",
+            "base_period": _extract_bls_catalog_field(body, "Base Period"),
+            "data_type": _extract_bls_catalog_field(body, "Data Type"),
+            "metadata_url": url,
+            "survey": configured.get("survey", ""),
+        }
+    return metadata
+
+
+def validate_bls_series_metadata(series_id, configured, official):
+    """Reject a BLS series when its configured semantics differ from BLS metadata."""
+    if not official:
+        raise ValueError(f"BLS metadata missing for {series_id}")
+    actual_title = official.get("series_title", "")
+    expected_title = configured.get("official_name", "")
+    if _normalized_bls_text(actual_title) != _normalized_bls_text(expected_title):
+        raise ValueError(
+            f"BLS title mismatch for {series_id}: expected {expected_title!r}, got {actual_title!r}"
+        )
+    actual_seasonal = str(official.get("seasonal") or "").strip().upper()
+    expected_seasonal = str(configured.get("seasonal") or "").strip().upper()
+    if expected_seasonal and actual_seasonal != expected_seasonal:
+        raise ValueError(
+            f"BLS seasonal mismatch for {series_id}: expected {expected_seasonal}, got {actual_seasonal}"
+        )
+    expected_base = str(configured.get("base_period") or "").strip()
+    actual_base = str(official.get("base_period") or "").strip()
+    if expected_base and actual_base != expected_base:
+        raise ValueError(
+            f"BLS base period mismatch for {series_id}: expected {expected_base!r}, got {actual_base!r}"
+        )
+    return actual_title
 
 
 def fetch_fred(series_id, api_key="", limit=5):
@@ -203,6 +278,8 @@ def collect_all(fred_key="", census_key=""):
     failed = 0
     fred_enabled = True
     bls_enabled = True
+    bls_metadata = {}
+    bls_metadata_verified_at = None
     try:
         assert_source_collectable("fred")
     except SourceGovernanceError as error:
@@ -213,6 +290,15 @@ def collect_all(fred_key="", census_key=""):
     except SourceGovernanceError as error:
         print(f"[MACRO] BLS collection skipped: {error}")
         bls_enabled = False
+    if bls_enabled:
+        try:
+            bls_metadata = fetch_bls_series_metadata(BLS_SERIES)
+            for series_id, configured in BLS_SERIES.items():
+                validate_bls_series_metadata(series_id, configured, bls_metadata.get(series_id))
+            bls_metadata_verified_at = datetime.now(timezone.utc).isoformat()
+        except ValueError as error:
+            print(f"[MACRO] BLS metadata validation failed: {error}")
+            bls_enabled = False
 
     # FRED data
     for series_id, meta in FRED_SERIES.items():
@@ -239,19 +325,32 @@ def collect_all(fred_key="", census_key=""):
     
     # BLS data (no key needed)
     print("\n[MACRO] Fetching BLS data (no key required)...")
-    for series_id, name in BLS_SERIES.items():
-        print(f"  BLS: {series_id} ({name})...", end=" ")
+    for series_id, configured in BLS_SERIES.items():
+        print(f"  BLS: {series_id} ({configured['name']})...", end=" ")
         result = fetch_bls(series_id) if bls_enabled else None
         if result:
+            official = bls_metadata[series_id]
+            official_name = validate_bls_series_metadata(series_id, configured, official)
             bls_key = f"BLS_{series_id}"
-            indicators[bls_key] = annotate_provenance({
-                "name": name,
+            bls_record = annotate_provenance({
+                "series_id": series_id,
+                "name": configured["name"],
+                "official_name": official_name,
                 "value": result["value"],
-                "unit": "见BLS",
+                "unit": configured["unit"],
                 "date": result["date"],
+                "description": configured["description"],
+                "seasonal_adjustment": configured["seasonal_adjustment"],
+                "frequency": configured["frequency"],
+                "base_period": configured["base_period"] or None,
                 "source": "BLS",
                 "source_url": f"https://api.bls.gov/publicAPI/v2/timeseries/data/{series_id}",
+                "metadata_url": official["metadata_url"],
+                "metadata_verified_at": bls_metadata_verified_at,
+                "source_record_id": series_id,
             }, default_source_kind="official", default_source_type="official_feed")
+            bls_record["evidence_hash"] = bls_evidence_hash(bls_record)
+            indicators[bls_key] = bls_record
             fetched += 1
             print(f"✅ {result['value']} ({result['date']})")
         else:
@@ -266,6 +365,8 @@ def collect_all(fred_key="", census_key=""):
             "fetched": fetched,
             "failed": failed,
             "has_fred_key": bool(fred_key),
+            "bls_metadata_verified": bool(bls_metadata_verified_at),
+            "bls_metadata_verified_at": bls_metadata_verified_at,
         },
         "indicators": indicators,
     }

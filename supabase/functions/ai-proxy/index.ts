@@ -218,7 +218,7 @@ async function retrieveFormalHistory(options: {
     if (!['fred', 'bls', 'macro-official'].includes(source)) return false;
     const key = [row.record_key, row.title, row.content_excerpt, row.summary]
       .map((part) => String(part || '').toLowerCase()).join(' ');
-    return /ecomsa|ecompctsa|rsafs|umcsent|dspic96|pcec96|cpi|mrtssm|retail|零售|电商|消费|收入|信心/.test(key);
+    return /ecomsa|ecompctsa|rsafs|umcsent|dspic96|pcec96|cpi|mrtssm|ces0000000001|payems|unrate|retail|employment|nonfarm|零售|电商|消费|收入|信心|就业|非农|失业/.test(key);
   }
   function filterFallbackRows(rowsToFilter: unknown[], macroOnly = false): unknown[] {
     const signals = querySignals(query);
@@ -342,7 +342,7 @@ function marketEvidenceGapSupplement(query: string, citations: FormalCitation[])
   const macroRows = citations.filter((citation) => {
     const haystack = `${citation.record_key} ${citation.title} ${citation.excerpt}`.toLowerCase();
     return ['fred', 'bls', 'macro-official'].includes(citation.source_key.toLowerCase())
-      && /ecomsa|ecompctsa|rsafs|umcsent|dspic96|pcec96|cpi|retail|零售|电商|消费|收入|信心/.test(haystack);
+      && /ecomsa|ecompctsa|rsafs|umcsent|dspic96|pcec96|cpi|ces0000000001|payems|unrate|retail|employment|nonfarm|零售|电商|消费|收入|信心|就业|非农|失业/.test(haystack);
   });
   const facts = macroRows.slice(0, 4).map((citation) => {
     const raw = `${citation.title} ${citation.excerpt}`;

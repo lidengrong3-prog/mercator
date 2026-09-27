@@ -10,6 +10,7 @@ from unittest.mock import patch
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
+from bls_series import BLS_METADATA_PAGE_BASE, BLS_SERIES, bls_evidence_hash  # noqa: E402
 from validate_data import (  # noqa: E402
     CPSC_MAX_AGE_HOURS,
     DatasetResult,
@@ -27,11 +28,84 @@ from validate_data import (  # noqa: E402
     validate_collection_run,
     validate_alerts,
     validate_items_dataset,
+    validate_macro,
     regulatory_source_hash,
 )
 
 
 class ValidateDataTests(unittest.TestCase):
+    @staticmethod
+    def canonical_macro_payload(now):
+        indicators = {}
+        for series_id, configured in BLS_SERIES.items():
+            record = {
+                "series_id": series_id,
+                "official_name": configured["official_name"],
+                "name": configured["name"],
+                "value": "100",
+                "unit": configured["unit"],
+                "date": "2026-08-01",
+                "description": configured["description"],
+                "seasonal_adjustment": configured["seasonal_adjustment"],
+                "frequency": configured["frequency"],
+                "base_period": configured["base_period"] or None,
+                "source": "BLS",
+                "source_url": f"https://api.bls.gov/publicAPI/v2/timeseries/data/{series_id}",
+                "metadata_url": f"{BLS_METADATA_PAGE_BASE}/{series_id}",
+                "metadata_verified_at": now.isoformat(),
+                "source_record_id": series_id,
+            }
+            record["evidence_hash"] = bls_evidence_hash(record)
+            indicators[f"BLS_{series_id}"] = record
+        for index in range(6):
+            indicators[f"FRED_TEST_{index}"] = {
+                "name": f"测试指标 {index}",
+                "value": str(index),
+                "unit": "指数",
+                "date": "2026-08-01",
+                "source": "FRED",
+                "source_url": f"https://fred.stlouisfed.org/series/TEST{index}",
+            }
+        return {
+            "meta": {
+                "generated_at": now.isoformat(),
+                "fetched": len(indicators),
+                "failed": 0,
+                "bls_metadata_verified": True,
+                "bls_metadata_verified_at": now.isoformat(),
+            },
+            "indicators": indicators,
+        }
+
+    def test_macro_gate_accepts_only_canonical_bls_semantics(self):
+        now = datetime(2026, 9, 27, tzinfo=timezone.utc)
+        payload = self.canonical_macro_payload(now)
+        with tempfile.TemporaryDirectory() as directory:
+            target = os.path.join(directory, "us_market")
+            os.makedirs(target)
+            with open(os.path.join(target, "macro_indicators.json"), "w", encoding="utf-8") as handle:
+                json.dump(payload, handle, ensure_ascii=False)
+            with patch("validate_data.DATA_DIR", directory):
+                result = validate_macro(now)
+        self.assertEqual(result.errors, [])
+        self.assertEqual(result.metrics["bls_semantic_errors"], 0)
+
+    def test_macro_gate_blocks_tampered_bls_name_and_value(self):
+        now = datetime(2026, 9, 27, tzinfo=timezone.utc)
+        payload = self.canonical_macro_payload(now)
+        target = payload["indicators"]["BLS_CES0000000001"]
+        target["name"] = "美国劳动力价格指标"
+        target["value"] = "999"
+        with tempfile.TemporaryDirectory() as directory:
+            folder = os.path.join(directory, "us_market")
+            os.makedirs(folder)
+            with open(os.path.join(folder, "macro_indicators.json"), "w", encoding="utf-8") as handle:
+                json.dump(payload, handle, ensure_ascii=False)
+            with patch("validate_data.DATA_DIR", directory):
+                result = validate_macro(now)
+        self.assertTrue(any("name 与登记语义不一致" in error for error in result.errors))
+        self.assertTrue(any("evidence_hash 与指标语义或观测值不匹配" in error for error in result.errors))
+
     def test_alert_quality_does_not_infer_collection_time_from_display_date(self):
         now = datetime(2026, 9, 7, tzinfo=timezone.utc)
         payload = [[

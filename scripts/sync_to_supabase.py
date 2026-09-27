@@ -579,6 +579,19 @@ def _is_public_macro_indicator(indicator_key, value, generated_at):
     )
 
 
+def macro_indicator_summary(value):
+    """Serialize the user-visible macro fact without losing its unit or date."""
+    if not isinstance(value, dict):
+        return ""
+    fields = ("name", "value", "unit", "date", "description", "official_name", "series_id")
+    return json.dumps(
+        {field: value.get(field) for field in fields if value.get(field) is not None},
+        ensure_ascii=False,
+        sort_keys=False,
+        separators=(",", ":"),
+    )
+
+
 def iter_provenance_records(only="all"):
     selected = set(PROVENANCE_DATASETS) if only == "all" else {only}
     for key, (filename, domain) in PROVENANCE_DATASETS.items():
@@ -593,6 +606,8 @@ def iter_provenance_records(only="all"):
             generated_at = data.get("meta", {}).get("generated_at")
             rows = [
                 dict(value, id=value.get("id") or indicator_key, market="US",
+                     title=value.get("title") or value.get("name") or indicator_key,
+                     summary=value.get("summary") or macro_indicator_summary(value),
                      source_type=value.get("source_type") or "official_feed",
                      published_at=value.get("published_at") or value.get("date"),
                      collected_at=value.get("collected_at") or generated_at)
@@ -1008,8 +1023,8 @@ def build_history_rows(quality_report, raw_rows, applicability_rows, only="all")
             "market_code": app.get("market_code"), "platform_key": app.get("platform_key"),
             "category_code": app.get("category_code"), "jurisdiction_code": app.get("jurisdiction_code"),
             "status": "active",
-            "title": raw.get("payload", {}).get("title") or app.get("record_key"),
-            "summary": raw.get("payload", {}).get("summary") or raw.get("payload", {}).get("detail"),
+            "title": raw.get("payload", {}).get("title") or raw.get("payload", {}).get("name") or app.get("record_key"),
+            "summary": raw.get("payload", {}).get("summary") or raw.get("payload", {}).get("detail") or raw.get("payload", {}).get("description"),
             "source_url": raw.get("source_url"), "published_at": raw.get("published_at"),
             "effective_from": raw.get("effective_from"), "effective_to": raw.get("effective_to"),
             "collected_at": raw["collected_at"], "first_seen_at": raw["collected_at"],

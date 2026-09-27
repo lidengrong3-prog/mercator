@@ -121,6 +121,13 @@ test('category market questions receive macro context and an explicit evidence g
   assert.match(overview, /无正式记录时正常回答/);
 });
 
+test('employment macro rows remain eligible for AI evidence retrieval', () => {
+  const ai = read('supabase', 'functions', 'ai-proxy', 'index.ts');
+  assert.match(ai, /ces0000000001\|payems\|unrate/);
+  assert.match(ai, /employment\|nonfarm/);
+  assert.match(ai, /就业\|非农\|失业/);
+});
+
 test('a 100k-row SQL performance and pagination acceptance fixture is available', () => {
   const benchmark = read('scripts', 'history_search_benchmark.sql');
   assert.match(benchmark, /generate_series\(1, 100000\)/);

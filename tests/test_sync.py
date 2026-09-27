@@ -85,6 +85,27 @@ class SyncTests(unittest.TestCase):
         self.assertTrue({"macro", "cpsc"}.issubset(set(sync_to_supabase.PROVENANCE_DATASETS)))
         self.assertIn("retrieved_at", rows[0])
 
+    def test_bls_macro_projection_preserves_user_visible_semantics(self):
+        raw_rows = sync_to_supabase.build_raw_record_rows({"datasets": {}}, "macro")
+        nonfarm = next(row for row in raw_rows if row["source_record_id"] == "CES0000000001")
+        self.assertEqual(nonfarm["payload"]["title"], "美国非农就业人数：全部雇员（季调）")
+        summary = json.loads(nonfarm["payload"]["summary"])
+        self.assertEqual(summary["name"], nonfarm["payload"]["title"])
+        self.assertEqual(summary["unit"], "千人")
+        self.assertEqual(summary["value"], nonfarm["payload"]["value"])
+        self.assertEqual(summary["date"], nonfarm["payload"]["date"])
+
+        applicability = sync_to_supabase.build_applicability_rows({"datasets": {}}, "macro")
+        history = sync_to_supabase.build_history_rows(
+            {"collection_run": {}}, raw_rows, applicability, "macro"
+        )
+        publication = next(
+            row for row in history["formal_publications"]
+            if row["record_key"] == "BLS_CES0000000001"
+        )
+        self.assertEqual(publication["title"], "美国非农就业人数：全部雇员（季调）")
+        self.assertEqual(json.loads(publication["summary"])["unit"], "千人")
+
     def test_private_provenance_inputs_are_loaded_after_worker_restore(self):
         generated_at = "2026-09-15T00:00:00+00:00"
         with tempfile.TemporaryDirectory() as directory:

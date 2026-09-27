@@ -14,6 +14,8 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable
 from urllib.parse import urlparse
 
+from bls_series import BLS_METADATA_PAGE_BASE, BLS_SERIES, bls_evidence_hash
+
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(ROOT, "data")
@@ -54,6 +56,7 @@ OFFICIAL_HOSTS = {
     "seller.shopee.sg",
 }
 ADVISORY_HOSTS = {"cifnews.com", "www.cifnews.com", "amz123.com", "www.amz123.com"}
+HEX64_RE = re.compile(r"[0-9a-f]{64}")
 
 ZH_RE = re.compile(r"[\u3400-\u9fff]")
 TAX_TYPES = {"customs_duty", "vat", "sales_tax", "marketplace_collection", "import_fee"}
@@ -65,6 +68,44 @@ ACCESS_REQUIREMENT_TYPES = {
 
 def contains_chinese(value: Any) -> bool:
     return bool(ZH_RE.search(str(value or "")))
+
+
+def bls_indicator_semantic_errors(indicator_key: str, item: dict[str, Any]) -> list[str]:
+    """Return publish-blocking errors for a BLS observation projection."""
+    if not str(indicator_key).startswith("BLS_"):
+        return []
+    series_id = str(indicator_key)[4:]
+    expected = BLS_SERIES.get(series_id)
+    if not expected:
+        return [f"{indicator_key}: 未登记的 BLS 序列 ID"]
+
+    expected_fields = {
+        "series_id": series_id,
+        "official_name": expected["official_name"],
+        "name": expected["name"],
+        "unit": expected["unit"],
+        "description": expected["description"],
+        "seasonal_adjustment": expected["seasonal_adjustment"],
+        "frequency": expected["frequency"],
+        "base_period": expected["base_period"] or None,
+        "source": "BLS",
+        "source_url": f"https://api.bls.gov/publicAPI/v2/timeseries/data/{series_id}",
+        "metadata_url": f"{BLS_METADATA_PAGE_BASE}/{series_id}",
+        "source_record_id": series_id,
+    }
+    errors = [
+        f"{indicator_key}: {field} 与登记语义不一致"
+        for field, expected_value in expected_fields.items()
+        if item.get(field) != expected_value
+    ]
+    if not parse_datetime(item.get("metadata_verified_at")):
+        errors.append(f"{indicator_key}: metadata_verified_at 缺失或无效")
+    evidence_hash = str(item.get("evidence_hash") or "").lower()
+    if not HEX64_RE.fullmatch(evidence_hash):
+        errors.append(f"{indicator_key}: evidence_hash 不是 64 位 SHA-256")
+    elif evidence_hash != bls_evidence_hash(item):
+        errors.append(f"{indicator_key}: evidence_hash 与指标语义或观测值不匹配")
+    return errors
 
 
 def regulatory_source_hash(item: dict[str, Any]) -> str:
@@ -1420,6 +1461,21 @@ def validate_macro(now: datetime) -> DatasetResult:
     set_freshness(result, data.get("meta", {}).get("generated_at"), now, 72)
     if len(indicators) < 10:
         result.errors.append(f"宏观指标数不足：{len(indicators)} < 10")
+    expected_bls_keys = {f"BLS_{series_id}" for series_id in BLS_SERIES}
+    actual_bls_keys = {str(key) for key in indicators if str(key).startswith("BLS_")}
+    missing_bls_keys = sorted(expected_bls_keys - actual_bls_keys)
+    unexpected_bls_keys = sorted(actual_bls_keys - expected_bls_keys)
+    semantic_errors = [
+        error
+        for key, row in indicators.items()
+        if isinstance(row, dict)
+        for error in bls_indicator_semantic_errors(str(key), row)
+    ]
+    meta = data.get("meta") if isinstance(data.get("meta"), dict) else {}
+    if meta.get("bls_metadata_verified") is not True:
+        semantic_errors.append("BLS 官方元数据校验未通过")
+    if not parse_datetime(meta.get("bls_metadata_verified_at")):
+        semantic_errors.append("BLS 官方元数据校验时间缺失或无效")
     missing_sources = sum(not str(row.get("source", "")).strip() for row in indicators.values() if isinstance(row, dict))
     invalid_urls = sum(not valid_http_url(row.get("source_url")) for row in indicators.values() if isinstance(row, dict))
     malformed = sum(not isinstance(row, dict) for row in indicators.values())
@@ -1429,6 +1485,9 @@ def validate_macro(now: datetime) -> DatasetResult:
         "missing_or_invalid_urls": invalid_urls,
         "collector_fetched": data.get("meta", {}).get("fetched"),
         "collector_failed": data.get("meta", {}).get("failed"),
+        "bls_semantic_errors": len(semantic_errors),
+        "missing_bls_series": missing_bls_keys,
+        "unexpected_bls_series": unexpected_bls_keys,
     })
     if malformed:
         result.errors.append(f"存在 {malformed} 条损坏的宏观指标")
@@ -1436,6 +1495,11 @@ def validate_macro(now: datetime) -> DatasetResult:
         result.errors.append(f"存在 {missing_sources} 条无来源名称指标")
     if invalid_urls:
         result.errors.append(f"存在 {invalid_urls} 条无有效来源 URL 指标")
+    if missing_bls_keys:
+        result.errors.append("缺少登记的 BLS 序列：" + ", ".join(missing_bls_keys))
+    if unexpected_bls_keys:
+        result.errors.append("存在未登记的 BLS 序列：" + ", ".join(unexpected_bls_keys))
+    result.errors.extend(semantic_errors)
     return result
 
 
@@ -2369,6 +2433,11 @@ def validate_public_projection(
         malformed = len(indicators) - len(rows)
         missing_names = sum(not str(item.get("name") or "").strip() for _, item in rows)
         invalid_urls = sum(not valid_http_url(item.get("source_url")) for _, item in rows)
+        semantic_errors = [
+            error
+            for key, item in rows
+            for error in bls_indicator_semantic_errors(str(key), item)
+        ]
         invalid_quality = 0
         macro_market = next(iter(allowed_market_codes), "") if len(allowed_market_codes) == 1 else ""
         generated_at = macro.get("meta", {}).get("generated_at") if isinstance(macro.get("meta"), dict) else None
@@ -2394,6 +2463,7 @@ def validate_public_projection(
             "missing_names": missing_names,
             "missing_or_invalid_urls": invalid_urls,
             "non_formal_records": invalid_quality,
+            "bls_semantic_errors": len(semantic_errors),
         })
         if malformed:
             macro_result.errors.append(f"存在 {malformed} 条损坏的宏观指标")
@@ -2403,6 +2473,7 @@ def validate_public_projection(
             macro_result.errors.append(f"存在 {invalid_urls} 条非 HTTPS 来源链接")
         if invalid_quality:
             macro_result.errors.append(f"存在 {invalid_quality} 条非正式或 provenance 不完整记录")
+        macro_result.errors.extend(semantic_errors)
         _expected_public_count(source_report, "macro", macro_result)
     elif macro is not None:
         macro_result.errors.append("根结构必须包含 indicators 对象")
