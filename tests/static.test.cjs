@@ -168,12 +168,18 @@ test('frontend assets are externalized and loaded in dependency order', () => {
   ];
   assert.deepEqual(localStyleSources, expectedStyles);
   assert.deepEqual(localScriptSources.filter((source) => source.startsWith('assets/js/')), expectedModules);
+  const reportsDecisionsIndex = localScriptSources.indexOf('assets/js/reports-decisions.js');
+  const pageLoaderIndex = localScriptSources.indexOf('assets/page-loader.js');
+  const authDataIndex = localScriptSources.indexOf('assets/js/auth-data.js');
+  assert.ok(reportsDecisionsIndex >= 0 && pageLoaderIndex > reportsDecisionsIndex);
+  assert.ok(authDataIndex >= 0 && pageLoaderIndex < authDataIndex);
   assert.equal(document.querySelectorAll('style').length, 0);
   assert.equal([...document.querySelectorAll('script:not([src])')].some((node) => node.textContent.trim()), false);
   for (const source of expectedStyles.concat(expectedModules)) {
     assert.equal(fs.existsSync(path.join(root, source)), true, `missing ${source}`);
   }
   const pageLoader = fs.readFileSync(path.join(root, 'assets', 'page-loader.js'), 'utf8');
+  assert.match(pageLoader, /jay:page-assets-ready/);
   for (const source of [
     'assets/styles/workspaces.css',
     'assets/js/products-shops.js',
