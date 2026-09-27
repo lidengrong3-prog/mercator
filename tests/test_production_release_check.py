@@ -6,9 +6,14 @@ from unittest.mock import patch
 
 from scripts import production_release_check
 from scripts.production_release_check import (
+    BLS_NONFARM_NAME,
+    BLS_NONFARM_RECORD_KEY,
+    BLS_NONFARM_SERIES_ID,
     PRIVATE_PAGE_DATA_PATHS,
     PUBLIC_PAGE_DATA_PATHS,
     ReleaseCheckError,
+    validate_bls_acceptance,
+    validate_bls_release_record,
     validate_browser_report_content_gate,
     validate_report_content_gate,
     validate_webhook_probe,
@@ -16,6 +21,21 @@ from scripts.production_release_check import (
 
 
 class ProductionReleaseCheckTests(unittest.TestCase):
+    @staticmethod
+    def bls_record():
+        return {
+            "series_id": BLS_NONFARM_SERIES_ID,
+            "name": BLS_NONFARM_NAME,
+            "official_name": "All employees, thousands, total nonfarm, seasonally adjusted",
+            "value": "159075",
+            "unit": "千人",
+            "date": "2026-08-01",
+            "source": "BLS",
+            "source_url": "https://api.bls.gov/publicAPI/v2/timeseries/data/CES0000000001",
+            "metadata_url": "https://data.bls.gov/timeseries/CES0000000001",
+            "evidence_hash": "a" * 64,
+        }
+
     def test_enabled_billing_requires_the_signature_guard(self):
         result = validate_webhook_probe(400, b'{"error":"INVALID_STRIPE_SIGNATURE"}', True)
         self.assertEqual(result, "signature_verified")
@@ -77,6 +97,28 @@ class ProductionReleaseCheckTests(unittest.TestCase):
             "exports": {},
         }), "blocked")
 
+    def test_bls_release_and_acceptance_require_matching_semantics(self):
+        expected = self.bls_record()
+        self.assertEqual(validate_bls_release_record(dict(expected), expected)["unit"], "千人")
+        acceptance = {
+            "bls_ai_acceptance": {
+                "status": "passed", "series_id": BLS_NONFARM_SERIES_ID,
+                "value": "159075", "unit": "千人", "date": "2026-08-01", "citation_count": 1,
+            },
+            "bls_report_acceptance": {
+                "status": "passed", "series_id": BLS_NONFARM_SERIES_ID,
+                "exports": {
+                    "pdf": {"status": "passed", "format": "pdf"},
+                    "docx": {"status": "passed", "format": "docx"},
+                },
+            },
+        }
+        self.assertEqual(validate_bls_acceptance(acceptance, expected)["ai"]["unit"], "千人")
+
+        wrong = dict(expected, name="美国非农" + "平均" + "时薪")
+        with self.assertRaises(ReleaseCheckError):
+            validate_bls_release_record(wrong, expected)
+
     def test_database_probes_use_each_tables_real_primary_key(self):
         requests = []
 
@@ -89,6 +131,8 @@ class ProductionReleaseCheckTests(unittest.TestCase):
                     "policy": "explicit-allowlist-formal-projection",
                     "data_files": list(PUBLIC_PAGE_DATA_PATHS),
                 }).encode(), {}
+            if url.endswith("/data/us_market/macro_indicators.json"):
+                return 200, json.dumps({"indicators": {BLS_NONFARM_RECORD_KEY: self.bls_record()}}).encode(), {}
             if any(url.endswith("/" + path) for path in PUBLIC_PAGE_DATA_PATHS):
                 return 200, b"{}", {}
             if any(url.endswith("/" + path) for path in PRIVATE_PAGE_DATA_PATHS):
@@ -148,6 +192,17 @@ class ProductionReleaseCheckTests(unittest.TestCase):
                      "http_status": 200, "config_fingerprint": "sha256:" + "b" * 64},
                 ],
             },
+            "bls_ai_acceptance": {
+                "status": "passed", "series_id": BLS_NONFARM_SERIES_ID,
+                "value": "159075", "unit": "千人", "date": "2026-08-01", "citation_count": 1,
+            },
+            "bls_report_acceptance": {
+                "status": "passed", "series_id": BLS_NONFARM_SERIES_ID,
+                "exports": {
+                    "pdf": {"status": "passed", "format": "pdf"},
+                    "docx": {"status": "passed", "format": "docx"},
+                },
+            },
             "checks": {
                 "database": True,
                 "storage_bucket": True,
@@ -186,6 +241,9 @@ class ProductionReleaseCheckTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             acceptance_path = Path(temp_dir) / "acceptance.json"
             browser_acceptance_path = Path(temp_dir) / "browser-acceptance.json"
+            macro_path = Path(temp_dir) / "data" / "us_market" / "macro_indicators.json"
+            macro_path.parent.mkdir(parents=True)
+            macro_path.write_text(json.dumps({"indicators": {BLS_NONFARM_RECORD_KEY: self.bls_record()}}), encoding="utf-8")
             acceptance_path.write_text(json.dumps(acceptance), encoding="utf-8")
             browser_acceptance_path.write_text(json.dumps(browser_acceptance), encoding="utf-8")
             with patch.dict("os.environ", {
@@ -199,6 +257,7 @@ class ProductionReleaseCheckTests(unittest.TestCase):
                 "PROD_TEST_USER_A_EMAIL": "a@example.com",
                 "PROD_TEST_USER_A_PASSWORD": "password",
                 "NOTIFICATION_CHANNELS_ENABLED": "false",
+                "RELEASE_MACRO_PATH": str(macro_path),
             }, clear=True), patch.object(
                 production_release_check, "request", side_effect=fake_request
             ):

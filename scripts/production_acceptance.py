@@ -354,16 +354,16 @@ def validate_bls_nonfarm_snapshot(record: dict) -> dict:
 
 
 def production_bls_nonfarm_snapshot() -> dict:
-    status, payload, _ = request(
-        "GET",
-        f"{SITE_URL}/data/us_market/macro_indicators.json",
-        headers={},
-    )
-    expect(status == 200 and isinstance(payload, dict),
-           f"production macro projection is unavailable: {status}")
+    path = Path("data/us_market/macro_indicators.json")
+    expect(path.is_file(), f"release macro projection is missing: {path}")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise AcceptanceError(f"release macro projection is invalid: {error}") from error
+    expect(isinstance(payload, dict), "release macro projection is not an object")
     meta = payload.get("meta") if isinstance(payload.get("meta"), dict) else {}
     expect(meta.get("bls_metadata_verified") is True,
-           f"production macro projection did not pass BLS metadata verification: {meta}")
+           f"release macro projection did not pass BLS metadata verification: {meta}")
     indicators = payload.get("indicators") if isinstance(payload.get("indicators"), dict) else {}
     record = indicators.get(BLS_NONFARM_RECORD_KEY)
     return validate_bls_nonfarm_snapshot(record)

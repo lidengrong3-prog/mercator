@@ -51,6 +51,12 @@ PRIVATE_PAGE_DATA_PATHS = (
     for code in configured_catalog(load_market_scope(), market_codes=["US"])["category_keys"]
 )
 
+BLS_NONFARM_SERIES_ID = "CES0000000001"
+BLS_NONFARM_RECORD_KEY = f"BLS_{BLS_NONFARM_SERIES_ID}"
+BLS_NONFARM_NAME = "美国非农就业人数：全部雇员（季调）"
+BLS_NONFARM_UNIT = "千人"
+BLS_FORBIDDEN_LABELS = ("美国非农" + "平均" + "时薪", "非农" + "平均" + "时薪", "平均" + "时薪")
+
 
 def required(name: str) -> str:
     value = os.environ.get(name, "").strip()
@@ -203,6 +209,50 @@ def validate_multi_ai_acceptance(acceptance: dict) -> dict:
     return evidence
 
 
+def validate_bls_release_record(online_record: dict, expected_record: dict) -> dict:
+    if not isinstance(online_record, dict) or not isinstance(expected_record, dict):
+        raise ReleaseCheckError("BLS nonfarm release record is missing")
+    required = {
+        "series_id": BLS_NONFARM_SERIES_ID,
+        "name": BLS_NONFARM_NAME,
+        "unit": BLS_NONFARM_UNIT,
+    }
+    for field, expected in required.items():
+        if str(online_record.get(field) or "") != expected:
+            raise ReleaseCheckError(f"online BLS {field} is incorrect")
+    for field in ("official_name", "value", "date", "source", "source_url", "metadata_url", "evidence_hash"):
+        if str(online_record.get(field) or "") != str(expected_record.get(field) or ""):
+            raise ReleaseCheckError(f"online BLS {field} does not match the release artifact")
+    if not re.fullmatch(r"[0-9a-f]{64}", str(online_record.get("evidence_hash") or "")):
+        raise ReleaseCheckError("online BLS evidence hash is invalid")
+    serialized = json.dumps(online_record, ensure_ascii=False)
+    if any(label in serialized for label in BLS_FORBIDDEN_LABELS):
+        raise ReleaseCheckError("online BLS record contains a legacy hourly-earnings label")
+    return online_record
+
+
+def validate_bls_acceptance(acceptance: dict, expected_record: dict) -> dict:
+    if not isinstance(expected_record, dict):
+        raise ReleaseCheckError("release BLS nonfarm record is missing")
+    ai = acceptance.get("bls_ai_acceptance") or {}
+    report = acceptance.get("bls_report_acceptance") or {}
+    if ai.get("status") != "passed" or report.get("status") != "passed":
+        raise ReleaseCheckError("R02 BLS AI/report acceptance did not pass")
+    if ai.get("series_id") != BLS_NONFARM_SERIES_ID or report.get("series_id") != BLS_NONFARM_SERIES_ID:
+        raise ReleaseCheckError("R02 BLS acceptance used the wrong series")
+    for field in ("value", "unit", "date"):
+        if str(ai.get(field) or "") != str(expected_record.get(field) or ""):
+            raise ReleaseCheckError(f"R02 BLS AI acceptance has the wrong {field}")
+    if int(ai.get("citation_count") or 0) < 1:
+        raise ReleaseCheckError("R02 BLS AI acceptance omitted the formal citation")
+    exports = report.get("exports") or {}
+    for export_format in ("pdf", "docx"):
+        evidence = exports.get(export_format) or {}
+        if evidence.get("status") != "passed" or evidence.get("format") != export_format:
+            raise ReleaseCheckError(f"R02 BLS {export_format} content acceptance did not pass")
+    return {"ai": ai, "report": report}
+
+
 def main() -> int:
     site = required("PRODUCTION_SITE_URL").rstrip("/") + "/"
     supabase = required("SUPABASE_URL").rstrip("/")
@@ -248,6 +298,10 @@ def main() -> int:
         raise ReleaseCheckError("duplicate report generation did not collapse to one run")
     report_content_gate = validate_report_content_gate(acceptance)
     multi_ai_acceptance = validate_multi_ai_acceptance(acceptance)
+    release_macro_path = Path(os.environ.get("RELEASE_MACRO_PATH", "data/us_market/macro_indicators.json"))
+    release_macro = parse_json(release_macro_path.read_bytes(), "release macro projection")
+    expected_bls_record = (release_macro.get("indicators") or {}).get(BLS_NONFARM_RECORD_KEY)
+    bls_acceptance = validate_bls_acceptance(acceptance, expected_bls_record)
 
     browser_acceptance = parse_json(browser_acceptance_file.read_bytes(), "browser exception acceptance result")
     if browser_acceptance.get("status") != "passed":
@@ -284,11 +338,15 @@ def main() -> int:
         raise ReleaseCheckError("frontend public data policy is missing or invalid")
     if set(public_data_manifest.get("data_files") or []) != set(PUBLIC_PAGE_DATA_PATHS):
         raise ReleaseCheckError("frontend public data allowlist does not match the release contract")
+    online_public_data = {}
     for path in PUBLIC_PAGE_DATA_PATHS:
         status, raw, _ = request("GET", site + path)
         if status != 200:
             raise ReleaseCheckError(f"allowlisted frontend data is unavailable: {path} HTTP {status}")
-        parse_json(raw, f"allowlisted frontend data {path}")
+        online_public_data[path] = parse_json(raw, f"allowlisted frontend data {path}")
+    online_macro = online_public_data.get("data/us_market/macro_indicators.json") or {}
+    online_bls_record = (online_macro.get("indicators") or {}).get(BLS_NONFARM_RECORD_KEY)
+    validate_bls_release_record(online_bls_record, expected_bls_record)
     for path in PRIVATE_PAGE_DATA_PATHS:
         status, _, _ = request("GET", site + path)
         if status != 404:
@@ -470,6 +528,7 @@ def main() -> int:
         "history_search": True,
         "webhook_signature_guard": webhook_guard,
         "multi_ai_acceptance": multi_ai_acceptance,
+        "bls_semantics": bls_acceptance,
         "public_data_isolated": True,
         "frontend": True,
     }, ensure_ascii=False, indent=2))
