@@ -996,8 +996,8 @@ test('data publication is gated and exposes its quality report', () => {
   assert.equal(report.publishable, ['healthy', 'degraded'].includes(report.status));
   assert.ok(report.datasets.policies);
   assert.ok(report.datasets.macro);
-  assert.ok(['healthy', 'degraded', 'not_connected', 'stale', 'failed'].includes(report.status));
-  assert.ok(['healthy', 'degraded', 'not_connected', 'stale', 'failed'].includes(report.datasets.cpsc.status));
+  assert.ok(['healthy', 'degraded', 'unverified', 'missing_source', 'not_connected', 'stale', 'failed'].includes(report.status));
+  assert.ok(['healthy', 'degraded', 'unverified', 'missing_source', 'not_connected', 'stale', 'failed'].includes(report.datasets.cpsc.status));
   assert.ok(report.summary.raw_records >= report.summary.scoped_records);
   assert.equal(report.summary.raw_records, Object.values(report.datasets).reduce((sum, item) => sum + item.raw_records, 0));
   assert.equal(report.summary.scoped_records, Object.values(report.datasets).reduce((sum, item) => sum + item.scoped_records, 0));

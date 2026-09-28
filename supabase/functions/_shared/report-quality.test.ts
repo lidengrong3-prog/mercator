@@ -52,3 +52,22 @@ Deno.test('stale quality snapshot blocks formal report output', () => {
     throw new Error('stale report must not be formally exported');
   }
 });
+
+Deno.test('unverified and missing-source quality states block formal report output', () => {
+  for (const status of ['unverified', 'missing_source']) {
+    const gate = evaluateQualityReport({
+      schema_version: 1,
+      generated_at: '2026-09-28T07:30:00Z',
+      status: 'healthy',
+      publishable: true,
+      datasets: { policies: { status } },
+    }, Date.parse('2026-09-28T08:00:00Z'));
+    if (gate.ok) throw new Error(status + ' dataset must block the quality gate');
+    if (reportContentAllowsFormalOutput({
+      publishable: true,
+      quality_gate: gate,
+      quality_snapshot: gate.snapshot,
+      coverage_matrix: completeCoverage(),
+    })) throw new Error(status + ' dataset must not permit formal output');
+  }
+});

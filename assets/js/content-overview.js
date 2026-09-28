@@ -998,7 +998,7 @@ function renderOverviewScopeSummary(){
   var categories=(context.categoryCodes||[]).map(function(code){var profile=api&&api.getCategoryProfile?api.getCategoryProfile(code):null;return profile&&(profile.name||profile.code)||code;});
   var report=typeof JAY_QUALITY_REPORT!=='undefined'?JAY_QUALITY_REPORT:null;
   var qualityStatus=typeof jayQualityStatus==='function'?jayQualityStatus(report):(report&&report.status||'pending');
-  var qualityLabels={healthy:'发布校验通过',degraded:'部分数据降级',not_connected:'关键数据尚未接入',stale:'数据已过期',failed:'发布校验阻断',pending:'正在读取质量状态'};
+  var qualityLabels={healthy:'发布校验通过',degraded:'部分数据降级',unverified:'关键记录待核验',missing_source:'关键记录缺来源',not_connected:'关键数据尚未接入',stale:'数据已过期',failed:'发布校验阻断',pending:'正在读取质量状态'};
   box.innerHTML='<span><i data-lucide="globe-2"></i><b>'+escapeHtml(markets.join('、')||'未选择市场')+'</b></span>'+
     '<span><i data-lucide="store"></i><b>'+platforms.length+'</b> 个平台</span>'+
     '<span><i data-lucide="tags"></i>'+escapeHtml(categories.length?categories.join('、'):'全部品类')+'</span>'+

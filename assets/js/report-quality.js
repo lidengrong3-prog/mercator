@@ -3,8 +3,8 @@
   'use strict';
 
   var MAX_AGE_MS = 12 * 60 * 60 * 1000;
-  var BLOCKED_STATUSES = ['failed', 'stale'];
-  var GLOBAL_BLOCKED_STATUSES = ['failed', 'stale', 'not_connected', 'pending'];
+  var BLOCKED_STATUSES = ['failed', 'stale', 'unverified', 'missing_source'];
+  var GLOBAL_BLOCKED_STATUSES = ['failed', 'stale', 'unverified', 'missing_source', 'not_connected', 'pending'];
   var PLATFORM_RULE_DIMENSIONS = ['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty'];
 
   function list(value) { return Array.isArray(value) ? value : []; }

@@ -64,6 +64,18 @@ test('formal output requires a successful embedded quality gate and snapshot', (
   assert.equal(quality.allowsStoredReport({ publishable: true, quality_gate: blocked, quality_snapshot: blocked.snapshot, coverage_matrix: completeCoverage() }), false);
 });
 
+test('unverified and missing-source datasets block formal output', () => {
+  ['unverified', 'missing_source'].forEach((status) => {
+    const gate = quality.evaluate(report({
+      status: 'healthy',
+      publishable: true,
+      datasets: { policies: { label: '政策动态', status, errors: [], warnings: [] } },
+    }), { now });
+    assert.equal(gate.ok, false);
+    assert.ok(gate.reasons.some((item) => item.code === 'QUALITY_DATASET_' + status.toUpperCase()));
+  });
+});
+
 test('formal output rejects incomplete platform rule dimensions even when global quality is degraded but publishable', () => {
   const gate = quality.evaluate(report(), { now });
   const dimensions = ['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty'];

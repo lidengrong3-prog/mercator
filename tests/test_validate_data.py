@@ -21,6 +21,7 @@ from validate_data import (  # noqa: E402
     effective_source_type,
     has_current_chinese_display,
     normalize_verification_status,
+    publication_gate_issues,
     record_quality,
     valid_http_url,
     validate_all,
@@ -32,6 +33,49 @@ from validate_data import (  # noqa: E402
 
 
 class ValidateDataTests(unittest.TestCase):
+    def test_quality_statuses_distinguish_reference_only_failures(self):
+        unverified = DatasetResult(
+            "policies", "data/policies.json", records=1,
+            scoped_records=1, unverified_records=1,
+        )
+        self.assertEqual(unverified.status, "unverified")
+        self.assertFalse(unverified.as_dict()["publishable"])
+        self.assertEqual(unverified.as_dict()["publication_layer"], "reference_only")
+
+        missing = DatasetResult(
+            "policies", "data/policies.json", records=1,
+            scoped_records=1, missing_source_records=1,
+        )
+        self.assertEqual(missing.status, "missing_source")
+        self.assertFalse(missing.as_dict()["publishable"])
+        self.assertEqual(missing.as_dict()["publication_layer"], "reference_only")
+
+    def test_publication_gate_rejects_inconsistent_publishable_statuses(self):
+        base = {
+            "status": "healthy", "publishable": True,
+            "summary": {"errors": 0},
+            "datasets": {"policies": {"status": "healthy"}},
+            "collection_run": {
+                "quality_status": "healthy",
+                "missing_pipeline_sources": [], "core_failures": [],
+            },
+        }
+        self.assertEqual(
+            publication_gate_issues(base, require_collection_run=True), []
+        )
+        for blocked in ("stale", "unverified", "missing_source", "failed"):
+            report = dict(base, status=blocked, publishable=True)
+            self.assertTrue(
+                publication_gate_issues(report, require_collection_run=True)
+            )
+        report = dict(
+            base, datasets={"policies": {"status": "missing_source"}}
+        )
+        self.assertIn(
+            "dataset_status:policies:missing_source",
+            publication_gate_issues(report, require_collection_run=True),
+        )
+
     def test_alert_quality_does_not_infer_collection_time_from_display_date(self):
         now = datetime(2026, 9, 7, tzinfo=timezone.utc)
         payload = [[
