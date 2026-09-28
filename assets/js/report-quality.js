@@ -1,4 +1,3 @@
-/* Global data-quality gate for report generation, persistence and export. */
 (function (root) {
   'use strict';
 
