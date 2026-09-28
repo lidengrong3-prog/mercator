@@ -71,6 +71,7 @@ from validate_data import (
     record_category_codes,
     record_platform_names,
     record_scope_codes,
+    publication_gate_issues,
     source_record_id_for,
     source_url_for,
     validate_all,
@@ -1066,6 +1067,24 @@ def build_raw_record_rows(quality_report=None, only="all"):
         source_key = source_key_for_record(item)
         source_policy = source_access_policy(source_key)
         source_lineage = classify_source_for_publication(source_key)
+        quality = record_quality(
+            item,
+            require_scope=True,
+            domain=domain,
+            require_provenance=domain in PROVENANCE_REQUIRED_DOMAINS,
+        )
+        publication_eligible = bool(source_lineage["publishable"] and quality.get("formal"))
+        quality_reasons = list(quality.get("reasons") or [])
+        if publication_eligible:
+            quarantine_reason = None
+        elif not source_lineage["publishable"]:
+            quarantine_reason = "来源授权或商业再分发权限未确认；仅保留在隔离证据层。"
+        elif any(reason in quality_reasons for reason in ("missing_source", "missing_source_kind", "missing_provenance_fields")):
+            quarantine_reason = "来源或核验链路不完整；记录仅保留在待核验层，不能用于正式结论。"
+        elif "unverified" in quality_reasons:
+            quarantine_reason = "记录尚未完成核验；仅保留为参考数据，不能用于正式结论。"
+        else:
+            quarantine_reason = "记录未通过正式发布规则；仅保留在隔离证据层。"
         payload = dict(item)
         evidence_hash = str(item.get("evidence_hash") or hashlib.sha256(json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()).lower()
         market_codes = set(record_scope_codes(item))
@@ -1110,10 +1129,8 @@ def build_raw_record_rows(quality_report=None, only="all"):
             "license_class": source_policy["license_class"],
             "access_class": source_policy["access_class"],
             "redistribution_allowed": source_policy["redistribution_allowed"],
-            "publication_status": "eligible" if source_lineage["publishable"] else "quarantined",
-            "quarantine_reason": None if source_lineage["publishable"] else (
-                "来源授权或商业再分发权限未确认；仅保留在隔离证据层。"
-            ),
+            "publication_status": "eligible" if publication_eligible else "quarantined",
+            "quarantine_reason": quarantine_reason,
             "allowed_display_fields": source_policy.get("allowed_display_fields") or [],
             "allowed_export_fields": source_policy.get("allowed_export_fields") or [],
             "retention_until": (
@@ -1122,7 +1139,7 @@ def build_raw_record_rows(quality_report=None, only="all"):
             ),
             "status": "active" if verification_status != "rejected" else "rejected",
         }
-        if not source_lineage["publishable"]:
+        if not publication_eligible:
             raw_row = quarantine_unlicensed_record(raw_row, source_key, raw_row["quarantine_reason"])
         rows.append(raw_row)
         rows[-1]["retention_until"] = rows[-1]["retention_until"].isoformat()
@@ -1319,7 +1336,12 @@ def build_applicability_rows(quality_report=None, only="all"):
         # but never promoted to the formal market applicability projection.
         if is_industry_advisory(item) or not redistribution_allowed_for_record(item):
             continue
-        quality = record_quality(item, require_scope=True)
+        quality = record_quality(
+            item,
+            require_scope=True,
+            domain=domain,
+            require_provenance=domain in PROVENANCE_REQUIRED_DOMAINS,
+        )
         if not quality.get('formal'):
             continue
         market_codes = _market_codes(item, markets)
@@ -1805,8 +1827,12 @@ def main():
     # Re-run the gate here so a manual sync cannot bypass the workflow check.
     quality_report = validate_all()
     write_report(quality_report, DEFAULT_REPORT)
-    if not quality_report.get("publishable"):
-        print(f"[SYNC] ERROR: data quality gate is {quality_report.get('status')}; refusing to publish")
+    gate_issues = publication_gate_issues(quality_report, require_collection_run=True)
+    if gate_issues:
+        print(
+            f"[SYNC] ERROR: data quality gate is {quality_report.get('status')}; "
+            f"refusing to publish ({', '.join(gate_issues)})"
+        )
         return 3
     collection_run = quality_report.get("collection_run")
     if not isinstance(collection_run, dict):

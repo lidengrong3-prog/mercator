@@ -13,6 +13,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from sync_to_supabase import public_market_data_payload
+from validate_data import validate_public_projection
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -317,6 +318,21 @@ def build_public_site(output, root=ROOT, environment="development", environ=None
             ),
         }
 
+    projection_report = validate_public_projection(
+        data_dir=os.fspath(output / "data"),
+        quality_report_path=os.fspath(output / "data" / "quality_report.json"),
+    )
+    if projection_report.get("publishable") is not True:
+        blocked = [
+            f"{key}:{row.get('status')}"
+            for key, row in (projection_report.get("datasets") or {}).items()
+            if isinstance(row, dict) and row.get("errors")
+        ]
+        raise ValueError(
+            "Public data projection failed the formal publication gate: "
+            + (", ".join(blocked) or str(projection_report.get("status") or "failed"))
+        )
+
     manifest = {
         "schema_version": 1,
         "policy": "explicit-allowlist-formal-projection",
@@ -330,6 +346,11 @@ def build_public_site(output, root=ROOT, environment="development", environ=None
         "performance_budget": {
             "path": "performance-budget-report.json",
             "status": performance["status"],
+        },
+        "quality_gate": {
+            "status": projection_report.get("status"),
+            "publishable": projection_report.get("publishable") is True,
+            "source_quality_report": projection_report.get("source_quality_report"),
         },
     }
     write_json(output / "public-data-manifest.json", manifest)

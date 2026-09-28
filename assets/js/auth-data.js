@@ -1,15 +1,8 @@
-// ========== JAY观海 SaaS Auth Module ==========
-// (moved to top)
-// (moved to top)
-// === JAY观海 Supabase Data Layer ===
-// JAY_API_URL / JAY_ANON_KEY 已在顶部初始化（修复 var 提升导致的 undefined 问题）
-
-// 数据新鲜度追踪 + AI 实时补数（用户架构：Supabase 优先，AI 联网检索写回）
 var JAY_DATA_META = {};          // { key: { updated_at, source } }
 var JAY_QUALITY_REPORT = null;
 var JAY_STALE_DAYS = 1;
 var JAY_CORE_KEYS = ['policies', 'rules', 'alerts', 'countries', 'platforms'];
-var JAY_QUALITY_LABELS = { healthy:'数据实时', degraded:'部分降级', not_connected:'尚未接入', stale:'数据过期', failed:'校验失败', pending:'读取中' };
+var JAY_QUALITY_LABELS = { healthy:'数据实时', degraded:'部分降级', unverified:'待核验', missing_source:'来源缺失', not_connected:'尚未接入', stale:'数据过期', failed:'校验失败', pending:'读取中' };
 function jayQualityStatus(report){
   if(!report) return 'pending';
   if(!report.generated_at) return 'failed';
@@ -46,7 +39,7 @@ function jayRenderQualityReport(){
   var summary = report.summary || {};
   var datasets = report.datasets || {};
   var keys = Object.keys(datasets);
-  var publishableCount = keys.filter(function(key){ return ['failed','stale','not_connected'].indexOf(datasets[key].status) < 0; }).length;
+  var publishableCount = keys.filter(function(key){ return ['failed','stale','unverified','missing_source','not_connected'].indexOf(datasets[key].status) < 0; }).length;
   var setText = function(id, value){ var node=document.getElementById(id); if(node) node.textContent=String(value); };
   setText('dq-datasets', summary.datasets == null ? keys.length : summary.datasets);
   setText('dq-healthy', publishableCount);
@@ -176,12 +169,12 @@ function jayUpdateDataStamp(){
     if(hint){
       hint.style.display=qualityStatus==='healthy'?'none':'';
       var hintText=document.getElementById('jay-stale-text');
-      var hints={degraded:'部分数据缺少来源或处于降级状态，请先核对质量报告。',not_connected:'税收或准入数据尚未接入，相关报告只能显示待补充。',stale:'质量报告或核心数据已过期，请先核对更新时间。',failed:'最近一次数据质量校验未通过，自动发布已阻断。'};
+      var hints={degraded:'部分数据降级，请核对质量报告。',unverified:'记录待核验，已阻止正式发布。',missing_source:'记录缺少来源，已阻止正式发布。',not_connected:'税收或准入数据尚未接入，相关报告只能显示待补充。',stale:'质量报告或核心数据已过期，请先核对更新时间。',failed:'最近一次数据质量校验未通过，自动发布已阻断。'};
       if(hintText) hintText.textContent=hints[qualityStatus]||'部分数据需要核对质量报告。';
     }
     [shellStatus,freshness].forEach(function(node){
       if(!node) return;
-      ['ready','fallback','healthy','degraded','not_connected','stale','failed'].forEach(function(cls){node.classList.remove(cls);});
+      ['ready','fallback','healthy','degraded','unverified','missing_source','not_connected','stale','failed'].forEach(function(cls){node.classList.remove(cls);});
       node.classList.add(qualityStatus);
     });
     if(shellStatus){var qualityText=shellStatus.querySelector('span:last-child');if(qualityText)qualityText.textContent=qualityLabel+' · '+qualityStamp;}

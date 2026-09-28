@@ -74,6 +74,38 @@ class SyncTests(unittest.TestCase):
                 patch.object(sync_to_supabase.sys, "argv", ["sync_to_supabase.py", "--dry-run"]):
             self.assertEqual(sync_to_supabase.main(), 3)
 
+    def test_sync_refuses_inconsistent_publishable_quality_status(self):
+        report = {
+            "status": "healthy", "publishable": True,
+            "summary": {"errors": 0},
+            "datasets": {"policies": {"status": "missing_source"}},
+            "collection_run": {
+                "quality_status": "healthy",
+                "missing_pipeline_sources": [], "core_failures": [],
+            },
+        }
+        with patch.object(sync_to_supabase, "validate_all", return_value=report), \
+                patch.object(sync_to_supabase, "write_report"), \
+                patch.object(sync_to_supabase.sys, "argv", ["sync_to_supabase.py", "--dry-run"]):
+            self.assertEqual(sync_to_supabase.main(), 3)
+
+    def test_unverified_raw_record_is_quarantined_and_never_formal(self):
+        record = {
+            "id": "pending-policy", "title": "Pending policy", "market": "US",
+            "source_kind": "official", "source_type": "government",
+            "source_url": "https://example.gov/pending-policy",
+            "source_record_id": "pending-policy", "verification_status": "pending",
+            "collected_at": "2026-09-20T00:00:00Z",
+            "published_at": "2026-09-19", "evidence_hash": "a" * 64,
+        }
+        records = [("policies", "policy", record, 0)]
+        with patch.object(sync_to_supabase, "iter_provenance_records", return_value=records):
+            raw = sync_to_supabase.build_raw_record_rows({"datasets": {}})
+            formal = sync_to_supabase.build_applicability_rows({"datasets": {}})
+        self.assertEqual(raw[0]["publication_status"], "quarantined")
+        self.assertIn("尚未完成核验", raw[0]["quarantine_reason"])
+        self.assertEqual(formal, [])
+
     def test_raw_provenance_rows_keep_source_and_evidence_fields(self):
         rows = sync_to_supabase.build_raw_record_rows({"datasets": {}})
         self.assertGreater(len(rows), 0)
@@ -175,7 +207,11 @@ class SyncTests(unittest.TestCase):
         self.assertGreater(len(rows), 0)
         self.assertTrue(all(row["market_code"] == "US" for row in rows))
         self.assertTrue(all(row["verification_status"] in {"verified", "uploaded"} for row in rows))
-        self.assertTrue(all(row["source_record_id"] and row["evidence_hash"] for row in rows))
+        self.assertTrue(all(
+            row["source_record_id"] and row["source_url"] and row["collected_at"]
+            and row["verified_at"] and row["evidence_hash"]
+            for row in rows
+        ))
         rules = sync_to_supabase.load_json(os.path.join(sync_to_supabase.DATA_DIR, "rules.json"))
         public_rules = sync_to_supabase.public_market_data_payload("rules", rules).get("items", [])
         self.assertGreater(len(public_rules), 0)
@@ -294,6 +330,8 @@ class SyncTests(unittest.TestCase):
             "verification_status": "verified",
             "collected_at": "2026-08-30T00:00:00+00:00",
             "published_at": "2026-08-29",
+            "verified_at": "2026-08-30T00:00:00+00:00",
+            "evidence_hash": "1" * 64,
         }
         with tempfile.NamedTemporaryFile("w", suffix=".json", encoding="utf-8", delete=False) as handle:
             json.dump(manifest, handle)
@@ -329,6 +367,8 @@ class SyncTests(unittest.TestCase):
             "verification_status": "verified",
             "collected_at": "2026-08-30T00:00:00+00:00",
             "published_at": "2026-08-29",
+            "verified_at": "2026-08-30T00:00:00+00:00",
+            "evidence_hash": "2" * 64,
             "rule_version": "2026.08",
         }
         with tempfile.NamedTemporaryFile("w", suffix=".json", encoding="utf-8", delete=False) as handle:
@@ -361,6 +401,7 @@ class SyncTests(unittest.TestCase):
             "source_url": "https://example.gov/records/tax-change-1",
             "source_record_id": "tax-change-1", "verification_status": "verified",
             "collected_at": "2026-08-30T00:00:00+00:00", "published_at": "2026-08-29",
+            "verified_at": "2026-08-30T00:00:00+00:00", "evidence_hash": "3" * 64,
         }
         with tempfile.NamedTemporaryFile("w", suffix=".json", encoding="utf-8", delete=False) as handle:
             json.dump(manifest, handle)

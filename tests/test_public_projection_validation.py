@@ -152,6 +152,22 @@ class PublicProjectionValidationTests(unittest.TestCase):
         self.assertTrue(report["publishable"])
         self.assertEqual(report["status"], "degraded")
 
+    def test_source_quality_report_cannot_hide_blocked_dataset_status(self):
+        with tempfile.TemporaryDirectory() as directory:
+            quality = self.create_projection(directory)
+            quality["status"] = "healthy"
+            quality["publishable"] = True
+            quality["datasets"]["policies"]["status"] = "missing_source"
+            self.write_json(directory, "quality_report.json", quality)
+
+            report = validate_data.validate_public_projection(data_dir=directory)
+
+        self.assertFalse(report["publishable"])
+        self.assertIn(
+            "不可进入正式层的数据状态",
+            "\n".join(report["datasets"]["quality_report"]["errors"]),
+        )
+
     def test_public_record_count_must_match_quality_report_formal_count(self):
         with tempfile.TemporaryDirectory() as directory:
             quality = self.create_projection(directory)

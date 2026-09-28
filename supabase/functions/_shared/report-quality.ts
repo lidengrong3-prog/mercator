@@ -23,7 +23,7 @@ export type ContentQualityAssessment = {
 type Row = Record<string, unknown>;
 
 const MAX_AGE_MS = 12 * 60 * 60 * 1000;
-const BLOCKED_STATUSES = new Set(['failed', 'stale', 'not_connected', 'pending']);
+const BLOCKED_STATUSES = new Set(['failed', 'stale', 'unverified', 'missing_source', 'not_connected', 'pending']);
 const PLATFORM_RULE_DIMENSIONS = ['fee', 'commission', 'deposit', 'fulfillment', 'prohibited', 'settlement', 'penalty'];
 
 function object(value: unknown): Record<string, unknown> | null {
@@ -52,7 +52,7 @@ export function evaluateQualityReport(value: unknown, nowMs = Date.now()): Quali
   Object.entries(datasets).forEach(([key, raw]) => {
     const dataset = object(raw);
     const datasetStatus = String(dataset?.status || '').toLowerCase();
-    if (datasetStatus === 'failed' || datasetStatus === 'stale') reasons.push(`QUALITY_DATASET_${datasetStatus.toUpperCase()}:${key}`);
+    if (BLOCKED_STATUSES.has(datasetStatus) && datasetStatus !== 'not_connected' && datasetStatus !== 'pending') reasons.push(`QUALITY_DATASET_${datasetStatus.toUpperCase()}:${key}`);
   });
   return {
     ok: reasons.length === 0,
