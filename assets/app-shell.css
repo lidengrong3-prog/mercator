@@ -1318,9 +1318,13 @@ header.topbar .topbar-right {
 .data-quality-badge.healthy { color: #247354; border-color: #b9dacd; background: #f2faf6; }
 .data-quality-badge.healthy > span { background: #2d8a67; }
 .data-quality-badge.degraded,
+.data-quality-badge.unverified,
+.data-quality-badge.missing_source,
 .data-quality-badge.not_connected,
 .data-quality-badge.stale { color: #8b5a16; border-color: #e6cfa4; background: #fff9ec; }
 .data-quality-badge.degraded > span,
+.data-quality-badge.unverified > span,
+.data-quality-badge.missing_source > span,
 .data-quality-badge.not_connected > span,
 .data-quality-badge.stale > span { background: #b7791f; }
 .data-quality-badge.failed { color: #a33833; border-color: #e5bbb8; background: #fff5f4; }
@@ -1389,9 +1393,13 @@ header.topbar .topbar-right {
 .data-quality-state { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; white-space: nowrap; }
 .data-quality-state::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #2d8a67; }
 .data-quality-state.degraded,
+.data-quality-state.unverified,
+.data-quality-state.missing_source,
 .data-quality-state.not_connected,
 .data-quality-state.stale { color: #8b5a16; }
 .data-quality-state.degraded::before,
+.data-quality-state.unverified::before,
+.data-quality-state.missing_source::before,
 .data-quality-state.not_connected::before,
 .data-quality-state.stale::before { background: #b7791f; }
 .data-quality-state.failed { color: #a33833; }

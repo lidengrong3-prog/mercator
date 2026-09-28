@@ -40,6 +40,18 @@ SOURCE_TYPES = (
     "unknown",
 )
 PROVENANCE_REQUIRED_DOMAINS = {"policy", "tax", "access", "rule", "alert", "cpsc"}
+FORMAL_PUBLISHABLE_STATUSES = frozenset({"healthy", "degraded"})
+REFERENCE_ONLY_STATUSES = frozenset({"unverified", "missing_source"})
+FORMAL_BLOCKING_STATUSES = frozenset({"failed", "stale", *REFERENCE_ONLY_STATUSES})
+QUALITY_STATUS_DEFINITIONS = {
+    "healthy": "结构、来源、时效和核验均通过，可进入正式发布层。",
+    "degraded": "正式记录仍可发布，但存在不影响正式结论的降级项。",
+    "stale": "数据超过允许时效，禁止进入正式发布层。",
+    "unverified": "存在关键记录未完成核验，仅可保留在待核验或审计层。",
+    "missing_source": "存在记录缺少来源或完整 provenance，仅可保留在隔离层。",
+    "failed": "结构、采集或核心来源校验失败，禁止发布。",
+    "not_connected": "数据域尚未接入，不得作为正式结论依据。",
+}
 OFFICIAL_HOST_SUFFIXES = (".gov", ".mil", ".gov.cn", ".europa.eu")
 OFFICIAL_HOSTS = {
     "gov",
@@ -273,6 +285,10 @@ class DatasetResult:
             return "failed"
         if self.connected is False:
             return "not_connected"
+        if self.missing_source_records:
+            return "missing_source"
+        if self.unverified_records:
+            return "unverified"
         if any("超过新鲜度阈值" in warning for warning in self.warnings):
             return "stale"
         if self.warnings:
@@ -280,10 +296,17 @@ class DatasetResult:
         return "healthy"
 
     def as_dict(self) -> dict[str, Any]:
+        status = self.status
         return {
             "key": self.key,
             "label": DATASET_LABELS[self.key],
-            "status": self.status,
+            "status": status,
+            "publishable": status in FORMAL_PUBLISHABLE_STATUSES,
+            "publication_layer": (
+                "reference_only" if status in REFERENCE_ONLY_STATUSES
+                else "blocked" if status in FORMAL_BLOCKING_STATUSES or status == "not_connected"
+                else "formal"
+            ),
             "path": self.path.replace("\\", "/"),
             "records": self.records,
             "raw_records": self.records,
@@ -1840,6 +1863,10 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
         status = "failed"
     elif "stale" in statuses:
         status = "stale"
+    elif "missing_source" in statuses:
+        status = "missing_source"
+    elif "unverified" in statuses:
+        status = "unverified"
     elif warnings or "not_connected" in statuses:
         status = "degraded"
     else:
@@ -1881,7 +1908,17 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
         "provenance_schema": os.path.relpath(PROVENANCE_SCHEMA, ROOT).replace("\\", "/"),
         "generated_at": now.isoformat(),
         "status": status,
-        "publishable": errors == 0,
+        "publishable": errors == 0 and status in FORMAL_PUBLISHABLE_STATUSES,
+        "quality_status_definitions": QUALITY_STATUS_DEFINITIONS,
+        "publication_policy": {
+            "formal_publishable_statuses": sorted(FORMAL_PUBLISHABLE_STATUSES),
+            "reference_only_statuses": sorted(REFERENCE_ONLY_STATUSES),
+            "blocking_statuses": sorted(FORMAL_BLOCKING_STATUSES),
+            "formal_records_require": [
+                "source_record_id", "source_url", "collected_at", "published_at",
+                "verified_at", "verification_status", "evidence_hash",
+            ],
+        },
         "collection_run": collection_run,
         "summary": {
             "datasets": len(results),
@@ -1896,6 +1933,8 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
             "degraded": statuses.count("degraded"),
             "not_connected": statuses.count("not_connected"),
             "stale": statuses.count("stale"),
+            "unverified": statuses.count("unverified"),
+            "missing_source": statuses.count("missing_source"),
             "failed": statuses.count("failed"),
             "errors": errors,
             "warnings": warnings,
@@ -1909,6 +1948,47 @@ def validate_all(now: datetime | None = None) -> dict[str, Any]:
         },
         "datasets": {result.key: result.as_dict() for result in results},
     }
+
+
+def publication_gate_issues(
+    report: dict[str, Any] | None,
+    *,
+    require_collection_run: bool = False,
+) -> list[str]:
+    """Return machine-readable reasons that forbid a formal publication run."""
+    if not isinstance(report, dict):
+        return ["quality_report_missing"]
+    issues: list[str] = []
+    status = str(report.get("status") or "").strip().casefold()
+    if report.get("publishable") is not True:
+        issues.append("publishable_false")
+    if status not in FORMAL_PUBLISHABLE_STATUSES:
+        issues.append(f"quality_status:{status or 'missing'}")
+    summary = report.get("summary")
+    if isinstance(summary, dict) and int(summary.get("errors") or 0) > 0:
+        issues.append("summary_errors")
+    datasets = report.get("datasets")
+    if isinstance(datasets, dict):
+        for key, value in datasets.items():
+            if not isinstance(value, dict):
+                issues.append(f"dataset_malformed:{key}")
+                continue
+            dataset_status = str(value.get("status") or "").strip().casefold()
+            if dataset_status in FORMAL_BLOCKING_STATUSES:
+                issues.append(f"dataset_status:{key}:{dataset_status}")
+    if require_collection_run:
+        collection_run = report.get("collection_run")
+        if not isinstance(collection_run, dict):
+            issues.append("collection_run_missing")
+        else:
+            if collection_run.get("missing_pipeline_sources"):
+                issues.append("collection_pipeline_incomplete")
+            if collection_run.get("core_failures"):
+                issues.append("collection_core_failure")
+            collection_status = str(collection_run.get("quality_status") or "").strip().casefold()
+            if collection_status in FORMAL_BLOCKING_STATUSES:
+                issues.append(f"collection_status:{collection_status}")
+    return list(dict.fromkeys(issues))
 
 
 def _public_projection_report(
@@ -2052,6 +2132,16 @@ def validate_public_projection(
         quality_result.errors.append(
             f"原始质量报告仍包含 {dataset_error_count} 个数据集错误"
         )
+    source_gate_issues = publication_gate_issues(source_report)
+    blocking_dataset_issues = [
+        issue for issue in source_gate_issues
+        if issue.startswith("dataset_status:") or issue.startswith("dataset_malformed:")
+    ]
+    if blocking_dataset_issues:
+        quality_result.errors.append(
+            "原始质量报告包含不可进入正式层的数据状态："
+            + ", ".join(blocking_dataset_issues)
+        )
     if not parse_datetime(source_report.get("generated_at")):
         quality_result.errors.append("原始质量报告缺少有效 generated_at")
     quality_result.formal_records = 1 if not quality_result.errors else 0
@@ -2060,6 +2150,7 @@ def validate_public_projection(
         "gate_status": gate_status or None,
         "reported_errors": summary.get("errors") if isinstance(summary, dict) else None,
         "dataset_errors": dataset_error_count,
+        "gate_issues": source_gate_issues,
     })
 
     manifest_path = os.path.join(public_dir, PUBLIC_PROJECTION_FILES["market_scope"])
