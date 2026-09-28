@@ -391,6 +391,9 @@ function rpV2SaveErrorDetails(error){
     reasonCodes:Array.from(new Set(reasons))
   };
 }
+function rpUserFacingError(error,fallback){
+  return window.jayUserFacingErrorText?window.jayUserFacingErrorText(error,fallback):(fallback||'操作未完成，请稍后重试');
+}
 function rpV2SetToolbarBusy(busy){
   var tb=document.querySelector('.rp-v2-preview-toolbar-right');
   if(!tb)return;
@@ -556,11 +559,11 @@ async function rpV2Generate(){
       rpV2RenderContentQuality(version.contentQuality);
        body.innerHTML='<div class="rp-v2-rpt">'+rpRenderReportWithCharts(version.text,version.sourceAppendix)+'</div>';
        var gatewayRows=rpAIGatewayRequests.map(function(id){return window.jayGetAIGateway?window.jayGetAIGateway(id):null;}).filter(Boolean);
-       var gatewayProviders=[];var gatewayScopes=[];var gatewayFallback=false;
-       gatewayRows.forEach(function(row){if(row.provider&&gatewayProviders.indexOf(row.provider)<0)gatewayProviders.push(row.provider);if(row.data_disclosure&&Array.isArray(row.data_disclosure.scope))row.data_disclosure.scope.forEach(function(scope){if(gatewayScopes.indexOf(scope)<0)gatewayScopes.push(scope);});if(row.fallback_used)gatewayFallback=true;});
+       var gatewayScopes=[];var gatewayFallback=false;
+       gatewayRows.forEach(function(row){if(row.data_disclosure&&Array.isArray(row.data_disclosure.scope))row.data_disclosure.scope.forEach(function(scope){if(gatewayScopes.indexOf(scope)<0)gatewayScopes.push(scope);});if(row.fallback_used)gatewayFallback=true;});
        if(gatewayRows.length){
          var disclosure=document.createElement('div');disclosure.className='rp-ai-disclosure';
-         disclosure.textContent='本报告 AI 处理供应商：'+gatewayProviders.join('、')+'；发送给第三方 AI 的数据范围：'+(gatewayScopes.join('、')||'正式历史投影、报告上下文')+(gatewayFallback?'；部分章节使用了备用供应商':'')+'。';
+         disclosure.textContent='本报告由服务端 AI 处理；发送给第三方 AI 的数据范围：'+(gatewayScopes.join('、')||'正式历史投影、报告上下文')+(gatewayFallback?'；部分章节已自动切换备用通道':'')+'。';
          body.appendChild(disclosure);
        }
       if(status){var blockedLabel=!qualityGate||!qualityGate.ok?'未发布草稿 · 数据质量阻断':(version.contentQuality&&!version.contentQuality.ok?'不可发布 · 内容质量需复核':(version.citationAudit&&!version.citationAudit.ok?'不可发布 · 正文引用核验未通过':'不可发布 · 请补充数据'));status.textContent=version.publishable?'可发布 · 完整性 '+version.completeness.overall+'%':blockedLabel;status.className='rp-v2-publish-status '+(version.publishable?'is-publishable':'is-blocked');}
@@ -587,11 +590,11 @@ async function rpV2Generate(){
     generateSection(section,{system:system,user:user,sourceAppendix:prompts.sourceAppendix,citationFacts:prompts.citationFacts},{temperature:0.35,max_tokens:2800,search:false,timeout:60000,entryPoint:'report.generation',operation:'report.section.'+section.id,requestId:(rpActiveReportRun&&rpActiveReportRun.id||identity.clientReportId)+':'+section.id,reportRunId:rpActiveReportRun&&rpActiveReportRun.id||null,clientReportId:identity.clientReportId,dataVersion:String(quality.data_contract_version||quality.generated_at||'local-unversioned')}).then(async function(output){
       results.push({id:section.id,title:section.title,domain:section.domain,text:output,claims:[]});await next(index+1);
     }).catch(async function(error){
-       var aiFailure=window.jayAIErrorDetails?window.jayAIErrorDetails(error,requestOptions&&requestOptions.requestId):{code:error.code||'UNKNOWN_ERROR',text:error.message||'AI 请求失败',requestId:requestOptions&&requestOptions.requestId||'',provider:'未确定',retryable:true,suggestion:'请稍后重试'};
-       body.innerHTML='<div class="rp-v2-rpt"><p data-ui-style="color:#ef4444">第 '+(index+1)+' 章生成失败：'+escapeHtml(aiFailure.text)+'</p><dl class="rp-ai-error-meta"><dt>错误类型</dt><dd>'+escapeHtml(aiFailure.code)+'</dd><dt>请求编号</dt><dd>'+escapeHtml(aiFailure.requestId||'未生成')+'</dd><dt>供应商</dt><dd>'+escapeHtml(aiFailure.provider||'未确定')+'</dd></dl><p>'+escapeHtml(aiFailure.retryable?('建议：'+aiFailure.suggestion):'请按提示处理后再试')+'</p><p>已停止组装，未保存为正式报告。</p></div>';
+       var aiFailureText=rpUserFacingError(error,'AI 服务暂时不可用，请稍后重试');
+       body.innerHTML='<div class="rp-v2-rpt"><p data-ui-style="color:#ef4444">第 '+(index+1)+' 章生成失败：'+escapeHtml(aiFailureText)+'</p><p>请稍后重试。已停止组装，本次内容未保存为正式报告。</p></div>';
       if(status){status.textContent='生成失败';status.className='rp-v2-publish-status is-blocked';}
       try{await jayFinishReportRun(rpActiveReportRun&&rpActiveReportRun.id,'failed',{durationMs:Date.now()-generationStartedAt,failedSection:section.id,errorCode:error.code||error.message,errorMessage:error.message,saveStatus:'failed',publicationStatus:'draft'});}catch(runError){console.warn('[JAY观海] report run failure logging failed:',runError);}
-      rpActiveReportRun=null;rpGenInterval=false;rpV2SetToolbarBusy(false);toast('报告生成失败：'+(window.jayServiceErrorText?window.jayServiceErrorText(error):(error.message==='AUTH_REQUIRED'?'请先登录':String(error.message||'未知错误'))));
+      rpActiveReportRun=null;rpGenInterval=false;rpV2SetToolbarBusy(false);toast('报告生成失败：'+rpUserFacingError(error,'请稍后重试'));
     });
   }
   await next(0);
@@ -656,7 +659,7 @@ async function rpV2GeneratePlan(){
     toast('执行计划已生成');
   } catch(e){
     var b = document.getElementById('rp-ai-modal-body');
-    if(b) b.innerHTML = '<p data-ui-style="color:#ef4444">生成失败：' + (e.message === 'AUTH_REQUIRED' ? '请先登录' : escapeHtml(e.message)) + '</p>';
+    if(b) b.innerHTML = '<p data-ui-style="color:#ef4444">生成失败：' + escapeHtml(rpUserFacingError(e,'请稍后重试')) + '</p>';
     if(e.message !== 'AUTH_REQUIRED') toast('执行计划生成失败');
   } finally {
     rpPlanBusy = false;
@@ -752,9 +755,9 @@ async function rpV2SaveReport(name,materialCount,details){
     jayReportsCache=reports.map(function(item){return item.id===report.id?report:item;});
     rpV2SetSaveState('failed'); rpV2LoadRecent();
     var saveBadge=document.getElementById('rp-v2-save-status');
-    if(saveBadge)saveBadge.title='错误：'+report.saveError.code+(report.saveError.requestId?'；请求编号：'+report.saveError.requestId:'')+(report.saveError.reasonCodes.length?'；校验原因：'+report.saveError.reasonCodes.join('、'):'');
+    if(saveBadge)saveBadge.title='报告未能保存到云端，请稍后重试';
     console.warn('[JAY观海] report history sync failed:',error);
-    toast('报告保存失败，仅暂存在本机：'+jayDbErrorText(error)+'（'+report.saveError.code+(report.saveError.requestId?'；请求编号 '+report.saveError.requestId:'')+'）'); rpSaveBusy=false;
+    toast('报告保存失败，仅暂存在本机：'+rpUserFacingError(error,'请稍后重试')); rpSaveBusy=false;
     return false;
   }
 }
@@ -866,7 +869,7 @@ function rpV2AiTool(type){
   sys += dateNote; usr += dateNote;
   callAI(sys, usr, { temperature: 0.5, max_tokens: 1400, search: true, entryPoint:'report.comparison', operation:'report.comparison', timeout:60000 })
     .then(function(out){ resultEl.innerHTML = '<div class="rp-v2-ai-result">' + renderMarkdownSafe(out) + '</div>'; toast('AI 分析完成'); })
-    .catch(function(e){ resultEl.innerHTML = '<div class="rp-v2-ai-result"><p data-ui-style="color:#ef4444">分析失败：' + (e.message === 'AUTH_REQUIRED' ? '请先登录' : escapeHtml(e.message)) + '</p></div>'; });
+    .catch(function(e){ resultEl.innerHTML = '<div class="rp-v2-ai-result"><p data-ui-style="color:#ef4444">分析失败：' + escapeHtml(rpUserFacingError(e,'请稍后重试')) + '</p></div>'; });
 }
 
 
@@ -1013,7 +1016,7 @@ function rpV2RenderExportHistory(rows){
   if(!rows.length){el.innerHTML='<div class="rp-v2-history-empty">暂无导出记录</div>';return;}
   var labels={pdf:'PDF',docx:'DOCX',md:'Markdown'},states={queued:'排队中',processing:'处理中',completed:'成功',failed:'失败'};
   var canEdit=typeof jayWorkspaceCanEdit==='function'&&jayWorkspaceCanEdit();
-  el.innerHTML=rows.slice(0,20).map(function(row){var date=row.created_at?new Date(row.created_at):null;var when=date&&isFinite(date.getTime())?date.toLocaleString('zh-CN'):'暂无时间';var localTemporary=String(row.file_path||'').indexOf('local-print://')===0||String(row.file_path||'').indexOf('JAY观海_Report_')===0;var status=localTemporary?'本地临时导出':(states[row.status]||row.status||'未知');var retry=canEdit&&row.status==='failed'&&row.report_id?'<button type="button" class="rp-v2-history-retry" data-export-id="'+escapeHtml(String(row.id||''))+'" title="重新导出">↻</button>':'';return '<div class="rp-v2-history-row"><div><strong>'+escapeHtml(labels[row.format]||row.format||'导出')+'</strong><small>'+escapeHtml(when)+' · '+escapeHtml(status)+(row.error_message?' · '+escapeHtml(row.error_message):'')+'</small></div>'+retry+'</div>';}).join('');
+  el.innerHTML=rows.slice(0,20).map(function(row){var date=row.created_at?new Date(row.created_at):null;var when=date&&isFinite(date.getTime())?date.toLocaleString('zh-CN'):'暂无时间';var localTemporary=String(row.file_path||'').indexOf('local-print://')===0||String(row.file_path||'').indexOf('JAY观海_Report_')===0;var status=localTemporary?'本地临时导出':(states[row.status]||row.status||'未知');var retry=canEdit&&row.status==='failed'&&row.report_id?'<button type="button" class="rp-v2-history-retry" data-export-id="'+escapeHtml(String(row.id||''))+'" title="重新导出">↻</button>':'';var failure=row.error_message?' · '+rpUserFacingError({message:row.error_message,code:row.error_message},'导出失败，请重试'):'';return '<div class="rp-v2-history-row"><div><strong>'+escapeHtml(labels[row.format]||row.format||'导出')+'</strong><small>'+escapeHtml(when)+' · '+escapeHtml(status)+escapeHtml(failure)+'</small></div>'+retry+'</div>';}).join('');
   el.querySelectorAll('.rp-v2-history-retry').forEach(function(button){
     button.addEventListener('click',function(){rpV2RetryExport(this.dataset.exportId||'');});
   });
@@ -1292,7 +1295,7 @@ async function callAI(systemPrompt, userPrompt, opts){
      window.JAY_AI_RETRIEVAL_BY_REQUEST=window.JAY_AI_RETRIEVAL_BY_REQUEST||{};
      window.JAY_AI_RETRIEVAL_BY_REQUEST[requestId]=data&&data.jay_retrieval&&typeof data.jay_retrieval==='object'?data.jay_retrieval:{mode:'formal_publications',source_ids:[],citations:[],fallback:false};
      window.JAY_AI_GATEWAY_BY_REQUEST=window.JAY_AI_GATEWAY_BY_REQUEST||{};
-     window.JAY_AI_GATEWAY_BY_REQUEST[requestId]=data&&data.jay_gateway&&typeof data.jay_gateway==='object'?data.jay_gateway:{request_id:requestId,provider:'未确定',task_type:taskType,agent_key:agentKey,data_disclosure:{scope:taskType==='general_chat'?['request_context']:['formal_publications','request_context']}};
+     window.JAY_AI_GATEWAY_BY_REQUEST[requestId]=data&&data.jay_gateway&&typeof data.jay_gateway==='object'?data.jay_gateway:{task_type:taskType,fallback_used:false,data_disclosure:{scope:taskType==='general_chat'?['request_context']:['formal_publications','request_context']}};
     var retrievalKeys=Object.keys(window.JAY_AI_RETRIEVAL_BY_REQUEST);
     if(retrievalKeys.length>40)delete window.JAY_AI_RETRIEVAL_BY_REQUEST[retrievalKeys[0]];
     // strip markdown code fences if present
@@ -1317,22 +1320,18 @@ window.jayGetAIGateway=function(requestId){
   var rows=window.JAY_AI_GATEWAY_BY_REQUEST||{};
   return rows[String(requestId||'')]||null;
 };
-// Shared UI metadata for overview/report failures. The request ID is stable
-// across a search attempt and its no-search fallback, so support can locate
-// one row in ai_request_logs.
-window.jayAIErrorDetails = function(error, fallbackRequestId){
+// Shared user-facing error metadata. Operational codes, request identifiers
+// and provider details remain in backend audit logs and are never rendered.
+window.jayAIErrorDetails = function(error){
   error=error||{};
   var details=error.details||{};
   var nested=details.ai_error||{};
   var code=String(error.code||nested.code||details.error||error.message||'UNKNOWN_ERROR').split(':')[0];
-  var text=window.jayServiceErrorText?window.jayServiceErrorText(error):String(error.message||code);
+  var text=rpUserFacingError(error,'AI 服务暂时不可用，请稍后重试');
   return {
-    code:code,
     text:text,
-    requestId:error.requestId||details.request_id||nested.request_id||fallbackRequestId||'',
-    provider:error.provider||details.provider||nested.provider||'未确定',
     retryable:error.retryable!=null?Boolean(error.retryable):(nested.retryable!=null?Boolean(nested.retryable):['AI_PROVIDER_TIMEOUT','AI_PROVIDER_UNREACHABLE','AI_PROVIDER_ERROR','AI_RATE_LIMITED','NETWORK_ERROR','EMPTY_RESPONSE','AI_EMPTY_RESPONSE'].indexOf(code)>=0),
-    suggestion:error.suggestion||details.suggestion||nested.suggestion||(code==='AUTH_REQUIRED'?'请重新登录后重试':'请稍后重试')
+    suggestion:code==='AUTH_REQUIRED'?'请重新登录后重试':'请稍后重试'
   };
 };
 

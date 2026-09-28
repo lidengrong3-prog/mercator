@@ -4,8 +4,11 @@ The browser calls this authenticated Supabase Edge Function using one
 provider-neutral contract. Requests carry `request_id`, `task_type`,
 `agent_key`, `provider`, `messages`, `workspace_id`, `retrieval` and a safe
 `data_disclosure` summary. Responses preserve a Chat Completions-compatible
-`choices` shape and add `jay_gateway` metadata; failures include an error code,
-request ID, provider, retryability and a user-facing suggestion. Prompt and
+`choices` shape and add sanitized `jay_gateway` metadata. Ordinary responses
+expose only task, fallback and disclosure scope; provider/model/attempt details
+remain in backend audit logs and are returned only to signed production
+acceptance requests. The UI maps failures to friendly Chinese messages and does
+not render internal codes, providers, stacks or request details. Prompt and
 response bodies are never copied into operational logs.
 
 ```bash

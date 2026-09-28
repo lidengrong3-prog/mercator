@@ -137,15 +137,28 @@ test('general chat is not forced through workspace data retrieval or technical e
   const edge = read('supabase', 'functions', 'ai-proxy', 'index.ts');
   const overview = read('assets', 'js', 'content-overview.js');
   const client = read('assets', 'js', 'reports-decisions.js');
+  const auth = read('assets', 'js', 'auth-data.js');
   assert.match(edge, /const isGeneralChat = taskType === 'general_chat'/);
   assert.match(edge, /retrievalMode = isGeneralChat ||/);
   assert.match(edge, /if \(!isGeneralChat\) \{/);
   assert.match(edge, /if \(!workspaceId\) \{[\s\S]*AI request audit skipped/);
   assert.match(overview, /taskType:businessQuery\?'market_qa':'general_chat'/);
   assert.match(overview, /系统数据中暂未找到最新记录，以下为通用参考/);
-  assert.match(overview, /我现在有点忙，请稍后再试/);
+  assert.match(edge, /formalRetrieval\.fallback = true/);
+  assert.match(edge, /mode: isGeneralChat \? 'disabled' : 'formal_publications'/);
+  assert.match(edge, /if \(acceptanceRunId\) \{[\s\S]*providers_attempted/);
+  assert.match(overview, /jayUserFacingErrorText/);
+  assert.match(auth, /function jayUserFacingErrorText/);
+  assert.match(auth, /deepseek\|coze\|doubao\|openai\|codex\|workbuddy/);
   assert.doesNotMatch(overview, /<dt>错误类型<\/dt>/);
+  assert.doesNotMatch(overview, /gateway\.provider/);
+  assert.doesNotMatch(overview, /gateway\.agent_key/);
   assert.match(client, /taskType==='general_chat'\?'':'market_analyst'/);
+  assert.doesNotMatch(client, /本报告 AI 处理供应商/);
+  assert.doesNotMatch(client, /<dt>错误类型<\/dt>/);
+  assert.doesNotMatch(client, /<dt>请求编号<\/dt>/);
+  assert.doesNotMatch(client, /<dt>供应商<\/dt>/);
+  assert.doesNotMatch(client, /saveBadge\.title='错误：'/);
 });
 
 test('production workflow exposes optional provider secrets without replacing absent values', () => {

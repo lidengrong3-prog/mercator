@@ -1923,6 +1923,16 @@ test('authenticated function errors and network recovery use the real request wr
   expect(timeout).toMatchObject({ ok: false, status: 408, code: 'REQUEST_TIMEOUT' });
   const providerTimeout = await invoke('providerTimeout');
   expect(providerTimeout).toMatchObject({ ok: false, status: 504, code: 'AI_PROVIDER_TIMEOUT', requestId: 'error-contract-test', provider: 'deepseek' });
+  const publicErrors = await page.evaluate(() => [
+    window.jayUserFacingErrorText({ code: 'WORKSPACE_REQUIRED', message: 'WORKSPACE_REQUIRED', status: 400 }),
+    window.jayUserFacingErrorText({ code: 'AI_RATE_LIMITED', message: 'AI_RATE_LIMITED', status: 429 }),
+    window.jayUserFacingErrorText({ code: 'AI_PROVIDER_ERROR', message: 'DeepSeek stack at invokeProvider()', status: 503 }),
+    window.jayUserFacingErrorText({ code: 'NETWORK_ERROR', message: 'NETWORK_ERROR', status: 0 }),
+    window.jayUserFacingErrorText({ code: 'REQUEST_TIMEOUT', message: 'REQUEST_TIMEOUT', status: 408 }),
+  ]);
+  for (const text of publicErrors) {
+    expect(text).not.toMatch(/WORKSPACE_REQUIRED|AI_PROVIDER_ERROR|AI_RATE_LIMITED|NETWORK_ERROR|REQUEST_TIMEOUT|deepseek|stack/i);
+  }
 
   const recovered = await invoke('offline-once', { retry: true });
   expect(recovered).toMatchObject({ ok: true, result: { ok: true } });
@@ -1948,6 +1958,63 @@ test('authenticated function errors and network recovery use the real request wr
   expect(searchBodies[0].request_id).toBe('search-fallback-test');
   expect(searchBodies[1].request_id).toBe('search-fallback-test');
   expect(searchBodies[1].web_search).toBeUndefined();
+});
+
+test('overview routes common questions to general chat and hides internal failures', async ({ page }) => {
+  const requests = [];
+  let responseMode = 'success';
+  await page.route('**/functions/v1/ai-proxy', async (route) => {
+    const body = route.request().postDataJSON();
+    requests.push(body);
+    if (responseMode === 'error') {
+      await route.fulfill({
+        status: 503, contentType: 'application/json',
+        body: JSON.stringify({ error: 'AI_PROVIDER_ERROR', provider: 'deepseek', stack: 'at invokeProvider (index.ts:1)' }),
+      });
+      return;
+    }
+    const noData = body.task_type === 'market_qa';
+    await route.fulfill({
+      status: 200, contentType: 'application/json',
+      body: JSON.stringify({
+        choices: [{ message: { content: noData
+          ? '系统数据中暂未找到最新记录，以下为通用参考。\n\n这是通用市场建议。'
+          : '正常回答：' + body.messages[body.messages.length - 1].content } }],
+        jay_gateway: { task_type: body.task_type, fallback_used: false, data_disclosure: { scope: ['request_context'] } },
+        jay_retrieval: { mode: noData ? 'formal_publications' : 'disabled', source_ids: [], citations: [], fallback: noData },
+      }),
+    });
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  await page.evaluate(() => {
+    window.jayIsDemo = false;
+    window.jayUser = { id: '00000000-0000-4000-8000-000000000001', email: 'chat@example.com' };
+    window.supabaseClient = { auth: { getSession: async () => ({ data: { session: { access_token: 'test-token' } } }) } };
+  });
+
+  for (const prompt of ['你好', '你是谁', '写开发信', '什么是亚马逊 FBA']) {
+    const before = requests.length;
+    await page.locator('#ov-hero-input').fill(prompt);
+    await page.locator('#ov-hero-send').click();
+    await expect.poll(() => requests.length).toBe(before + 1);
+    expect(requests.at(-1).task_type).toBe('general_chat');
+    expect(requests.at(-1).workspace_id || null).toBeNull();
+    await expect(page.locator('#ov-hero-result')).toContainText('正常回答：' + prompt);
+  }
+
+  await page.locator('#ov-hero-input').fill('当前亚马逊市场销量趋势怎么样');
+  await page.locator('#ov-hero-send').click();
+  await expect.poll(() => requests.at(-1)?.task_type).toBe('market_qa');
+  await expect(page.locator('#ov-hero-result')).toContainText('系统数据中暂未找到最新记录，以下为通用参考');
+
+  responseMode = 'error';
+  await page.locator('#ov-hero-input').fill('你好');
+  await page.locator('#ov-hero-send').click();
+  await expect(page.locator('#ov-hero-result')).toContainText('AI 服务端处理失败，请稍后重试');
+  const failureText = await page.locator('#ov-hero-result').innerText();
+  expect(failureText).not.toMatch(/AI_PROVIDER_ERROR|deepseek|stack|index\.ts/i);
 });
 
 test('duplicate checkout, report generation and export actions collapse to one operation', async ({ page }) => {

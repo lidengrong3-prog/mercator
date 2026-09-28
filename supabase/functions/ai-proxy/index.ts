@@ -671,8 +671,12 @@ Deno.serve(async (request) => {
       formalRetrieval.error = 'RAG_UNAVAILABLE';
     }
   }
-  if (taskType === 'market_qa' && isBusinessDataQuery(latestUserQuery) && !formalRetrieval.citations.length) {
+  const noFormalDataFallback = taskType === 'market_qa'
+    && isBusinessDataQuery(latestUserQuery)
+    && !formalRetrieval.citations.length;
+  if (noFormalDataFallback) {
     const noDataNotice = '系统数据中暂未找到最新记录，以下为通用参考。请基于通用知识回答，并明确区分通用参考和系统正式数据。';
+    formalRetrieval.fallback = true;
     formalRetrieval.prompt = formalRetrieval.prompt
       ? `${noDataNotice}\n${formalRetrieval.prompt}`
       : noDataNotice;
@@ -1141,8 +1145,7 @@ Deno.serve(async (request) => {
     }
     content = `${content.trim()}\n\n${marketEvidenceGapSupplement(marketQuery, formalRetrieval.citations)}`;
   }
-  if (taskType === 'market_qa' && isBusinessDataQuery(marketQuery)
-    && formalRetrieval.citations.length === 0
+  if (noFormalDataFallback
     && !content.includes('系统数据中暂未找到最新记录')) {
     content = `系统数据中暂未找到最新记录，以下为通用参考。\n\n${content.trim()}`;
   }
@@ -1174,25 +1177,34 @@ Deno.serve(async (request) => {
         reset_at: String(reservation?.reset_at || ''),
       };
     }
-    result.jay_gateway = {
-      request_id: requestId,
-      entry_point: entryPoint,
-      operation,
-      provider,
-      model: activeModel,
+    const publicGateway: Record<string, unknown> = {
       task_type: taskType,
-      agent_key: agentKey,
-      route_source: routeSource,
-      search_used: usedSearch,
       fallback_used: fallbackUsed,
-      providers_attempted: providerAttempts.map((item) => item.provider),
-      provider_config_fingerprints: providerConfigFingerprints,
-      attempts: providerAttempts.map((item) => ({ provider: item.provider, model: item.model, config_fingerprint: item.config_fingerprint, status: item.status, http_status: item.http_status, error_code: item.error_code, duration_ms: item.duration_ms })),
-      data_disclosure: dataDisclosure,
+      data_disclosure: {
+        third_party_provider: true,
+        consent: dataDisclosure.consent,
+        scope: dataDisclosure.scope,
+      },
       retrieval_count: formalRetrieval.citations.length,
     };
+    // Provider names, models, fingerprints and attempt details are operational
+    // metadata. Keep them in backend audit logs and expose them only to the
+    // signed production-acceptance flow, never to the ordinary user interface.
+    if (acceptanceRunId) {
+      Object.assign(publicGateway, {
+        request_id: requestId, entry_point: entryPoint, operation, provider, model: activeModel,
+        agent_key: agentKey, route_source: routeSource, search_used: usedSearch,
+        providers_attempted: providerAttempts.map((item) => item.provider),
+        provider_config_fingerprints: providerConfigFingerprints,
+        attempts: providerAttempts.map((item) => ({
+          provider: item.provider, model: item.model, config_fingerprint: item.config_fingerprint,
+          status: item.status, http_status: item.http_status, error_code: item.error_code, duration_ms: item.duration_ms,
+        })),
+      });
+    }
+    result.jay_gateway = publicGateway;
     result.jay_retrieval = {
-      mode: 'formal_publications',
+      mode: isGeneralChat ? 'disabled' : 'formal_publications',
       source_ids: formalRetrieval.citations.map((item) => item.source_id),
       citations: formalRetrieval.citations,
       error: formalRetrieval.error,

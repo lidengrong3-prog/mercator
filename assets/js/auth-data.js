@@ -1472,7 +1472,24 @@ function jayDbErrorText(error) {
   return error.message || '数据保存失败，请稍后重试';
 }
 
+function jayUserFacingErrorText(error, fallback) {
+  var text = String(jayDbErrorText(error) || '').trim();
+  var unsafe = /\b[A-Z][A-Z0-9]+(?:_[A-Z0-9]+)+\b|deepseek|coze|doubao|openai|codex|workbuddy|traceback|stack(?:\s*trace)?|\bat\s+[A-Za-z_$][\w$]*\s*\(|https?:\/\/[^\s]+\/functions\/v1\//i;
+  if (!text || unsafe.test(text)) {
+    if (error && error.status === 401) return '登录状态已失效，请重新登录';
+    if (error && error.status === 403) return '当前账号没有执行此操作的权限';
+    if (error && error.status === 429) return '请求过于频繁，请稍后重试';
+    if (error && error.status === 402) return '当前服务额度不足，请稍后再试';
+    if (error && (error.status === 408 || error.status === 504 || error.name === 'AbortError')) return '请求超时，请检查网络后重试';
+    if (error && error.status === 0) return '网络连接失败，请检查网络后重试';
+    if (error && error.status >= 500) return '服务暂时不可用，请稍后重试';
+    return fallback || '操作未完成，请稍后重试';
+  }
+  return text.slice(0, 180);
+}
+
 window.jayServiceErrorText = jayDbErrorText;
+window.jayUserFacingErrorText = jayUserFacingErrorText;
 
 async function jayDbRequest(method, table, query, payload, prefer) {
   if (!JAY_USER_TABLES[table]) throw new Error('UNSUPPORTED_USER_TABLE');

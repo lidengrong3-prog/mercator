@@ -789,7 +789,7 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
     var disclosure='';
     if(gateway){
       var scope=gateway.data_disclosure&&Array.isArray(gateway.data_disclosure.scope)?gateway.data_disclosure.scope.join('、'):'正式历史投影、当前问题上下文';
-      disclosure='<div class="ovr-note ovr-ai-disclosure">本次由 '+escapeHtml(String(gateway.provider||'服务端 AI'))+'（'+escapeHtml(String(gateway.agent_key||'市场分析助手'))+'）处理；发送给第三方 AI 的数据范围：'+escapeHtml(scope)+(gateway.fallback_used?'；主供应商不可用，已按策略切换备用供应商':'')+'。</div>';
+      disclosure='<div class="ovr-note ovr-ai-disclosure">本次由服务端 AI 处理；发送给第三方 AI 的数据范围：'+escapeHtml(scope)+(gateway.fallback_used?'；服务已自动切换备用通道':'')+'。</div>';
     }
     return '<div class="ovr-card"><div class="ovr-head"><span>AI</span><h4>'+(generalChat?'回答：':'分析结果：')+escapeHtml(q)+'<small>'+(generalChat?'通用 AI 对话':'优先基于当前工作区已核验数据')+'</small></h4></div>'+
       bodyHtml+disclosure+
@@ -797,8 +797,7 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
       '<div class="ovr-note">'+(generalChat?'内容由 AI 生成，请结合实际情况判断。':'结论仅在服务端 AI 成功返回后展示；数据不足时不会使用内置规则补造结果。')+'</div></div>';
   }
   function buildHeroErrorCard(q, error, requestId){
-    var info=window.jayAIErrorDetails?window.jayAIErrorDetails(error,requestId):{code:error&&error.code||'UNKNOWN_ERROR',text:error&&error.message||'AI 服务请求失败',requestId:requestId||'',provider:'未确定',retryable:true,suggestion:'请稍后重试'};
-    var friendly=String(info.code||'').toUpperCase()==='AUTH_REQUIRED'?'请先登录后再试':'我现在有点忙，请稍后再试。';
+    var friendly=window.jayUserFacingErrorText?window.jayUserFacingErrorText(error,'我现在有点忙，请稍后再试。'):'我现在有点忙，请稍后再试。';
     return '<div class="ovr-card ovr-card-error"><div class="ovr-head"><span>AI</span><h4>暂时无法回答<small>'+escapeHtml(friendly)+'</small></h4></div>'+
       '<div class="ovr-section"><p>'+escapeHtml(friendly)+'</p></div>'+
       '<div class="ovr-foot"><button class="primary" type="button" data-ov-retry="1">重新分析</button></div></div>';

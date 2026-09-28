@@ -2,15 +2,15 @@
 
 ## 统一入口
 
-浏览器只调用 `supabase/functions/v1/ai-proxy`，不会接触任何供应商密钥，也不会拼接供应商 URL。请求至少包含登录会话、`workspace_id`、`messages` 和 `request_id`；推荐同时传入：
+浏览器只调用 `supabase/functions/v1/ai-proxy`，不会接触任何供应商密钥，也不会拼接供应商 URL。请求至少包含登录会话、`messages` 和 `request_id`；业务任务还需要 `workspace_id`，`general_chat` 不依赖工作区；推荐同时传入：
 
-- `task_type`：`market_qa`、`report`、`translation`、`course_qa`、`code` 或 `automation`。
+- `task_type`：`general_chat`、`market_qa`、`report`、`translation`、`course_qa`、`code` 或 `automation`。`general_chat` 不检索业务库；业务问题检索为空时继续给出通用回答，并明确声明系统数据范围。
 - `agent_key`：从 `ai_agent_catalog` 选择的智能体。
 - `provider`：`auto` 或明确的供应商键。
 - `retrieval`：正式历史投影检索设置；正式投影始终在联网检索之前处理。
 - `data_disclosure`：发送范围摘要和用户同意状态。摘要不含工作区原文。
 
-响应统一为 Chat Completions 兼容的 `choices` 形状，并附加 `jay_gateway`：实际供应商、模型、智能体、是否回退、尝试过的供应商和发送范围。失败响应包含稳定的 `request_id`、错误类型、供应商、是否可重试和建议。
+响应统一为 Chat Completions 兼容的 `choices` 形状。普通用户响应中的 `jay_gateway` 只包含任务类型、是否回退和发送范围，不包含供应商、模型、指纹或尝试明细；这些信息仅保存在后台审计日志，签名生产验收请求可读取验证元数据。前端将失败统一映射为中文友好提示，不渲染内部错误码、供应商名称、堆栈或请求细节。
 
 ## 供应商适配
 
