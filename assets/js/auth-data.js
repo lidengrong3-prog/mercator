@@ -2,7 +2,7 @@ var JAY_DATA_META = {};          // { key: { updated_at, source } }
 var JAY_QUALITY_REPORT = null;
 var JAY_STALE_DAYS = 1;
 var JAY_CORE_KEYS = ['policies', 'rules', 'alerts', 'countries', 'platforms'];
-var JAY_QUALITY_LABELS = { healthy:'数据实时', degraded:'部分降级', unverified:'待核验', missing_source:'来源缺失', not_connected:'尚未接入', stale:'数据过期', failed:'校验失败', pending:'读取中' };
+var JAY_QUALITY_LABELS = { healthy:'数据有效', degraded:'部分降级', unverified:'待核验', missing_source:'来源缺失', not_connected:'尚未接入', stale:'数据过期', failed:'校验失败', pending:'读取中' };
 function jayQualityStatus(report){
   if(!report) return 'pending';
   if(!report.generated_at) return 'failed';
@@ -143,7 +143,7 @@ async function jayRefreshViaAI(key, label){
     toast(catLabel + ' AI 简报已生成');
     return brief;
   } catch(e){
-    toast('实时刷新失败：' + (e.message === 'AUTH_REQUIRED' ? '请先登录' : e.message));
+    toast('数据刷新失败：' + (e.message === 'AUTH_REQUIRED' ? '请先登录' : e.message));
     return null;
   }
 }
@@ -200,13 +200,13 @@ function jayRenderBriefCard(){
   });
   var body = document.getElementById('ov-brief-body');
   if(!body) return;
-  if(!best){ var marketText=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames().join('、'):'当前'; body.innerHTML = '<p data-ui-style="color:var(--muted);font-size:12px">暂无实时简报。点击「刷新实时数据」，AI 将联网检索并生成最新'+marketText+'市场动态。</p>'; return; }
+  if(!best){ var marketText=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getActiveMarketNames?window.JAY_MARKET_SCOPE_API.getActiveMarketNames().join('、'):'当前'; body.innerHTML = '<p data-ui-style="color:var(--muted);font-size:12px">暂无数据简报。点击「刷新数据」，AI 将检索并生成'+marketText+'市场动态，同时标明数据时效。</p>'; return; }
   var d = new Date(best.ts);
   var label = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
   body.innerHTML = '<div class="rp-v2-rpt" data-ui-style="box-shadow:none;padding:0">' + renderMarkdownSafe(best.text) + '</div><div data-ui-style="font-size:11px;color:var(--muted);margin-top:8px">生成时间：'+label+'</div>';
 }
 
-// 初始化总览页数据印章与 AI 实时情报卡（依赖 JAY_DATA_META / JAY_CORE_KEYS，必须在数据层定义后调用）
+// 初始化总览页数据印章与 AI 数据情报卡（依赖 JAY_DATA_META / JAY_CORE_KEYS，必须在数据层定义后调用）
 jayUpdateDataStamp(); jayRenderBriefCard(); jayLoadQualityReport();
 
 function jayMarketDataContractValid(key,data){

@@ -301,6 +301,8 @@ test('repository root excludes retired one-off generation and review artifacts',
 
 test('market scope is centralized before data modules load', () => {
   const scope = fs.readFileSync(path.join(root, 'assets/js/market-scope.js'), 'utf8');
+  const catalog = fs.readFileSync(path.join(root, 'assets/js/catalog.js'), 'utf8');
+  const aiProxy = fs.readFileSync(path.join(root, 'supabase/functions/ai-proxy/index.ts'), 'utf8');
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'data', 'market_scope.json'), 'utf8'));
   const us = manifest.markets.find((market) => market.code === 'US');
   const activeCategories = manifest.categories
@@ -312,12 +314,12 @@ test('market scope is centralized before data modules load', () => {
   assert.deepEqual(new Set(templateCategories), new Set(activeCategories));
   assert.ok(us.category_keys.includes('pet-food'));
   assert.ok(us.category_keys.includes('pet-supplies'));
-  assert.match(scope, /code:\s*'US'/);
-  assert.match(scope, /name:\s*'美国'/);
-  assert.match(scope, /name:\s*'Amazon'/);
-  assert.match(scope, /name:\s*'TikTok Shop'/);
-  assert.match(scope, /name:\s*'AliExpress'/);
-  assert.match(scope, /name:\s*'eBay'/);
+  assert.doesNotMatch(scope, /code:\s*'US'/);
+  assert.doesNotMatch(scope, /name:\s*'美国'/);
+  assert.doesNotMatch(scope, /name:\s*'Amazon'/);
+  assert.doesNotMatch(scope, /name:\s*'TikTok Shop'/);
+  assert.doesNotMatch(scope, /name:\s*'AliExpress'/);
+  assert.doesNotMatch(scope, /name:\s*'eBay'/);
   assert.match(scope, /version:\s*CONFIG_VERSION/);
   assert.match(scope, /marketPlatforms:/);
   assert.match(scope, /dataDomains:/);
@@ -331,6 +333,20 @@ test('market scope is centralized before data modules load', () => {
   assert.match(scope, /normalizeDataRecord/);
   assert.match(scope, /getReportTemplates/);
   assert.match(scope, /global\.JAY_MARKET_SCOPE/);
+  assert.deepEqual(manifest.data_status_definitions, {
+    configured: { label: '可用', description: '已接入正式数据，可按质量状态用于页面、搜索和 AI。' },
+    schema_only: { label: '部分接入', description: '范围与结构已配置，但真实业务数据仍不完整。' },
+    not_connected: { label: '规划中', description: '尚未接入真实数据源，不得展示为可用数据。' },
+  });
+  assert.equal(manifest.markets.find((market) => market.code === 'US').data_status, 'configured');
+  assert.equal(manifest.markets.find((market) => market.code === 'ID').data_status, 'schema_only');
+  assert.match(catalog, /data\/market_scope\.json/);
+  assert.match(catalog, /sole range authority/);
+  assert.doesNotMatch(catalog, /market_catalog\?select/);
+  assert.match(scope, /fresh:\s*'有效',\s*stale:\s*'已过期'/);
+  assert.match(aiProxy, /raw_source_records\?id=in/);
+  assert.match(aiProxy, /citation\.freshness/);
+  assert.match(aiProxy, /citation\.source_type/);
   const reportEngine = fs.readFileSync(path.join(root, 'assets/js/report-engine.js'), 'utf8');
   const reportDecisions = fs.readFileSync(path.join(root, 'assets/js/reports-decisions.js'), 'utf8');
   for (const retired of ['walmart', 'etsy', 'shopify', 'temu', 'shein']) {
@@ -1123,7 +1139,9 @@ test('formal pages do not retain retired mock render paths', () => {
   assert.match(policySource, /jaySafeHttpsUrl\(p\.source_url\)/);
   assert.match(policySource, /jaySafeHttpsUrl\(r\.source_url\)/);
   assert.match(policySource, /function plRenderDataLineage\(record,evidence,options\)/);
-  assert.match(policySource, /plFormatLineageTime\(record\.collected_at\|\|record\.collectedAt\)/);
+  assert.match(policySource, /plFormatLineageTime\(freshness\.retrievedAt\)/);
+  assert.match(policySource, /时效：/);
+  assert.match(policySource, /来源类型：/);
   assert.match(policySource, /source_record_id\|\|record\.sourceRecordId/);
   assert.match(policySource, /evidence_hash\|\|record\.evidenceHash/);
   assert.match(policySource, /plRenderDataLineage\(p,evidence/);

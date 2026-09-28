@@ -518,6 +518,31 @@ class ValidateDataTests(unittest.TestCase):
         self.assertEqual(result.freshness_hours, 0.5)
         self.assertFalse(any("超过新鲜度阈值" in error for error in result.errors))
 
+    def test_dataset_report_exposes_retrieval_verification_sla_and_source_type(self):
+        now = datetime(2026, 9, 28, tzinfo=timezone.utc)
+        payload = {
+            "updated_at": "2026-09-20T00:00:00Z",
+            "items": [{
+                "id": "policy-r04", "title": "R04 policy", "market": "US",
+                "source": "Official", "source_url": "https://example.gov/policy-r04",
+                "source_kind": "official", "source_type": "government",
+                "source_record_id": "policy-r04", "verification_status": "verified",
+                "verified_at": "2026-09-20T00:00:00Z", "collected_at": "2026-09-20T00:00:00Z",
+                "published_at": "2026-09-19", "evidence_hash": "a" * 64,
+            }],
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = os.path.join(temp_dir, "policies.json")
+            with open(path, "w", encoding="utf-8") as handle:
+                json.dump(payload, handle)
+            result = validate_items_dataset("policies", path, now, minimum=1, max_age_hours=36)
+        report = result.as_dict()
+        self.assertEqual(report["retrieved_at"], "2026-09-20T00:00:00+00:00")
+        self.assertEqual(report["verified_at"], "2026-09-20T00:00:00+00:00")
+        self.assertEqual(report["freshness"], "stale")
+        self.assertEqual(report["sla_hours"], 36)
+        self.assertEqual(report["source_type"], "government")
+
 
 if __name__ == "__main__":
     unittest.main()

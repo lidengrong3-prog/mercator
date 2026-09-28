@@ -494,6 +494,8 @@ test('core product pages stay in the workspace and render above the fold', async
   await page.evaluate(() => window.switchPage('countries'));
   await expect(page.locator('#countries .country-scope-summary')).toContainText('美国');
   await expect(page.locator('#country-profile-selector')).toHaveValue('US');
+  await expect(page.locator('#country-profile-selector option[value="US"]')).toHaveText(/美国.*可用/);
+  await expect(page.locator('#country-profile-selector option[value="ID"]')).toHaveText(/印度尼西亚.*部分接入/);
   await expect(page.locator('#country-commerce-title')).toHaveText('美国电商市场环境');
   await expect(page.locator('#country-commerce-count')).toHaveText('8 项已接入');
   await expect(page.locator('#country-commerce-content .country-commerce-metric')).toHaveCount(11);
@@ -503,6 +505,8 @@ test('core product pages stay in the workspace and render above the fold', async
   await expect(page.locator('#country-commerce-content .country-commerce-metric.is-missing').first()).toHaveAttribute('data-data-status', 'not-connected');
   await expect(page.locator('#country-commerce-content .country-commerce-metric.is-missing').first()).toContainText('尚未接入');
   await expect(page.locator('#country-commerce-content .country-commerce-metric.has-data a')).toHaveCount(8);
+  await expect(page.locator('#country-commerce-meta')).toContainText('范围状态 可用');
+  await expect(page.locator('#country-commerce-content .country-commerce-meta').first()).toContainText(/获取 .*核验 .*时效 .*来源类型/);
   await expect(page.locator('#country-commerce-content')).toContainText('电商零售总额');
   await expect(page.locator('#country-commerce-content')).toContainText('电商渗透率');
   await expect(page.locator('#country-commerce-content')).not.toContainText(/国债|房贷|房价|非农/);
@@ -515,6 +519,13 @@ test('core product pages stay in the workspace and render above the fold', async
   await expect(page.locator('[data-commerce-section="category"]')).toContainText('服装及配饰门店零售');
   await expect(page.locator('#country-commerce-count')).toHaveText('9 项已接入');
   await page.locator('#country-commerce-category').selectOption('');
+  const staleSearchLabel = await page.evaluate(() => {
+    return window.JAY_MARKET_SCOPE_API.getRecordFreshness({
+      source_type: 'government', verification_status: 'verified', verified_at: '2025-01-01T00:00:00Z',
+      retrieved_at: '2025-01-01T00:00:00Z',
+    }, { domain: 'policy', now: '2026-09-28T00:00:00Z' }).label;
+  });
+  expect(staleSearchLabel).toBe('已过期');
   await expect(page.locator('#countries .chart-placeholder')).toHaveCount(0);
   await expect(page.locator('#countries .alert-sidebar .alert-item')).toHaveCount(0);
 
@@ -723,7 +734,9 @@ test('decision overview supports multi-market scope and keeps market entry filte
   await expect(page.locator('#ov-metrics [data-metric="country-count"] .ov-metric-val')).toHaveText('2');
   await expect(page.locator('#ov-metrics [data-metric="platform-count"] .ov-metric-val')).toHaveText('5');
   await expect(page.locator('#ov-scope-summary')).toContainText('美国、德国');
-  await expect(page.locator('#jay-platform-selector option')).toHaveText(['全部平台', 'Amazon', 'TikTok Shop', 'AliExpress', 'eBay', 'Otto']);
+  await expect(page.locator('#jay-platform-selector option')).toHaveText([
+    '全部平台', 'Amazon · 可用', 'TikTok Shop · 可用', 'AliExpress · 可用', 'eBay · 可用', 'Otto · 可用',
+  ]);
   await expect(page.locator('#ov-country-grid .ov-ccard')).toHaveCount(2);
 
   await expect(page.locator('#ov-metrics [data-metric="policy-count"] .ov-metric-val')).not.toHaveText('—', { timeout: 15_000 });
@@ -995,7 +1008,7 @@ test('platform rules are filtered to the US market and supported platforms', asy
   await expect(rules).toHaveCount(Math.min(ruleSnapshot.total, 8));
   await expect(rules.locator('.data-lineage')).toHaveCount(Math.min(ruleSnapshot.total, 8));
   await expect(rules.first().locator('.data-lineage')).toContainText('来源：');
-  await expect(rules.first().locator('.data-lineage')).toContainText('采集：');
+  await expect(rules.first().locator('.data-lineage')).toContainText('获取：');
   await expect(rules.first().locator('.data-lineage')).toContainText('证据等级：');
   const ruleRows = await rules.evaluateAll((cards) => cards.map((card) => ({
     text: card.textContent,
@@ -1076,7 +1089,7 @@ test('policy dynamics are constrained to the configured US market', async ({ pag
   await expect(page.locator('#pl-list .pl-verify-badge.pass').first()).toBeVisible();
   await expect(policyCards.locator('.data-lineage')).toHaveCount(10);
   await expect(policyCards.first().locator('.data-lineage')).toContainText('已核验 · 官方来源');
-  await expect(policyCards.first().locator('.data-lineage')).toContainText('采集：');
+  await expect(policyCards.first().locator('.data-lineage')).toContainText('获取：');
   await expect(policyCards.first().locator('.data-lineage')).toContainText('证据等级：官方来源');
   await expect(page.locator('#pl-list .pl-translation-badge')).toHaveCount(10);
   await expect(page.locator('#pl-list .pl-relevance-tag').first()).toContainText(/跨境|贸易/);
@@ -1200,7 +1213,7 @@ test('third-party industry news is visible as traceable reference only', async (
   await expect(page.locator('#pl-list .pl-card')).toHaveCount(Math.min(10, state.count));
   await expect(page.locator('#pl-list')).toContainText('可追溯参考');
   await expect(page.locator('#pl-list .data-lineage-advisory').first()).toContainText('非官方核验');
-  await expect(page.locator('#pl-list .data-lineage-advisory').first()).toContainText('采集：');
+  await expect(page.locator('#pl-list .data-lineage-advisory').first()).toContainText('获取：');
   await expect(page.locator('#pl-list')).toContainText('第三方行业资讯');
   await expect(page.locator('#pl-list')).not.toContainText('40 · 低可信');
   await expect(page.locator('#pl-stats-row')).toContainText('可追溯参考，不纳入正式政策统计');
@@ -2089,7 +2102,9 @@ test('visible scope controls propagate a newly registered market across workspac
   });
 
   await expect(page.locator('#jay-market-selector')).toHaveValue('DE');
-  await expect(page.locator('#jay-market-selector option')).toHaveText(['美国', '印度尼西亚', '德国']);
+  await expect(page.locator('#jay-market-selector option')).toHaveText([
+    '美国 · 可用', '印度尼西亚 · 部分接入', '德国 · 可用',
+  ]);
   await expect(page.locator('.market-switcher').first()).toContainText('德国市场');
   await expect(page.locator('#ov-metrics .ov-metric-card').nth(0).locator('.ov-metric-val')).toHaveText('1');
   await expect(page.locator('#ov-metrics .ov-metric-card').nth(1).locator('.ov-metric-val')).toHaveText('1');
@@ -2154,7 +2169,9 @@ test('platform and category selectors update the shared scope without stale sele
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();
 
-  await expect(page.locator('#jay-platform-selector option')).toHaveText(['全部平台', 'Amazon', 'TikTok Shop', 'AliExpress', 'eBay']);
+  await expect(page.locator('#jay-platform-selector option')).toHaveText([
+    '全部平台', 'Amazon · 可用', 'TikTok Shop · 可用', 'AliExpress · 可用', 'eBay · 可用',
+  ]);
   await page.locator('#jay-platform-selector').selectOption('amazon');
   await expect(page.locator('#jay-platform-selector')).toHaveValue('amazon');
   await page.locator('#jay-platform-selector').selectOption('tiktok-shop');

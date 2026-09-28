@@ -1201,12 +1201,14 @@ function renderOvCountries(){
     var flag=escapeHtml(c[0]||'🌐');
     var name=escapeHtml(c[1]||activeNames[0]||'当前市场');
     var code=api&&api.normalizeMarketCode?api.normalizeMarketCode(c[1]):(activeCodes[0]||'');
+    var market=api&&api.getMarket?api.getMarket(code):null;
+    var scopeStatus=api&&api.getDataStatusMeta?api.getDataStatusMeta(market&&(market.dataStatus||market.data_status)):{status:'not_connected',label:'规划中'};
     var commerceState=typeof window.jayGetCountryCommerceState==='function'?window.jayGetCountryCommerceState(code):{status:'idle',count:0};
     var commerceLabel=commerceState.status==='ready'?commerceState.count+' 项':(commerceState.status==='loading'?'加载中':(commerceState.status==='error'?'读取失败':'尚未接入'));
     var platformCount=api&&api.getMarketPlatforms?api.getMarketPlatforms(code).length:0;
     var policyCount=policyRows.filter(function(row){return ovMarketCode(row&&(row.region||row.market||row.market_code))===code;}).length;
     var alertCount=alertRows.filter(function(row){return ovMarketCode(row&&(row.country||row.region||row.market))===code;}).length;
-    return '<article class="ov-ccard" data-market-code="'+escapeHtml(code)+'"><div class="ov-ccard-top"><span class="flag">'+flag+'</span><div><h3>'+name+'</h3><p class="ov-ccard-sub">当前范围 · '+escapeHtml(code)+'</p></div></div>'+
+    return '<article class="ov-ccard" data-market-code="'+escapeHtml(code)+'" data-scope-status="'+escapeHtml(scopeStatus.status)+'"><div class="ov-ccard-top"><span class="flag">'+flag+'</span><div><h3>'+name+'</h3><p class="ov-ccard-sub">'+escapeHtml(scopeStatus.label)+' · '+escapeHtml(code)+'</p></div></div>'+
       '<div class="ov-ccard-metrics"><div><span>电商指标</span><b>'+escapeHtml(commerceLabel)+'</b></div><div><span>平台</span><b>'+platformCount+' 个</b></div><div><span>政策</span><b>'+(policyReady?policyCount:'—')+'</b></div><div><span>预警</span><b>'+(alertReady?alertCount:'—')+'</b></div></div>'+
       '<div class="ov-ccard-actions"><button class="ov-ccard-btn primary" data-destination="countries"><i data-lucide="globe-2"></i>市场档案</button><button class="ov-ccard-btn" data-destination="policies"><i data-lucide="landmark"></i>政策</button><button class="ov-ccard-btn" data-destination="rules"><i data-lucide="scroll-text"></i>规则</button><button class="ov-ccard-btn" data-destination="tax"><i data-lucide="receipt-text"></i>税收关税</button><button class="ov-ccard-btn" data-destination="access"><i data-lucide="badge-check"></i>市场准入</button><button class="ov-ccard-btn" data-destination="report"><i data-lucide="file-chart-column"></i>报告</button></div></article>';
   }).join('');

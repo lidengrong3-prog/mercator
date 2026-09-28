@@ -168,6 +168,9 @@
 
   function makeRecord(input) {
     var type = input.type;
+    var api = scopeApi();
+    var freshness = api && api.getRecordFreshness && input.rawRecord
+      ? api.getRecordFreshness(input.rawRecord, { domain: input.domain }) : {};
     var aliases = expandedAliases([input.title, input.subtitle, input.description]
       .concat(input.aliases || [], TYPE_ALIASES[type] || []));
     var record = {
@@ -180,6 +183,12 @@
       platformKeys: unique(list(input.platformKeys).map(platformKey)),
       aliases: aliases,
       updatedAt: validDate(input.updatedAt),
+      retrievedAt: validDate(input.retrievedAt || freshness.retrievedAt),
+      verifiedAt: validDate(input.verifiedAt || freshness.verifiedAt),
+      freshness: text(input.freshness || freshness.status),
+      freshnessLabel: text(input.freshnessLabel || freshness.label),
+      sourceType: text(input.sourceType || freshness.sourceType),
+      dataStatus: text(input.dataStatus),
       page: input.page || (TYPE_META[type] && TYPE_META[type].page) || 'overview',
       targetId: text(input.targetId),
       targetIndex: Number.isInteger(input.targetIndex) ? input.targetIndex : -1,
@@ -211,15 +220,17 @@
 
   function buildCountryRecords(records) {
     configuredMarkets().forEach(function (market) {
+      var status = scopeApi() && scopeApi().getDataStatusMeta ? scopeApi().getDataStatusMeta(market.dataStatus || market.data_status) : { status: 'not_connected', label: '规划中', description: '尚未接入真实数据源。' };
       addRecord(records, {
         id: 'country:' + market.code,
         type: 'country',
         title: (market.flag ? market.flag + ' ' : '') + (market.name || market.label || market.code),
         subtitle: (market.regionName || market.region_name || '已配置市场') + ' · ' + market.code,
-        description: market.dataStatus === 'schema_only' || market.data_status === 'schema_only' ? '数据框架已配置，业务数据尚未接入' : '查看市场档案与当前数据状态',
+        description: status.description,
         aliases: [market.name, market.label, market.code].concat(market.aliases || []),
         marketCodes: [market.code],
-        verificationLabel: market.dataStatus === 'schema_only' || market.data_status === 'schema_only' ? '尚未接入' : '已配置'
+        verificationLabel: status.label,
+        dataStatus: status.status
       });
     });
   }
@@ -233,16 +244,18 @@
       var market = marketFor(code);
       var platform = platformFor(key);
       if (!market || !platform) return;
+      var status = scopeApi() && scopeApi().getDataStatusMeta ? scopeApi().getDataStatusMeta(relation.dataStatus || relation.data_status) : { status: 'not_connected', label: '规划中', description: '尚未接入真实数据源。' };
       addRecord(records, {
         id: 'platform:' + code + ':' + key,
         type: 'platform',
         title: platform.name || key,
         subtitle: (market.name || code) + ' · ' + (relation.label || '平台档案'),
-        description: relation.dataStatus === 'schema_only' || relation.data_status === 'schema_only' ? '平台关系已配置，规则数据尚未接入' : '查看该市场的平台档案与规则',
+        description: status.description,
         aliases: [platform.key, platform.name, market.name, market.code].concat(platform.aliases || [], market.aliases || []),
         marketCodes: [code],
         platformKeys: [key],
-        verificationLabel: relation.dataStatus === 'schema_only' || relation.data_status === 'schema_only' ? '尚未接入' : '已配置'
+        verificationLabel: status.label,
+        dataStatus: status.status
       });
     });
   }
@@ -311,7 +324,9 @@
         sourceKey: item.source_key,
         sourceLabel: recordSourceLabel(item),
         verificationLabel: recordVerificationLabel(item),
-        verificationStatus: item.verification_status || item.verificationStatus
+        verificationStatus: item.verification_status || item.verificationStatus,
+        rawRecord: item,
+        domain: 'policy'
       });
     });
   }
@@ -339,7 +354,9 @@
         sourceKey: item.source_key,
         sourceLabel: recordSourceLabel(item),
         verificationLabel: recordVerificationLabel(item),
-        verificationStatus: item.verification_status || item.verificationStatus
+        verificationStatus: item.verification_status || item.verificationStatus,
+        rawRecord: item,
+        domain: 'rule'
       });
     });
   }
@@ -632,6 +649,11 @@
       historyUrl: item.history_url,
       publicationId: item.id,
       targetId: item.source_record_id,
+      rawRecord: item,
+      domain: type,
+      retrievedAt: item.retrieved_at || item.collected_at,
+      verifiedAt: item.verified_at,
+      sourceType: item.source_type,
       isServerRecord: true
     });
   }
@@ -819,7 +841,11 @@
 
   function resultMeta(record) {
     var parts = [];
-    if (record.updatedAt) parts.push(formatDate(record.updatedAt));
+    if (record.retrievedAt) parts.push('获取 ' + formatDate(record.retrievedAt));
+    if (record.verifiedAt) parts.push('核验 ' + formatDate(record.verifiedAt));
+    if (record.freshnessLabel) parts.push('时效 ' + record.freshnessLabel);
+    if (record.sourceType) parts.push('来源类型 ' + record.sourceType);
+    if (!record.retrievedAt && record.updatedAt) parts.push(formatDate(record.updatedAt));
     if (record.sourceLabel) parts.push(record.sourceLabel);
     if (record.verificationLabel) parts.push(record.verificationLabel);
     if (record.verificationLevel) parts.push(record.verificationLevel);

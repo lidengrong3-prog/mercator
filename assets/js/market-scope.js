@@ -3,163 +3,32 @@
 
   // Configuration is metadata-only. Market facts, tax rates and requirements
   // belong to verified data feeds, not to this browser registry.
-  var CONFIG_VERSION = '2.0';
+  var CONFIG_VERSION = '2.1';
   var SCOPE_STORAGE_KEY = 'jay_market_scope_v1';
   var SOURCE_KINDS = ['official', 'traceable', 'uploaded', 'derived', 'demo'];
   var VERIFICATION_STATUSES = ['verified', 'uploaded', 'pending', 'rejected'];
   var SOURCE_TYPES = ['government', 'regulator', 'platform', 'official_feed', 'industry_association', 'licensed_provider', 'user_upload', 'derived', 'demo', 'unknown'];
+  var DATA_STATUSES = ['configured', 'schema_only', 'not_connected'];
+  var DATA_STATUS_DEFINITIONS = {
+    configured: { label: '可用', description: '已接入正式数据，可按质量状态使用。' },
+    schema_only: { label: '部分接入', description: '范围与结构已配置，但真实业务数据仍不完整。' },
+    not_connected: { label: '规划中', description: '尚未接入真实数据源。' },
+  };
+  var FRESHNESS_SLA_HOURS = { default: 168, policy: 36, rule: 36, alert: 36, tax: 168, access: 168, macro: 744, cpsc: 72, platform: 168, market: 168 };
   var MARKET_CONFIG = {
     version: CONFIG_VERSION,
-    defaultMarketCodes: ['US'],
-    markets: [
-      {
-        code: 'US', key: 'us', name: '美国', label: '美国市场', flag: '🇺🇸',
-        aliases: ['us', 'usa', 'united states', 'unitedstates', '美国', '美区'],
-        regionCode: 'NA', regionName: '北美', jurisdictionCodes: ['US'],
-        platformKeys: ['amazon', 'tiktok-shop', 'aliexpress', 'ebay'],
-        categoryKeys: ['generic', 'electronics', 'beauty', 'apparel', 'home', 'pet-food', 'pet-supplies'], dataStatus: 'verified',
-        dataSources: {
-          macro: {
-            localPath: 'data/us_market/macro_indicators.json',
-            sourceKind: 'official',
-            sourceType: 'official_feed',
-            commerceProfile: {
-              indicatorMap: {
-                ecommerce_sales: 'ECOMSA', ecommerce_penetration: 'ECOMPCTSA', retail_sales: 'RSAFS',
-                disposable_income: 'DSPIC96', consumer_confidence: 'UMCSENT', consumer_spending: 'PCEC96',
-                inflation: 'CPIAUCSL', exchange_rate: 'DEXCHUS',
-              },
-              categoryIndicatorMap: {
-                apparel: ['MRTSSM448USS'], electronics: ['MRTSSM443USS'], beauty: [], home: [], 'pet-food': [], 'pet-supplies': [], generic: [],
-              },
-              backgroundCodes: ['GDP', 'UNRATE', 'INDPRO', 'BOPGSTB'],
-            },
-          },
-        },
-      },
-      {
-        code: 'ID', key: 'id', name: '印度尼西亚', label: '印度尼西亚市场', flag: '🇮🇩',
-        aliases: ['id', 'indonesia', '印尼', '印度尼西亚'], regionCode: 'SEA', regionName: '东南亚',
-        jurisdictionCodes: ['ID'], platformKeys: ['tiktok-shop', 'shopee', 'lazada'],
-        categoryKeys: ['generic', 'electronics', 'beauty', 'apparel', 'home', 'pet-supplies'],
-        dataSources: {}, status: 'active', dataStatus: 'schema_only',
-      },
-    ],
-    platforms: [
-      { key: 'amazon', name: 'Amazon', aliases: ['amazon', 'amazon.com'], kind: 'marketplace' },
-      { key: 'tiktok-shop', name: 'TikTok Shop', aliases: ['tiktok shop', 'tiktok-shop', 'tiktokshop'], kind: 'social-commerce' },
-      { key: 'aliexpress', name: 'AliExpress', aliases: ['aliexpress', '速卖通'], kind: 'marketplace' },
-      { key: 'ebay', name: 'eBay', aliases: ['ebay'], kind: 'marketplace' },
-      { key: 'shopee', name: 'Shopee', aliases: ['shopee', '虾皮'], kind: 'marketplace' },
-      { key: 'lazada', name: 'Lazada', aliases: ['lazada'], kind: 'marketplace' },
-    ],
-    // One record represents one market-specific platform offering. A shared
-    // platform therefore gets a separate record for every market it serves.
-    marketPlatforms: [
-      { marketCode: 'US', platformKey: 'amazon', status: 'active', dataStatus: 'configured', label: '美国站' },
-      { marketCode: 'US', platformKey: 'tiktok-shop', status: 'active', dataStatus: 'configured', label: '美国站' },
-      { marketCode: 'US', platformKey: 'aliexpress', status: 'active', dataStatus: 'configured', label: '美国站' },
-      { marketCode: 'US', platformKey: 'ebay', status: 'active', dataStatus: 'configured', label: '美国站' },
-      { marketCode: 'ID', platformKey: 'tiktok-shop', status: 'active', dataStatus: 'schema_only', label: '印度尼西亚站' },
-      { marketCode: 'ID', platformKey: 'shopee', status: 'active', dataStatus: 'schema_only', label: '印度尼西亚站' },
-      { marketCode: 'ID', platformKey: 'lazada', status: 'active', dataStatus: 'schema_only', label: '印度尼西亚站' },
-    ],
-    jurisdictions: [
-      { code: 'US', name: '美国联邦辖区', type: 'country', parentCode: null },
-      { code: 'ID', name: '印度尼西亚共和国辖区', type: 'country', parentCode: null },
-    ],
-    dataDomains: {
-      policy: { key: 'policy', label: '政策法规', displayLocale: 'zh-CN', dimensions: ['market', 'jurisdiction', 'category', 'platform', 'effectiveDate'] },
-      tax: { key: 'tax', label: '税收与关税', displayLocale: 'zh-CN', types: ['customs_duty','vat','sales_tax','marketplace_collection','import_fee'], dimensions: ['market', 'jurisdiction', 'category', 'origin', 'hsCode', 'tradeMode', 'fulfillmentMode', 'effectiveDate'] },
-      access: { key: 'access', label: '准入与合规', displayLocale: 'zh-CN', types: ['certification','labeling','packaging','registration','intellectual_property','import_requirement'], dimensions: ['market', 'jurisdiction', 'category', 'platform', 'requirementType', 'effectiveDate'] },
-      logistics: { key: 'logistics', label: '物流与履约', dimensions: ['market', 'platform', 'category', 'fulfillmentMode'] },
-      payment: { key: 'payment', label: '支付与资金', dimensions: ['market', 'platform', 'currency'] },
-    },
-    // Empty by design: extension points must be populated by verified
-    // collectors or user uploads before they affect a report.
+    dataStatusDefinitions: Object.assign({}, DATA_STATUS_DEFINITIONS),
+    freshnessSlaHours: Object.assign({}, FRESHNESS_SLA_HOURS),
+    defaultMarketCodes: [],
+    markets: [],
+    platforms: [],
+    marketPlatforms: [],
+    jurisdictions: [],
+    dataDomains: {},
     taxRules: [],
     accessRequirements: [],
-    reportTemplates: [
-      {
-        id: 'market-research-v1', code: 'market-research', version: 1,
-        name: '市场调研报告', marketCodes: [], platformKeys: [], categoryCodes: ['generic'], requiredDomains: ['market', 'policy', 'platform', 'rule'],
-        modules: ['executive_summary', 'market_environment', 'competitor_research', 'consumer_needs', 'platform_research', 'product_fit', 'risk_recommendations'],
-        dataStatus: 'schema_only',
-      },
-      {
-        id: 'electronics-market-v1', code: 'electronics-market', version: 1,
-        name: '电子产品市场调研报告', marketCodes: [], platformKeys: [], categoryCodes: ['electronics'], requiredDomains: ['market', 'policy', 'tax', 'access', 'logistics', 'platform', 'rule'],
-        modules: ['executive_summary', 'market_environment', 'consumer_needs', 'platform_research', 'unit_economics', 'access_requirements', 'logistics', 'risk_recommendations'],
-        dataStatus: 'schema_only',
-      },
-      {
-        id: 'beauty-market-v1', code: 'beauty-market', version: 1,
-        name: '美妆个护市场调研报告', marketCodes: [], platformKeys: [], categoryCodes: ['beauty'], requiredDomains: ['market', 'policy', 'tax', 'access', 'platform', 'rule'],
-        modules: ['executive_summary', 'market_environment', 'consumer_profile', 'platform_research', 'access_requirements', 'price_band', 'risk_recommendations'],
-        dataStatus: 'schema_only',
-      },
-      {
-        id: 'apparel-market-v1', code: 'apparel-market', version: 1,
-        name: '服装市场调研报告', marketCodes: [], platformKeys: [], categoryCodes: ['apparel'], requiredDomains: ['market', 'policy', 'access', 'platform', 'rule'],
-        modules: ['executive_summary', 'market_environment', 'consumer_profile', 'seasonality', 'platform_research', 'price_band', 'risk_recommendations'],
-        dataStatus: 'schema_only',
-      },
-      {
-        id: 'home-market-v1', code: 'home-market', version: 1,
-        name: '家居产品市场调研报告', marketCodes: [], platformKeys: [], categoryCodes: ['home'], requiredDomains: ['market', 'policy', 'tax', 'access', 'logistics', 'platform', 'rule'],
-        modules: ['executive_summary', 'market_environment', 'consumer_profile', 'platform_research', 'access_requirements', 'price_band', 'logistics', 'risk_recommendations'],
-        dataStatus: 'schema_only',
-      },
-      {
-        id: 'pet-food-market-v1', code: 'pet-food-market', version: 1,
-        name: '宠物食品市场调研报告', marketCodes: [], platformKeys: [], categoryCodes: ['pet-food'], requiredDomains: ['market', 'policy', 'tax', 'access', 'logistics', 'platform', 'rule'],
-        modules: ['executive_summary', 'market_environment', 'consumer_profile', 'platform_research', 'access_requirements', 'unit_economics', 'logistics', 'risk_recommendations'],
-        dataStatus: 'schema_only',
-      },
-      {
-        id: 'pet-supplies-market-v1', code: 'pet-supplies-market', version: 1,
-        name: '宠物用品市场调研报告', marketCodes: [], platformKeys: [], categoryCodes: ['pet-supplies'], requiredDomains: ['market', 'policy', 'tax', 'access', 'logistics', 'platform', 'rule'],
-        modules: ['executive_summary', 'market_environment', 'consumer_profile', 'platform_research', 'access_requirements', 'price_band', 'logistics', 'risk_recommendations'],
-        dataStatus: 'schema_only',
-      },
-    ],
-    categoryProfiles: [
-      {
-        code: 'generic', name: '通用品类', aliases: ['generic', '通用'], dataStatus: 'schema_only',
-        requiredFields: ['category', 'market', 'platform'],
-        reportModules: ['category_overview', 'price_band', 'competition', 'risk'],
-      },
-      {
-        code: 'electronics', name: '电子产品', aliases: ['electronics', '电子', '3c'], dataStatus: 'schema_only',
-        requiredFields: ['category', 'market', 'platform', 'productCost', 'sellingPrice', 'certifications'],
-        reportModules: ['category_overview', 'price_band', 'unit_economics', 'access_requirements', 'logistics', 'risk'],
-      },
-      {
-        code: 'beauty', name: '美妆个护', aliases: ['beauty', 'cosmetics', '美妆', '个护'], dataStatus: 'schema_only',
-        requiredFields: ['category', 'market', 'platform', 'ingredients', 'claims', 'sellingPrice'],
-        reportModules: ['category_overview', 'consumer_profile', 'access_requirements', 'price_band', 'risk'],
-      },
-      {
-        code: 'apparel', name: '服装', aliases: ['apparel', 'fashion', '服装', '服饰'], dataStatus: 'schema_only',
-        requiredFields: ['category', 'market', 'platform', 'material', 'sizeSystem', 'sellingPrice'],
-        reportModules: ['category_overview', 'consumer_profile', 'seasonality', 'price_band', 'risk'],
-      },
-      {
-        code: 'pet-food', name: '宠物食品', aliases: ['pet-food', 'pet food', '宠物食品', '宠物粮'], dataStatus: 'schema_only',
-        requiredFields: ['category', 'market', 'platform', 'ingredients', 'shelfLife', 'certifications'],
-        reportModules: ['category_overview', 'consumer_profile', 'access_requirements', 'unit_economics', 'risk'],
-      },
-      {
-        code: 'pet-supplies', name: '宠物用品', aliases: ['pet-supplies', 'pet supplies', '宠物用品', '宠物用具'], dataStatus: 'schema_only',
-        requiredFields: ['category', 'market', 'platform', 'material', 'safetyClaims', 'sellingPrice'],
-        reportModules: ['category_overview', 'consumer_profile', 'access_requirements', 'price_band', 'risk'],
-      },
-      {
-        code: 'home', name: '家居产品', aliases: ['home', 'home-goods', '家居', '家居产品', '家用产品'], dataStatus: 'schema_only',
-        requiredFields: ['category', 'market', 'platform', 'material', 'dimensions', 'sellingPrice'],
-        reportModules: ['category_overview', 'consumer_profile', 'platform_research', 'price_band', 'logistics', 'risk'],
-      },
-    ],
+    reportTemplates: [],
+    categoryProfiles: [],
   };
 
   var state = {
@@ -304,6 +173,60 @@
     return SOURCE_TYPES.indexOf(normalized) >= 0 ? normalized : '';
   }
 
+  function normalizeDataStatus(value, fallback) {
+    var raw = lower(value).replace(/[ -]+/g, '_');
+    var aliases = {
+      active: 'configured', verified: 'configured', connected: 'configured', available: 'configured',
+      partial: 'schema_only', schema: 'schema_only', planned: 'schema_only',
+      missing: 'not_connected', unavailable: 'not_connected', disconnected: 'not_connected', disabled: 'not_connected',
+    };
+    var normalized = aliases[raw] || raw;
+    if (DATA_STATUSES.indexOf(normalized) >= 0) return normalized;
+    return DATA_STATUSES.indexOf(fallback) >= 0 ? fallback : 'not_connected';
+  }
+
+  function getDataStatusMeta(value) {
+    var status = normalizeDataStatus(value, 'not_connected');
+    var definition = MARKET_CONFIG.dataStatusDefinitions && MARKET_CONFIG.dataStatusDefinitions[status]
+      || DATA_STATUS_DEFINITIONS[status];
+    return { status: status, label: definition.label, description: definition.description,
+      available: status === 'configured', partial: status === 'schema_only', planned: status === 'not_connected' };
+  }
+
+  function getFreshnessSlaHours(domain) {
+    var key = lower(domain || 'default');
+    var values = MARKET_CONFIG.freshnessSlaHours || FRESHNESS_SLA_HOURS;
+    var hours = Number(values[key] != null ? values[key] : values.default);
+    return Number.isFinite(hours) && hours > 0 ? hours : FRESHNESS_SLA_HOURS.default;
+  }
+
+  function validTimestamp(value) {
+    if (!value) return null;
+    var parsed = new Date(value);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  function getRecordFreshness(record, options) {
+    record = record || {}; options = options || {};
+    var domain = lower(options.domain || record.domain || 'default');
+    var retrievedAt = record.retrieved_at || record.retrievedAt || record.collected_at || record.collectedAt || record.updated_at || record.updatedAt || null;
+    var verifiedAt = record.verified_at || record.verifiedAt || null;
+    var sourceType = normalizeSourceType(record.source_type || record.sourceType) || 'unknown';
+    var dataStatus = normalizeDataStatus(record.data_status || record.dataStatus || 'configured', 'configured');
+    var verificationStatus = normalizeVerificationStatus(record.verification_status || record.verificationStatus || record.verification, normalizeSourceKind(record.source_kind || record.sourceKind));
+    var slaHours = getFreshnessSlaHours(domain);
+    var basis = validTimestamp(verifiedAt) || validTimestamp(retrievedAt) || validTimestamp(record.published_at || record.publishedAt);
+    var now = validTimestamp(options.now) || new Date();
+    var ageHours = basis ? Math.max(0, (now.getTime() - basis.getTime()) / 3600000) : null;
+    var status = 'unknown';
+    if (dataStatus === 'not_connected') status = 'not_connected';
+    else if (verificationStatus && ['verified', 'uploaded'].indexOf(verificationStatus) < 0) status = 'unverified';
+    else if (ageHours !== null) status = ageHours > slaHours ? 'stale' : 'fresh';
+    var labels = { fresh: '有效', stale: '已过期', unverified: '待核验', not_connected: '尚未接入', unknown: '时间未知' };
+    return { status: status, label: labels[status], retrievedAt: retrievedAt, verifiedAt: verifiedAt,
+      sourceType: sourceType, slaHours: slaHours, ageHours: ageHours === null ? null : Math.round(ageHours * 10) / 10 };
+  }
+
   function sourceEvidence(record) {
     record = record || {};
     return text(record.source_url || record.sourceUrl || record.url)
@@ -391,6 +314,7 @@
     normalized.publication_status = lower(input.publication_status || input.publicationStatus);
     normalized.source_url = text(input.source_url || input.sourceUrl || input.url);
     normalized.source_record_id = text(input.source_record_id || input.sourceRecordId);
+    normalized.retrieved_at = input.retrieved_at || input.retrievedAt || input.collected_at || input.collectedAt || input.updated_at || input.updatedAt || null;
     normalized.verified_at = input.verified_at || input.verifiedAt || null;
     normalized.verification_notes = text(input.verification_notes || input.verificationNotes);
     normalized.evidence_hash = text(input.evidence_hash || input.evidenceHash);
@@ -402,6 +326,8 @@
     normalized.published_at = input.published_at || input.publishedAt || null;
     normalized.effective_from = input.effective_from || input.effectiveFrom || input.effective_date || input.effectiveDate || null;
     normalized.scope_status = markets.length ? 'scoped' : 'unscoped';
+    normalized.freshness_meta = getRecordFreshness(normalized, { domain: normalized.domain });
+    normalized.freshness = normalized.freshness_meta.status;
     return normalized;
   }
 
@@ -818,7 +744,8 @@
       if (selectorLabel) selectorLabel.textContent = markets.length > 1 ? '主市场' : '当前市场';
       var configuredMarkets = MARKET_CONFIG.markets.slice();
       setSelectOptions(selector, configuredMarkets.map(function (market) { return market.code; }), Object.fromEntries(configuredMarkets.map(function (market) {
-        return [market.code, market.name || market.label || market.code];
+        var status = getDataStatusMeta(market.dataStatus || market.data_status);
+        return [market.code, (market.name || market.label || market.code) + ' · ' + status.label];
       })), false);
       selector.value = primaryCode;
       if (!selector.__jayScopeBound) {
@@ -830,7 +757,8 @@
     var countryProfileSelector = global.document.getElementById('country-profile-selector');
     if (countryProfileSelector) {
       setSelectOptions(countryProfileSelector, configuredMarkets.map(function (market) { return market.code; }), Object.fromEntries(configuredMarkets.map(function (market) {
-        return [market.code, (market.flag ? market.flag + ' ' : '') + (market.name || market.label || market.code)];
+        var status = getDataStatusMeta(market.dataStatus || market.data_status);
+        return [market.code, (market.flag ? market.flag + ' ' : '') + (market.name || market.label || market.code) + ' · ' + status.label];
       })), false);
       countryProfileSelector.value = primaryCode;
       if (!countryProfileSelector.__jayScopeBound) {
@@ -852,7 +780,8 @@
       });
       var platformOptions = Object.keys(configuredPlatformMap).map(function (key) {
         var platform = configuredPlatformMap[key];
-        return { value: platform.key, label: platform.name || platform.key };
+        var status = getDataStatusMeta(platform.dataStatus || platform.data_status);
+        return { value: platform.key, label: (platform.name || platform.key) + ' · ' + status.label };
       });
       setSelectOptions(platformSelector, platformOptions, null, true);
       platformSelector.value = scope && scope.selectedPlatformKeys && scope.selectedPlatformKeys.length === 1
@@ -1068,6 +997,10 @@
 
   function hydrateCatalog(payload) {
     payload = payload || {};
+    if (payload.configVersion) MARKET_CONFIG.version = text(payload.configVersion);
+    if (payload.dataStatusDefinitions && typeof payload.dataStatusDefinitions === 'object') MARKET_CONFIG.dataStatusDefinitions = Object.assign({}, DATA_STATUS_DEFINITIONS, payload.dataStatusDefinitions);
+    if (payload.freshnessSlaHours && typeof payload.freshnessSlaHours === 'object') MARKET_CONFIG.freshnessSlaHours = Object.assign({}, FRESHNESS_SLA_HOURS, payload.freshnessSlaHours);
+    if (payload.dataDomains && typeof payload.dataDomains === 'object') MARKET_CONFIG.dataDomains = Object.assign({}, payload.dataDomains);
     var markets = Array.isArray(payload.markets) ? payload.markets : [];
     var platforms = Array.isArray(payload.platforms) ? payload.platforms : [];
     var relations = Array.isArray(payload.marketPlatforms) ? payload.marketPlatforms : [];
@@ -1087,7 +1020,7 @@
         code: text(item.code).toUpperCase(),
         key: text(item.key || item.code).toLowerCase(),
         flag: item.flag || item.emoji || '🌐',
-        dataStatus: item.dataStatus || item.data_status || 'configured',
+        dataStatus: normalizeDataStatus(item.dataStatus || item.data_status, 'not_connected'),
         aliases: Array.isArray(item.aliases) && item.aliases.length
           ? item.aliases.slice() : ((previous && previous.aliases) || []).slice(),
         platformKeys: unique(list(item.platformKeys || item.platform_keys).map(normalizePlatformKey).filter(Boolean)),
@@ -1096,17 +1029,20 @@
         dataSources: dataSources && typeof dataSources === 'object' ? Object.assign({}, dataSources) : {},
       });
     });
+    if (Array.isArray(payload.defaultMarketCodes)) {
+      MARKET_CONFIG.defaultMarketCodes = payload.defaultMarketCodes.map(function (code) { return text(code).toUpperCase(); }).filter(Boolean);
+    }
     MARKET_CONFIG.platforms = platforms.map(function (item) {
       return Object.assign({ aliases: [], kind: 'marketplace' }, item, {
         key: text(item.key).toLowerCase(),
-        dataStatus: item.dataStatus || item.data_status || 'configured',
+        dataStatus: normalizeDataStatus(item.dataStatus || item.data_status, 'not_connected'),
       });
     });
     MARKET_CONFIG.marketPlatforms = relations.map(function (item) {
       return Object.assign({}, item, {
         marketCode: text(item.marketCode || item.market_code).toUpperCase(),
         platformKey: normalizePlatformKey(item.platformKey || item.platform_key),
-        dataStatus: item.dataStatus || item.data_status || 'unknown',
+        dataStatus: normalizeDataStatus(item.dataStatus || item.data_status, 'not_connected'),
       });
     });
     MARKET_CONFIG.jurisdictions = jurisdictions.map(function (item) {
@@ -1114,7 +1050,7 @@
     });
     if (categories.length) MARKET_CONFIG.categoryProfiles = categories.map(function (item) {
       return Object.assign({ aliases: [], requiredFields: [], reportModules: [], dataStatus: 'schema_only' }, item, {
-        dataStatus: item.dataStatus || item.data_status || 'schema_only',
+        dataStatus: normalizeDataStatus(item.dataStatus || item.data_status, 'schema_only'),
       });
     });
     if (reportTemplates.length) MARKET_CONFIG.reportTemplates = reportTemplates.map(function (item) {
@@ -1184,6 +1120,10 @@
     normalizeSourceKind: normalizeSourceKind,
     normalizeVerificationStatus: normalizeVerificationStatus,
     normalizeSourceType: normalizeSourceType,
+    normalizeDataStatus: normalizeDataStatus,
+    getDataStatusMeta: getDataStatusMeta,
+    getFreshnessSlaHours: getFreshnessSlaHours,
+    getRecordFreshness: getRecordFreshness,
     normalizeDataRecord: normalizeDataRecord,
     getRecordQuality: getRecordQuality,
     isFormalRecord: isFormalRecord,
@@ -1191,6 +1131,7 @@
     sourceKinds: SOURCE_KINDS.slice(),
     verificationStatuses: VERIFICATION_STATUSES.slice(),
     sourceTypes: SOURCE_TYPES.slice(),
+    dataStatuses: DATA_STATUSES.slice(),
     isAllowedMarket: isAllowedMarket,
     isAllowedPlatform: isAllowedPlatform,
     isApplicablePolicy: isApplicablePolicy,

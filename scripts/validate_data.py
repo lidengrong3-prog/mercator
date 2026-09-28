@@ -312,7 +312,11 @@ class DatasetResult:
     excluded_records: int = 0
     exclusion_reasons: dict[str, int] = field(default_factory=dict)
     updated_at: str | None = None
+    retrieved_at: str | None = None
+    verified_at: str | None = None
     freshness_hours: float | None = None
+    sla_hours: int | None = None
+    source_type: str | None = None
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     metrics: dict[str, Any] = field(default_factory=dict)
@@ -359,7 +363,12 @@ class DatasetResult:
             "excluded_records": self.excluded_records,
             "exclusion_reasons": self.exclusion_reasons,
             "updated_at": self.updated_at,
+            "retrieved_at": self.retrieved_at,
+            "verified_at": self.verified_at,
             "freshness_hours": self.freshness_hours,
+            "freshness": "stale" if status == "stale" else ("fresh" if self.freshness_hours is not None else "unknown"),
+            "sla_hours": self.sla_hours,
+            "source_type": self.source_type or "unknown",
             "connected": self.connected,
             "errors": self.errors,
             "warnings": self.warnings,
@@ -1005,6 +1014,8 @@ def set_freshness(
             result.errors.append("缺少有效的更新时间")
         return
     result.updated_at = parsed.isoformat()
+    result.retrieved_at = parsed.isoformat()
+    result.sla_hours = max_age_hours
     age = (now - parsed).total_seconds() / 3600
     result.freshness_hours = round(age, 1)
     if age < -24:
@@ -1055,6 +1066,19 @@ def validate_items_dataset(
 
     malformed = sum(not isinstance(item, dict) for item in items)
     rows = [item for item in items if isinstance(item, dict)]
+    verified_values = [
+        parse_datetime(item.get("verified_at") or item.get("verifiedAt"))
+        for item in rows
+    ]
+    verified_values = [value for value in verified_values if value is not None]
+    if verified_values:
+        result.verified_at = max(verified_values).isoformat()
+    source_types = sorted({
+        str(item.get("source_type") or item.get("sourceType") or "").strip().casefold()
+        for item in rows if str(item.get("source_type") or item.get("sourceType") or "").strip()
+    })
+    if source_types:
+        result.source_type = source_types[0] if len(source_types) == 1 else "mixed"
     result.scoped_records = count_scoped_items(key, rows)
     apply_record_quality_metrics(
         result,

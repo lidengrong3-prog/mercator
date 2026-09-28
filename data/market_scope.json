@@ -1,7 +1,24 @@
 {
   "schema_version": 1,
-  "config_version": "2.0",
+  "config_version": "2.1",
   "display_locale": "zh-CN",
+  "data_status_definitions": {
+    "configured": {"label": "可用", "description": "已接入正式数据，可按质量状态用于页面、搜索和 AI。"},
+    "schema_only": {"label": "部分接入", "description": "范围与结构已配置，但真实业务数据仍不完整。"},
+    "not_connected": {"label": "规划中", "description": "尚未接入真实数据源，不得展示为可用数据。"}
+  },
+  "freshness_sla_hours": {
+    "default": 168,
+    "policy": 36,
+    "rule": 36,
+    "alert": 36,
+    "tax": 168,
+    "access": 168,
+    "macro": 744,
+    "cpsc": 72,
+    "platform": 168,
+    "market": 168
+  },
   "data_domains": {
     "policy": {"label": "政策法规", "display_locale": "zh-CN"},
     "tax": {"label": "税收与关税", "display_locale": "zh-CN", "types": ["customs_duty", "vat", "sales_tax", "marketplace_collection", "import_fee"]},
@@ -69,12 +86,12 @@
     }
   ],
   "platforms": [
-    {"key": "amazon", "name": "Amazon", "kind": "marketplace", "aliases": ["amazon", "amazon.com"], "status": "active"},
-    {"key": "tiktok-shop", "name": "TikTok Shop", "kind": "social-commerce", "aliases": ["tiktok shop", "tiktokshop"], "status": "active"},
-    {"key": "aliexpress", "name": "AliExpress", "kind": "marketplace", "aliases": ["aliexpress", "速卖通"], "status": "active"},
-    {"key": "ebay", "name": "eBay", "kind": "marketplace", "aliases": ["ebay"], "status": "active"},
-    {"key": "shopee", "name": "Shopee", "kind": "marketplace", "aliases": ["shopee", "虾皮"], "status": "active"},
-    {"key": "lazada", "name": "Lazada", "kind": "marketplace", "aliases": ["lazada"], "status": "active"}
+    {"key": "amazon", "name": "Amazon", "kind": "marketplace", "aliases": ["amazon", "amazon.com"], "status": "active", "data_status": "configured"},
+    {"key": "tiktok-shop", "name": "TikTok Shop", "kind": "social-commerce", "aliases": ["tiktok shop", "tiktokshop"], "status": "active", "data_status": "configured"},
+    {"key": "aliexpress", "name": "AliExpress", "kind": "marketplace", "aliases": ["aliexpress", "速卖通"], "status": "active", "data_status": "configured"},
+    {"key": "ebay", "name": "eBay", "kind": "marketplace", "aliases": ["ebay"], "status": "active", "data_status": "configured"},
+    {"key": "shopee", "name": "Shopee", "kind": "marketplace", "aliases": ["shopee", "虾皮"], "status": "active", "data_status": "schema_only"},
+    {"key": "lazada", "name": "Lazada", "kind": "marketplace", "aliases": ["lazada"], "status": "active", "data_status": "schema_only"}
   ],
   "market_platforms": [
     {"market_code": "US", "platform_key": "amazon", "status": "active", "data_status": "configured", "label": "美国站"},

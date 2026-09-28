@@ -2819,6 +2819,18 @@ main > .page.active {
   overflow-wrap: anywhere;
 }
 
+#countries .country-commerce-meta {
+  display: block;
+  margin: 0 0 8px;
+  color: var(--shell-muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+#countries .country-commerce-metric.is-stale {
+  border-color: #d49a32;
+}
+
 #countries .country-commerce-metric a {
   display: inline-flex;
   align-items: center;

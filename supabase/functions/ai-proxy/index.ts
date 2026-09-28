@@ -123,9 +123,24 @@ type FormalCitation = {
   history_url: string;
   published_at: string | null;
   collected_at: string | null;
+  retrieved_at: string | null;
+  verified_at: string | null;
+  source_type: string;
+  freshness: '有效' | '已过期' | '时间未知';
   verification_level: string;
   excerpt: string;
 };
+
+function citationFreshness(domain: string, sourceKey: string, ...values: Array<string | null>): '有效' | '已过期' | '时间未知' {
+  const basis = values.map((value) => value ? new Date(value) : null).find((value) => value && !Number.isNaN(value.getTime()));
+  if (!basis) return '时间未知';
+  const key = String(domain || '').toLowerCase();
+  const source = String(sourceKey || '').toLowerCase();
+  const slaHours = ['fred', 'bls', 'macro-official'].includes(source) || key === 'market' ? 744
+    : ['policy', 'rule', 'alert'].includes(key) ? 36
+      : key === 'cpsc' ? 72 : 168;
+  return (Date.now() - basis.getTime()) / 3_600_000 > slaHours ? '已过期' : '有效';
+}
 
 function firstString(value: unknown): string | null {
   if (typeof value === 'string' && value.trim()) return value.trim();
@@ -277,9 +292,33 @@ async function retrieveFormalHistory(options: {
     }
     return { citations: [], prompt: '', error: retrievalError, fallback: false };
   }
-  const citations = rows.slice(0, 8).map((item, index) => {
+  const selectedRows = rows.slice(0, 8);
+  const rawIds = Array.from(new Set(selectedRows.map((item) => item && typeof item === 'object'
+    ? String((item as Record<string, unknown>).raw_source_record_id || '') : '')
+    .filter((id) => /^[0-9a-f-]{36}$/i.test(id))));
+  const rawMetadata = new Map<string, Record<string, unknown>>();
+  if (rawIds.length) {
+    try {
+      const metadataResponse = await fetch(
+        `${options.supabaseUrl}/rest/v1/raw_source_records?id=in.(${rawIds.join(',')})&select=id,domain,source_type,retrieved_at,verified_at`,
+        { headers: options.serviceHeaders },
+      );
+      if (metadataResponse.ok) {
+        const metadataRows = await metadataResponse.json() as Record<string, unknown>[];
+        metadataRows.forEach((row) => rawMetadata.set(String(row.id || ''), row));
+      }
+    } catch (error) {
+      console.error('formal citation metadata retrieval failed', error);
+    }
+  }
+  const citations = selectedRows.map((item, index) => {
     const row = item && typeof item === 'object' ? item as Record<string, unknown> : {};
     const sourceId = String(row.source_id || row.id || '');
+    const raw = rawMetadata.get(String(row.raw_source_record_id || '')) || {};
+    const retrievedAt = raw.retrieved_at ? String(raw.retrieved_at) : (row.collected_at ? String(row.collected_at) : null);
+    const verifiedAt = raw.verified_at ? String(raw.verified_at) : null;
+    const domain = String(raw.domain || row.domain || '');
+    const sourceKey = String(row.source_key || '').slice(0, 120);
     return {
       citation_id: `H${String(index + 1).padStart(3, '0')}`,
       source_id: sourceId,
@@ -287,13 +326,17 @@ async function retrieveFormalHistory(options: {
       record_key: String(row.record_key || '').slice(0, 120),
       title: String(row.title || row.record_key || '').slice(0, 300),
       source_name: String(row.source_name || row.source_key || '').slice(0, 200),
-      source_key: String(row.source_key || '').slice(0, 120),
+      source_key: sourceKey,
       source_url: /^https:\/\//i.test(String(row.source_url || '')) ? String(row.source_url) : null,
       history_url: /^#[a-z]+\?record=[0-9a-f-]{36}$/i.test(String(row.history_url || ''))
         ? String(row.history_url)
         : `#search?record=${sourceId}`,
       published_at: row.published_at ? String(row.published_at) : null,
       collected_at: row.collected_at ? String(row.collected_at) : null,
+      retrieved_at: retrievedAt,
+      verified_at: verifiedAt,
+      source_type: String(raw.source_type || 'unknown'),
+      freshness: citationFreshness(domain, sourceKey, verifiedAt, retrievedAt, row.collected_at ? String(row.collected_at) : null, row.published_at ? String(row.published_at) : null),
       verification_level: String(row.verification_level || row.verification_status || ''),
       excerpt: String(row.content_excerpt || row.summary || '').replace(/\s+/g, ' ').slice(0, 1200),
     };
@@ -311,7 +354,8 @@ async function retrieveFormalHistory(options: {
   }
   const lines = citations.map((citation) => (
     `[${citation.citation_id}] ${citation.title}; 来源=${citation.source_name}; ` +
-    `时间=${citation.published_at || citation.collected_at || '未提供'}; 来源ID=${citation.source_id}; ` +
+    `发布时间=${citation.published_at || '未提供'}; 获取时间=${citation.retrieved_at || '未提供'}; ` +
+    `核验时间=${citation.verified_at || '未提供'}; 时效=${citation.freshness}; 来源类型=${citation.source_type}; 来源ID=${citation.source_id}; ` +
     `内容=${citation.excerpt || '无摘要'}`
   ));
   return {

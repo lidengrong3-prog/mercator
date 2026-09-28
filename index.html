@@ -698,7 +698,7 @@
         </div>
         <span class="platform-linkage"><span class="flag">🌐</span>当前市场</span>
       </div>
-      <p class="platform-source-note">平台范围来自统一市场配置；规则数量由当前市场已验证规则记录实时计算。</p>
+      <p class="platform-source-note">平台范围来自统一市场配置；规则数量根据当前市场已验证规则记录动态计算。</p>
       <div class="platform-grid">
         <article class="platform-card amazon" data-platform="Amazon" role="button" tabindex="0" aria-label="查看 Amazon 平台规则">
           <div class="platform-header">
@@ -1027,7 +1027,7 @@
               <li><span class="ck">✓</span>免费版全部功能</li>
               <li><span class="ck">✓</span>「怎么卖 / 卖给谁 / 避什么坑」可执行清单</li>
               <li><span class="ck">✓</span>AI 深度周报 + 完整风险应对方案</li>
-              <li><span class="ck">✓</span>定制化 PDF 报告 + 数据实时刷新</li>
+              <li><span class="ck">✓</span>定制化 PDF 报告 + 数据状态与核验时间</li>
               <li><span class="ck">✓</span>竞品拆解 / 选品评分卡 / 利润计算器</li>
             </ul>
             <button id="prc-upgrade-pro" class="prc-cta" data-action="jayUpgrade('pro')" disabled>升级 PRO</button>
@@ -1143,7 +1143,7 @@
         </div>
 
         <div class="data-pipeline" aria-label="自动发布链路">
-          <div><i data-lucide="radio-tower"></i><span><b>来源采集</b><small>每 4 小时</small></span></div>
+          <div><i data-lucide="radio-tower"></i><span><b>来源采集</b><small>按来源 SLA</small></span></div>
           <i data-lucide="chevron-right"></i>
           <div><i data-lucide="shield-check"></i><span><b>质量校验</b><small>异常阻断</small></span></div>
           <i data-lucide="chevron-right"></i>
@@ -1309,7 +1309,7 @@
 <button id="jay-totop" title="回到顶部">↑</button>
 <footer class="jay-footer">
   <span>JAY观海 · 跨境市场情报系统 <b id="jay-ver">v1.0.0</b></span>
-  <span>数据来源：官方公开数据、平台公告、Supabase 实时库与仓库 JSON；未接入或未通过校验的数据保持空状态</span>
+  <span>数据来源：官方公开数据、平台公告、Supabase 正式库与仓库 JSON；未接入或未通过校验的数据保持空状态</span>
   <span class="jay-f-sep"></span>
   <a href="javascript:void(0)" data-action="jayOpenGlossary()">术语表</a>
   <a href="javascript:void(0)" data-action="jayOpenOnboard()">新手引导</a>
@@ -1356,7 +1356,7 @@
     <p class="jo-sub">关于 JAY观海 的使用与数据说明</p>
     <ul class="jf-list">
             <li><b>JAY观海 是什么？</b><span id="faq-product-description">JAY观海 是轻工业协会专属数字化产业服务工具，面向全国轻工制造企业免费提供跨境市场分析、海外商品机会、跨境合规风险筛查和市场出海规划等一体化数据支撑，是协会落实企业出海扶持、产业数字化升级的标准化服务载体。</span></li>
-      <li><b>数据是实时的吗？</b><span>系统提供"数据定时刷新"（默认每 2 小时），侧边栏底部可查看刷新状态与更新日志。部分指标为行业估算，仅供决策参考。</span></li>
+      <li><b>数据多久更新？</b><span>不同来源按各自 SLA 更新。页面会显示获取时间、核验时间与时效状态；超过 SLA 的记录明确标记为“已过期”，不作为实时数据展示。</span></li>
       <li><b>AI 搜索需要配置密钥吗？</b><span>需要登录并由服务端安全代理调用 AI。未登录或 AI 服务不可用时，系统不会用内置规则编造机会与风险结论。</span></li>
             <li><b>免费版能用什么？</b><span id="faq-free-description">免费版可浏览当前配置的市场、平台、政策和预警数据，使用 AI 搜索与定时刷新、生成并导出报告。部分批量操作与高级企业协同功能需升级专业版（PRO）。</span></li>
       <li><b>为什么有些平台显示"N/A"？</b><span>个别平台因公开数据缺失，增速/客单价暂以 N/A 显示。我们正持续补全，不影响其余维度的参考。</span></li>

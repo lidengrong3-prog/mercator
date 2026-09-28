@@ -1071,7 +1071,8 @@ if(name==='rules'){
 if(name==='products'){ if(JAY_CTX.country||JAY_CTX.platform){ var cf=$('#pr-f-country'); if(cf&&JAY_CTX.country) cf.value=JAY_CTX.country; var pf=$('#pr-f-platform'); if(pf&&JAY_CTX.platform) pf.value=JAY_CTX.platform; var sf=$('#pr-f-signal'); if(sf) sf.value='all'; if(typeof prApplyFilters==='function') prApplyFilters(); } }
 // Navigation keeps the selected configured market while clearing only the
 // transient platform drill-down.
-JAY_CTX.country = window.JAY_MARKET_SCOPE ? window.JAY_MARKET_SCOPE.country.name : jayConfiguredMarketName();
+JAY_CTX.country = window.JAY_MARKET_SCOPE && window.JAY_MARKET_SCOPE.country
+  ? window.JAY_MARKET_SCOPE.country.name : jayConfiguredMarketName();
 JAY_CTX.platform=null;
 if (typeof trackActivity === 'function' && name !== 'overview') {
   var actMap = { countries: 'view_country', platforms: 'view_platform', policies: 'view_policy', rules: 'view_rule', report: 'export_report' };
@@ -1090,7 +1091,8 @@ var rpLastReportText = '';
 var rpLastReportTitle = '';
 // 跨模块联动上下文：在任一模块点击国家/平台后跳转目标页，自动预筛选对应内容
 var JAY_CTX = {
-  country: window.JAY_MARKET_SCOPE ? window.JAY_MARKET_SCOPE.country.name : '美国',
+  country: window.JAY_MARKET_SCOPE && window.JAY_MARKET_SCOPE.country
+    ? window.JAY_MARKET_SCOPE.country.name : '',
   platform: null,
   policyFilter: { domain:'policy', region: jayConfiguredMarketCode(), category: 'all', impact: 'all', scope: 'cross-border' },
   ruleFilter: { platform: 'all', market: jayConfiguredMarketCode(), category: 'all', impact: 'all', actType: 'all' }

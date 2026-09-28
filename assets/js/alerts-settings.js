@@ -24,7 +24,7 @@ function syncPlatformScopeUi(){
   if(!page)return;
   var header=page.querySelector('.page-header h2'); if(header)header.textContent=marketNames.join('、')+'市场 · 平台档案';
   var linkage=page.querySelector('.platform-linkage'); if(linkage)linkage.textContent='当前市场：'+marketNames.join('、');
-  var note=page.querySelector('.platform-source-note'); if(note)note.textContent='平台范围来自统一市场配置；规则数量由当前市场已验证规则记录实时计算。';
+  var note=page.querySelector('.platform-source-note'); if(note)note.textContent='平台范围来自统一市场配置；规则数量根据当前市场已验证规则记录动态计算。';
   var grid=page.querySelector('.platform-grid'); if(!grid)return;
   var empty=grid.querySelector('.platform-scope-empty');
   if(!empty){
@@ -39,14 +39,16 @@ function syncPlatformScopeUi(){
   grid.querySelectorAll('.platform-card[data-platform]').forEach(function(card){ card.style.display=names.indexOf(card.dataset.platform)>=0?'':'none'; });
   platforms.forEach(function(platform){
     var name=platform.name||platform.key;
+    var scopeStatus=api.getDataStatusMeta?api.getDataStatusMeta(platform.dataStatus||platform.data_status):{status:'not_connected',label:'规划中',description:'尚未接入真实数据源。'};
     if(existing[name]){
-      var region=existing[name].querySelector('.platform-region'); if(region)region.textContent=(platform.marketName||marketNames[0]||'当前')+'站';
-      var desc=existing[name].querySelector('.platform-desc'); if(desc)desc.textContent='平台经营指标未接入可信数据源，当前仅展示已验证的'+(platform.marketName||marketNames[0]||'当前')+'规则记录。';
+      existing[name].dataset.scopeStatus=scopeStatus.status;
+      var region=existing[name].querySelector('.platform-region'); if(region)region.textContent=(platform.marketName||marketNames[0]||'当前')+'站 · '+scopeStatus.label;
+      var desc=existing[name].querySelector('.platform-desc'); if(desc)desc.textContent=scopeStatus.description;
       return;
     }
-    var card=document.createElement('article'); card.className='platform-card'; card.dataset.platform=name; card.tabIndex=0; card.setAttribute('role','button'); card.setAttribute('aria-label','查看 '+name+' 平台规则');
+    var card=document.createElement('article'); card.className='platform-card'; card.dataset.platform=name; card.dataset.scopeStatus=scopeStatus.status; card.tabIndex=0; card.setAttribute('role','button'); card.setAttribute('aria-label','查看 '+name+' 平台规则，'+scopeStatus.label);
     var shortName=name.replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||name.slice(0,1);
-    card.innerHTML='<div class="platform-header"><div class="platform-logo">'+escapeHtml(shortName)+'</div><div><div class="platform-name">'+escapeHtml(name)+'</div><div class="platform-region">'+escapeHtml((platform.marketName||marketNames[0]||'当前')+'站')+'</div></div></div><div class="platform-rule-status" data-platform-status="'+escapeHtml(name)+'"><span>已验证规则</span><b>正在读取...</b></div><p class="platform-desc">平台经营指标未接入可信数据源，当前仅展示已验证规则记录。</p><span class="platform-open-rules">查看平台规则 →</span>';
+    card.innerHTML='<div class="platform-header"><div class="platform-logo">'+escapeHtml(shortName)+'</div><div><div class="platform-name">'+escapeHtml(name)+'</div><div class="platform-region">'+escapeHtml((platform.marketName||marketNames[0]||'当前')+'站 · '+scopeStatus.label)+'</div></div></div><div class="platform-rule-status" data-platform-status="'+escapeHtml(name)+'"><span>已验证规则</span><b>正在读取...</b></div><p class="platform-desc">'+escapeHtml(scopeStatus.description)+'</p><span class="platform-open-rules">查看平台规则 →</span>';
     var open=function(){ if(typeof jayOpenRulesFilter==='function')jayOpenRulesFilter({platform:name,market:platform.marketCode||((api.getPrimaryMarketCode&&api.getPrimaryMarketCode())||'')}); else if(typeof switchPage==='function')switchPage('rules'); };
     card.addEventListener('click',function(e){if(e.target.closest('a,button,input,select,textarea'))return;open();});
     card.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
@@ -907,7 +909,7 @@ function stInitSystemStatus(){
   var authDot=document.getElementById('st-system-auth-dot');if(authDot)authDot.style.background=(!jayIsDemo&&jayUser)?'#27ae60':'#94a3b8';
   var quality=document.getElementById('st-system-quality');
   var status=typeof jayQualityStatus==='function'?jayQualityStatus(JAY_QUALITY_REPORT):'pending';
-  if(quality)quality.textContent={healthy:'数据实时',degraded:'部分降级',unverified:'待核验',missing_source:'来源缺失',not_connected:'尚未接入',stale:'数据过期',failed:'校验失败',pending:'读取中'}[status]||'读取中';
+  if(quality)quality.textContent={healthy:'数据有效',degraded:'部分降级',unverified:'待核验',missing_source:'来源缺失',not_connected:'尚未接入',stale:'数据过期',failed:'校验失败',pending:'读取中'}[status]||'读取中';
   var qualityDot=document.getElementById('st-system-quality-dot');if(qualityDot)qualityDot.style.background=(status==='healthy'?'#27ae60':(['degraded','unverified','missing_source','not_connected'].indexOf(status)>=0?'#e8a33d':(status==='pending'?'#94a3b8':'#e25555')));
   var updated=document.getElementById('st-system-updated');if(updated)updated.textContent=JAY_QUALITY_REPORT&&JAY_QUALITY_REPORT.generated_at?jayQualityDate(JAY_QUALITY_REPORT.generated_at):'尚未读取';
   var reports=document.getElementById('st-rep-count');if(reports)reports.textContent=rpV2GetReports().length;
@@ -1193,7 +1195,7 @@ function stToast(msg){
     }
 
     st.lastOk=jayNowStr(); st.status='ok'; st.changed=changedCount; st.source=source;
-    var srcTxt = source==='supabase' ? 'Supabase 实时库' : '仓库 JSON 兜底';
+    var srcTxt = source==='supabase' ? 'Supabase 正式库' : '仓库 JSON 兜底';
     jaySetStamp(def, '📡 数据读取于 '+jayNowStr()+' | 来源: '+srcTxt+' | 变更 '+changedCount+' 条');
     jayLog({ key:def.key, label:def.label, status:'ok', changed:changedCount, source:source });
     if(typeof jayUpdateDataStamp==='function') jayUpdateDataStamp();

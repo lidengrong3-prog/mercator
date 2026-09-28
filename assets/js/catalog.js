@@ -92,6 +92,11 @@ var JAY_ANON_KEY = JAY_SUPABASE_KEY;
 function jayCatalogPayload(raw){
   raw=raw||{};
   return {
+    configVersion:raw.configVersion||raw.config_version||'',
+    defaultMarketCodes:raw.defaultMarketCodes||raw.default_market_codes||[],
+    dataStatusDefinitions:raw.dataStatusDefinitions||raw.data_status_definitions||{},
+    freshnessSlaHours:raw.freshnessSlaHours||raw.freshness_sla_hours||{},
+    dataDomains:raw.dataDomains||raw.data_domains||{},
     markets:Array.isArray(raw.markets)?raw.markets.map(function(item){ var metadata=item.metadata&&typeof item.metadata==='object'?item.metadata:{}; return Object.assign({},item,{dataStatus:item.dataStatus||item.data_status,platformKeys:item.platformKeys||item.platform_keys||[],categoryKeys:item.categoryKeys||item.category_keys||[],jurisdictionCodes:item.jurisdictionCodes||item.jurisdiction_codes||[],regionCode:item.regionCode||item.region_code,regionName:item.regionName||item.region_name,dataSources:item.dataSources||item.data_sources||metadata.dataSources||metadata.data_sources||{}}); }):[],
     platforms:Array.isArray(raw.platforms)?raw.platforms.map(function(item){ return Object.assign({},item,{dataStatus:item.dataStatus||item.data_status}); }):[],
     marketPlatforms:Array.isArray(raw.marketPlatforms)?raw.marketPlatforms.map(function(item){ return Object.assign({},item,{marketCode:item.marketCode||item.market_code,platformKey:item.platformKey||item.platform_key,dataStatus:item.dataStatus||item.data_status}); }):(Array.isArray(raw.market_platforms)?raw.market_platforms:[]),
@@ -111,46 +116,18 @@ var localCatalogReady = (async function(){
       window.JAY_MARKET_SCOPE_API.hydrateCatalog(payload);
       console.log('[JAY观海] Local market catalog loaded:',payload.markets.length,'markets');
     }
+    return window.JAY_MARKET_SCOPE;
   } catch(e) {
-    console.info('[JAY观海] Local market catalog unavailable; using embedded registry');
+    console.error('[JAY观海] data/market_scope.json unavailable; market ranges remain unavailable',e);
+    return window.JAY_MARKET_SCOPE;
   }
 }());
+window.JAY_MARKET_SCOPE_READY=localCatalogReady;
 
-var marketCatalogLoading = false;
 async function loadMarketCatalog(){
-  if(marketCatalogLoading || !window.JAY_MARKET_SCOPE_API || !JAY_SUPABASE_URL) return;
-  await localCatalogReady;
-  marketCatalogLoading=true;
-  var controller = new AbortController();
-  var timeout = setTimeout(function(){ controller.abort(); }, 2800);
-  function read(path){
-    return fetch(JAY_API_URL+'/'+path, {headers:{apikey:JAY_ANON_KEY,Authorization:'Bearer '+JAY_ANON_KEY},signal:controller.signal})
-      .then(function(response){ if(!response.ok) throw new Error('catalog '+response.status); return response.json(); });
-  }
-  try{
-    var rows = await Promise.all([
-      read('market_catalog?select=*'),
-      read('platform_catalog?select=*'),
-      read('market_platforms?select=*'),
-      read('jurisdiction_catalog?select=*'),
-      read('category_profiles?select=*'),
-      read('report_template_catalog?select=*'),
-    ]);
-    if(rows.every(Array.isArray) && rows[0].length && rows[1].length && rows[2].length){
-      window.JAY_MARKET_SCOPE_API.hydrateCatalog(jayCatalogPayload({
-        markets: rows[0], platforms: rows[1], market_platforms: rows[2], jurisdictions: rows[3],
-        categories: rows[4], report_templates: rows[5],
-      }));
-      console.log('[JAY观海] Market catalog loaded from Supabase:',rows[0].length,'markets');
-    }
-  }catch(e){
-    // The catalog migration is optional during local development. The
-    // immutable default registry remains the safe fallback when it is absent.
-    console.info('[JAY观海] Market catalog unavailable; using local registry');
-  }finally{
-    clearTimeout(timeout);
-    marketCatalogLoading=false;
-  }
+  // data/market_scope.json is the browser's sole range authority. Supabase
+  // catalog tables remain a synchronized server mirror, never an override.
+  return localCatalogReady;
 }
 
 // Load the remote catalog as soon as the base registry exists. Data modules
@@ -161,6 +138,7 @@ loadMarketCatalog();
 var platformDataLoading=false;
 async function loadPlatformData(){
   if(platformDataLoading)return;
+  await localCatalogReady;
   if(typeof jayFetchMarketData!=='function'){
     setTimeout(loadPlatformData,0);
     return;

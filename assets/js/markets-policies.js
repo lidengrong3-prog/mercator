@@ -13,7 +13,7 @@ function jayApplyCountryDataScope(){
     var status=market&&market.dataStatus;
     // A raw country payload is retained for later verification, but only
     // explicitly verified or user-uploaded market records enter formal pages.
-    if(activeCodes.indexOf(code)>=0 && (!status || status==='verified' || status==='uploaded'))scoped[key]=countryDataSource[key];
+    if(activeCodes.indexOf(code)>=0 && (!status || status==='configured' || status==='verified' || status==='uploaded'))scoped[key]=countryDataSource[key];
   });
   countryFullData=scoped;
   window.countryFullData=countryFullData;
@@ -204,19 +204,25 @@ function jayCommerceMetricCard(slot,row,dataStatus){
       '<h5>'+escapeHtml(definition.label)+'</h5><p>'+escapeHtml(definition.purpose)+'</p>'+
       '<strong>'+missingDetail+'</strong></article>';
   }
-  return '<article class="country-commerce-metric has-data" data-slot="'+escapeHtml(slot)+'" data-data-status="ready">'+
+  var freshness=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getRecordFreshness
+    ? window.JAY_MARKET_SCOPE_API.getRecordFreshness(row,{domain:'macro'}) : {label:'时间未知',sourceType:row.sourceType||row.source_type||'official_feed'};
+  var meta='获取 '+plFormatLineageTime(freshness.retrievedAt||row.retrieved_at||row.collected_at)+' · 核验 '+plFormatLineageTime(freshness.verifiedAt||row.verified_at)+' · 时效 '+freshness.label+' · 来源类型 '+plLineageSourceTypeLabel(freshness.sourceType);
+  return '<article class="country-commerce-metric has-data'+(freshness.status==='stale'?' is-stale':'')+'" data-slot="'+escapeHtml(slot)+'" data-data-status="'+escapeHtml(freshness.status||'unknown')+'">'+
     '<div class="country-commerce-metric-top"><span>'+escapeHtml(row.name)+'</span><time datetime="'+escapeHtml(row.date)+'">'+escapeHtml(row.date)+'</time></div>'+
     '<h5>'+escapeHtml(definition.label)+'</h5><p>'+escapeHtml(definition.purpose)+'</p>'+
     '<div class="country-commerce-value"><b>'+escapeHtml(jayFormatCommerceValue(row.value))+'</b><span>'+escapeHtml(row.unit)+'</span></div>'+
-    '<a href="'+escapeHtml(row.sourceUrl)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(row.source)+'<i data-lucide="external-link"></i></a></article>';
+    '<small class="country-commerce-meta">'+escapeHtml(meta)+'</small><a href="'+escapeHtml(row.sourceUrl)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(row.source)+'<i data-lucide="external-link"></i></a></article>';
 }
 
 function jayCommerceCategoryCard(row){
-  return '<article class="country-commerce-metric has-data" data-slot="'+escapeHtml(row.code)+'">'+
+  var freshness=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getRecordFreshness
+    ? window.JAY_MARKET_SCOPE_API.getRecordFreshness(row,{domain:'macro'}) : {label:'时间未知',sourceType:row.sourceType||row.source_type||'official_feed'};
+  var meta='获取 '+plFormatLineageTime(freshness.retrievedAt||row.retrieved_at||row.collected_at)+' · 核验 '+plFormatLineageTime(freshness.verifiedAt||row.verified_at)+' · 时效 '+freshness.label+' · 来源类型 '+plLineageSourceTypeLabel(freshness.sourceType);
+  return '<article class="country-commerce-metric has-data'+(freshness.status==='stale'?' is-stale':'')+'" data-slot="'+escapeHtml(row.code)+'" data-data-status="'+escapeHtml(freshness.status||'unknown')+'">'+
     '<div class="country-commerce-metric-top"><span>官方品类零售（线上线下）</span><time datetime="'+escapeHtml(row.date)+'">'+escapeHtml(row.date)+'</time></div>'+
     '<h5>'+escapeHtml(row.name)+'</h5><p>用于判断品类需求，不代表电商渠道销售额</p>'+
     '<div class="country-commerce-value"><b>'+escapeHtml(jayFormatCommerceValue(row.value))+'</b><span>'+escapeHtml(row.unit)+'</span></div>'+
-    '<a href="'+escapeHtml(row.sourceUrl)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(row.source)+'<i data-lucide="external-link"></i></a></article>';
+    '<small class="country-commerce-meta">'+escapeHtml(meta)+'</small><a href="'+escapeHtml(row.sourceUrl)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(row.source)+'<i data-lucide="external-link"></i></a></article>';
 }
 
 function jayCommerceMetricSection(id,title,description,slots,indicatorMap,rowMap,dataStatus){
@@ -281,6 +287,7 @@ function jayRenderCountryCommerce(market,payload,rows,status,message){
   if(!panel||!title||!meta||!count||!content)return;
   var api=window.JAY_MARKET_SCOPE_API;
   var marketName=market.name||market.label||market.code;
+  var scopeStatus=api&&api.getDataStatusMeta?api.getDataStatusMeta(market.dataStatus||market.data_status):{label:'规划中'};
   var sourceConfig=jayCountryCommerceSource(market)||{};
   var profile=jayCommerceProfile(sourceConfig);
   var rowMap=jayCommerceRowMap(rows);
@@ -300,7 +307,7 @@ function jayRenderCountryCommerce(market,payload,rows,status,message){
   panel.className='country-commerce-panel '+(normalizedStatus==='error'?'is-error':normalizedStatus==='ready'?'has-data':'is-empty');
   panel.dataset.dataStatus=normalizedStatus;
   title.textContent=marketName+'电商市场环境';
-  meta.textContent=(message?message+' · ':'')+(generated?'数据集更新于 '+generated+' · ':'')+'每项已接入指标均保留原始来源和数据日期';
+  meta.textContent='范围状态 '+scopeStatus.label+' · '+(message?message+' · ':'')+(generated?'数据集获取于 '+generated+' · ':'')+'每项指标显示获取、核验、时效和来源类型';
   count.textContent=selectedCodes.length+' 项已接入';
   content.innerHTML=
     jayCommerceMetricSection('market-size','电商市场规模','判断线上市场容量、增长基础和成熟度',coreSlots,profile.indicatorMap,rowMap,normalizedStatus)+
@@ -752,6 +759,9 @@ function plRenderDataLineage(record,evidence,options){
   var evidenceHash=String(record.evidence_hash||record.evidenceHash||'').trim();
   var notes=String(record.verification_notes||record.verificationNotes||'').trim();
   var verifiedAt=record.verified_at||record.verifiedAt||'';
+  var freshness=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.getRecordFreshness
+    ? window.JAY_MARKET_SCOPE_API.getRecordFreshness(record,{domain:record.domain||plActiveDomain})
+    : {label:'时间未知',retrievedAt:record.retrieved_at||record.collected_at,verifiedAt:verifiedAt,sourceType:sourceType};
   var detail=options.compact?'':(
     '<details class="data-lineage-detail"><summary>查看数据血缘</summary>'+
       '<div class="data-lineage-detail-grid">'+
@@ -760,6 +770,8 @@ function plRenderDataLineage(record,evidence,options){
         '<div><b>来源类别</b><span>'+escapeHtml(plLineageSourceCategoryLabel(sourceCategory,sourceType))+'</span></div>'+
         '<div><b>来源分类</b><span>'+escapeHtml(tierLabel)+'</span></div>'+
         '<div><b>核验时间</b><span>'+escapeHtml(plFormatLineageTime(verifiedAt))+'</span></div>'+
+        '<div><b>获取时间</b><span>'+escapeHtml(plFormatLineageTime(freshness.retrievedAt))+'</span></div>'+
+        '<div><b>时效状态</b><span>'+escapeHtml(freshness.label)+'</span></div>'+
         '<div class="data-lineage-detail-wide"><b>来源 URL</b>'+(safeUrl?'<a href="'+escapeHtml(safeUrl)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(safeUrl)+'</a>':'<span>尚未接入</span>')+'</div>'+
         '<div class="data-lineage-detail-wide"><b>证据哈希</b><code title="'+escapeHtml(evidenceHash)+'">'+escapeHtml(evidenceHash||'未提供')+'</code></div>'+
         (notes?'<div class="data-lineage-detail-wide"><b>核验说明</b><span>'+escapeHtml(notes)+'</span></div>':'')+
@@ -770,7 +782,10 @@ function plRenderDataLineage(record,evidence,options){
     '<div class="data-lineage-summary">'+
       '<span class="data-lineage-badge">'+escapeHtml(statusLabel)+'</span>'+
       '<span class="data-lineage-source">来源：'+sourceLink+(domain?' <small>('+escapeHtml(domain)+')</small>':'')+'</span>'+
-      '<span class="data-lineage-time">采集：'+escapeHtml(plFormatLineageTime(record.collected_at||record.collectedAt))+'</span>'+
+      '<span class="data-lineage-time">获取：'+escapeHtml(plFormatLineageTime(freshness.retrievedAt))+'</span>'+
+      '<span class="data-lineage-time">核验：'+escapeHtml(plFormatLineageTime(freshness.verifiedAt))+'</span>'+
+      '<span class="data-lineage-time">时效：'+escapeHtml(freshness.label)+'</span>'+
+      '<span class="data-lineage-time">来源类型：'+escapeHtml(plLineageSourceTypeLabel(freshness.sourceType))+'</span>'+
       '<span class="data-lineage-tier">证据等级：'+escapeHtml(tierLabel)+'</span>'+
     '</div>'+detail+
   '</div>';
@@ -1746,7 +1761,7 @@ function renderRlStats(){
   const highSubsidy=acts.filter(a=>a[7].includes('免佣金')||a[7].includes('返现')).length;
   const platforms=new Set(items.map(r=>r.platform));
   $('#rl-stats-grid').innerHTML=[
-    ['规则总数',items.length+'条','实时追踪','#3366cc'],
+    ['规则总数',items.length+'条','状态追踪','#3366cc'],
     ['高影响规则',highCount+'条','重点关注','#e74c3c'],
     ['待执行规则',pendingCount+'条','需提前准备','#e67e22'],
     ['覆盖平台',platforms.size+'个','多维度监控','#16a34a']
