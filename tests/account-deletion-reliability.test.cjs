@@ -15,6 +15,7 @@ const aiProxy = read('supabase/functions/ai-proxy/index.ts');
 const frontend = read('assets/js/product-enhancements.js');
 const authData = read('assets/js/auth-data.js');
 const workflow = read('.github/workflows/async-reliability.yml');
+const deploymentWorkflow = read('.github/workflows/deploy-production.yml');
 
 test('deletion requests enqueue durable leased jobs and return 202', () => {
   assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.data_deletion_jobs/);
@@ -46,6 +47,7 @@ test('expired leases recover and terminal failures cannot remain processing', ()
   assert.match(worker, /p_retryable: retryable/);
   assert.match(workflow, /cron: '\*\/5 \* \* \* \*'/);
   assert.match(workflow, /data-deletion-worker/);
+  assert.match(deploymentWorkflow, /Edge Function deploy failed after \$attempt attempts/);
 });
 
 test('Coze and report async work have TTL failure and retry contracts', () => {
