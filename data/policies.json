@@ -1,7 +1,47 @@
 {
-  "updated_at": "2026-09-30T22:57:58.089072+08:00",
+  "updated_at": "2026-10-01T04:52:10.454362+08:00",
   "source_count": 2,
   "items": [
+    {
+      "id": "p20261001-3609b837",
+      "source_record_id": "2026-20060",
+      "title": "Air Plan Approval; Reconsideration and Repeal of Air Plan Partial Approval and Partial Disapproval of North Dakota's Regional Haze State Implementation Plan for the Second Implementation Period; Correction",
+      "summary": "On September 9, 2026 the U.S. Environmental Protection Agency (EPA or Agency) proposed to repeal a final rule published in the Federal Register (FR) on December 2, 2024, partially approving and partially disapproving North Dakota's 2022 regional haze State Implementation Plan (SIP) submission for th",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/09/30/2026-20060/air-plan-approval-reconsideration-and-repeal-of-air-plan-partial-approval-and-partial-disapproval-of",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-09-30",
+      "collected_at": "2026-10-01T04:52:10.454362+08:00",
+      "market_codes": [
+        "US"
+      ],
+      "market": "US",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "retrieved_at": "2026-10-01T04:52:10.454362+08:00",
+      "verified_at": "2026-10-01T04:52:10.454362+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "ccc23147bfa252e3dc3955c7e14a0108301fd00e331594be6cebb5bfb5fae9b9",
+      "title_zh": "空气计划批准；对北达科他州第二实施期区域雾霾州实施计划的部分批准和部分不批准进行复议和废止；更正",
+      "summary_zh": "2026年9月9日，美国环境保护署（EPA或该机构）提议废止2024年12月2日在《联邦公报》（FR）上发布的一项最终规则，该规则部分批准并部分不批准北达科他州2022年提交的第二实施期区域雾霾州实施计划（SIP）。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "openai-compatible",
+        "model": "deepseek-chat",
+        "translated_at": "2026-09-30T20:53:14.340873+00:00",
+        "source_hash": "035dd1b0d84d0c97ea45ebb83e0f168d26b4519533b88c3a5cc8f8cab0474309",
+        "human_reviewed": false
+      },
+      "source_key": "federal-register",
+      "source_category": "official_policy",
+      "authorization_status": "not_required",
+      "publication_status": "eligible"
+    },
     {
       "id": "p20260930-0b37c732",
       "source_record_id": "2026-20057",
@@ -10615,7 +10655,7 @@
     "target_language": "zh-CN",
     "translation_metadata_field": "translation"
   },
-  "last_checked_at": "2026-09-30T22:57:58.089072+08:00",
+  "last_checked_at": "2026-10-01T04:52:10.454362+08:00",
   "source_checks": {
     "federal_register": "succeeded",
     "ustr": "failed",
