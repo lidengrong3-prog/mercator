@@ -309,7 +309,7 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(items[0]["source_url"], "https://www.amz123.com/t/2")
         self.assertEqual(items[0]["market_codes"], ["US"])
 
-    @patch("scripts.collect_cpsc.http_get_json")
+    @patch.object(collect_cpsc, "http_get_json")
     def test_cpsc_rejects_provider_error_payload(self, mock_get_json):
         provider_error = {
             "RecallID": 0,
