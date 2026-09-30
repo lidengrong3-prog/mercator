@@ -49,13 +49,13 @@
       ],
       [
         "零售销售(2026-08-01)",
-        "773947.0 百万美元",
+        "737763.0 百万美元",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/RSAFS"
       ],
       [
-        "10Y国债收益率(2026-09-24)",
-        "5.18 %",
+        "10Y国债收益率(2026-09-28)",
+        "5.24 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/DGS10"
       ],
@@ -349,6 +349,6 @@
         ]
       ]
     },
-    "macro_updated": "2026-09-28 05:29 UTC"
+    "macro_updated": "2026-09-30 04:06 UTC"
   }
 }
