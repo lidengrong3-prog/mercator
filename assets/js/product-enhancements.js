@@ -615,19 +615,21 @@ async function jayRequestDataExport(){
     if(status)status.textContent='导出已下载';
   }catch(error){ if(status)status.textContent='导出失败：'+String(error.code||error.message||'SERVICE_ERROR'); }
 }
+async function jayQueueDeletion(type,workspaceId,statusId){
+  var scope=workspaceId||'account',key='jay_delete_'+scope,idem,status=document.getElementById(statusId);
+  if(status)status.textContent='正在提交删除任务…';
+  try{idem=localStorage.getItem(key)||('data-delete-'+scope+'-'+crypto.randomUUID());localStorage.setItem(key,idem);}catch(_){idem='data-delete-'+scope+'-'+Date.now();}
+  var payload={request_type:type,idempotency_key:idem};if(workspaceId)payload.workspace_id=workspaceId;
+  try{var result=await jayFunctionRequest('data-subject-request',payload,{timeout:15000,retryOnNetwork:true,requestId:idem});if(result.status==='failed'){try{localStorage.removeItem(key);}catch(_){}if(status)status.textContent='删除失败，可重新提交';}else if(status)status.textContent=result.status==='completed'?'删除已完成':'删除任务后台处理中';}
+  catch(error){if(status)status.textContent='删除失败：'+String(error.code||error.message||'SERVICE_ERROR');}
+}
 async function jayRequestAccountDeletion(){
   if(!window.confirm||!window.confirm('确定申请删除账号及相关文件吗？此操作不可撤销，且需先转移工作区所有权。'))return;
-  var status=document.getElementById('st-data-request-status');if(status)status.textContent='正在提交删除任务…';
-  var key='jay_delete_account',idem;try{idem=localStorage.getItem(key)||('data-delete-account-'+crypto.randomUUID());localStorage.setItem(key,idem);}catch(_){idem='data-delete-account-'+Date.now();}
-  try{var result=await jayFunctionRequest('data-subject-request',{request_type:'delete_account',idempotency_key:idem},{timeout:15000,retryOnNetwork:true,requestId:idem});if(result.status==='failed'){try{localStorage.removeItem(key);}catch(_){}if(status)status.textContent='删除失败，可重新提交';}else if(status)status.textContent=result.status==='completed'?'账号删除已完成':'删除任务后台处理中';}
-  catch(error){if(status)status.textContent='删除失败：'+String(error.code||error.message||'SERVICE_ERROR');}
+  return jayQueueDeletion('delete_account',null,'st-data-request-status');
 }
 async function jayRequestWorkspaceDeletion(){
   var workspaceId=typeof jayActiveWorkspaceId==='function'?jayActiveWorkspaceId():null;
   if(!workspaceId){toast('请先选择工作区');return;}
   if(!window.confirm||!window.confirm('确定申请删除当前工作区及其中的报告、素材和导出吗？此操作不可撤销。'))return;
-  var status=document.getElementById('st-workspace-meta');if(status)status.textContent='正在提交工作区删除任务…';
-  var key='jay_delete_workspace_'+workspaceId,idem;try{idem=localStorage.getItem(key)||('data-delete-workspace-'+workspaceId+'-'+crypto.randomUUID());localStorage.setItem(key,idem);}catch(_){idem='data-delete-workspace-'+workspaceId+'-'+Date.now();}
-  try{var result=await jayFunctionRequest('data-subject-request',{request_type:'delete_workspace',workspace_id:workspaceId,idempotency_key:idem},{timeout:15000,retryOnNetwork:true,requestId:idem});if(result.status==='failed'){try{localStorage.removeItem(key);}catch(_){}if(status)status.textContent='删除失败，可重新提交';}else if(status)status.textContent=result.status==='completed'?'工作区删除已完成':'删除任务后台处理中';}
-  catch(error){if(status)status.textContent='删除失败：'+String(error.code||error.message||'SERVICE_ERROR');}
+  return jayQueueDeletion('delete_workspace',workspaceId,'st-workspace-meta');
 }
