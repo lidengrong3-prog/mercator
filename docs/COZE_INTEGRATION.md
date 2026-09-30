@@ -4,7 +4,7 @@
 
 ## 1. Coze 控制台需要准备的内容
 
-使用中国区 Coze（`coze.cn`）。当前只需创建并发布市场分析 Bot；其余两个 Bot 是后续阶段的预留配置：
+使用中国区 Coze（`coze.cn`）。三类任务都使用独立的服务端路由变量；报告或课程专用 Bot 尚未配置时，可兼容复用已发布的市场分析 Bot，并由生产验收执行真实调用：
 
 | Bot | 建议名称 | 系统任务 | 环境变量 |
 | --- | --- | --- | --- |
@@ -109,7 +109,7 @@ COZE_API_TOKEN=<真实 Personal Access Token>
 COZE_BOT_ID_MARKET_QA=<市场分析 Bot ID>
 ```
 
-`COZE_BOT_ID_REPORT` 和 `COZE_BOT_ID_COURSE` 在对应任务进入独立验收阶段时再添加。
+`COZE_BOT_ID_REPORT` 和 `COZE_BOT_ID_COURSE` 可在专用 Bot 发布后添加；未添加时发布工作流会安全回退到 `COZE_BOT_ID_MARKET_QA`（再回退到旧版 `COZE_BOT_ID`），但仍会分别执行报告和课程任务的真实线上验收。
 
 添加 Variables（也可放 Secrets，但这些值本身不属于密码）：
 

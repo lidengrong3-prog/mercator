@@ -119,10 +119,10 @@ jobs:
       COZE_API_URL: ${{ vars.COZE_API_URL || secrets.COZE_API_URL || 'https://api.coze.cn' }}
       COZE_API_TOKEN: ${{ secrets.COZE_API_TOKEN }}
       COZE_API_KEY: ${{ secrets.COZE_API_KEY }}
-      COZE_BOT_ID: ${{ secrets.COZE_BOT_ID }}
-      COZE_BOT_ID_MARKET_QA: ${{ secrets.COZE_BOT_ID_MARKET_QA }}
-      COZE_BOT_ID_REPORT: ${{ secrets.COZE_BOT_ID_REPORT }}
-      COZE_BOT_ID_COURSE: ${{ secrets.COZE_BOT_ID_COURSE }}
+      COZE_BOT_ID: ${{ secrets.COZE_BOT_ID || secrets.COZE_BOT_ID_MARKET_QA }}
+      COZE_BOT_ID_MARKET_QA: ${{ secrets.COZE_BOT_ID_MARKET_QA || secrets.COZE_BOT_ID }}
+      COZE_BOT_ID_REPORT: ${{ secrets.COZE_BOT_ID_REPORT || secrets.COZE_BOT_ID_MARKET_QA || secrets.COZE_BOT_ID }}
+      COZE_BOT_ID_COURSE: ${{ secrets.COZE_BOT_ID_COURSE || secrets.COZE_BOT_ID_MARKET_QA || secrets.COZE_BOT_ID }}
       COZE_MODEL: ${{ secrets.COZE_MODEL }}
       COZE_POLL_INTERVAL_MS: ${{ vars.COZE_POLL_INTERVAL_MS || secrets.COZE_POLL_INTERVAL_MS || '500' }}
       COZE_POLL_MAX_ATTEMPTS: ${{ vars.COZE_POLL_MAX_ATTEMPTS || secrets.COZE_POLL_MAX_ATTEMPTS || '100' }}
