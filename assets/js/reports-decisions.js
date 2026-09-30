@@ -486,6 +486,17 @@ async function rpV2Generate(){
   if(!AI_ENGINE.hasKey()){toast('请先登录后使用 AI 报告服务');return;}
   rpGenInterval=true;
   var generationStartedAt=Date.now();
+  // A production report can contain many AI-backed chapters. Keep the whole
+  // run bounded so provider timeouts, retries and fallbacks can never leave
+  // the UI or report_runs row in a permanent processing state.
+  var generationDeadlineAt=generationStartedAt+360000;
+  var generationFailures=[];
+  function generationRemainingMs(){return Math.max(0,generationDeadlineAt-Date.now());}
+  function generationFailureText(section,error){
+    var reason=rpUserFacingError(error,'AI 服务暂时不可用，请稍后重试');
+    generationFailures.push({sectionId:section.id,sectionTitle:section.title,code:String(error&&error.code||'AI_SECTION_FAILED')});
+    return '本章未能在本次生成时限内完成：'+reason+'。已保留为待补充内容，请稍后重新生成；系统不会将本章保存为正式报告。';
+  }
   var identity=rpV2GenerationIdentity(context,topic,pool);
   var quality=window.JAY_QUALITY_REPORT||{};
   try{
@@ -521,7 +532,10 @@ async function rpV2Generate(){
   var results=[];
   function renderProgress(index){var p=body.querySelector('.rp-v2-generating p');if(p)p.textContent='正在生成第 '+(index+1)+'/'+plan.sections.length+' 章：'+plan.sections[index].title;}
   async function generateSection(section,prompts,requestOptions){
-    var output=await callAI(prompts.system,prompts.user,requestOptions);
+    var remaining=generationRemainingMs();
+    if(remaining<1000){var deadlineError=new Error('REPORT_GENERATION_TIMEOUT');deadlineError.code='REPORT_GENERATION_TIMEOUT';throw deadlineError;}
+    var boundedOptions=Object.assign({},requestOptions,{timeout:Math.max(1000,Math.min(Number(requestOptions.timeout||60000),remaining))});
+    var output=await callAI(prompts.system,prompts.user,boundedOptions);
     rpAIGatewayRequests.push(requestOptions.requestId);
     var audit=window.JAY_REPORT_ENGINE.auditCitations([{id:section.id,text:output}],prompts.sourceAppendix||[],prompts.citationFacts||[]);
     var scopeAudit=window.JAY_REPORT_ENGINE.checkScope(output,facts.scope||context);
@@ -534,8 +548,10 @@ async function rpV2Generate(){
     var repairUser=prompts.user+'\n发布审核失败，请重新生成本章。未引用数字所在行：\n'+(missing||'- 无')+'\n引用来源无法证明数字的行：\n'+(untraceable||'- 无')+'\n无效引用：'+(invalid||'无')+'\n范围外名称：'+(scopeViolations||'无');
     var retryOptions=Object.assign({},requestOptions,{
       operation:requestOptions.operation+'.citation-retry',
-      requestId:requestOptions.requestId+':citation-retry'
+      requestId:requestOptions.requestId+':citation-retry',
+      timeout:Math.max(1000,Math.min(Number(requestOptions.timeout||60000),generationRemainingMs()))
     });
+    if(generationRemainingMs()<1000){var retryDeadlineError=new Error('REPORT_GENERATION_TIMEOUT');retryDeadlineError.code='REPORT_GENERATION_TIMEOUT';throw retryDeadlineError;}
     var retryOutput=await callAI(repairSystem,repairUser,retryOptions);
     var repaired=window.JAY_REPORT_ENGINE.repairSectionCitations(retryOutput,prompts.citationFacts||[],prompts.sourceAppendix||[]);
     var sourced=window.JAY_REPORT_ENGINE.pruneUncitedNumericLines(repaired.text,prompts.sourceAppendix||[],prompts.citationFacts||[]);
@@ -549,9 +565,23 @@ async function rpV2Generate(){
     return '';
   }
   async function next(index){
+    if(index<plan.sections.length&&generationRemainingMs()<1000){
+      for(var timeoutIndex=index;timeoutIndex<plan.sections.length;timeoutIndex++){
+        var timeoutSection=plan.sections[timeoutIndex];
+        var timeoutError=new Error('REPORT_GENERATION_TIMEOUT');timeoutError.code='REPORT_GENERATION_TIMEOUT';
+        results.push({id:timeoutSection.id,title:timeoutSection.title,domain:timeoutSection.domain,text:generationFailureText(timeoutSection,timeoutError),claims:[]});
+      }
+      index=plan.sections.length;
+    }
     if(index>=plan.sections.length){
       var assembled=window.JAY_REPORT_ENGINE.assemble(plan,results,facts,check,financial,qualityGate);
       var version=window.rpCreateReportVersion?window.rpCreateReportVersion(assembled,rpV2RevisionBase,rpV2RevisionBase?'regenerate':'generate'):assembled;
+      if(generationFailures.length){
+        version.generationFailures=generationFailures.slice();
+        version.publishable=false;
+        version.publicationBlocks=(version.publicationBlocks||[]).concat(generationFailures.map(function(item){return {code:'AI_SECTION_GENERATION_FAILED',message:item.sectionTitle+'未完成生成',section_id:item.sectionId};}));
+        version.text='> **未发布草稿**：部分章节未能在生成时限内完成，请稍后重新生成。\n\n'+version.text;
+      }
       var snapshot=rpV2BuildReportSnapshot(version,facts,pool,context,qualityGate);
       version.snapshot=snapshot;
       version.dataSnapshotAt=snapshot.dataSnapshotAt;
@@ -566,7 +596,7 @@ async function rpV2Generate(){
          disclosure.textContent='本报告由服务端 AI 处理；发送给第三方 AI 的数据范围：'+(gatewayScopes.join('、')||'正式历史投影、报告上下文')+(gatewayFallback?'；部分章节已自动切换备用通道':'')+'。';
          body.appendChild(disclosure);
        }
-      if(status){var blockedLabel=!qualityGate||!qualityGate.ok?'未发布草稿 · 数据质量阻断':(version.contentQuality&&!version.contentQuality.ok?'不可发布 · 内容质量需复核':(version.citationAudit&&!version.citationAudit.ok?'不可发布 · 正文引用核验未通过':'不可发布 · 请补充数据'));status.textContent=version.publishable?'可发布 · 完整性 '+version.completeness.overall+'%':blockedLabel;status.className='rp-v2-publish-status '+(version.publishable?'is-publishable':'is-blocked');}
+      if(status){var blockedLabel=generationFailures.length?'未发布草稿 · '+generationFailures.length+' 个章节待重试':(!qualityGate||!qualityGate.ok?'未发布草稿 · 数据质量阻断':(version.contentQuality&&!version.contentQuality.ok?'不可发布 · 内容质量需复核':(version.citationAudit&&!version.citationAudit.ok?'不可发布 · 正文引用核验未通过':'不可发布 · 请补充数据')));status.textContent=version.publishable?'可发布 · 完整性 '+version.completeness.overall+'%':blockedLabel;status.className='rp-v2-publish-status '+(version.publishable?'is-publishable':'is-blocked');}
       var reportRecord=await rpV2SaveReport(title,pool.length,{model:version,items:pool,tpl:rpV2SelectedTpl,text:version.text,parentId:rpV2RevisionBase&&rpV2RevisionBase.id||null,snapshot:snapshot,clientReportId:identity.clientReportId,reportRunId:rpActiveReportRun&&rpActiveReportRun.id});
       var savedReport=reportRecord&&reportRecord.cloudSaved?reportRecord:null;
       try{
@@ -574,30 +604,40 @@ async function rpV2Generate(){
           durationMs:Date.now()-generationStartedAt,reportId:savedReport&&savedReport.dbId||null,model:rpActiveReportRun&&rpActiveReportRun.model||null,
           saveStatus:savedReport?'saved':(version.publishable?'failed':'blocked'),publicationStatus:savedReport&&version.publishable?'formal':'draft',
           errorCode:version.publishable&&!savedReport?'REPORT_SAVE_FAILED':null,errorMessage:version.publishable&&!savedReport?'Generated report could not be saved to Supabase':null,
-          metadata:{topic:topic||'',template_id:rpV2SelectedTpl||'market-research',publishable:version.publishable===true,quality_status:qualityGate&&qualityGate.status||'unknown',quality_report_version:qualityGate&&qualityGate.snapshot&&qualityGate.snapshot.quality_report_version||'',completeness:version.completeness&&version.completeness.overall}
+          metadata:{topic:topic||'',template_id:rpV2SelectedTpl||'market-research',publishable:version.publishable===true,quality_status:qualityGate&&qualityGate.status||'unknown',quality_report_version:qualityGate&&qualityGate.snapshot&&qualityGate.snapshot.quality_report_version||'',completeness:version.completeness&&version.completeness.overall,generation_failure_count:generationFailures.length,generation_failure_codes:generationFailures.map(function(item){return item.code;})}
         });
       }catch(runFinishError){console.warn('[JAY观海] report run finalization failed:',runFinishError);}
       rpV2RevisionBase=null;
-      toast(version.publishable?(savedReport?'报告已生成并保存到云端':'报告已生成，但云端保存失败'):(!qualityGate||!qualityGate.ok?'数据质量门禁未通过，报告已保留为未保存草稿':(version.citationAudit&&!version.citationAudit.ok?'报告正文引用核验未通过，已保留为未保存草稿':'报告已生成草稿，需补充数据后发布')));
+      toast(version.publishable?(savedReport?'报告已生成并保存到云端':'报告已生成，但云端保存失败'):(generationFailures.length?'报告已生成未保存草稿，'+generationFailures.length+' 个章节需稍后重试':(!qualityGate||!qualityGate.ok?'数据质量门禁未通过，报告已保留为未保存草稿':(version.citationAudit&&!version.citationAudit.ok?'报告正文引用核验未通过，已保留为未保存草稿':'报告已生成草稿，需补充数据后发布'))));
       rpActiveReportRun=null;rpGenInterval=false;rpV2SetToolbarBusy(false);return;
     }
     renderProgress(index);
     var section=plan.sections[index];var local=localSection(section);
     if(local){results.push({id:section.id,title:section.title,domain:section.domain,text:local,claims:[]});await next(index+1);return;}
     var prompts=window.JAY_REPORT_ENGINE.buildSectionPrompt(plan,section,facts,financial,customText);
+    if(!prompts.citationFacts||!prompts.citationFacts.length){
+      results.push({id:section.id,title:section.title,domain:section.domain,text:'当前已核验数据中没有可用于本章的事实记录。本章保留为“待补充”，未调用 AI 补写或借用范围外数据。',claims:[]});
+      await next(index+1);return;
+    }
     var system=prompts.system+'\n当前日期：'+jayNowHuman()+'。输出简体中文 Markdown 章节正文，不要添加未给出的事实。';
     var user=prompts.user+'\n输出要求：只输出“'+section.title+'”本章正文；数字必须来自 facts 或 financial，无法确认就写“待补充”；不得写全球或未选择市场、平台；所有事实结论和关键数字必须保留 citationCatalog 中的 [Sxxx] 行内引用。';
-    generateSection(section,{system:system,user:user,sourceAppendix:prompts.sourceAppendix,citationFacts:prompts.citationFacts},{temperature:0.35,max_tokens:2800,search:false,timeout:60000,entryPoint:'report.generation',operation:'report.section.'+section.id,requestId:(rpActiveReportRun&&rpActiveReportRun.id||identity.clientReportId)+':'+section.id,reportRunId:rpActiveReportRun&&rpActiveReportRun.id||null,clientReportId:identity.clientReportId,dataVersion:String(quality.data_contract_version||quality.generated_at||'local-unversioned')}).then(async function(output){
+    return await generateSection(section,{system:system,user:user,sourceAppendix:prompts.sourceAppendix,citationFacts:prompts.citationFacts},{temperature:0.35,max_tokens:2800,search:false,timeout:60000,entryPoint:'report.generation',operation:'report.section.'+section.id,requestId:(rpActiveReportRun&&rpActiveReportRun.id||identity.clientReportId)+':'+section.id,reportRunId:rpActiveReportRun&&rpActiveReportRun.id||null,clientReportId:identity.clientReportId,dataVersion:String(quality.data_contract_version||quality.generated_at||'local-unversioned')}).then(async function(output){
       results.push({id:section.id,title:section.title,domain:section.domain,text:output,claims:[]});await next(index+1);
     }).catch(async function(error){
-       var aiFailureText=rpUserFacingError(error,'AI 服务暂时不可用，请稍后重试');
-       body.innerHTML='<div class="rp-v2-rpt"><p data-ui-style="color:#ef4444">第 '+(index+1)+' 章生成失败：'+escapeHtml(aiFailureText)+'</p><p>请稍后重试。已停止组装，本次内容未保存为正式报告。</p></div>';
-      if(status){status.textContent='生成失败';status.className='rp-v2-publish-status is-blocked';}
-      try{await jayFinishReportRun(rpActiveReportRun&&rpActiveReportRun.id,'failed',{durationMs:Date.now()-generationStartedAt,failedSection:section.id,errorCode:error.code||error.message,errorMessage:error.message,saveStatus:'failed',publicationStatus:'draft'});}catch(runError){console.warn('[JAY观海] report run failure logging failed:',runError);}
-      rpActiveReportRun=null;rpGenInterval=false;rpV2SetToolbarBusy(false);toast('报告生成失败：'+rpUserFacingError(error,'请稍后重试'));
+      results.push({id:section.id,title:section.title,domain:section.domain,text:generationFailureText(section,error),claims:[]});
+      await next(index+1);
     });
   }
-  await next(0);
+  try{
+    await next(0);
+  }catch(error){
+    if(body&&body.querySelector('.rp-v2-generating'))body.innerHTML='<div class="rp-v2-rpt"><p data-ui-style="color:#ef4444">报告生成已安全停止。</p><p>本次内容未保存为正式报告，请稍后重试。</p></div>';
+    if(status){status.textContent='生成失败';status.className='rp-v2-publish-status is-blocked';}
+    try{await jayFinishReportRun(rpActiveReportRun&&rpActiveReportRun.id,'failed',{durationMs:Date.now()-generationStartedAt,errorCode:error&&error.code||'REPORT_GENERATION_FAILED',errorMessage:error&&error.message||'Report generation failed',saveStatus:'failed',publicationStatus:'draft',metadata:{generation_failure_count:generationFailures.length}});}catch(runError){console.warn('[JAY观海] report run failure logging failed:',runError);}
+    toast('报告生成失败：'+rpUserFacingError(error,'请稍后重试'));
+  }finally{
+    if(rpGenInterval){rpActiveReportRun=null;rpGenInterval=false;rpV2SetToolbarBusy(false);}
+  }
 }
 
 /* ===== Phase0 B1: 报告生成前个性化问卷 ===== */

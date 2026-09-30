@@ -2081,6 +2081,72 @@ test('duplicate checkout, report generation and export actions collapse to one o
   expect(state).toEqual({ checkoutSame: true, generationStarts: 1, exportStarts: 1 });
 });
 
+test('report provider failures finish as blocked drafts without permanent processing', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '浏览只读演示' }).click();
+  const state = await page.evaluate(async () => {
+    window.jayIsDemo = false;
+    window.jayCanUseUserDb = () => false;
+    window.AI_ENGINE.hasKey = () => true;
+    window.rpV2SelectedTpl = 'market-research';
+    window.rpV2Answers = { category: 'generic' };
+    window.rpBuildReportPlan = () => ({
+      template: { id: 'market-research', code: 'market-research', version: 1 },
+      purpose: 'market-research',
+      scope: { marketCodes: ['US'], marketNames: ['美国'], platformKeys: ['amazon'], platformNames: ['Amazon'], categoryCodes: ['generic'] },
+      sections: [{ id: 'executive_summary', title: '执行摘要', domain: 'summary', required: true }],
+      requiredDomains: ['market'],
+    });
+    window.rpCollectReportFacts = () => ({
+      scope: { marketCodes: ['US'], marketNames: ['美国'], platformKeys: ['amazon'], platformNames: ['Amazon'], categoryCodes: ['generic'] },
+      records: { market: [{ domain: 'market', record: { title: '美国市场' }, source: { citation: 'S001' } }] },
+      sources: [],
+      collectedAt: new Date().toISOString(),
+    });
+    window.rpCheckReportData = () => ({ ok: true, missing: [], warnings: [], recordCount: 1, coverageMatrix: { ok: true, totalCells: 1, coveredCells: 1, coveragePercent: 100, missingCells: [] } });
+    window.JAY_REPORT_ENGINE.financialFromFacts = () => ({ status: 'not_available' });
+    window.JAY_REPORT_ENGINE.buildSectionPrompt = () => ({ system: 'system', user: 'user', sourceAppendix: [], citationFacts: [{ record: { title: '美国市场' } }] });
+    window.JAY_REPORT_ENGINE.assemble = (_plan, results) => ({
+      text: results.map((row) => `## ${row.title}\n\n${row.text}`).join('\n\n'),
+      sections: results, sourceAppendix: [], sourceRecordIds: [], completeness: { overall: 100 },
+      citationAudit: { ok: true }, reconciliation: { ok: true }, scopeCheck: { ok: true }, contentQuality: { ok: true, dimensions: {} },
+      coverageMatrix: { ok: true, totalCells: 1, coveredCells: 1, coveragePercent: 100, missingCells: [] },
+      publicationBlocks: [], publishable: true, generatedAt: new Date().toISOString(),
+    });
+    window.rpCreateReportVersion = (report) => Object.assign({}, report, { engineVersion: 'test', revision: 1, version: 1 });
+    window.callAI = async () => {
+      const error = new Error('REQUEST_TIMEOUT');
+      error.code = 'REQUEST_TIMEOUT';
+      error.status = 408;
+      throw error;
+    };
+    let finished = null;
+    window.jayStartReportRun = async () => ({ id: 'run-timeout', duplicate: false, status: 'running' });
+    window.jayFinishReportRun = async (id, status, details) => { finished = { id, status, details }; };
+    document.getElementById('rp-v2-topic').value = '生产超时验收';
+    await window.rpV2Generate();
+    return {
+      generationActive: window.rpGenInterval === true,
+      generating: !!document.querySelector('#rp-v2-preview-body .rp-v2-generating'),
+      publishable: window.rpLastReportModel && window.rpLastReportModel.publishable,
+      failureCount: window.rpLastReportModel && window.rpLastReportModel.generationFailures && window.rpLastReportModel.generationFailures.length,
+      saveState: window.rpLastSaveState,
+      publishStatus: document.getElementById('rp-v2-publish-status').textContent,
+      finished,
+    };
+  });
+
+  expect(state.generationActive).toBe(false);
+  expect(state.generating).toBe(false);
+  expect(state.publishable).toBe(false);
+  expect(state.failureCount).toBe(1);
+  expect(state.saveState).toBe('blocked');
+  expect(state.publishStatus).toContain('1 个章节待重试');
+  expect(state.finished.status).toBe('completed');
+  expect(state.finished.details.saveStatus).toBe('blocked');
+  expect(state.finished.details.metadata.generation_failure_count).toBe(1);
+});
+
 test('market scope can register and switch to a market-specific platform set', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: '浏览只读演示' }).click();

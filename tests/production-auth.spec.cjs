@@ -126,12 +126,13 @@ test.describe('production authenticated browser acceptance', () => {
       if (platformRuleDimensions.includes(topic)) current.dimensions.add(topic);
       coverage.set(key, current);
     }
-    const selected = [...coverage.values()].sort((left, right) => (
+    const ranked = [...coverage.values()].sort((left, right) => (
       right.dimensions.size - left.dimensions.size
       || right.count - left.count
       || right.latest.localeCompare(left.latest)
       || left.key.localeCompare(right.key)
-    ))[0];
+    ));
+    const selected = ranked.find((candidate) => platformRuleDimensions.every((dimension) => candidate.dimensions.has(dimension))) || ranked[0];
     if (!selected) {
       throw new Error('no active US platform has verified formal rule evidence for production report acceptance');
     }
@@ -145,7 +146,8 @@ test.describe('production authenticated browser acceptance', () => {
     };
   }
 
-  async function waitForReportPreview(page, timeout = 480_000) {
+  async function waitForReportPreview(page, workspaceId, timeout = 480_000) {
+    const currentRunRows = () => rows(page, 'report_runs', { acceptance_run_id: acceptanceRunId, workspace_id: workspaceId });
     const deadline = Date.now() + timeout;
     while (Date.now() < deadline) {
       const state = await page.evaluate(() => {
@@ -184,12 +186,12 @@ test.describe('production authenticated browser acceptance', () => {
       // check stays blocked while that generation is active, so it is not a
       // terminal condition by itself.
       if (terminalReportState || terminalToast) {
-        const runs = await rows(page, 'report_runs', {});
+        const runs = await currentRunRows();
         throw new Error(`report generation stopped before preview: ${JSON.stringify({ ...state, latestRun: runs[0] || null })}`);
       }
       await page.waitForTimeout(500);
     }
-    const runs = await rows(page, 'report_runs', {});
+    const runs = await currentRunRows();
     const state = await page.evaluate(() => ({
       generationActive: window.rpGenInterval === true,
       generating: !!document.querySelector('#rp-v2-preview-body .rp-v2-generating'),
@@ -331,7 +333,7 @@ test.describe('production authenticated browser acceptance', () => {
     await expect(page.locator('#rp-questionnaire')).toHaveClass(/show/);
     await page.locator('#rp-q-category').fill('通用');
     await page.locator('#rp-questionnaire .rp-q-go').click();
-    const previewState = await waitForReportPreview(page);
+    const previewState = await waitForReportPreview(page, workspaceA);
     const formalReady = previewState.publishable === true;
     await page.waitForFunction(() => ['saved', 'failed', 'blocked'].includes(String(window.rpLastSaveState || '')), null, { timeout: 60_000 });
     const cloudSave = await page.evaluate(() => ({ state: window.rpLastSaveState, error: window.rpLastSaveError || null }));
