@@ -9,6 +9,7 @@ function read(relativePath) {
 }
 
 const migration = read('supabase/migrations/20260930130000_r09_account_deletion_jobs.sql');
+const workspaceCascadeFix = read('supabase/migrations/20260930180000_r09_workspace_owner_cascade_fix.sql');
 const requestFunction = read('supabase/functions/data-subject-request/index.ts');
 const worker = read('supabase/functions/data-deletion-worker/index.ts');
 const aiProxy = read('supabase/functions/ai-proxy/index.ts');
@@ -38,6 +39,8 @@ test('large deletions use bounded batches, cursors and auth-last ordering', () =
   const profileStep = migration.indexOf("'db_profiles'");
   const authStep = migration.lastIndexOf("'auth_user', 'auth_user'");
   assert.ok(profileStep > 0 && authStep > profileStep, 'Auth deletion must be the final account step');
+  assert.match(workspaceCascadeFix, /job.job_type = 'delete_workspace'[\s\S]*step.step_key = 'db_workspace_members'/);
+  assert.match(workspaceCascadeFix, /workspace_members_removed_by_workspace_cascade/);
 });
 
 test('expired leases recover and terminal failures cannot remain processing', () => {
@@ -48,6 +51,14 @@ test('expired leases recover and terminal failures cannot remain processing', ()
   assert.match(workflow, /cron: '\*\/5 \* \* \* \*'/);
   assert.match(workflow, /data-deletion-worker/);
   assert.match(deploymentWorkflow, /Edge Function deploy failed after \$attempt attempts/);
+  assert.match(worker, /DATA_DELETION_WORKER_KEY/);
+  assert.match(worker, /ACCEPTANCE_HMAC_SECRET/);
+  assert.match(deploymentWorkflow, /DATA_DELETION_WORKER_KEY=\$SUPABASE_SERVICE_KEY/);
+});
+
+test('browser acceptance reruns recover the original backend acceptance id', () => {
+  assert.match(deploymentWorkflow, /artifact_run_id=.*production-acceptance-result\.json/);
+  assert.match(deploymentWorkflow, /echo "ACCEPTANCE_RUN_ID=\$artifact_run_id" >> "\$GITHUB_ENV"/);
 });
 
 test('Coze and report async work have TTL failure and retry contracts', () => {

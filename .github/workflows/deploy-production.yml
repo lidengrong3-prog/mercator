@@ -295,6 +295,7 @@ jobs:
             "DEEPSEEK_MODEL=$DEEPSEEK_MODEL"
             "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_KEY"
             "ACCEPTANCE_HMAC_SECRET=$SUPABASE_SERVICE_KEY"
+            "DATA_DELETION_WORKER_KEY=$SUPABASE_SERVICE_KEY"
             "ALLOWED_ORIGINS=$ALLOWED_ORIGINS"
             "RELEASE_SHA=$RELEASE_SHA"
             "RELEASE_MIGRATION_HEAD=$MIGRATION_HEAD"
@@ -620,7 +621,9 @@ jobs:
         shell: bash
         run: |
           set -eu
-          test "$(python -c 'import json; print(json.load(open("production-acceptance-result.json"))["acceptance_run_id"])')" = "$ACCEPTANCE_RUN_ID"
+          artifact_run_id="$(python -c 'import json; print(json.load(open("production-acceptance-result.json"))["acceptance_run_id"])')"
+          test -n "$artifact_run_id"
+          echo "ACCEPTANCE_RUN_ID=$artifact_run_id" >> "$GITHUB_ENV"
           python - <<'PY' >> "$GITHUB_ENV"
           import json
           result = json.load(open('production-acceptance-result.json', encoding='utf-8'))
@@ -672,6 +675,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Download backend acceptance result
+        uses: actions/download-artifact@v4
+        with:
+          name: production-acceptance-result-${{ github.run_id }}
+      - name: Resolve backend acceptance run id
+        shell: bash
+        run: |
+          set -eu
+          artifact_run_id="$(python -c 'import json; print(json.load(open("production-acceptance-result.json"))["acceptance_run_id"])')"
+          test -n "$artifact_run_id"
+          echo "ACCEPTANCE_RUN_ID=$artifact_run_id" >> "$GITHUB_ENV"
       - name: Resolve ephemeral Supabase service key
         shell: bash
         run: |

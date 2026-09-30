@@ -97,9 +97,12 @@ Deno.serve(async (request) => {
 
   const url = String(Deno.env.get('SUPABASE_URL') || '').replace(/\/$/, '');
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-  if (!url || !serviceKey) return jsonResponse({ error: 'DATA_DELETION_WORKER_NOT_CONFIGURED' }, 503, origin);
+  const workerKey = Deno.env.get('DATA_DELETION_WORKER_KEY')
+    || Deno.env.get('ACCEPTANCE_HMAC_SECRET')
+    || serviceKey;
+  if (!url || !serviceKey || !workerKey) return jsonResponse({ error: 'DATA_DELETION_WORKER_NOT_CONFIGURED' }, 503, origin);
   const authorization = request.headers.get('Authorization') || '';
-  if (authorization !== 'Bearer ' + serviceKey) return jsonResponse({ error: 'SERVICE_ROLE_REQUIRED' }, 401, origin);
+  if (authorization !== 'Bearer ' + workerKey) return jsonResponse({ error: 'SERVICE_ROLE_REQUIRED' }, 401, origin);
 
   const headers = serviceHeaders(serviceKey);
   const workerId = String(Deno.env.get('RELEASE_SHA') || 'local') + ':' + crypto.randomUUID();
