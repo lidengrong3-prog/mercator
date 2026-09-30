@@ -171,6 +171,7 @@ test('production workflow exposes optional provider secrets without replacing ab
   for (const name of ['COZE_API_TOKEN', 'COZE_BOT_ID', 'DOUBAO_API_KEY', 'OPENAI_API_KEY', 'CODEX_API_KEY']) assert.match(workflow, new RegExp(name));
   assert.match(workflow, /for optional_name in COZE_API_URL/);
   assert.match(workflow, /functions deploy "\$function_name"/);
+  assert.equal((workflow.match(/--use-api/g) || []).length, 3);
 });
 
 test('admin observability exposes provider catalog and attempt aggregates', () => {

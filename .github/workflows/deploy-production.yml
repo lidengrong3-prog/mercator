@@ -343,7 +343,7 @@ jobs:
         run: |
           set -eu
           for function_name in ai-proxy history-search resource-library report-save report-export report-docx workspace-invite billing-checkout billing-status billing-portal admin-summary data-subject-request security-gate; do
-            npx --yes supabase@2.39.2 functions deploy "$function_name" --project-ref "$SUPABASE_PROJECT_ID"
+            npx --yes supabase@2.39.2 functions deploy "$function_name" --project-ref "$SUPABASE_PROJECT_ID" --use-api
           done
       - name: Verify report function validation contract versions
         shell: bash
@@ -408,9 +408,9 @@ jobs:
           done
           test "$stable_rounds" -ge 12 || { echo "Report function validation contracts did not converge: expected=$expected$last_summary"; exit 1; }
       - name: Deploy Stripe webhook without Supabase JWT verification
-        run: npx --yes supabase@2.39.2 functions deploy billing-webhook --project-ref "$SUPABASE_PROJECT_ID" --no-verify-jwt
+        run: npx --yes supabase@2.39.2 functions deploy billing-webhook --project-ref "$SUPABASE_PROJECT_ID" --no-verify-jwt --use-api
       - name: Deploy notification dispatcher with application-level authentication
-        run: npx --yes supabase@2.39.2 functions deploy notification-dispatch --project-ref "$SUPABASE_PROJECT_ID" --no-verify-jwt
+        run: npx --yes supabase@2.39.2 functions deploy notification-dispatch --project-ref "$SUPABASE_PROJECT_ID" --no-verify-jwt --use-api
 
   authenticated-acceptance:
     needs: deploy-backend
