@@ -153,6 +153,27 @@ def gen_recall_id(recall):
     return f"cpsc-{h}"
 
 
+def is_provider_error_recall(recall):
+    """Detect CPSC provider failures returned as recall-shaped objects."""
+    if not isinstance(recall, dict):
+        return True
+
+    title = str(recall.get("Title") or recall.get("title") or "").strip().lower()
+    recall_id = recall.get("RecallID")
+    recall_number = recall.get("RecallNumber") or recall.get("recall_number")
+    recall_url = recall.get("URL") or recall.get("url")
+    return (
+        title.startswith("error retrieving recalls")
+        or title == "error"
+        or (
+            recall_id in (0, "0", None)
+            and not recall_number
+            and not recall_url
+            and "error" in title
+        )
+    )
+
+
 def fetch_cpsc_recalls(days=120, start_date=None, end_date=None, page=1, per_page=None):
     """
     Fetch recent recalls from CPSC.
@@ -196,7 +217,12 @@ def fetch_cpsc_recalls(days=120, start_date=None, end_date=None, page=1, per_pag
     else:
         print(f"[CPSC] Unexpected response type: {type(data)}")
         return []
-    
+
+    recalls = [recall for recall in recalls if not is_provider_error_recall(recall)]
+    if not recalls:
+        print("[CPSC] Official API returned no valid recall records.")
+        return []
+
     print(f"[CPSC] Raw recalls: {len(recalls)}")
     if per_page:
         page_size = max(int(per_page), 1)
@@ -222,7 +248,7 @@ def process_recalls(recalls, days=120, start_date=None, end_date=None):
     }
     
     for recall in recalls:
-        if not isinstance(recall, dict):
+        if is_provider_error_recall(recall):
             continue
         
         title = recall.get("Title", "") or recall.get("title", "") or recall.get("recall_title", "")

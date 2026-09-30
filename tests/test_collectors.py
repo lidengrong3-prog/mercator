@@ -309,6 +309,22 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(items[0]["source_url"], "https://www.amz123.com/t/2")
         self.assertEqual(items[0]["market_codes"], ["US"])
 
+    @patch("scripts.collect_cpsc.http_get_json")
+    def test_cpsc_rejects_provider_error_payload(self, mock_get_json):
+        provider_error = {
+            "RecallID": 0,
+            "RecallNumber": None,
+            "RecallDate": None,
+            "URL": None,
+            "Title": "Error retrieving Recalls: The underlying provider failed on Open.",
+        }
+        mock_get_json.return_value = [provider_error]
+
+        self.assertEqual(collect_cpsc.fetch_cpsc_recalls(), [])
+        processed = collect_cpsc.process_recalls([provider_error])
+        self.assertEqual(processed["recalls"], [])
+        self.assertEqual(processed["china_related"], [])
+
     def test_cpsc_normalizes_official_fields_and_links(self):
         raw = [{
             "RecallID": 1,
