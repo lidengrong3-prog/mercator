@@ -869,6 +869,42 @@ Deno.serve(async (request) => {
     });
     return response.ok;
   };
+  let aiAsyncTaskStarted = false;
+  const startAiAsyncTask = async (): Promise<boolean> => {
+    if (isGeneralChat || !workspaceId || !enabledCandidates.includes('coze')) return false;
+    const response = await fetch(supabaseUrl + '/rest/v1/ai_async_tasks?on_conflict=workspace_id,request_id', {
+      method: 'POST',
+      headers: { ...serviceHeaders, Prefer: 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({
+        workspace_id: workspaceId,
+        user_id: user.id,
+        request_id: requestId,
+        task_type: taskType,
+        requested_provider: requestedProvider,
+        status: 'processing',
+        expires_at: new Date(Date.now() + 120_000).toISOString(),
+        completed_at: null,
+        error_code: null,
+        metadata: { entry_point: entryPoint, agent_key: agentKey, route_source: routeSource },
+      }),
+    });
+    return response.ok;
+  };
+  const finishAiAsyncTask = async (status: 'completed' | 'failed', errorCode: string | null = null): Promise<void> => {
+    if (!aiAsyncTaskStarted || !workspaceId) return;
+    await fetch(supabaseUrl + '/rest/v1/ai_async_tasks?workspace_id=eq.' + encodeURIComponent(workspaceId)
+      + '&request_id=eq.' + encodeURIComponent(requestId) + '&status=eq.processing', {
+      method: 'PATCH',
+      headers: { ...serviceHeaders, Prefer: 'return=minimal' },
+      body: JSON.stringify({
+        status,
+        final_provider: provider,
+        completed_at: new Date().toISOString(),
+        error_code: errorCode,
+        updated_at: new Date().toISOString(),
+      }),
+    }).catch((error) => console.error('AI async task finalization failed', error));
+  };
   if (!isGeneralChat) {
     if (!workspaceAuthorization) {
       return jsonResponse(
@@ -983,6 +1019,13 @@ Deno.serve(async (request) => {
     if (!rolloutResponse.ok) return false;
     return workspaceFinalized && await rolloutResponse.json() === true;
   };
+  aiAsyncTaskStarted = await startAiAsyncTask();
+  if (!isGeneralChat && workspaceId && enabledCandidates.includes('coze') && !aiAsyncTaskStarted) {
+    await finalizeReservation('released');
+    await logRequest({ status: 'failed', input_tokens: 0, output_tokens: 0, total_tokens: 0,
+      estimated_cost_usd: 0, http_status: 503, error_code: 'AI_ASYNC_LEDGER_UNAVAILABLE' });
+    return jsonResponse(gatewayErrorBody('AI_ASYNC_LEDGER_UNAVAILABLE', requestId, provider), 503, origin);
+  }
   // The gateway deadline covers the whole route, while each provider gets a
   // bounded slice so a slow primary leaves time for its configured fallback.
   const providerTimeout = acceptanceScenario === 'provider_timeout'
@@ -1157,6 +1200,7 @@ Deno.serve(async (request) => {
   if (!successfulResult || !parsedResult) {
     await logRequest({ status: 'failed', model: activeModel, input_tokens: 0, output_tokens: 0, total_tokens: 0, estimated_cost_usd: 0, http_status: lastErrorStatus, error_code: lastErrorCode, search_enabled: usedSearch, metadata: { route_source: routeSource, fallback_used: fallbackUsed, agent_key: agentKey } });
     await finalizeReservation('released');
+    await finishAiAsyncTask('failed', lastErrorCode);
     return jsonResponse(gatewayErrorBody(lastErrorCode, requestId, provider, {
       provider_status: lastErrorStatus, entry_point: entryPoint, operation, task_type: taskType,
       agent_key: agentKey, route_source: routeSource, fallback_used: fallbackUsed,
@@ -1192,9 +1236,11 @@ Deno.serve(async (request) => {
   const totalTokens = Math.max(1, parsedResult.totalTokens, inputTokens + outputTokens, estimatedInputTokens);
   if (!await finalizeReservation('completed', totalTokens)) {
     await logRequest({ status: 'failed', input_tokens: inputTokens, output_tokens: outputTokens, total_tokens: totalTokens, estimated_cost_usd: estimateCost(inputTokens, outputTokens), http_status: 503, error_code: 'AI_USAGE_FINALIZATION_FAILED' });
+    await finishAiAsyncTask('failed', 'AI_USAGE_FINALIZATION_FAILED');
     return jsonResponse(gatewayErrorBody('AI_USAGE_FINALIZATION_FAILED', requestId, provider, { entry_point: entryPoint, operation }), 503, origin);
   }
   await logRequest({ status: 'completed', model: activeModel, input_tokens: inputTokens, output_tokens: outputTokens, total_tokens: totalTokens, estimated_cost_usd: estimateCost(inputTokens, outputTokens, provider), http_status: 200, error_code: null, search_enabled: usedSearch, metadata: { fallback_used: fallbackUsed, route_source: routeSource, final_fallback_reason: finalFallbackReason } });
+  await finishAiAsyncTask('completed');
   const result: Record<string, unknown> = {
     id: String(successfulResult.id || `jay-${requestId}`),
     object: 'chat.completion',

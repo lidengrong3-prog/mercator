@@ -64,11 +64,14 @@ test('production configuration audit keeps launch gates closed and checks two ac
 
 test('data-subject endpoint enforces ownership and does not expose raw private tables', () => {
   const source = read('supabase/functions/data-subject-request/index.ts');
+  const deletionWorker = read('supabase/functions/data-deletion-worker/index.ts');
   assert.match(source, /data_subject_request/);
-  assert.match(source, /ACCOUNT_DELETE_REQUIRES_WORKSPACE_TRANSFER/);
+  assert.match(deletionWorker, /ACCOUNT_DELETE_REQUIRES_WORKSPACE_TRANSFER/);
+  assert.match(deletionWorker, /SERVICE_ROLE_REQUIRED/);
   assert.match(source, /WORKSPACE_ADMIN_REQUIRED/);
   assert.doesNotMatch(source, /private_data_artifacts/);
   assert.match(read('supabase/config.toml'), /\[functions\.data-subject-request\][\s\S]*verify_jwt = true/);
+  assert.match(read('supabase/config.toml'), /\[functions\.data-deletion-worker\][\s\S]*verify_jwt = true/);
   assert.match(read('supabase/functions/security-gate/index.ts'), /\['search', 'upload'\]/);
   assert.match(read('assets/js/products-shops.js'), /jaySecurityGate\('upload'\)/);
   const historySearch = read('supabase/functions/history-search/index.ts');

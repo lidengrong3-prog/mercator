@@ -1618,6 +1618,8 @@ async function jayStartReportRun(details) {
     if(previous&&['failed','cancelled'].indexOf(previous.status)>=0){
       var retryPayload=Object.assign({},payload,{
         idempotency_key:(payload.idempotency_key+':retry:'+Date.now()).slice(0,240),
+        retry_of:previous.id,
+        attempt_count:Math.min(100,Math.max(1,Number(previous.attempt_count||1)+1)),
         metadata:Object.assign({},payload.metadata||{},{retry_of:previous.id})
       });
       var retryRows=await jayDbInsert('report_runs',retryPayload);

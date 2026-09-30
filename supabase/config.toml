@@ -31,6 +31,9 @@ verify_jwt = true
 [functions.data-subject-request]
 verify_jwt = true
 
+[functions.data-deletion-worker]
+verify_jwt = true
+
 [functions.security-gate]
 verify_jwt = true
 

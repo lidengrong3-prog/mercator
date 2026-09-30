@@ -1,0 +1,50 @@
+name: Async task reliability
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: async-task-reliability
+  cancel-in-progress: false
+
+jobs:
+  sweep-and-resume:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      SUPABASE_URL: ${{ format('https://{0}.supabase.co', secrets.SUPABASE_PROJECT_ID) }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Resolve ephemeral Supabase service key
+        shell: bash
+        run: |
+          set -eu
+          keys_json="$(npx --yes supabase@2.39.2 projects api-keys --project-ref "$SUPABASE_PROJECT_ID" --output json)"
+          service_key="$(printf '%s' "$keys_json" | python scripts/resolve_supabase_service_key.py)"
+          test -n "$service_key"
+          echo "::add-mask::$service_key"
+          echo "SUPABASE_SERVICE_KEY=$service_key" >> "$GITHUB_ENV"
+      - name: Expire stale tasks and resume deletion jobs
+        shell: bash
+        run: |
+          set -eu
+          curl --fail --silent --show-error \
+            --request POST "$SUPABASE_URL/functions/v1/data-deletion-worker" \
+            --header "apikey: $SUPABASE_SERVICE_KEY" \
+            --header "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            --header "Content-Type: application/json" \
+            --data '{"max_batches":50}'
