@@ -67,6 +67,17 @@ test('R08 denial codes cover removal, cross-workspace access, expiry and exhaust
   assert.match(sql, /WHEN normalized_action = 'invite' AND NOT seat_available THEN 'WORKSPACE_SEAT_LIMIT_REACHED'/);
 });
 
+test('R08 invite acceptance uses a trusted manager seat check', () => {
+  const sql = read('supabase', 'migrations', '20261018000000_r08_trusted_seat_check.sql');
+  assert.match(sql, /CREATE OR REPLACE FUNCTION public\.workspace_seat_available_trusted/);
+  assert.match(sql, /member\.user_id = p_manager_id[\s\S]*manager_role NOT IN \('owner', 'admin'\)/);
+  assert.match(sql, /subscription\.current_period_end IS NULL OR subscription\.current_period_end > NOW\(\)/);
+  assert.match(sql, /lower\(invite\.email\) <> lower\(p_exclude_email\)/);
+  assert.match(sql, /active_seats \+ pending_seats \+ p_requested_count <= effective_seat_limit/);
+  assert.match(sql, /CREATE OR REPLACE FUNCTION public\.guard_workspace_seat_limit[\s\S]*workspace_seat_available_trusted/);
+  assert.doesNotMatch(sql, /guard_workspace_seat_limit[\s\S]*workspace_seat_available\(/);
+});
+
 test('production browser acceptance records the complete R08 role matrix', () => {
   const acceptance = read('tests', 'production-auth.spec.cjs');
   assert.match(acceptance, /resolve_workspace_authorization/);
