@@ -34,6 +34,7 @@ test('workspace billing migration owns plans, seats and atomic monthly counters'
 
 test('workspace billing keeps workspaces isolated and protects membership seats', () => {
   const migration = read('supabase', 'migrations', '20260914000000_workspace_billing.sql');
+  const ownerBootstrap = read('supabase', 'migrations', '20260930120000_r08_workspace_owner_bootstrap.sql');
   assert.match(migration, /Multiple workspaces always start independently on free/);
   assert.match(migration, /workspace_seat_available/);
   assert.match(migration, /WORKSPACE_SEAT_LIMIT_REACHED/);
@@ -46,6 +47,9 @@ test('workspace billing keeps workspaces isolated and protects membership seats'
   assert.match(migration, /configure_workspace_manual_subscription/);
   assert.match(migration, /workspace_subscription\.manual_configured/);
   assert.match(migration, /admin_audit_log/);
+  assert.match(ownerBootstrap, /NEW\.role = 'owner'[\s\S]*NEW\.user_id = workspace_owner_id[\s\S]*has_active_member IS FALSE/);
+  assert.match(ownerBootstrap, /IF NOT public\.workspace_seat_available\([\s\S]*RAISE EXCEPTION 'WORKSPACE_SEAT_LIMIT_REACHED'/);
+  assert.doesNotMatch(ownerBootstrap, /auth\.role\(\) = 'service_role'[\s\S]*RETURN NEW/);
 });
 
 test('AI and billing functions pass workspace identity and shared usage RPCs', () => {
