@@ -75,6 +75,7 @@ test('live multi-AI acceptance requires a real primary and a real fallback', () 
   const acceptance = read('scripts', 'production_acceptance.py');
   const releaseCheck = read('scripts', 'production_release_check.py');
   const workflow = read('.github', 'workflows', 'deploy-production.yml');
+  const productionRouting = read('supabase', 'migrations', '20261017000000_r06_coze_business_task_routing.sql');
   assert.match(acceptance, /AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER/);
   assert.match(acceptance, /AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER/);
   assert.match(acceptance, /provider_fallback/);
@@ -95,6 +96,10 @@ test('live multi-AI acceptance requires a real primary and a real fallback', () 
   assert.match(workflow, /COZE_BOT_ID_REPORT/);
   assert.match(workflow, /COZE_BOT_ID_COURSE/);
   assert.match(workflow, /fallback must be deepseek/);
+  assert.match(productionRouting, /allowed_task_types[\s\S]*'market_qa'[\s\S]*'report'[\s\S]*'course_qa'/);
+  assert.match(productionRouting, /agent_key IN[\s\S]*'market_analyst'[\s\S]*'report_generator'[\s\S]*'course_assistant'/);
+  assert.match(productionRouting, /task_type IN[\s\S]*'market_qa'[\s\S]*'report'[\s\S]*'course_qa'/);
+  assert.match(productionRouting, /fallback_providers[\s\S]*'deepseek'/);
 });
 
 test('unconfigured optional fallbacks preserve the last configured provider failure', () => {
