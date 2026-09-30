@@ -329,18 +329,18 @@ CREATE OR REPLACE FUNCTION public.workspace_effective_entitlement(
   p_user_id UUID DEFAULT auth.uid()
 )
 RETURNS JSONB LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public AS $$
-DECLARE authorization JSONB;
+DECLARE authorization_result JSONB;
 BEGIN
-  authorization := public.resolve_workspace_authorization(
+  authorization_result := public.resolve_workspace_authorization(
     p_workspace_id, 'read', 'billing', NULL, NULL, p_user_id
   );
-  IF COALESCE((authorization->>'membership_active')::BOOLEAN, FALSE) IS NOT TRUE THEN
+  IF COALESCE((authorization_result->>'membership_active')::BOOLEAN, FALSE) IS NOT TRUE THEN
     RAISE EXCEPTION 'WORKSPACE_FORBIDDEN' USING ERRCODE = '42501';
   END IF;
-  IF authorization->'entitlement' IS NULL THEN
+  IF authorization_result->'entitlement' IS NULL THEN
     RAISE EXCEPTION 'BILLING_ENTITLEMENTS_UNAVAILABLE' USING ERRCODE = 'P0001';
   END IF;
-  RETURN authorization->'entitlement';
+  RETURN authorization_result->'entitlement';
 END;
 $$;
 
@@ -352,16 +352,16 @@ CREATE OR REPLACE FUNCTION public.workspace_seat_available(
 )
 RETURNS BOOLEAN LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = public AS $$
 DECLARE
-  authorization JSONB;
+  authorization_result JSONB;
   seats JSONB;
 BEGIN
   IF p_requested_count IS NULL OR p_requested_count < 0 THEN RETURN FALSE; END IF;
   PERFORM pg_advisory_xact_lock(hashtextextended(p_workspace_id::text || ':seat', 0));
-  authorization := public.resolve_workspace_authorization(
+  authorization_result := public.resolve_workspace_authorization(
     p_workspace_id, 'manage_members', 'workspace_member', NULL, p_exclude_email, p_user_id
   );
-  IF COALESCE((authorization->>'allowed')::BOOLEAN, FALSE) IS NOT TRUE THEN RETURN FALSE; END IF;
-  seats := authorization->'seats';
+  IF COALESCE((authorization_result->>'allowed')::BOOLEAN, FALSE) IS NOT TRUE THEN RETURN FALSE; END IF;
+  seats := authorization_result->'seats';
   RETURN COALESCE((seats->>'in_use')::INTEGER, 0) + p_requested_count
     <= COALESCE((seats->>'limit')::INTEGER, 0);
 END;
@@ -373,16 +373,16 @@ CREATE OR REPLACE FUNCTION public.assert_workspace_seat_available(
   p_user_id UUID DEFAULT auth.uid()
 )
 RETURNS BOOLEAN LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public AS $$
-DECLARE authorization JSONB;
+DECLARE authorization_result JSONB;
 BEGIN
-  authorization := public.resolve_workspace_authorization(
+  authorization_result := public.resolve_workspace_authorization(
     p_workspace_id, 'invite', 'workspace_invite', NULL, p_email, p_user_id
   );
-  IF authorization->>'code' = 'WORKSPACE_SEAT_LIMIT_REACHED' THEN
+  IF authorization_result->>'code' = 'WORKSPACE_SEAT_LIMIT_REACHED' THEN
     RAISE EXCEPTION 'WORKSPACE_SEAT_LIMIT_REACHED' USING ERRCODE = 'P0001';
   END IF;
-  IF COALESCE((authorization->>'allowed')::BOOLEAN, FALSE) IS NOT TRUE THEN
-    RAISE EXCEPTION '%', COALESCE(authorization->>'code', 'WORKSPACE_FORBIDDEN') USING ERRCODE = '42501';
+  IF COALESCE((authorization_result->>'allowed')::BOOLEAN, FALSE) IS NOT TRUE THEN
+    RAISE EXCEPTION '%', COALESCE(authorization_result->>'code', 'WORKSPACE_FORBIDDEN') USING ERRCODE = '42501';
   END IF;
   RETURN TRUE;
 END;
