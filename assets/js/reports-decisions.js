@@ -1214,9 +1214,14 @@ async function callAI(systemPrompt, userPrompt, opts){
   var requestId=String(opts.requestId||('ai_'+Date.now()+'_'+Math.random().toString(36).slice(2,10)));
   var entryPoint=String(opts.entryPoint||((opts.operation||'').indexOf('overview')===0?'overview.decision':((opts.operation||'').indexOf('report')===0?'report.generation':'ai.analysis')));
   var operationName=String(opts.operation||'analysis');
-  var taskType=String(opts.taskType||((operationName.indexOf('report')===0||entryPoint.indexOf('report')===0)?'report':(operationName.indexOf('translation')===0?'translation':(operationName.indexOf('course')===0?'course_qa':(entryPoint.indexOf('code')===0?'code':'market_qa')))));
+  var taskType=String(opts.taskType||((operationName.indexOf('report')===0||entryPoint.indexOf('report')===0)?'report':(operationName.indexOf('translation')===0?'translation':(operationName.indexOf('course')===0?'course_qa':(operationName.indexOf('general')===0?'general_chat':(entryPoint.indexOf('code')===0?'code':'market_qa'))))));
   var hasAgentKey=Object.prototype.hasOwnProperty.call(opts,'agentKey');
-  var agentKey=String(hasAgentKey?opts.agentKey:((taskType==='report')?'report_generator':(taskType==='course_qa'?'course_assistant':(taskType==='translation'?'translator':(taskType==='code'?'code_maintainer':(taskType==='general_chat'?'':'market_analyst'))))));
+  var defaultAgentKey=taskType==='general_chat'?'':'market_analyst';
+  if(taskType==='report')defaultAgentKey='report_generator';
+  else if(taskType==='course_qa')defaultAgentKey='course_assistant';
+  else if(taskType==='translation')defaultAgentKey='translator';
+  else if(taskType==='code')defaultAgentKey='code_maintainer';
+  var agentKey=String(hasAgentKey?opts.agentKey:defaultAgentKey);
   var requestedTimeout=Number(opts.timeout);
   var totalTimeout=Math.max(1000,isFinite(requestedTimeout)?requestedTimeout:60000);
   var requestDeadline=Date.now()+totalTimeout;
@@ -1239,7 +1244,7 @@ async function callAI(systemPrompt, userPrompt, opts){
        workspace_id: opts.workspaceId || (typeof jayActiveWorkspaceId==='function' ? jayActiveWorkspaceId() : null),
        data_disclosure: {
          consent: opts.dataDisclosureConsent !== false,
-         scope: Array.isArray(opts.dataDisclosureScope)?opts.dataDisclosureScope.slice(0,20):['formal_publications','request_context'],
+         scope: Array.isArray(opts.dataDisclosureScope)?opts.dataDisclosureScope.slice(0,20):(taskType==='general_chat'?['request_context']:['formal_publications','request_context']),
        },
       context: opts.context && typeof opts.context==='object' ? opts.context : {},
       course_id: opts.context&&opts.context.course_id?opts.context.course_id:null,
@@ -1293,7 +1298,7 @@ async function callAI(systemPrompt, userPrompt, opts){
       throw emptyError;
     }
      window.JAY_AI_RETRIEVAL_BY_REQUEST=window.JAY_AI_RETRIEVAL_BY_REQUEST||{};
-     window.JAY_AI_RETRIEVAL_BY_REQUEST[requestId]=data&&data.jay_retrieval&&typeof data.jay_retrieval==='object'?data.jay_retrieval:{mode:'formal_publications',source_ids:[],citations:[],fallback:false};
+     window.JAY_AI_RETRIEVAL_BY_REQUEST[requestId]=data&&data.jay_retrieval&&typeof data.jay_retrieval==='object'?data.jay_retrieval:{mode:taskType==='general_chat'?'disabled':'formal_publications',source_ids:[],citations:[],fallback:false};
      window.JAY_AI_GATEWAY_BY_REQUEST=window.JAY_AI_GATEWAY_BY_REQUEST||{};
      window.JAY_AI_GATEWAY_BY_REQUEST[requestId]=data&&data.jay_gateway&&typeof data.jay_gateway==='object'?data.jay_gateway:{task_type:taskType,fallback_used:false,data_disclosure:{scope:taskType==='general_chat'?['request_context']:['formal_publications','request_context']}};
     var retrievalKeys=Object.keys(window.JAY_AI_RETRIEVAL_BY_REQUEST);

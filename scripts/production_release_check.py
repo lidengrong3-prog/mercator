@@ -174,14 +174,14 @@ def validate_multi_ai_acceptance(acceptance: dict) -> dict:
     evidence = acceptance.get("multi_ai_acceptance") or {}
     if evidence.get("status") != "passed":
         raise ReleaseCheckError("multi-AI live acceptance did not pass")
-    if evidence.get("primary_provider") != "deepseek":
-        raise ReleaseCheckError("multi-AI live acceptance primary provider must be DeepSeek")
-    if evidence.get("fallback_provider") not in {"coze", "doubao", "openai"}:
-        raise ReleaseCheckError("multi-AI live acceptance fallback provider is not an approved provider")
+    if evidence.get("primary_provider") != "coze":
+        raise ReleaseCheckError("multi-AI live acceptance primary provider must be Coze")
+    if evidence.get("fallback_provider") != "deepseek":
+        raise ReleaseCheckError("multi-AI live acceptance fallback provider must be DeepSeek")
     if evidence.get("primary_provider") == evidence.get("fallback_provider"):
         raise ReleaseCheckError("multi-AI live acceptance requires distinct primary and fallback providers")
     for key in ("primary_real_call", "fallback_real_call", "primary_fault_injected",
-                "fallback_used", "request_id_consistent", "quota_settled_once"):
+                "fallback_used", "request_id_consistent", "quota_settled_once", "quota_replay_blocked"):
         if evidence.get(key) is not True:
             raise ReleaseCheckError(f"multi-AI live acceptance omitted {key} evidence")
     if evidence.get("attempt_count") != 2:
@@ -206,6 +206,17 @@ def validate_multi_ai_acceptance(acceptance: dict) -> dict:
             raise ReleaseCheckError("multi-AI live acceptance attempt omitted the model")
     if not evidence.get("primary_request_id") or not evidence.get("fallback_request_id"):
         raise ReleaseCheckError("multi-AI live acceptance omitted request IDs")
+    expected_routes = {
+        "market_qa": "coze",
+        "report": "coze",
+        "course_qa": "coze",
+        "general_chat": "deepseek",
+    }
+    if evidence.get("task_routes") != expected_routes:
+        raise ReleaseCheckError("multi-AI live acceptance did not prove all task routes")
+    probes = evidence.get("coze_bot_probes") or {}
+    if any(probes.get(task) is not True for task in ("market_qa", "report", "course_qa")):
+        raise ReleaseCheckError("multi-AI live acceptance did not call every Coze Bot")
     return evidence
 
 
@@ -282,6 +293,7 @@ def main() -> int:
         "forbidden": (403, "ORIGIN_NOT_ALLOWED"),
         "rate_limit": (429, "AI_RATE_LIMITED"),
         "provider_timeout": (504, "AI_PROVIDER_TIMEOUT"),
+        "provider_cancel_after_create": (504, "AI_PROVIDER_TIMEOUT"),
         "quota": (402, "AI_QUOTA_EXCEEDED"),
     }
     for name, (expected_status, expected_error) in expected_exceptions.items():
@@ -292,6 +304,8 @@ def main() -> int:
             raise ReleaseCheckError(f"production exception acceptance has the wrong {name} error code")
         if name in ("rate_limit", "provider_timeout", "quota") and evidence.get("logged") is not True:
             raise ReleaseCheckError(f"production exception acceptance did not log {name}")
+        if name == "provider_cancel_after_create" and (evidence.get("logged") is not True or evidence.get("remote_cancelled") is not True):
+            raise ReleaseCheckError("production exception acceptance did not prove Coze cancellation")
 
     duplicate_generation = exception_checks.get("duplicate_generation") or {}
     if duplicate_generation.get("row_count") != 1 or not duplicate_generation.get("run_id"):

@@ -1,4 +1,5 @@
--- Coze is the primary generator for the three user-facing AI tasks. Provider
+-- Coze is the primary generator for the three business AI tasks. General chat
+-- remains on the general-purpose route. Provider
 -- credentials and Bot IDs remain Edge Function secrets; this migration only
 -- changes server-owned routing policy.
 BEGIN;

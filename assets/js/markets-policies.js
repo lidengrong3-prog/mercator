@@ -1143,6 +1143,26 @@ function renderPlStats(){
   }
 }
 
+function plRecordMonitorInput(record,domain){
+  record=record||{};domain=domain||plActiveDomain||'policy';
+  var market=plRecordMarketCode(record)||'US';
+  var rawId=record.id||record.policy_id||record.tax_id||record.requirement_id||record.source_record_id||record.source_url||[market,plDisplayTitle(record),record.published_at||''].join('|');
+  return {
+    source_record_type:'policy',
+    source_record_id:domain+':'+String(rawId).slice(0,460),
+    source_title:plDisplayTitle(record),
+    market_code:market,
+    platform_key:String(record.platform_key||record.platform||record.source_key||'official-policy'),
+    category_code:plDomainTypeValue(record,domain)||null,
+    monitor_conditions:{record_domain:domain,events:['source_updated','effective_date_changed','status_changed']}
+  };
+}
+function plAddMonitorByIndex(idx,button){
+  var record=plGetActiveDomainItems()[idx];
+  if(!record){toast('来源记录不存在，无法创建预警');return Promise.resolve({status:'failed'});}
+  if(typeof window.jayAddRecordMonitorFromUi!=='function'){toast('预警服务尚未就绪，请刷新后重试');return Promise.resolve({status:'failed'});}
+  return window.jayAddRecordMonitorFromUi(plRecordMonitorInput(record,plActiveDomain),button);
+}
 function renderPlAi(){
   let tabsHtml='';
   if(plActiveDomain==='policy'){
@@ -1168,7 +1188,7 @@ function renderPlAi(){
   const items=tabItems.slice(0,4).map(function(p){
     var summary=plDisplaySummary(p).replace(/\s+/g,' ').slice(0,180);
     var source=p.source_url?(' · 来源：'+plSourceLabel(p)):'';
-    return `<div class="ai-item"><span class="ai-tag-red">${escapeHtml(plMarketLabel(plRecordMarketCode(p)))}</span> ${escapeHtml(plDisplayTitle(p))}<br><span data-ui-style="color:#566;">${escapeHtml(summary)}${escapeHtml(source)}</span><span class="ai-btn" data-action="plAiLocatePolicy(${p._idx})">定位记录</span><span class="ai-btn" data-action="toast('已添加预警')">添加预警</span></div>`;
+    return `<div class="ai-item"><span class="ai-tag-red">${escapeHtml(plMarketLabel(plRecordMarketCode(p)))}</span> ${escapeHtml(plDisplayTitle(p))}<br><span data-ui-style="color:#566;">${escapeHtml(summary)}${escapeHtml(source)}</span><span class="ai-btn" data-action="plAiLocatePolicy(${p._idx})">定位记录</span><button class="ai-btn" data-action="plAddMonitorByIndex(${p._idx},this)">添加预警</button></div>`;
   }).join('');
   $('#pl-ai-content').innerHTML=items || '<div class="ai-item">'+plDomainLabels[plActiveDomain].empty+'。</div>';
 }
@@ -1272,7 +1292,7 @@ function renderPlList(){
          <span class="pl-level-badge ${badgeClass}">${escapeHtml(impactLabel)}</span>
         <div class="pl-card-ops">
           <button data-action="event.stopPropagation();openPlDetail(${p._idx})">查看详情</button>
-          <button data-action="event.stopPropagation();toast('已添加预警')">添加预警</button>
+          <button data-action="event.stopPropagation();plAddMonitorByIndex(${p._idx},this)">添加预警</button>
         </div>
       </div>
     </div>`;
@@ -1356,7 +1376,14 @@ function plSyncToOtherBoards(region,category,impact){
   if(typeof refreshDynamicAlerts==='function') refreshDynamicAlerts();
 }
 function plExportReport(){jayExportPolicy();}
-function plBatchAlert(){if(!plSelected.size){toast('请先选择政策');return;}toast(`已为 ${plSelected.size} 条政策开启预警`);plSelected.clear();$('#pl-selected-count').textContent='';renderPlList();}
+async function plBatchAlert(){
+  if(!plSelected.size){toast('请先选择政策');return;}
+  var items=plGetActiveDomainItems();
+  var inputs=Array.from(plSelected).map(function(idx){return items[idx]?plRecordMonitorInput(items[idx],plActiveDomain):null;}).filter(Boolean);
+  if(typeof window.jayAddRecordMonitorBatchFromUi!=='function'){toast('预警服务尚未就绪，请刷新后重试');return;}
+  var result=await window.jayAddRecordMonitorBatchFromUi(inputs);
+  if(result.created||result.duplicate){plSelected.clear();$('#pl-selected-count').textContent='';renderPlList();}
+}
 function plBatchWatch(){if(!plSelected.size){toast('请先选择政策');return;}toast(`已将 ${plSelected.size} 条政策加入看板`);plSelected.clear();$('#pl-selected-count').textContent='';renderPlList();}
 function plBatchArchive(){if(!plSelected.size){toast('请先选择政策');return;}toast(`已归档 ${plSelected.size} 条政策`);plSelected.clear();$('#pl-selected-count').textContent='';renderPlList();}
 
@@ -1415,7 +1442,7 @@ function openPlDetail(idx){
     <div class="pl-detail-section"><h4>${escapeHtml(plDomainLabels[plActiveDomain].label)}字段</h4>${plDetailFacts(p,plActiveDomain)}</div>
     <div class="pl-detail-section"><h4>中文内容</h4><div class="pl-detail-item" data-ui-style="line-height:1.8">${escapeHtml(summary||'中文摘要尚未接入')}</div></div>
     ${originalTitle&&originalTitle!==title?`<details class="pl-detail-section"><summary>查看原文标题</summary><div class="pl-detail-item">${escapeHtml(originalTitle)}</div></details>`:''}
-    <div class="pl-detail-section"><button class="filter-button" data-action="toast('已添加预警')">添加预警监控</button><button class="filter-button" data-action="toast('已加入看板')">加入看板</button></div>`;
+    <div class="pl-detail-section"><button class="filter-button" data-action="plAddMonitorByIndex(${idx},this)">添加预警监控</button><button class="filter-button" data-action="toast('已加入看板')">加入看板</button></div>`;
   $('#pl-detail-modal').innerHTML=html;
   $('#pl-detail-overlay').classList.add('show');
 }
@@ -1685,6 +1712,28 @@ function rlRuleIdentity(rule){
   rule=rule||{};
   return String(rule.rule_key||rule.ruleKey||rule.rule_id||rule.ruleId||rule.id||[rule.platform,rule.market,rule.title].join('|'));
 }
+function rlRuleMonitorInput(rule){
+  rule=rule||{};
+  var market=window.JAY_MARKET_SCOPE_API&&window.JAY_MARKET_SCOPE_API.normalizeMarketCode?window.JAY_MARKET_SCOPE_API.normalizeMarketCode(rule.market):String(rule.market||'US').toUpperCase();
+  return {source_record_type:'rule',source_record_id:String(rlRuleIdentity(rule)).slice(0,500),source_title:String(rule.title||'平台规则'),market_code:market||'US',platform_key:String(rule.platform_key||rule.platform||'platform-rule'),category_code:rule.category||null,monitor_conditions:{events:['source_updated','version_changed','effective_date_changed','status_changed'],rule_version:rlRuleVersionLabel(rule)}};
+}
+function rlActivityMonitorInput(activity,idx){
+  activity=activity||[];
+  var api=window.JAY_MARKET_SCOPE_API;
+  var selectedMarket=($('#rl-market')||{}).value||'';
+  var market=selectedMarket&&selectedMarket!=='all'?selectedMarket:(api&&api.getPrimaryMarketCode?api.getPrimaryMarketCode():'US');
+  var platform=api&&api.normalizePlatform?api.normalizePlatform(activity[12]||activity[0]):String(activity[12]||activity[0]||'platform-activity');
+  var recordId=['activity',platform,activity[1]||'',activity[2]||'',activity[3]||'',activity[4]||'',idx].join('|');
+  return {source_record_type:'activity',source_record_id:recordId.slice(0,500),source_title:String(activity[0]||'平台活动')+' · '+String(activity[1]||''),market_code:String(market||'US'),platform_key:String(platform||'platform-activity'),category_code:rlActTypeGroup(activity[1]||''),monitor_conditions:{events:['registration_deadline_changed','activity_status_changed','source_updated'],registration_start:activity[2]||null,registration_end:activity[3]||null}};
+}
+function rlAddRuleMonitor(idx,button){
+  var rule=rlGetJsonItems()[idx];if(!rule){toast('来源规则不存在，无法创建预警');return Promise.resolve({status:'failed'});}
+  return window.jayAddRecordMonitorFromUi?window.jayAddRecordMonitorFromUi(rlRuleMonitorInput(rule),button):Promise.resolve(toast('预警服务尚未就绪，请刷新后重试'));
+}
+function rlAddActivityMonitor(idx,button){
+  var activity=activitiesData[idx];if(!activity){toast('来源活动不存在，无法创建预警');return Promise.resolve({status:'failed'});}
+  return window.jayAddRecordMonitorFromUi?window.jayAddRecordMonitorFromUi(rlActivityMonitorInput(activity,idx),button):Promise.resolve(toast('预警服务尚未就绪，请刷新后重试'));
+}
 
 function rlRuleHistoryRecords(rule){
   rule=rule||{};
@@ -1778,14 +1827,15 @@ function switchRlAiTab(t){
   if(t==='rule'){
     const items=getFilteredRules();
     const highItems=items.filter(r=>r.impact_level==='high').slice(0,3);
-    const aiHtml=highItems.length?highItems.map(r=>'<li>⚠️ <strong>'+escapeHtml(r.platform)+'</strong> '+escapeHtml((r.title||r.summary||'').substring(0,60))+' <button class="ai-action" data-action="rlLocate(\'rule\',\''+escInline(r.platform)+'\')">定位</button><button class="ai-action" data-action="toast(\'已加入预警\')">加入预警</button></li>').join(''):'<li>暂无高影响规则</li>';
+    const aiHtml=highItems.length?highItems.map(function(r){var idx=rlGetJsonItems().indexOf(r);return '<li>⚠️ <strong>'+escapeHtml(r.platform)+'</strong> '+escapeHtml((r.title||r.summary||'').substring(0,60))+' <button class="ai-action" data-action="rlLocate(\'rule\',\''+escInline(r.platform)+'\')">定位</button><button class="ai-action" data-action="rlAddRuleMonitor('+idx+',this)">加入预警</button></li>';}).join(''):'<li>暂无高影响规则</li>';
     $('#rl-ai-content').innerHTML='<ul>'+aiHtml+'</ul>';
   } else {
     const acts=getFilteredActs().filter(a=>parseInt(a[11])>0).slice(0,5);
     const aiHtml=acts.length?acts.map((a,i)=>{
       const label=rlActTypeLabels[rlActTypeGroup(a[1])] || a[1];
       const countdown=rlCountdown(a[11]);
-      return '<li>'+(i===0?'🔥':i===1?'🆕':'💡')+' <strong>'+escapeHtml(a[0])+'</strong> '+label+' — '+a[7].substring(0,45)+(a[7].length>45?'…':'')+' '+countdown+' <button class="ai-action" data-action="rlLocate(\'act\',\''+escInline(a[0])+'\')">定位</button><button class="ai-action" data-action="toast(\'已加入预警\')">报名预警</button></li>';
+      var activityIndex=activitiesData.indexOf(a);
+      return '<li>'+(i===0?'🔥':i===1?'🆕':'💡')+' <strong>'+escapeHtml(a[0])+'</strong> '+label+' — '+a[7].substring(0,45)+(a[7].length>45?'…':'')+' '+countdown+' <button class="ai-action" data-action="rlLocate(\'act\',\''+escInline(a[0])+'\')">定位</button><button class="ai-action" data-action="rlAddActivityMonitor('+activityIndex+',this)">报名预警</button></li>';
     }).join(''):'<li>暂无近期活动</li>';
     $('#rl-ai-content').innerHTML='<ul>'+aiHtml+'</ul>';
   }
@@ -1887,7 +1937,7 @@ function renderRlRules(){
     +'</div>'
     +'<div class="rl-card-actions">'
     +'<button data-action="openRlRuleDetail('+globalIdx+')">查看详情</button>'
-    +'<button data-action="toast(\'已添加预警\')">添加预警</button>'
+    +'<button data-action="rlAddRuleMonitor('+globalIdx+',this)">添加预警</button>'
     +'</div></div>';
   }).join('');
   // pagination
@@ -1919,7 +1969,7 @@ function renderRlActs(){
     +'</div>'
     +'<div class="rl-card-actions">'
     +'<button data-action="openRlActDetail('+globalIdx+')">活动详情</button>'
-    +'<button data-action="toast(\'已添加报名预警\')">报名预警</button>'
+    +'<button data-action="rlAddActivityMonitor('+globalIdx+',this)">报名预警</button>'
     +'<button class="btn-primary" data-action="switchPage(\'products\');toast(\'已跳转爆款雷达\')">热销品</button>'
     +'</div></div>';
   }).join('');
@@ -1980,7 +2030,17 @@ function updateRlSelectedCount(){const n=rlChecked.size;$('#rl-selected-count').
 $('#rl-select-all').onchange=function(){const checks=$$('.rl-check');if(this.checked)checks.forEach(c=>{const idx=c.dataset.idx;rlChecked.add(isNaN(idx)?idx:parseInt(idx));c.checked=true});else{rlChecked.clear();checks.forEach(c=>c.checked=false)}updateRlSelectedCount()};
 
 // Batch ops
-function rlBatchAlert(){if(!rlChecked.size){toast('请先选择条目');return}toast('已为'+rlChecked.size+'项开启预警')}
+async function rlBatchAlert(){
+  if(!rlChecked.size){toast('请先选择条目');return;}
+  var rules=rlGetJsonItems(),inputs=[];
+  rlChecked.forEach(function(key){
+    if(String(key).charAt(0)==='a'){var idx=Number(String(key).slice(1));if(activitiesData[idx])inputs.push(rlActivityMonitorInput(activitiesData[idx],idx));return;}
+    var rule=rules.find(function(item){return String(item.id)===String(key);});if(rule)inputs.push(rlRuleMonitorInput(rule));
+  });
+  if(!window.jayAddRecordMonitorBatchFromUi){toast('预警服务尚未就绪，请刷新后重试');return;}
+  var result=await window.jayAddRecordMonitorBatchFromUi(inputs);
+  if(result.created||result.duplicate){rlChecked.clear();updateRlSelectedCount();renderRlRules();renderRlActs();}
+}
 function rlBatchWatch(){if(!rlChecked.size){toast('请先选择条目');return}toast('已加入看板'+rlChecked.size+'项')}
 function rlExport(){toast('报表导出中…')}
 
@@ -2030,7 +2090,7 @@ function openRlRuleDetail(idx){
    +'<div class="rl-detail-section"><h3>📌 平台规则字段</h3>'+rlRuleFieldsHtml(r)+'</div>'
     +'<div class="rl-detail-section"><h3>📝 规则详情</h3><p>'+escapeHtml(r.summary||r.title||'暂无详细摘要')+'</p></div>'
    +'<div class="rl-detail-section"><h3>🕘 版本与历史变化</h3>'+rlRuleVersionHistoryHtml(r)+'</div>'
-  +'<div class="rl-detail-section"><h3>✅ 后续动作</h3><p>请根据原始来源、发布日期和生效日期复核该规则，再制定平台合规动作。</p></div>'
+  +'<div class="rl-detail-section"><h3>✅ 后续动作</h3><p>请根据原始来源、发布日期和生效日期复核该规则，再制定平台合规动作。</p><button data-action="rlAddRuleMonitor('+idx+',this)">添加预警监控</button></div>'
   +'<div class="rl-detail-section"><h3>🔗 关联联动</h3><p>'
   +'<button data-action="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'alerts\')" data-ui-style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看预警中心</button>'
   +'<button data-action="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'policies\')" data-ui-style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看政策动态</button>'
@@ -2075,7 +2135,7 @@ function openRlActDetail(idx){
   +'<div class="rl-detail-section"><h3>🔗 关联联动</h3><p>'
   +'<button data-action="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'products\')" data-ui-style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看爆款雷达</button>'
   +'<button data-action="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'platforms\')" data-ui-style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">查看平台档案</button>'
-  +'<button data-action="this.closest(\'.rl-detail-overlay\').remove();switchPage(\'alerts\')" data-ui-style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">添加报名预警</button>'
+  +'<button data-action="rlAddActivityMonitor('+idx+',this)" data-ui-style="margin:4px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">添加报名预警</button>'
   +'</p></div>'
   +'</div>';
   document.body.appendChild(overlay);

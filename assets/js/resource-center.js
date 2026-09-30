@@ -8,8 +8,8 @@
   var tabLabels={market:'市场资料库',ai:'AI 智能体中心',academy:'观海学院'};
   var demoItems=[
     {id:'demo-market-summary',slug:'demo-market-summary',title:'跨境市场年度数据汇总',summary:'按国家、平台和品类汇总的正式市场指标与政策索引。',resource_type:'data_summary',resource_year:2025,status:'published',access_level:'public',source_kind:'internal',metadata:{route:'',demo:true}},
-    {id:'demo-ai-market',slug:'ai-market-analyst',title:'市场分析助手',summary:'基于正式历史投影回答市场、平台和政策问题。',resource_type:'ai_agent',status:'published',access_level:'public',source_kind:'internal',metadata:{route:'overview',agent_key:'market_analyst',provider:'deepseek'}},
-    {id:'demo-ai-report',slug:'ai-report-generator',title:'报告生成助手',summary:'按已核验数据和来源附录生成市场决策报告。',resource_type:'ai_agent',status:'published',access_level:'public',source_kind:'internal',metadata:{route:'report',agent_key:'report_generator',provider:'deepseek'}},
+    {id:'demo-ai-market',slug:'ai-market-analyst',title:'市场分析助手',summary:'基于正式历史投影回答市场、平台和政策问题。',resource_type:'ai_agent',status:'published',access_level:'public',source_kind:'internal',metadata:{route:'overview',agent_key:'market_analyst',provider:'coze'}},
+    {id:'demo-ai-report',slug:'ai-report-generator',title:'报告生成助手',summary:'按已核验数据和来源附录生成市场决策报告。',resource_type:'ai_agent',status:'published',access_level:'public',source_kind:'internal',metadata:{route:'report',agent_key:'report_generator',provider:'coze'}},
     {id:'demo-tool-profit',slug:'internal-profit-calculator',title:'利润测算工具',summary:'使用当前工作区输入数据进行单件利润、费用和敏感性测算。',resource_type:'external_tool',status:'published',access_level:'public',source_kind:'internal',metadata:{route:'tools'}},
     {id:'demo-academy',slug:'guanhai-academy',title:'观海学院',summary:'跨境经营课程、学习进度和配套资料入口。',resource_type:'course',status:'published',access_level:'public',source_kind:'internal',metadata:{route:'academy',status:'content_pending'}}
   ];

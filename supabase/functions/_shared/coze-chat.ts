@@ -7,6 +7,8 @@ export type CozeChatOptions = {
   signal: AbortSignal;
   pollIntervalMs?: number;
   pollMaxAttempts?: number;
+  cancelAfterCreate?: boolean;
+  requireCancellation?: boolean;
   fetcher?: typeof fetch;
 };
 
@@ -67,6 +69,49 @@ function waitForPoll(delayMs: number, signal: AbortSignal): Promise<void> {
   });
 }
 
+async function fetchWithRetry(fetcher: typeof fetch, input: RequestInfo | URL, init: RequestInit, signal: AbortSignal): Promise<Response> {
+  let lastError: unknown = null;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const response = await fetcher(input, init);
+      if (attempt === 0 && (response.status === 429 || response.status >= 500)) {
+        await waitForPoll(200, signal);
+        continue;
+      }
+      return response;
+    } catch (error) {
+      lastError = error;
+      if (signal.aborted || attempt > 0) throw error;
+      await waitForPoll(200, signal);
+    }
+  }
+  throw lastError || new Error('COZE_REQUEST_FAILED');
+}
+
+export async function cancelCozeChat(
+  config: ProviderConfig,
+  conversationId: string,
+  chatId: string,
+  fetcher: typeof fetch = fetch,
+): Promise<boolean> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 3_000);
+  try {
+    const response = await fetcher(`${config.url}/v3/chat/cancel`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${config.key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, conversation_id: conversationId }),
+      signal: controller.signal,
+    });
+    const parsed = await readCozeResponse(response);
+    return !parsed.error;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /**
  * Coze Chat v3 is asynchronous even when stream=false. Create a chat, poll
  * its status, then list messages and return a normalized provider response.
@@ -86,35 +131,49 @@ export async function invokeCozeChat(config: ProviderConfig, options: CozeChatOp
     return jsonResponse({ code: 'COZE_CHAT_ID_MISSING', message: 'Coze did not return chat and conversation identifiers' }, 502);
   }
 
+  if (options.cancelAfterCreate) {
+    const cancelled = await cancelCozeChat(config, conversationId, chatId, fetcher);
+    if (!cancelled && options.requireCancellation) {
+      return jsonResponse({ code: 'COZE_CANCEL_FAILED', message: 'Coze chat could not be cancelled' }, 502);
+    }
+    throw new DOMException('The Coze chat was cancelled after creation', 'AbortError');
+  }
+
   const terminalFailure = new Set(['failed', 'canceled', 'cancelled', 'requires_action']);
   let chatData = createdData;
   let status = String(chatData.status || '').toLowerCase();
-  const pollIntervalMs = Math.max(200, Math.min(3_000, Number(options.pollIntervalMs || 500)));
+  const pollIntervalMs = Math.max(10, Math.min(3_000, Number(options.pollIntervalMs || 500)));
   const pollMaxAttempts = Math.max(1, Math.min(120, Number(options.pollMaxAttempts || 60)));
-  for (let attempt = 0; status !== 'completed' && attempt < pollMaxAttempts; attempt += 1) {
-    if (terminalFailure.has(status)) {
-      const lastError = objectValue(chatData.last_error || chatData.error);
-      const upstreamCode = String(lastError.code || lastError.error_code || status);
-      const message = String(lastError.msg || lastError.message || status);
-      return jsonResponse({ code: 'COZE_CHAT_FAILED', message, data: chatData }, 502, upstreamCode);
+  try {
+    for (let attempt = 0; status !== 'completed' && attempt < pollMaxAttempts; attempt += 1) {
+      if (terminalFailure.has(status)) {
+        if (status === 'requires_action') await cancelCozeChat(config, conversationId, chatId, fetcher);
+        const lastError = objectValue(chatData.last_error || chatData.error);
+        const upstreamCode = String(lastError.code || lastError.error_code || status);
+        const message = String(lastError.msg || lastError.message || status);
+        return jsonResponse({ code: 'COZE_CHAT_FAILED', message, data: chatData }, 502, upstreamCode);
+      }
+      await waitForPoll(pollIntervalMs, options.signal);
+      const retrieveResponse = await fetchWithRetry(fetcher, queryUrl(config.url, '/v3/chat/retrieve', conversationId, chatId), {
+        method: 'POST', headers, signal: options.signal,
+      }, options.signal);
+      const retrieved = await readCozeResponse(retrieveResponse);
+      if (retrieved.error) return retrieved.error;
+      chatData = objectValue(retrieved.result.data);
+      status = String(chatData.status || '').toLowerCase();
     }
-    await waitForPoll(pollIntervalMs, options.signal);
-    const retrieveResponse = await fetcher(queryUrl(config.url, '/v3/chat/retrieve', conversationId, chatId), {
-      // Coze's official SDK uses POST for retrieve; GET returns 405.
-      method: 'POST', headers, signal: options.signal,
-    });
-    const retrieved = await readCozeResponse(retrieveResponse);
-    if (retrieved.error) return retrieved.error;
-    chatData = objectValue(retrieved.result.data);
-    status = String(chatData.status || '').toLowerCase();
+  } catch (error) {
+    await cancelCozeChat(config, conversationId, chatId, fetcher);
+    throw error;
   }
   if (status !== 'completed') {
+    await cancelCozeChat(config, conversationId, chatId, fetcher);
     throw new DOMException('The Coze chat polling timed out', 'AbortError');
   }
 
-  const messagesResponse = await fetcher(queryUrl(config.url, '/v3/chat/message/list', conversationId, chatId), {
+  const messagesResponse = await fetchWithRetry(fetcher, queryUrl(config.url, '/v3/chat/message/list', conversationId, chatId), {
     method: 'GET', headers, signal: options.signal,
-  });
+  }, options.signal);
   const messagesResult = await readCozeResponse(messagesResponse);
   if (messagesResult.error) return messagesResult.error;
   const messagesData = messagesResult.result.data;

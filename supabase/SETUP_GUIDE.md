@@ -42,6 +42,7 @@ npx supabase db reset
 - `saved_workspace_items`
 - `sales_leads`
 - `monitored_shops`
+- `monitoring_tasks`（政策、规则和活动预警包含来源记录、条件、状态和幂等键）
 - `workspaces`
 - `workspace_members`
 - `workspace_invites`
@@ -133,16 +134,16 @@ CODEX_API_KEY
 CODEX_MODEL
 AI_FALLBACK_PROVIDERS
 AI_GATEWAY_TIMEOUT_MS
-# 发布前真实多 AI 验收（主供应商固定 DeepSeek，备用三选一）
-AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER=deepseek
-AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER=coze
+# 发布前真实多 AI 验收（Coze 主、DeepSeek 备）
+AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER=coze
+AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER=deepseek
 ```
 
 随后部署 `supabase/functions/ai-proxy`、`supabase/functions/report-export`、`supabase/functions/report-docx` 和 `supabase/functions/admin-summary`。函数需要服务端专用的 `SUPABASE_SERVICE_ROLE_KEY`，不得暴露到浏览器。`ALLOWED_ORIGINS` 应至少包含正式 GitHub Pages 域名；生产环境不要使用通配符。未配置密钥的可选供应商会保持 `pending_config`，不会被当作可用供应商；WorkBuddy 在正式 API、Webhook 或 MCP 契约确认前保持 `disabled`。
 
 AI 路由会先匹配当前工作区策略，再匹配全局任务策略；每条策略可指定一个主供应商和有序备用供应商。主供应商失败时只切换到下一候选，不会向所有供应商群发同一请求。部署后应在独立测试工作区逐一验证主备切换、请求编号一致、额度只结算一次，以及管理员后台的供应商尝试日志和成本统计。
 
-正式发布工作流会自动执行第 31 项真实验收：先验证 DeepSeek 真实返回，再注入一次主供应商故障并验证 Coze、豆包或 OpenAI 的真实返回。必须配置 `AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER` 及对应供应商密钥；缺失时发布直接失败，不能用模拟数据绕过。验收工件仅包含不含密钥的配置指纹和运行元数据，验收工作区、请求、供应商尝试和额度预占会按 `acceptance_run_id` 清理。
+正式发布工作流会自动执行第 31 项真实验收：验证 Coze 真实返回，注入 Coze 主供应商故障并验证 DeepSeek 真实返回，再验证 Coze 创建后取消和相同 `request_id` 的额度幂等。缺失 Token、任一 Bot ID 或真实证据时发布直接失败。验收工件仅包含不含密钥的配置指纹和运行元数据，验收工作区、请求、供应商尝试和额度预占会按 `acceptance_run_id` 清理。
 
 Coze 三 Bot 的创建、提示词、Token 最小权限、GitHub/Supabase 配置和真实验收步骤见
 [Coze 正式接入手册](../docs/COZE_INTEGRATION.md)。

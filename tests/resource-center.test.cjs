@@ -101,6 +101,8 @@ test('resource center UI exposes market library, AI agents, academy and admin wo
 test('course AI is isolated to authorized published course content', () => {
   const edge = read('supabase', 'functions', 'ai-proxy', 'index.ts');
   assert.match(edge, /COURSE_FORBIDDEN/);
+  assert.match(edge, /resolveWorkspaceAuthorization/);
+  assert.match(edge, /action: 'course_read'/);
   assert.match(edge, /course_lesson_ids/);
   assert.match(edge, /taskType !== 'course_qa'[\s\S]*retrieveFormalHistory/);
   assert.match(edge, /taskType !== 'course_qa'[\s\S]*payload\.web_search/);

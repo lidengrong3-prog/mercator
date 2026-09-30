@@ -83,7 +83,7 @@ Coze 工作流按以下顺序配置，知识库无结果时不能连接到终止
 
 在 Coze 的 API/开发者设置中创建 Personal Access Token：
 
-1. 只授予调用已发布 Bot/Chat API 所需的最小权限。
+1. 只授予已发布 Bot 的 `chat`、`getChat`、`listMessage` 和 `cancelChat` 最小权限。
 2. 如果控制台允许限定工作空间或资源，只选择上述三个 Bot 所在工作空间。
 3. 设置合理有效期并记录到期日；到期前轮换。
 4. Token 只保存到 GitHub `production` Environment Secret 和 Supabase Edge Function Secret。
@@ -95,6 +95,7 @@ Coze 工作流按以下顺序配置，知识库无结果时不能连接到终止
 POST /v3/chat
 POST /v3/chat/retrieve
 GET  /v3/chat/message/list
+POST /v3/chat/cancel
 ```
 
 ## 3. GitHub production Environment 配置
@@ -115,12 +116,12 @@ COZE_BOT_ID_MARKET_QA=<市场分析 Bot ID>
 ```text
 COZE_API_URL=https://api.coze.cn
 COZE_POLL_INTERVAL_MS=500
-COZE_POLL_MAX_ATTEMPTS=100
-AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER=deepseek
-AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER=coze
+COZE_POLL_MAX_ATTEMPTS=60
+AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER=coze
+AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER=deepseek
 ```
 
-当前发布验收先验证现有 DeepSeek 基线，再通过故障注入真实调用 Coze 市场分析 Bot。验收通过后，市场分析生产路由是 `Coze → DeepSeek`；报告继续使用 DeepSeek，报告和课程不在本阶段切换范围内。
+发布验收先真实调用 Coze，再在网关边界注入 Coze 主供应商故障并要求 DeepSeek 真实成功。数据库迁移完成后，市场分析、报告和课程请求是 `Coze → DeepSeek`；通用聊天是 `DeepSeek → OpenAI → 豆包`，不检索业务资料库。
 
 ## 4. Supabase 配置方式
 
@@ -146,6 +147,7 @@ supabase secrets set \
   → POST /v3/chat
   → POST /v3/chat/retrieve 轮询到 completed
   → GET /v3/chat/message/list 读取 type=answer
+  → 超时/中止时 POST /v3/chat/cancel
   → 统一响应、审计供应商/耗时/Token
   → 本系统保存或展示结果
 ```
@@ -158,6 +160,8 @@ supabase secrets set \
 
 - 市场分析：返回简体中文，并保留后端注入的 `[Hxxx]`。
 - Coze 暂停或超时：同一请求自动回退 DeepSeek，额度只结算一次。
+- Coze 创建后超时：取消接口真实成功，远端任务不得长期停留在 processing。
+- 相同 `request_id` 重放：返回已完成冲突，不重复调用供应商或重复结算额度。
 - Coze 返回 401：发布失败并提示检查 Token，不允许静默绕过。
 - Coze 返回空答案或 failed：记录失败尝试并执行回退。
 - 管理后台能看到供应商、Bot 模型标识、耗时、状态和配置指纹，但看不到 Token、提示词或完整回答。

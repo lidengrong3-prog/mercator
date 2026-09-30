@@ -2,6 +2,7 @@ import { handleWorkspaceInvite } from './index.ts';
 
 type Scenario = {
   member?: boolean;
+  authorizationCode?: string;
   mailStatus?: number;
   mailBody?: Record<string, unknown>;
   rateAllowed?: boolean;
@@ -55,9 +56,13 @@ function installFetch(scenario: Scenario, patches: Record<string, unknown>[]) {
         scope: body.p_scope,
       }, { status: scenario.rateStatus || 200 });
     }
-    if (url.endsWith('/rest/v1/rpc/assert_workspace_seat_available')) {
-      return Response.json({ available: true });
-    }
+    if (url.endsWith('/rest/v1/rpc/resolve_workspace_authorization')) return Response.json({
+      allowed: scenario.member !== false,
+      code: scenario.member === false ? (scenario.authorizationCode || 'WORKSPACE_FORBIDDEN') : 'OK',
+      workspace_id: '00000000-0000-4000-8000-000000000010',
+      role: scenario.member === false ? null : 'owner',
+      seats: { limit: 5, active: 1, pending: 0, in_use: 1, available: true },
+    });
     if (url.includes('/workspace_members?')) return Response.json(scenario.member === false ? [] : [{ id: 'membership-1' }]);
     if (url.includes('/workspaces?')) return Response.json([{ id: '00000000-0000-4000-8000-000000000010', name: '测试团队' }]);
     if (url.includes('/profiles?')) return Response.json([]);
@@ -123,6 +128,14 @@ Deno.test('workspace invitation checks manager permission before delivery', asyn
     const response = await handleWorkspaceInvite(request());
     const body = await response.json();
     if (response.status !== 403 || body.error !== 'WORKSPACE_FORBIDDEN') throw new Error(JSON.stringify(body));
+  });
+});
+
+Deno.test('workspace invitation returns the stable exhausted-seat code', async () => {
+  await withScenario({ member: false, authorizationCode: 'WORKSPACE_SEAT_LIMIT_REACHED', resendCalls: [] }, async () => {
+    const response = await handleWorkspaceInvite(request());
+    const body = await response.json();
+    if (response.status !== 409 || body.error !== 'WORKSPACE_SEAT_LIMIT_REACHED') throw new Error(JSON.stringify(body));
   });
 });
 

@@ -13,6 +13,7 @@ import {
 } from '../_shared/billing.ts';
 import { buildBillingSubscriptionPatch, objectValue } from '../_shared/billing-lifecycle.mjs';
 import { enforceRateLimit, rateLimitResponse, requestId as securityRequestId } from '../_shared/security.ts';
+import { resolveWorkspaceAuthorization, workspaceAuthorizationStatus } from '../_shared/workspace-authorization.ts';
 
 Deno.serve(async (request) => {
   const origin = request.headers.get('Origin');
@@ -36,16 +37,19 @@ Deno.serve(async (request) => {
   const headers = serviceHeaders(config.serviceKey);
   let payload: Record<string, unknown> = {};
   try { payload = await request.json(); } catch { /* Empty body keeps legacy callers working. */ }
-  let workspaceId = typeof payload.workspace_id === 'string' ? payload.workspace_id.trim() : '';
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(workspaceId)) {
-    const membershipResponse = await fetch(`${config.url}/rest/v1/workspace_members?user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&select=workspace_id&order=joined_at.asc&limit=1`, { headers });
-    const memberships = membershipResponse.ok ? await membershipResponse.json() : [];
-    workspaceId = String(memberships?.[0]?.workspace_id || '');
-  }
-  if (!workspaceId) return jsonResponse({ error: 'WORKSPACE_REQUIRED' }, 400, origin);
-  const membershipResponse = await fetch(`${config.url}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&select=role&limit=1`, { headers });
-  const memberships = membershipResponse.ok ? await membershipResponse.json() : [];
-  if (!memberships?.length) return jsonResponse({ error: 'WORKSPACE_FORBIDDEN' }, 403, origin);
+  const requestedWorkspaceId = typeof payload.workspace_id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(payload.workspace_id.trim())
+    ? payload.workspace_id.trim()
+    : null;
+  const authorization = await resolveWorkspaceAuthorization({
+    supabaseUrl: config.url,
+    serviceKey: config.serviceKey,
+    userId: user.id,
+    workspaceId: requestedWorkspaceId,
+    action: 'read',
+    resourceType: 'billing_status',
+  });
+  if (!authorization.allowed) return jsonResponse({ error: authorization.code }, workspaceAuthorizationStatus(authorization), origin);
+  const workspaceId = String(authorization.workspace_id || '');
   const subscriptionResponse = await fetch(
     `${config.url}/rest/v1/workspace_subscriptions?workspace_id=eq.${encodeURIComponent(workspaceId)}&select=id,workspace_id,plan,status,provider,provider_customer_id,provider_subscription_id,provider_price_id,current_period_start,current_period_end,cancel_at_period_end,latest_invoice_id,latest_payment_status,last_payment_error,last_payment_failed_at,canceled_at,ended_at,refunded_at,refund_status,refunded_amount_minor,refund_currency,entitlement_revoked_at,entitlement_revoke_reason,seat_limit,manual_reason,updated_at&limit=1`,
     { headers },
@@ -53,19 +57,10 @@ Deno.serve(async (request) => {
   if (!subscriptionResponse.ok) return jsonResponse({ error: 'BILLING_STATUS_UNAVAILABLE' }, 502, origin);
   const subscriptionRows = await subscriptionResponse.json();
   const subscription = subscriptionRows?.[0] || { workspace_id: workspaceId, plan: 'free', status: 'active', provider: 'internal', seat_limit: 1 };
-  const periodEnd = subscription.current_period_end ? Date.parse(String(subscription.current_period_end)) : 0;
-  const periodExpired = subscription.provider === 'stripe'
-    && ['active', 'trialing'].includes(String(subscription.status))
-    && Number.isFinite(periodEnd) && periodEnd > 0 && periodEnd <= Date.now();
-  const accessState = subscription.entitlement_revoke_reason === 'full_refund'
-    ? 'refunded'
-    : (periodExpired ? 'expired' : String(subscription.status || 'active'));
-  const effectivePlanResponse = await fetch(`${config.url}/rest/v1/rpc/workspace_effective_entitlement`, {
-    method: 'POST', headers, body: JSON.stringify({ p_workspace_id: workspaceId, p_user_id: user.id }),
-  });
-  if (!effectivePlanResponse.ok) return jsonResponse({ error: 'BILLING_ENTITLEMENTS_UNAVAILABLE' }, 503, origin);
-  const planEntitlement = await effectivePlanResponse.json();
-  const effectivePlan = String(planEntitlement?.plan || 'free');
+  const accessState = String((authorization.subscription as Record<string, unknown> | undefined)?.access_state || subscription.status || 'active');
+  const planEntitlement = authorization.entitlement as Record<string, unknown> | undefined;
+  if (!planEntitlement) return jsonResponse({ error: 'BILLING_ENTITLEMENTS_UNAVAILABLE' }, 503, origin);
+  const effectivePlan = String(planEntitlement.plan || 'free');
 
   const usageResponse = await fetch(`${config.url}/rest/v1/rpc/get_workspace_billing_usage`, {
     method: 'POST', headers, body: JSON.stringify({ p_workspace_id: workspaceId, p_user_id: user.id }),

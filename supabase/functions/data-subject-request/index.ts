@@ -11,7 +11,7 @@ type Row = Record<string, unknown>;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ACCOUNT_TABLES = [
   'profiles', 'query_history', 'watchlist_items', 'reports', 'feedback',
-  'monitored_shops', 'user_watchlist', 'user_activity', 'generated_reports',
+  'monitored_shops', 'monitoring_tasks', 'user_watchlist', 'user_activity', 'generated_reports',
   'user_preferences', 'report_materials', 'user_feedback', 'saved_workspace_items',
   'sales_leads', 'workspace_members', 'workspace_invites', 'ai_request_logs',
   'report_runs', 'report_exports',

@@ -56,7 +56,8 @@ test('AI and billing functions pass workspace identity and shared usage RPCs', (
   const webhook = read('supabase', 'functions', 'billing-webhook', 'index.ts');
   const adminSummary = read('supabase', 'functions', 'admin-summary', 'index.ts');
   assert.match(aiProxy, /payload\.workspace_id/);
-  assert.match(aiProxy, /workspace_effective_entitlement/);
+  assert.match(aiProxy, /resolveWorkspaceAuthorization/);
+  assert.match(aiProxy, /workspaceAuthorization.entitlement/);
   assert.match(aiProxy, /reserve_workspace_ai_token_quota/);
   assert.match(aiProxy, /finalize_workspace_ai_token_reservation/);
   assert.match(aiProxy, /reservationError === 'AI_RATE_LIMITED'/);
@@ -64,9 +65,11 @@ test('AI and billing functions pass workspace identity and shared usage RPCs', (
   assert.match(status, /workspace_subscriptions/);
   assert.match(status, /get_workspace_billing_usage/);
   assert.match(status, /workspace_id: workspaceId/);
-  assert.match(checkout, /WORKSPACE_BILLING_ADMIN_REQUIRED/);
+  assert.match(checkout, /resolveWorkspaceAuthorization/);
+  assert.match(checkout, /action: 'manage_billing'/);
   assert.match(checkout, /metadata\[workspace_id\]/);
   assert.match(portal, /workspace_subscriptions/);
+  assert.match(portal, /action: 'manage_billing'/);
   assert.match(webhook, /resolvedWorkspaceId/);
   assert.match(webhook, /workspace_subscriptions/);
   assert.match(webhook, /targetTable = resolvedWorkspaceId/);

@@ -10,6 +10,7 @@ import {
   userFromJwt,
 } from '../_shared/billing.ts';
 import { enforceRateLimit, rateLimitResponse, requestId as securityRequestId } from '../_shared/security.ts';
+import { resolveWorkspaceAuthorization, workspaceAuthorizationStatus } from '../_shared/workspace-authorization.ts';
 
 Deno.serve(async (request) => {
   const origin = request.headers.get('Origin');
@@ -32,15 +33,19 @@ Deno.serve(async (request) => {
   let payload: Record<string, unknown> = {};
   try { payload = await request.json(); } catch { /* Legacy empty body is resolved to the first workspace. */ }
   const headers = serviceHeaders(config.serviceKey);
-  let workspaceId = String(payload.workspace_id || '').trim();
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(workspaceId)) {
-    const membershipsResponse = await fetch(`${config.url}/rest/v1/workspace_members?user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&select=workspace_id&order=joined_at.asc&limit=1`, { headers });
-    const memberships = membershipsResponse.ok ? await membershipsResponse.json() : [];
-    workspaceId = String(memberships?.[0]?.workspace_id || '');
-  }
-  if (!workspaceId) return jsonResponse({ error: 'WORKSPACE_REQUIRED' }, 400, origin);
-  const membershipResponse = await fetch(`${config.url}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&role=in.(owner,admin)&select=role&limit=1`, { headers });
-  if (!membershipResponse.ok || !(await membershipResponse.json())?.length) return jsonResponse({ error: 'WORKSPACE_BILLING_ADMIN_REQUIRED' }, 403, origin);
+  const requestedWorkspaceId = typeof payload.workspace_id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(payload.workspace_id.trim())
+    ? payload.workspace_id.trim()
+    : null;
+  const authorization = await resolveWorkspaceAuthorization({
+    supabaseUrl: config.url,
+    serviceKey: config.serviceKey,
+    userId: user.id,
+    workspaceId: requestedWorkspaceId,
+    action: 'manage_billing',
+    resourceType: 'billing_portal',
+  });
+  if (!authorization.allowed) return jsonResponse({ error: authorization.code }, workspaceAuthorizationStatus(authorization), origin);
+  const workspaceId = String(authorization.workspace_id || '');
   if (!billingCheckoutEnabled(workspaceId)) return jsonResponse({ error: 'BILLING_NOT_ENABLED' }, 503, origin);
 
   const response = await fetch(

@@ -140,9 +140,9 @@ jobs:
       CODEX_API_KEY: ${{ secrets.CODEX_API_KEY }}
       CODEX_MODEL: ${{ secrets.CODEX_MODEL }}
       AI_FALLBACK_PROVIDERS: ${{ vars.AI_FALLBACK_PROVIDERS || secrets.AI_FALLBACK_PROVIDERS || '' }}
-      AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || 'deepseek' }}
-      AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || 'coze' }}
-      AI_PROVIDER_TIMEOUT_MS: ${{ vars.AI_PROVIDER_TIMEOUT_MS || secrets.AI_PROVIDER_TIMEOUT_MS || '50000' }}
+      AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || 'coze' }}
+      AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || 'deepseek' }}
+      AI_PROVIDER_TIMEOUT_MS: ${{ vars.AI_PROVIDER_TIMEOUT_MS || secrets.AI_PROVIDER_TIMEOUT_MS || '25000' }}
       AI_GATEWAY_TIMEOUT_MS: ${{ vars.AI_GATEWAY_TIMEOUT_MS || secrets.AI_GATEWAY_TIMEOUT_MS || '55000' }}
       ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
       PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://jayguanhai.com/' }}
@@ -186,21 +186,12 @@ jobs:
           done
           [[ "$APP_PUBLIC_URL" == https://* ]] || { echo "APP_PUBLIC_URL must use https" >&2; exit 1; }
           [[ "$WORKSPACE_INVITE_FROM_EMAIL" == *@* ]] || { echo "WORKSPACE_INVITE_FROM_EMAIL must be a valid Resend sender" >&2; exit 1; }
-          [[ "$AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER" == deepseek ]] || { echo "AI live acceptance primary must be deepseek" >&2; exit 1; }
-          case "$AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER" in
-            coze)
-              test -n "${COZE_API_TOKEN:-}${COZE_API_KEY:-}" || { echo "Coze live acceptance requires COZE_API_TOKEN or COZE_API_KEY" >&2; exit 1; }
-              test -n "${COZE_BOT_ID_MARKET_QA:-${COZE_BOT_ID:-}}" || { echo "Coze live acceptance requires COZE_BOT_ID_MARKET_QA or COZE_BOT_ID" >&2; exit 1; }
-              ;;
-            doubao)
-              test -n "${DOUBAO_API_KEY:-}${ARK_API_KEY:-}" || { echo "Doubao live acceptance requires DOUBAO_API_KEY or ARK_API_KEY" >&2; exit 1; }
-              test -n "${DOUBAO_MODEL:-}${ARK_MODEL:-}" || { echo "Doubao live acceptance requires DOUBAO_MODEL or ARK_MODEL" >&2; exit 1; }
-              ;;
-            openai)
-              test -n "${OPENAI_API_KEY:-}" || { echo "OpenAI live acceptance requires OPENAI_API_KEY" >&2; exit 1; }
-              ;;
-            *) echo "AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER must be coze, doubao, or openai" >&2; exit 1 ;;
-          esac
+          [[ "$AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER" == coze ]] || { echo "AI live acceptance primary must be coze" >&2; exit 1; }
+          [[ "$AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER" == deepseek ]] || { echo "AI live acceptance fallback must be deepseek" >&2; exit 1; }
+          test -n "${COZE_API_TOKEN:-}${COZE_API_KEY:-}" || { echo "Coze live acceptance requires COZE_API_TOKEN or COZE_API_KEY" >&2; exit 1; }
+          for name in COZE_BOT_ID_MARKET_QA COZE_BOT_ID_REPORT COZE_BOT_ID_COURSE; do
+            test -n "${!name:-}" || { echo "Coze live acceptance requires $name" >&2; exit 1; }
+          done
       - name: Resolve ephemeral Supabase service key
         shell: bash
         run: |
@@ -442,8 +433,8 @@ jobs:
       DEFER_ACCEPTANCE_CLEANUP: '1'
       PRODUCTION_ACCEPTANCE_OUTPUT: production-acceptance-result.json
       RELEASE_SHA: ${{ github.sha }}
-      AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || 'deepseek' }}
-      AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || 'coze' }}
+      AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER || 'coze' }}
+      AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER: ${{ vars.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || secrets.AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER || 'deepseek' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

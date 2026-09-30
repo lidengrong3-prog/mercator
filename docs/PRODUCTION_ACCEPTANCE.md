@@ -30,10 +30,10 @@ Pages 数据验收必须确认 10 个白名单 JSON 均可读取，且 `_cfd_par
 
 - Secrets：`SUPABASE_ACCESS_TOKEN`、`SUPABASE_PROJECT_ID`、`SUPABASE_DB_PASSWORD`、`SUPABASE_URL`、`SUPABASE_ANON_KEY`。
 - AI Secrets：`DEEPSEEK_API_URL`、`DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL`、`ALLOWED_ORIGINS`。
-- 第 31 项真实多 AI 验收：`AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER=deepseek`，以及
-  `AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER`（`coze`、`doubao` 或 `openai`）。必须同时
-  配置所选备用供应商的真实 Secrets；发布工作流会先验证 DeepSeek 真实成功，再只
-  故障注入主供应商并验证备用供应商真实成功，缺少任一项直接阻断发布。
+- 第 31 项真实多 AI 验收：`AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER=coze`、
+  `AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER=deepseek`，并配置 Coze Token、三个 Bot ID 和
+  DeepSeek Secrets。发布工作流会验证 Coze 真实成功、故障注入后的 DeepSeek 真实成功、
+  Coze 创建后取消、同一请求额度幂等；缺少任一证据直接阻断发布。
 - 定时法规翻译默认复用上述 DeepSeek Secrets；如需独立翻译服务，可配置 `REGULATORY_TRANSLATION_API_URL`、`REGULATORY_TRANSLATION_API_KEY`、`REGULATORY_TRANSLATION_MODEL`，独立配置优先。
 - 限流与成本：`AI_REQUESTS_PER_MINUTE`、`AI_MONTHLY_TOKEN_LIMIT`、`AI_INPUT_COST_PER_MILLION_USD`、`AI_OUTPUT_COST_PER_MILLION_USD`。
 - Stripe（正式收费前）：`STRIPE_SECRET_KEY`、`STRIPE_PRICE_PRO_MONTHLY`、`STRIPE_WEBHOOK_SECRET`。
@@ -109,6 +109,9 @@ python scripts/cleanup_production_acceptance.py --expired --retention-days 7
 - 账号 A 刷新页面、重新登录后恢复报告和导出历史。
 - 账号 B 通过页面获得独立工作区，且不能读取账号 A 的素材、上传数据、报告或导出历史。
 - 浏览器将一次带唯一请求 ID 的 `billing-status` 请求断开，客户端只能重试一次；第二次请求必须真实到达生产函数并恢复成功。
+- 账号 B 从政策或规则记录创建预警后，数据库必须生成包含工作区、创建者、来源记录、监控条件和幂等键的 `monitoring_tasks` 行；刷新页面后仍可读取。
+- 同一来源与条件重复添加必须返回重复结果且只有一行；暂停、重新启用和删除必须分别写回后端，并在预警中心同步显示。
+- 将账号 B 降为查看者后再次添加预警必须明确返回无权限，不得显示“已添加”。
 
 浏览器验收不会在普通本地 `npm run test:browser` 中自动运行，避免误用生产账号；生产工作流在前端部署后显式开启。API 与浏览器分别生成验收 JSON，最终 production smoke 会逐项检查 401、403、429、AI 超时、额度不足、断网恢复、重复生成和重复导出证据，缺项即失败。
 

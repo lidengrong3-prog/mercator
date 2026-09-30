@@ -36,19 +36,9 @@ test('provider adapters cover DeepSeek, Coze, Doubao, OpenAI Responses and Codex
   assert.match(adapter, /providerTaskAllowed/);
   assert.match(adapter, /system_maintenance/);
   assert.match(adapter, /providerConfigFingerprint/);
-  assert.match(adapter, /auto_save_history:\s*true/);
+  assert.match(adapter, /auto_save_history: true/);
+  assert.match(adapter, /['market_qa', 'report', 'course_qa']/);
   assert.match(cozeChat, /\/v3\/chat\/retrieve[\s\S]*method:\s*'POST'/);
-});
-
-test('Coze rollout is limited to market analysis until report acceptance', () => {
-  const migration = read('supabase', 'migrations', '20261015000000_market_only_coze_routing.sql');
-  assert.match(migration, /allowed_task_types = ARRAY\['agent','market_qa'\]/);
-  assert.match(migration, /WHERE agent_key = 'report_generator'/);
-  assert.match(migration, /WHERE agent_key = 'course_assistant'/);
-  assert.match(migration, /WHERE workspace_id IS NULL[\s\S]*task_type = 'report'/);
-  assert.match(migration, /WHERE workspace_id IS NULL[\s\S]*task_type = 'course_qa'/);
-  assert.equal((migration.match(/primary_provider = 'deepseek'/g) || []).length, 4);
-  assert.doesNotMatch(migration, /primary_provider = 'coze'/);
 });
 
 test('live acceptance migration isolates provider evidence from production rollups', () => {
@@ -73,6 +63,9 @@ test('gateway routes one logical request through ordered fallbacks and reserves 
   assert.match(edge, /provider_config_fingerprints/);
   assert.match(edge, /invokeCozeChat/);
   assert.match(edge, /acceptance_primary_fault/);
+  assert.match(edge, /provider_cancel_after_create/);
+  assert.match(edge, /final_fallback_reason/);
+  assert.match(edge, /general_chat/);
   assert.match(edge, /acceptance_run_id: acceptanceRunId/);
   assert.match(edge, /Math\.min\(50_000, Number\(Deno\.env\.get\('AI_PROVIDER_TIMEOUT_MS'\)/);
   assert.match(edge, /x-jay-provider-error-code/);
@@ -88,13 +81,20 @@ test('live multi-AI acceptance requires a real primary and a real fallback', () 
   assert.match(acceptance, /fallback_real_call/);
   assert.match(acceptance, /config_fingerprint/);
   assert.match(acceptance, /quota_settled_once/);
+  assert.match(acceptance, /quota_replay_blocked/);
+  assert.match(acceptance, /provider_cancel_after_create/);
+  assert.match(acceptance, /production-acceptance-coze-report/);
+  assert.match(acceptance, /production-acceptance-coze-course/);
+  assert.match(acceptance, /production-acceptance-general-chat/);
+  assert.match(releaseCheck, /did not call every Coze Bot/);
   assert.match(releaseCheck, /validate_multi_ai_acceptance/);
   assert.match(releaseCheck, /primary_fault_injected/);
   assert.match(workflow, /AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER/);
   assert.match(workflow, /Coze live acceptance requires/);
   assert.match(workflow, /COZE_BOT_ID_MARKET_QA/);
-  assert.match(workflow, /Doubao live acceptance requires/);
-  assert.match(workflow, /OpenAI live acceptance requires/);
+  assert.match(workflow, /COZE_BOT_ID_REPORT/);
+  assert.match(workflow, /COZE_BOT_ID_COURSE/);
+  assert.match(workflow, /fallback must be deepseek/);
 });
 
 test('unconfigured optional fallbacks preserve the last configured provider failure', () => {

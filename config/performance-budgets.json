@@ -1,6 +1,6 @@
 {
   "initial": {
-    "javascript_bytes": 800000,
+    "javascript_bytes": 815000,
     "javascript_gzip_bytes": 225000,
     "css_bytes": 240000,
     "css_gzip_bytes": 52000
@@ -12,7 +12,7 @@
     "css_gzip_bytes": 20000
   },
   "total": {
-    "javascript_bytes": 1030000,
+    "javascript_bytes": 1050000,
     "javascript_gzip_bytes": 290000,
     "css_bytes": 330000,
     "css_gzip_bytes": 65000

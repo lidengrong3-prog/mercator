@@ -783,9 +783,9 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
 
   function delay(ms){return new Promise(function(r){setTimeout(r,ms);});}
 
-  function buildHeroResultCard(q, bodyHtml, requestId){
+  function buildHeroResultCard(q, bodyHtml, requestId, generalChat){
     var gateway=window.jayGetAIGateway?window.jayGetAIGateway(requestId):null;
-    var generalChat=gateway&&gateway.task_type==='general_chat';
+    generalChat=Boolean(generalChat||(gateway&&gateway.task_type==='general_chat'));
     var disclosure='';
     if(gateway){
       var scope=gateway.data_disclosure&&Array.isArray(gateway.data_disclosure.scope)?gateway.data_disclosure.scope.join('、'):'正式历史投影、当前问题上下文';
@@ -794,7 +794,7 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
     return '<div class="ovr-card"><div class="ovr-head"><span>AI</span><h4>'+(generalChat?'回答：':'分析结果：')+escapeHtml(q)+'<small>'+(generalChat?'通用 AI 对话':'优先基于当前工作区已核验数据')+'</small></h4></div>'+
       bodyHtml+disclosure+
       (generalChat?'':'<div class="ovr-foot"><button class="primary" data-action="switchPage(\'platforms\')">查看平台详情</button><button data-action="switchPage(\'policies\')">查看政策动态</button></div>')+
-      '<div class="ovr-note">'+(generalChat?'内容由 AI 生成，请结合实际情况判断。':'结论仅在服务端 AI 成功返回后展示；数据不足时不会使用内置规则补造结果。')+'</div></div>';
+      '<div class="ovr-note">'+(generalChat?'内容由 AI 生成，请结合实际情况判断。':'结论仅在服务端 AI 成功返回后展示；数据不足时会切换为明确标注的通用参考。')+'</div></div>';
   }
   function buildHeroErrorCard(q, error, requestId){
     var friendly=window.jayUserFacingErrorText?window.jayUserFacingErrorText(error,'我现在有点忙，请稍后再试。'):'我现在有点忙，请稍后再试。';
@@ -834,18 +834,23 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
       try{
         await delay(320);
         setHeroStep(2);
+        var businessQuery=/最近|最新|今日|今天|当前|目前|趋势|销售|销量|市场表现|卖得|召回|cpsc|佣金|政策|规则|关税|税率|准入|合规|平台费|竞争|竞品|市场规模|消费者|市场机会|市场风险/i.test(q);
         var systemPrompt=businessQuery
           ? '你是 JAY观海市场助手。服务端可能提供正式历史投影；引用事实保留 [Hxxx]，不得把缓存当知识库。无正式记录时正常回答并说明“系统数据中暂未找到最新记录，以下为通用参考”；区分事实和推断，不编造销售额、销量、消费者或竞争结论。简体中文，500 字以内。'
           : '你是 JAY观海通用聊天助手。直接回答问候、概念、文案和闲聊，不查系统数据，不因无记录拒答；不确定时说明。简体中文，500 字以内。';
-        var wantsLive=/实时|最新|今日|今天|政策更新|规则变动|最近|销售|销量|市场表现|趋势|电商中|卖得|怎么样/.test(q);
+        var wantsLive=businessQuery&&/实时|最新|今日|今天|政策更新|规则变动|最近/.test(q);
         var activeScope=scopeApi&&scopeApi.getActiveContext?scopeApi.getActiveContext():{};
-        var answer=await callAI(systemPrompt, q, {max_tokens:800, timeout:60000, search:wantsLive, entryPoint:'overview.decision', operation:businessQuery?'decision_assistant':'general_chat', taskType:businessQuery?'market_qa':'general_chat', agentKey:businessQuery?'market_analyst':'', retrievalMode:businessQuery?(wantsLive?'formal_first':'formal_only'):'disabled', retrievalQuery:q, requestId:requestId, context:{market_codes:activeScope.marketCodes||[],platform_keys:activeScope.platformKeys||[],category_codes:activeScope.categoryCodes||[],data_snapshot_at:(window.JAY_QUALITY_REPORT&&window.JAY_QUALITY_REPORT.generated_at)||null}});
+        var answer=await callAI(systemPrompt, q, {max_tokens:800, timeout:60000, search:wantsLive, entryPoint:'overview.decision', operation:businessQuery?'decision_assistant':'general_chat', taskType:businessQuery?'market_qa':'general_chat', agentKey:businessQuery?'market_analyst':'', retrievalMode:businessQuery?(wantsLive?'formal_first':'formal_only'):'disabled', retrievalQuery:q, requestId:requestId, dataDisclosureScope:businessQuery?['formal_publications','request_context']:['request_context'], context:{market_codes:activeScope.marketCodes||[],platform_keys:activeScope.platformKeys||[],category_codes:activeScope.categoryCodes||[],data_snapshot_at:(window.JAY_QUALITY_REPORT&&window.JAY_QUALITY_REPORT.generated_at)||null}});
         setHeroStep(3);
         var rendered=renderHistoryCitations(answer,requestId);
         var bodyHtml='<div class="ovr-section">'+rendered.html+'</div>';
-         var card = buildHeroResultCard(q, bodyHtml, requestId);
+         var card = buildHeroResultCard(q, bodyHtml, requestId, !businessQuery);
         if(rendered.count){
           card = card.replace('<div class="ovr-note">', '<div class="ovr-note">已检索 '+rendered.count+' 条正式历史记录，点击 [Hxxx] 可返回对应记录。');
+        }
+        var retrievalMeta=window.jayGetAIRetrieval?window.jayGetAIRetrieval(requestId):null;
+        if(retrievalMeta&&retrievalMeta.fallback&&!rendered.count){
+          card=card.replace('<div class="ovr-note">','<div class="ovr-note">系统正式数据未命中，本回答已切换为通用参考。');
         }
         resultEl.innerHTML=card;
         var retrievalMeta=window.jayGetAIRetrieval?window.jayGetAIRetrieval(requestId):null;

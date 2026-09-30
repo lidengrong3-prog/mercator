@@ -38,15 +38,16 @@ test('formal report save and export authorize through the report workspace', () 
   const pdf = read('supabase', 'functions', 'report-export', 'index.ts');
   const docx = read('supabase', 'functions', 'report-docx', 'index.ts');
   assert.match(save, /const workspaceId = uuid\(submitted\.workspace_id\)/);
-  assert.match(save, /workspace_members\?workspace_id=eq\./);
-  assert.match(save, /\['owner', 'admin', 'editor'\]\.includes\(role\)/);
+  assert.match(save, /resolveWorkspaceAuthorization/);
+  assert.match(save, /action: 'report_write'/);
   assert.match(save, /user_id: creatorId/);
   assert.match(save, /workspace_id: workspaceId/);
   assert.match(save, /on_conflict=workspace_id,client_id/);
   assert.match(validation, /report_materials\?select=[^`]*workspace_id=eq\.\$\{encodeURIComponent\(workspaceId\)\}/);
   for (const source of [pdf, docx]) {
     assert.match(source, /select=id,workspace_id,title,content/);
-    assert.match(source, /workspace_members\?workspace_id=eq\./);
+    assert.match(source, /resolveWorkspaceAuthorization/);
+    assert.match(source, /action: 'export'/);
     assert.doesNotMatch(source, /generated_reports\?id=eq\.\$\{encodeURIComponent\(reportId\)\}&user_id=eq\./);
     assert.match(source, /validateFormalReportWithServerData\([^\n]+workspaceId/);
   }
@@ -95,8 +96,8 @@ test('workspace roles expose independent capabilities and shared report metadata
   assert.match(settings, /INVITE_ROLE_REQUIRED/);
   assert.match(invite, /INVITE_ROLE_REQUIRED/);
   for (const source of [exportPdf, exportDocx]) {
-    assert.match(source, /select=role/);
-    assert.match(source, /WORKSPACE_READ_ONLY/);
+    assert.match(source, /resolveWorkspaceAuthorization/);
+    assert.match(source, /workspaceAuthorizationStatus/);
     assert.match(source, /workspace_id: workspaceId/);
   }
   assert.match(exportMigration, /ALTER TABLE public\.report_exports[\s\S]*ADD COLUMN IF NOT EXISTS workspace_id/);

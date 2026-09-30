@@ -63,6 +63,21 @@ test.describe('production authenticated browser acceptance', () => {
     }, { tableName: table, filterValues: filters });
   }
 
+  async function workspaceAuthorization(page, workspaceId, action, requiredPlan = null, targetEmail = null) {
+    return page.evaluate(async ({ workspaceIdValue, actionValue, requiredPlanValue, targetEmailValue }) => {
+      const result = await window.supabaseClient.rpc('resolve_workspace_authorization', {
+        p_workspace_id: workspaceIdValue,
+        p_action: actionValue,
+        p_resource_type: 'production_acceptance',
+        p_required_plan: requiredPlanValue,
+        p_target_email: targetEmailValue,
+        p_user_id: window.jayUser.id,
+      });
+      if (result.error) throw new Error(result.error.message);
+      return result.data;
+    }, { workspaceIdValue: workspaceId, actionValue: action, requiredPlanValue: requiredPlan, targetEmailValue: targetEmail });
+  }
+
   async function waitForRow(page, table, filters, predicate = () => true, timeout = 30_000) {
     const deadline = Date.now() + timeout;
     while (Date.now() < deadline) {
@@ -199,6 +214,7 @@ test.describe('production authenticated browser acceptance', () => {
     const importedProductTitle = `生产浏览验收商品-${runId}`;
     const browserTopic = `生产浏览器验收通用品类-${runId}`;
     const browserReportTitle = `《${browserTopic}》美国市场调研报告`;
+    let r08AuthorizationEvidence = null;
     page.on('popup', (popup) => popup.close().catch(() => {}));
 
     await login(page, credentials.a);
@@ -443,6 +459,10 @@ test.describe('production authenticated browser acceptance', () => {
     const userB = await pageB.evaluate(() => window.jayUser.id);
     const workspaceB = acceptanceWorkspaceB || await pageB.evaluate(() => window.jayActiveWorkspaceId());
     expect(workspaceB).not.toBe(workspaceA);
+    const ownerAuthorization = await workspaceAuthorization(page, workspaceA, 'manage_billing');
+    expect(ownerAuthorization).toMatchObject({ allowed: true, code: 'OK', role: 'owner', can_write: true, can_manage_members: true, can_manage_billing: true });
+    const crossAccountAuthorization = await workspaceAuthorization(page, workspaceB, 'read');
+    expect(crossAccountAuthorization).toMatchObject({ allowed: false, code: 'WORKSPACE_FORBIDDEN', membership_active: false });
 
     // Recover from an interrupted previous run, then prove the two owner
     // workspaces are isolated before creating this run's invitation.
@@ -503,6 +523,12 @@ test.describe('production authenticated browser acceptance', () => {
     await pageB.evaluate(async () => { await window.switchPage('settings'); window.stSwitchTab('team'); });
     await expect(pageB.locator(`#st-workspace-select option[value="${workspaceA}"]`)).toHaveCount(1);
     await expect(pageB.locator(`#st-workspace-select option[value="${workspaceB}"]`)).toHaveCount(1);
+    const editorReadAuthorization = await workspaceAuthorization(pageB, workspaceA, 'read');
+    const editorWriteAuthorization = await workspaceAuthorization(pageB, workspaceA, 'write');
+    const editorManageAuthorization = await workspaceAuthorization(pageB, workspaceA, 'manage_members');
+    expect(editorReadAuthorization).toMatchObject({ allowed: true, code: 'OK', role: 'editor', can_read: true });
+    expect(editorWriteAuthorization).toMatchObject({ allowed: true, code: 'OK', role: 'editor', can_write: true });
+    expect(editorManageAuthorization).toMatchObject({ allowed: false, code: 'WORKSPACE_ADMIN_REQUIRED', role: 'editor', can_manage_members: false });
 
     const staleWatchlistCleanup = await pageB.evaluate(async (workspaceId) => {
       const result = await window.supabaseClient
@@ -523,6 +549,52 @@ test.describe('production authenticated browser acceptance', () => {
       (row) => row.user_id === userB
     );
     expect(editorWatchlist.user_id).toBe(userB);
+
+    const alertSourceId = `production-policy:${acceptanceRunId}`;
+    const createdMonitor = await pageB.evaluate((input) => window.jayCreateRecordMonitor(input), {
+      source_record_type: 'policy',
+      source_record_id: alertSourceId,
+      source_title: 'R07 生产持久化验收政策',
+      market_code: 'US',
+      platform_key: 'official-policy',
+      category_code: 'compliance',
+      monitor_conditions: { events: ['source_updated', 'effective_date_changed', 'status_changed'] },
+    });
+    expect(createdMonitor).toMatchObject({ workspace_id: workspaceA, created_by: userB, status: 'active', source_record_id: alertSourceId });
+    const persistedMonitor = await waitForRow(pageB, 'monitoring_tasks', { workspace_id: workspaceA, source_record_id: alertSourceId }, (row) => row.status === 'active');
+    const duplicateMonitor = await pageB.evaluate(async (input) => {
+      try { await window.jayCreateRecordMonitor(input); return { created: true }; }
+      catch (error) { return { created: false, code: error.message, status: error.status }; }
+    }, {
+      source_record_type: 'policy', source_record_id: alertSourceId, source_title: 'R07 生产持久化验收政策',
+      market_code: 'US', platform_key: 'official-policy', category_code: 'compliance',
+      monitor_conditions: { events: ['source_updated', 'effective_date_changed', 'status_changed'] },
+    });
+    expect(duplicateMonitor).toMatchObject({ created: false, code: 'MONITOR_ALREADY_EXISTS' });
+    expect((await rows(pageB, 'monitoring_tasks', { workspace_id: workspaceA, source_record_id: alertSourceId })).length).toBe(1);
+
+    await pageB.reload({ waitUntil: 'domcontentloaded' });
+    await pageB.waitForFunction(() => window.jayUser && !window.jayIsDemo, null, { timeout: 30_000 });
+    await pageB.evaluate(async (workspaceId) => {
+      await window.jayLoadWorkspaceContext(workspaceId);
+      window.__productionAcceptanceToasts = [];
+      const originalToast = window.toast;
+      window.toast = function productionAcceptanceToast(message) {
+        window.__productionAcceptanceToasts.push(String(message || ''));
+        return originalToast.apply(this, arguments);
+      };
+    }, workspaceA);
+    expect((await pageB.evaluate(() => window.jayLoadMonitoringTasks({ throwOnError: true }))).some((task) => task.id === persistedMonitor.id)).toBe(true);
+    const pausedMonitor = await pageB.evaluate((taskId) => window.jayUpdateMonitoringTask(taskId, { status: 'paused' }), persistedMonitor.id);
+    expect(pausedMonitor.status).toBe('paused');
+    const resumedMonitor = await pageB.evaluate((taskId) => window.jayUpdateMonitoringTask(taskId, { status: 'active' }), persistedMonitor.id);
+    expect(resumedMonitor.status).toBe('active');
+    await pageB.evaluate((taskId) => window.jayDeleteMonitoringTask(taskId), persistedMonitor.id);
+    expect(await rows(pageB, 'monitoring_tasks', { id: persistedMonitor.id })).toEqual([]);
+    const alertPersistenceEvidence = {
+      created: true, persisted_after_reload: true, duplicate_blocked: true,
+      paused: pausedMonitor.status === 'paused', resumed: resumedMonitor.status === 'active', deleted: true,
+    };
     const sharedExport = await pageB.evaluate(async (sharedReportId) => {
       try {
         const result = await window.jayFunctionRequest('report-export', {
@@ -542,12 +614,36 @@ test.describe('production authenticated browser acceptance', () => {
     }
 
     const membership = await waitForRow(page, 'workspace_members', { workspace_id: workspaceA, user_id: userB }, (row) => row.status === 'active');
+    await page.evaluate((membershipId) => window.jayUpdateWorkspaceMember(membershipId, 'admin'), membership.id);
+    await pageB.evaluate((workspaceId) => window.jayLoadWorkspaceContext(workspaceId), workspaceA);
+    expect(await pageB.evaluate(() => window.jayWorkspaceRole())).toBe('admin');
+    const adminManageAuthorization = await workspaceAuthorization(pageB, workspaceA, 'manage_members');
+    const adminBillingAuthorization = await workspaceAuthorization(pageB, workspaceA, 'manage_billing');
+    expect(adminManageAuthorization).toMatchObject({ allowed: true, code: 'OK', role: 'admin', can_manage_members: true });
+    expect(adminBillingAuthorization).toMatchObject({ allowed: true, code: 'OK', role: 'admin', can_manage_billing: true });
+
     await page.evaluate((membershipId) => window.jayUpdateWorkspaceMember(membershipId, 'viewer'), membership.id);
     await pageB.evaluate((workspaceId) => window.jayLoadWorkspaceContext(workspaceId), workspaceA);
     expect(await pageB.evaluate(() => window.jayWorkspaceRole())).toBe('viewer');
+    const viewerReadAuthorization = await workspaceAuthorization(pageB, workspaceA, 'read');
+    const viewerWriteAuthorization = await workspaceAuthorization(pageB, workspaceA, 'write');
+    expect(viewerReadAuthorization).toMatchObject({ allowed: true, code: 'OK', role: 'viewer', can_read: true });
+    expect(viewerWriteAuthorization).toMatchObject({ allowed: false, code: 'WORKSPACE_READ_ONLY', role: 'viewer', can_write: false });
     const viewerWrite = await pageB.evaluate(() => window.addToWatchlist('country', 'ID', '印度尼西亚', 'viewer denied'));
     expect(viewerWrite).toBe(false);
     expect(await pageB.evaluate(() => window.__productionAcceptanceToasts.some((message) => message.includes('只读权限')))).toBe(true);
+    const viewerMonitorWrite = await pageB.evaluate(async (runId) => {
+      try {
+        await window.jayCreateRecordMonitor({
+          source_record_type: 'policy', source_record_id: `viewer-denied:${runId}`, source_title: '无权限预警',
+          market_code: 'US', platform_key: 'official-policy', monitor_conditions: { events: ['source_updated'] },
+        });
+        return { created: true };
+      } catch (error) {
+        return { created: false, code: error.code || error.message, status: error.status };
+      }
+    }, acceptanceRunId);
+    expect(viewerMonitorWrite).toMatchObject({ created: false, code: 'WORKSPACE_READ_ONLY', status: 403 });
 
     const watchlistCleanup = await page.evaluate(async (workspaceId) => {
       const result = await window.supabaseClient
@@ -576,6 +672,16 @@ test.describe('production authenticated browser acceptance', () => {
     expect(stillHasRemovedWorkspace).toBe(false);
     expect(await rows(pageB, 'generated_reports', { id: reportId })).toEqual([]);
     expect(await rows(pageB, 'report_materials', { title: importedProductTitle })).toEqual([]);
+    const removedAuthorization = await workspaceAuthorization(pageB, workspaceA, 'read');
+    expect(removedAuthorization).toMatchObject({ allowed: false, code: 'WORKSPACE_FORBIDDEN', membership_active: false });
+    r08AuthorizationEvidence = {
+      owner: ownerAuthorization,
+      cross_account: crossAccountAuthorization,
+      editor: { read: editorReadAuthorization, write: editorWriteAuthorization, manage: editorManageAuthorization },
+      admin: { manage: adminManageAuthorization, billing: adminBillingAuthorization },
+      viewer: { read: viewerReadAuthorization, write: viewerWriteAuthorization },
+      removed: removedAuthorization,
+    };
 
     await contextB.close();
     await context.close();
@@ -596,6 +702,8 @@ test.describe('production authenticated browser acceptance', () => {
         },
         report_id: reportId,
         invite_id: invitation.id,
+        alert_persistence: alertPersistenceEvidence,
+        r08_authorization: r08AuthorizationEvidence,
         report_content_gate: reportContentGate,
         exports: pdfExport && docxExport ? { pdf: pdfExport.id, docx: docxExport.id } : {},
       }, null, 2));

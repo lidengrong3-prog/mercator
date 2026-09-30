@@ -2,6 +2,7 @@ import { fetchCurrentQualityGate, reportContentAllowsFormalOutput } from '../_sh
 import { REPORT_VALIDATION_VERSION, validateFormalReportWithServerData } from '../_shared/report-validation.ts';
 import { buildReportDocx } from '../_shared/report-docx.ts';
 import { enforceRateLimit, rateLimitResponse, requestId as securityRequestId } from '../_shared/security.ts';
+import { resolveWorkspaceAuthorization, workspaceAuthorizationStatus } from '../_shared/workspace-authorization.ts';
 
 // JWT-protected DOCX export. The document is a real OOXML package rather
 // than a Markdown file with a .docx extension, so Word can open and edit it.
@@ -43,10 +44,18 @@ Deno.serve(async (request) => {
   const report = reportRows?.[0] as { workspace_id?: unknown; title?: unknown; content?: unknown; save_status?: unknown; publication_status?: unknown; server_validation_version?: unknown; server_validated_at?: unknown; server_validation?: unknown } | undefined;
   if (!report) return jsonResponse({ error: 'REPORT_NOT_FOUND' }, 404, origin);
   const workspaceId = String(report.workspace_id || '');
-  const membershipResponse = await fetch(`${supabaseUrl}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&select=role&limit=1`, { headers });
-  const memberships = membershipResponse.ok ? await membershipResponse.json() : [];
-  if (!workspaceId || !memberships?.length) return jsonResponse({ error: 'REPORT_NOT_FOUND' }, 404, origin);
-  if (!['owner', 'admin', 'editor'].includes(String(memberships[0]?.role || ''))) return jsonResponse({ error: 'WORKSPACE_READ_ONLY' }, 403, origin);
+  const authorization = await resolveWorkspaceAuthorization({
+    supabaseUrl,
+    serviceKey,
+    userId: user.id,
+    workspaceId,
+    action: 'export',
+    resourceType: 'report_export',
+  });
+  if (!authorization.allowed) {
+    if (authorization.code === 'WORKSPACE_FORBIDDEN') return jsonResponse({ error: 'REPORT_NOT_FOUND' }, 404, origin);
+    return jsonResponse({ error: authorization.code }, workspaceAuthorizationStatus(authorization), origin);
+  }
   if (report.save_status !== 'saved') return jsonResponse({ error: 'REPORT_NOT_SAVED' }, 409, origin);
   const storedContent = report.content && typeof report.content === 'object' ? report.content as Record<string, unknown> : {};
   if (!reportContentAllowsFormalOutput(storedContent)) return jsonResponse({ error: 'REPORT_QUALITY_GATE_BLOCKED' }, 409, origin);

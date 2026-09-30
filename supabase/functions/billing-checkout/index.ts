@@ -10,6 +10,7 @@ import {
   userFromJwt,
 } from '../_shared/billing.ts';
 import { enforceRateLimit, rateLimitResponse, requestId as securityRequestId } from '../_shared/security.ts';
+import { resolveWorkspaceAuthorization, workspaceAuthorizationStatus } from '../_shared/workspace-authorization.ts';
 
 Deno.serve(async (request) => {
   const origin = request.headers.get('Origin');
@@ -37,11 +38,15 @@ Deno.serve(async (request) => {
   const workspaceId = String(payload.workspace_id || '').trim();
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(workspaceId)) return jsonResponse({ error: 'WORKSPACE_REQUIRED' }, 400, origin);
   const serviceHeadersValue = serviceHeaders(config.serviceKey);
-  const membershipResponse = await fetch(
-    `${config.url}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&role=in.(owner,admin)&select=role&limit=1`,
-    { headers: serviceHeadersValue },
-  );
-  if (!membershipResponse.ok || !(await membershipResponse.json())?.length) return jsonResponse({ error: 'WORKSPACE_BILLING_ADMIN_REQUIRED' }, 403, origin);
+  const authorization = await resolveWorkspaceAuthorization({
+    supabaseUrl: config.url,
+    serviceKey: config.serviceKey,
+    userId: user.id,
+    workspaceId,
+    action: 'manage_billing',
+    resourceType: 'billing_checkout',
+  });
+  if (!authorization.allowed) return jsonResponse({ error: authorization.code }, workspaceAuthorizationStatus(authorization), origin);
   if (!billingCheckoutEnabled(workspaceId)) return jsonResponse({ error: 'BILLING_NOT_ENABLED' }, 503, origin);
 
   const subscriptionResponse = await fetch(
@@ -51,12 +56,7 @@ Deno.serve(async (request) => {
   if (!subscriptionResponse.ok) return jsonResponse({ error: 'BILLING_STATUS_UNAVAILABLE' }, 503, origin);
   const subscriptionRows = await subscriptionResponse.json();
   const current = subscriptionRows?.[0];
-  const effectivePlanResponse = await fetch(`${config.url}/rest/v1/rpc/effective_billing_plan`, {
-    method: 'POST', headers: serviceHeadersValue,
-    body: JSON.stringify({ p_workspace_id: workspaceId, p_user_id: user.id }),
-  });
-  if (!effectivePlanResponse.ok) return jsonResponse({ error: 'BILLING_ENTITLEMENTS_UNAVAILABLE' }, 503, origin);
-  const effectivePlan = String(await effectivePlanResponse.json() || 'free');
+  const effectivePlan = String((authorization.entitlement as Record<string, unknown> | undefined)?.plan || 'free');
   if (effectivePlan === 'pro') {
     return jsonResponse({ error: 'SUBSCRIPTION_ALREADY_ACTIVE' }, 409, origin);
   }

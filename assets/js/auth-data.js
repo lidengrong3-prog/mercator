@@ -311,7 +311,7 @@ var JAY_ACCEPTANCE_TRACKED_TABLES = {
   user_activity: true,
   report_materials: true, saved_workspace_items: true, generated_reports: true,
   report_runs: true, report_exports: true, ai_request_logs: true,
-  ai_token_reservations: true, monitored_shops: true, user_watchlist: true
+  ai_token_reservations: true, monitored_shops: true, user_watchlist: true, monitoring_tasks: true
 };
 
 function jayAcceptanceRunId() {
@@ -758,6 +758,7 @@ var JAY_USER_TABLES = {
   workspace_usage_monthly: true,
   monitoring_tasks: true
 };
+var JAY_USER_RPCS = { create_record_monitor: true };
 
 function jayCanUseUserDb() {
   return !!(supabaseClient && jayUser && !jayIsDemo);
@@ -1349,6 +1350,12 @@ var JAY_SERVICE_ERROR_MESSAGES = {
   ADMIN_FORBIDDEN: '当前账号没有管理员权限',
   WORKSPACE_FORBIDDEN: '当前账号没有执行此操作的权限',
   WORKSPACE_READ_ONLY: '当前工作区为只读权限',
+  MONITOR_ALREADY_EXISTS: '该来源记录已经添加预警，不会重复创建',
+  MONITOR_SOURCE_REQUIRED: '来源记录信息不完整，无法创建预警',
+  MONITOR_SOURCE_TYPE_INVALID: '当前来源类型不支持创建预警',
+  MONITOR_CONDITIONS_INVALID: '监控条件格式无效',
+  MONITOR_NOT_FOUND: '监控记录不存在或已被删除',
+  MONITOR_SAVE_FAILED: '预警写入失败，请稍后重试',
   INVITE_EMAIL_INVALID: '请输入有效的邀请邮箱',
   INVITE_SELF_NOT_ALLOWED: '不能邀请当前登录邮箱',
   INVITE_ALREADY_MEMBER: '该账号已是当前工作区成员',
@@ -1547,6 +1554,29 @@ function jayDbPatch(table, filter, payload) {
 
 function jayDbDelete(table, filter) {
   return jayDbRequest('DELETE', table, filter, undefined, 'return=representation');
+}
+
+async function jayDbRpc(name, payload) {
+  if (!JAY_USER_RPCS[name]) throw new Error('UNSUPPORTED_USER_RPC');
+  var headers = await jayUserHeaders('return=representation');
+  var response;
+  try {
+    response = await fetch(JAY_API_URL + '/rpc/' + name, { method: 'POST', headers: headers, body: JSON.stringify(payload || {}) });
+  } catch (networkError) {
+    networkError.status = 0;
+    throw networkError;
+  }
+  var responseText = await response.text();
+  var result = null;
+  if (responseText) { try { result = JSON.parse(responseText); } catch (e) { result = responseText; } }
+  if (!response.ok) {
+    var error = new Error((result && (result.message || result.hint)) || ('HTTP ' + response.status));
+    error.status = response.status;
+    error.code = result && result.code;
+    error.details = result;
+    throw error;
+  }
+  return result;
 }
 
 async function jayStartReportRun(details) {
@@ -2325,10 +2355,10 @@ async function loadUserWatchlist() {
   }
 }
 
-async function jayLoadMonitoringTasks(){
+async function jayLoadMonitoringTasks(options){
   if(!jayCanUseUserDb()||!jayActiveWorkspaceId())return [];
   try{return await jayDbGet('monitoring_tasks','select=*&workspace_id=eq.'+encodeURIComponent(jayRequireActiveWorkspace())+'&order=created_at.desc&limit=200');}
-  catch(error){console.warn('[JAY观海] monitoring task load failed:',error);return [];}
+  catch(error){console.warn('[JAY观海] monitoring task load failed:',error);if(options&&options.throwOnError)throw error;return [];}
 }
 async function jayCreateMonitoringTask(input){
   if(!jayCanUseUserDb())throw new Error('AUTH_REQUIRED');
@@ -2338,18 +2368,87 @@ async function jayCreateMonitoringTask(input){
   if(['keyword','product','shop'].indexOf(type)<0)throw new Error('INVALID_MONITORING_TYPE');
   var market=String(input.market_code||'').trim().toUpperCase(),platform=String(input.platform_key||'').trim().toLowerCase();
   if(!market||!platform)throw new Error('MONITORING_SCOPE_REQUIRED');
-  var payload={workspace_id:jayRequireActiveWorkspace(),created_by:jayUser.id,task_type:type,market_code:market,platform_key:platform,category_code:input.category_code||null,keyword:type==='keyword'?String(input.keyword||'').trim().slice(0,120):null,target_entity_id:type==='keyword'?null:(input.target_entity_id||null),target_external_id:type==='keyword'?null:(input.target_external_id||null),cadence_per_day:Math.min(4,Math.max(1,Number(input.cadence_per_day||1))),status:'active'};
+  var keyword=type==='keyword'?String(input.keyword||'').trim().slice(0,120):null;
+  var targetEntity=type==='keyword'?null:(input.target_entity_id||null),targetExternal=type==='keyword'?null:(input.target_external_id||null);
+  var identity=['legacy-client',type,market,platform,keyword||'',targetEntity||'',targetExternal||''].join(':');
+  var payload={workspace_id:jayRequireActiveWorkspace(),created_by:jayUser.id,task_type:type,market_code:market,platform_key:platform,category_code:input.category_code||null,keyword:keyword,target_entity_id:targetEntity,target_external_id:targetExternal,cadence_per_day:Math.min(4,Math.max(1,Number(input.cadence_per_day||1))),status:'active',idempotency_key:String(input.idempotency_key||identity).slice(0,240)};
   if(type==='keyword'&&!payload.keyword)throw new Error('MONITORING_KEYWORD_REQUIRED');
   if(type!=='keyword'&&!payload.target_entity_id&&!payload.target_external_id)throw new Error('MONITORING_TARGET_REQUIRED');
   var rows=await jayDbInsert('monitoring_tasks',payload);return rows&&rows[0]||null;
 }
+async function jayCreateRecordMonitor(input){
+  if(!jayCanUseUserDb()){var authError=new Error('AUTH_REQUIRED');authError.code='AUTH_REQUIRED';authError.status=401;throw authError;}
+  if(!jayWorkspaceCanEdit()){var permissionError=new Error('WORKSPACE_READ_ONLY');permissionError.code='WORKSPACE_READ_ONLY';permissionError.status=403;throw permissionError;}
+  input=input&&typeof input==='object'?input:{};
+  var conditions=input.monitor_conditions&&typeof input.monitor_conditions==='object'&&!Array.isArray(input.monitor_conditions)?input.monitor_conditions:{};
+  var result=await jayDbRpc('create_record_monitor',{
+    p_workspace_id:jayRequireActiveWorkspace(),
+    p_source_record_type:String(input.source_record_type||'').toLowerCase(),
+    p_source_record_id:String(input.source_record_id||''),
+    p_source_title:String(input.source_title||'').slice(0,500),
+    p_market_code:String(input.market_code||'').toUpperCase(),
+    p_platform_key:String(input.platform_key||'').toLowerCase(),
+    p_category_code:input.category_code||null,
+    p_monitor_conditions:conditions,
+    p_acceptance_run_id:jayAcceptanceRunId()||null
+  });
+  return Array.isArray(result)?result[0]:result;
+}
 async function jayUpdateMonitoringTask(taskId,patch){
-  if(!jayCanUseUserDb()||!jayWorkspaceCanEdit())throw new Error('WORKSPACE_READ_ONLY');
+  if(!jayCanUseUserDb())throw new Error('AUTH_REQUIRED');
+  if(!jayWorkspaceCanEdit())throw new Error('WORKSPACE_READ_ONLY');
   var allowed={status:true,cadence_per_day:true,next_run_at:true};var body={};Object.keys(patch||{}).forEach(function(key){if(allowed[key])body[key]=patch[key];});
   if(!Object.keys(body).length)return null;
-  var rows=await jayDbPatch('monitoring_tasks','id=eq.'+encodeURIComponent(taskId)+'&workspace_id=eq.'+encodeURIComponent(jayRequireActiveWorkspace()),body);return rows&&rows[0]||null;
+  if(body.status&&['active','paused','failed','expired','blocked'].indexOf(body.status)<0)throw new Error('MONITOR_STATUS_INVALID');
+  var rows=await jayDbPatch('monitoring_tasks','id=eq.'+encodeURIComponent(taskId)+'&workspace_id=eq.'+encodeURIComponent(jayRequireActiveWorkspace()),body);
+  if(!rows||!rows[0])throw new Error('MONITOR_NOT_FOUND');
+  return rows[0];
 }
-window.jayLoadMonitoringTasks=jayLoadMonitoringTasks;window.jayCreateMonitoringTask=jayCreateMonitoringTask;window.jayUpdateMonitoringTask=jayUpdateMonitoringTask;
+async function jayDeleteMonitoringTask(taskId){
+  if(!jayCanUseUserDb())throw new Error('AUTH_REQUIRED');
+  if(!jayWorkspaceCanEdit())throw new Error('WORKSPACE_READ_ONLY');
+  var rows=await jayDbDelete('monitoring_tasks','id=eq.'+encodeURIComponent(taskId)+'&workspace_id=eq.'+encodeURIComponent(jayRequireActiveWorkspace()));
+  if(!rows||!rows[0])throw new Error('MONITOR_NOT_FOUND');
+  return rows[0];
+}
+async function jayAddRecordMonitorFromUi(input,button){
+  if(!jayCanUseUserDb()){toast('请先登录后再添加预警');return {status:'auth_required'};}
+  if(!jayWorkspaceCanEdit()){toast('当前工作区无权添加预警');return {status:'forbidden'};}
+  var originalText=button?String(button.textContent||'添加预警'):'添加预警';
+  if(button){button.disabled=true;button.textContent='正在添加…';}
+  try{
+    var task=await jayCreateRecordMonitor(input);
+    if(!task||!task.id)throw new Error('MONITOR_SAVE_FAILED');
+    if(button){button.textContent='已添加';button.dataset.monitorTaskId=task.id;}
+    toast('预警已添加并同步到当前工作区');
+    window.dispatchEvent(new CustomEvent('jay:monitoring-task-change',{detail:{action:'created',task:task}}));
+    return {status:'created',task:task};
+  }catch(error){
+    var code=jayErrorCode(error);
+    if(code==='MONITOR_ALREADY_EXISTS'){if(button)button.textContent='已存在';toast('该记录已存在监控，不会重复创建');return {status:'duplicate'};}
+    if(code==='AUTH_REQUIRED')toast('请先登录后再添加预警');
+    else if(code==='WORKSPACE_READ_ONLY'||error.status===403)toast('当前工作区无权添加预警');
+    else toast('预警写入失败：'+jayDbErrorText(error));
+    if(button)button.textContent=originalText;
+    return {status:'failed',error:error};
+  }finally{if(button)button.disabled=false;}
+}
+async function jayAddRecordMonitorBatchFromUi(inputs){
+  inputs=Array.isArray(inputs)?inputs.filter(Boolean):[];
+  if(!inputs.length){toast('请先选择要监控的来源记录');return {created:0,duplicate:0,failed:0};}
+  if(!jayCanUseUserDb()){toast('请先登录后再添加预警');return {created:0,duplicate:0,failed:inputs.length};}
+  if(!jayWorkspaceCanEdit()){toast('当前工作区无权添加预警');return {created:0,duplicate:0,failed:inputs.length};}
+  var result={created:0,duplicate:0,failed:0};
+  for(var i=0;i<inputs.length;i++){
+    try{var task=await jayCreateRecordMonitor(inputs[i]);if(task&&task.id)result.created+=1;else result.failed+=1;}
+    catch(error){if(jayErrorCode(error)==='MONITOR_ALREADY_EXISTS')result.duplicate+=1;else result.failed+=1;}
+  }
+  if(result.created)window.dispatchEvent(new CustomEvent('jay:monitoring-task-change',{detail:{action:'batch-created',count:result.created}}));
+  var parts=[];if(result.created)parts.push('新增 '+result.created+' 条');if(result.duplicate)parts.push('重复 '+result.duplicate+' 条');if(result.failed)parts.push('失败 '+result.failed+' 条');
+  toast('预警处理完成：'+parts.join('，'));
+  return result;
+}
+window.jayLoadMonitoringTasks=jayLoadMonitoringTasks;window.jayCreateMonitoringTask=jayCreateMonitoringTask;window.jayCreateRecordMonitor=jayCreateRecordMonitor;window.jayUpdateMonitoringTask=jayUpdateMonitoringTask;window.jayDeleteMonitoringTask=jayDeleteMonitoringTask;window.jayAddRecordMonitorFromUi=jayAddRecordMonitorFromUi;window.jayAddRecordMonitorBatchFromUi=jayAddRecordMonitorBatchFromUi;
 
 async function addToWatchlist(itemType, itemId, itemName, note) {
   if (!jayCanUseUserDb()) { toast('登录后可同步到工作区看板'); return false; }

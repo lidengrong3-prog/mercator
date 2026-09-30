@@ -44,8 +44,8 @@ SITE_URL = os.environ.get("PRODUCTION_SITE_URL", "").strip().rstrip("/")
 ACTIVE_ACCEPTANCE_RUN_ID = ""
 ACCEPTANCE_FINAL_STATE: dict = {}
 PLATFORM_RULE_DIMENSIONS = ("fee", "commission", "deposit", "fulfillment", "prohibited", "settlement", "penalty")
-LIVE_AI_PRIMARY_DEFAULT = "deepseek"
-LIVE_AI_FALLBACK_PROVIDERS = {"coze", "doubao", "openai"}
+LIVE_AI_PRIMARY_DEFAULT = "coze"
+LIVE_AI_FALLBACK_PROVIDERS = {"deepseek"}
 BLS_NONFARM_SERIES_ID = "CES0000000001"
 BLS_NONFARM_RECORD_KEY = f"BLS_{BLS_NONFARM_SERIES_ID}"
 BLS_NONFARM_NAME = "美国非农就业人数：全部雇员（季调）"
@@ -290,6 +290,19 @@ def service_select_rows(table: str, query: dict) -> list[dict]:
     )
     expect(status == 200 and isinstance(value, list), f"service role cannot read {table}: {status} {value}")
     return value
+
+
+def service_insert(table: str, body: dict) -> dict:
+    status, value, _ = request(
+        "POST",
+        f"{SUPABASE_URL}/rest/v1/{table}",
+        token=SERVICE_KEY,
+        body=body,
+        headers={"apikey": SERVICE_KEY, "Prefer": "return=representation"},
+    )
+    expect(status in (200, 201) and isinstance(value, list) and value,
+           f"service role cannot insert {table}: {status} {value}")
+    return value[0]
 
 
 def acceptance_fault_headers(user_id: str, scenario: str, request_id: str, issued_at: int | None = None) -> dict[str, str]:
@@ -956,9 +969,9 @@ def main() -> int:
     live_primary_provider = os.environ.get("AI_LIVE_ACCEPTANCE_PRIMARY_PROVIDER", LIVE_AI_PRIMARY_DEFAULT).strip().lower()
     live_fallback_provider = os.environ.get("AI_LIVE_ACCEPTANCE_FALLBACK_PROVIDER", "").strip().lower()
     expect(live_primary_provider == LIVE_AI_PRIMARY_DEFAULT,
-           "live multi-AI acceptance must use DeepSeek as the primary provider")
+           "live multi-AI acceptance must use Coze as the primary provider")
     expect(live_fallback_provider in LIVE_AI_FALLBACK_PROVIDERS,
-           "live multi-AI acceptance requires Coze, Doubao, or OpenAI as the fallback provider")
+           "live multi-AI acceptance requires DeepSeek as the fallback provider")
 
     status, site_body, _ = request("GET", SITE_URL, headers={})
     expect(status == 200 and b"JAY" in site_body, f"production site is unavailable: {status}")
@@ -1139,6 +1152,89 @@ def main() -> int:
     expect(primary_gateway.get("model"), "primary live AI acceptance did not return a model")
     report_text = ai_body["choices"][0]["message"]["content"]
 
+    report_probe_id = f"production-acceptance-coze-report:{acceptance_run_id}"
+    report_probe_status, report_probe_body, _ = function("ai-proxy", token_a, {
+        "request_id": report_probe_id,
+        "acceptance_run_id": acceptance_run_id,
+        "workspace_id": workspace_a,
+        "operation": "report.acceptance",
+        "entry_point": "report.generation",
+        "task_type": "report",
+        "agent_key": "report_generator",
+        "provider": "coze",
+        "fallback_providers": [],
+        "report_run_id": run["id"],
+        "messages": [{"role": "user", "content": "请用一句话确认报告生成 Bot 已发布并可调用。"}],
+        "temperature": 0,
+        "max_tokens": 128,
+        "stream": False,
+    }, timeout=60)
+    report_probe_gateway = report_probe_body.get("jay_gateway") or {}
+    expect(report_probe_status == 200 and report_probe_body.get("choices")
+           and report_probe_gateway.get("provider") == "coze"
+           and report_probe_gateway.get("providers_attempted") == ["coze"],
+           f"Coze report Bot live probe failed: {report_probe_status} {report_probe_body}")
+
+    course = service_insert("courses", {
+        "slug": f"production-acceptance-{acceptance_run_id}",
+        "title": "生产验收课程",
+        "description": "仅用于验证 Coze 课程 Bot 的真实调用。",
+        "access_level": "workspace",
+        "workspace_id": workspace_a,
+        "status": "published",
+        "published_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    })
+    course_module = service_insert("course_modules", {
+        "course_id": course["id"], "title": "验收模块", "summary": "验收模块", "sort_order": 1, "status": "published",
+    })
+    service_insert("course_lessons", {
+        "module_id": course_module["id"], "title": "验收课时", "summary": "验收课时",
+        "body": "课程验收口令是海风。只允许根据本课时回答。", "sort_order": 1, "status": "published",
+    })
+    course_probe_id = f"production-acceptance-coze-course:{acceptance_run_id}"
+    course_probe_status, course_probe_body, _ = function("ai-proxy", token_a, {
+        "request_id": course_probe_id,
+        "acceptance_run_id": acceptance_run_id,
+        "workspace_id": workspace_a,
+        "operation": "course.acceptance",
+        "entry_point": "academy.course",
+        "task_type": "course_qa",
+        "agent_key": "course_assistant",
+        "provider": "coze",
+        "fallback_providers": [],
+        "context": {"course_id": course["id"]},
+        "messages": [{"role": "user", "content": "本课时的验收口令是什么？"}],
+        "temperature": 0,
+        "max_tokens": 128,
+        "stream": False,
+    }, timeout=60)
+    course_probe_gateway = course_probe_body.get("jay_gateway") or {}
+    expect(course_probe_status == 200 and course_probe_body.get("choices")
+           and course_probe_gateway.get("provider") == "coze"
+           and course_probe_gateway.get("providers_attempted") == ["coze"],
+           f"Coze course Bot live probe failed: {course_probe_status} {course_probe_body}")
+
+    chat_probe_id = f"production-acceptance-general-chat:{acceptance_run_id}"
+    chat_probe_status, chat_probe_body, _ = function("ai-proxy", token_a, {
+        "request_id": chat_probe_id,
+        "acceptance_run_id": acceptance_run_id,
+        "workspace_id": workspace_a,
+        "operation": "general_chat",
+        "entry_point": "overview.decision",
+        "task_type": "general_chat",
+        "agent_key": "",
+        "provider": "auto",
+        "messages": [{"role": "user", "content": "请回复：通用聊天路由正常。"}],
+        "temperature": 0,
+        "max_tokens": 128,
+        "stream": False,
+    }, timeout=60)
+    chat_probe_gateway = chat_probe_body.get("jay_gateway") or {}
+    expect(chat_probe_status == 200 and chat_probe_body.get("choices")
+           and chat_probe_gateway.get("provider") == "deepseek"
+           and chat_probe_gateway.get("task_type") == "general_chat",
+           f"general chat route live probe failed: {chat_probe_status} {chat_probe_body}")
+
     # The primary is deliberately failed at the gateway boundary for this one
     # request. The fallback is not mocked and must complete a real upstream
     # call, leaving two attempts under the same request ID.
@@ -1203,6 +1299,34 @@ def main() -> int:
     expect(len(fallback_reservations) == 1 and fallback_reservations[0].get("status") == "completed"
            and int(fallback_reservations[0].get("actual_tokens") or 0) > 0,
            f"fallback request did not settle exactly one token reservation: {fallback_reservations}")
+    settled_tokens = int(fallback_reservations[0].get("actual_tokens") or 0)
+    duplicate_status, duplicate_body, _ = function("ai-proxy", token_a, {
+        "request_id": fallback_request_id,
+        "acceptance_run_id": acceptance_run_id,
+        "workspace_id": workspace_a,
+        "operation": "production.acceptance.multi_ai_fallback",
+        "task_type": "market_qa",
+        "provider": live_primary_provider,
+        "fallback_providers": [live_fallback_provider],
+        "messages": [{"role": "user", "content": "请用一句很短的话确认多 AI 故障切换。"}],
+        "temperature": 0,
+        "max_tokens": 128,
+        "stream": False,
+    }, timeout=30)
+    expect(duplicate_status == 409 and duplicate_body.get("error") == "AI_REQUEST_ALREADY_COMPLETED",
+           f"replayed AI request was not rejected idempotently: {duplicate_status} {duplicate_body}")
+    replay_reservations = service_select_rows("ai_token_reservations", {
+        "select": "request_id,status,reserved_tokens,actual_tokens",
+        "user_id": f"eq.{user_a}",
+        "request_id": f"eq.{fallback_request_id}",
+        "acceptance_run_id": f"eq.{acceptance_run_id}",
+        "limit": "10",
+    })
+    replay_attempts = provider_attempt_rows(fallback_request_id, acceptance_run_id)
+    expect(len(replay_reservations) == 1
+           and int(replay_reservations[0].get("actual_tokens") or 0) == settled_tokens
+           and len(replay_attempts) == 2,
+           f"replayed AI request changed quota or provider attempts: {replay_reservations} {replay_attempts}")
     multi_ai_acceptance = {
         "status": "passed",
         "primary_provider": live_primary_provider,
@@ -1223,6 +1347,14 @@ def main() -> int:
             "duration_ms": row.get("duration_ms"), "config_fingerprint": row.get("config_fingerprint"),
         } for row in fallback_attempts],
         "quota_settled_once": len(fallback_reservations) == 1,
+        "quota_replay_blocked": True,
+        "task_routes": {
+            "market_qa": primary_gateway.get("provider"),
+            "report": report_probe_gateway.get("provider"),
+            "course_qa": course_probe_gateway.get("provider"),
+            "general_chat": chat_probe_gateway.get("provider"),
+        },
+        "coze_bot_probes": {"market_qa": True, "report": True, "course_qa": True},
         "duration_ms": round((time.monotonic() - fallback_started) * 1000),
     }
     expect(multi_ai_acceptance["request_id_consistent"] is True,
@@ -1288,12 +1420,15 @@ def main() -> int:
     for scenario, expected_status, expected_error in (
         ("quota", 402, "AI_QUOTA_EXCEEDED"),
         ("provider_timeout", 504, "AI_PROVIDER_TIMEOUT"),
+        ("provider_cancel_after_create", 504, "AI_PROVIDER_TIMEOUT"),
         ("rate_limit", 429, "AI_RATE_LIMITED"),
     ):
         fault_request_id = f"production-acceptance-{scenario}:{acceptance_run_id}"
-        status, fault_result, response_headers = function("ai-proxy", token_a, {
-            **fault_body, "request_id": fault_request_id,
-        }, headers=acceptance_fault_headers(user_a, scenario, fault_request_id), timeout=30)
+        scenario_body = {**fault_body, "request_id": fault_request_id}
+        if scenario == "provider_cancel_after_create":
+            scenario_body.update({"provider": "coze", "fallback_providers": [], "task_type": "market_qa"})
+        status, fault_result, response_headers = function("ai-proxy", token_a, scenario_body,
+            headers=acceptance_fault_headers(user_a, scenario, fault_request_id), timeout=30)
         expect(status == expected_status and fault_result.get("error") == expected_error,
                f"AI {scenario} acceptance returned the wrong contract: {status} {fault_result}")
         failure_log = expect_ai_failure_log(token_a, fault_request_id, expected_error)
@@ -1302,7 +1437,7 @@ def main() -> int:
         if scenario == "rate_limit":
             expect(str(response_headers.get("Retry-After") or "") == "60",
                    f"AI rate limit response omitted Retry-After: {dict(response_headers)}")
-        if scenario == "provider_timeout":
+        if scenario in ("provider_timeout", "provider_cancel_after_create"):
             reservations = service_select_rows("ai_token_reservations", {
                 "select": "request_id,status,reserved_tokens,actual_tokens",
                 "user_id": f"eq.{user_a}",
@@ -1316,6 +1451,7 @@ def main() -> int:
             "error": expected_error,
             "request_id": fault_request_id,
             "logged": True,
+            "remote_cancelled": scenario == "provider_cancel_after_create",
         }
 
     report_content = build_server_validated_report_content(token_a, report_text)

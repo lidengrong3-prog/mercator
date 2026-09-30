@@ -149,8 +149,9 @@ export function providerRequestBody(
       bot_id: config.botId,
       user_id: options.userId.slice(0, 128),
       stream: false,
-      // Message list is read after the asynchronous chat completes. Coze
-      // only exposes that conversation history when auto-save is enabled.
+      // Coze Chat v3 retrieve/message-list APIs require the chat to be saved.
+      // The gateway uses a fresh conversation per request and sends only the
+      // already-approved request scope.
       auto_save_history: true,
       ...(options.workspaceId || options.taskType || options.agentKey ? {
         custom_variables: {
@@ -333,6 +334,7 @@ export function providerErrorCode(status: number): string {
 
 export function providerTaskAllowed(provider: GatewayProvider, taskType: string): boolean {
   if (provider === 'codex') return ['code', 'automation', 'system_maintenance'].includes(taskType);
+  if (provider === 'coze') return ['market_qa', 'report', 'course_qa'].includes(taskType);
   if (provider === 'workbuddy') return false;
   return true;
 }

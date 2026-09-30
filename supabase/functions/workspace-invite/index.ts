@@ -8,6 +8,7 @@ const defaultOrigins = [
   'http://127.0.0.1:4174',
 ];
 import { enforceRateLimit, rateLimitResponse, requestId as securityRequestId } from '../_shared/security.ts';
+import { resolveWorkspaceAuthorization, workspaceAuthorizationStatus } from '../_shared/workspace-authorization.ts';
 
 type Json = Record<string, unknown>;
 
@@ -81,7 +82,11 @@ async function authenticatedUser(request: Request, url: string, anonKey: string)
 
 async function db(url: string, headers: Record<string, string>, path: string, init: RequestInit = {}): Promise<unknown> {
   const response = await fetch(`${url}/rest/v1/${path}`, { ...init, headers: { ...headers, ...(init.headers || {}) } });
-  if (!response.ok) throw new HttpError(`DATABASE_${response.status}`, response.status >= 500 ? 502 : response.status);
+  if (!response.ok) {
+    const errorBody = await response.text().catch(() => '');
+    if (errorBody.includes('WORKSPACE_SEAT_LIMIT_REACHED')) throw new HttpError('WORKSPACE_SEAT_LIMIT_REACHED', 409);
+    throw new HttpError(`DATABASE_${response.status}`, response.status >= 500 ? 502 : response.status);
+  }
   if (response.status === 204) return null;
   const text = await response.text();
   return text ? JSON.parse(text) : null;
@@ -134,23 +139,16 @@ export async function handleWorkspaceInvite(request: Request): Promise<Response>
 
   const serviceHeaders = { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey, 'Content-Type': 'application/json' };
   try {
-    const memberships = await db(
+    const authorization = await resolveWorkspaceAuthorization({
       supabaseUrl,
-      serviceHeaders,
-      `workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&role=in.(owner,admin)&select=id&limit=1`,
-    ) as Json[];
-    if (!memberships?.length) throw new HttpError('WORKSPACE_FORBIDDEN', 403);
-
-    const seatCheck = await fetch(`${supabaseUrl}/rest/v1/rpc/assert_workspace_seat_available`, {
-      method: 'POST',
-      headers: serviceHeaders,
-      body: JSON.stringify({ p_workspace_id: workspaceId, p_email: inviteEmail, p_user_id: user.id }),
+      serviceKey,
+      userId: user.id,
+      workspaceId,
+      action: 'invite',
+      resourceType: 'workspace_invite',
+      targetEmail: inviteEmail,
     });
-    if (!seatCheck.ok) {
-      const seatError = await seatCheck.text().catch(() => '');
-      if (seatError.includes('WORKSPACE_SEAT_LIMIT_REACHED')) throw new HttpError('WORKSPACE_SEAT_LIMIT_REACHED', 409);
-      throw new HttpError('WORKSPACE_SEAT_CHECK_FAILED', 503);
-    }
+    if (!authorization.allowed) throw new HttpError(authorization.code, workspaceAuthorizationStatus(authorization));
 
     const resendKey = Deno.env.get('RESEND_API_KEY') || '';
     const fromEmail = Deno.env.get('WORKSPACE_INVITE_FROM_EMAIL') || Deno.env.get('NOTIFICATION_FROM_EMAIL') || '';

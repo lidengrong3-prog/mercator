@@ -2,6 +2,9 @@ export const PRODUCTION_ACCEPTANCE_SCENARIOS = Object.freeze([
   'rate_limit',
   'quota',
   'provider_timeout',
+  // Create a real Coze chat, cancel it through the upstream API, and surface a
+  // timeout so production proves no remote chat is left processing.
+  'provider_cancel_after_create',
   // Fail only the explicitly selected primary provider. The next provider
   // must still make a real upstream request and return a successful response.
   'provider_fallback',

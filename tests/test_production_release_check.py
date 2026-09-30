@@ -174,8 +174,8 @@ class ProductionReleaseCheckTests(unittest.TestCase):
             },
             "multi_ai_acceptance": {
                 "status": "passed",
-                "primary_provider": "deepseek",
-                "fallback_provider": "openai",
+                "primary_provider": "coze",
+                "fallback_provider": "deepseek",
                 "primary_request_id": "primary-request",
                 "fallback_request_id": "fallback-request",
                 "primary_real_call": True,
@@ -184,11 +184,16 @@ class ProductionReleaseCheckTests(unittest.TestCase):
                 "fallback_used": True,
                 "request_id_consistent": True,
                 "quota_settled_once": True,
+                "quota_replay_blocked": True,
+                "task_routes": {
+                    "market_qa": "coze", "report": "coze", "course_qa": "coze", "general_chat": "deepseek",
+                },
+                "coze_bot_probes": {"market_qa": True, "report": True, "course_qa": True},
                 "attempt_count": 2,
                 "attempts": [
-                    {"provider": "deepseek", "model": "deepseek-chat", "status": "failed",
+                    {"provider": "coze", "model": "bot:market", "status": "failed",
                      "error_code": "AI_PROVIDER_UNAVAILABLE", "config_fingerprint": "sha256:" + "a" * 64},
-                    {"provider": "openai", "model": "gpt-4.1-mini", "status": "completed",
+                    {"provider": "deepseek", "model": "deepseek-chat", "status": "completed",
                      "http_status": 200, "config_fingerprint": "sha256:" + "b" * 64},
                 ],
             },
@@ -215,6 +220,7 @@ class ProductionReleaseCheckTests(unittest.TestCase):
                 "forbidden": {"status": 403, "error": "ORIGIN_NOT_ALLOWED"},
                 "rate_limit": {"status": 429, "error": "AI_RATE_LIMITED", "logged": True},
                 "provider_timeout": {"status": 504, "error": "AI_PROVIDER_TIMEOUT", "logged": True},
+                "provider_cancel_after_create": {"status": 504, "error": "AI_PROVIDER_TIMEOUT", "logged": True, "remote_cancelled": True},
                 "quota": {"status": 402, "error": "AI_QUOTA_EXCEEDED", "logged": True},
                 "duplicate_generation": {"run_id": "run", "row_count": 1},
                 "duplicate_exports": {

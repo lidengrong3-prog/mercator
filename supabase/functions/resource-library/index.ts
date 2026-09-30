@@ -1,4 +1,5 @@
 import { enforceRateLimit, rateLimitResponse, requestId as securityRequestId } from '../_shared/security.ts';
+import { resolveWorkspaceAuthorization, workspaceAuthorizationStatus } from '../_shared/workspace-authorization.ts';
 
 const defaultOrigins = [
   'https://lidengrong3-prog.github.io',
@@ -108,9 +109,16 @@ Deno.serve(async (request) => {
   const requestedWorkspaceId = uuid(payload.workspace_id);
   let workspaceMember = false;
   if (requestedWorkspaceId) {
-    const membershipResponse = await fetch(`${supabaseUrl}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(requestedWorkspaceId)}&user_id=eq.${encodeURIComponent(userId)}&status=eq.active&select=role&limit=1`, { headers: serviceHeaders });
-    workspaceMember = membershipResponse.ok && (await membershipResponse.json()).length > 0;
-    if (!workspaceMember && !isAdmin) return errorResponse('WORKSPACE_FORBIDDEN', requestId, origin, 403);
+    const authorization = await resolveWorkspaceAuthorization({
+      supabaseUrl,
+      serviceKey,
+      userId,
+      workspaceId: requestedWorkspaceId,
+      action: 'resource_read',
+      resourceType: 'resource_library',
+    });
+    workspaceMember = authorization.allowed;
+    if (!workspaceMember && !isAdmin) return errorResponse(authorization.code, requestId, origin, workspaceAuthorizationStatus(authorization));
   }
 
   async function rows(table: string, query: string): Promise<Record<string, unknown>[]> {
@@ -165,10 +173,16 @@ Deno.serve(async (request) => {
     if (course.access_level === 'workspace') return !!requestedWorkspaceId && workspaceMember && String(course.workspace_id || '') === requestedWorkspaceId;
     if (course.access_level === 'plan') {
       if (!requestedWorkspaceId || !workspaceMember) return false;
-      const subscriptions = await rows('workspace_subscriptions', `select=plan,status&workspace_id=eq.${encodeURIComponent(requestedWorkspaceId)}&limit=1`);
-      const subscription = subscriptions[0] || {};
-      const planRank: Record<string, number> = { free: 1, pro: 2, enterprise: 3 };
-      return ['trialing', 'active'].includes(String(subscription.status || '')) && (planRank[String(subscription.plan || 'free')] || 0) >= (planRank[String(course.required_plan || 'free')] || 1);
+      const authorization = await resolveWorkspaceAuthorization({
+        supabaseUrl: supabaseUrl as string,
+        serviceKey: serviceKey as string,
+        userId,
+        workspaceId: requestedWorkspaceId,
+        action: 'course_read',
+        resourceType: 'course',
+        requiredPlan: String(course.required_plan || 'free'),
+      });
+      return authorization.allowed;
     }
     const workspaceFilter = requestedWorkspaceId ? `&workspace_id=eq.${encodeURIComponent(requestedWorkspaceId)}` : '&workspace_id=is.null';
     const enrollments = await rows('course_enrollments', `select=status,expires_at&course_id=eq.${encodeURIComponent(String(course.id))}&user_id=eq.${encodeURIComponent(userId)}${workspaceFilter}&limit=10`);

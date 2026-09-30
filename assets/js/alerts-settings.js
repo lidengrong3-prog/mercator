@@ -324,6 +324,81 @@ var alTypeLabels={shop:'店铺异动',cat:'类目变化',policy:'政策动态',t
 var alLevelLabels={high:'高风险',mid:'中风险',low:'普通'};
 var alTypeTargets={shop:'products',cat:'products',policy:'policies',tax:'policies',access:'policies',market:'countries',platform:'rules'};
 var alFilterStorageKey='jay_alert_filters_v2';
+var alMonitoringTasks=[];
+var alMonitoringLoadState='idle';
+var alMonitoringContextKey='';
+
+function alCurrentMonitoringContext(){
+  if(typeof jayCanUseUserDb!=='function'||!jayCanUseUserDb())return 'guest';
+  return String(jayUser&&jayUser.id||'')+':'+String(typeof jayActiveWorkspaceId==='function'?jayActiveWorkspaceId():'');
+}
+function alRecordMonitoringTasks(){
+  return alMonitoringTasks.filter(function(task){return ['policy','rule','activity'].indexOf(String(task.source_record_type||task.task_type||''))>=0;});
+}
+async function alLoadMonitoringTasks(force){
+  var context=alCurrentMonitoringContext();
+  if(context==='guest'){alMonitoringTasks=[];alMonitoringContextKey=context;alMonitoringLoadState='guest';renderAlMonitoringPanel();return [];}
+  if(!force&&alMonitoringLoadState==='loading')return alMonitoringTasks;
+  if(!force&&context===alMonitoringContextKey&&alMonitoringLoadState==='ready')return alMonitoringTasks;
+  alMonitoringContextKey=context;alMonitoringLoadState='loading';renderAlMonitoringPanel();
+  try{
+    alMonitoringTasks=await window.jayLoadMonitoringTasks({throwOnError:true});
+    alMonitoringLoadState='ready';
+  }catch(error){
+    alMonitoringLoadState='error';
+    console.warn('[JAY观海] alert monitor load failed:',error);
+  }
+  renderAlMonitoringPanel();
+  return alMonitoringTasks;
+}
+function alMonitoringStatusLabel(status){return ({active:'监控中',paused:'已暂停',failed:'执行失败',expired:'已过期',blocked:'已阻断'})[status]||status||'未知';}
+function alMonitoringTypeLabel(type){return ({policy:'政策',rule:'平台规则',activity:'平台活动'})[type]||type||'来源记录';}
+function renderAlMonitoringPanel(){
+  var el=document.getElementById('al-monitoring');if(!el)return;
+  var head='<div class="al-monitoring-head"><div><h3>我的来源监控</h3><p>记录保存在当前工作区，刷新页面后仍会保留。</p></div><button type="button" class="al-btn" data-action="alLoadMonitoringTasks(true)">刷新</button></div>';
+  if(alMonitoringLoadState==='guest'){el.innerHTML=head+'<div class="al-monitoring-empty">请先登录后查看和管理预警监控。</div>';return;}
+  if(alMonitoringLoadState==='loading'){el.innerHTML=head+'<div class="al-monitoring-empty">正在读取工作区监控记录…</div>';return;}
+  if(alMonitoringLoadState==='error'){el.innerHTML=head+'<div class="al-monitoring-empty is-error">监控记录读取失败，请刷新重试。</div>';return;}
+  var tasks=alRecordMonitoringTasks();
+  if(!tasks.length){el.innerHTML=head+'<div class="al-monitoring-empty">当前工作区尚未添加政策或规则预警。</div>';return;}
+  el.innerHTML=head+'<div class="al-monitoring-list">'+tasks.map(function(task){
+    var type=String(task.source_record_type||task.task_type||'');
+    var status=String(task.status||'active');
+    var toggleStatus=status==='active'?'paused':'active';
+    var toggleText=status==='active'?'暂停':'重新启用';
+    return '<article class="al-monitoring-item" data-monitor-id="'+escapeHtml(task.id)+'">'
+      +'<div class="al-monitoring-copy"><div><span class="al-monitoring-type">'+escapeHtml(alMonitoringTypeLabel(type))+'</span><b>'+escapeHtml(task.source_title||task.source_record_id||'未命名来源')+'</b></div>'
+      +'<p>'+escapeHtml(task.market_code||'')+(task.platform_key?' · '+escapeHtml(task.platform_key):'')+' · 创建于 '+escapeHtml(jayFmtTime(task.created_at||''))+'</p></div>'
+      +'<span class="al-monitoring-status is-'+escapeHtml(status)+'">'+escapeHtml(alMonitoringStatusLabel(status))+'</span>'
+      +'<div class="al-monitoring-actions"><button type="button" data-action="alSetMonitoringStatus(\''+escInline(task.id)+'\',\''+toggleStatus+'\',this)">'+toggleText+'</button><button type="button" class="danger" data-action="alDeleteMonitoringTask(\''+escInline(task.id)+'\',this)">删除</button></div>'
+      +'</article>';
+  }).join('')+'</div>';
+}
+async function alSetMonitoringStatus(taskId,status,button){
+  var original=button?button.textContent:'';if(button){button.disabled=true;button.textContent='同步中…';}
+  try{
+    var task=await window.jayUpdateMonitoringTask(taskId,{status:status});
+    alMonitoringTasks=alMonitoringTasks.map(function(item){return item.id===taskId?task:item;});
+    renderAlMonitoringPanel();toast(status==='paused'?'监控已暂停并同步到后端':'监控已重新启用并同步到后端');
+  }catch(error){
+    var code=typeof jayErrorCode==='function'?jayErrorCode(error):String(error&&error.message||'');
+    if(code==='AUTH_REQUIRED')toast('请先登录后管理预警');else if(code==='WORKSPACE_READ_ONLY'||error.status===403)toast('当前工作区无权修改预警');else toast('监控状态同步失败：'+(window.jayServiceErrorText?window.jayServiceErrorText(error):'请稍后重试'));
+    if(button){button.disabled=false;button.textContent=original;}
+  }
+}
+async function alDeleteMonitoringTask(taskId,button){
+  var original=button?button.textContent:'';if(button){button.disabled=true;button.textContent='删除中…';}
+  try{
+    await window.jayDeleteMonitoringTask(taskId);
+    alMonitoringTasks=alMonitoringTasks.filter(function(item){return item.id!==taskId;});
+    renderAlMonitoringPanel();toast('监控已删除并同步到后端');
+  }catch(error){
+    var code=typeof jayErrorCode==='function'?jayErrorCode(error):String(error&&error.message||'');
+    if(code==='AUTH_REQUIRED')toast('请先登录后管理预警');else if(code==='WORKSPACE_READ_ONLY'||error.status===403)toast('当前工作区无权删除预警');else toast('监控删除失败：'+(window.jayServiceErrorText?window.jayServiceErrorText(error):'请稍后重试'));
+    if(button){button.disabled=false;button.textContent=original;}
+  }
+}
+window.alLoadMonitoringTasks=alLoadMonitoringTasks;window.alSetMonitoringStatus=alSetMonitoringStatus;window.alDeleteMonitoringTask=alDeleteMonitoringTask;
 
 // Initial alerts render will be triggered by switchPage
 
@@ -336,6 +411,8 @@ function renderAlerts(){
   renderAlBatch();
   renderAlList(filtered);
   renderAlPagination(filtered);
+  renderAlMonitoringPanel();
+  if(alCurrentMonitoringContext()!==alMonitoringContextKey||alMonitoringLoadState==='idle')alLoadMonitoringTasks(false);
   updateAlBadge(filtered);
 }
 
@@ -1281,3 +1358,4 @@ if(window.addEventListener) window.addEventListener('jay:market-scope-change', f
   if(typeof refreshDynamicAlerts==='function')refreshDynamicAlerts();
   if(typeof renderAlerts==='function')renderAlerts();
 });
+if(window.addEventListener)window.addEventListener('jay:monitoring-task-change',function(){alLoadMonitoringTasks(true);});

@@ -5,6 +5,7 @@ import {
   validateFormalReportWithServerData,
 } from '../_shared/report-validation.ts';
 import { enforceRateLimit, rateLimitResponse, requestId as securityRequestId } from '../_shared/security.ts';
+import { resolveWorkspaceAuthorization, workspaceAuthorizationStatus } from '../_shared/workspace-authorization.ts';
 
 const defaultOrigins = [
   'https://lidengrong3-prog.github.io',
@@ -121,14 +122,15 @@ Deno.serve(async (request) => {
     apikey: serviceKey,
     'Content-Type': 'application/json',
   };
-  const membershipResponse = await fetch(
-    `${supabaseUrl}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(user.id)}&status=eq.active&select=role&limit=1`,
-    { headers: serviceHeaders },
-  );
-  const memberships = membershipResponse.ok ? await membershipResponse.json() : [];
-  const role = String(memberships?.[0]?.role || '');
-  if (!role) return jsonResponse({ error: 'WORKSPACE_FORBIDDEN' }, 403, origin);
-  if (!['owner', 'admin', 'editor'].includes(role)) return jsonResponse({ error: 'WORKSPACE_READ_ONLY' }, 403, origin);
+  const authorization = await resolveWorkspaceAuthorization({
+    supabaseUrl,
+    serviceKey,
+    userId: user.id,
+    workspaceId,
+    action: 'report_write',
+    resourceType: 'report',
+  });
+  if (!authorization.allowed) return jsonResponse({ error: authorization.code }, workspaceAuthorizationStatus(authorization), origin);
 
   const existingResponse = await fetch(
     `${supabaseUrl}/rest/v1/generated_reports?workspace_id=eq.${encodeURIComponent(workspaceId)}&client_id=eq.${encodeURIComponent(clientId)}&select=id,user_id&limit=1`,

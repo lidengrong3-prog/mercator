@@ -13,6 +13,7 @@ import {
 import type { GatewayProvider } from '../_shared/ai-gateway.ts';
 import { invokeCozeChat } from '../_shared/coze-chat.ts';
 import { isMacroHistoryRow, isMacroQuestion, selectRelevantMacroRows } from '../_shared/macro-retrieval.ts';
+import { resolveWorkspaceAuthorization, workspaceAuthorizationStatus } from '../_shared/workspace-authorization.ts';
 
 const defaultOrigins = [
   'https://lidengrong3-prog.github.io',
@@ -76,6 +77,7 @@ const ERROR_SUGGESTIONS: Record<string, string> = {
   NETWORK_ERROR: '请检查网络连接后重试',
   WORKSPACE_REQUIRED: '请先选择一个工作区后重试',
   WORKSPACE_FORBIDDEN: '你已不在该工作区，刷新页面后重新选择工作区',
+  WORKSPACE_READ_ONLY: '当前角色只有查看权限，无法发起 AI 请求',
   COURSE_REQUIRED: '请先打开一门课程，再使用课程问答',
   COURSE_FORBIDDEN: '当前账号没有这门课程的访问权限',
   COURSE_CONTENT_EMPTY: '课程内容尚未发布，暂时无法回答',
@@ -495,6 +497,7 @@ Deno.serve(async (request) => {
   }
   const resourceWorkspaceIds = [reportRunResource?.workspace_id, reportResource?.workspace_id].filter(Boolean) as string[];
   let workspaceId = requestedWorkspaceId || resourceWorkspaceIds[0] || null;
+  let workspaceAuthorization: Awaited<ReturnType<typeof resolveWorkspaceAuthorization>> | null = null;
   if (isGeneralChat) {
     // General chat does not require a selected workspace. Use an active one
     // only when available so existing audit tables can remain workspace-scoped.
@@ -510,11 +513,17 @@ Deno.serve(async (request) => {
     if (!workspaceId || resourceWorkspaceIds.some((id) => id !== workspaceId)) {
       return jsonResponse(gatewayErrorBody(workspaceId ? 'WORKSPACE_FORBIDDEN' : 'WORKSPACE_REQUIRED', requestId, provider), workspaceId ? 403 : 400, origin);
     }
-    const membershipResponse = await fetch(`${supabaseUrl}/rest/v1/workspace_members?workspace_id=eq.${encodeURIComponent(workspaceId)}&user_id=eq.${encodeURIComponent(String(user.id))}&status=eq.active&select=role&limit=1`, { headers: serviceHeaders });
-    if (!membershipResponse.ok) return jsonResponse(gatewayErrorBody('WORKSPACE_FORBIDDEN', requestId, provider), 403, origin);
-    const memberships = await membershipResponse.json();
-    if (!memberships?.length) return jsonResponse(gatewayErrorBody('WORKSPACE_FORBIDDEN', requestId, provider), 403, origin);
-    if (!['owner', 'admin', 'editor'].includes(String(memberships[0]?.role || ''))) return jsonResponse(gatewayErrorBody('WORKSPACE_READ_ONLY', requestId, provider), 403, origin);
+    workspaceAuthorization = await resolveWorkspaceAuthorization({
+      supabaseUrl,
+      serviceKey,
+      userId: user.id,
+      workspaceId,
+      action: 'write',
+      resourceType: 'ai_request',
+    });
+    if (!workspaceAuthorization.allowed) {
+      return jsonResponse(gatewayErrorBody(workspaceAuthorization.code, requestId, provider), workspaceAuthorizationStatus(workspaceAuthorization), origin);
+    }
   }
 
   // Resolve one agent and an ordered provider route. Explicit provider choices
@@ -618,8 +627,13 @@ Deno.serve(async (request) => {
   }
   const providerCatalogRows = await readRows(`ai_provider_catalog?provider_key=in.(${providerCandidates.join(',')})&limit=20`);
   const disabledProviders = new Set(providerCatalogRows.filter((row) => row.status === 'disabled').map((row) => String(row.provider_key)));
-  const enabledCandidates = providerCandidates.filter((candidate) => !disabledProviders.has(candidate)
-    && (isGeneralChat || providerTaskAllowed(candidate, taskType)));
+  const providerCatalog = new Map(providerCatalogRows.map((row) => [String(row.provider_key), row]));
+  const enabledCandidates = providerCandidates.filter((candidate) => {
+    const catalog = providerCatalog.get(candidate);
+    const allowedTasks = Array.isArray(catalog?.allowed_task_types) ? catalog.allowed_task_types as unknown[] : [];
+    const catalogAllowsTask = !catalog || !allowedTasks.length || allowedTasks.map(String).includes(taskType);
+    return !disabledProviders.has(candidate) && providerTaskAllowed(candidate, taskType) && catalogAllowsTask;
+  });
   if (!enabledCandidates.length) return jsonResponse(gatewayErrorBody('AI_PROVIDER_FORBIDDEN', requestId, provider), 403, origin);
   provider = enabledCandidates[0];
   const requestedModel = payload.model ? String(payload.model).slice(0, 120) : null;
@@ -692,10 +706,16 @@ Deno.serve(async (request) => {
     let courseAllowed = Boolean(course && course.status === 'published' && course.access_level === 'public');
     if (course && course.status === 'published' && course.access_level === 'workspace') courseAllowed = String(course.workspace_id || '') === workspaceId;
     if (course && course.status === 'published' && course.access_level === 'plan') {
-      const subscriptions = await readRows(`workspace_subscriptions?workspace_id=eq.${encodeURIComponent(workspaceId || '')}&select=plan,status&limit=1`);
-      const subscription = subscriptions[0] || {};
-      const planRank: Record<string, number> = { free: 1, pro: 2, enterprise: 3 };
-      courseAllowed = ['trialing', 'active'].includes(String(subscription.status || '')) && (planRank[String(subscription.plan || 'free')] || 0) >= (planRank[String(course.required_plan || 'free')] || 1);
+      const courseAuthorization = await resolveWorkspaceAuthorization({
+        supabaseUrl,
+        serviceKey,
+        userId: user.id,
+        workspaceId,
+        action: 'course_read',
+        resourceType: 'course',
+        requiredPlan: String(course.required_plan || 'free'),
+      });
+      courseAllowed = courseAuthorization.allowed;
     }
     if (course && course.status === 'published' && ['purchase', 'manual'].includes(String(course.access_level))) {
       const enrollments = await readRows(`course_enrollments?course_id=eq.${encodeURIComponent(courseId)}&user_id=eq.${encodeURIComponent(String(user.id))}&status=eq.active&select=id,workspace_id,expires_at&limit=10`);
@@ -746,6 +766,7 @@ Deno.serve(async (request) => {
   if (taskType === 'code' || taskType === 'automation' || taskType === 'system_maintenance') inferredDisclosureScope.add('system_metadata');
   dataDisclosure.scope = Array.from(inferredDisclosureScope).slice(0, 20);
   let activeModel = requestedModel || '';
+  let finalFallbackReason: string | null = null;
   const providerAttempts: Array<Record<string, unknown>> = [];
   const providerConfigFingerprints: Record<string, string> = {};
   let fallbackUsed = false;
@@ -772,6 +793,7 @@ Deno.serve(async (request) => {
         operation, entry_point: entryPoint, task_type: taskType, agent_key: agentKey,
         requested_provider: requestedProvider, provider, model: String(values.model || activeModel || ''), data_version: dataVersion,
         provider_attempts: providerAttempts, provider_config_fingerprints: providerConfigFingerprints, fallback_used: fallbackUsed,
+        final_fallback_reason: fallbackUsed ? finalFallbackReason : null,
         retry_count: Math.max(0, providerAttempts.length - 1), data_disclosure: dataDisclosure,
         search_enabled: Boolean(values.search_enabled == null ? searchRequested : values.search_enabled),
         duration_ms: Date.now() - startedAt, metadata: {
@@ -848,11 +870,14 @@ Deno.serve(async (request) => {
     return response.ok;
   };
   if (!isGeneralChat) {
-    const effectivePlanResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/workspace_effective_entitlement`, {
-      method: 'POST', headers: serviceHeaders, body: JSON.stringify({ p_workspace_id: workspaceId, p_user_id: user.id }),
-    });
-    if (!effectivePlanResponse.ok) return jsonResponse(gatewayErrorBody('BILLING_ENTITLEMENTS_UNAVAILABLE', requestId, provider), 503, origin);
-    const entitlement = await effectivePlanResponse.json();
+    if (!workspaceAuthorization) {
+      return jsonResponse(
+        gatewayErrorBody('BILLING_ENTITLEMENTS_UNAVAILABLE', requestId, provider),
+        503,
+        origin,
+      );
+    }
+    const entitlement = workspaceAuthorization.entitlement as Record<string, unknown> | undefined;
     effectivePlan = String(entitlement?.plan || 'free');
     if (!entitlement) return jsonResponse(gatewayErrorBody('BILLING_ENTITLEMENTS_UNAVAILABLE', requestId, provider), 503, origin);
 
@@ -983,10 +1008,9 @@ Deno.serve(async (request) => {
           body,
           signal: controller.signal,
           pollIntervalMs: Number(Deno.env.get('COZE_POLL_INTERVAL_MS') || 500),
-          // Coze runs asynchronously. Keep the default polling window aligned
-          // with the gateway's 50-second provider deadline so slower bots do
-          // not fail the live fallback before the gateway timeout expires.
-          pollMaxAttempts: Number(Deno.env.get('COZE_POLL_MAX_ATTEMPTS') || 100),
+          pollMaxAttempts: Number(Deno.env.get('COZE_POLL_MAX_ATTEMPTS') || 60),
+          cancelAfterCreate: acceptanceScenario === 'provider_cancel_after_create',
+          requireCancellation: acceptanceScenario === 'provider_cancel_after_create',
         });
       }
       return await fetch(providerEndpoint(config), {
@@ -1019,6 +1043,7 @@ Deno.serve(async (request) => {
         lastErrorCode = unavailableProviderError;
         lastErrorStatus = 503;
       }
+      if (candidateIndex === 0) finalFallbackReason = unavailableProviderError;
       await logProviderAttempt({ provider: candidate, model: activeModel, status: 'failed', http_status: 503, error_code: unavailableProviderError, fallback_reason: candidateIndex ? 'primary_provider_failed' : 'provider_not_configured' });
       continue;
     }
@@ -1030,6 +1055,7 @@ Deno.serve(async (request) => {
     if (acceptanceScenario === 'provider_fallback' && candidateIndex === 0) {
       lastErrorCode = 'AI_PROVIDER_UNAVAILABLE';
       lastErrorStatus = 503;
+      finalFallbackReason = 'acceptance_primary_fault';
       await logProviderAttempt({
         provider: candidate, model: activeModel, config_fingerprint: configFingerprint,
         status: 'failed', http_status: 503, error_code: lastErrorCode,
@@ -1050,6 +1076,7 @@ Deno.serve(async (request) => {
         const aborted = error instanceof DOMException && error.name === 'AbortError';
         lastErrorCode = aborted ? 'AI_PROVIDER_TIMEOUT' : 'AI_PROVIDER_UNREACHABLE';
         lastErrorStatus = aborted ? 504 : 502;
+        if (candidateIndex === 0) finalFallbackReason = lastErrorCode;
         await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: lastErrorStatus, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'primary_provider_failed' : null });
         providerFinished = true;
         continue;
@@ -1065,6 +1092,7 @@ Deno.serve(async (request) => {
         const providerError = String(upstream.headers.get('x-jay-provider-error-code') || '').replace(/[^A-Za-z0-9._-]/g, '').slice(0, 80);
         const attemptErrorCode = providerError ? `${lastErrorCode}:${candidate.toUpperCase()}_${providerError}` : lastErrorCode;
         retryAfter = upstream.headers.get('retry-after') || '60';
+        if (candidateIndex === 0) finalFallbackReason = attemptErrorCode;
         await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: upstream.status, error_code: attemptErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
         providerFinished = true;
         continue;
@@ -1075,6 +1103,7 @@ Deno.serve(async (request) => {
       } catch {
         lastErrorCode = 'AI_PROVIDER_INVALID_RESPONSE';
         lastErrorStatus = 502;
+        if (candidateIndex === 0) finalFallbackReason = lastErrorCode;
         await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: 502, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
         providerFinished = true;
         continue;
@@ -1082,6 +1111,7 @@ Deno.serve(async (request) => {
       if (candidate === 'coze' && Number(rawResult.code || 0) !== 0) {
         lastErrorCode = Number(rawResult.code) === 429 ? 'AI_RATE_LIMITED' : 'AI_PROVIDER_ERROR';
         lastErrorStatus = Number(rawResult.code) === 429 ? 429 : 502;
+        if (candidateIndex === 0) finalFallbackReason = lastErrorCode;
         await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: lastErrorStatus, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
         providerFinished = true;
         continue;
@@ -1090,6 +1120,7 @@ Deno.serve(async (request) => {
       if (!parsed.content) {
         lastErrorCode = 'AI_EMPTY_RESPONSE';
         lastErrorStatus = 502;
+        if (candidateIndex === 0) finalFallbackReason = lastErrorCode;
         await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'failed', http_status: 502, error_code: lastErrorCode, duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
         providerFinished = true;
         continue;
@@ -1101,6 +1132,7 @@ Deno.serve(async (request) => {
         && formalRetrieval.prompt.includes('【类目证据边界】') && isRefusalStyleAnswer(parsed.content)) {
         lastErrorCode = 'AI_CONTENT_REFUSAL';
         lastErrorStatus = 502;
+        if (candidateIndex === 0) finalFallbackReason = lastErrorCode;
         await logProviderAttempt({
           provider: candidate, model: activeModel, config_fingerprint: configFingerprint,
           status: 'failed', http_status: 502, error_code: lastErrorCode,
@@ -1112,7 +1144,7 @@ Deno.serve(async (request) => {
       provider = candidate;
       successfulResult = rawResult;
       parsedResult = parsed;
-      await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'completed', http_status: 200, input_tokens: parsed.inputTokens, output_tokens: parsed.outputTokens, total_tokens: parsed.totalTokens, estimated_cost_usd: estimateCost(parsed.inputTokens, parsed.outputTokens, candidate), duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? 'fallback_provider' : null });
+      await logProviderAttempt({ provider: candidate, model: activeModel, config_fingerprint: configFingerprint, status: 'completed', http_status: 200, input_tokens: parsed.inputTokens, output_tokens: parsed.outputTokens, total_tokens: parsed.totalTokens, estimated_cost_usd: estimateCost(parsed.inputTokens, parsed.outputTokens, candidate), duration_ms: Date.now() - attemptStarted, fallback_reason: candidateIndex ? (finalFallbackReason || 'primary_provider_failed') : null });
       providerFinished = true;
     }
   }
@@ -1156,7 +1188,7 @@ Deno.serve(async (request) => {
     await logRequest({ status: 'failed', input_tokens: inputTokens, output_tokens: outputTokens, total_tokens: totalTokens, estimated_cost_usd: estimateCost(inputTokens, outputTokens), http_status: 503, error_code: 'AI_USAGE_FINALIZATION_FAILED' });
     return jsonResponse(gatewayErrorBody('AI_USAGE_FINALIZATION_FAILED', requestId, provider, { entry_point: entryPoint, operation }), 503, origin);
   }
-  await logRequest({ status: 'completed', model: activeModel, input_tokens: inputTokens, output_tokens: outputTokens, total_tokens: totalTokens, estimated_cost_usd: estimateCost(inputTokens, outputTokens, provider), http_status: 200, error_code: null, search_enabled: usedSearch, metadata: { fallback_used: fallbackUsed, route_source: routeSource } });
+  await logRequest({ status: 'completed', model: activeModel, input_tokens: inputTokens, output_tokens: outputTokens, total_tokens: totalTokens, estimated_cost_usd: estimateCost(inputTokens, outputTokens, provider), http_status: 200, error_code: null, search_enabled: usedSearch, metadata: { fallback_used: fallbackUsed, route_source: routeSource, final_fallback_reason: finalFallbackReason } });
   const result: Record<string, unknown> = {
     id: String(successfulResult.id || `jay-${requestId}`),
     object: 'chat.completion',
@@ -1194,6 +1226,7 @@ Deno.serve(async (request) => {
       Object.assign(publicGateway, {
         request_id: requestId, entry_point: entryPoint, operation, provider, model: activeModel,
         agent_key: agentKey, route_source: routeSource, search_used: usedSearch,
+        final_fallback_reason: fallbackUsed ? finalFallbackReason : null,
         providers_attempted: providerAttempts.map((item) => item.provider),
         provider_config_fingerprints: providerConfigFingerprints,
         attempts: providerAttempts.map((item) => ({

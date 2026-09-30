@@ -76,6 +76,9 @@ BEGIN
     DELETE FROM public.user_watchlist WHERE acceptance_run_id = trim(p_acceptance_run_id) AND workspace_id = ANY(workspace_ids);
     GET DIAGNOSTICS table_count = ROW_COUNT;
     removed := removed || jsonb_build_object('user_watchlist', table_count);
+    DELETE FROM public.monitoring_tasks WHERE acceptance_run_id = trim(p_acceptance_run_id) AND workspace_id = ANY(workspace_ids);
+    GET DIAGNOSTICS table_count = ROW_COUNT;
+    removed := removed || jsonb_build_object('monitoring_tasks', table_count);
     DELETE FROM public.monitored_shops WHERE acceptance_run_id = trim(p_acceptance_run_id) AND user_id IN (run_row.api_owner_id, run_row.browser_owner_id);
     GET DIAGNOSTICS table_count = ROW_COUNT;
     removed := removed || jsonb_build_object('monitored_shops', table_count);

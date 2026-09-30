@@ -40,3 +40,39 @@ Deno.test('Coze v3 adapter maps API authentication errors', async () => {
   if (result.status !== 401) throw new Error(`expected 401, received ${result.status}`);
   if (result.headers.get('X-JAY-Provider-Error-Code') !== '4101') throw new Error('Coze error code was not preserved safely');
 });
+
+Deno.test('Coze timeout cancels the created upstream chat', async () => {
+  const calls: string[] = [];
+  const cancelBodies: Array<Record<string, unknown>> = [];
+  const fetcher = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input);
+    calls.push(url);
+    if (url.endsWith('/v3/chat')) {
+      return new Response(JSON.stringify({ code: 0, data: { id: 'chat-timeout', conversation_id: 'conversation-timeout', status: 'in_progress' } }), { status: 200 });
+    }
+    if (url.endsWith('/v3/chat/cancel')) {
+      cancelBodies.push(JSON.parse(String(init?.body || '{}')));
+      return new Response(JSON.stringify({ code: 0, data: { status: 'canceled' } }), { status: 200 });
+    }
+    return new Response(JSON.stringify({ code: 0, data: { id: 'chat-timeout', conversation_id: 'conversation-timeout', status: 'in_progress' } }), { status: 200 });
+  }) as typeof fetch;
+  let timedOut = false;
+  try {
+    await invokeCozeChat(config, {
+      body: { bot_id: 'bot-1', user_id: 'user-1', stream: false },
+      signal: new AbortController().signal,
+      pollIntervalMs: 10,
+      pollMaxAttempts: 1,
+      fetcher,
+    });
+  } catch (error) {
+    timedOut = error instanceof DOMException && error.name === 'AbortError';
+  }
+  const cancelBody = cancelBodies[0];
+  if (
+    !timedOut ||
+    !calls.some((url) => url.endsWith('/v3/chat/cancel')) ||
+    cancelBody?.chat_id !== 'chat-timeout' ||
+    cancelBody?.conversation_id !== 'conversation-timeout'
+  ) throw new Error(`Coze timeout was not cancelled correctly: ${JSON.stringify({ calls, cancelBodies })}`);
+});
