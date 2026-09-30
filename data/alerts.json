@@ -590,8 +590,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "d5e2fede34795391757a30e91d72c9143db7f5a1bff300e5e5e7664662fec663",
-      "dataset_snapshot_at": "2026-09-28T05:28:52.800395+00:00",
+      "dataset_snapshot_id": "48e7747f5d27cacc63e3f0dd636ff8758503f595dbff61e92116ff6ae4fbcf93",
+      "dataset_snapshot_at": "2026-09-30T05:35:47.844337+00:00",
       "dataset_record_count": 169,
       "window_start": "2026-07-02",
       "window_end": "2026-09-30",
@@ -601,7 +601,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "0dcfc4c162a832d3201ccec5e05c005d44c3dac27d1d5a574bbc5464b3c56e5f"
+      "evidence_hash": "f036fa543b2e693ac07242739e56a2c27e9a08b3e599e75b5fdbf22898fc23f5"
     }
   ],
   [
@@ -769,8 +769,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "d5e2fede34795391757a30e91d72c9143db7f5a1bff300e5e5e7664662fec663",
-      "dataset_snapshot_at": "2026-09-28T05:28:52.800395+00:00",
+      "dataset_snapshot_id": "48e7747f5d27cacc63e3f0dd636ff8758503f595dbff61e92116ff6ae4fbcf93",
+      "dataset_snapshot_at": "2026-09-30T05:35:47.844337+00:00",
       "dataset_record_count": 169,
       "window_start": "2026-07-02",
       "window_end": "2026-09-30",
@@ -780,7 +780,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "901dcd4f2bc54dadc778503a1170b222b63e2e1aa90e436cf75778ddb865d620"
+      "evidence_hash": "27cbe783ed1ff0e8e7f60958167916ce5b5ec0512f0b2b53872130316b87d233"
     }
   ],
   [
@@ -852,8 +852,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "d5e2fede34795391757a30e91d72c9143db7f5a1bff300e5e5e7664662fec663",
-      "dataset_snapshot_at": "2026-09-28T05:28:52.800395+00:00",
+      "dataset_snapshot_id": "48e7747f5d27cacc63e3f0dd636ff8758503f595dbff61e92116ff6ae4fbcf93",
+      "dataset_snapshot_at": "2026-09-30T05:35:47.844337+00:00",
       "dataset_record_count": 169,
       "window_start": "2026-07-02",
       "window_end": "2026-09-30",
@@ -863,7 +863,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "b38b7aff3ed99f155f1135a16e4099b8d338588ece7a41df718671dfce3e403a"
+      "evidence_hash": "f6d83bb93c80b063990709f1f5b6fac5079d3cb4bf8dc094472317bb5b1cb0ae"
     }
   ],
   [
@@ -1639,7 +1639,7 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "1ea6fe22fd99f35c0c70e15834237e248e8c2927b3cb6bd7abe90e9eadc4884d",
+      "dataset_snapshot_id": "1780bdade01c6bc1c92392c034de11bdcd77adb899bd5192134e4cd88ed8fadb",
       "dataset_snapshot_at": "2026-09-30T12:05:26.426064+08:00",
       "dataset_record_count": 335,
       "window_start": "2026-08-31",
@@ -1650,7 +1650,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "dbfcb0d3636a66ebd3d237c00256e0f99b26614161f1ef061a19ebf78eff0c04"
+      "evidence_hash": "ce49739601bded0e99ac2fa9ed4925af31e5c727128b4a120d9d44fa186ef268"
     }
   ],
   [
@@ -4702,7 +4702,7 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "1ea6fe22fd99f35c0c70e15834237e248e8c2927b3cb6bd7abe90e9eadc4884d",
+      "dataset_snapshot_id": "1780bdade01c6bc1c92392c034de11bdcd77adb899bd5192134e4cd88ed8fadb",
       "dataset_snapshot_at": "2026-09-30T12:05:26.426064+08:00",
       "dataset_record_count": 335,
       "window_start": "2026-08-31",
@@ -4713,7 +4713,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "45a3687453a05ac63945da85b92f1c7bcdd273ecc7a6424f85a8bb9545424ada"
+      "evidence_hash": "423569853a7d973c29b71ff2b886df1781a0dba9506753d22cb60e9cce728a61"
     }
   ],
   [
