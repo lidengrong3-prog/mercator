@@ -52,6 +52,14 @@ class ValidateDataTests(unittest.TestCase):
         self.assertFalse(missing.as_dict()["publishable"])
         self.assertEqual(missing.as_dict()["publication_layer"], "reference_only")
 
+        mixed = DatasetResult(
+            "rules", "data/rules.json", records=3, scoped_records=3,
+            formal_records=1, unverified_records=2, missing_source_records=2,
+        )
+        self.assertEqual(mixed.status, "degraded")
+        self.assertTrue(mixed.as_dict()["publishable"])
+        self.assertEqual(mixed.as_dict()["publication_layer"], "formal")
+
     def test_publication_gate_rejects_inconsistent_publishable_statuses(self):
         base = {
             "status": "healthy", "publishable": True,

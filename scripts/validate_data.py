@@ -330,10 +330,12 @@ class DatasetResult:
             return "failed"
         if self.connected is False:
             return "not_connected"
-        if self.missing_source_records:
+        if self.missing_source_records and self.formal_records == 0:
             return "missing_source"
-        if self.unverified_records:
+        if self.unverified_records and self.formal_records == 0:
             return "unverified"
+        if self.missing_source_records or self.unverified_records:
+            return "degraded"
         if any("超过新鲜度阈值" in warning for warning in self.warnings):
             return "stale"
         if self.warnings:
