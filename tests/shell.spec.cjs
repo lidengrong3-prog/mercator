@@ -1921,6 +1921,31 @@ test('authenticated function errors and network recovery use the real request wr
   expect(failed.text).toContain('服务暂时不可用');
   const timeout = await invoke('timeout', { timeout: 1000 });
   expect(timeout).toMatchObject({ ok: false, status: 408, code: 'REQUEST_TIMEOUT' });
+  const bodyTimeout = await page.evaluate(async () => {
+    const originalFetch = window.fetch;
+    try {
+      window.fetch = async function bodyStallFetch(_url, init) {
+        return {
+          ok: true,
+          status: 200,
+          headers: { get: () => null },
+          text: () => new Promise((_resolve, reject) => {
+            init.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), { once: true });
+          }),
+        };
+      };
+      return await Promise.race([
+        window.jayFunctionRequest('ai-proxy', { messages: [{ role: 'user', content: 'body timeout' }] }, { timeout: 1000, requestId: 'body-timeout-test' })
+          .then(() => ({ ok: true }))
+          .catch((error) => ({ ok: false, status: error.status, code: error.code })),
+        new Promise((resolve) => setTimeout(() => resolve({ ok: false, outerTimeout: true }), 1800)),
+      ]);
+    } finally {
+      window.fetch = originalFetch;
+    }
+  });
+  expect(bodyTimeout).toMatchObject({ ok: false, status: 408, code: 'REQUEST_TIMEOUT' });
+  expect(bodyTimeout.outerTimeout).toBeUndefined();
   const providerTimeout = await invoke('providerTimeout');
   expect(providerTimeout).toMatchObject({ ok: false, status: 504, code: 'AI_PROVIDER_TIMEOUT', requestId: 'error-contract-test', provider: 'deepseek' });
   const publicErrors = await page.evaluate(() => [

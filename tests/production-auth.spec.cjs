@@ -9,6 +9,7 @@ const credentials = {
 const enabled = process.env.RUN_PRODUCTION_ACCEPTANCE === '1';
 const ready = enabled && baseUrl && Object.values(credentials).every((account) => account.email && account.password);
 const acceptanceRunId = process.env.ACCEPTANCE_RUN_ID || `local-browser-${Date.now()}`;
+const expectedReleaseSha = process.env.EXPECTED_RELEASE_SHA || process.env.RELEASE_SHA || '';
 const acceptanceWorkspaceA = process.env.ACCEPTANCE_API_WORKSPACE_ID || '';
 const acceptanceWorkspaceB = process.env.ACCEPTANCE_BROWSER_WORKSPACE_ID || '';
 const platformDisplayNames = {
@@ -24,10 +25,43 @@ test.describe('production authenticated browser acceptance', () => {
   // The report engine generates one request per chapter. Keep enough room for
   // all sequential production AI calls, exports and account-isolation checks.
   test.setTimeout(600_000);
+  let releaseReady = false;
+
+  async function waitForDeployedRelease(page) {
+    if (!expectedReleaseSha || releaseReady) return;
+    const deadline = Date.now() + 120_000;
+    let lastReleaseSha = '';
+    while (Date.now() < deadline) {
+      const releaseUrl = new URL('release.json', baseUrl);
+      releaseUrl.searchParams.set('release', `${expectedReleaseSha}-${Date.now()}`);
+      try {
+        const response = await page.request.get(releaseUrl.toString(), {
+          headers: { 'cache-control': 'no-cache', pragma: 'no-cache' },
+        });
+        if (response.ok()) {
+          const payload = await response.json().catch(() => ({}));
+          lastReleaseSha = String(payload.release_sha || '');
+          if (lastReleaseSha === expectedReleaseSha) {
+            releaseReady = true;
+            return;
+          }
+        }
+      } catch (error) {}
+      await page.waitForTimeout(2_000);
+    }
+    throw new Error(`deployed frontend release did not converge: expected=${expectedReleaseSha} actual=${lastReleaseSha || 'unavailable'}`);
+  }
+
+  function browserEntryUrl() {
+    const entry = new URL(baseUrl);
+    if (expectedReleaseSha) entry.searchParams.set('release', expectedReleaseSha);
+    return entry.toString();
+  }
 
   async function login(page, account) {
     await page.addInitScript((runId) => { window.__JAY_ACCEPTANCE_RUN_ID = runId; }, acceptanceRunId);
-    await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
+    await waitForDeployedRelease(page);
+    await page.goto(browserEntryUrl(), { waitUntil: 'domcontentloaded' });
     await expect(page.locator('#loginPage')).toBeVisible({ timeout: 30_000 });
     await page.locator('#auth-email').fill(account.email);
     await page.locator('#auth-password').fill(account.password);

@@ -1101,6 +1101,7 @@ async function jayFunctionRequest(functionName, payload, options) {
   var timeoutMs = Math.max(1000, Number(options.timeout || 60000));
   var timer = setTimeout(function(){ controller.abort(); }, timeoutMs);
   var response;
+  var raw = '';
   try {
     response = await fetch(JAY_SUPABASE_URL + '/functions/v1/' + functionName, {
       method: 'POST',
@@ -1113,6 +1114,11 @@ async function jayFunctionRequest(functionName, payload, options) {
       body: JSON.stringify(requestPayload),
       signal: controller.signal
     });
+    // Keep the abort deadline active until the response body has been fully
+    // consumed. A provider or proxy can send headers and then stall the body;
+    // clearing the timer immediately after fetch() would leave the UI in a
+    // permanent processing state.
+    raw = await response.text();
   } catch (networkError) {
     var requestError;
     if (networkError && networkError.name === 'AbortError') {
@@ -1132,7 +1138,6 @@ async function jayFunctionRequest(functionName, payload, options) {
   } finally {
     clearTimeout(timer);
   }
-  var raw = await response.text();
   var result = {};
   if (raw) {
     try { result = JSON.parse(raw); } catch (e) { result = { message: raw.slice(0, 300) }; }
