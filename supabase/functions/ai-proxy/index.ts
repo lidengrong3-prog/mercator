@@ -1126,17 +1126,23 @@ Deno.serve(async (request) => {
         continue;
       }
       // A successful HTTP response is not a usable answer when the Coze bot
-      // terminates on an empty category lookup. Continue through the governed
-      // fallback route so the user receives a normal general-knowledge answer.
-      if (candidate === 'coze' && taskType === 'market_qa'
-        && formalRetrieval.prompt.includes('【类目证据边界】') && isRefusalStyleAnswer(parsed.content)) {
+      // refuses despite receiving governed retrieval context. Continue through
+      // the ordered fallback route so formal evidence is still answered. This
+      // covers both an empty category lookup and an ignored formal citation.
+      const cozeRetrievalRefusal = candidate === 'coze' && taskType === 'market_qa'
+        && isRefusalStyleAnswer(parsed.content)
+        && (formalRetrieval.citations.length > 0 || formalRetrieval.prompt.includes('【类目证据边界】'));
+      if (cozeRetrievalRefusal) {
         lastErrorCode = 'AI_CONTENT_REFUSAL';
         lastErrorStatus = 502;
         if (candidateIndex === 0) finalFallbackReason = lastErrorCode;
+        const refusalFallbackReason = formalRetrieval.citations.length > 0
+          ? 'retrieval_content_refusal'
+          : 'empty_category_retrieval';
         await logProviderAttempt({
           provider: candidate, model: activeModel, config_fingerprint: configFingerprint,
           status: 'failed', http_status: 502, error_code: lastErrorCode,
-          duration_ms: Date.now() - attemptStarted, fallback_reason: 'empty_category_retrieval',
+          duration_ms: Date.now() - attemptStarted, fallback_reason: refusalFallbackReason,
         });
         providerFinished = true;
         continue;

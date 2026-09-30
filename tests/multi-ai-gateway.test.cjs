@@ -130,11 +130,14 @@ test('frontend sends task and disclosure metadata and renders selected gateway',
   assert.match(overview, /发送给第三方 AI 的数据范围/);
 });
 
-test('Coze category refusals fall through to the governed provider fallback', () => {
+test('Coze retrieval refusals fall through to the governed provider fallback', () => {
   const edge = read('supabase', 'functions', 'ai-proxy', 'index.ts');
   assert.match(edge, /function isRefusalStyleAnswer/);
-  assert.match(edge, /candidate === 'coze' && taskType === 'market_qa'/);
-  assert.match(edge, /fallback_reason: 'empty_category_retrieval'/);
+  assert.match(edge, /const cozeRetrievalRefusal = candidate === 'coze' && taskType === 'market_qa'/);
+  assert.match(edge, /formalRetrieval.citations.length > 0 || formalRetrieval.prompt.includes('【类目证据边界】')/);
+  assert.match(edge, /fallback_reason: refusalFallbackReason/);
+  assert.match(edge, /retrieval_content_refusal/);
+  assert.match(edge, /empty_category_retrieval/);
   assert.match(edge, /lastErrorCode = 'AI_CONTENT_REFUSAL'/);
 });
 
