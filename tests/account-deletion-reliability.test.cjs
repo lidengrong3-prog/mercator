@@ -10,6 +10,7 @@ function read(relativePath) {
 
 const migration = read('supabase/migrations/20260930130000_r09_account_deletion_jobs.sql');
 const workspaceCascadeFix = read('supabase/migrations/20260930180000_r09_workspace_owner_cascade_fix.sql');
+const workspaceGuardFix = read('supabase/migrations/20260930190000_r09_workspace_cascade_guard_fix.sql');
 const requestFunction = read('supabase/functions/data-subject-request/index.ts');
 const worker = read('supabase/functions/data-deletion-worker/index.ts');
 const aiProxy = read('supabase/functions/ai-proxy/index.ts');
@@ -41,6 +42,8 @@ test('large deletions use bounded batches, cursors and auth-last ordering', () =
   assert.ok(profileStep > 0 && authStep > profileStep, 'Auth deletion must be the final account step');
   assert.match(workspaceCascadeFix, /job.job_type = 'delete_workspace'[\s\S]*step.step_key = 'db_workspace_members'/);
   assert.match(workspaceCascadeFix, /workspace_members_removed_by_workspace_cascade/);
+  assert.match(workspaceGuardFix, /TG_OP = 'DELETE' AND workspace_owner IS NULL/);
+  assert.match(workspaceGuardFix, /workspace owner membership cannot be removed or downgraded/);
 });
 
 test('expired leases recover and terminal failures cannot remain processing', () => {
