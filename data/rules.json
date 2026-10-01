@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-01T04:52:10.454362+08:00",
+  "updated_at": "2026-10-01T13:56:46.250096+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -18,7 +18,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Manage returns, missing items, and refunds for sellers Here’s everything you need to know if something goes wrong with an order or if a buyer changes their mind and doesn’t want the item anymore. 4 min overview",
-      "summary": "",
+      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home Are you a buyer looking for a refund or to return an item? Read our article on returns and refunds If a customer has a problem with their order, or if they change their mind about a purchase, they’ll get in touch with you and ask for help. Once the buyer tells you there’s a problem, yo...",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -33,23 +33,22 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-01T04:52:10.454362+08:00",
-      "collected_at": "2026-10-01T04:52:10.454362+08:00",
+      "verified_at": "2026-10-01T13:56:46.250096+08:00",
+      "collected_at": "2026-10-01T13:56:46.250096+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "18",
+      "rule_version": "19",
       "effective_from": "2026-10-01",
       "changed_fields": [
-        "published_at",
-        "effective_from"
+        "summary"
       ],
-      "change_summary": "规则字段变化：published_at、effective_from",
+      "change_summary": "规则字段变化：summary",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-01T04:52:10.454362+08:00",
+      "retrieved_at": "2026-10-01T13:56:46.250096+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "197758308d3d3fc7b0ff2be1e6363b81fccdd4a98ceaabf49f54f510d9b6249a",
       "version_history": [
@@ -423,9 +422,31 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：summary、published_at、effective_from"
+        },
+        {
+          "id": "r20261001-4095a550",
+          "rule_key": "ebay:4079",
+          "rule_version": "18",
+          "title": "Manage returns, missing items, and refunds for sellers Here’s everything you need to know if something goes wrong with an order or if a buyer changes their mind and doesn’t want the item anymore. 4 min overview",
+          "summary": "",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/managing-returns-refunds/manage-returns-missing-items-refunds-sellers?id=4079",
+          "published_at": "2026-10-01",
+          "effective_from": "2026-10-01",
+          "source_record_id": "ebay:4079",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "197758308d3d3fc7b0ff2be1e6363b81fccdd4a98ceaabf49f54f510d9b6249a",
+          "collected_at": "2026-10-01T04:52:10.454362+08:00",
+          "verified_at": "2026-10-01T04:52:10.454362+08:00",
+          "changed_fields": [
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：published_at、effective_from"
         }
       ],
-      "previous_version": "17",
+      "previous_version": "18",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -2694,7 +2715,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Creating a listing A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listing didn't go live the way you expected. 3 min article",
-      "summary": "",
+      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Getting started Item description Item condition Item specifics Our listing tools Completing your listing Frequently asked questions A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listi...",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -2709,24 +2730,22 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-01T04:52:10.454362+08:00",
-      "collected_at": "2026-10-01T04:52:10.454362+08:00",
+      "verified_at": "2026-10-01T13:56:46.250096+08:00",
+      "collected_at": "2026-10-01T13:56:46.250096+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "17",
+      "rule_version": "18",
       "effective_from": "2026-10-01",
       "changed_fields": [
-        "summary",
-        "published_at",
-        "effective_from"
+        "summary"
       ],
-      "change_summary": "规则字段变化：summary、published_at、effective_from",
+      "change_summary": "规则字段变化：summary",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-01T04:52:10.454362+08:00",
+      "retrieved_at": "2026-10-01T13:56:46.250096+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "43b7efa1c22a23db288ae28b10c4ee8938748803e48a270d68e2366fb4c460b3",
       "version_history": [
@@ -3080,9 +3099,32 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：title、summary、published_at、effective_from"
+        },
+        {
+          "id": "r20261001-37439b17",
+          "rule_key": "ebay:4105",
+          "rule_version": "17",
+          "title": "Creating a listing A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listing didn't go live the way you expected. 3 min article",
+          "summary": "",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/listings/creating-listing?id=4105",
+          "published_at": "2026-10-01",
+          "effective_from": "2026-10-01",
+          "source_record_id": "ebay:4105",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "43b7efa1c22a23db288ae28b10c4ee8938748803e48a270d68e2366fb4c460b3",
+          "collected_at": "2026-10-01T04:52:10.454362+08:00",
+          "verified_at": "2026-10-01T04:52:10.454362+08:00",
+          "changed_fields": [
+            "summary",
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：summary、published_at、effective_from"
         }
       ],
-      "previous_version": "16",
+      "previous_version": "17",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -3405,7 +3447,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "User Agreement",
-      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page 1. Introduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims of Intellectual Property Violati...",
+      "summary": "",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -3420,28 +3462,24 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-01T04:52:10.454362+08:00",
-      "collected_at": "2026-10-01T04:52:10.454362+08:00",
+      "verified_at": "2026-10-01T13:56:46.250096+08:00",
+      "collected_at": "2026-10-01T13:56:46.250096+08:00",
       "market_code": "US",
       "source": "eBay",
-      "topic": "fee",
-      "rule_dimensions": {
-        "fee": "y 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims o",
-        "penalty": "roduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. N"
-      },
-      "rule_version": "18",
+      "topic": "other",
+      "rule_dimensions": {},
+      "rule_version": "19",
       "effective_from": "2026-10-01",
       "changed_fields": [
-        "published_at",
-        "effective_from"
+        "summary",
+        "fee",
+        "penalty"
       ],
-      "change_summary": "规则字段变化：published_at、effective_from",
+      "change_summary": "规则字段变化：summary、费用、处罚",
       "platform_keys": [
         "ebay"
       ],
-      "fee": "y 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims o",
-      "penalty": "roduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. N",
-      "retrieved_at": "2026-10-01T04:52:10.454362+08:00",
+      "retrieved_at": "2026-10-01T13:56:46.250096+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "3ab8a81e89312624e20211eec093b88c11980873a5ff27d3f12ae100aaaae1c3",
       "version_history": [
@@ -3874,9 +3912,34 @@
             "penalty"
           ],
           "change_summary": "规则字段变化：summary、费用、处罚"
+        },
+        {
+          "id": "r20261001-5cf1bbf5",
+          "rule_key": "ebay:4259",
+          "rule_version": "18",
+          "title": "User Agreement",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page 1. Introduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims of Intellectual Property Violati...",
+          "rule_dimensions": {
+            "fee": "y 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims o",
+            "penalty": "roduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. N"
+          },
+          "source_url": "https://www.ebay.com/help/policies/member-behaviour-policies/user-agreement?id=4259",
+          "published_at": "2026-10-01",
+          "effective_from": "2026-10-01",
+          "source_record_id": "ebay:4259",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "3ab8a81e89312624e20211eec093b88c11980873a5ff27d3f12ae100aaaae1c3",
+          "collected_at": "2026-10-01T04:52:10.454362+08:00",
+          "verified_at": "2026-10-01T04:52:10.454362+08:00",
+          "changed_fields": [
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：published_at、effective_from"
         }
       ],
-      "previous_version": "17",
+      "previous_version": "18",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -3970,7 +4033,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-10-01T04:52:10.454362+08:00",
+  "last_checked_at": "2026-10-01T13:56:46.250096+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4196,11 +4259,11 @@
       "label": "部分接入",
       "rule_count": 9,
       "topics": [
-        "fee",
         "penalty",
         "settlement"
       ],
       "missing_topics": [
+        "fee",
         "commission",
         "deposit",
         "fulfillment",
@@ -4208,13 +4271,11 @@
       ],
       "dimensions": {
         "fee": {
-          "status": "connected",
-          "label": "已接入",
-          "record_count": 1,
-          "source_record_ids": [
-            "ebay:4259"
-          ],
-          "last_verified_at": "2026-10-01T04:52:10.454362+08:00"
+          "status": "not_connected",
+          "label": "未接入",
+          "record_count": 0,
+          "source_record_ids": [],
+          "last_verified_at": null
         },
         "commission": {
           "status": "not_connected",
@@ -4257,16 +4318,15 @@
         "penalty": {
           "status": "connected",
           "label": "已接入",
-          "record_count": 2,
+          "record_count": 1,
           "source_record_ids": [
-            "ebay:4080",
-            "ebay:4259"
+            "ebay:4080"
           ],
           "last_verified_at": "2026-10-01T04:52:10.454362+08:00"
         }
       },
-      "last_verified_at": "2026-10-01T04:52:10.454362+08:00",
-      "reason": "缺少主题：佣金、保证金、履约、禁售"
+      "last_verified_at": "2026-10-01T13:56:46.250096+08:00",
+      "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   },
   "platform_status": {
@@ -4488,11 +4548,11 @@
       "label": "部分接入",
       "rule_count": 9,
       "topics": [
-        "fee",
         "penalty",
         "settlement"
       ],
       "missing_topics": [
+        "fee",
         "commission",
         "deposit",
         "fulfillment",
@@ -4500,13 +4560,11 @@
       ],
       "dimensions": {
         "fee": {
-          "status": "connected",
-          "label": "已接入",
-          "record_count": 1,
-          "source_record_ids": [
-            "ebay:4259"
-          ],
-          "last_verified_at": "2026-10-01T04:52:10.454362+08:00"
+          "status": "not_connected",
+          "label": "未接入",
+          "record_count": 0,
+          "source_record_ids": [],
+          "last_verified_at": null
         },
         "commission": {
           "status": "not_connected",
@@ -4549,16 +4607,15 @@
         "penalty": {
           "status": "connected",
           "label": "已接入",
-          "record_count": 2,
+          "record_count": 1,
           "source_record_ids": [
-            "ebay:4080",
-            "ebay:4259"
+            "ebay:4080"
           ],
           "last_verified_at": "2026-10-01T04:52:10.454362+08:00"
         }
       },
-      "last_verified_at": "2026-10-01T04:52:10.454362+08:00",
-      "reason": "缺少主题：佣金、保证金、履约、禁售"
+      "last_verified_at": "2026-10-01T13:56:46.250096+08:00",
+      "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   }
 }
