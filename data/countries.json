@@ -30,8 +30,8 @@
         "https://fred.stlouisfed.org/series/UNRATE"
       ],
       [
-        "联邦基金利率(2026-08-01)",
-        "3.63 %",
+        "联邦基金利率(2026-09-01)",
+        "3.75 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/FEDFUNDS"
       ],
@@ -54,8 +54,8 @@
         "https://fred.stlouisfed.org/series/RSAFS"
       ],
       [
-        "10Y国债收益率(2026-09-29)",
-        "5.26 %",
+        "10Y国债收益率(2026-09-30)",
+        "5.29 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/DGS10"
       ],
@@ -66,8 +66,8 @@
         "https://fred.stlouisfed.org/series/HOUST"
       ],
       [
-        "30Y抵押贷款利率(2026-09-24)",
-        "7.03 %",
+        "30Y抵押贷款利率(2026-10-01)",
+        "7.28 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/MORTGAGE30US"
       ],
@@ -349,6 +349,6 @@
         ]
       ]
     },
-    "macro_updated": "2026-10-01 15:31 UTC"
+    "macro_updated": "2026-10-01 21:05 UTC"
   }
 }
