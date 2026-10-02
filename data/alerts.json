@@ -2184,18 +2184,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "49dc8d0ff3c2a63ba21e70b1d093c4b0beedaf1bc1fe7e1f99dd04e8080354f6",
-      "dataset_snapshot_at": "2026-10-01T23:29:32.394120+08:00",
-      "dataset_record_count": 346,
+      "dataset_snapshot_id": "3dd55475adb449e1e8dea425a815c30c4723ad8619e862a52619d2d717a4d783",
+      "dataset_snapshot_at": "2026-10-02T22:45:40.312797+08:00",
+      "dataset_record_count": 350,
       "window_start": "2026-09-02",
       "window_end": "2026-10-02",
-      "input_record_count": 346,
+      "input_record_count": 350,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "893937b70c0a708a5a21e10d6553a68ec38695d9b588272a5759a10f3d83d648"
+      "evidence_hash": "54e14813cddba548039a361aa74ba680bf166190d1c24d6abc0d6c3ae6565d27"
     }
   ],
   [
@@ -5247,18 +5247,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "49dc8d0ff3c2a63ba21e70b1d093c4b0beedaf1bc1fe7e1f99dd04e8080354f6",
-      "dataset_snapshot_at": "2026-10-01T23:29:32.394120+08:00",
-      "dataset_record_count": 346,
+      "dataset_snapshot_id": "3dd55475adb449e1e8dea425a815c30c4723ad8619e862a52619d2d717a4d783",
+      "dataset_snapshot_at": "2026-10-02T22:45:40.312797+08:00",
+      "dataset_record_count": 350,
       "window_start": "2026-09-02",
       "window_end": "2026-10-02",
-      "input_record_count": 346,
+      "input_record_count": 350,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "80270b887d43c5ebfa0def4f71a494d2c354d9b47213d39471e78c64c4351f38"
+      "evidence_hash": "3b99b744be76e7d3aeac9aa50cb28703990bbf8a6f7028734831d7a4139b3079"
     }
   ],
   [
