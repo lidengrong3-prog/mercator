@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-02T05:04:07.552741+08:00",
+  "updated_at": "2026-10-02T13:39:49.961118+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -2896,7 +2896,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Creating a listing A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listing didn't go live the way you expected. 3 min article",
-      "summary": "",
+      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Getting started Item description Item condition Item specifics Our listing tools Completing your listing Frequently asked questions A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listi...",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -2911,23 +2911,22 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-02T05:04:07.552741+08:00",
-      "collected_at": "2026-10-02T05:04:07.552741+08:00",
+      "verified_at": "2026-10-02T13:39:49.961118+08:00",
+      "collected_at": "2026-10-02T13:39:49.961118+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "20",
+      "rule_version": "21",
       "effective_from": "2026-10-02",
       "changed_fields": [
-        "published_at",
-        "effective_from"
+        "summary"
       ],
-      "change_summary": "规则字段变化：published_at、effective_from",
+      "change_summary": "规则字段变化：summary",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-02T05:04:07.552741+08:00",
+      "retrieved_at": "2026-10-02T13:39:49.961118+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "b0b0589ae09727257676980af8add89ca50aba036049edc0f7e28a90c49ec961",
       "version_history": [
@@ -3346,9 +3345,31 @@
             "summary"
           ],
           "change_summary": "规则字段变化：summary"
+        },
+        {
+          "id": "r20261002-37439b17",
+          "rule_key": "ebay:4105",
+          "rule_version": "20",
+          "title": "Creating a listing A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listing didn't go live the way you expected. 3 min article",
+          "summary": "",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/listings/creating-listing?id=4105",
+          "published_at": "2026-10-02",
+          "effective_from": "2026-10-02",
+          "source_record_id": "ebay:4105",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "b0b0589ae09727257676980af8add89ca50aba036049edc0f7e28a90c49ec961",
+          "collected_at": "2026-10-02T05:04:07.552741+08:00",
+          "verified_at": "2026-10-02T05:04:07.552741+08:00",
+          "changed_fields": [
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：published_at、effective_from"
         }
       ],
-      "previous_version": "19",
+      "previous_version": "20",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -4301,7 +4322,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-10-02T05:04:07.552741+08:00",
+  "last_checked_at": "2026-10-02T13:39:49.961118+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4593,7 +4614,7 @@
           "last_verified_at": "2026-10-02T05:04:07.552741+08:00"
         }
       },
-      "last_verified_at": "2026-10-02T05:04:07.552741+08:00",
+      "last_verified_at": "2026-10-02T13:39:49.961118+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   },
@@ -4882,7 +4903,7 @@
           "last_verified_at": "2026-10-02T05:04:07.552741+08:00"
         }
       },
-      "last_verified_at": "2026-10-02T05:04:07.552741+08:00",
+      "last_verified_at": "2026-10-02T13:39:49.961118+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   }
