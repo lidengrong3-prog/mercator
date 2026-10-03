@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-03T04:47:30.129022+08:00",
+  "updated_at": "2026-10-03T13:21:13.199934+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -1035,7 +1035,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Resolving unpaid items with buyers After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the item they bought. 2 min article",
-      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Reminding buyers to pay Using Preferences for items awaiting payment After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the ite...",
+      "summary": "",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -1050,48 +1050,25 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-03T04:47:30.129022+08:00",
-      "collected_at": "2026-10-03T04:47:30.129022+08:00",
+      "verified_at": "2026-10-03T13:21:13.199934+08:00",
+      "collected_at": "2026-10-03T13:21:13.199934+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "22",
+      "rule_version": "23",
       "effective_from": "2026-10-03",
       "changed_fields": [
-        "summary",
-        "published_at",
-        "effective_from"
+        "summary"
       ],
-      "change_summary": "规则字段变化：summary、published_at、effective_from",
+      "change_summary": "规则字段变化：summary",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-03T04:47:30.129022+08:00",
+      "retrieved_at": "2026-10-03T13:21:13.199934+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "e8ebb0f3416f6aa4f855343e5ce7b1ca6e97d2ca414b7bb84be9dad00b522c2a",
       "version_history": [
-        {
-          "id": "r20260917-85b7a9af",
-          "rule_key": "ebay:4137",
-          "rule_version": "2",
-          "title": "Resolving unpaid items with buyers After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the item they bought. 2 min article",
-          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles We're sorry, we couldn't find any results that match your search. Please try again. To help you find what you’re looking for: Try different search terms Use more general search terms Make sure all words are spelled correctly Browse Help Articles Need more help?Go to Help home On this page Reminding buyers to pay Using Preferences for items awaiting payment After you’ve made a sale on eBay, it’s usually a smooth process to c...",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/selling/getting-paid/resolving-unpaid-items-buyers?id=4137",
-          "published_at": "2026-09-17",
-          "effective_from": "2026-09-17",
-          "source_record_id": "ebay:4137",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "9e2c1457a16aa6d2ffa1e7da368466f9594015fc8dbde29d934ba7ff12930c58",
-          "collected_at": "2026-09-17T22:22:17.705995+08:00",
-          "verified_at": "2026-09-17T22:22:17.705995+08:00",
-          "changed_fields": [
-            "summary"
-          ],
-          "change_summary": "规则字段变化：summary"
-        },
         {
           "id": "r20260917-85b7a9af",
           "rule_key": "ebay:4137",
@@ -1509,9 +1486,32 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：published_at、effective_from"
+        },
+        {
+          "id": "r20261003-85b7a9af",
+          "rule_key": "ebay:4137",
+          "rule_version": "22",
+          "title": "Resolving unpaid items with buyers After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the item they bought. 2 min article",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Reminding buyers to pay Using Preferences for items awaiting payment After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the ite...",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/getting-paid/resolving-unpaid-items-buyers?id=4137",
+          "published_at": "2026-10-03",
+          "effective_from": "2026-10-03",
+          "source_record_id": "ebay:4137",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "e8ebb0f3416f6aa4f855343e5ce7b1ca6e97d2ca414b7bb84be9dad00b522c2a",
+          "collected_at": "2026-10-03T04:47:30.129022+08:00",
+          "verified_at": "2026-10-03T04:47:30.129022+08:00",
+          "changed_fields": [
+            "summary",
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：summary、published_at、effective_from"
         }
       ],
-      "previous_version": "21",
+      "previous_version": "22",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -2054,7 +2054,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manages the end-to-end payments process, and you receive your funds directly in your checking account. You can find an overview of the payment options that are usually added automatically on our Accepted payment methods help page. 2 min article",
-      "summary": "",
+      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Payment partners Helpful articles Register for eBay to manage your payments Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manages the end-to-end payments process, and you receive your funds directly in yo...",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -2069,8 +2069,8 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-03T04:47:30.129022+08:00",
-      "collected_at": "2026-10-03T04:47:30.129022+08:00",
+      "verified_at": "2026-10-03T13:21:13.199934+08:00",
+      "collected_at": "2026-10-03T13:21:13.199934+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "settlement",
@@ -2078,17 +2078,16 @@
       "rule_dimensions": {
         "settlement": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manage"
       },
-      "rule_version": "20",
+      "rule_version": "21",
       "effective_from": "2026-10-03",
       "changed_fields": [
-        "published_at",
-        "effective_from"
+        "summary"
       ],
-      "change_summary": "规则字段变化：published_at、effective_from",
+      "change_summary": "规则字段变化：summary",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-03T04:47:30.129022+08:00",
+      "retrieved_at": "2026-10-03T13:21:13.199934+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "c03898ea951cae9bba1e57e0d54b3174e066ea544901881a5894148045b5b6e2",
       "version_history": [
@@ -2544,9 +2543,33 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：published_at、effective_from"
+        },
+        {
+          "id": "r20261003-60dd64dc",
+          "rule_key": "ebay:4795",
+          "rule_version": "20",
+          "title": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manages the end-to-end payments process, and you receive your funds directly in your checking account. You can find an overview of the payment options that are usually added automatically on our Accepted payment methods help page. 2 min article",
+          "summary": "",
+          "rule_dimensions": {
+            "settlement": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manage"
+          },
+          "source_url": "https://www.ebay.com/help/selling/getting-paid/start-getting-paid-ebay?id=4795",
+          "published_at": "2026-10-03",
+          "effective_from": "2026-10-03",
+          "source_record_id": "ebay:4795",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "c03898ea951cae9bba1e57e0d54b3174e066ea544901881a5894148045b5b6e2",
+          "collected_at": "2026-10-03T04:47:30.129022+08:00",
+          "verified_at": "2026-10-03T04:47:30.129022+08:00",
+          "changed_fields": [
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：published_at、effective_from"
         }
       ],
-      "previous_version": "19",
+      "previous_version": "20",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -4506,7 +4529,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-10-03T04:47:30.129022+08:00",
+  "last_checked_at": "2026-10-03T13:21:13.199934+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4786,7 +4809,7 @@
             "ebay:4795",
             "ebay:4796"
           ],
-          "last_verified_at": "2026-10-03T04:47:30.129022+08:00"
+          "last_verified_at": "2026-10-03T13:21:13.199934+08:00"
         },
         "penalty": {
           "status": "connected",
@@ -4798,7 +4821,7 @@
           "last_verified_at": "2026-10-03T04:47:30.129022+08:00"
         }
       },
-      "last_verified_at": "2026-10-03T04:47:30.129022+08:00",
+      "last_verified_at": "2026-10-03T13:21:13.199934+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   },
@@ -5075,7 +5098,7 @@
             "ebay:4795",
             "ebay:4796"
           ],
-          "last_verified_at": "2026-10-03T04:47:30.129022+08:00"
+          "last_verified_at": "2026-10-03T13:21:13.199934+08:00"
         },
         "penalty": {
           "status": "connected",
@@ -5087,7 +5110,7 @@
           "last_verified_at": "2026-10-03T04:47:30.129022+08:00"
         }
       },
-      "last_verified_at": "2026-10-03T04:47:30.129022+08:00",
+      "last_verified_at": "2026-10-03T13:21:13.199934+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   }

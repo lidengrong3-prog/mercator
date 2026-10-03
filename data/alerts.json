@@ -2184,7 +2184,7 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "70389b7a5aa3d3364f650352ac54df15f7786e79b118a526d9354858c6b6f146",
+      "dataset_snapshot_id": "fadc88613aa25e222c3c99f4e375bd0bdfd9568d7fcada04747a2f6e8e18e0af",
       "dataset_snapshot_at": "2026-10-02T22:45:40.312797+08:00",
       "dataset_record_count": 350,
       "window_start": "2026-09-03",
@@ -2195,7 +2195,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "57021fe79c8dcfe4e345c31ad777c7836d34919a7334fee3d767b5e6c9a05dbc"
+      "evidence_hash": "7b2c662b2fd30358b443f394721a4b80d90199967c34e3772aac8d5f4badfe70"
     }
   ],
   [
