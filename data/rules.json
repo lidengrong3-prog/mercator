@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-05T03:40:03.440778+08:00",
+  "updated_at": "2026-10-05T07:13:01.740551+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -4600,7 +4600,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-10-05T03:40:03.440778+08:00",
+  "last_checked_at": "2026-10-05T07:13:01.740551+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
