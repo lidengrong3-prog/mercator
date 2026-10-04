@@ -58,7 +58,7 @@
     "manifest": "data/market_scope.json"
   },
   "provenance_schema": "data/provenance_schema.json",
-  "generated_at": "2026-10-03T05:22:31.042284+00:00",
+  "generated_at": "2026-10-04T05:56:24.938363+00:00",
   "status": "degraded",
   "publishable": true,
   "quality_status_definitions": {
@@ -99,7 +99,7 @@
     "quality_status": "degraded",
     "ledger_schema_version": 2,
     "ledger_status": "degraded",
-    "completed_at": "2026-10-03T05:22:30.518079+00:00",
+    "completed_at": "2026-10-04T05:56:24.410270+00:00",
     "scope": {
       "market_codes": [
         "US"
@@ -131,9 +131,9 @@
   },
   "summary": {
     "datasets": 11,
-    "raw_records": 826,
-    "scoped_records": 637,
-    "formal_records": 615,
+    "raw_records": 832,
+    "scoped_records": 643,
+    "formal_records": 621,
     "demo_records": 0,
     "unverified_records": 97,
     "missing_source_records": 52,
@@ -176,8 +176,8 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-03T05:22:30.518079+00:00",
-      "retrieved_at": "2026-10-03T05:22:30.518079+00:00",
+      "updated_at": "2026-10-04T05:56:24.410270+00:00",
+      "retrieved_at": "2026-10-04T05:56:24.410270+00:00",
       "verified_at": null,
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -187,12 +187,12 @@
       "errors": [],
       "warnings": [
         "部分请求失败，来源降级：aliexpress_rules, amazon_rules, tiktok_shop_rules, us_access_official, us_tax_official",
-        "非核心来源采集失败：cpsc_recalls, ustr"
+        "非核心来源采集失败：ustr"
       ],
       "metrics": {
         "ledger_schema_version": 2,
         "ledger_status": "degraded",
-        "ledger_completed_at": "2026-10-03T05:22:30.518079+00:00",
+        "ledger_completed_at": "2026-10-04T05:56:24.410270+00:00",
         "ledger_scope": {
           "market_codes": [
             "US"
@@ -232,9 +232,9 @@
           "pet-supplies"
         ],
         "source_status_counts": {
-          "succeeded": 7,
+          "succeeded": 8,
           "degraded": 5,
-          "failed": 2,
+          "failed": 1,
           "skipped": 0
         },
         "core_sources": [
@@ -255,12 +255,12 @@
         "unconnected_platform_keys": [],
         "ledger_summary": {
           "sources": 14,
-          "succeeded": 7,
+          "succeeded": 8,
           "degraded": 5,
-          "failed": 2,
+          "failed": 1,
           "core_failures": [],
-          "records_collected": 255,
-          "records_in_scope": 464
+          "records_collected": 441,
+          "records_in_scope": 467
         }
       }
     },
@@ -271,10 +271,10 @@
       "publishable": true,
       "publication_layer": "formal",
       "path": "data/policies.json",
-      "records": 350,
-      "raw_records": 350,
-      "scoped_records": 308,
-      "formal_records": 305,
+      "records": 356,
+      "raw_records": 356,
+      "scoped_records": 314,
+      "formal_records": 311,
       "demo_records": 0,
       "unverified_records": 45,
       "missing_source_records": 0,
@@ -284,9 +284,9 @@
         "unverified": 45,
         "out_of_scope": 42
       },
-      "updated_at": "2026-10-03T05:21:13.199934+00:00",
-      "retrieved_at": "2026-10-03T05:21:13.199934+00:00",
-      "verified_at": "2026-10-02T14:45:40.312797+00:00",
+      "updated_at": "2026-10-04T05:54:34.807602+00:00",
+      "retrieved_at": "2026-10-04T05:54:34.807602+00:00",
+      "verified_at": "2026-10-04T05:54:34.807602+00:00",
       "freshness_hours": 0.0,
       "freshness": "fresh",
       "sla_hours": 36,
@@ -299,8 +299,8 @@
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-10-03T13:21:13.199934+08:00",
-        "formal_records": 305,
+        "content_updated_at": "2026-10-04T13:54:34.807602+08:00",
+        "formal_records": 311,
         "demo_records": 0,
         "unverified_records": 45,
         "missing_source_records": 0,
@@ -312,20 +312,20 @@
         },
         "legacy_inferred_records": 0,
         "source_kind_counts": {
-          "official": 310,
+          "official": 316,
           "traceable": 40,
           "uploaded": 0,
           "derived": 0,
           "demo": 0
         },
         "verification_status_counts": {
-          "verified": 305,
+          "verified": 311,
           "uploaded": 0,
           "pending": 45,
           "rejected": 0
         },
         "source_type_counts": {
-          "government": 310,
+          "government": 316,
           "regulator": 0,
           "platform": 0,
           "official_feed": 0,
@@ -336,8 +336,8 @@
           "demo": 0,
           "unknown": 0
         },
-        "official_or_traceable_records": 350,
-        "provenance_complete_records": 350,
+        "official_or_traceable_records": 356,
+        "provenance_complete_records": 356,
         "malformed_records": 0,
         "missing_ids": 0,
         "missing_titles": 0,
@@ -367,9 +367,9 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-03T05:22:17.211875+00:00",
-      "retrieved_at": "2026-10-03T05:22:17.211875+00:00",
-      "verified_at": "2026-10-03T05:22:17.211875+00:00",
+      "updated_at": "2026-10-04T05:56:01.850094+00:00",
+      "retrieved_at": "2026-10-04T05:56:01.850094+00:00",
+      "verified_at": "2026-10-04T05:56:01.850094+00:00",
       "freshness_hours": 0.0,
       "freshness": "fresh",
       "sla_hours": 168,
@@ -379,7 +379,7 @@
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-10-03T05:22:17.211875+00:00",
+        "content_updated_at": "2026-10-04T05:56:01.850094+00:00",
         "formal_records": 5,
         "demo_records": 0,
         "unverified_records": 0,
@@ -443,9 +443,9 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-03T05:22:17.467354+00:00",
-      "retrieved_at": "2026-10-03T05:22:17.467354+00:00",
-      "verified_at": "2026-10-03T05:22:17.467354+00:00",
+      "updated_at": "2026-10-04T05:56:02.239476+00:00",
+      "retrieved_at": "2026-10-04T05:56:02.239476+00:00",
+      "verified_at": "2026-10-04T05:56:02.239476+00:00",
       "freshness_hours": 0.0,
       "freshness": "fresh",
       "sla_hours": 168,
@@ -455,7 +455,7 @@
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-10-03T05:22:17.467354+00:00",
+        "content_updated_at": "2026-10-04T05:56:02.239476+00:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 0,
@@ -525,9 +525,9 @@
         "out_of_scope_platform": 45,
         "missing_provenance_fields": 52
       },
-      "updated_at": "2026-10-03T05:21:13.199934+00:00",
-      "retrieved_at": "2026-10-03T05:21:13.199934+00:00",
-      "verified_at": "2026-10-03T05:21:13.199934+00:00",
+      "updated_at": "2026-10-04T05:54:34.807602+00:00",
+      "retrieved_at": "2026-10-04T05:54:34.807602+00:00",
+      "verified_at": "2026-10-04T05:54:34.807602+00:00",
       "freshness_hours": 0.0,
       "freshness": "fresh",
       "sla_hours": 36,
@@ -543,7 +543,7 @@
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-10-03T13:21:13.199934+08:00",
+        "content_updated_at": "2026-10-04T13:54:34.807602+08:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 52,
@@ -613,8 +613,8 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-03T05:22:30.581647+00:00",
-      "retrieved_at": "2026-10-03T05:22:30.581647+00:00",
+      "updated_at": "2026-10-04T05:56:24.476419+00:00",
+      "retrieved_at": "2026-10-04T05:56:24.476419+00:00",
       "verified_at": null,
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -684,8 +684,8 @@
       "missing_source_records": 0,
       "excluded_records": 38,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-03T05:22:30.517015+00:00",
-      "retrieved_at": "2026-10-03T05:22:30.517015+00:00",
+      "updated_at": "2026-10-04T05:56:24.409221+00:00",
+      "retrieved_at": "2026-10-04T05:56:24.409221+00:00",
       "verified_at": null,
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -750,8 +750,8 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-03T05:22:17.634972+00:00",
-      "retrieved_at": "2026-10-03T05:22:17.634972+00:00",
+      "updated_at": "2026-10-04T05:56:09.354988+00:00",
+      "retrieved_at": "2026-10-04T05:56:09.354988+00:00",
       "verified_at": null,
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -810,8 +810,8 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-03T05:22:30.517015+00:00",
-      "retrieved_at": "2026-10-03T05:22:30.517015+00:00",
+      "updated_at": "2026-10-04T05:56:24.409221+00:00",
+      "retrieved_at": "2026-10-04T05:56:24.409221+00:00",
       "verified_at": null,
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -881,10 +881,10 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-01T21:05:12.643703+00:00",
-      "retrieved_at": "2026-10-01T21:05:12.643703+00:00",
+      "updated_at": "2026-10-04T05:56:14.892136+00:00",
+      "retrieved_at": "2026-10-04T05:56:14.892136+00:00",
       "verified_at": null,
-      "freshness_hours": 32.3,
+      "freshness_hours": 0.0,
       "freshness": "fresh",
       "sla_hours": 72,
       "source_type": "unknown",
