@@ -80,8 +80,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "776da074d3b402fe6fdc75cf307e0b3139bc31eb5091b1020be4aee99cc5dd23",
-      "dataset_snapshot_at": "2026-10-06T01:21:23.286202+00:00",
+      "dataset_snapshot_id": "5aa188b8a35fac652f4903789388367f7b870bdaadf2f5e3080a4a900fd983cc",
+      "dataset_snapshot_at": "2026-10-06T11:18:17.833024+00:00",
       "dataset_record_count": 179,
       "window_start": "2026-07-08",
       "window_end": "2026-10-06",
@@ -91,7 +91,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "349a957656781ead6e89deb2bf9f035f59340d0bc81779a643e8887c343d17af"
+      "evidence_hash": "7e4ee0a1a95c651702ea0aa41ae9c92f9fb6c4f802225b855e0673a5ca0684db"
     }
   ],
   [
@@ -667,8 +667,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "776da074d3b402fe6fdc75cf307e0b3139bc31eb5091b1020be4aee99cc5dd23",
-      "dataset_snapshot_at": "2026-10-06T01:21:23.286202+00:00",
+      "dataset_snapshot_id": "5aa188b8a35fac652f4903789388367f7b870bdaadf2f5e3080a4a900fd983cc",
+      "dataset_snapshot_at": "2026-10-06T11:18:17.833024+00:00",
       "dataset_record_count": 179,
       "window_start": "2026-07-08",
       "window_end": "2026-10-06",
@@ -678,7 +678,7 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "0e64affe2d9e9c6074ef7d9c1b47069e0de734ee98634ee2678a3c93dcc8e55f"
+      "evidence_hash": "26b6de639e258b81819700146c076d84071009ffd7c20964a62c13c284be38ed"
     }
   ],
   [
@@ -852,8 +852,8 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "776da074d3b402fe6fdc75cf307e0b3139bc31eb5091b1020be4aee99cc5dd23",
-      "dataset_snapshot_at": "2026-10-06T01:21:23.286202+00:00",
+      "dataset_snapshot_id": "5aa188b8a35fac652f4903789388367f7b870bdaadf2f5e3080a4a900fd983cc",
+      "dataset_snapshot_at": "2026-10-06T11:18:17.833024+00:00",
       "dataset_record_count": 179,
       "window_start": "2026-07-08",
       "window_end": "2026-10-06",
@@ -863,7 +863,109 @@
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "e7a8ef93c00fa069fa1aef93e2b582c20108794e7c728ac5b48980f760dc0a1b"
+      "evidence_hash": "f83d32ef523d07b8137e947d58c474f0ffa1946bb2319a5b88f908860e217e5e"
+    }
+  ],
+  [
+    "pol-20261006-29a5d2ee",
+    "policy",
+    "high",
+    "政策更新：葡萄牙某些未涂布纸：反倾销税行政复审最终结果；2024-2025",
+    "美国",
+    "tariff",
+    "美国商务部（商务部）认定，本次复审唯一的生产商/出口商The Navigator Company, S.A（Navigator）在复审期（POR）2024年3月1日至2025年2月28日期间以低于正常价值（NV）的价格销售了涉案商品。",
+    "2026-10-06",
+    false,
+    {
+      "source": "Federal Register / 政策分析",
+      "source_url": "https://www.federalregister.gov/documents/2026/10/06/2026-20484/certain-uncoated-paper-from-portugal-final-results-of-antidumping-duty-administrative-review",
+      "source_kind": "derived",
+      "source_type": "derived",
+      "source_record_id": "2026-20484",
+      "verification_status": "verified",
+      "published_at": "2026-10-06",
+      "collected_at": "2026-10-06T19:17:42.422583+08:00",
+      "verified_at": "2026-10-06T19:17:42.422583+08:00",
+      "verification_notes": "由已核验来源生成的动态预警；正文事实应回溯到 source_record_id。",
+      "category_codes": [],
+      "source_record_ids": [
+        "2026-20484"
+      ],
+      "upstream_evidence_hash": "31d36ddd2b869f32a4b4785c61c2c4e5e3df453ad353d5ccca54c79d7afa2823",
+      "upstream_evidence_hashes": [
+        "31d36ddd2b869f32a4b4785c61c2c4e5e3df453ad353d5ccca54c79d7afa2823"
+      ],
+      "source_record_evidence": [
+        {
+          "source_record_id": "2026-20484",
+          "evidence_hash": "31d36ddd2b869f32a4b4785c61c2c4e5e3df453ad353d5ccca54c79d7afa2823"
+        }
+      ],
+      "lineage_type": "record",
+      "input_dataset": "data/policies.json",
+      "dataset_snapshot_id": "7155a394c0c46281b615c4eac669e7ac0f60f92e6f94af8c421df49940d02518",
+      "dataset_snapshot_at": "2026-10-06T19:17:42.422583+08:00",
+      "dataset_record_count": 361,
+      "window_start": "2026-09-06",
+      "window_end": "2026-10-06",
+      "input_record_count": 361,
+      "matched_record_count": 1,
+      "aggregate_count": null,
+      "schema_version": "2.1",
+      "display_locale": "zh-CN",
+      "generator_version": "2026.09.08.1",
+      "evidence_hash": "db1e7d35d11ca5b00f2df78cfc6367810a3544067df7246116492fe1d737cd5a"
+    }
+  ],
+  [
+    "pol-20261006-9623e433",
+    "policy",
+    "high",
+    "政策更新：泰国某些冷冻温水虾：反倾销税行政复审最终结果及无装运最终裁定；2024-2025",
+    "美国",
+    "tariff",
+    "美国商务部（商务部）认定，本次行政复审所涉的某些生产商/出口商在复审期（POR）2024年2月1日至2025年1月31日期间，以低于正常价值的价格销售了来自泰国的某些冷冻温水虾（虾）。",
+    "2026-10-06",
+    false,
+    {
+      "source": "Federal Register / 政策分析",
+      "source_url": "https://www.federalregister.gov/documents/2026/10/06/2026-20488/certain-frozen-warmwater-shrimp-from-thailand-final-results-of-antidumping-duty-administrative",
+      "source_kind": "derived",
+      "source_type": "derived",
+      "source_record_id": "2026-20488",
+      "verification_status": "verified",
+      "published_at": "2026-10-06",
+      "collected_at": "2026-10-06T19:17:42.422583+08:00",
+      "verified_at": "2026-10-06T19:17:42.422583+08:00",
+      "verification_notes": "由已核验来源生成的动态预警；正文事实应回溯到 source_record_id。",
+      "category_codes": [],
+      "source_record_ids": [
+        "2026-20488"
+      ],
+      "upstream_evidence_hash": "f542366fb6e7c6313ef612237b3e0a747de0b7790ff94aadfd0e0835e6cd8935",
+      "upstream_evidence_hashes": [
+        "f542366fb6e7c6313ef612237b3e0a747de0b7790ff94aadfd0e0835e6cd8935"
+      ],
+      "source_record_evidence": [
+        {
+          "source_record_id": "2026-20488",
+          "evidence_hash": "f542366fb6e7c6313ef612237b3e0a747de0b7790ff94aadfd0e0835e6cd8935"
+        }
+      ],
+      "lineage_type": "record",
+      "input_dataset": "data/policies.json",
+      "dataset_snapshot_id": "7155a394c0c46281b615c4eac669e7ac0f60f92e6f94af8c421df49940d02518",
+      "dataset_snapshot_at": "2026-10-06T19:17:42.422583+08:00",
+      "dataset_record_count": 361,
+      "window_start": "2026-09-06",
+      "window_end": "2026-10-06",
+      "input_record_count": 361,
+      "matched_record_count": 1,
+      "aggregate_count": null,
+      "schema_version": "2.1",
+      "display_locale": "zh-CN",
+      "generator_version": "2026.09.08.1",
+      "evidence_hash": "819e9920b2b78f26c0dd19aeb28791d4e3df5cf2db20c9d372d11a67b1511df7"
     }
   ],
   [
@@ -3051,18 +3153,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "db92789e85f40efcec20bf2d216428badf13b4506461dd79f0fc31c15a55ec3a",
-      "dataset_snapshot_at": "2026-10-04T13:54:34.807602+08:00",
-      "dataset_record_count": 356,
+      "dataset_snapshot_id": "7155a394c0c46281b615c4eac669e7ac0f60f92e6f94af8c421df49940d02518",
+      "dataset_snapshot_at": "2026-10-06T19:17:42.422583+08:00",
+      "dataset_record_count": 361,
       "window_start": "2026-09-06",
       "window_end": "2026-10-06",
-      "input_record_count": 356,
+      "input_record_count": 361,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "007c7eb1c7a3633783d36085481ac6cc99b110ba46cedc32cfb328a4ed2d3200"
+      "evidence_hash": "63be839aad51fe42b6371ed4e67c69d833bbba235771e161e391a916a640c561"
     }
   ],
   [
