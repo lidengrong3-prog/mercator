@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-07T14:02:14.940276+08:00",
+  "updated_at": "2026-10-07T23:34:50.440144+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -1037,7 +1037,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Resolving unpaid items with buyers After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the item they bought. 2 min article",
-      "summary": "",
+      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Reminding buyers to pay Using Preferences for items awaiting payment After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the ite...",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -1052,50 +1052,25 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-07T02:25:22.084524+08:00",
-      "collected_at": "2026-10-07T02:25:22.084524+08:00",
+      "verified_at": "2026-10-07T23:34:50.440144+08:00",
+      "collected_at": "2026-10-07T23:34:50.440144+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "28",
+      "rule_version": "29",
       "effective_from": "2026-10-07",
       "changed_fields": [
-        "summary",
-        "published_at",
-        "effective_from"
+        "summary"
       ],
-      "change_summary": "规则字段变化：summary、published_at、effective_from",
+      "change_summary": "规则字段变化：summary",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-07T02:25:22.084524+08:00",
+      "retrieved_at": "2026-10-07T23:34:50.440144+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "f466aaf530331058eb62dac689b1cd4faaaa79eab8d3df664b2b7257b642e287",
       "version_history": [
-        {
-          "id": "r20260921-85b7a9af",
-          "rule_key": "ebay:4137",
-          "rule_version": "8",
-          "title": "Resolving unpaid items with buyers After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the item they bought. 2 min article",
-          "summary": "",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/selling/getting-paid/resolving-unpaid-items-buyers?id=4137",
-          "published_at": "2026-09-21",
-          "effective_from": "2026-09-21",
-          "source_record_id": "ebay:4137",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "c1cd8fc046813b6444d4ef3b73319c4bbf6c062a1c1eb3383ae1071698eac945",
-          "collected_at": "2026-09-21T02:50:04.303080+08:00",
-          "verified_at": "2026-09-21T02:50:04.303080+08:00",
-          "changed_fields": [
-            "summary",
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：summary、published_at、effective_from"
-        },
         {
           "id": "r20260921-85b7a9af",
           "rule_key": "ebay:4137",
@@ -1512,9 +1487,32 @@
             "summary"
           ],
           "change_summary": "规则字段变化：summary"
+        },
+        {
+          "id": "r20261007-85b7a9af",
+          "rule_key": "ebay:4137",
+          "rule_version": "28",
+          "title": "Resolving unpaid items with buyers After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the item they bought. 2 min article",
+          "summary": "",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/getting-paid/resolving-unpaid-items-buyers?id=4137",
+          "published_at": "2026-10-07",
+          "effective_from": "2026-10-07",
+          "source_record_id": "ebay:4137",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "f466aaf530331058eb62dac689b1cd4faaaa79eab8d3df664b2b7257b642e287",
+          "collected_at": "2026-10-07T02:25:22.084524+08:00",
+          "verified_at": "2026-10-07T02:25:22.084524+08:00",
+          "changed_fields": [
+            "summary",
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：summary、published_at、effective_from"
         }
       ],
-      "previous_version": "27",
+      "previous_version": "28",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -2057,7 +2055,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manages the end-to-end payments process, and you receive your funds directly in your checking account. You can find an overview of the payment options that are usually added automatically on our Accepted payment methods help page. 2 min article",
-      "summary": "",
+      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Payment partners Helpful articles Register for eBay to manage your payments Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manages the end-to-end payments process, and you receive your funds directly in yo...",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -2072,8 +2070,8 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-07T02:25:22.084524+08:00",
-      "collected_at": "2026-10-07T02:25:22.084524+08:00",
+      "verified_at": "2026-10-07T23:34:50.440144+08:00",
+      "collected_at": "2026-10-07T23:34:50.440144+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "settlement",
@@ -2081,45 +2079,19 @@
       "rule_dimensions": {
         "settlement": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manage"
       },
-      "rule_version": "27",
+      "rule_version": "28",
       "effective_from": "2026-10-07",
       "changed_fields": [
-        "published_at",
-        "effective_from"
+        "summary"
       ],
-      "change_summary": "规则字段变化：published_at、effective_from",
+      "change_summary": "规则字段变化：summary",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-07T02:25:22.084524+08:00",
+      "retrieved_at": "2026-10-07T23:34:50.440144+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "25035da1e66c29ce8c8cf8d8d5620c6e3aa554c65f6bb72697803e6f816a89b1",
       "version_history": [
-        {
-          "id": "r20260921-60dd64dc",
-          "rule_key": "ebay:4795",
-          "rule_version": "7",
-          "title": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manages the end-to-end payments process, and you receive your funds directly in your checking account. You can find an overview of the payment options that are usually added automatically on our Accepted payment methods help page. 2 min article",
-          "summary": "",
-          "rule_dimensions": {
-            "settlement": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manage"
-          },
-          "source_url": "https://www.ebay.com/help/selling/getting-paid/start-getting-paid-ebay?id=4795",
-          "published_at": "2026-09-21",
-          "effective_from": "2026-09-21",
-          "source_record_id": "ebay:4795",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "7e7b7c37f2668f0eea72fcb88a8b60cb34779f53002b124bade7312ddcd774e4",
-          "collected_at": "2026-09-21T02:50:04.303080+08:00",
-          "verified_at": "2026-09-21T02:50:04.303080+08:00",
-          "changed_fields": [
-            "summary",
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：summary、published_at、effective_from"
-        },
         {
           "id": "r20260921-60dd64dc",
           "rule_key": "ebay:4795",
@@ -2573,9 +2545,33 @@
             "summary"
           ],
           "change_summary": "规则字段变化：summary"
+        },
+        {
+          "id": "r20261007-60dd64dc",
+          "rule_key": "ebay:4795",
+          "rule_version": "27",
+          "title": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manages the end-to-end payments process, and you receive your funds directly in your checking account. You can find an overview of the payment options that are usually added automatically on our Accepted payment methods help page. 2 min article",
+          "summary": "",
+          "rule_dimensions": {
+            "settlement": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manage"
+          },
+          "source_url": "https://www.ebay.com/help/selling/getting-paid/start-getting-paid-ebay?id=4795",
+          "published_at": "2026-10-07",
+          "effective_from": "2026-10-07",
+          "source_record_id": "ebay:4795",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "25035da1e66c29ce8c8cf8d8d5620c6e3aa554c65f6bb72697803e6f816a89b1",
+          "collected_at": "2026-10-07T02:25:22.084524+08:00",
+          "verified_at": "2026-10-07T02:25:22.084524+08:00",
+          "changed_fields": [
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：published_at、effective_from"
         }
       ],
-      "previous_version": "26",
+      "previous_version": "27",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -2588,7 +2584,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "How sellers can cancel an order Sellers are obligated to complete the sale when a buyer makes a purchase. However, we understand that there may be circumstances in which orders need to be canceled. 2 min article",
-      "summary": "",
+      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page What if the buyer requests to cancel the order? What happens if the buyer asks you to cancel when the order isn’t eligible for cancellation? What happens after an order is canceled? If there is an issue with the refund Sellers are obligated to complete the sale when a buye...",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -2603,13 +2599,13 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-07T14:02:14.940276+08:00",
-      "collected_at": "2026-10-07T14:02:14.940276+08:00",
+      "verified_at": "2026-10-07T23:34:50.440144+08:00",
+      "collected_at": "2026-10-07T23:34:50.440144+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "26",
+      "rule_version": "27",
       "effective_from": "2026-10-07",
       "changed_fields": [
         "summary"
@@ -2618,33 +2614,10 @@
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-07T14:02:14.940276+08:00",
+      "retrieved_at": "2026-10-07T23:34:50.440144+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "b1bb7b75a46f9ef46e482c63c4db13c8048e70dbc7df9e781fc2f438cc2ff846",
       "version_history": [
-        {
-          "id": "r20260920-2e55240b",
-          "rule_key": "ebay:4136",
-          "rule_version": "6",
-          "title": "How sellers can cancel an order Sellers are obligated to complete the sale when a buyer makes a purchase. However, we understand that there may be circumstances in which orders need to be canceled. 2 min article",
-          "summary": "",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/selling/getting-paid/sellers-can-cancel-order?id=4136",
-          "published_at": "2026-09-20",
-          "effective_from": "2026-09-20",
-          "source_record_id": "ebay:4136",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "83a8f0f4454f464f88353f13756dd067af33973d0868db34f6d829d5add0e091",
-          "collected_at": "2026-09-20T02:39:16.590015+08:00",
-          "verified_at": "2026-09-20T02:39:16.590015+08:00",
-          "changed_fields": [
-            "summary",
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：summary、published_at、effective_from"
-        },
         {
           "id": "r20260920-2e55240b",
           "rule_key": "ebay:4136",
@@ -3061,9 +3034,30 @@
             "summary"
           ],
           "change_summary": "规则字段变化：summary"
+        },
+        {
+          "id": "r20261007-2e55240b",
+          "rule_key": "ebay:4136",
+          "rule_version": "26",
+          "title": "How sellers can cancel an order Sellers are obligated to complete the sale when a buyer makes a purchase. However, we understand that there may be circumstances in which orders need to be canceled. 2 min article",
+          "summary": "",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/getting-paid/sellers-can-cancel-order?id=4136",
+          "published_at": "2026-10-07",
+          "effective_from": "2026-10-07",
+          "source_record_id": "ebay:4136",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "b1bb7b75a46f9ef46e482c63c4db13c8048e70dbc7df9e781fc2f438cc2ff846",
+          "collected_at": "2026-10-07T14:02:14.940276+08:00",
+          "verified_at": "2026-10-07T14:02:14.940276+08:00",
+          "changed_fields": [
+            "summary"
+          ],
+          "change_summary": "规则字段变化：summary"
         }
       ],
-      "previous_version": "25",
+      "previous_version": "26",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -4627,7 +4621,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-10-07T14:02:14.940276+08:00",
+  "last_checked_at": "2026-10-07T23:34:50.440144+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4907,7 +4901,7 @@
             "ebay:4795",
             "ebay:4796"
           ],
-          "last_verified_at": "2026-10-07T02:25:22.084524+08:00"
+          "last_verified_at": "2026-10-07T23:34:50.440144+08:00"
         },
         "penalty": {
           "status": "connected",
@@ -4919,7 +4913,7 @@
           "last_verified_at": "2026-10-07T02:25:22.084524+08:00"
         }
       },
-      "last_verified_at": "2026-10-07T14:02:14.940276+08:00",
+      "last_verified_at": "2026-10-07T23:34:50.440144+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   },
@@ -5196,7 +5190,7 @@
             "ebay:4795",
             "ebay:4796"
           ],
-          "last_verified_at": "2026-10-07T02:25:22.084524+08:00"
+          "last_verified_at": "2026-10-07T23:34:50.440144+08:00"
         },
         "penalty": {
           "status": "connected",
@@ -5208,7 +5202,7 @@
           "last_verified_at": "2026-10-07T02:25:22.084524+08:00"
         }
       },
-      "last_verified_at": "2026-10-07T14:02:14.940276+08:00",
+      "last_verified_at": "2026-10-07T23:34:50.440144+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   }
