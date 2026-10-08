@@ -363,7 +363,7 @@ DECLARE
   owned BOOLEAN;
   inserted_id UUID;
   attempt_number INTEGER;
-  request_id TEXT;
+  clean_request_id TEXT;
   attempt_status TEXT;
 BEGIN
   SELECT TRUE INTO owned FROM public.collection_tasks
@@ -383,9 +383,9 @@ BEGIN
   END IF;
 
   attempt_number := GREATEST(1, COALESCE((p_attempt->>'attempt_number')::INTEGER, 1));
-  request_id := LEFT(NULLIF(TRIM(p_attempt->>'request_id'), ''), 240);
+  clean_request_id := LEFT(NULLIF(TRIM(p_attempt->>'request_id'), ''), 240);
   attempt_status := NULLIF(TRIM(p_attempt->>'status'), '');
-  IF request_id IS NULL OR attempt_status NOT IN ('succeeded', 'failed', 'budget_blocked', 'source_blocked', 'timed_out') THEN
+  IF clean_request_id IS NULL OR attempt_status NOT IN ('succeeded', 'failed', 'budget_blocked', 'source_blocked', 'timed_out') THEN
     RAISE EXCEPTION 'ATTEMPT_PAYLOAD_INVALID' USING ERRCODE = '22023';
   END IF;
 
@@ -394,7 +394,7 @@ BEGIN
     error_code, error_message, estimated_cost_usd, started_at, completed_at,
     diagnostics, lease_token, budget_request_id
   ) VALUES (
-    p_task_id, attempt_number, LEFT(TRIM(p_worker_id), 160), request_id, attempt_status,
+    p_task_id, attempt_number, LEFT(TRIM(p_worker_id), 160), clean_request_id, attempt_status,
     NULLIF(p_attempt->>'exit_code', '')::INTEGER,
     LEFT(NULLIF(TRIM(p_attempt->>'error_code'), ''), 120),
     LEFT(NULLIF(TRIM(p_attempt->>'error_message'), ''), 2000),
@@ -404,10 +404,10 @@ BEGIN
     CASE WHEN jsonb_typeof(p_attempt->'diagnostics') = 'object' THEN p_attempt->'diagnostics' ELSE '{}'::jsonb END,
     p_lease_token, LEFT(NULLIF(TRIM(p_attempt->>'budget_request_id'), ''), 240)
   )
-  ON CONFLICT (request_id) DO NOTHING
+  ON CONFLICT ON CONSTRAINT collection_task_attempts_request_id_key DO NOTHING
   RETURNING id INTO inserted_id;
 
-  RETURN jsonb_build_object('recorded', TRUE, 'idempotent', inserted_id IS NULL, 'request_id', request_id);
+  RETURN jsonb_build_object('recorded', TRUE, 'idempotent', inserted_id IS NULL, 'request_id', clean_request_id);
 END;
 $$;
 
