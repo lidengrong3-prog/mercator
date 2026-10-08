@@ -69,6 +69,22 @@ owner_guard_uses_membership_tag() {
   ) > 0"
 }
 
+r10_worker_contract_exists() {
+  scalar "SELECT (
+    to_regclass('public.collection_worker_events') IS NOT NULL
+    AND EXISTS (
+      SELECT 1 FROM pg_proc p
+      JOIN pg_namespace n ON n.oid = p.pronamespace
+      WHERE n.nspname = 'public' AND p.proname = 'claim_collection_task_v2'
+    )
+    AND EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = 'collection_tasks'
+        AND column_name = 'lease_token'
+    )
+  )::text"
+}
+
 assert_equal() {
   local expected="$1"
   local actual="$2"
@@ -102,7 +118,8 @@ assert_equal "$((migration_count - 1))" "$(scalar 'SELECT count(*) FROM supabase
 assert_equal "$previous_version" "$(scalar 'SELECT max(version) FROM supabase_migrations.schema_migrations')" "pre-upgrade migration head"
 assert_equal "false" "$(acceptance_cleanup_deletes_storage_table)" "pre-upgrade Storage API cleanup contract"
 assert_equal "true" "$(user_watchlist_has_acceptance_tag)" "pre-upgrade watchlist acceptance tag"
-assert_equal "f" "$(owner_guard_uses_membership_tag)" "pre-upgrade owner cleanup guard"
+assert_equal "t" "$(owner_guard_uses_membership_tag)" "pre-upgrade owner cleanup guard"
+assert_equal "false" "$(r10_worker_contract_exists)" "pre-upgrade R10 Worker contract"
 psql_rehearsal -f scripts/database_upgrade_seed.sql
 
 supabase migration up --local
@@ -112,6 +129,7 @@ assert_equal "true" "$(rate_limit_path_has_extensions)" "upgraded rate-limit ext
 assert_equal "false" "$(acceptance_cleanup_deletes_storage_table)" "upgraded acceptance Storage API contract"
 assert_equal "true" "$(user_watchlist_has_acceptance_tag)" "upgraded watchlist acceptance tag"
 assert_equal "t" "$(owner_guard_uses_membership_tag)" "upgraded owner cleanup guard"
+assert_equal "true" "$(r10_worker_contract_exists)" "upgraded R10 Worker contract"
 assert_equal "preserve-me" "$(scalar "SELECT data->>'value' FROM public.market_data WHERE key = 'migration-rehearsal-existing-row'")" "existing market data preservation"
 assert_equal "migration-rehearsal-existing-row" "$(scalar "SELECT approval_reference FROM public.production_rollout_state WHERE singleton = TRUE")" "existing rollout state preservation"
 psql_rehearsal -f scripts/database_rehearsal_assertions.sql

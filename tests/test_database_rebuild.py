@@ -119,6 +119,8 @@ class DatabaseRebuildTests(unittest.TestCase):
         self.assertIn('supabase db reset --local --no-seed', script)
         self.assertIn('--version "$previous_version"', script)
         self.assertIn('supabase migration up --local', script)
+        self.assertIn('pre-upgrade R10 Worker contract', script)
+        self.assertIn('upgraded R10 Worker contract', script)
         self.assertIn('existing market data preservation', script)
         self.assertIn('upgraded rate-limit extension path', script)
         self.assertIn('upgraded acceptance Storage API contract', script)
