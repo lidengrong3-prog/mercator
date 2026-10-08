@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-08T05:20:54.104153+08:00",
+  "updated_at": "2026-10-08T14:06:56.047750+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -1039,7 +1039,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Resolving unpaid items with buyers After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the item they bought. 2 min article",
-      "summary": "",
+      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Reminding buyers to pay Using Preferences for items awaiting payment After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the ite...",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -1054,49 +1054,25 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-08T05:20:54.104153+08:00",
-      "collected_at": "2026-10-08T05:20:54.104153+08:00",
+      "verified_at": "2026-10-08T14:06:56.047750+08:00",
+      "collected_at": "2026-10-08T14:06:56.047750+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "30",
+      "rule_version": "31",
       "effective_from": "2026-10-08",
       "changed_fields": [
-        "summary",
-        "published_at",
-        "effective_from"
+        "summary"
       ],
-      "change_summary": "规则字段变化：summary、published_at、effective_from",
+      "change_summary": "规则字段变化：summary",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-08T05:20:54.104153+08:00",
+      "retrieved_at": "2026-10-08T14:06:56.047750+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "7f7d9e72700080f76dd74fbfcd4fabb92e444bb57789cffe10e3c427a58a9ed0",
       "version_history": [
-        {
-          "id": "r20260922-85b7a9af",
-          "rule_key": "ebay:4137",
-          "rule_version": "10",
-          "title": "Resolving unpaid items with buyers After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the item they bought. 2 min article",
-          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Reminding buyers to pay Using Preferences for items awaiting payment After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the ite...",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/selling/getting-paid/resolving-unpaid-items-buyers?id=4137",
-          "published_at": "2026-09-22",
-          "effective_from": "2026-09-22",
-          "source_record_id": "ebay:4137",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "fb9b15ceb69d13f19f6113c04d2a999da7f8d7c0c6710a0b2b16365db3152a16",
-          "collected_at": "2026-09-22T04:27:50.284494+08:00",
-          "verified_at": "2026-09-22T04:27:50.284494+08:00",
-          "changed_fields": [
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：published_at、effective_from"
-        },
         {
           "id": "r20260923-85b7a9af",
           "rule_key": "ebay:4137",
@@ -1514,9 +1490,32 @@
             "summary"
           ],
           "change_summary": "规则字段变化：summary"
+        },
+        {
+          "id": "r20261008-85b7a9af",
+          "rule_key": "ebay:4137",
+          "rule_version": "30",
+          "title": "Resolving unpaid items with buyers After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the item they bought. 2 min article",
+          "summary": "",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/getting-paid/resolving-unpaid-items-buyers?id=4137",
+          "published_at": "2026-10-08",
+          "effective_from": "2026-10-08",
+          "source_record_id": "ebay:4137",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "7f7d9e72700080f76dd74fbfcd4fabb92e444bb57789cffe10e3c427a58a9ed0",
+          "collected_at": "2026-10-08T05:20:54.104153+08:00",
+          "verified_at": "2026-10-08T05:20:54.104153+08:00",
+          "changed_fields": [
+            "summary",
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：summary、published_at、effective_from"
         }
       ],
-      "previous_version": "29",
+      "previous_version": "30",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -4648,7 +4647,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-10-08T05:20:54.104153+08:00",
+  "last_checked_at": "2026-10-08T14:06:56.047750+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4940,7 +4939,7 @@
           "last_verified_at": "2026-10-08T05:20:54.104153+08:00"
         }
       },
-      "last_verified_at": "2026-10-08T05:20:54.104153+08:00",
+      "last_verified_at": "2026-10-08T14:06:56.047750+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   },
@@ -5229,7 +5228,7 @@
           "last_verified_at": "2026-10-08T05:20:54.104153+08:00"
         }
       },
-      "last_verified_at": "2026-10-08T05:20:54.104153+08:00",
+      "last_verified_at": "2026-10-08T14:06:56.047750+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   }
