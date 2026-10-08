@@ -42,6 +42,10 @@ class WorkerConfigurationError(RuntimeError):
     """Worker 环境或任务配置无效。"""
 
 
+class WorkerLeaseLostError(RuntimeError):
+    """The database rejected a write from a stale or expired task lease."""
+
+
 class SupabaseRequestError(RuntimeError):
     """Supabase REST/RPC 请求失败。"""
 
@@ -137,51 +141,75 @@ class SupabaseClient:
     def rpc(self, name: str, payload: Mapping[str, Any] | None = None) -> Any:
         return self.request("POST", f"rest/v1/rpc/{name}", body=dict(payload or {}))
 
-    def claim_task(self, worker_id: str, lease_seconds: int) -> dict[str, Any] | None:
-        result = self.rpc("claim_collection_task", {
+    def claim_task(self, worker_id: str, boot_id: str, lease_seconds: int) -> dict[str, Any] | None:
+        result = self.rpc("claim_collection_task_v2", {
             "p_worker_id": worker_id,
+            "p_boot_id": boot_id,
             "p_lease_seconds": lease_seconds,
         })
         if isinstance(result, list):
             return result[0] if result and isinstance(result[0], dict) else None
         return result if isinstance(result, dict) else None
 
-    def renew_lease(self, task_id: str, worker_id: str, lease_seconds: int) -> bool:
-        result = self.rpc("renew_collection_task_lease", {
+    def renew_lease(
+        self, task_id: str, worker_id: str, boot_id: str, lease_token: str, lease_seconds: int
+    ) -> bool:
+        result = self.rpc("renew_collection_task_lease_v2", {
             "p_task_id": task_id,
             "p_worker_id": worker_id,
+            "p_boot_id": boot_id,
+            "p_lease_token": lease_token,
             "p_lease_seconds": lease_seconds,
         })
         if isinstance(result, list):
             result = result[0] if result else False
         if isinstance(result, dict):
-            return bool(result.get("renew_collection_task_lease", result.get("renewed", True)))
+            return bool(result.get("renew_collection_task_lease_v2", result.get("renewed", True)))
         return bool(result)
 
-    def complete_task(self, task_id: str, worker_id: str, result_summary: Mapping[str, Any]) -> Any:
-        return self.rpc("complete_collection_task", {
+    def complete_task(
+        self, task_id: str, worker_id: str, boot_id: str, lease_token: str,
+        result_summary: Mapping[str, Any],
+    ) -> Any:
+        result = self.rpc("complete_collection_task_v2", {
             "p_task_id": task_id,
             "p_worker_id": worker_id,
+            "p_boot_id": boot_id,
+            "p_lease_token": lease_token,
             "p_result_summary": dict(result_summary),
         })
+        if isinstance(result, list):
+            result = result[0] if result else {}
+        if not isinstance(result, dict) or not bool(result.get("applied")):
+            raise WorkerLeaseLostError("task completion rejected by lease fence")
+        return result
 
     def fail_task(
         self,
         task_id: str,
         worker_id: str,
+        boot_id: str,
+        lease_token: str,
         error_code: str,
         error_message: str,
         backoff_seconds: int,
         retryable: bool,
     ) -> Any:
-        return self.rpc("fail_collection_task", {
+        result = self.rpc("fail_collection_task_v2", {
             "p_task_id": task_id,
             "p_worker_id": worker_id,
+            "p_boot_id": boot_id,
+            "p_lease_token": lease_token,
             "p_error_code": error_code,
             "p_error_message": error_message,
             "p_backoff_seconds": backoff_seconds,
             "p_retryable": retryable,
         })
+        if isinstance(result, list):
+            result = result[0] if result else {}
+        if not isinstance(result, dict) or not bool(result.get("applied")):
+            raise WorkerLeaseLostError("task failure rejected by lease fence")
+        return result
 
     def reserve_budget(
         self,
@@ -200,23 +228,79 @@ class SupabaseClient:
             result = result[0] if result else {}
         return result if isinstance(result, dict) else {"allowed": bool(result)}
 
-    def record_source_outcome(self, source_key: str, success: bool, error_code: str | None = None) -> dict[str, Any]:
-        result = self.rpc("record_collection_source_outcome", {
+    def record_source_outcome(
+        self, task_id: str, worker_id: str, boot_id: str, lease_token: str,
+        source_key: str, success: bool, error_code: str | None = None,
+    ) -> dict[str, Any]:
+        result = self.rpc("record_collection_source_outcome_v2", {
+            "p_task_id": task_id,
+            "p_worker_id": worker_id,
+            "p_boot_id": boot_id,
+            "p_lease_token": lease_token,
             "p_source_key": source_key,
             "p_success": success,
             "p_error_code": error_code,
         })
         if isinstance(result, list):
             result = result[0] if result else {}
-        return result if isinstance(result, dict) else {}
+        if not isinstance(result, dict) or result.get("recorded") is False:
+            raise WorkerLeaseLostError("source outcome rejected by lease fence")
+        return result
 
-    def insert_attempt(self, row: Mapping[str, Any]) -> Any:
-        return self.request(
-            "POST",
-            "rest/v1/collection_task_attempts",
-            body=[dict(row)],
-            prefer="return=minimal,resolution=ignore-duplicates",
-        )
+    def insert_attempt(
+        self, task_id: str, worker_id: str, boot_id: str, lease_token: str,
+        row: Mapping[str, Any],
+    ) -> Any:
+        result = self.rpc("record_collection_task_attempt_v2", {
+            "p_task_id": task_id,
+            "p_worker_id": worker_id,
+            "p_boot_id": boot_id,
+            "p_lease_token": lease_token,
+            "p_attempt": dict(row),
+        })
+        if isinstance(result, list):
+            result = result[0] if result else {}
+        if not isinstance(result, dict) or not bool(result.get("recorded")):
+            raise WorkerLeaseLostError("attempt write rejected by lease fence")
+        return result
+
+    def finalize_task(
+        self,
+        task_id: str,
+        worker_id: str,
+        boot_id: str,
+        lease_token: str,
+        attempt: Mapping[str, Any],
+        source_key: str,
+        *,
+        record_source_outcome: bool,
+        source_success: bool | None,
+        source_error_code: str | None,
+        result_summary: Mapping[str, Any] | None,
+        complete: bool,
+        backoff_seconds: int,
+        retryable: bool,
+    ) -> dict[str, Any]:
+        result = self.rpc("finalize_collection_task_v2", {
+            "p_task_id": task_id,
+            "p_worker_id": worker_id,
+            "p_boot_id": boot_id,
+            "p_lease_token": lease_token,
+            "p_attempt": dict(attempt),
+            "p_source_key": source_key,
+            "p_record_source_outcome": record_source_outcome,
+            "p_source_success": source_success,
+            "p_source_error_code": source_error_code,
+            "p_result_summary": dict(result_summary or {}),
+            "p_complete": complete,
+            "p_backoff_seconds": backoff_seconds,
+            "p_retryable": retryable,
+        })
+        if isinstance(result, list):
+            result = result[0] if result else {}
+        if not isinstance(result, dict) or not bool(result.get("applied")):
+            raise WorkerLeaseLostError("atomic task finalization rejected by lease fence")
+        return result
 
     def source_policy(self, source_key: str) -> dict[str, Any] | None:
         rows = self.request(
@@ -487,6 +571,7 @@ class CollectionWorker:
         self.runtime_metadata = {
             "runtime": "collection_worker.py",
             "boot_id": self.boot_id,
+            "protocol_version": "2",
             "browser_rules": str(os.environ.get("ENABLE_BROWSER_PLATFORM_RULES", "")).strip().lower()
                 in {"1", "true", "yes"},
         }
@@ -560,6 +645,9 @@ class CollectionWorker:
             "attempt_number": attempt_number,
             "worker_id": self.worker_id,
             "request_id": request_id,
+            "budget_request_id": str(
+                task.get("budget_request_id") or f"collection-budget:{task['id']}:{attempt_number}"
+            ),
             "status": status,
             "exit_code": exit_code,
             "error_code": error_code,
@@ -570,14 +658,20 @@ class CollectionWorker:
             "diagnostics": dict(diagnostics or {}),
         }
 
-    def _renew_loop(self, task_id: str, stop_event: threading.Event) -> None:
+    def _renew_loop(
+        self, task_id: str, lease_token: str,
+        stop_event: threading.Event, lease_lost_event: threading.Event,
+    ) -> None:
         # Runtime presence expires after two minutes. Keep both the task lease
         # and instance heartbeat fresh during long collectors and publication.
         interval = max(5.0, min(self.lease_seconds / 3.0, 60.0))
         while not stop_event.wait(interval):
             try:
-                renewed = self.client.renew_lease(task_id, self.worker_id, self.lease_seconds)
+                renewed = self.client.renew_lease(
+                    task_id, self.worker_id, self.boot_id, lease_token, self.lease_seconds
+                )
                 if not renewed:
+                    lease_lost_event.set()
                     print(json.dumps({"event": "lease_lost", "task_id": task_id}, ensure_ascii=False), flush=True)
                     return
                 self._heartbeat("busy", task_id)
@@ -616,8 +710,14 @@ class CollectionWorker:
         source_key = str(task.get("source_key") or "").strip()
         if not task_id or not source_key:
             raise WorkerConfigurationError("claimed task must contain id and source_key")
+        lease_token = str(task.get("lease_token") or "").strip()
+        if not lease_token:
+            raise WorkerConfigurationError("claimed task must contain lease_token")
         attempt_number = _positive_int(task.get("attempt_count"), 1, minimum=1, maximum=1000)
         request_id = f"collection:{task_id}:{attempt_number}"
+        budget_request_id = str(
+            task.get("budget_request_id") or f"collection-budget:{task_id}:{attempt_number}"
+        ).strip()
         started_at = iso_now()
         policy = self.client.source_policy(source_key) or {}
         parameters = task.get("parameters") if isinstance(task.get("parameters"), dict) else {}
@@ -635,6 +735,28 @@ class CollectionWorker:
                 print(json.dumps({"event": "monitoring_status_failed", "monitoring_task_id": monitoring_task_id,
                                   "error": _safe_text(record_error)}, ensure_ascii=False), flush=True)
 
+        def finalize(
+            attempt: Mapping[str, Any],
+            *,
+            complete: bool,
+            record_source_outcome: bool,
+            source_success: bool | None = None,
+            source_error_code: str | None = None,
+            result_summary: Mapping[str, Any] | None = None,
+            backoff_seconds: int = 0,
+            retryable: bool = False,
+        ) -> dict[str, Any]:
+            return self.client.finalize_task(
+                task_id, self.worker_id, self.boot_id, lease_token, attempt, source_key,
+                record_source_outcome=record_source_outcome,
+                source_success=source_success,
+                source_error_code=source_error_code,
+                result_summary=result_summary,
+                complete=complete,
+                backoff_seconds=backoff_seconds,
+                retryable=retryable,
+            )
+
         # 进程可能在写入成功 attempt 后、完成任务状态前重启。先补完成，
         # 避免再次调用外部 API 并产生重复写入。
         prior_success = getattr(self.client, "successful_attempt", None)
@@ -642,7 +764,7 @@ class CollectionWorker:
             previous = prior_success(task_id)
             if previous:
                 previous_request_id = str(previous.get("request_id") or request_id)
-                self.client.complete_task(task_id, self.worker_id, {
+                self.client.complete_task(task_id, self.worker_id, self.boot_id, lease_token, {
                     "status": "succeeded", "request_id": previous_request_id,
                     "recovered_after_restart": True,
                 })
@@ -652,28 +774,33 @@ class CollectionWorker:
         request_count, estimated_cost = self._policy_cost(task, policy)
 
         try:
-            budget = self.client.reserve_budget(source_key, request_id, request_count, estimated_cost)
+            budget = self.client.reserve_budget(source_key, budget_request_id, request_count, estimated_cost)
         except Exception as error:
             error_code = "BUDGET_RESERVATION_FAILED"
             message = _safe_text(error)
-            self.client.insert_attempt(self._attempt_row(task, attempt_number=attempt_number, request_id=request_id,
-                                                         status="failed", started_at=started_at,
-                                                         error_code=error_code, error_message=message,
-                                                         estimated_cost_usd=estimated_cost))
-            self.client.fail_task(task_id, self.worker_id, error_code, message, self._backoff(policy, attempt_number), True)
+            finalize(
+                self._attempt_row(task, attempt_number=attempt_number, request_id=request_id,
+                                  status="failed", started_at=started_at,
+                                  error_code=error_code, error_message=message,
+                                  estimated_cost_usd=estimated_cost),
+                complete=False, record_source_outcome=False,
+                backoff_seconds=self._backoff(policy, attempt_number), retryable=True,
+            )
             record_monitoring("failed", message)
             return {"task_id": task_id, "status": "failed", "error_code": error_code}
 
         if not bool(budget.get("allowed")):
             reason = str(budget.get("reason") or "BUDGET_BLOCKED")
-            self.client.insert_attempt(self._attempt_row(task, attempt_number=attempt_number, request_id=request_id,
-                                                         status="budget_blocked", started_at=started_at,
-                                                         error_code=reason, error_message=reason,
-                                                         estimated_cost_usd=estimated_cost,
-                                                         diagnostics={"budget": {"reason": reason}}))
-            self.client.fail_task(task_id, self.worker_id, reason, "collection budget blocked", 0, False)
+            finalize(
+                self._attempt_row(task, attempt_number=attempt_number, request_id=request_id,
+                                  status="budget_blocked", started_at=started_at,
+                                  error_code=reason, error_message="collection budget blocked",
+                                  estimated_cost_usd=estimated_cost,
+                                  diagnostics={"budget": {"reason": reason}}),
+                complete=False, record_source_outcome=False,
+            )
             record_monitoring("failed", reason)
-            return {"task_id": task_id, "status": "dead_letter", "error_code": reason}
+            return {"task_id": task_id, "status": "budget_blocked", "error_code": reason}
 
         try:
             command = build_collector_command(task, python_executable=self.python_executable)
@@ -681,16 +808,22 @@ class CollectionWorker:
         except WorkerConfigurationError as error:
             code = "COLLECTOR_NOT_ALLOWED" if "allowlisted" in str(error) else "INVALID_TASK_PARAMETERS"
             message = _safe_text(error)
-            self.client.insert_attempt(self._attempt_row(task, attempt_number=attempt_number, request_id=request_id,
-                                                         status="failed", started_at=started_at,
-                                                         error_code=code, error_message=message,
-                                                         estimated_cost_usd=estimated_cost))
-            self.client.fail_task(task_id, self.worker_id, code, message, 0, False)
+            finalize(
+                self._attempt_row(task, attempt_number=attempt_number, request_id=request_id,
+                                  status="failed", started_at=started_at,
+                                  error_code=code, error_message=message,
+                                  estimated_cost_usd=estimated_cost),
+                complete=False, record_source_outcome=False,
+            )
             record_monitoring("failed", message)
             return {"task_id": task_id, "status": "dead_letter", "error_code": code}
 
         stop_event = threading.Event()
-        renew_thread = threading.Thread(target=self._renew_loop, args=(task_id, stop_event), daemon=True)
+        lease_lost_event = threading.Event()
+        renew_thread = threading.Thread(
+            target=self._renew_loop,
+            args=(task_id, lease_token, stop_event, lease_lost_event), daemon=True,
+        )
         renew_thread.start()
         try:
             exit_code, stdout, stderr, process_error = self._run_process(command, timeout_seconds=timeout_seconds, task_id=task_id)
@@ -698,35 +831,42 @@ class CollectionWorker:
             stop_event.set()
             renew_thread.join(timeout=2)
 
+        if lease_lost_event.is_set():
+            return {"task_id": task_id, "status": "lease_lost", "error_code": "LEASE_FENCED"}
+
         if exit_code == 0 and process_error is None:
-            source_result = self.client.record_source_outcome(source_key, True, None)
             diagnostics = {"stdout_tail": stdout, "stderr_tail": stderr}
-            self.client.insert_attempt(self._attempt_row(task, attempt_number=attempt_number, request_id=request_id,
-                                                         status="succeeded", started_at=started_at, exit_code=0,
-                                                         estimated_cost_usd=estimated_cost, diagnostics=diagnostics))
             summary = {"status": "succeeded", "request_id": request_id, "exit_code": 0,
-                       "source_outcome": source_result, "diagnostics": diagnostics}
-            self.client.complete_task(task_id, self.worker_id, summary)
+                       "diagnostics": diagnostics}
+            finalize(
+                self._attempt_row(task, attempt_number=attempt_number, request_id=request_id,
+                                  status="succeeded", started_at=started_at, exit_code=0,
+                                  estimated_cost_usd=estimated_cost, diagnostics=diagnostics),
+                complete=True, record_source_outcome=True, source_success=True,
+                result_summary=summary,
+            )
             record_monitoring("succeeded")
             return {"task_id": task_id, "status": "succeeded", "request_id": request_id}
 
         timed_out = process_error is not None and process_error.startswith("timeout")
         error_code = "TIMEOUT" if timed_out else ("PROCESS_ERROR" if process_error else "EXIT_NONZERO")
         message = process_error or (stderr or stdout or f"collector exited with code {exit_code}")
-        source_result = self.client.record_source_outcome(source_key, False, error_code)
-        diagnostics = {"stdout_tail": stdout, "stderr_tail": stderr,
-                       "source_outcome": source_result}
-        self.client.insert_attempt(self._attempt_row(task, attempt_number=attempt_number, request_id=request_id,
-                                                     status="timed_out" if timed_out else "failed",
-                                                     started_at=started_at, error_code=error_code,
-                                                     error_message=message, exit_code=exit_code,
-                                                     estimated_cost_usd=estimated_cost, diagnostics=diagnostics))
+        diagnostics = {"stdout_tail": stdout, "stderr_tail": stderr}
         publication_blocked = bool(policy.get("blocks_publication_on_failure"))
         summary = {"status": "failed", "request_id": request_id, "error_code": error_code,
                    "publication_blocked": publication_blocked,
                    "source_key": source_key}
         backoff = self._backoff(policy, attempt_number)
-        self.client.fail_task(task_id, self.worker_id, error_code, message, backoff, True)
+        finalize(
+            self._attempt_row(task, attempt_number=attempt_number, request_id=request_id,
+                              status="timed_out" if timed_out else "failed",
+                              started_at=started_at, error_code=error_code,
+                              error_message=message, exit_code=exit_code,
+                              estimated_cost_usd=estimated_cost, diagnostics=diagnostics),
+            complete=False, record_source_outcome=True, source_success=False,
+            source_error_code=error_code, result_summary=summary,
+            backoff_seconds=backoff, retryable=True,
+        )
         record_monitoring("failed", message)
         print(json.dumps({"event": "task_failed", "task_id": task_id, "source_key": source_key,
                           "error_code": error_code, "publication_blocked": publication_blocked}, ensure_ascii=False), flush=True)
@@ -745,7 +885,7 @@ class CollectionWorker:
                 # collection; the next poll retries the due intents.
                 print(json.dumps({"event": "monitoring_dispatch_failed", "error": _safe_text(error)}, ensure_ascii=False), flush=True)
         for _ in range(max(_positive_int(max_tasks, 1, minimum=1, maximum=1000), 1)):
-            task = self.client.claim_task(self.worker_id, self.lease_seconds)
+            task = self.client.claim_task(self.worker_id, self.boot_id, self.lease_seconds)
             if not task:
                 break
             try:

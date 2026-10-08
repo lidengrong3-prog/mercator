@@ -48,8 +48,9 @@ def decide_route(
     """Return the route and the evidence used to select it."""
 
     active_workers = _as_nonnegative_int(health.get("active_workers"))
+    r10_ready_workers = _as_nonnegative_int(health.get("r10_ready_workers"))
     scheduled = event_name.strip().lower() == "schedule"
-    worker_ready = health_error is None and active_workers is not None and active_workers > 0
+    worker_ready = health_error is None and r10_ready_workers is not None and r10_ready_workers > 0
     if worker_ready and cutover and not (pilot_only and scheduled):
         mode = "worker"
         reason = "cutover_enabled_and_worker_healthy"
@@ -62,6 +63,9 @@ def decide_route(
     elif active_workers is None or active_workers <= 0:
         mode = "legacy"
         reason = "worker_unavailable"
+    elif r10_ready_workers is None or r10_ready_workers <= 0:
+        mode = "legacy"
+        reason = "worker_protocol_not_stable"
     else:
         mode = "legacy"
         reason = "pilot_only_scheduled"
@@ -73,6 +77,7 @@ def decide_route(
         "pilot_only": pilot_only,
         "scheduled": scheduled,
         "active_workers": active_workers or 0,
+        "r10_ready_workers": r10_ready_workers or 0,
         "queued": health.get("queued"),
         "dead_letter": health.get("dead_letter"),
         "health_error": health_error,

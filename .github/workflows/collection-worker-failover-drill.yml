@@ -2,6 +2,15 @@ name: Collection Worker Failover Drill
 
 on:
   workflow_dispatch:
+    inputs:
+      phase:
+        description: Validate the paused Worker fallback or the resumed Worker recovery
+        type: choice
+        required: true
+        default: outage
+        options:
+          - outage
+          - recovery
 
 permissions:
   contents: read
@@ -22,6 +31,7 @@ jobs:
       COLLECTION_WORKER_CUTOVER: 'true'
       COLLECTION_WORKER_PILOT_ONLY: 'false'
       EVENT_NAME: schedule
+      DRILL_PHASE: ${{ inputs.phase || 'outage' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -52,8 +62,14 @@ jobs:
             --cutover "$COLLECTION_WORKER_CUTOVER" \
             --pilot-only "$COLLECTION_WORKER_PILOT_ONLY" \
             --output collection-routing-decision.json
-          test "$(python -c 'import json; print(json.load(open("collection-routing-decision.json", encoding="utf-8"))["mode"])')" = legacy
-          test "$(python -c 'import json; print(json.load(open("collection-routing-decision.json", encoding="utf-8"))["worker_ready"])')" = False
+          if [ "$DRILL_PHASE" = outage ]; then
+            test "$(python -c 'import json; print(json.load(open("collection-routing-decision.json", encoding="utf-8"))["mode"])')" = legacy
+            test "$(python -c 'import json; print(json.load(open("collection-routing-decision.json", encoding="utf-8"))["worker_ready"])')" = False
+          else
+            test "$(python -c 'import json; print(json.load(open("collection-routing-decision.json", encoding="utf-8"))["mode"])')" = worker
+            test "$(python -c 'import json; print(json.load(open("collection-routing-decision.json", encoding="utf-8"))["worker_ready"])')" = True
+            test "$(python -c 'import json; print(json.load(open("collection-worker-health.json", encoding="utf-8")).get("r10_ready_workers", 0))')" -ge 1
+          fi
       - name: Publish failover evidence
         if: ${{ always() }}
         uses: actions/upload-artifact@v4

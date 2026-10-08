@@ -20,6 +20,9 @@ const runtimeMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations
 const observabilityMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20261012000000_collection_worker_observability.sql'), 'utf8');
 const pilotScript = fs.readFileSync(path.join(root, 'scripts', 'collection_worker_pilot.py'), 'utf8');
 const pilotWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'collection-worker-pilot.yml'), 'utf8');
+const r10Migration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '20261019000000_r10_worker_continuity_idempotency.sql'), 'utf8');
+const r10Acceptance = fs.readFileSync(path.join(root, 'scripts', 'collection_worker_r10_acceptance.py'), 'utf8');
+const r10Workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'collection-worker-r10-acceptance.yml'), 'utf8');
 
 test('worker has queue lifecycle, lease renewal, retry, budget and allowlist contracts', () => {
   for (const fragment of [
@@ -124,4 +127,27 @@ test('worker migration includes per-source limits, leases, budgets and service-o
     'daily_request_limit', 'daily_cost_limit_usd', 'lease_expires_at', 'depends_on_task_keys', 'FOR UPDATE SKIP LOCKED',
     "'tikhub'", 'last_failure_at', 'GRANT EXECUTE ON FUNCTION public.claim_collection_task',
   ]) assert.match(migration, new RegExp(fragment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+});
+
+test('R10 uses durable fencing, a single half-open probe and stable budget idempotency', () => {
+  for (const fragment of [
+    'claim_collection_task_v2', 'renew_collection_task_lease_v2',
+    'record_collection_task_attempt_v2', 'record_collection_source_outcome_v2',
+    'complete_collection_task_v2', 'fail_collection_task_v2',
+    'lease_token', 'lease_boot_id', 'budget_request_id',
+    'circuit_probe_task_id', 'circuit_probe_lease_token',
+    'collection_source_outcomes', 'collection_worker_events',
+    'budget_blocked', 'r10_ready_workers', "metadata->>'protocol_version' = '2'",
+  ]) assert.match(r10Migration, new RegExp(fragment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(worker, /"protocol_version": "2"/);
+  assert.match(routeScript, /worker_protocol_not_stable/);
+  assert.match(routeScript, /r10_ready_workers/);
+  assert.match(dataWorkflow, /legacy-update-data:/);
+  assert.match(r10Acceptance, /required_hours: int = DEFAULT_REQUIRED_HOURS/);
+  assert.match(r10Acceptance, /duplicate_requests/);
+  assert.match(r10Acceptance, /no_unexplained_terminal_failure/);
+  assert.match(r10Workflow, /cron: '17 \* \* \* \*'/);
+  assert.match(r10Workflow, /--window-hours 25 --required-hours 24/);
+  assert.match(failoverWorkflow, /phase:/);
+  assert.match(failoverWorkflow, /r10_ready_workers/);
 });
