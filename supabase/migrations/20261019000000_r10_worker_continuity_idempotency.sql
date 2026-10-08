@@ -235,7 +235,7 @@ BEGIN
 
   UPDATE public.collection_source_policies AS policy
      SET circuit_state = 'open',
-         circuit_opened_at = NOW() - make_interval(secs => policy.circuit_cooldown_seconds),
+         circuit_opened_at = NOW(),
          circuit_probe_task_id = NULL, circuit_probe_lease_token = NULL,
          circuit_half_opened_at = NULL, updated_at = NOW()
     FROM public.collection_tasks AS task
