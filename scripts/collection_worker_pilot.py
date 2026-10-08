@@ -111,8 +111,9 @@ def run_pilot(
 
     health = client.health_check()
     active_workers = int(health.get("active_workers") or 0)
-    if active_workers < 1:
-        raise RuntimeError("no active Worker heartbeat; pilot refuses to enqueue")
+    r10_ready_workers = int(health.get("r10_ready_workers") or 0)
+    if active_workers < 1 or r10_ready_workers < 1:
+        raise RuntimeError("no stable R10 Worker heartbeat; pilot refuses to enqueue")
 
     rows = enqueue(client, [collector], parameters=dict(parameters or {}), run_id=run_id)
     task_keys = [str(row["task_key"]) for row in rows]
@@ -128,7 +129,10 @@ def run_pilot(
                 raise TimeoutError(f"timed out waiting for pilot tasks to appear: {task_keys}")
         else:
             terminal = {str(row.get("status")) for row in last_rows}
-            failed = [row for row in last_rows if row.get("status") in {"dead_letter", "cancelled"}]
+            failed = [
+                row for row in last_rows
+                if row.get("status") in {"dead_letter", "budget_blocked", "cancelled"}
+            ]
             if failed:
                 raise RuntimeError(json.dumps({"pilot_tasks_failed": failed}, ensure_ascii=False))
             if terminal == {"succeeded"}:
@@ -148,6 +152,7 @@ def run_pilot(
         "started_at": started_at,
         "completed_at": _now(),
         "active_workers_before": active_workers,
+        "r10_ready_workers_before": r10_ready_workers,
         "task_keys": task_keys,
         "tasks": [
             {

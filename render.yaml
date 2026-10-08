@@ -6,7 +6,7 @@ services:
     dockerContext: .
     plan: starter
     numInstances: 1
-    autoDeploy: false
+    autoDeploy: true
     envVars:
       - key: SUPABASE_URL
         sync: false

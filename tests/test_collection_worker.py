@@ -11,10 +11,12 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from collection_worker import (  # noqa: E402
     CollectionWorker,
     WorkerConfigurationError,
+    WorkerLeaseLostError,
     build_collector_command,
 )
 from enqueue_collection_tasks import enqueue  # noqa: E402
 from collection_worker_stability import evaluate_stability  # noqa: E402
+from collection_worker_r10_acceptance import evaluate_r10_acceptance  # noqa: E402
 from route_collection_schedule import decide_route  # noqa: E402
 
 
@@ -27,6 +29,8 @@ def task(**overrides):
         "domain": "alert",
         "parameters": {},
         "attempt_count": 1,
+        "lease_token": "00000000-0000-0000-0000-000000000101",
+        "budget_request_id": "collection-budget:00000000-0000-0000-0000-000000000001:1",
     }
     value.update(overrides)
     return value
@@ -55,7 +59,7 @@ class FakeClient:
         self.monitoring_results = []
         self.heartbeats = []
 
-    def claim_task(self, worker_id, lease_seconds):
+    def claim_task(self, worker_id, boot_id, lease_seconds):
         return self.tasks.popleft() if self.tasks else None
 
     def source_policy(self, source_key):
@@ -68,24 +72,55 @@ class FakeClient:
         self.reservations.append((source_key, request_id, request_count, estimated_cost_usd))
         return {"allowed": self.budget_allowed, "reason": "DAILY_COST_LIMIT" if not self.budget_allowed else None}
 
-    def insert_attempt(self, row):
+    def insert_attempt(self, task_id, worker_id, boot_id, lease_token, row):
         self.attempts.append(row)
 
-    def fail_task(self, task_id, worker_id, error_code, error_message, backoff_seconds, retryable):
+    def finalize_task(
+        self, task_id, worker_id, boot_id, lease_token, attempt, source_key, *,
+        record_source_outcome, source_success, source_error_code, result_summary,
+        complete, backoff_seconds, retryable,
+    ):
+        self.attempts.append(dict(attempt))
+        if record_source_outcome:
+            value = {
+                "source_key": source_key,
+                "success": source_success,
+                "error_code": source_error_code,
+            }
+            self.outcomes.append(value)
+        if complete:
+            self.completed.append((task_id, dict(result_summary or {})))
+            return {"applied": True, "status": "succeeded"}
+        error_code = str(attempt.get("error_code") or "")
+        self.failures.append({
+            "task_id": task_id,
+            "error_code": error_code,
+            "backoff_seconds": backoff_seconds,
+            "retryable": retryable,
+        })
+        status = "budget_blocked" if error_code in {"DAILY_COST_LIMIT", "DAILY_REQUEST_LIMIT"} else "retry_wait"
+        return {"applied": True, "status": status}
+
+    def fail_task(
+        self, task_id, worker_id, boot_id, lease_token,
+        error_code, error_message, backoff_seconds, retryable,
+    ):
         self.failures.append({
             "task_id": task_id, "error_code": error_code, "backoff_seconds": backoff_seconds,
             "retryable": retryable,
         })
 
-    def complete_task(self, task_id, worker_id, result_summary):
+    def complete_task(self, task_id, worker_id, boot_id, lease_token, result_summary):
         self.completed.append((task_id, result_summary))
 
-    def record_source_outcome(self, source_key, success, error_code=None):
+    def record_source_outcome(
+        self, task_id, worker_id, boot_id, lease_token, source_key, success, error_code=None,
+    ):
         value = {"source_key": source_key, "success": success, "error_code": error_code}
         self.outcomes.append(value)
         return value
 
-    def renew_lease(self, task_id, worker_id, lease_seconds):
+    def renew_lease(self, task_id, worker_id, boot_id, lease_token, lease_seconds):
         self.renewals.append((task_id, worker_id))
         return True
 
@@ -236,7 +271,7 @@ class CollectionWorkerTests(unittest.TestCase):
             return SimpleNamespace(returncode=0, stdout="", stderr="")
 
         result = self.make_worker(client, runner).run_once()
-        self.assertEqual(result[0]["status"], "dead_letter")
+        self.assertEqual(result[0]["status"], "budget_blocked")
         self.assertEqual(client.attempts[0]["status"], "budget_blocked")
         self.assertEqual(client.failures[0]["retryable"], False)
         self.assertEqual(ran, [])
@@ -282,7 +317,7 @@ class CollectionWorkerTests(unittest.TestCase):
                 super().__init__()
                 self.claim_calls = 0
 
-            def claim_task(self, worker_id, lease_seconds):
+            def claim_task(self, worker_id, boot_id, lease_seconds):
                 self.claim_calls += 1
                 if self.claim_calls == 1:
                     raise RuntimeError("temporary database outage")
@@ -335,7 +370,7 @@ class CollectionWorkerTests(unittest.TestCase):
 
     def test_scheduler_routes_to_legacy_when_worker_heartbeat_is_missing(self):
         result = decide_route(
-            {"active_workers": 0, "queued": 2, "dead_letter": 0},
+            {"active_workers": 0, "r10_ready_workers": 0, "queued": 2, "dead_letter": 0},
             cutover=True,
             pilot_only=False,
             event_name="schedule",
@@ -346,7 +381,7 @@ class CollectionWorkerTests(unittest.TestCase):
 
     def test_scheduler_health_errors_fail_closed_to_legacy(self):
         result = decide_route(
-            {"active_workers": 1},
+            {"active_workers": 1, "r10_ready_workers": 1},
             cutover=True,
             pilot_only=False,
             event_name="schedule",
@@ -357,13 +392,61 @@ class CollectionWorkerTests(unittest.TestCase):
 
     def test_pilot_only_keeps_scheduled_route_on_legacy(self):
         result = decide_route(
-            {"active_workers": 1},
+            {"active_workers": 1, "r10_ready_workers": 1},
             cutover=True,
             pilot_only=True,
             event_name="schedule",
         )
         self.assertEqual(result["mode"], "legacy")
         self.assertEqual(result["reason"], "pilot_only_scheduled")
+
+    def test_scheduler_requires_stable_r10_heartbeats_before_recovery(self):
+        warming = decide_route(
+            {"active_workers": 1, "r10_ready_workers": 0},
+            cutover=True,
+            pilot_only=False,
+            event_name="schedule",
+        )
+        recovered = decide_route(
+            {"active_workers": 1, "r10_ready_workers": 1},
+            cutover=True,
+            pilot_only=False,
+            event_name="schedule",
+        )
+        self.assertEqual(warming["mode"], "legacy")
+        self.assertEqual(warming["reason"], "worker_protocol_not_stable")
+        self.assertEqual(recovered["mode"], "worker")
+
+    def test_budget_reservation_key_is_stable_across_infrastructure_retries(self):
+        class FlakyBudgetClient(FakeClient):
+            def reserve_budget(self, source_key, request_id, request_count, estimated_cost_usd):
+                self.reservations.append((source_key, request_id, request_count, estimated_cost_usd))
+                if len(self.reservations) == 1:
+                    raise RuntimeError("reservation response lost")
+                return {"allowed": True, "reason": None}
+
+        client = FlakyBudgetClient([
+            task(attempt_count=1),
+            task(attempt_count=2, lease_token="00000000-0000-0000-0000-000000000102"),
+        ])
+        runner = lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout="ok", stderr="")
+        worker = self.make_worker(client, runner)
+        worker.run_once(max_tasks=2)
+        self.assertEqual(len(client.reservations), 2)
+        self.assertEqual(client.reservations[0][1], client.reservations[1][1])
+
+    def test_fenced_source_outcome_never_marks_task_complete(self):
+        class FencedClient(FakeClient):
+            def finalize_task(self, *args, **kwargs):
+                raise WorkerLeaseLostError("lease fenced")
+
+        client = FencedClient([task()])
+        result = self.make_worker(
+            client,
+            lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout="ok", stderr=""),
+        ).run_once()
+        self.assertEqual(result[0]["status"], "worker_error")
+        self.assertEqual(client.completed, [])
 
     def test_seven_day_stability_gate_requires_all_operational_evidence(self):
         evidence = {
@@ -399,6 +482,55 @@ class CollectionWorkerTests(unittest.TestCase):
         )
         self.assertEqual(result["status"], "blocked")
         self.assertFalse(result["checks"]["no_dead_letter"])
+
+    def test_r10_gate_allows_restart_but_requires_continuous_24_hour_evidence(self):
+        evidence = {
+            "protocol_version": 2,
+            "heartbeat_count": 2881,
+            "coverage_seconds": 86400,
+            "boot_count": 2,
+            "max_gap_seconds": 60,
+            "duplicate_request_count": 0,
+            "duplicate_attempt_count": 0,
+            "task_status_counts": {"succeeded": 12, "budget_blocked": 1},
+            "worker_event_counts": {"lease_expired": 1, "budget_blocked": 1},
+        }
+        result = evaluate_r10_acceptance(
+            evidence,
+            {"active_workers": 1, "r10_ready_workers": 1, "dead_letter": 0},
+        )
+        self.assertEqual(result["status"], "passed")
+
+    def test_r10_gate_reports_observing_before_24_hours(self):
+        result = evaluate_r10_acceptance(
+            {
+                "protocol_version": 2,
+                "heartbeat_count": 100,
+                "coverage_seconds": 3000,
+                "max_gap_seconds": 60,
+                "duplicate_request_count": 0,
+                "duplicate_attempt_count": 0,
+                "task_status_counts": {},
+            },
+            {"active_workers": 1, "r10_ready_workers": 1, "dead_letter": 0},
+        )
+        self.assertEqual(result["status"], "observing")
+
+    def test_r10_gate_fails_on_duplicate_or_unexplained_dead_letter(self):
+        result = evaluate_r10_acceptance(
+            {
+                "protocol_version": 2,
+                "heartbeat_count": 2881,
+                "coverage_seconds": 86400,
+                "max_gap_seconds": 60,
+                "duplicate_request_count": 1,
+                "duplicate_attempt_count": 0,
+                "task_status_counts": {"dead_letter": 1},
+            },
+            {"active_workers": 1, "r10_ready_workers": 1, "dead_letter": 1},
+        )
+        self.assertEqual(result["status"], "failed")
+        self.assertFalse(result["checks"]["duplicate_requests"])
 
 
 if __name__ == "__main__":

@@ -28,7 +28,7 @@ docker compose -f docker-compose.worker.yml up --build -d
 docker compose -f docker-compose.worker.yml logs -f collection-worker
 ```
 
-Render 可通过根目录的 `render.yaml` 创建一个 Background Worker 和 5 GB 持久盘。首次部署保持 `autoDeploy: false`，先填写 Supabase 与翻译服务 Secrets，再人工部署当前已验收版本。其他容器平台使用同一个 Dockerfile，并保持单实例和 `/app/data` 持久卷；在采集器改为完全无状态前不要扩成多个不共享磁盘的实例。
+Render 可通过根目录的 `render.yaml` 创建一个 Background Worker 和 5 GB 持久盘。完成首次 Secrets 配置和 Pilot 后，生产服务跟随 `main` 自动部署；R10 调度器只认可连续 3 个带 `protocol_version=2` 的心跳，因此数据库迁移和容器切换期间仍走旧采集路径。其他容器平台使用同一个 Dockerfile，并保持单实例和 `/app/data` 持久卷；在采集器改为完全无状态前不要扩成多个不共享磁盘的实例。
 
 生产环境建议使用进程管理器（systemd、容器编排平台或托管任务服务）保持两个或更多实例。多个实例可以安全并行领取任务，数据库的 `claim_collection_task` 使用行锁和 `SKIP LOCKED` 保证同一任务只会被一个租约持有者领取。现有 Python 采集器会写入仓库的 `data/` 工作目录，因此多实例部署时必须挂载同一个持久卷；没有共享卷时请先使用单实例，否则应先把采集器改为直接写私有 Storage/数据库。
 
@@ -72,17 +72,17 @@ Pilot 失败时不要直接把任务批量改回 `queued`。先查看 workflow �
 
 ## 执行与恢复语义
 
-每次领取会递增 `attempt_count` 并创建租约。执行期间 Worker 定期调用 `renew_collection_task_lease`；进程崩溃或网络断开后，租约过期，下一实例会自动回收任务。成功会写入 `collection_task_attempts` 并将任务设为 `succeeded`。超时、网络错误或非零退出按来源策略指数退避，超过 `max_attempts` 后进入 `dead_letter`。
+每次领取会递增 `attempt_count` 并创建带 `lease_token` 和 `boot_id` 的租约。执行期间 Worker 定期调用 R10 续租 RPC；进程崩溃、重启或网络断开后，租约过期，下一实例会用新的 token 回收任务。尝试写入、来源结果和最终状态都校验 token，旧进程的迟到写入只会被记录为 fencing 拒绝。成功 attempt 已落库但最终状态未提交时，新实例只补齐完成状态，不再次调用来源。
 
-每次尝试的 `request_id` 为 `collection:{task_id}:{attempt_number}`。预算预留记录使用该 ID 幂等，Worker 重启不会重复预留同一尝试的预算。日志只保存状态、错误类型和截断诊断，不保存密钥或原始响应。
+每次尝试的 `request_id` 为 `collection:{task_id}:{attempt_number}`，预算使用独立的 `collection-budget:{task_id}:{execution}` 幂等键。预算 RPC 响应丢失、Worker 重启或同一次执行的租约恢复不会重复扣除整笔额度；已确认调用过供应商的失败重试会轮换预算键，避免低估真实费用。日志只保存状态、错误类型和截断诊断，不保存密钥或原始响应。
 
 ## 来源策略、熔断和发布闸门
 
-`collection_source_policies` 为每个来源配置并发数、超时、退避、失败阈值、熔断窗口和冷却时间。核心来源（Federal Register、CPSC、平台官方规则）失败时，任务结果会带 `publication_blocked: true`；这只阻止正式发布，不会取消其他来源任务。来源成功后会关闭熔断，失败超过阈值后自动打开熔断。
+`collection_source_policies` 为每个来源配置并发数、超时、退避、失败阈值、熔断窗口和冷却时间。熔断状态保存在数据库；冷却结束后数据库只签发一个 `half_open` 探针，探针成功才关闭，失败或租约丢失会重新打开。核心来源失败时，任务结果会带 `publication_blocked: true`；这只阻止正式发布，不会取消其他来源任务。
 
 ## TikHub 预算
 
-迁移默认给 `tikhub` 设置每日 1,000 次请求和 25 USD 估算费用上限。Worker 在执行前调用 `reserve_collection_budget`，超过任一限制就将尝试记为 `budget_blocked`、任务放入 `dead_letter`，并写入 `collection_budget_alerts` 与 `system_incidents`。管理员应在确认账单后更新来源策略，不要绕过预算函数直接调用 API。
+迁移默认给 `tikhub` 设置每日 1,000 次请求和 25 USD 估算费用上限。Worker 在执行前调用 `reserve_collection_budget`，超过任一限制时不会启动采集器，任务进入可解释的 `budget_blocked` 状态，并按来源/日期/上限类型唯一写入 `collection_budget_alerts` 与 `system_incidents`。管理员应在确认账单后更新来源策略，不要绕过预算函数直接调用 API。
 
 ## 健康检查和运维
 
@@ -90,15 +90,16 @@ Pilot 失败时不要直接把任务批量改回 `queued`。先查看 workflow �
 python scripts/collection_worker.py --health-check
 ```
 
-该命令返回队列积压、有效租约、死信、打开的熔断来源、TikHub 当日用量，以及两分钟内有心跳的 `active_workers`。`.github/workflows/collection-health.yml` 每 6 小时运行一次并只上传摘要产物。处理死信前先确认供应商恢复，再将任务状态改回 `queued` 并清理租约；暂停来源应把 `collection_source_policies.enabled` 设为 `false`。
+该命令返回队列积压、有效租约、死信、预算阻断、打开/半开的熔断来源、TikHub 当日用量、`active_workers` 和通过防抖的 `r10_ready_workers`。`.github/workflows/collection-health.yml` 每 6 小时运行一次并只上传摘要产物。处理死信前先确认供应商恢复，再将任务状态改回 `queued` 并清理租约；暂停来源应把 `collection_source_policies.enabled` 设为 `false`。
 
 验证 24 小时运行证据：
 
 ```bash
 python scripts/collection_worker.py --runtime-evidence --window-hours 24
+python scripts/collection_worker_r10_acceptance.py --window-hours 25 --required-hours 24
 ```
 
-`collection_worker_heartbeat_samples` 保存带 `boot_id` 的心跳样本；证据输出包含心跳覆盖时长、最大间隔、启动会话数、任务尝试去重计数和窗口内任务状态。只有 `coverage_seconds >= 86400`、`boot_count=1`、最大间隔符合运维阈值、`duplicate_request_count=0`、`duplicate_attempt_count=0` 且没有 `dead_letter` 时，才可把“连续运行至少 24 小时、无丢任务和重复写入”记为通过。一次数据库/网络瞬时错误会记录 `worker_poll_failed` 并指数退避，Worker 继续运行；租约续期失败仍由数据库租约和过期回收保证不重复领取。
+`collection_worker_heartbeat_samples` 保存带 `boot_id` 和协议版本的心跳样本；R10 证据输出包含心跳覆盖时长、最大间隔、重启次数、任务尝试去重计数、fencing/租约事件和窗口内任务状态。只有 `coverage_seconds >= 86400`、最大间隔符合阈值、重复 request/attempt 均为 0、没有未解释的 `dead_letter` 且当前 `r10_ready_workers > 0` 时才通过。安全重启允许 `boot_count > 1`，但不能造成心跳缺口或重复写入。`.github/workflows/collection-worker-r10-acceptance.yml` 每小时保存一次脱敏证据；满 24 小时前状态为 `observing`，不会伪报通过。
 
 ## 无中断切换
 
@@ -113,7 +114,7 @@ python scripts/collection_worker.py --runtime-evidence --window-hours 24
 
 ## 自动回退演练与旧路径保留
 
-调度路由由 `scripts/route_collection_schedule.py` 统一决定，并把健康快照和路由结果作为 workflow artifact 保存。路由是 fail-closed 的：健康查询失败、响应无法解析、`active_workers=0` 或 Worker 心跳过期时，结果只能是 `legacy`。下一次定时运行会执行 `legacy-update-data`，完成原有直采、质量校验、同步和公共投影更新；不会因为 Worker 暂时掉线而静默跳过数据更新。
+调度路由由 `scripts/route_collection_schedule.py` 统一决定，并把健康快照和路由结果作为 workflow artifact 保存。路由是 fail-closed 的：健康查询失败、响应无法解析、Worker 心跳过期或 `r10_ready_workers=0` 时，结果只能是 `legacy`。Worker 恢复后必须积累至少 3 个近期 R10 心跳才安全切回。下一次定时运行会执行 `legacy-update-data`，不会因为 Worker 暂时掉线而静默跳过数据更新。
 
 验证第 16 项时，先在 Render 暂停 `mercator-collection-worker`，等待数据库实例心跳超过两分钟，再手动运行 `Collection Worker Failover Drill`。该 workflow 只读健康状态，要求路由结果为 `legacy` 且 `worker_ready=false`，并上传 `collection-routing-decision.json`。完成后恢复 Worker，确认新的心跳恢复，再运行一次正常调度。
 
