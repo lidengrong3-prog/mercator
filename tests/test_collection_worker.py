@@ -532,6 +532,22 @@ class CollectionWorkerTests(unittest.TestCase):
         self.assertEqual(result["status"], "failed")
         self.assertFalse(result["checks"]["duplicate_requests"])
 
+    def test_r10_gate_fails_when_no_r10_worker_is_running(self):
+        result = evaluate_r10_acceptance(
+            {
+                "protocol_version": 2,
+                "heartbeat_count": 0,
+                "coverage_seconds": 0,
+                "max_gap_seconds": 0,
+                "duplicate_request_count": 0,
+                "duplicate_attempt_count": 0,
+                "task_status_counts": {},
+            },
+            {"active_workers": 0, "r10_ready_workers": 0, "dead_letter": 0},
+        )
+        self.assertEqual(result["status"], "failed")
+        self.assertFalse(result["checks"]["r10_worker_currently_ready"])
+
 
 if __name__ == "__main__":
     unittest.main()

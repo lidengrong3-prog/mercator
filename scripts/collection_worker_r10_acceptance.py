@@ -51,8 +51,8 @@ def evaluate_r10_acceptance(
     }
     if all(checks.values()):
         status = "passed"
-    elif not checks["coverage_seconds"] and (
-        heartbeat_count == 0 or _count(health, "active_workers") > 0
+    elif not checks["coverage_seconds"] and all(
+        value for name, value in checks.items() if name != "coverage_seconds"
     ):
         status = "observing"
     else:
