@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -159,15 +160,78 @@ def validate_browser_report_content_gate(browser_acceptance: dict) -> str:
             raise ReleaseCheckError("browser formal report acceptance omitted PDF/DOCX jobs")
         return "formal"
     if mode == "blocked":
-        if gate.get("formal_save") is not False or gate.get("formal_exports") is not False:
-            raise ReleaseCheckError("browser blocked report acceptance enabled formal output")
-        if gate.get("browser_formal_requests") != 0 or exports:
-            raise ReleaseCheckError("browser sent a formal export request for an incomplete report")
-        reason_codes = set(gate.get("reason_codes") or [])
-        if not reason_codes.intersection({"QUALITY_REQUIRED_DATA_MISSING", "QUALITY_PLATFORM_RULE_COVERAGE_MISSING"}):
-            raise ReleaseCheckError("browser blocked report acceptance omitted the missing-content reason")
-        return "blocked"
-    raise ReleaseCheckError("browser acceptance omitted the report content gate mode")
+        raise ReleaseCheckError("R11 requires a real saved report and PDF/DOCX exports; blocked drafts cannot pass")
+    raise ReleaseCheckError("browser acceptance omitted the formal report content gate mode")
+
+
+def validate_two_account_browser_closure(browser_acceptance: dict) -> dict:
+    execution = browser_acceptance.get("execution") or {}
+    if (execution.get("mode") != "production"
+            or execution.get("evidence_source") != "live_browser"
+            or execution.get("mock_used") is not False
+            or execution.get("release_fallback_used") is not False):
+        raise ReleaseCheckError("browser acceptance is not live production-only evidence")
+    accounts = browser_acceptance.get("accounts") or {}
+    if set(accounts) != {"a", "b"}:
+        raise ReleaseCheckError("browser acceptance did not return both isolated accounts")
+    required_true = (
+        "login", "workspace_selected", "upload_persisted", "report_saved",
+        "pdf_exported", "docx_exported", "logout_relogin",
+        "report_recovered_after_relogin", "upload_recovered_after_relogin",
+        "ai_logs_present",
+    )
+    required_ids = ("user_id", "workspace_id", "upload_id", "report_id", "report_run_id")
+    for label, evidence in accounts.items():
+        for key in required_true:
+            if evidence.get(key) is not True:
+                raise ReleaseCheckError(f"browser account {label} omitted {key}")
+        for key in required_ids:
+            if not evidence.get(key):
+                raise ReleaseCheckError(f"browser account {label} omitted {key}")
+        exports = evidence.get("exports") or {}
+        if not exports.get("pdf") or not exports.get("docx"):
+            raise ReleaseCheckError(f"browser account {label} omitted real export IDs")
+    if accounts["a"]["user_id"] == accounts["b"]["user_id"]:
+        raise ReleaseCheckError("browser acceptance accounts resolve to the same user")
+    if accounts["a"]["workspace_id"] == accounts["b"]["workspace_id"]:
+        raise ReleaseCheckError("browser acceptance accounts resolve to the same workspace")
+    isolation = browser_acceptance.get("isolation") or {}
+    for key in ("workspace", "uploads", "reports", "exports", "ai_logs"):
+        if isolation.get(key) is not True:
+            raise ReleaseCheckError(f"browser acceptance did not prove cross-account {key} isolation")
+    return {"accounts": accounts, "isolation": isolation, "execution": execution}
+
+
+def validate_dual_release_evidence(evidence: dict, expected_sha: str, expected_migration: str) -> dict:
+    if evidence.get("status") != "passed":
+        raise ReleaseCheckError("EdgeOne/GitHub Pages live consistency did not pass")
+    if evidence.get("release_sha") != expected_sha or evidence.get("migration_head") != expected_migration:
+        raise ReleaseCheckError("dual-release evidence does not match the triggering release")
+    if (evidence.get("evidence_source") != "live_http"
+            or evidence.get("mock_used") is not False
+            or evidence.get("fallback_used") is not False
+            or evidence.get("differences") != []):
+        raise ReleaseCheckError("dual-release evidence used fallback/mock data or retained differences")
+    surfaces = evidence.get("surfaces") or {}
+    if set(surfaces) != {"edgeone", "github_pages"}:
+        raise ReleaseCheckError("dual-release evidence omitted a production surface")
+    for name, surface in surfaces.items():
+        if (surface.get("status") != "passed"
+                or surface.get("release_sha") != expected_sha
+                or surface.get("migration_head") != expected_migration
+                or not surface.get("index_sha256")
+                or not surface.get("asset_manifest_sha256")):
+            raise ReleaseCheckError(f"dual-release evidence is incomplete for {name}")
+    if surfaces["github_pages"].get("direct_origin") is not True:
+        raise ReleaseCheckError("GitHub Pages evidence did not bypass EdgeOne")
+    for field in ("index_sha256", "asset_manifest_sha256"):
+        if surfaces["edgeone"].get(field) != surfaces["github_pages"].get(field):
+            raise ReleaseCheckError(f"EdgeOne and GitHub Pages differ for {field}")
+    rules = evidence.get("edgeone_rules") or {}
+    if (rules.get("authority") != "repository-build-artifact"
+            or rules.get("manual_overrides_allowed") is not False):
+        raise ReleaseCheckError("EdgeOne rules are not governed by the repository artifact")
+    return evidence
 
 
 def validate_multi_ai_acceptance(acceptance: dict) -> dict:
@@ -272,6 +336,7 @@ def main() -> int:
     expected_migration = required("EXPECTED_MIGRATION_HEAD")
     acceptance_file = Path(required("ACCEPTANCE_RESULT_FILE"))
     browser_acceptance_file = Path(required("BROWSER_ACCEPTANCE_RESULT_FILE"))
+    dual_release_file = Path(required("DUAL_RELEASE_RESULT_FILE"))
     test_email = required("PROD_TEST_USER_A_EMAIL")
     test_password = required("PROD_TEST_USER_A_PASSWORD")
     notification_expected = required_bool("NOTIFICATION_CHANNELS_ENABLED")
@@ -321,6 +386,12 @@ def main() -> int:
     if browser_acceptance.get("status") != "passed":
         raise ReleaseCheckError("browser exception acceptance did not pass")
     browser_report_content_gate = validate_browser_report_content_gate(browser_acceptance)
+    two_account_browser = validate_two_account_browser_closure(browser_acceptance)
+    dual_release = validate_dual_release_evidence(
+        parse_json(dual_release_file.read_bytes(), "dual-release evidence"),
+        expected_sha,
+        expected_migration,
+    )
     acceptance_run_id = acceptance.get("acceptance_run_id")
     browser_acceptance_run_id = browser_acceptance.get("acceptance_run_id")
     if not acceptance_run_id or acceptance_run_id != browser_acceptance_run_id:
@@ -343,6 +414,10 @@ def main() -> int:
         raise ReleaseCheckError("frontend migration head does not match the checked-out source")
     if manifest.get("production_origin") != expected_origin:
         raise ReleaseCheckError("frontend production origin does not match the configured site")
+    if manifest.get("schema_version") != 2 or manifest.get("frontend") != "github-pages+edgeone-pages":
+        raise ReleaseCheckError("frontend release does not declare the R11 dual-publish contract")
+    if manifest.get("release_integrity_path") != "release-integrity.json":
+        raise ReleaseCheckError("frontend release integrity path is missing")
 
     status, raw, _ = request("GET", site + "public-data-manifest.json")
     if status != 200:
@@ -374,6 +449,8 @@ def main() -> int:
     if status != 200:
         raise ReleaseCheckError(f"frontend asset manifest unavailable: HTTP {status}")
     asset_manifest = parse_json(raw, "frontend asset manifest")
+    if hashlib.sha256(raw).hexdigest() != manifest.get("asset_manifest_sha256"):
+        raise ReleaseCheckError("frontend asset manifest fingerprint does not match release.json")
     runtime_path = asset_manifest.get("assets/runtime-config.js")
     if not runtime_path:
         raise ReleaseCheckError("frontend runtime configuration asset is missing")
@@ -536,6 +613,8 @@ def main() -> int:
         "production_exceptions": True,
         "report_content_gate": report_content_gate,
         "browser_report_content_gate": browser_report_content_gate,
+        "two_account_browser": two_account_browser,
+        "dual_release": dual_release,
         "network_recovery": True,
         "billing_status": "enabled" if billing_enabled else "disabled",
         "notification_channels": "enabled" if notification_expected else "disabled",

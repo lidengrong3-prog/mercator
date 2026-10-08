@@ -7,14 +7,18 @@
 1. 代码、数据质量、桌面端和移动端测试。
 2. Supabase 数据库迁移。
 3. Edge Function Secrets 与函数部署。
-4. 两个真实测试账号的端到端验收。
-5. GitHub Pages 前端部署。
-6. 已部署正式站的真实浏览器账号验收。
-7. 正式站和 Supabase API 冒烟检查。
+4. 两个真实测试账号的后端端到端验收。
+5. 生成 `release.json`、`release-integrity.json` 和静态资源指纹清单。
+6. 把同一 `_site` 构建产物分别部署到 GitHub Pages 和 EdgeOne Pages。
+7. 从 EdgeOne 正式入口和绕过 EdgeOne 的 GitHub Pages 源站分别取回资源并比较指纹。
+8. 已部署正式站的两个真实浏览器账号完整验收。
+9. 正式站和 Supabase API 冒烟检查。
 
-任何步骤失败都会阻止后续步骤。GitHub Pages 的 Source 必须设置为 GitHub Actions，不能继续使用绕过该工作流的分支自动发布。
+任何步骤失败都会阻止后续步骤。GitHub Pages 的 Source 必须设置为 GitHub Actions；EdgeOne Pages 只能由本工作流上传同一构建产物，不能继续使用控制台手工上传、独立构建或分支自动发布。
 
-发布工作流还会在质量门禁阶段拒绝非 `main` 分支和脏工作区，并检查迁移文件名的时间顺序、基础对象覆盖率及逐文件表依赖。数据库必须能够从 `20260824000000_database_foundation.sql` 开始，仅依赖 `supabase/migrations/` 完成空库重建；`schema.sql`、`phase2_schema.sql`、`monitored_shops.sql` 和 `add_indexes.sql` 不再手工执行。`db push --include-all` 后再次读取远端 migration 列表，要求最新版本在本地和远端一致。生产 `ALLOWED_ORIGINS` 必须严格等于正式站的 `https://域名` origin，不能包含本地地址、路径或通配符。前端部署包由 `scripts/build_public_site.py` 按严格白名单组装，并写入 `release.json` 和 `public-data-manifest.json`；最后的 smoke 会核对提交 SHA、迁移头、正式 origin、公开数据清单、私有数据 404、数据库和所有 Edge Function 路由。
+发布工作流还会在质量门禁阶段拒绝非 `main` 分支和脏工作区，并检查迁移文件名的时间顺序、基础对象覆盖率及逐文件表依赖。数据库必须能够从 `20260824000000_database_foundation.sql` 开始，仅依赖 `supabase/migrations/` 完成空库重建；`schema.sql`、`phase2_schema.sql`、`monitored_shops.sql` 和 `add_indexes.sql` 不再手工执行。`db push --include-all` 后再次读取远端 migration 列表，要求最新版本在本地和远端一致。生产 `ALLOWED_ORIGINS` 必须严格等于正式站的 `https://域名` origin，不能包含本地地址、路径或通配符。前端部署包由 `scripts/build_public_site.py` 按严格白名单组装，`scripts/build_release_bundle.py` 记录提交 SHA、迁移头、`index.html`、静态资源清单、关键 JS/CSS、EdgeOne 配置和中间件的 SHA-256。`scripts/verify_dual_release.py` 随后通过真实 HTTP 同时核对 EdgeOne 和 GitHub Pages 源站；任一资源不同、规则来源不符或仍为旧提交都会阻断浏览器验收和最终 smoke。
+
+`edgeone.json` 和 `deploy/edgeone-middleware.js` 是 EdgeOne 规则的唯一来源。构建产物中的 `edgeone-rules-source.json` 会记录这两个文件的指纹并声明 `manual_overrides_allowed=false`；EdgeOne 响应还必须带 `X-JAY-EdgeOne-Rules-Source: repository-build-artifact`。控制台不得新增会覆盖缓存、安全响应头、路由或中间件的手工规则。线上探测会验证该标头以及私有数据路径的 404/no-store 行为，手工覆盖不能作为可接受差异。
 
 数据库变更合入前应保留一次本地 `npx supabase db reset` 成功记录，并运行 `python scripts/validate_migration_chain.py`。前者验证真实 PostgreSQL/Supabase 执行，后者在普通 CI 和生产预检中防止根对象或依赖顺序再次漏出迁移链。
 
@@ -42,6 +46,7 @@ Pages 数据验收必须确认 10 个白名单 JSON 均可读取，且 `_cfd_par
 - 通知 Secrets：`NOTIFICATION_CONFIG_ENCRYPTION_KEY`、`NOTIFICATION_FROM_EMAIL`。通知发件地址必须与 `WORKSPACE_INVITE_FROM_EMAIL` 独立。
 - 通知 Variables：`NOTIFICATION_CHANNELS_ENABLED`、`NOTIFICATION_LIVE_ACCEPTANCE_MODE`、`NOTIFICATION_ACCEPTANCE_WORKSPACE_ID`、`NOTIFICATION_ACCEPTANCE_RUN_ID` 和 `NOTIFICATION_ALERT_MAX_AGE_DAYS`（默认 `7`，允许 `1-30`）。完成 15 项真实渠道验收前 `NOTIFICATION_CHANNELS_ENABLED` 必须保持 `false`。
 - 双账号验收：`PROD_TEST_USER_A_EMAIL`、`PROD_TEST_USER_A_PASSWORD`、`PROD_TEST_USER_B_EMAIL`、`PROD_TEST_USER_B_PASSWORD`。
+- EdgeOne 双发布：Secret `EDGEONE_API_TOKEN` 和 Variable `EDGEONE_PROJECT_NAME`。Token 仅授予目标 Pages 项目的部署权限；项目必须关闭独立构建和控制台手工发布。可选 Variable `GITHUB_PAGES_ORIGIN_IPS` 用逗号列出 GitHub Pages 官方源站地址，未配置时使用工作流内的官方 IPv4 地址。
 - Variable：`PRODUCTION_SITE_URL`，设置为 `https://jayguanhai.com/`。
 
 Stripe 后台的 webhook URL 必须配置为 `https://<project-ref>.supabase.co/functions/v1/billing-webhook`，并订阅 `checkout.session.completed`、`checkout.session.async_payment_succeeded`、`checkout.session.async_payment_failed`、`customer.subscription.created`、`customer.subscription.updated`、`customer.subscription.deleted`、`invoice.paid`、`invoice.payment_failed`、`invoice.payment_action_required`、`invoice.marked_uncollectible`、`charge.refunded` 和 `refund.updated`。只有签名验证成功的 live-mode 事件可以更新会员；重复事件按 Stripe event ID 去重，失败事件和超过 5 分钟未完成的处理事件可以安全重试，旧事件不得覆盖较新的订阅状态。生产环境不得设置 `STRIPE_ALLOW_TEST_EVENTS=true`。完整的 live 验收、开启顺序和回滚流程见 [STRIPE_LIVE_BILLING.md](STRIPE_LIVE_BILLING.md)。
@@ -104,16 +109,15 @@ python scripts/cleanup_production_acceptance.py --expired --retention-days 7
 
 部署完成后，`RUN_PRODUCTION_ACCEPTANCE=1 npm run test:browser:production` 会在正式站使用新的浏览器上下文验证：
 
-- 账号 A 通过页面上传 CSV/JSON，并确认素材进入云端素材池。
-- 账号 A 通过页面完成模板选择、报告生成、云端保存，并从报告页触发 PDF/DOCX 服务端导出。
-- 账号 A 刷新页面、重新登录后恢复报告和导出历史。
-- 账号 B 通过页面获得独立工作区，且不能读取账号 A 的素材、上传数据、报告或导出历史。
+- 账号 A 和账号 B 分别在自己的隔离工作区通过页面上传 JSON、加入素材、生成正式报告、保存到云端并触发 PDF/DOCX 服务端导出。
+- 两个账号都必须退出并重新登录，随后恢复各自的上传记录和正式报告；缺少任何一项都失败。
+- 两个账号互相不能读取对方的工作区、素材、上传数据、报告、导出历史和 AI 日志。
 - 浏览器将一次带唯一请求 ID 的 `billing-status` 请求断开，客户端只能重试一次；第二次请求必须真实到达生产函数并恢复成功。
 - 账号 B 从政策或规则记录创建预警后，数据库必须生成包含工作区、创建者、来源记录、监控条件和幂等键的 `monitoring_tasks` 行；刷新页面后仍可读取。
 - 同一来源与条件重复添加必须返回重复结果且只有一行；暂停、重新启用和删除必须分别写回后端，并在预警中心同步显示。
 - 将账号 B 降为查看者后再次添加预警必须明确返回无权限，不得显示“已添加”。
 
-浏览器验收不会在普通本地 `npm run test:browser` 中自动运行，避免误用生产账号；生产工作流在前端部署后显式开启。API 与浏览器分别生成验收 JSON，最终 production smoke 会逐项检查 401、403、429、AI 超时、额度不足、断网恢复、重复生成和重复导出证据，缺项即失败。
+浏览器验收不会在普通本地 `npm run test:browser` 中自动运行，避免误用生产账号；生产工作流只在双发布指纹一致后显式开启。API、双发布和浏览器分别生成验收 JSON，最终 production smoke 会逐项检查 401、403、429、AI 超时、额度不足、断网恢复、重复生成、重复导出、两个账号的完整闭环和双站点真实 HTTP 证据。浏览器报告被质量门禁阻断、使用 mock、使用发布 fallback 或仅有单账号成功都不能计为 R11 通过。
 
 ## 外部通知验收
 
