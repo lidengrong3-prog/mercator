@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-09T14:11:13.447894+08:00",
+  "updated_at": "2026-10-09T23:21:12.001092+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -18,7 +18,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Manage returns, missing items, and refunds for sellers Here’s everything you need to know if something goes wrong with an order or if a buyer changes their mind and doesn’t want the item anymore. 4 min overview",
-      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home Are you a buyer looking for a refund or to return an item? Read our article on returns and refunds If a customer has a problem with their order, or if they change their mind about a purchase, they’ll get in touch with you and ask for help. Once the buyer tells you there’s a problem, yo...",
+      "summary": "",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -33,13 +33,13 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-09T14:11:13.447894+08:00",
-      "collected_at": "2026-10-09T14:11:13.447894+08:00",
+      "verified_at": "2026-10-09T23:21:12.001092+08:00",
+      "collected_at": "2026-10-09T23:21:12.001092+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "31",
+      "rule_version": "32",
       "effective_from": "2026-10-09",
       "changed_fields": [
         "summary"
@@ -48,31 +48,10 @@
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-09T14:11:13.447894+08:00",
+      "retrieved_at": "2026-10-09T23:21:12.001092+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "87703787e73c6d20c77c4b8e04cafb1d34761d441d85658004342f044aa1dea5",
       "version_history": [
-        {
-          "id": "r20260923-4095a550",
-          "rule_key": "ebay:4079",
-          "rule_version": "11",
-          "title": "Manage returns, missing items, and refunds for sellers Here’s everything you need to know if something goes wrong with an order or if a buyer changes their mind and doesn’t want the item anymore. 4 min overview",
-          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home Are you a buyer looking for a refund or to return an item? Read our article on returns and refunds If a customer has a problem with their order, or if they change their mind about a purchase, they’ll get in touch with you and ask for help. Once the buyer tells you there’s a problem, yo...",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/selling/managing-returns-refunds/manage-returns-missing-items-refunds-sellers?id=4079",
-          "published_at": "2026-09-23",
-          "effective_from": "2026-09-23",
-          "source_record_id": "ebay:4079",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "8451f36cd1c4d735ea0563cc467346dd73aba7ae8c2473d2aab4b01e089aec86",
-          "collected_at": "2026-09-23T06:59:13.244924+08:00",
-          "verified_at": "2026-09-23T06:59:13.244924+08:00",
-          "changed_fields": [
-            "summary"
-          ],
-          "change_summary": "规则字段变化：summary"
-        },
         {
           "id": "r20260924-4095a550",
           "rule_key": "ebay:4079",
@@ -489,9 +468,30 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：published_at、effective_from"
+        },
+        {
+          "id": "r20261009-4095a550",
+          "rule_key": "ebay:4079",
+          "rule_version": "31",
+          "title": "Manage returns, missing items, and refunds for sellers Here’s everything you need to know if something goes wrong with an order or if a buyer changes their mind and doesn’t want the item anymore. 4 min overview",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home Are you a buyer looking for a refund or to return an item? Read our article on returns and refunds If a customer has a problem with their order, or if they change their mind about a purchase, they’ll get in touch with you and ask for help. Once the buyer tells you there’s a problem, yo...",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/managing-returns-refunds/manage-returns-missing-items-refunds-sellers?id=4079",
+          "published_at": "2026-10-09",
+          "effective_from": "2026-10-09",
+          "source_record_id": "ebay:4079",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "87703787e73c6d20c77c4b8e04cafb1d34761d441d85658004342f044aa1dea5",
+          "collected_at": "2026-10-09T14:11:13.447894+08:00",
+          "verified_at": "2026-10-09T14:11:13.447894+08:00",
+          "changed_fields": [
+            "summary"
+          ],
+          "change_summary": "规则字段变化：summary"
         }
       ],
-      "previous_version": "30",
+      "previous_version": "31",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -4660,7 +4660,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-10-09T14:11:13.447894+08:00",
+  "last_checked_at": "2026-10-09T23:21:12.001092+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4952,7 +4952,7 @@
           "last_verified_at": "2026-10-09T05:23:00.488452+08:00"
         }
       },
-      "last_verified_at": "2026-10-09T14:11:13.447894+08:00",
+      "last_verified_at": "2026-10-09T23:21:12.001092+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   },
@@ -5241,7 +5241,7 @@
           "last_verified_at": "2026-10-09T05:23:00.488452+08:00"
         }
       },
-      "last_verified_at": "2026-10-09T14:11:13.447894+08:00",
+      "last_verified_at": "2026-10-09T23:21:12.001092+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   }
