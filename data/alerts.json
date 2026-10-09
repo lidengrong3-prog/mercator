@@ -1,107 +1,12 @@
 [
   [
-    "cpsc-cat-20261009-d1a34529",
-    "policy",
-    "high",
-    "⚠️ 家居产品品类: 近90天8起中国产品召回",
-    "美国",
-    "CPSC",
-    "过去90天内，家居产品品类有8起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
-    "2026-10-09",
-    false,
-    {
-      "source": "CPSC 数据分析",
-      "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
-      "source_kind": "derived",
-      "source_type": "derived",
-      "source_record_id": "cpsc-cat-source-20261009-d1a34529",
-      "verification_status": "verified",
-      "published_at": "2026-10-01",
-      "collected_at": "2026-10-06T01:10:17.173543+08:00",
-      "verified_at": "2026-10-06T01:10:17.173543+08:00",
-      "verification_notes": "由已核验来源生成的动态预警；正文事实应回溯到 source_record_id。",
-      "category_codes": [
-        "home"
-      ],
-      "source_record_ids": [
-        "24541ba6abebdeaea1607e63",
-        "cb84e2346f5acec1adaac327",
-        "dd62e0c6b3d6f62d114ddf30",
-        "f2b68af39d8bc960a1795bbe",
-        "68d3e3366639e0a1c732d621",
-        "dfd67442266034f9ee90b33a",
-        "67ec165fc0ecc6d4b989ccf5",
-        "17132c01efefc1482835138e"
-      ],
-      "upstream_evidence_hash": "",
-      "upstream_evidence_hashes": [
-        "553bc62b8b8bab534c2597fc9619f212c34c7faa0c8a73188a841980e07e08fc",
-        "5c02417b84ab51b1d2ab52982825fa97d56274d0e18423edfa4c91a3f2cff9a0",
-        "5d67e89264c7d3f01b82843d629680ac25b5609ac607dac170bdc8f2b7c2c6c2",
-        "f27bedc65b2cbad310fe7d9a316d64cebf9d9e5c6ee88a49c7b59d3c939f2ea6",
-        "aa4a1f82d3e00d5c5e25a5de9d7570ca91b91d58e4afeacd830d2668abb4ed55",
-        "169714624e421c00880c82aeafe186997f8d9c1ad08ce341741a29c1058396d2",
-        "42e7e9e0ac474b02fc49fa98659ecf0e0e0d2391ba241726618ffc968010a8f6",
-        "1b1d9549b93a268c4f6e8823ff8ba5231fb92ed09e784557ae855f88fee561dc"
-      ],
-      "source_record_evidence": [
-        {
-          "source_record_id": "24541ba6abebdeaea1607e63",
-          "evidence_hash": "553bc62b8b8bab534c2597fc9619f212c34c7faa0c8a73188a841980e07e08fc"
-        },
-        {
-          "source_record_id": "cb84e2346f5acec1adaac327",
-          "evidence_hash": "5c02417b84ab51b1d2ab52982825fa97d56274d0e18423edfa4c91a3f2cff9a0"
-        },
-        {
-          "source_record_id": "dd62e0c6b3d6f62d114ddf30",
-          "evidence_hash": "5d67e89264c7d3f01b82843d629680ac25b5609ac607dac170bdc8f2b7c2c6c2"
-        },
-        {
-          "source_record_id": "f2b68af39d8bc960a1795bbe",
-          "evidence_hash": "f27bedc65b2cbad310fe7d9a316d64cebf9d9e5c6ee88a49c7b59d3c939f2ea6"
-        },
-        {
-          "source_record_id": "68d3e3366639e0a1c732d621",
-          "evidence_hash": "aa4a1f82d3e00d5c5e25a5de9d7570ca91b91d58e4afeacd830d2668abb4ed55"
-        },
-        {
-          "source_record_id": "dfd67442266034f9ee90b33a",
-          "evidence_hash": "169714624e421c00880c82aeafe186997f8d9c1ad08ce341741a29c1058396d2"
-        },
-        {
-          "source_record_id": "67ec165fc0ecc6d4b989ccf5",
-          "evidence_hash": "42e7e9e0ac474b02fc49fa98659ecf0e0e0d2391ba241726618ffc968010a8f6"
-        },
-        {
-          "source_record_id": "17132c01efefc1482835138e",
-          "evidence_hash": "1b1d9549b93a268c4f6e8823ff8ba5231fb92ed09e784557ae855f88fee561dc"
-        }
-      ],
-      "lineage_type": "aggregate",
-      "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "5937ebd2ad1b8d5a4b70b7e43476b42514ec1d0b8a52355688ade4a50b229d47",
-      "dataset_snapshot_at": "2026-10-08T15:40:48.208120+00:00",
-      "dataset_record_count": 179,
-      "window_start": "2026-07-11",
-      "window_end": "2026-10-09",
-      "input_record_count": 114,
-      "matched_record_count": 8,
-      "aggregate_count": 8,
-      "schema_version": "2.1",
-      "display_locale": "zh-CN",
-      "generator_version": "2026.09.08.1",
-      "evidence_hash": "273bb5586ca1ad05ab959423ce2ac3b07493c038fd8bba3dc48617f35b915e3b"
-    }
-  ],
-  [
     "cpsc-cat-20261009-21548b46",
     "policy",
     "high",
-    "⚠️ 电子产品品类: 近90天84起中国产品召回",
+    "⚠️ 电子产品品类: 近90天89起中国产品召回",
     "美国",
     "CPSC",
-    "过去90天内，电子产品品类有84起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
+    "过去90天内，电子产品品类有89起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
     "2026-10-09",
     false,
     {
@@ -111,14 +16,19 @@
       "source_type": "derived",
       "source_record_id": "cpsc-cat-source-20261009-21548b46",
       "verification_status": "verified",
-      "published_at": "2026-10-01",
-      "collected_at": "2026-10-06T01:10:17.173543+08:00",
-      "verified_at": "2026-10-06T01:10:17.173543+08:00",
+      "published_at": "2026-10-08",
+      "collected_at": "2026-10-09T14:12:27.891875+08:00",
+      "verified_at": "2026-10-09T14:12:27.891875+08:00",
       "verification_notes": "由已核验来源生成的动态预警；正文事实应回溯到 source_record_id。",
       "category_codes": [
         "electronics"
       ],
       "source_record_ids": [
+        "197a4c1b32cd625a5f54764c",
+        "d0a3ed5535eb7c7365e4ef3e",
+        "a97717b32a5061b3bce035ce",
+        "ece0a45b2f48742262f0fa0a",
+        "dc4dfd2283b2cf7527f9c208",
         "6c00c4100f9feb6715cf85e4",
         "4c0547c30457e0051f1d4301",
         "9b77ba2657d396db6959674f",
@@ -206,6 +116,11 @@
       ],
       "upstream_evidence_hash": "",
       "upstream_evidence_hashes": [
+        "f71362fa5c14f381504902a06866fa767d5c013b40cc7663f19fe200495822aa",
+        "12bfd898f96abc4f7e0ec41b90554862adad626c1fcc23231576106e0f90c0f0",
+        "9361e8c6d11619c2449a917a8f2f5091d0f8ece0e58d0417918b348acf5ac868",
+        "91897f0b4de79b523e27c39cece5fb1d1875c8c7f7752f7fe67428aee8b76a37",
+        "7f93441e2f92f9791273c6df4afb3710f216a0f4916fc3b420bae6a50a2ae9ef",
         "21d868e20f49606fc69e32c5af68634b177e3e4ffeb7f013aca0736043a5c69c",
         "382b197ba8851d4a47186ee8ab109e3a3a4dac365383aab62f9868de7abade7e",
         "883d23ce2fcfefda59f653beca3848142cb55e96d9e45997d99d7b9eeb290bce",
@@ -292,6 +207,26 @@
         "8ef11c8a9183da4d3992662a4edb869fa248d088b2ef39602311dab6c4c8afb3"
       ],
       "source_record_evidence": [
+        {
+          "source_record_id": "197a4c1b32cd625a5f54764c",
+          "evidence_hash": "f71362fa5c14f381504902a06866fa767d5c013b40cc7663f19fe200495822aa"
+        },
+        {
+          "source_record_id": "d0a3ed5535eb7c7365e4ef3e",
+          "evidence_hash": "12bfd898f96abc4f7e0ec41b90554862adad626c1fcc23231576106e0f90c0f0"
+        },
+        {
+          "source_record_id": "a97717b32a5061b3bce035ce",
+          "evidence_hash": "9361e8c6d11619c2449a917a8f2f5091d0f8ece0e58d0417918b348acf5ac868"
+        },
+        {
+          "source_record_id": "ece0a45b2f48742262f0fa0a",
+          "evidence_hash": "91897f0b4de79b523e27c39cece5fb1d1875c8c7f7752f7fe67428aee8b76a37"
+        },
+        {
+          "source_record_id": "dc4dfd2283b2cf7527f9c208",
+          "evidence_hash": "7f93441e2f92f9791273c6df4afb3710f216a0f4916fc3b420bae6a50a2ae9ef"
+        },
         {
           "source_record_id": "6c00c4100f9feb6715cf85e4",
           "evidence_hash": "21d868e20f49606fc69e32c5af68634b177e3e4ffeb7f013aca0736043a5c69c"
@@ -631,28 +566,28 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "5937ebd2ad1b8d5a4b70b7e43476b42514ec1d0b8a52355688ade4a50b229d47",
-      "dataset_snapshot_at": "2026-10-08T15:40:48.208120+00:00",
-      "dataset_record_count": 179,
+      "dataset_snapshot_id": "7425383a3217ff791b6664874e4ce08cfc597da915704f948ac3c09ecb2939d3",
+      "dataset_snapshot_at": "2026-10-09T06:12:28.519437+00:00",
+      "dataset_record_count": 186,
       "window_start": "2026-07-11",
       "window_end": "2026-10-09",
-      "input_record_count": 114,
-      "matched_record_count": 84,
-      "aggregate_count": 84,
+      "input_record_count": 121,
+      "matched_record_count": 89,
+      "aggregate_count": 89,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "9863f56ae7909e52de05464466828f581f2f156138e0cc2ac1d574d5cd819b71"
+      "evidence_hash": "36749b6ccb1f85cf23319c4a44b99668f0b2f4d3a16511bc77895e50fa59818e"
     }
   ],
   [
     "cpsc-cat-20261009-cc4214c3",
     "policy",
     "high",
-    "⚠️ 服装品类: 近90天22起中国产品召回",
+    "⚠️ 服装品类: 近90天24起中国产品召回",
     "美国",
     "CPSC",
-    "过去90天内，服装品类有22起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
+    "过去90天内，服装品类有24起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
     "2026-10-09",
     false,
     {
@@ -662,14 +597,16 @@
       "source_type": "derived",
       "source_record_id": "cpsc-cat-source-20261009-cc4214c3",
       "verification_status": "verified",
-      "published_at": "2026-10-01",
-      "collected_at": "2026-10-06T01:10:17.173543+08:00",
-      "verified_at": "2026-10-06T01:10:17.173543+08:00",
+      "published_at": "2026-10-08",
+      "collected_at": "2026-10-09T14:12:27.891875+08:00",
+      "verified_at": "2026-10-09T14:12:27.891875+08:00",
       "verification_notes": "由已核验来源生成的动态预警；正文事实应回溯到 source_record_id。",
       "category_codes": [
         "apparel"
       ],
       "source_record_ids": [
+        "a5af844b3d5abc2688307e7e",
+        "6d959918feb368df6be0d4d7",
         "d3adaa264cbed4a01872cfbe",
         "bcb5f864524b0e2a8515649f",
         "c0c6678d6b01d319ed49cfae",
@@ -695,6 +632,8 @@
       ],
       "upstream_evidence_hash": "",
       "upstream_evidence_hashes": [
+        "c5791b5016409e5b9be802dde732d0e297939e94b4e958fe8870b76f6821c3be",
+        "e60b1977b81a8a87fdcd692ad6512c0397ac424043f985d4187665e08cdc2b9d",
         "fa6bf38723004b31c601f7b3c636fba3858881fb3e581bf0d42695edd28fd178",
         "824bb0cacd198d1832c45a1ee2f815ede5104f64028f8f5fd3432cb36f198a9b",
         "e62cf23104df505352e50d3531260a25a618a2629da7f09b2e9c11ffb8daa7f4",
@@ -719,6 +658,14 @@
         "e39e3aa7bf76f9860225f86bdd27122cc04be7559d1d320dd572a55e76533295"
       ],
       "source_record_evidence": [
+        {
+          "source_record_id": "a5af844b3d5abc2688307e7e",
+          "evidence_hash": "c5791b5016409e5b9be802dde732d0e297939e94b4e958fe8870b76f6821c3be"
+        },
+        {
+          "source_record_id": "6d959918feb368df6be0d4d7",
+          "evidence_hash": "e60b1977b81a8a87fdcd692ad6512c0397ac424043f985d4187665e08cdc2b9d"
+        },
         {
           "source_record_id": "d3adaa264cbed4a01872cfbe",
           "evidence_hash": "fa6bf38723004b31c601f7b3c636fba3858881fb3e581bf0d42695edd28fd178"
@@ -810,18 +757,113 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "5937ebd2ad1b8d5a4b70b7e43476b42514ec1d0b8a52355688ade4a50b229d47",
-      "dataset_snapshot_at": "2026-10-08T15:40:48.208120+00:00",
-      "dataset_record_count": 179,
+      "dataset_snapshot_id": "7425383a3217ff791b6664874e4ce08cfc597da915704f948ac3c09ecb2939d3",
+      "dataset_snapshot_at": "2026-10-09T06:12:28.519437+00:00",
+      "dataset_record_count": 186,
       "window_start": "2026-07-11",
       "window_end": "2026-10-09",
-      "input_record_count": 114,
-      "matched_record_count": 22,
-      "aggregate_count": 22,
+      "input_record_count": 121,
+      "matched_record_count": 24,
+      "aggregate_count": 24,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "af2cac8cf018fc0204e2c890ab6dabb8694c24021860489bfe229b77e28896b0"
+      "evidence_hash": "e4f0832af88664258eb815a3671b6c9f2eb17d3ae169ef10a9a9a13954fd5fb6"
+    }
+  ],
+  [
+    "cpsc-cat-20261009-d1a34529",
+    "policy",
+    "high",
+    "⚠️ 家居产品品类: 近90天8起中国产品召回",
+    "美国",
+    "CPSC",
+    "过去90天内，家居产品品类有8起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
+    "2026-10-09",
+    false,
+    {
+      "source": "CPSC 数据分析",
+      "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
+      "source_kind": "derived",
+      "source_type": "derived",
+      "source_record_id": "cpsc-cat-source-20261009-d1a34529",
+      "verification_status": "verified",
+      "published_at": "2026-10-01",
+      "collected_at": "2026-10-06T01:10:17.173543+08:00",
+      "verified_at": "2026-10-06T01:10:17.173543+08:00",
+      "verification_notes": "由已核验来源生成的动态预警；正文事实应回溯到 source_record_id。",
+      "category_codes": [
+        "home"
+      ],
+      "source_record_ids": [
+        "24541ba6abebdeaea1607e63",
+        "cb84e2346f5acec1adaac327",
+        "dd62e0c6b3d6f62d114ddf30",
+        "f2b68af39d8bc960a1795bbe",
+        "68d3e3366639e0a1c732d621",
+        "dfd67442266034f9ee90b33a",
+        "67ec165fc0ecc6d4b989ccf5",
+        "17132c01efefc1482835138e"
+      ],
+      "upstream_evidence_hash": "",
+      "upstream_evidence_hashes": [
+        "553bc62b8b8bab534c2597fc9619f212c34c7faa0c8a73188a841980e07e08fc",
+        "5c02417b84ab51b1d2ab52982825fa97d56274d0e18423edfa4c91a3f2cff9a0",
+        "5d67e89264c7d3f01b82843d629680ac25b5609ac607dac170bdc8f2b7c2c6c2",
+        "f27bedc65b2cbad310fe7d9a316d64cebf9d9e5c6ee88a49c7b59d3c939f2ea6",
+        "aa4a1f82d3e00d5c5e25a5de9d7570ca91b91d58e4afeacd830d2668abb4ed55",
+        "169714624e421c00880c82aeafe186997f8d9c1ad08ce341741a29c1058396d2",
+        "42e7e9e0ac474b02fc49fa98659ecf0e0e0d2391ba241726618ffc968010a8f6",
+        "1b1d9549b93a268c4f6e8823ff8ba5231fb92ed09e784557ae855f88fee561dc"
+      ],
+      "source_record_evidence": [
+        {
+          "source_record_id": "24541ba6abebdeaea1607e63",
+          "evidence_hash": "553bc62b8b8bab534c2597fc9619f212c34c7faa0c8a73188a841980e07e08fc"
+        },
+        {
+          "source_record_id": "cb84e2346f5acec1adaac327",
+          "evidence_hash": "5c02417b84ab51b1d2ab52982825fa97d56274d0e18423edfa4c91a3f2cff9a0"
+        },
+        {
+          "source_record_id": "dd62e0c6b3d6f62d114ddf30",
+          "evidence_hash": "5d67e89264c7d3f01b82843d629680ac25b5609ac607dac170bdc8f2b7c2c6c2"
+        },
+        {
+          "source_record_id": "f2b68af39d8bc960a1795bbe",
+          "evidence_hash": "f27bedc65b2cbad310fe7d9a316d64cebf9d9e5c6ee88a49c7b59d3c939f2ea6"
+        },
+        {
+          "source_record_id": "68d3e3366639e0a1c732d621",
+          "evidence_hash": "aa4a1f82d3e00d5c5e25a5de9d7570ca91b91d58e4afeacd830d2668abb4ed55"
+        },
+        {
+          "source_record_id": "dfd67442266034f9ee90b33a",
+          "evidence_hash": "169714624e421c00880c82aeafe186997f8d9c1ad08ce341741a29c1058396d2"
+        },
+        {
+          "source_record_id": "67ec165fc0ecc6d4b989ccf5",
+          "evidence_hash": "42e7e9e0ac474b02fc49fa98659ecf0e0e0d2391ba241726618ffc968010a8f6"
+        },
+        {
+          "source_record_id": "17132c01efefc1482835138e",
+          "evidence_hash": "1b1d9549b93a268c4f6e8823ff8ba5231fb92ed09e784557ae855f88fee561dc"
+        }
+      ],
+      "lineage_type": "aggregate",
+      "input_dataset": "data/us_market/cpsc_recalls.json",
+      "dataset_snapshot_id": "7425383a3217ff791b6664874e4ce08cfc597da915704f948ac3c09ecb2939d3",
+      "dataset_snapshot_at": "2026-10-09T06:12:28.519437+00:00",
+      "dataset_record_count": 186,
+      "window_start": "2026-07-11",
+      "window_end": "2026-10-09",
+      "input_record_count": 121,
+      "matched_record_count": 8,
+      "aggregate_count": 8,
+      "schema_version": "2.1",
+      "display_locale": "zh-CN",
+      "generator_version": "2026.09.08.1",
+      "evidence_hash": "81140a7ed2069e33bd4c16206eb20987a9dde6d533785acd14edf90775ea3845"
     }
   ],
   [
@@ -861,18 +903,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "26771a88ee272120dbddec4a6848d342859ef0804f5c6c3c11a81a8951e34cd0",
-      "dataset_snapshot_at": "2026-10-08T23:39:57.695860+08:00",
-      "dataset_record_count": 371,
+      "dataset_snapshot_id": "9fac7c80f8cc9745745223433ea174abe429711aa38f6c26dd1197044c4ff8a7",
+      "dataset_snapshot_at": "2026-10-09T14:11:13.447894+08:00",
+      "dataset_record_count": 377,
       "window_start": "2026-09-09",
       "window_end": "2026-10-09",
-      "input_record_count": 371,
+      "input_record_count": 377,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "cfef0c4eeba3be938fbc14c8c174fc888ca267d1ceec2f2d37ce3feb140f10fb"
+      "evidence_hash": "4cada7e86218a82c2e2ba10a74f33faa8fe0d72d102b2af75f13753e0761f571"
     }
   ],
   [
@@ -1684,18 +1726,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "26771a88ee272120dbddec4a6848d342859ef0804f5c6c3c11a81a8951e34cd0",
-      "dataset_snapshot_at": "2026-10-08T23:39:57.695860+08:00",
-      "dataset_record_count": 371,
+      "dataset_snapshot_id": "9fac7c80f8cc9745745223433ea174abe429711aa38f6c26dd1197044c4ff8a7",
+      "dataset_snapshot_at": "2026-10-09T14:11:13.447894+08:00",
+      "dataset_record_count": 377,
       "window_start": "2026-09-09",
       "window_end": "2026-10-09",
-      "input_record_count": 371,
+      "input_record_count": 377,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "f0145f4fb6a0f8969fa6764b19e1f900503cb50c927f7f2eb1c9aeaffb21b14b"
+      "evidence_hash": "9fb7a7a9cb04a1c26223d3535045dd9d16c1328bb05c060204efebe38e8a9e38"
     }
   ],
   [
@@ -1735,18 +1777,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "26771a88ee272120dbddec4a6848d342859ef0804f5c6c3c11a81a8951e34cd0",
-      "dataset_snapshot_at": "2026-10-08T23:39:57.695860+08:00",
-      "dataset_record_count": 371,
+      "dataset_snapshot_id": "9fac7c80f8cc9745745223433ea174abe429711aa38f6c26dd1197044c4ff8a7",
+      "dataset_snapshot_at": "2026-10-09T14:11:13.447894+08:00",
+      "dataset_record_count": 377,
       "window_start": "2026-09-09",
       "window_end": "2026-10-09",
-      "input_record_count": 371,
+      "input_record_count": 377,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "eaa748a775d4397a8695fd06d985b3910eb4a8e504b3484d0b4e802bb23e6748"
+      "evidence_hash": "bd35aaec6960e56a06d85a3a060126e56768d481952b1432940e7a0e644bb490"
     }
   ],
   [
@@ -3755,18 +3797,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "26771a88ee272120dbddec4a6848d342859ef0804f5c6c3c11a81a8951e34cd0",
-      "dataset_snapshot_at": "2026-10-08T23:39:57.695860+08:00",
-      "dataset_record_count": 371,
+      "dataset_snapshot_id": "9fac7c80f8cc9745745223433ea174abe429711aa38f6c26dd1197044c4ff8a7",
+      "dataset_snapshot_at": "2026-10-09T14:11:13.447894+08:00",
+      "dataset_record_count": 377,
       "window_start": "2026-09-09",
       "window_end": "2026-10-09",
-      "input_record_count": 371,
+      "input_record_count": 377,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "c10328fca56255b0702db69dac7f618b4352caae4ce5a9be70bab8d51b9a3cf6"
+      "evidence_hash": "3ce8d848c494bd8dec857ed5d7c771db5d1a33e5fef398fe5b83437a6327ff13"
     }
   ],
   [
