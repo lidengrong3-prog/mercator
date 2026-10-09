@@ -125,6 +125,10 @@ def hashed_asset_path(relative_path, payload):
     return path.with_name(f"{path.stem}.{digest}{path.suffix}").as_posix()
 
 
+def sha256_file(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def asset_measurement(path):
     payload = path.read_bytes()
     return {"bytes": len(payload), "gzip_bytes": len(gzip.compress(payload, mtime=0))}
@@ -291,6 +295,20 @@ def build_public_site(output, root=ROOT, environment="development", environ=None
         if header.get("key") == "Content-Security-Policy":
             header["value"] = header_csp
     write_json(output / "edgeone.json", edgeone)
+    write_json(output / "edgeone-rules-source.json", {
+        "schema_version": 1,
+        "authority": "repository-build-artifact",
+        "manual_overrides_allowed": False,
+        "source_files": ["edgeone.json", "deploy/edgeone-middleware.js"],
+        "deployed_files": {
+            "edgeone.json": {
+                "sha256": sha256_file(output / "edgeone.json"),
+            },
+            "middleware.js": {
+                "sha256": sha256_file(output / "middleware.js"),
+            },
+        },
+    })
 
     performance = enforce_performance_budgets(
         root,

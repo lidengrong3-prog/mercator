@@ -546,7 +546,7 @@ jobs:
           python-version: '3.11'
       - name: Assemble static site after backend acceptance
         run: python scripts/build_public_site.py --output _site --environment production
-      - name: Write release manifest
+      - name: Write release manifest (release.json) and signed-by-build resource fingerprints
         shell: bash
         run: |
           set -eu
@@ -554,25 +554,23 @@ jobs:
           migration_head="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' -printf '%f\n' | sort | tail -n 1 | sed 's/\.sql$//')"
           test -n "$migration_head"
           production_origin="$(python -c 'from urllib.parse import urlparse; import os; parsed=urlparse(os.environ["PRODUCTION_SITE_URL"]); print(f"{parsed.scheme}://{parsed.netloc}")')"
-          python - "$migration_head" "$production_origin" <<'PY'
-          import json
-          import os
-          import sys
-          from datetime import datetime, timezone
-          from pathlib import Path
-
-          Path('_site/release.json').write_text(json.dumps({
-              'release_sha': os.environ['GITHUB_SHA'],
-              'migration_head': sys.argv[1],
-              'production_origin': sys.argv[2],
-              'frontend': 'github-pages',
-              'source_ref': os.environ.get('GITHUB_REF_NAME', ''),
-              'generated_at': datetime.now(timezone.utc).isoformat(),
-          }, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-          PY
+          python scripts/build_release_bundle.py \
+            --site _site \
+            --release-sha "$GITHUB_SHA" \
+            --migration-head "$migration_head" \
+            --production-origin "$production_origin" \
+            --source-ref "$GITHUB_REF_NAME"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+      - name: Publish the exact production site artifact for EdgeOne and verification
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-site-${{ github.run_id }}
+          path: _site
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
 
   deploy-frontend:
     needs: build-frontend
@@ -587,10 +585,78 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-  browser-authenticated-acceptance:
-    needs: deploy-frontend
+  deploy-edgeone:
+    needs: build-frontend
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - name: Download the exact production site artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: production-site-${{ github.run_id }}
+          path: _site
+      - name: Require repository-controlled EdgeOne deployment configuration
+        shell: bash
+        env:
+          EDGEONE_API_TOKEN: ${{ secrets.EDGEONE_API_TOKEN }}
+          EDGEONE_PROJECT_NAME: ${{ vars.EDGEONE_PROJECT_NAME }}
+        run: |
+          set -eu
+          test -n "$EDGEONE_API_TOKEN"
+          test -n "$EDGEONE_PROJECT_NAME"
+          test "$(python -c 'import json; print(json.load(open("_site/edgeone-rules-source.json"))["authority"])')" = repository-build-artifact
+          test "$(python -c 'import json; print(str(json.load(open("_site/edgeone-rules-source.json"))["manual_overrides_allowed"]).lower())')" = false
+      - name: Deploy the repository artifact to EdgeOne Pages
+        uses: TencentEdgeOne/edgeone-pages-action@025b878b4c30de49cf26d147b64190c76c292037 # v1
+        with:
+          token: ${{ secrets.EDGEONE_API_TOKEN }}
+          project-name: ${{ vars.EDGEONE_PROJECT_NAME }}
+          build-path: ./_site
+
+  dual-release-consistency:
+    needs:
+      - deploy-frontend
+      - deploy-edgeone
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://jayguanhai.com/' }}
+      GITHUB_PAGES_ORIGIN_IPS: ${{ vars.GITHUB_PAGES_ORIGIN_IPS || '185.199.108.153,185.199.109.153,185.199.110.153,185.199.111.153' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download the exact production site artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: production-site-${{ github.run_id }}
+          path: _site
+      - name: Compare live EdgeOne and direct GitHub Pages fingerprints
+        shell: bash
+        run: |
+          set -eu
+          python scripts/verify_dual_release.py \
+            --expected _site/release-integrity.json \
+            --edgeone-url "$PRODUCTION_SITE_URL" \
+            --github-pages-url "$PRODUCTION_SITE_URL" \
+            --github-pages-origin-ips "$GITHUB_PAGES_ORIGIN_IPS" \
+            --wait-seconds 600 \
+            --output dual-release-result.json
+      - name: Publish sanitized dual-release evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: dual-release-result-${{ github.run_id }}
+          path: dual-release-result.json
+          if-no-files-found: error
+          retention-days: 90
+
+  browser-authenticated-acceptance:
+    needs: dual-release-consistency
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
     environment: production
     env:
       PRODUCTION_SITE_URL: ${{ vars.PRODUCTION_SITE_URL || secrets.PRODUCTION_SITE_URL || 'https://jayguanhai.com/' }}
@@ -723,6 +789,7 @@ jobs:
       EXPECTED_RELEASE_SHA: ${{ github.sha }}
       ACCEPTANCE_RESULT_FILE: production-acceptance-result.json
       BROWSER_ACCEPTANCE_RESULT_FILE: production-browser-acceptance-result.json
+      DUAL_RELEASE_RESULT_FILE: dual-release-result.json
       NOTIFICATION_CHANNELS_ENABLED: ${{ vars.NOTIFICATION_CHANNELS_ENABLED || secrets.NOTIFICATION_CHANNELS_ENABLED || 'false' }}
     steps:
       - uses: actions/checkout@v4
@@ -737,6 +804,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: production-browser-acceptance-result-${{ github.run_id }}
+      - name: Download live dual-release evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: dual-release-result-${{ github.run_id }}
       - name: Resolve expected migration head
         shell: bash
         run: |

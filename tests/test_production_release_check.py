@@ -1,4 +1,5 @@
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
@@ -85,17 +86,18 @@ class ProductionReleaseCheckTests(unittest.TestCase):
                 "production_exceptions": {"blocked_exports": {}},
             })
 
-    def test_browser_report_content_gate_accepts_a_local_only_draft(self):
-        self.assertEqual(validate_browser_report_content_gate({
-            "report_content_gate": {
-                "mode": "blocked",
-                "formal_save": False,
-                "formal_exports": False,
-                "browser_formal_requests": 0,
-                "reason_codes": ["QUALITY_REQUIRED_DATA_MISSING"],
-            },
-            "exports": {},
-        }), "blocked")
+    def test_browser_report_content_gate_rejects_a_local_only_draft(self):
+        with self.assertRaises(ReleaseCheckError):
+            validate_browser_report_content_gate({
+                "report_content_gate": {
+                    "mode": "blocked",
+                    "formal_save": False,
+                    "formal_exports": False,
+                    "browser_formal_requests": 0,
+                    "reason_codes": ["QUALITY_REQUIRED_DATA_MISSING"],
+                },
+                "exports": {},
+            })
 
     def test_bls_release_and_acceptance_require_matching_semantics(self):
         expected = self.bls_record()
@@ -121,11 +123,21 @@ class ProductionReleaseCheckTests(unittest.TestCase):
 
     def test_database_probes_use_each_tables_real_primary_key(self):
         requests = []
+        asset_manifest_raw = b'{"assets/runtime-config.js":"assets/runtime-config.abc123.js"}'
+        asset_manifest_digest = hashlib.sha256(asset_manifest_raw).hexdigest()
 
         def fake_request(method, url, *, headers=None, body=None):
             requests.append((method, url))
             if url.endswith("/release.json"):
-                return 200, b'{"release_sha":"sha","migration_head":"migration","production_origin":"https://example.com"}', {}
+                return 200, json.dumps({
+                    "schema_version": 2,
+                    "release_sha": "sha",
+                    "migration_head": "migration",
+                    "production_origin": "https://example.com",
+                    "frontend": "github-pages+edgeone-pages",
+                    "release_integrity_path": "release-integrity.json",
+                    "asset_manifest_sha256": asset_manifest_digest,
+                }).encode(), {}
             if url.endswith("/public-data-manifest.json"):
                 return 200, json.dumps({
                     "policy": "explicit-allowlist-formal-projection",
@@ -140,7 +152,7 @@ class ProductionReleaseCheckTests(unittest.TestCase):
             if url == "https://example.com/":
                 return 200, b"JAY", {}
             if url.endswith("/asset-manifest.json"):
-                return 200, b'{"assets/runtime-config.js":"assets/runtime-config.abc123.js"}', {}
+                return 200, asset_manifest_raw, {}
             if url.endswith("/assets/runtime-config.abc123.js"):
                 return 200, b'window.JAY_APP_CONFIG = Object.freeze({"environment":"production","supabase":{"url":"https://project.supabase.co","anonKey":"anon"}});', {}
             if "/auth/v1/token" in url:
@@ -243,15 +255,50 @@ class ProductionReleaseCheckTests(unittest.TestCase):
                 "attempts": 2,
                 "recovered_with_production_response": True,
             },
+            "execution": {
+                "mode": "production", "evidence_source": "live_browser",
+                "mock_used": False, "release_fallback_used": False,
+            },
+            "accounts": {
+                "a": {
+                    "user_id": "user-a", "workspace_id": "workspace-a", "upload_id": "upload-a",
+                    "report_id": "report-a", "report_run_id": "run-a", "exports": {"pdf": "pdf-a", "docx": "docx-a"},
+                    "login": True, "workspace_selected": True, "upload_persisted": True,
+                    "report_saved": True, "pdf_exported": True, "docx_exported": True,
+                    "logout_relogin": True, "report_recovered_after_relogin": True,
+                    "upload_recovered_after_relogin": True, "ai_logs_present": True,
+                },
+                "b": {
+                    "user_id": "user-b", "workspace_id": "workspace-b", "upload_id": "upload-b",
+                    "report_id": "report-b", "report_run_id": "run-b", "exports": {"pdf": "pdf-b", "docx": "docx-b"},
+                    "login": True, "workspace_selected": True, "upload_persisted": True,
+                    "report_saved": True, "pdf_exported": True, "docx_exported": True,
+                    "logout_relogin": True, "report_recovered_after_relogin": True,
+                    "upload_recovered_after_relogin": True, "ai_logs_present": True,
+                },
+            },
+            "isolation": {"workspace": True, "uploads": True, "reports": True, "exports": True, "ai_logs": True},
+        }
+        dual_release = {
+            "status": "passed", "release_sha": "sha", "migration_head": "migration",
+            "evidence_source": "live_http", "mock_used": False, "fallback_used": False,
+            "differences": [],
+            "surfaces": {
+                "edgeone": {"status": "passed", "release_sha": "sha", "migration_head": "migration", "index_sha256": "index", "asset_manifest_sha256": asset_manifest_digest, "direct_origin": False},
+                "github_pages": {"status": "passed", "release_sha": "sha", "migration_head": "migration", "index_sha256": "index", "asset_manifest_sha256": asset_manifest_digest, "direct_origin": True},
+            },
+            "edgeone_rules": {"authority": "repository-build-artifact", "manual_overrides_allowed": False},
         }
         with tempfile.TemporaryDirectory() as temp_dir:
             acceptance_path = Path(temp_dir) / "acceptance.json"
             browser_acceptance_path = Path(temp_dir) / "browser-acceptance.json"
+            dual_release_path = Path(temp_dir) / "dual-release.json"
             macro_path = Path(temp_dir) / "data" / "us_market" / "macro_indicators.json"
             macro_path.parent.mkdir(parents=True)
             macro_path.write_text(json.dumps({"indicators": {BLS_NONFARM_RECORD_KEY: self.bls_record()}}), encoding="utf-8")
             acceptance_path.write_text(json.dumps(acceptance), encoding="utf-8")
             browser_acceptance_path.write_text(json.dumps(browser_acceptance), encoding="utf-8")
+            dual_release_path.write_text(json.dumps(dual_release), encoding="utf-8")
             with patch.dict("os.environ", {
                 "PRODUCTION_SITE_URL": "https://example.com/",
                 "SUPABASE_URL": "https://project.supabase.co",
@@ -260,6 +307,7 @@ class ProductionReleaseCheckTests(unittest.TestCase):
                 "EXPECTED_MIGRATION_HEAD": "migration",
                 "ACCEPTANCE_RESULT_FILE": str(acceptance_path),
                 "BROWSER_ACCEPTANCE_RESULT_FILE": str(browser_acceptance_path),
+                "DUAL_RELEASE_RESULT_FILE": str(dual_release_path),
                 "PROD_TEST_USER_A_EMAIL": "a@example.com",
                 "PROD_TEST_USER_A_PASSWORD": "password",
                 "NOTIFICATION_CHANNELS_ENABLED": "false",

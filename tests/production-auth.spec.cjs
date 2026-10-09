@@ -24,7 +24,7 @@ test.describe('production authenticated browser acceptance', () => {
   test.skip(!ready, 'set RUN_PRODUCTION_ACCEPTANCE=1 and two production test accounts to run this suite');
   // The report engine generates one request per chapter. Keep enough room for
   // all sequential production AI calls, exports and account-isolation checks.
-  test.setTimeout(600_000);
+  test.setTimeout(1_500_000);
   let releaseReady = false;
 
   async function waitForDeployedRelease(page) {
@@ -242,6 +242,130 @@ test.describe('production authenticated browser acceptance', () => {
     throw new Error(`timed out waiting for report preview: ${JSON.stringify({ ...state, latestRun: runs[0] || null })}`);
   }
 
+  async function runSecondAccountFormalClosure(page, account, workspaceId, reportPlatform) {
+    const marker = `production-browser-b-${acceptanceRunId}`;
+    const uploadedFileName = `${marker}.json`;
+    const importedProductTitle = `生产浏览验收B商品-${acceptanceRunId}`;
+    const topic = `生产浏览器B验收通用品类-${acceptanceRunId}`;
+    const reportTitle = `《${topic}》美国市场调研报告`;
+
+    await page.evaluate((platformKey) => {
+      window.JAY_MARKET_SCOPE_API.setActiveMarket('US');
+      window.JAY_MARKET_SCOPE_API.setActivePlatforms([platformKey]);
+      window.JAY_MARKET_SCOPE_API.setActiveCategories(['generic']);
+      window.__productionAcceptanceToasts = [];
+      if (!window.__productionAcceptanceOriginalToast) {
+        window.__productionAcceptanceOriginalToast = window.toast;
+        window.toast = function productionAcceptanceToast(message) {
+          window.__productionAcceptanceToasts.push(String(message || ''));
+          return window.__productionAcceptanceOriginalToast.apply(this, arguments);
+        };
+      }
+    }, reportPlatform.key);
+
+    await page.evaluate(() => window.switchPage('products'));
+    await page.locator('#pr-file-input').setInputFiles({
+      name: uploadedFileName,
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify({
+        products: [{
+          商品名: importedProductTitle,
+          '国家/市场': '美国',
+          电商平台: reportPlatform.name,
+          商品类目: '通用',
+          售价: '29.90',
+          销量: '8',
+          信号: '稳定',
+          店铺: '生产验收B店铺',
+          更新时间: '2026-10-08',
+        }],
+      }, null, 2)),
+    });
+    await expect(page.locator('#pr-data-status')).toContainText('已导入 1 条商品', { timeout: 15_000 });
+    const upload = await waitForRow(
+      page,
+      'saved_workspace_items',
+      { workspace_id: workspaceId, item_type: 'product_catalog_import', client_id: 'default' },
+      (row) => row.content?.meta?.fileName === uploadedFileName,
+    );
+    await page.locator('#pr-table-body .pr-chk').first().check();
+    await page.locator('#pr-batch-add').click();
+    await waitForRow(page, 'report_materials', { workspace_id: workspaceId }, (row) => row.title === importedProductTitle);
+
+    await page.evaluate(() => window.switchPage('report'));
+    await page.waitForFunction(() => (
+      window.policiesDataState === 'ready'
+      && Array.isArray(window.policiesJsonData?.items) && window.policiesJsonData.items.length > 0
+      && Array.isArray(window.rulesJsonData?.items) && window.rulesJsonData.items.length > 0
+      && window.jayGetCountryCommerceState?.('US')?.status === 'ready'
+    ), null, { timeout: 30_000 });
+    await page.locator('.rp-v2-tpl-card[data-tpl="market-research"]').click();
+    await expect(page.locator('#rp-v2-next-btn')).toBeEnabled();
+    await page.locator('#rp-v2-next-btn').click();
+    await page.locator('#rp-v2-topic').fill(topic);
+    await page.locator('#rp-panel-step2 button[data-action="rpV2Questionnaire()"]')
+      .click();
+    await expect(page.locator('#rp-questionnaire')).toHaveClass(/show/);
+    await page.locator('#rp-q-category').fill('通用');
+    await page.locator('#rp-questionnaire .rp-q-go').click();
+    const preview = await waitForReportPreview(page, workspaceId);
+    if (preview.publishable !== true) {
+      throw new Error(`R11 account B report was not publishable: ${JSON.stringify(preview.publicationBlocks || [])}`);
+    }
+    await page.waitForFunction(() => ['saved', 'failed', 'blocked'].includes(String(window.rpLastSaveState || '')), null, { timeout: 60_000 });
+    const cloudSave = await page.evaluate(() => ({ state: window.rpLastSaveState, error: window.rpLastSaveError || null }));
+    if (cloudSave.state !== 'saved') throw new Error(`R11 account B report-save failed: ${JSON.stringify(cloudSave)}`);
+    const report = await waitForRow(
+      page,
+      'generated_reports',
+      { workspace_id: workspaceId, title: reportTitle },
+      (row) => row.save_status === 'saved' && row.publication_status === 'formal',
+    );
+
+    await page.locator('#rp-panel-step3 button[data-action="rpV2Export(\'pdf\')"]').click();
+    const pdf = await waitForRow(page, 'report_exports', { report_id: report.id, format: 'pdf' }, (row) => row.status === 'completed', 90_000);
+    await page.locator('#rp-panel-step3 button[data-action="rpV2Export(\'docx\')"]').click();
+    const docx = await waitForRow(page, 'report_exports', { report_id: report.id, format: 'docx' }, (row) => row.status === 'completed', 90_000);
+    expect(pdf.file_path).toBeTruthy();
+    expect(docx.file_path).toBeTruthy();
+
+    const reportRun = await waitForRow(
+      page,
+      'report_runs',
+      { workspace_id: workspaceId, acceptance_run_id: acceptanceRunId },
+      (row) => row.report_id === report.id && row.status === 'completed',
+    );
+    const aiLog = await waitForRow(
+      page,
+      'ai_request_logs',
+      { report_run_id: reportRun.id },
+      (row) => row.status === 'completed',
+    );
+
+    await signOut(page);
+    await login(page, account);
+    expect(await page.evaluate(() => window.jayActiveWorkspaceId())).toBe(workspaceId);
+    await page.evaluate(() => window.switchPage('report'));
+    await expect(page.locator('#rp-v2-recent-list')).toContainText(reportTitle, { timeout: 30_000 });
+    await page.locator('#rp-v2-recent-list .rp-v2-recent-item').filter({ hasText: reportTitle }).first().click();
+    await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
+    await page.evaluate(() => window.switchPage('products'));
+    await expect(page.locator('#pr-table-body')).toContainText(importedProductTitle, { timeout: 30_000 });
+
+    return {
+      userId: await page.evaluate(() => window.jayUser.id),
+      workspaceId,
+      uploadedFileName,
+      importedProductTitle,
+      uploadId: upload.id,
+      reportId: report.id,
+      reportRunId: reportRun.id,
+      aiLogId: aiLog.id,
+      pdfId: pdf.id,
+      docxId: docx.id,
+    };
+  }
+
   test('real login, upload, report recovery, exports and account isolation', async ({ browser }) => {
     const context = await browser.newContext({ acceptDownloads: true });
     const page = await context.newPage();
@@ -369,6 +493,9 @@ test.describe('production authenticated browser acceptance', () => {
     await page.locator('#rp-questionnaire .rp-q-go').click();
     const previewState = await waitForReportPreview(page, workspaceA);
     const formalReady = previewState.publishable === true;
+    if (!formalReady) {
+      throw new Error(`R11 account A report was not publishable: ${JSON.stringify(previewState.publicationBlocks || [])}`);
+    }
     await page.waitForFunction(() => ['saved', 'failed', 'blocked'].includes(String(window.rpLastSaveState || '')), null, { timeout: 60_000 });
     const cloudSave = await page.evaluate(() => ({ state: window.rpLastSaveState, error: window.rpLastSaveError || null }));
     let reportRow;
@@ -421,6 +548,8 @@ test.describe('production authenticated browser acceptance', () => {
       await expect(page.locator('#rp-v2-recent-list')).toContainText(browserReportTitle, { timeout: 30_000 });
       await page.locator('#rp-v2-recent-list .rp-v2-recent-item').filter({ hasText: browserReportTitle }).first().click();
       await expect(page.locator('#rp-v2-save-status')).toContainText('已保存到云端');
+      await page.evaluate(() => window.switchPage('products'));
+      await expect(page.locator('#pr-table-body')).toContainText(importedProductTitle, { timeout: 30_000 });
       reportContentGate = { mode: 'formal', formal_save: true, formal_exports: true, missing_rule_dimensions: [] };
     } else {
       expect(cloudSave.state).toBe('blocked');
@@ -495,6 +624,7 @@ test.describe('production authenticated browser acceptance', () => {
     const userB = await pageB.evaluate(() => window.jayUser.id);
     const workspaceB = acceptanceWorkspaceB || await pageB.evaluate(() => window.jayActiveWorkspaceId());
     expect(workspaceB).not.toBe(workspaceA);
+    const userA = await page.evaluate(() => window.jayUser.id);
     const ownerAuthorization = await workspaceAuthorization(page, workspaceA, 'manage_billing');
     expect(ownerAuthorization).toMatchObject({ allowed: true, code: 'OK', role: 'owner', can_write: true, can_manage_members: true, can_manage_billing: true });
     const crossAccountAuthorization = await workspaceAuthorization(page, workspaceB, 'read');
@@ -532,6 +662,24 @@ test.describe('production authenticated browser acceptance', () => {
     expect(await rows(pageB, 'report_materials', { title: importedProductTitle })).toEqual([]);
     expect(await rows(pageB, 'generated_reports', { id: reportId })).toEqual([]);
     expect(await rows(pageB, 'report_exports', { report_id: reportId })).toEqual([]);
+
+    const reverseWorkspaceAuthorization = await workspaceAuthorization(pageB, workspaceA, 'read');
+    expect(reverseWorkspaceAuthorization).toMatchObject({ allowed: false, code: 'WORKSPACE_FORBIDDEN', membership_active: false });
+    const accountBFlow = await runSecondAccountFormalClosure(pageB, credentials.b, workspaceB, reportPlatform);
+    expect(accountBFlow.userId).toBe(userB);
+    expect(await rows(page, 'saved_workspace_items', { id: accountBFlow.uploadId })).toEqual([]);
+    expect(await rows(page, 'generated_reports', { id: accountBFlow.reportId })).toEqual([]);
+    expect(await rows(page, 'report_exports', { report_id: accountBFlow.reportId })).toEqual([]);
+    expect(await rows(page, 'ai_request_logs', { id: accountBFlow.aiLogId })).toEqual([]);
+
+    const reportRunA = await waitForRow(
+      page,
+      'report_runs',
+      { workspace_id: workspaceA, acceptance_run_id: acceptanceRunId },
+      (row) => row.report_id === reportId && row.status === 'completed',
+    );
+    const aiLogA = await waitForRow(page, 'ai_request_logs', { report_run_id: reportRunA.id }, (row) => row.status === 'completed');
+    expect(await rows(pageB, 'ai_request_logs', { id: aiLogA.id })).toEqual([]);
 
     await page.evaluate(async () => {
       await window.jayLoadWorkspaceContext();
@@ -742,6 +890,57 @@ test.describe('production authenticated browser acceptance', () => {
         r08_authorization: r08AuthorizationEvidence,
         report_content_gate: reportContentGate,
         exports: pdfExport && docxExport ? { pdf: pdfExport.id, docx: docxExport.id } : {},
+        execution: {
+          mode: 'production',
+          evidence_source: 'live_browser',
+          mock_used: false,
+          release_fallback_used: false,
+        },
+        accounts: {
+          a: {
+            user_id: userA,
+            workspace_id: workspaceA,
+            upload_id: importRow.id,
+            report_id: reportId,
+            report_run_id: reportRunA.id,
+            exports: { pdf: pdfExport.id, docx: docxExport.id },
+            login: true,
+            workspace_selected: true,
+            upload_persisted: true,
+            report_saved: true,
+            pdf_exported: true,
+            docx_exported: true,
+            logout_relogin: true,
+            report_recovered_after_relogin: true,
+            upload_recovered_after_relogin: true,
+            ai_logs_present: true,
+          },
+          b: {
+            user_id: accountBFlow.userId,
+            workspace_id: accountBFlow.workspaceId,
+            upload_id: accountBFlow.uploadId,
+            report_id: accountBFlow.reportId,
+            report_run_id: accountBFlow.reportRunId,
+            exports: { pdf: accountBFlow.pdfId, docx: accountBFlow.docxId },
+            login: true,
+            workspace_selected: true,
+            upload_persisted: true,
+            report_saved: true,
+            pdf_exported: true,
+            docx_exported: true,
+            logout_relogin: true,
+            report_recovered_after_relogin: true,
+            upload_recovered_after_relogin: true,
+            ai_logs_present: true,
+          },
+        },
+        isolation: {
+          workspace: crossAccountAuthorization.allowed === false && reverseWorkspaceAuthorization.allowed === false,
+          uploads: true,
+          reports: true,
+          exports: true,
+          ai_logs: true,
+        },
       }, null, 2));
     }
   });
