@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-14T07:45:49.449706+08:00",
+  "updated_at": "2026-10-14T12:57:05.848316+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -1525,7 +1525,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need to update your details from the Payments tab in Seller Hub, or from Payments in My eBay. 2 min article",
-      "summary": "",
+      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Express payouts to your debit card Changing to a business account As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need ...",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -1540,8 +1540,8 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-14T03:20:14.353495+08:00",
-      "collected_at": "2026-10-14T03:20:14.353495+08:00",
+      "verified_at": "2026-10-14T12:57:05.848316+08:00",
+      "collected_at": "2026-10-14T12:57:05.848316+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "settlement",
@@ -1549,44 +1549,19 @@
       "rule_dimensions": {
         "settlement": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up t"
       },
-      "rule_version": "38",
+      "rule_version": "39",
       "effective_from": "2026-10-14",
       "changed_fields": [
-        "summary",
-        "published_at",
-        "effective_from"
+        "summary"
       ],
-      "change_summary": "规则字段变化：summary、published_at、effective_from",
+      "change_summary": "规则字段变化：summary",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-14T03:20:14.353495+08:00",
+      "retrieved_at": "2026-10-14T12:57:05.848316+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "be28f1b73f56a599cb145c329e5925e9b2aa919f2f4ce5a7dc64b88bb6c23561",
       "version_history": [
-        {
-          "id": "r20260930-e1109ba2",
-          "rule_key": "ebay:4796",
-          "rule_version": "18",
-          "title": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need to update your details from the Payments tab in Seller Hub, or from Payments in My eBay. 2 min article",
-          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Express payouts to your debit card Changing to a business account As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need ...",
-          "rule_dimensions": {
-            "settlement": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up t"
-          },
-          "source_url": "https://www.ebay.com/help/selling/fees-credits-invoices/setting-changing-automatic-payment-method/updating-checking-account-details-payouts?id=4796",
-          "published_at": "2026-09-30",
-          "effective_from": "2026-09-30",
-          "source_record_id": "ebay:4796",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "8cace6a2e11f2464f6611dd797061e453de8b1c3e4299b3f213bcdd58c317630",
-          "collected_at": "2026-09-30T22:57:58.089072+08:00",
-          "verified_at": "2026-09-30T22:57:58.089072+08:00",
-          "changed_fields": [
-            "summary"
-          ],
-          "change_summary": "规则字段变化：summary"
-        },
         {
           "id": "r20261001-e1109ba2",
           "rule_key": "ebay:4796",
@@ -2038,9 +2013,34 @@
             "summary"
           ],
           "change_summary": "规则字段变化：summary"
+        },
+        {
+          "id": "r20261014-e1109ba2",
+          "rule_key": "ebay:4796",
+          "rule_version": "38",
+          "title": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need to update your details from the Payments tab in Seller Hub, or from Payments in My eBay. 2 min article",
+          "summary": "",
+          "rule_dimensions": {
+            "settlement": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up t"
+          },
+          "source_url": "https://www.ebay.com/help/selling/fees-credits-invoices/setting-changing-automatic-payment-method/updating-checking-account-details-payouts?id=4796",
+          "published_at": "2026-10-14",
+          "effective_from": "2026-10-14",
+          "source_record_id": "ebay:4796",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "be28f1b73f56a599cb145c329e5925e9b2aa919f2f4ce5a7dc64b88bb6c23561",
+          "collected_at": "2026-10-14T03:20:14.353495+08:00",
+          "verified_at": "2026-10-14T03:20:14.353495+08:00",
+          "changed_fields": [
+            "summary",
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：summary、published_at、effective_from"
         }
       ],
-      "previous_version": "37",
+      "previous_version": "38",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -3072,7 +3072,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Creating a listing A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listing didn't go live the way you expected. 3 min article",
-      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Getting started Item description Item condition Item specifics Our listing tools Completing your listing Frequently asked questions A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listi...",
+      "summary": "",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -3087,47 +3087,25 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-14T03:20:14.353495+08:00",
-      "collected_at": "2026-10-14T03:20:14.353495+08:00",
+      "verified_at": "2026-10-14T12:57:05.848316+08:00",
+      "collected_at": "2026-10-14T12:57:05.848316+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "38",
+      "rule_version": "39",
       "effective_from": "2026-10-14",
       "changed_fields": [
-        "published_at",
-        "effective_from"
+        "summary"
       ],
-      "change_summary": "规则字段变化：published_at、effective_from",
+      "change_summary": "规则字段变化：summary",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-14T03:20:14.353495+08:00",
+      "retrieved_at": "2026-10-14T12:57:05.848316+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "cd6df9d9cdd125633564e85bfe61c25f5e3b6da7b8bda3cf744bbc98f4305834",
       "version_history": [
-        {
-          "id": "r20261001-37439b17",
-          "rule_key": "ebay:4105",
-          "rule_version": "18",
-          "title": "Creating a listing A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listing didn't go live the way you expected. 3 min article",
-          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Getting started Item description Item condition Item specifics Our listing tools Completing your listing Frequently asked questions A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listi...",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/selling/listings/creating-listing?id=4105",
-          "published_at": "2026-10-01",
-          "effective_from": "2026-10-01",
-          "source_record_id": "ebay:4105",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "43b7efa1c22a23db288ae28b10c4ee8938748803e48a270d68e2366fb4c460b3",
-          "collected_at": "2026-10-01T13:56:46.250096+08:00",
-          "verified_at": "2026-10-01T13:56:46.250096+08:00",
-          "changed_fields": [
-            "summary"
-          ],
-          "change_summary": "规则字段变化：summary"
-        },
         {
           "id": "r20261001-37439b17",
           "rule_key": "ebay:4105",
@@ -3543,9 +3521,31 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：summary、published_at、effective_from"
+        },
+        {
+          "id": "r20261014-37439b17",
+          "rule_key": "ebay:4105",
+          "rule_version": "38",
+          "title": "Creating a listing A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listing didn't go live the way you expected. 3 min article",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Getting started Item description Item condition Item specifics Our listing tools Completing your listing Frequently asked questions A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listi...",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/listings/creating-listing?id=4105",
+          "published_at": "2026-10-14",
+          "effective_from": "2026-10-14",
+          "source_record_id": "ebay:4105",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "cd6df9d9cdd125633564e85bfe61c25f5e3b6da7b8bda3cf744bbc98f4305834",
+          "collected_at": "2026-10-14T03:20:14.353495+08:00",
+          "verified_at": "2026-10-14T03:20:14.353495+08:00",
+          "changed_fields": [
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：published_at、effective_from"
         }
       ],
-      "previous_version": "37",
+      "previous_version": "38",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -4651,7 +4651,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-10-14T07:45:49.449706+08:00",
+  "last_checked_at": "2026-10-14T12:57:05.848316+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4931,7 +4931,7 @@
             "ebay:4795",
             "ebay:4796"
           ],
-          "last_verified_at": "2026-10-14T03:20:14.353495+08:00"
+          "last_verified_at": "2026-10-14T12:57:05.848316+08:00"
         },
         "penalty": {
           "status": "connected",
@@ -4943,7 +4943,7 @@
           "last_verified_at": "2026-10-14T03:20:14.353495+08:00"
         }
       },
-      "last_verified_at": "2026-10-14T03:20:14.353495+08:00",
+      "last_verified_at": "2026-10-14T12:57:05.848316+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   },
@@ -5220,7 +5220,7 @@
             "ebay:4795",
             "ebay:4796"
           ],
-          "last_verified_at": "2026-10-14T03:20:14.353495+08:00"
+          "last_verified_at": "2026-10-14T12:57:05.848316+08:00"
         },
         "penalty": {
           "status": "connected",
@@ -5232,7 +5232,7 @@
           "last_verified_at": "2026-10-14T03:20:14.353495+08:00"
         }
       },
-      "last_verified_at": "2026-10-14T03:20:14.353495+08:00",
+      "last_verified_at": "2026-10-14T12:57:05.848316+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   }
