@@ -54,8 +54,8 @@
         "https://fred.stlouisfed.org/series/RSAFS"
       ],
       [
-        "10Y国债收益率(2026-10-09)",
-        "5.24 %",
+        "10Y国债收益率(2026-10-13)",
+        "5.21 %",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/DGS10"
       ],
@@ -349,6 +349,6 @@
         ]
       ]
     },
-    "macro_updated": "2026-10-14 20:16 UTC"
+    "macro_updated": "2026-10-14 23:19 UTC"
   }
 }
