@@ -36,8 +36,8 @@
         "https://fred.stlouisfed.org/series/FEDFUNDS"
       ],
       [
-        "CPI(2026-08-01)",
-        "334.131 指数(1982-84=100)",
+        "CPI(2026-09-01)",
+        "336.298 指数(1982-84=100)",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/CPIAUCSL"
       ],
@@ -349,6 +349,6 @@
         ]
       ]
     },
-    "macro_updated": "2026-10-14 04:57 UTC"
+    "macro_updated": "2026-10-14 13:48 UTC"
   }
 }
