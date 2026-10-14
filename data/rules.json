@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-14T21:46:20.942883+08:00",
+  "updated_at": "2026-10-15T04:14:52.073929+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -12,7 +12,7 @@
   },
   "items": [
     {
-      "id": "r20261014-4095a550",
+      "id": "r20261015-4095a550",
       "rule_key": "ebay:4079",
       "source_record_id": "ebay:4079",
       "source_id_method": "url_query",
@@ -27,53 +27,32 @@
       ],
       "category": "policy",
       "impact_level": "medium",
-      "effective_date": "2026-10-14",
-      "published_at": "2026-10-14",
+      "effective_date": "2026-10-15",
+      "published_at": "2026-10-15",
       "source_url": "https://www.ebay.com/help/selling/managing-returns-refunds/manage-returns-missing-items-refunds-sellers?id=4079",
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-14T21:46:20.942883+08:00",
-      "collected_at": "2026-10-14T21:46:20.942883+08:00",
+      "verified_at": "2026-10-15T04:14:52.073929+08:00",
+      "collected_at": "2026-10-15T04:14:52.073929+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "38",
-      "effective_from": "2026-10-14",
+      "rule_version": "39",
+      "effective_from": "2026-10-15",
       "changed_fields": [
-        "summary"
+        "published_at",
+        "effective_from"
       ],
-      "change_summary": "规则字段变化：summary",
+      "change_summary": "规则字段变化：published_at、effective_from",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-14T21:46:20.942883+08:00",
+      "retrieved_at": "2026-10-15T04:14:52.073929+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "d71824aff593ec6b67c3ca0fc7d195888d99a5f27e62154367621401713b91ef",
+      "evidence_hash": "dfdf8426daa743122d27b4fb1fe2220cfee50facb29be2df6e0d8037a94e7db1",
       "version_history": [
-        {
-          "id": "r20261001-4095a550",
-          "rule_key": "ebay:4079",
-          "rule_version": "18",
-          "title": "Manage returns, missing items, and refunds for sellers Here’s everything you need to know if something goes wrong with an order or if a buyer changes their mind and doesn’t want the item anymore. 4 min overview",
-          "summary": "",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/selling/managing-returns-refunds/manage-returns-missing-items-refunds-sellers?id=4079",
-          "published_at": "2026-10-01",
-          "effective_from": "2026-10-01",
-          "source_record_id": "ebay:4079",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "197758308d3d3fc7b0ff2be1e6363b81fccdd4a98ceaabf49f54f510d9b6249a",
-          "collected_at": "2026-10-01T04:52:10.454362+08:00",
-          "verified_at": "2026-10-01T04:52:10.454362+08:00",
-          "changed_fields": [
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：published_at、effective_from"
-        },
         {
           "id": "r20261001-4095a550",
           "rule_key": "ebay:4079",
@@ -487,16 +466,37 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：summary、published_at、effective_from"
+        },
+        {
+          "id": "r20261014-4095a550",
+          "rule_key": "ebay:4079",
+          "rule_version": "38",
+          "title": "Manage returns, missing items, and refunds for sellers Here’s everything you need to know if something goes wrong with an order or if a buyer changes their mind and doesn’t want the item anymore. 4 min overview",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home Are you a buyer looking for a refund or to return an item? Read our article on returns and refunds If a customer has a problem with their order, or if they change their mind about a purchase, they’ll get in touch with you and ask for help. Once the buyer tells you there’s a problem, yo...",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/managing-returns-refunds/manage-returns-missing-items-refunds-sellers?id=4079",
+          "published_at": "2026-10-14",
+          "effective_from": "2026-10-14",
+          "source_record_id": "ebay:4079",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "d71824aff593ec6b67c3ca0fc7d195888d99a5f27e62154367621401713b91ef",
+          "collected_at": "2026-10-14T21:46:20.942883+08:00",
+          "verified_at": "2026-10-14T21:46:20.942883+08:00",
+          "changed_fields": [
+            "summary"
+          ],
+          "change_summary": "规则字段变化：summary"
         }
       ],
-      "previous_version": "37",
+      "previous_version": "38",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
       "publication_status": "eligible"
     },
     {
-      "id": "r20261014-206678c3",
+      "id": "r20261015-206678c3",
       "rule_key": "ebay:4080",
       "source_record_id": "ebay:4080",
       "source_id_method": "url_query",
@@ -511,14 +511,14 @@
       ],
       "category": "policy",
       "impact_level": "medium",
-      "effective_date": "2026-10-14",
-      "published_at": "2026-10-14",
+      "effective_date": "2026-10-15",
+      "published_at": "2026-10-15",
       "source_url": "https://www.ebay.com/help/selling/selling/seller-performance-overview?id=4080",
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-14T21:46:20.942883+08:00",
-      "collected_at": "2026-10-14T21:46:20.942883+08:00",
+      "verified_at": "2026-10-15T04:14:52.073929+08:00",
+      "collected_at": "2026-10-15T04:14:52.073929+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "penalty",
@@ -526,44 +526,20 @@
       "rule_dimensions": {
         "penalty": "er 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be eval"
       },
-      "rule_version": "35",
-      "effective_from": "2026-10-14",
+      "rule_version": "36",
+      "effective_from": "2026-10-15",
       "changed_fields": [
-        "summary"
+        "published_at",
+        "effective_from"
       ],
-      "change_summary": "规则字段变化：summary",
+      "change_summary": "规则字段变化：published_at、effective_from",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-14T21:46:20.942883+08:00",
+      "retrieved_at": "2026-10-15T04:14:52.073929+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "5f6da6c2e201796e783261c9fb4d9aaa16b0cbb03ba25cfe3054ab260a7bd309",
+      "evidence_hash": "9960427becee524737b6b7027e7c4a6d6f4530141e2d8453abf0717f77a221a0",
       "version_history": [
-        {
-          "id": "r20260928-206678c3",
-          "rule_key": "ebay:4080",
-          "rule_version": "15",
-          "title": "Seller performance overview Our performance metrics and requirements are intended to encourage good selling practices so that buyers can shop with confidence on eBay. Beginning October 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be evaluated and reported separately under a future program. 3 min article",
-          "summary": "",
-          "rule_dimensions": {
-            "penalty": "er 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be eval"
-          },
-          "source_url": "https://www.ebay.com/help/selling/selling/seller-performance-overview?id=4080",
-          "published_at": "2026-09-28",
-          "effective_from": "2026-09-28",
-          "source_record_id": "ebay:4080",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "7da59877aa9b6d298e496cbafa84e333395123445c67a837d927e42b96a9d404",
-          "collected_at": "2026-09-28T03:47:37.490493+08:00",
-          "verified_at": "2026-09-28T03:47:37.490493+08:00",
-          "changed_fields": [
-            "summary",
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：summary、published_at、effective_from"
-        },
         {
           "id": "r20260928-206678c3",
           "rule_key": "ebay:4080",
@@ -1019,16 +995,39 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：summary、published_at、effective_from"
+        },
+        {
+          "id": "r20261014-206678c3",
+          "rule_key": "ebay:4080",
+          "rule_version": "35",
+          "title": "Seller performance overview Our performance metrics and requirements are intended to encourage good selling practices so that buyers can shop with confidence on eBay. Beginning October 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be evaluated and reported separately under a future program. 3 min article",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Seller standards and seller levels Service metrics and peer benchmarking How to manage your performance Your reputation on eBay Selling internationally Our performance metrics and requirements are intended to encourage good selling practices so that buyers can shop with co...",
+          "rule_dimensions": {
+            "penalty": "er 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be eval"
+          },
+          "source_url": "https://www.ebay.com/help/selling/selling/seller-performance-overview?id=4080",
+          "published_at": "2026-10-14",
+          "effective_from": "2026-10-14",
+          "source_record_id": "ebay:4080",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "5f6da6c2e201796e783261c9fb4d9aaa16b0cbb03ba25cfe3054ab260a7bd309",
+          "collected_at": "2026-10-14T21:46:20.942883+08:00",
+          "verified_at": "2026-10-14T21:46:20.942883+08:00",
+          "changed_fields": [
+            "summary"
+          ],
+          "change_summary": "规则字段变化：summary"
         }
       ],
-      "previous_version": "34",
+      "previous_version": "35",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
       "publication_status": "eligible"
     },
     {
-      "id": "r20261014-85b7a9af",
+      "id": "r20261015-85b7a9af",
       "rule_key": "ebay:4137",
       "source_record_id": "ebay:4137",
       "source_id_method": "url_query",
@@ -1043,52 +1042,32 @@
       ],
       "category": "policy",
       "impact_level": "medium",
-      "effective_date": "2026-10-14",
-      "published_at": "2026-10-14",
+      "effective_date": "2026-10-15",
+      "published_at": "2026-10-15",
       "source_url": "https://www.ebay.com/help/selling/getting-paid/resolving-unpaid-items-buyers?id=4137",
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-14T21:46:20.942883+08:00",
-      "collected_at": "2026-10-14T21:46:20.942883+08:00",
+      "verified_at": "2026-10-15T04:14:52.073929+08:00",
+      "collected_at": "2026-10-15T04:14:52.073929+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "39",
-      "effective_from": "2026-10-14",
+      "rule_version": "40",
+      "effective_from": "2026-10-15",
       "changed_fields": [
-        "summary"
+        "published_at",
+        "effective_from"
       ],
-      "change_summary": "规则字段变化：summary",
+      "change_summary": "规则字段变化：published_at、effective_from",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-14T21:46:20.942883+08:00",
+      "retrieved_at": "2026-10-15T04:14:52.073929+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "297066cba82295c7cb62002dff7e5c96732de7bf3edc3ff925aaf1b901d292ed",
+      "evidence_hash": "b5f686f91da3078784d503b653219b05925cec289c87ce43c1a22fa20c9b6047",
       "version_history": [
-        {
-          "id": "r20260930-85b7a9af",
-          "rule_key": "ebay:4137",
-          "rule_version": "19",
-          "title": "Resolving unpaid items with buyers After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the item they bought. 2 min article",
-          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Reminding buyers to pay Using Preferences for items awaiting payment After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the ite...",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/selling/getting-paid/resolving-unpaid-items-buyers?id=4137",
-          "published_at": "2026-09-30",
-          "effective_from": "2026-09-30",
-          "source_record_id": "ebay:4137",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "7376675cbfa38f4cb2aa4a31824900821bdeb5401113614ccc7c7da287a0a950",
-          "collected_at": "2026-09-30T22:57:58.089072+08:00",
-          "verified_at": "2026-09-30T22:57:58.089072+08:00",
-          "changed_fields": [
-            "summary"
-          ],
-          "change_summary": "规则字段变化：summary"
-        },
         {
           "id": "r20261001-85b7a9af",
           "rule_key": "ebay:4137",
@@ -1505,16 +1484,37 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：summary、published_at、effective_from"
+        },
+        {
+          "id": "r20261014-85b7a9af",
+          "rule_key": "ebay:4137",
+          "rule_version": "39",
+          "title": "Resolving unpaid items with buyers After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the item they bought. 2 min article",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Reminding buyers to pay Using Preferences for items awaiting payment After you’ve made a sale on eBay, it’s usually a smooth process to complete the transaction with the buyer, but sometimes you might find yourself in a situation where the buyer hasn’t yet paid for the ite...",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/getting-paid/resolving-unpaid-items-buyers?id=4137",
+          "published_at": "2026-10-14",
+          "effective_from": "2026-10-14",
+          "source_record_id": "ebay:4137",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "297066cba82295c7cb62002dff7e5c96732de7bf3edc3ff925aaf1b901d292ed",
+          "collected_at": "2026-10-14T21:46:20.942883+08:00",
+          "verified_at": "2026-10-14T21:46:20.942883+08:00",
+          "changed_fields": [
+            "summary"
+          ],
+          "change_summary": "规则字段变化：summary"
         }
       ],
-      "previous_version": "38",
+      "previous_version": "39",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
       "publication_status": "eligible"
     },
     {
-      "id": "r20261014-e1109ba2",
+      "id": "r20261015-e1109ba2",
       "rule_key": "ebay:4796",
       "source_record_id": "ebay:4796",
       "source_id_method": "url_query",
@@ -1529,14 +1529,14 @@
       ],
       "category": "policy",
       "impact_level": "medium",
-      "effective_date": "2026-10-14",
-      "published_at": "2026-10-14",
+      "effective_date": "2026-10-15",
+      "published_at": "2026-10-15",
       "source_url": "https://www.ebay.com/help/selling/fees-credits-invoices/setting-changing-automatic-payment-method/updating-checking-account-details-payouts?id=4796",
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-14T12:57:05.848316+08:00",
-      "collected_at": "2026-10-14T12:57:05.848316+08:00",
+      "verified_at": "2026-10-15T04:14:52.073929+08:00",
+      "collected_at": "2026-10-15T04:14:52.073929+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "settlement",
@@ -1544,44 +1544,20 @@
       "rule_dimensions": {
         "settlement": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up t"
       },
-      "rule_version": "39",
-      "effective_from": "2026-10-14",
+      "rule_version": "40",
+      "effective_from": "2026-10-15",
       "changed_fields": [
-        "summary"
+        "published_at",
+        "effective_from"
       ],
-      "change_summary": "规则字段变化：summary",
+      "change_summary": "规则字段变化：published_at、effective_from",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-14T12:57:05.848316+08:00",
+      "retrieved_at": "2026-10-15T04:14:52.073929+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "be28f1b73f56a599cb145c329e5925e9b2aa919f2f4ce5a7dc64b88bb6c23561",
+      "evidence_hash": "153f2d4e3d644c1b8492831ee6ad612f438865370f7732d21080f6f1eb376b81",
       "version_history": [
-        {
-          "id": "r20261001-e1109ba2",
-          "rule_key": "ebay:4796",
-          "rule_version": "19",
-          "title": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need to update your details from the Payments tab in Seller Hub, or from Payments in My eBay. 2 min article",
-          "summary": "",
-          "rule_dimensions": {
-            "settlement": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up t"
-          },
-          "source_url": "https://www.ebay.com/help/selling/fees-credits-invoices/setting-changing-automatic-payment-method/updating-checking-account-details-payouts?id=4796",
-          "published_at": "2026-10-01",
-          "effective_from": "2026-10-01",
-          "source_record_id": "ebay:4796",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "1a46b71126ecab055f0236c2cbf4cedf1caa4c20889946b8a7fb83e4d65e5f6d",
-          "collected_at": "2026-10-01T04:52:10.454362+08:00",
-          "verified_at": "2026-10-01T04:52:10.454362+08:00",
-          "changed_fields": [
-            "summary",
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：summary、published_at、effective_from"
-        },
         {
           "id": "r20261002-e1109ba2",
           "rule_key": "ebay:4796",
@@ -2033,16 +2009,39 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：summary、published_at、effective_from"
+        },
+        {
+          "id": "r20261014-e1109ba2",
+          "rule_key": "ebay:4796",
+          "rule_version": "39",
+          "title": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need to update your details from the Payments tab in Seller Hub, or from Payments in My eBay. 2 min article",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Express payouts to your debit card Changing to a business account As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need ...",
+          "rule_dimensions": {
+            "settlement": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up t"
+          },
+          "source_url": "https://www.ebay.com/help/selling/fees-credits-invoices/setting-changing-automatic-payment-method/updating-checking-account-details-payouts?id=4796",
+          "published_at": "2026-10-14",
+          "effective_from": "2026-10-14",
+          "source_record_id": "ebay:4796",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "be28f1b73f56a599cb145c329e5925e9b2aa919f2f4ce5a7dc64b88bb6c23561",
+          "collected_at": "2026-10-14T12:57:05.848316+08:00",
+          "verified_at": "2026-10-14T12:57:05.848316+08:00",
+          "changed_fields": [
+            "summary"
+          ],
+          "change_summary": "规则字段变化：summary"
         }
       ],
-      "previous_version": "38",
+      "previous_version": "39",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
       "publication_status": "eligible"
     },
     {
-      "id": "r20261014-60dd64dc",
+      "id": "r20261015-60dd64dc",
       "rule_key": "ebay:4795",
       "source_record_id": "ebay:4795",
       "source_id_method": "url_query",
@@ -2057,14 +2056,14 @@
       ],
       "category": "policy",
       "impact_level": "medium",
-      "effective_date": "2026-10-14",
-      "published_at": "2026-10-14",
+      "effective_date": "2026-10-15",
+      "published_at": "2026-10-15",
       "source_url": "https://www.ebay.com/help/selling/getting-paid/start-getting-paid-ebay?id=4795",
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-14T21:46:20.942883+08:00",
-      "collected_at": "2026-10-14T21:46:20.942883+08:00",
+      "verified_at": "2026-10-15T04:14:52.073929+08:00",
+      "collected_at": "2026-10-15T04:14:52.073929+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "settlement",
@@ -2072,42 +2071,20 @@
       "rule_dimensions": {
         "settlement": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manage"
       },
-      "rule_version": "36",
-      "effective_from": "2026-10-14",
+      "rule_version": "37",
+      "effective_from": "2026-10-15",
       "changed_fields": [
-        "summary"
+        "published_at",
+        "effective_from"
       ],
-      "change_summary": "规则字段变化：summary",
+      "change_summary": "规则字段变化：published_at、effective_from",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-14T21:46:20.942883+08:00",
+      "retrieved_at": "2026-10-15T04:14:52.073929+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "a2582aea0009fbaec09ba297e53f735723ac5e438714f0bcacddc1cacac6fe24",
+      "evidence_hash": "ea32de5f0279b55859c9e0b78349f8e6cd680c798a892a54543fe3f744d9ae20",
       "version_history": [
-        {
-          "id": "r20260928-60dd64dc",
-          "rule_key": "ebay:4795",
-          "rule_version": "16",
-          "title": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manages the end-to-end payments process, and you receive your funds directly in your checking account. You can find an overview of the payment options that are usually added automatically on our Accepted payment methods help page. 2 min article",
-          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Payment partners Helpful articles Register for eBay to manage your payments Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manages the end-to-end payments process, and you receive your funds directly in yo...",
-          "rule_dimensions": {
-            "settlement": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manage"
-          },
-          "source_url": "https://www.ebay.com/help/selling/getting-paid/start-getting-paid-ebay?id=4795",
-          "published_at": "2026-09-28",
-          "effective_from": "2026-09-28",
-          "source_record_id": "ebay:4795",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "0870ada973300fabc0ffce8acd33b1e41c207cd97d2c453876202154dfbace43",
-          "collected_at": "2026-09-28T07:05:53.483638+08:00",
-          "verified_at": "2026-09-28T07:05:53.483638+08:00",
-          "changed_fields": [
-            "summary"
-          ],
-          "change_summary": "规则字段变化：summary"
-        },
         {
           "id": "r20260930-60dd64dc",
           "rule_key": "ebay:4795",
@@ -2562,16 +2539,39 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：summary、published_at、effective_from"
+        },
+        {
+          "id": "r20261014-60dd64dc",
+          "rule_key": "ebay:4795",
+          "rule_version": "36",
+          "title": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manages the end-to-end payments process, and you receive your funds directly in your checking account. You can find an overview of the payment options that are usually added automatically on our Accepted payment methods help page. 2 min article",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Payment partners Helpful articles Register for eBay to manage your payments Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manages the end-to-end payments process, and you receive your funds directly in yo...",
+          "rule_dimensions": {
+            "settlement": "Start getting paid on eBay Getting paid for items you’ve sold on eBay is simple. Your buyers can choose from a range of payment methods, eBay manage"
+          },
+          "source_url": "https://www.ebay.com/help/selling/getting-paid/start-getting-paid-ebay?id=4795",
+          "published_at": "2026-10-14",
+          "effective_from": "2026-10-14",
+          "source_record_id": "ebay:4795",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "a2582aea0009fbaec09ba297e53f735723ac5e438714f0bcacddc1cacac6fe24",
+          "collected_at": "2026-10-14T21:46:20.942883+08:00",
+          "verified_at": "2026-10-14T21:46:20.942883+08:00",
+          "changed_fields": [
+            "summary"
+          ],
+          "change_summary": "规则字段变化：summary"
         }
       ],
-      "previous_version": "35",
+      "previous_version": "36",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
       "publication_status": "eligible"
     },
     {
-      "id": "r20261014-2e55240b",
+      "id": "r20261015-2e55240b",
       "rule_key": "ebay:4136",
       "source_record_id": "ebay:4136",
       "source_id_method": "url_query",
@@ -2586,54 +2586,32 @@
       ],
       "category": "policy",
       "impact_level": "medium",
-      "effective_date": "2026-10-14",
-      "published_at": "2026-10-14",
+      "effective_date": "2026-10-15",
+      "published_at": "2026-10-15",
       "source_url": "https://www.ebay.com/help/selling/getting-paid/sellers-can-cancel-order?id=4136",
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-14T21:46:20.942883+08:00",
-      "collected_at": "2026-10-14T21:46:20.942883+08:00",
+      "verified_at": "2026-10-15T04:14:52.073929+08:00",
+      "collected_at": "2026-10-15T04:14:52.073929+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "36",
-      "effective_from": "2026-10-14",
+      "rule_version": "37",
+      "effective_from": "2026-10-15",
       "changed_fields": [
-        "summary"
+        "published_at",
+        "effective_from"
       ],
-      "change_summary": "规则字段变化：summary",
+      "change_summary": "规则字段变化：published_at、effective_from",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-14T21:46:20.942883+08:00",
+      "retrieved_at": "2026-10-15T04:14:52.073929+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "062be1d7ffe1cfd6e4b70722fb2e8b25c67cfc6f46e65898b190c45124923d31",
+      "evidence_hash": "f29c764e973ffd17a0db95f893cf9c3d3a5364635ee32202fc0fdc1957854d85",
       "version_history": [
-        {
-          "id": "r20260930-2e55240b",
-          "rule_key": "ebay:4136",
-          "rule_version": "16",
-          "title": "How sellers can cancel an order Sellers are obligated to complete the sale when a buyer makes a purchase. However, we understand that there may be circumstances in which orders need to be canceled. 2 min article",
-          "summary": "",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/selling/getting-paid/sellers-can-cancel-order?id=4136",
-          "published_at": "2026-09-30",
-          "effective_from": "2026-09-30",
-          "source_record_id": "ebay:4136",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "d71e255e1f4d8163087c76bea1051664c076f51627f999692d625a6531f765d6",
-          "collected_at": "2026-09-30T12:05:26.426064+08:00",
-          "verified_at": "2026-09-30T12:05:26.426064+08:00",
-          "changed_fields": [
-            "summary",
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：summary、published_at、effective_from"
-        },
         {
           "id": "r20261001-2e55240b",
           "rule_key": "ebay:4136",
@@ -3049,16 +3027,37 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：summary、published_at、effective_from"
+        },
+        {
+          "id": "r20261014-2e55240b",
+          "rule_key": "ebay:4136",
+          "rule_version": "36",
+          "title": "How sellers can cancel an order Sellers are obligated to complete the sale when a buyer makes a purchase. However, we understand that there may be circumstances in which orders need to be canceled. 2 min article",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page What if the buyer requests to cancel the order? What happens if the buyer asks you to cancel when the order isn’t eligible for cancellation? What happens after an order is canceled? If there is an issue with the refund Sellers are obligated to complete the sale when a buye...",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/getting-paid/sellers-can-cancel-order?id=4136",
+          "published_at": "2026-10-14",
+          "effective_from": "2026-10-14",
+          "source_record_id": "ebay:4136",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "062be1d7ffe1cfd6e4b70722fb2e8b25c67cfc6f46e65898b190c45124923d31",
+          "collected_at": "2026-10-14T21:46:20.942883+08:00",
+          "verified_at": "2026-10-14T21:46:20.942883+08:00",
+          "changed_fields": [
+            "summary"
+          ],
+          "change_summary": "规则字段变化：summary"
         }
       ],
-      "previous_version": "35",
+      "previous_version": "36",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
       "publication_status": "eligible"
     },
     {
-      "id": "r20261014-37439b17",
+      "id": "r20261015-37439b17",
       "rule_key": "ebay:4105",
       "source_record_id": "ebay:4105",
       "source_id_method": "url_query",
@@ -3073,53 +3072,32 @@
       ],
       "category": "policy",
       "impact_level": "medium",
-      "effective_date": "2026-10-14",
-      "published_at": "2026-10-14",
+      "effective_date": "2026-10-15",
+      "published_at": "2026-10-15",
       "source_url": "https://www.ebay.com/help/selling/listings/creating-listing?id=4105",
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-14T21:46:20.942883+08:00",
-      "collected_at": "2026-10-14T21:46:20.942883+08:00",
+      "verified_at": "2026-10-15T04:14:52.073929+08:00",
+      "collected_at": "2026-10-15T04:14:52.073929+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "40",
-      "effective_from": "2026-10-14",
+      "rule_version": "41",
+      "effective_from": "2026-10-15",
       "changed_fields": [
-        "summary"
+        "published_at",
+        "effective_from"
       ],
-      "change_summary": "规则字段变化：summary",
+      "change_summary": "规则字段变化：published_at、effective_from",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-14T21:46:20.942883+08:00",
+      "retrieved_at": "2026-10-15T04:14:52.073929+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "cd6df9d9cdd125633564e85bfe61c25f5e3b6da7b8bda3cf744bbc98f4305834",
+      "evidence_hash": "398cabb10f7decb34f33dad545ce3a8038e2e7c968bef7310cb8110d9978a87c",
       "version_history": [
-        {
-          "id": "r20261002-37439b17",
-          "rule_key": "ebay:4105",
-          "rule_version": "20",
-          "title": "Creating a listing A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listing didn't go live the way you expected. 3 min article",
-          "summary": "",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/selling/listings/creating-listing?id=4105",
-          "published_at": "2026-10-02",
-          "effective_from": "2026-10-02",
-          "source_record_id": "ebay:4105",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "b0b0589ae09727257676980af8add89ca50aba036049edc0f7e28a90c49ec961",
-          "collected_at": "2026-10-02T05:04:07.552741+08:00",
-          "verified_at": "2026-10-02T05:04:07.552741+08:00",
-          "changed_fields": [
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：published_at、effective_from"
-        },
         {
           "id": "r20261002-37439b17",
           "rule_key": "ebay:4105",
@@ -3535,16 +3513,37 @@
             "summary"
           ],
           "change_summary": "规则字段变化：summary"
+        },
+        {
+          "id": "r20261014-37439b17",
+          "rule_key": "ebay:4105",
+          "rule_version": "40",
+          "title": "Creating a listing A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listing didn't go live the way you expected. 3 min article",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Getting started Item description Item condition Item specifics Our listing tools Completing your listing Frequently asked questions A listing is the first step in getting your item in front of buyers. Here's what to include, which tools can help, and where to go if a listi...",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/listings/creating-listing?id=4105",
+          "published_at": "2026-10-14",
+          "effective_from": "2026-10-14",
+          "source_record_id": "ebay:4105",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "cd6df9d9cdd125633564e85bfe61c25f5e3b6da7b8bda3cf744bbc98f4305834",
+          "collected_at": "2026-10-14T21:46:20.942883+08:00",
+          "verified_at": "2026-10-14T21:46:20.942883+08:00",
+          "changed_fields": [
+            "summary"
+          ],
+          "change_summary": "规则字段变化：summary"
         }
       ],
-      "previous_version": "39",
+      "previous_version": "40",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
       "publication_status": "eligible"
     },
     {
-      "id": "r20261014-8611ae99",
+      "id": "r20261015-8611ae99",
       "rule_key": "ebay:4081",
       "source_record_id": "ebay:4081",
       "source_id_method": "url_query",
@@ -3559,20 +3558,20 @@
       ],
       "category": "policy",
       "impact_level": "medium",
-      "effective_date": "2026-10-14",
-      "published_at": "2026-10-14",
+      "effective_date": "2026-10-15",
+      "published_at": "2026-10-15",
       "source_url": "https://www.ebay.com/help/selling/selling/start-selling-ebay?id=4081",
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-14T03:20:14.353495+08:00",
-      "collected_at": "2026-10-14T03:20:14.353495+08:00",
+      "verified_at": "2026-10-15T04:14:52.073929+08:00",
+      "collected_at": "2026-10-15T04:14:52.073929+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "25",
-      "effective_from": "2026-10-14",
+      "rule_version": "26",
+      "effective_from": "2026-10-15",
       "changed_fields": [
         "published_at",
         "effective_from"
@@ -3581,32 +3580,10 @@
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-14T03:20:14.353495+08:00",
+      "retrieved_at": "2026-10-15T04:14:52.073929+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "f95d803a43d0766f82aefbd73a6b30cf5aef133cb2de921d3187d351041f21b5",
+      "evidence_hash": "c1ad1fd08e32db64d0597dbc079ac90ea3f2ee11a49c24f82f3c1f07ca434a42",
       "version_history": [
-        {
-          "id": "r20260920-8611ae99",
-          "rule_key": "ebay:4081",
-          "rule_version": "5",
-          "title": "Start selling on eBay Whether you want to make some extra cash, clear out unwanted items from around the house, or even start a business, it’s easy to start selling on eBay. 4 min article",
-          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Digital Services Act (DSA) verification Seller news and updates eBay Seller Capital Helpful selling articles Whether you want to make some extra cash, clear out unwanted items from around the house, or even start a business, it’s easy to start selling on eBay. If you don't...",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/selling/selling/start-selling-ebay?id=4081",
-          "published_at": "2026-09-20",
-          "effective_from": "2026-09-20",
-          "source_record_id": "ebay:4081",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "241bbb57f394f634748157f867b12afa42e4dcea50b812ff3d9cc6d77c1143b9",
-          "collected_at": "2026-09-20T02:39:16.590015+08:00",
-          "verified_at": "2026-09-20T02:39:16.590015+08:00",
-          "changed_fields": [
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：published_at、effective_from"
-        },
         {
           "id": "r20260921-8611ae99",
           "rule_key": "ebay:4081",
@@ -4024,16 +4001,38 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：published_at、effective_from"
+        },
+        {
+          "id": "r20261014-8611ae99",
+          "rule_key": "ebay:4081",
+          "rule_version": "25",
+          "title": "Start selling on eBay Whether you want to make some extra cash, clear out unwanted items from around the house, or even start a business, it’s easy to start selling on eBay. 4 min article",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Digital Services Act (DSA) verification Seller news and updates eBay Seller Capital Helpful selling articles Whether you want to make some extra cash, clear out unwanted items from around the house, or even start a business, it’s easy to start selling on eBay. If you don't...",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/selling/selling/start-selling-ebay?id=4081",
+          "published_at": "2026-10-14",
+          "effective_from": "2026-10-14",
+          "source_record_id": "ebay:4081",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "f95d803a43d0766f82aefbd73a6b30cf5aef133cb2de921d3187d351041f21b5",
+          "collected_at": "2026-10-14T03:20:14.353495+08:00",
+          "verified_at": "2026-10-14T03:20:14.353495+08:00",
+          "changed_fields": [
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：published_at、effective_from"
         }
       ],
-      "previous_version": "24",
+      "previous_version": "25",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
       "publication_status": "eligible"
     },
     {
-      "id": "r20261014-5cf1bbf5",
+      "id": "r20261015-5cf1bbf5",
       "rule_key": "ebay:4259",
       "source_record_id": "ebay:4259",
       "source_id_method": "url_query",
@@ -4048,14 +4047,14 @@
       ],
       "category": "policy",
       "impact_level": "medium",
-      "effective_date": "2026-10-14",
-      "published_at": "2026-10-14",
+      "effective_date": "2026-10-15",
+      "published_at": "2026-10-15",
       "source_url": "https://www.ebay.com/help/policies/member-behaviour-policies/user-agreement?id=4259",
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-14T21:46:20.942883+08:00",
-      "collected_at": "2026-10-14T21:46:20.942883+08:00",
+      "verified_at": "2026-10-15T04:14:52.073929+08:00",
+      "collected_at": "2026-10-15T04:14:52.073929+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "fee",
@@ -4063,48 +4062,22 @@
         "fee": "y 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims o",
         "penalty": "roduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. N"
       },
-      "rule_version": "36",
-      "effective_from": "2026-10-14",
+      "rule_version": "37",
+      "effective_from": "2026-10-15",
       "changed_fields": [
-        "summary",
-        "fee",
-        "penalty"
+        "published_at",
+        "effective_from"
       ],
-      "change_summary": "规则字段变化：summary、费用、处罚",
+      "change_summary": "规则字段变化：published_at、effective_from",
       "platform_keys": [
         "ebay"
       ],
       "fee": "y 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims o",
       "penalty": "roduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. N",
-      "retrieved_at": "2026-10-14T21:46:20.942883+08:00",
+      "retrieved_at": "2026-10-15T04:14:52.073929+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "373291c6f40332541b3728e5f8d9feaf9c213bd3053de0c7f7502bfdbe6ee518",
+      "evidence_hash": "dd17367e3937f9a14e733f0a46befcfd434b1aa5bbd1aaaed589498a1f78ebc2",
       "version_history": [
-        {
-          "id": "r20260930-5cf1bbf5",
-          "rule_key": "ebay:4259",
-          "rule_version": "16",
-          "title": "User Agreement",
-          "summary": "",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/policies/member-behaviour-policies/user-agreement?id=4259",
-          "published_at": "2026-09-30",
-          "effective_from": "2026-09-30",
-          "source_record_id": "ebay:4259",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "d5e411e186eb35628d531da3bd7be7a1b3ecdcf40acae0e2c1b02627862e8095",
-          "collected_at": "2026-09-30T12:05:26.426064+08:00",
-          "verified_at": "2026-09-30T12:05:26.426064+08:00",
-          "changed_fields": [
-            "summary",
-            "fee",
-            "penalty",
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：summary、费用、处罚、published_at、effective_from"
-        },
         {
           "id": "r20260930-5cf1bbf5",
           "rule_key": "ebay:4259",
@@ -4549,9 +4522,35 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：summary、费用、处罚、published_at、effective_from"
+        },
+        {
+          "id": "r20261014-5cf1bbf5",
+          "rule_key": "ebay:4259",
+          "rule_version": "36",
+          "title": "User Agreement",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page 1. Introduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims of Intellectual Property Violati...",
+          "rule_dimensions": {
+            "fee": "y 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims o",
+            "penalty": "roduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. N"
+          },
+          "source_url": "https://www.ebay.com/help/policies/member-behaviour-policies/user-agreement?id=4259",
+          "published_at": "2026-10-14",
+          "effective_from": "2026-10-14",
+          "source_record_id": "ebay:4259",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "373291c6f40332541b3728e5f8d9feaf9c213bd3053de0c7f7502bfdbe6ee518",
+          "collected_at": "2026-10-14T21:46:20.942883+08:00",
+          "verified_at": "2026-10-14T21:46:20.942883+08:00",
+          "changed_fields": [
+            "summary",
+            "fee",
+            "penalty"
+          ],
+          "change_summary": "规则字段变化：summary、费用、处罚"
         }
       ],
-      "previous_version": "35",
+      "previous_version": "36",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -4645,7 +4644,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-10-14T21:46:20.942883+08:00",
+  "last_checked_at": "2026-10-15T04:14:52.073929+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4889,7 +4888,7 @@
           "source_record_ids": [
             "ebay:4259"
           ],
-          "last_verified_at": "2026-10-14T21:46:20.942883+08:00"
+          "last_verified_at": "2026-10-15T04:14:52.073929+08:00"
         },
         "commission": {
           "status": "not_connected",
@@ -4927,7 +4926,7 @@
             "ebay:4795",
             "ebay:4796"
           ],
-          "last_verified_at": "2026-10-14T21:46:20.942883+08:00"
+          "last_verified_at": "2026-10-15T04:14:52.073929+08:00"
         },
         "penalty": {
           "status": "connected",
@@ -4937,10 +4936,10 @@
             "ebay:4080",
             "ebay:4259"
           ],
-          "last_verified_at": "2026-10-14T21:46:20.942883+08:00"
+          "last_verified_at": "2026-10-15T04:14:52.073929+08:00"
         }
       },
-      "last_verified_at": "2026-10-14T21:46:20.942883+08:00",
+      "last_verified_at": "2026-10-15T04:14:52.073929+08:00",
       "reason": "缺少主题：佣金、保证金、履约、禁售"
     }
   },
@@ -5181,7 +5180,7 @@
           "source_record_ids": [
             "ebay:4259"
           ],
-          "last_verified_at": "2026-10-14T21:46:20.942883+08:00"
+          "last_verified_at": "2026-10-15T04:14:52.073929+08:00"
         },
         "commission": {
           "status": "not_connected",
@@ -5219,7 +5218,7 @@
             "ebay:4795",
             "ebay:4796"
           ],
-          "last_verified_at": "2026-10-14T21:46:20.942883+08:00"
+          "last_verified_at": "2026-10-15T04:14:52.073929+08:00"
         },
         "penalty": {
           "status": "connected",
@@ -5229,10 +5228,10 @@
             "ebay:4080",
             "ebay:4259"
           ],
-          "last_verified_at": "2026-10-14T21:46:20.942883+08:00"
+          "last_verified_at": "2026-10-15T04:14:52.073929+08:00"
         }
       },
-      "last_verified_at": "2026-10-14T21:46:20.942883+08:00",
+      "last_verified_at": "2026-10-15T04:14:52.073929+08:00",
       "reason": "缺少主题：佣金、保证金、履约、禁售"
     }
   }
