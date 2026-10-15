@@ -48,8 +48,8 @@
         "https://fred.stlouisfed.org/series/UMCSENT"
       ],
       [
-        "零售销售(2026-08-01)",
-        "737763.0 百万美元",
+        "零售销售(2026-09-01)",
+        "745021.0 百万美元",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/RSAFS"
       ],
@@ -349,6 +349,6 @@
         ]
       ]
     },
-    "macro_updated": "2026-10-15 04:42 UTC"
+    "macro_updated": "2026-10-15 13:31 UTC"
   }
 }
