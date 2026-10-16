@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-16T12:34:09.521975+08:00",
+  "updated_at": "2026-10-16T21:17:34.358962+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -497,12 +497,12 @@
       "publication_status": "eligible"
     },
     {
-      "id": "r20261016-206678c3",
+      "id": "r20261016-0182ce3c",
       "rule_key": "ebay:4080",
       "source_record_id": "ebay:4080",
       "source_id_method": "url_query",
       "source_id_is_official": true,
-      "title": "Seller performance overview Our performance metrics and requirements are intended to encourage good selling practices so that buyers can shop with confidence on eBay. Beginning October 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be evaluated and reported separately under a future program. 3 min article",
+      "title": "Seller performance overview Our performance metrics and requirements are intended to encourage good selling practices so that buyers can shop with confidence on eBay. As of October 15, 2026, eBay Live transactions are no longer counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be evaluated and reported separately under a future program. 3 min article",
       "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Seller standards and seller levels Service metrics and peer benchmarking How to manage your performance Your reputation on eBay Selling internationally Our performance metrics and requirements are intended to encourage good selling practices so that buyers can shop with co...",
       "platform": "eBay",
       "platform_key": "ebay",
@@ -518,54 +518,29 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-16T03:55:49.742999+08:00",
-      "collected_at": "2026-10-16T03:55:49.742999+08:00",
+      "verified_at": "2026-10-16T21:17:34.358962+08:00",
+      "collected_at": "2026-10-16T21:17:34.358962+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "penalty",
-      "penalty": "er 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be eval",
+      "penalty": "ctober 15, 2026, eBay Live transactions are no longer counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be eval",
       "rule_dimensions": {
-        "penalty": "er 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be eval"
+        "penalty": "ctober 15, 2026, eBay Live transactions are no longer counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be eval"
       },
-      "rule_version": "37",
+      "rule_version": "38",
       "effective_from": "2026-10-16",
       "changed_fields": [
-        "published_at",
-        "effective_from"
+        "title",
+        "penalty"
       ],
-      "change_summary": "规则字段变化：published_at、effective_from",
+      "change_summary": "规则字段变化：title、处罚",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-10-16T03:55:49.742999+08:00",
+      "retrieved_at": "2026-10-16T21:17:34.358962+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "7c84adabc18c9e37b1058e27e8132033b12529d4a5d4266b776f5491f15ea912",
+      "evidence_hash": "c621ed144e4a6a2d948c0b59749bbb7dc61354ffe9ce405679e7083b8f90f5cd",
       "version_history": [
-        {
-          "id": "r20260930-206678c3",
-          "rule_key": "ebay:4080",
-          "rule_version": "17",
-          "title": "Seller performance overview Our performance metrics and requirements are intended to encourage good selling practices so that buyers can shop with confidence on eBay. Beginning October 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be evaluated and reported separately under a future program. 3 min article",
-          "summary": "",
-          "rule_dimensions": {
-            "penalty": "er 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be eval"
-          },
-          "source_url": "https://www.ebay.com/help/selling/selling/seller-performance-overview?id=4080",
-          "published_at": "2026-09-30",
-          "effective_from": "2026-09-30",
-          "source_record_id": "ebay:4080",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "a4c9dd057cf1366e2808b52d55edb9139ee75fc93de50c30bbff656351ca813c",
-          "collected_at": "2026-09-30T12:05:26.426064+08:00",
-          "verified_at": "2026-09-30T12:05:26.426064+08:00",
-          "changed_fields": [
-            "summary",
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：summary、published_at、effective_from"
-        },
         {
           "id": "r20261001-206678c3",
           "rule_key": "ebay:4080",
@@ -1020,9 +995,33 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：published_at、effective_from"
+        },
+        {
+          "id": "r20261016-206678c3",
+          "rule_key": "ebay:4080",
+          "rule_version": "37",
+          "title": "Seller performance overview Our performance metrics and requirements are intended to encourage good selling practices so that buyers can shop with confidence on eBay. Beginning October 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be evaluated and reported separately under a future program. 3 min article",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Seller standards and seller levels Service metrics and peer benchmarking How to manage your performance Your reputation on eBay Selling internationally Our performance metrics and requirements are intended to encourage good selling practices so that buyers can shop with co...",
+          "rule_dimensions": {
+            "penalty": "er 15, 2026, eBay Live transactions will no longer be counted in your seller standards or service metrics calculations, including all transactions completed before this date. eBay Live seller performance will be eval"
+          },
+          "source_url": "https://www.ebay.com/help/selling/selling/seller-performance-overview?id=4080",
+          "published_at": "2026-10-16",
+          "effective_from": "2026-10-16",
+          "source_record_id": "ebay:4080",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "7c84adabc18c9e37b1058e27e8132033b12529d4a5d4266b776f5491f15ea912",
+          "collected_at": "2026-10-16T03:55:49.742999+08:00",
+          "verified_at": "2026-10-16T03:55:49.742999+08:00",
+          "changed_fields": [
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：published_at、effective_from"
         }
       ],
-      "previous_version": "36",
+      "previous_version": "37",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -4640,7 +4639,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-10-16T12:34:09.521975+08:00",
+  "last_checked_at": "2026-10-16T21:17:34.358962+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4932,10 +4931,10 @@
             "ebay:4080",
             "ebay:4259"
           ],
-          "last_verified_at": "2026-10-16T03:55:49.742999+08:00"
+          "last_verified_at": "2026-10-16T21:17:34.358962+08:00"
         }
       },
-      "last_verified_at": "2026-10-16T03:55:49.742999+08:00",
+      "last_verified_at": "2026-10-16T21:17:34.358962+08:00",
       "reason": "缺少主题：佣金、保证金、履约、禁售"
     }
   },
@@ -5224,10 +5223,10 @@
             "ebay:4080",
             "ebay:4259"
           ],
-          "last_verified_at": "2026-10-16T03:55:49.742999+08:00"
+          "last_verified_at": "2026-10-16T21:17:34.358962+08:00"
         }
       },
-      "last_verified_at": "2026-10-16T03:55:49.742999+08:00",
+      "last_verified_at": "2026-10-16T21:17:34.358962+08:00",
       "reason": "缺少主题：佣金、保证金、履约、禁售"
     }
   }
