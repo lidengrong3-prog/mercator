@@ -1,7 +1,87 @@
 {
-  "updated_at": "2026-10-17T12:28:43.849126+08:00",
+  "updated_at": "2026-10-18T12:35:21.827065+08:00",
   "source_count": 2,
   "items": [
+    {
+      "id": "p20261018-b04a1a81",
+      "source_record_id": "2026-21383",
+      "title": "New Source Performance Standards and National Emission Standards for Hazardous Air Pollutants; Delegation of Authority to Northwest Clean Air Agency, Washington State",
+      "summary": "The Northwest Clean Air Agency (NWCAA), located in Washington State, submitted updated regulations for receiving delegation and approval of its program for the implementation and enforcement of newly issued or revised New Source Performance Standards (NSPS) and National Emission Standards for Hazard",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/10/19/2026-21383/new-source-performance-standards-and-national-emission-standards-for-hazardous-air-pollutants",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-10-19",
+      "collected_at": "2026-10-18T12:35:21.827065+08:00",
+      "market_codes": [
+        "US"
+      ],
+      "market": "US",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "retrieved_at": "2026-10-18T12:35:21.827065+08:00",
+      "verified_at": "2026-10-18T12:35:21.827065+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "51df894bbde8ac0dacc6c72ae0fef39569452145ee38cb096c89f1ad4e532760",
+      "title_zh": "新源性能标准与危险空气污染物国家排放标准；授权华盛顿州西北清洁空气机构",
+      "summary_zh": "位于华盛顿州的西北清洁空气机构（NWCAA）提交了更新后的法规，以接受对其项目的授权和批准，该项目负责实施和执行新发布或修订的新源性能标准（NSPS）以及危险空气污染物国家排放标准",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "openai-compatible",
+        "model": "deepseek-chat",
+        "translated_at": "2026-10-18T04:36:12.470104+00:00",
+        "source_hash": "9bb99521d6cac266de045edb838235e080fa3bea6e539ddf529a8f72fbb9a2f1",
+        "human_reviewed": false
+      },
+      "source_key": "federal-register",
+      "source_category": "official_policy",
+      "authorization_status": "not_required",
+      "publication_status": "eligible"
+    },
+    {
+      "id": "p20261018-3e6be6d2",
+      "source_record_id": "C1-2026-12067",
+      "title": "Fee Schedules; Fee Recovery for Fiscal Year 2026",
+      "summary": "See source for details.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/10/19/C1-2026-12067/fee-schedules-fee-recovery-for-fiscal-year-2026",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-10-19",
+      "collected_at": "2026-10-18T12:35:21.827065+08:00",
+      "market_codes": [
+        "US"
+      ],
+      "market": "US",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "retrieved_at": "2026-10-18T12:35:21.827065+08:00",
+      "verified_at": "2026-10-18T12:35:21.827065+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "b58f63d1478a0775f4e49d109bb97de1e6750977f567d5c8d32f0f6a79195346",
+      "title_zh": "收费标准；2026财年费用回收",
+      "summary_zh": "详情请见来源。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "openai-compatible",
+        "model": "deepseek-chat",
+        "translated_at": "2026-10-18T04:36:12.470104+00:00",
+        "source_hash": "e01f23fa22ba0e826456881553d7e71c21b9abd5b16a7fce9d0bb2cb80177cad",
+        "human_reviewed": false
+      },
+      "source_key": "federal-register",
+      "source_category": "official_policy",
+      "authorization_status": "not_required",
+      "publication_status": "eligible"
+    },
     {
       "id": "p20261016-ea037728",
       "source_record_id": "2026-21235",
@@ -12775,7 +12855,7 @@
     "target_language": "zh-CN",
     "translation_metadata_field": "translation"
   },
-  "last_checked_at": "2026-10-17T12:28:43.849126+08:00",
+  "last_checked_at": "2026-10-18T12:35:21.827065+08:00",
   "source_checks": {
     "federal_register": "succeeded",
     "ustr": "failed",
