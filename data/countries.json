@@ -60,8 +60,8 @@
         "https://fred.stlouisfed.org/series/DGS10"
       ],
       [
-        "新屋开工(2026-08-01)",
-        "1275 千套",
+        "新屋开工(2026-09-01)",
+        "1221 千套",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/HOUST"
       ],
@@ -349,6 +349,6 @@
         ]
       ]
     },
-    "macro_updated": "2026-10-20 04:55 UTC"
+    "macro_updated": "2026-10-20 13:36 UTC"
   }
 }
