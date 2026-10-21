@@ -58,7 +58,7 @@
     "manifest": "data/market_scope.json"
   },
   "provenance_schema": "data/provenance_schema.json",
-  "generated_at": "2026-10-20T23:14:17.821778+00:00",
+  "generated_at": "2026-10-21T04:51:35.250488+00:00",
   "status": "degraded",
   "publishable": true,
   "quality_status_definitions": {
@@ -99,7 +99,7 @@
     "quality_status": "degraded",
     "ledger_schema_version": 2,
     "ledger_status": "degraded",
-    "completed_at": "2026-10-20T23:14:17.359572+00:00",
+    "completed_at": "2026-10-21T04:51:34.467741+00:00",
     "scope": {
       "market_codes": [
         "US"
@@ -132,7 +132,7 @@
   "summary": {
     "datasets": 11,
     "raw_records": 911,
-    "scoped_records": 721,
+    "scoped_records": 720,
     "formal_records": 701,
     "demo_records": 0,
     "unverified_records": 96,
@@ -176,8 +176,8 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-20T23:14:17.359572+00:00",
-      "retrieved_at": "2026-10-20T23:14:17.359572+00:00",
+      "updated_at": "2026-10-21T04:51:34.467741+00:00",
+      "retrieved_at": "2026-10-21T04:51:34.467741+00:00",
       "verified_at": null,
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -187,12 +187,12 @@
       "errors": [],
       "warnings": [
         "部分请求失败，来源降级：aliexpress_rules, amazon_rules, tiktok_shop_rules, us_access_official, us_tax_official",
-        "非核心来源采集失败：cpsc_recalls, ustr"
+        "非核心来源采集失败：ustr"
       ],
       "metrics": {
         "ledger_schema_version": 2,
         "ledger_status": "degraded",
-        "ledger_completed_at": "2026-10-20T23:14:17.359572+00:00",
+        "ledger_completed_at": "2026-10-21T04:51:34.467741+00:00",
         "ledger_scope": {
           "market_codes": [
             "US"
@@ -232,9 +232,9 @@
           "pet-supplies"
         ],
         "source_status_counts": {
-          "succeeded": 7,
+          "succeeded": 8,
           "degraded": 5,
-          "failed": 2,
+          "failed": 1,
           "skipped": 0
         },
         "core_sources": [
@@ -255,12 +255,12 @@
         "unconnected_platform_keys": [],
         "ledger_summary": {
           "sources": 14,
-          "succeeded": 7,
+          "succeeded": 8,
           "degraded": 5,
-          "failed": 2,
+          "failed": 1,
           "core_failures": [],
-          "records_collected": 226,
-          "records_in_scope": 471
+          "records_collected": 430,
+          "records_in_scope": 475
         }
       }
     },
@@ -273,19 +273,19 @@
       "path": "data/policies.json",
       "records": 400,
       "raw_records": 400,
-      "scoped_records": 357,
+      "scoped_records": 356,
       "formal_records": 356,
       "demo_records": 0,
       "unverified_records": 44,
       "missing_source_records": 0,
       "excluded_records": 44,
       "exclusion_reasons": {
-        "industry_advisory": 42,
+        "industry_advisory": 43,
         "unverified": 44,
-        "out_of_scope": 43
+        "out_of_scope": 44
       },
-      "updated_at": "2026-10-20T23:13:17.701889+00:00",
-      "retrieved_at": "2026-10-20T23:13:17.701889+00:00",
+      "updated_at": "2026-10-21T04:50:11.527694+00:00",
+      "retrieved_at": "2026-10-21T04:50:11.527694+00:00",
       "verified_at": "2026-10-20T13:35:29.724604+00:00",
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -295,25 +295,25 @@
       "errors": [],
       "warnings": [
         "存在 44 条未核验数据，未进入正式统计",
-        "存在 42 条第三方行业资讯，仅作可追溯参考，不视为官方核验"
+        "存在 43 条第三方行业资讯，仅作可追溯参考，不视为官方核验"
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-10-21T07:13:17.701889+08:00",
+        "content_updated_at": "2026-10-21T12:50:11.527694+08:00",
         "formal_records": 356,
         "demo_records": 0,
         "unverified_records": 44,
         "missing_source_records": 0,
         "excluded_records": 44,
         "exclusion_reasons": {
-          "industry_advisory": 42,
+          "industry_advisory": 43,
           "unverified": 44,
-          "out_of_scope": 43
+          "out_of_scope": 44
         },
         "legacy_inferred_records": 0,
         "source_kind_counts": {
-          "official": 358,
-          "traceable": 42,
+          "official": 357,
+          "traceable": 43,
           "uploaded": 0,
           "derived": 0,
           "demo": 0
@@ -325,12 +325,12 @@
           "rejected": 0
         },
         "source_type_counts": {
-          "government": 358,
+          "government": 357,
           "regulator": 0,
           "platform": 0,
           "official_feed": 0,
           "industry_association": 0,
-          "licensed_provider": 42,
+          "licensed_provider": 43,
           "user_upload": 0,
           "derived": 0,
           "demo": 0,
@@ -367,9 +367,9 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-20T23:14:01.986329+00:00",
-      "retrieved_at": "2026-10-20T23:14:01.986329+00:00",
-      "verified_at": "2026-10-20T23:14:01.986329+00:00",
+      "updated_at": "2026-10-21T04:51:20.107993+00:00",
+      "retrieved_at": "2026-10-21T04:51:20.107993+00:00",
+      "verified_at": "2026-10-21T04:51:20.107993+00:00",
       "freshness_hours": 0.0,
       "freshness": "fresh",
       "sla_hours": 168,
@@ -379,7 +379,7 @@
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-10-20T23:14:01.986329+00:00",
+        "content_updated_at": "2026-10-21T04:51:20.107993+00:00",
         "formal_records": 5,
         "demo_records": 0,
         "unverified_records": 0,
@@ -443,9 +443,9 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-20T23:14:02.446962+00:00",
-      "retrieved_at": "2026-10-20T23:14:02.446962+00:00",
-      "verified_at": "2026-10-20T23:14:02.446962+00:00",
+      "updated_at": "2026-10-21T04:51:20.378999+00:00",
+      "retrieved_at": "2026-10-21T04:51:20.378999+00:00",
+      "verified_at": "2026-10-21T04:51:20.378999+00:00",
       "freshness_hours": 0.0,
       "freshness": "fresh",
       "sla_hours": 168,
@@ -455,7 +455,7 @@
       "warnings": [],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-10-20T23:14:02.446962+00:00",
+        "content_updated_at": "2026-10-21T04:51:20.378999+00:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 0,
@@ -525,8 +525,8 @@
         "out_of_scope_platform": 45,
         "missing_provenance_fields": 52
       },
-      "updated_at": "2026-10-20T23:13:17.701889+00:00",
-      "retrieved_at": "2026-10-20T23:13:17.701889+00:00",
+      "updated_at": "2026-10-21T04:50:11.527694+00:00",
+      "retrieved_at": "2026-10-21T04:50:11.527694+00:00",
       "verified_at": "2026-10-20T20:02:10.308126+00:00",
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -543,7 +543,7 @@
       ],
       "metrics": {
         "freshness_basis": "last_checked_at",
-        "content_updated_at": "2026-10-21T07:13:17.701889+08:00",
+        "content_updated_at": "2026-10-21T12:50:11.527694+08:00",
         "formal_records": 11,
         "demo_records": 0,
         "unverified_records": 52,
@@ -613,8 +613,8 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-20T23:14:17.415067+00:00",
-      "retrieved_at": "2026-10-20T23:14:17.415067+00:00",
+      "updated_at": "2026-10-21T04:51:34.547814+00:00",
+      "retrieved_at": "2026-10-21T04:51:34.547814+00:00",
       "verified_at": null,
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -684,8 +684,8 @@
       "missing_source_records": 0,
       "excluded_records": 38,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-20T23:14:17.358512+00:00",
-      "retrieved_at": "2026-10-20T23:14:17.358512+00:00",
+      "updated_at": "2026-10-21T04:51:34.466553+00:00",
+      "retrieved_at": "2026-10-21T04:51:34.466553+00:00",
       "verified_at": null,
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -750,8 +750,8 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-20T23:14:02.594514+00:00",
-      "retrieved_at": "2026-10-20T23:14:02.594514+00:00",
+      "updated_at": "2026-10-21T04:51:20.605222+00:00",
+      "retrieved_at": "2026-10-21T04:51:20.605222+00:00",
       "verified_at": null,
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -810,8 +810,8 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-20T23:14:17.358512+00:00",
-      "retrieved_at": "2026-10-20T23:14:17.358512+00:00",
+      "updated_at": "2026-10-21T04:51:34.466553+00:00",
+      "retrieved_at": "2026-10-21T04:51:34.466553+00:00",
       "verified_at": null,
       "freshness_hours": 0.0,
       "freshness": "fresh",
@@ -881,10 +881,10 @@
       "missing_source_records": 0,
       "excluded_records": 0,
       "exclusion_reasons": {},
-      "updated_at": "2026-10-20T20:04:05.033143+00:00",
-      "retrieved_at": "2026-10-20T20:04:05.033143+00:00",
+      "updated_at": "2026-10-21T04:51:25.873267+00:00",
+      "retrieved_at": "2026-10-21T04:51:25.873267+00:00",
       "verified_at": null,
-      "freshness_hours": 3.2,
+      "freshness_hours": 0.0,
       "freshness": "fresh",
       "sla_hours": 72,
       "source_type": "unknown",
