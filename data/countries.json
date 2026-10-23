@@ -42,8 +42,8 @@
         "https://fred.stlouisfed.org/series/CPIAUCSL"
       ],
       [
-        "消费者信心指数(2026-08-01)",
-        "51.7 指数",
+        "消费者信心指数(2026-09-01)",
+        "48.1 指数",
         "来源: FRED",
         "https://fred.stlouisfed.org/series/UMCSENT"
       ],
@@ -349,6 +349,6 @@
         ]
       ]
     },
-    "macro_updated": "2026-10-23 13:30 UTC"
+    "macro_updated": "2026-10-23 20:01 UTC"
   }
 }
