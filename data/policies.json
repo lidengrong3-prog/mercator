@@ -1,7 +1,47 @@
 {
-  "updated_at": "2026-10-27T22:34:14.048992+08:00",
+  "updated_at": "2026-10-28T04:44:21.255814+08:00",
   "source_count": 1,
   "items": [
+    {
+      "id": "p20261028-317de12b",
+      "source_record_id": "2026-21904",
+      "title": "Submission for OMB Review; 30-Day Comment Request; The Impact of Clinical Research Training and Medical Education at the Clinical Center on Physician Careers in Academia and Clinical Research",
+      "summary": "In compliance with the Paperwork Reduction Act of 1995, the National Institutes of Health (NIH) has submitted to the Office of Management and Budget (OMB) a request for review and approval of the information collection listed below.",
+      "source": "Federal Register (Trade Representative Office)",
+      "source_url": "https://www.federalregister.gov/documents/2026/10/27/2026-21904/submission-for-omb-review-30-day-comment-request-the-impact-of-clinical-research-training-and",
+      "region": "US",
+      "category": "regulation",
+      "impact_level": "medium",
+      "published_at": "2026-10-27",
+      "collected_at": "2026-10-28T04:44:21.255814+08:00",
+      "market_codes": [
+        "US"
+      ],
+      "market": "US",
+      "source_kind": "official",
+      "source_type": "government",
+      "verification_status": "verified",
+      "retrieved_at": "2026-10-28T04:44:21.255814+08:00",
+      "verified_at": "2026-10-28T04:44:21.255814+08:00",
+      "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
+      "evidence_hash": "9807b0009179e66439958806906619178471bc0da8bf9f9dfd13103df781e74b",
+      "title_zh": "提交OMB审查；30天评论请求；临床中心临床研究与医学教育培训对医师学术与临床研究职业的影响",
+      "summary_zh": "根据1995年《文书削减法》，美国国立卫生研究院（NIH）已向管理和预算办公室（OMB）提交请求，要求审查和批准下列信息收集。",
+      "translation": {
+        "source_language": "auto",
+        "target_language": "zh-CN",
+        "status": "translated",
+        "provider": "openai-compatible",
+        "model": "deepseek-chat",
+        "translated_at": "2026-10-27T20:45:07.638873+00:00",
+        "source_hash": "560088e7d7ee2e467c395b4e33172fd9ea5a307955df3ff5d369ff3f041dc95b",
+        "human_reviewed": false
+      },
+      "source_key": "federal-register",
+      "source_category": "official_policy",
+      "authorization_status": "not_required",
+      "publication_status": "eligible"
+    },
     {
       "id": "p20261027-4a2f7d2d",
       "source_record_id": "2026-21902",
@@ -13277,41 +13317,6 @@
       "source_category": "official_policy",
       "authorization_status": "not_required",
       "publication_status": "eligible"
-    },
-    {
-      "id": "p20260717-e435ec79",
-      "title": "Sunshine Act Meetings",
-      "summary": "See source for details.",
-      "source": "Federal Register (Trade Representative Office)",
-      "source_url": "https://www.federalregister.gov/documents/2026/07/17/2026-14534/sunshine-act-meetings",
-      "region": "US",
-      "category": "regulation",
-      "impact_level": "medium",
-      "published_at": "2026-07-17",
-      "collected_at": "2026-07-17T20:20:45.174605+08:00",
-      "title_zh": "《阳光法案》会议",
-      "summary_zh": "详情见资料来源。",
-      "translation": {
-        "source_language": "auto",
-        "target_language": "zh-CN",
-        "status": "translated",
-        "provider": "argos-offline",
-        "model": "translate-en_zh-1.9",
-        "translated_at": "2026-08-31T06:32:48.257033+00:00",
-        "source_hash": "4ed5d2b17110df819a7af4fcd3c711d18fbace0580bb54097f7aacc86aa5aa8b",
-        "human_reviewed": false
-      },
-      "source_record_id": "p20260717-e435ec79",
-      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
-      "source_kind": "official",
-      "source_type": "government",
-      "verification_status": "verified",
-      "verified_at": "2026-07-17T20:20:45.174605+08:00",
-      "evidence_hash": "fce04da0272c3d1c6b08825d40e4ed99eb2aa8f5b48a4d4261a0203240a54c78",
-      "source_key": "federal-register",
-      "source_category": "official_policy",
-      "authorization_status": "not_required",
-      "publication_status": "eligible"
     }
   ],
   "language_contract": {
@@ -13326,7 +13331,7 @@
     "target_language": "zh-CN",
     "translation_metadata_field": "translation"
   },
-  "last_checked_at": "2026-10-27T22:34:14.048992+08:00",
+  "last_checked_at": "2026-10-28T04:44:21.255814+08:00",
   "source_checks": {
     "federal_register": "succeeded",
     "ustr": "failed",
