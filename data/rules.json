@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-28T23:09:08.255818+08:00",
+  "updated_at": "2026-10-29T05:07:00.304722+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -4045,13 +4045,13 @@
       "publication_status": "eligible"
     },
     {
-      "id": "r20261028-5cf1bbf5",
+      "id": "r20261029-5cf1bbf5",
       "rule_key": "ebay:4259",
       "source_record_id": "ebay:4259",
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "User Agreement",
-      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page 1. Introduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims of Intellectual Property Violati...",
+      "summary": "",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -4060,59 +4060,35 @@
       ],
       "category": "policy",
       "impact_level": "medium",
-      "effective_date": "2026-10-28",
-      "published_at": "2026-10-28",
+      "effective_date": "2026-10-29",
+      "published_at": "2026-10-29",
       "source_url": "https://www.ebay.com/help/policies/member-behaviour-policies/user-agreement?id=4259",
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-10-28T04:44:21.255814+08:00",
-      "collected_at": "2026-10-28T04:44:21.255814+08:00",
+      "verified_at": "2026-10-29T05:07:00.304722+08:00",
+      "collected_at": "2026-10-29T05:07:00.304722+08:00",
       "market_code": "US",
       "source": "eBay",
-      "topic": "fee",
-      "rule_dimensions": {
-        "fee": "y 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims o",
-        "penalty": "roduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. N"
-      },
-      "rule_version": "51",
-      "effective_from": "2026-10-28",
+      "topic": "other",
+      "rule_dimensions": {},
+      "rule_version": "52",
+      "effective_from": "2026-10-29",
       "changed_fields": [
+        "summary",
+        "fee",
+        "penalty",
         "published_at",
         "effective_from"
       ],
-      "change_summary": "规则字段变化：published_at、effective_from",
+      "change_summary": "规则字段变化：summary、费用、处罚、published_at、effective_from",
       "platform_keys": [
         "ebay"
       ],
-      "fee": "y 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims o",
-      "penalty": "roduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. N",
-      "retrieved_at": "2026-10-28T04:44:21.255814+08:00",
+      "retrieved_at": "2026-10-29T05:07:00.304722+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "c720873733d2ee8d15cb6d0b5ad45abf4ffcd660d23dca07cb42042f68ff3141",
+      "evidence_hash": "3a013bb80a20632d2a1eeb640fd6496e8b1de7e967fe0467dc4bf3a872191023",
       "version_history": [
-        {
-          "id": "r20261010-5cf1bbf5",
-          "rule_key": "ebay:4259",
-          "rule_version": "31",
-          "title": "User Agreement",
-          "summary": "",
-          "rule_dimensions": {},
-          "source_url": "https://www.ebay.com/help/policies/member-behaviour-policies/user-agreement?id=4259",
-          "published_at": "2026-10-10",
-          "effective_from": "2026-10-10",
-          "source_record_id": "ebay:4259",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "b3337ec7753e84a92e4f451179d2af04436234d76bc7103d4c5a8df999d8be13",
-          "collected_at": "2026-10-10T04:56:24.870984+08:00",
-          "verified_at": "2026-10-10T04:56:24.870984+08:00",
-          "changed_fields": [
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：published_at、effective_from"
-        },
         {
           "id": "r20261012-5cf1bbf5",
           "rule_key": "ebay:4259",
@@ -4585,9 +4561,34 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：published_at、effective_from"
+        },
+        {
+          "id": "r20261028-5cf1bbf5",
+          "rule_key": "ebay:4259",
+          "rule_version": "51",
+          "title": "User Agreement",
+          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page 1. Introduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims of Intellectual Property Violati...",
+          "rule_dimensions": {
+            "fee": "y 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims o",
+            "penalty": "roduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. N"
+          },
+          "source_url": "https://www.ebay.com/help/policies/member-behaviour-policies/user-agreement?id=4259",
+          "published_at": "2026-10-28",
+          "effective_from": "2026-10-28",
+          "source_record_id": "ebay:4259",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "c720873733d2ee8d15cb6d0b5ad45abf4ffcd660d23dca07cb42042f68ff3141",
+          "collected_at": "2026-10-28T04:44:21.255814+08:00",
+          "verified_at": "2026-10-28T04:44:21.255814+08:00",
+          "changed_fields": [
+            "published_at",
+            "effective_from"
+          ],
+          "change_summary": "规则字段变化：published_at、effective_from"
         }
       ],
-      "previous_version": "50",
+      "previous_version": "51",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -4681,7 +4682,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-10-28T23:09:08.255818+08:00",
+  "last_checked_at": "2026-10-29T05:07:00.304722+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4907,11 +4908,11 @@
       "label": "部分接入",
       "rule_count": 9,
       "topics": [
-        "fee",
         "penalty",
         "settlement"
       ],
       "missing_topics": [
+        "fee",
         "commission",
         "deposit",
         "fulfillment",
@@ -4919,13 +4920,11 @@
       ],
       "dimensions": {
         "fee": {
-          "status": "connected",
-          "label": "已接入",
-          "record_count": 1,
-          "source_record_ids": [
-            "ebay:4259"
-          ],
-          "last_verified_at": "2026-10-28T04:44:21.255814+08:00"
+          "status": "not_connected",
+          "label": "未接入",
+          "record_count": 0,
+          "source_record_ids": [],
+          "last_verified_at": null
         },
         "commission": {
           "status": "not_connected",
@@ -4968,16 +4967,15 @@
         "penalty": {
           "status": "connected",
           "label": "已接入",
-          "record_count": 2,
+          "record_count": 1,
           "source_record_ids": [
-            "ebay:4080",
-            "ebay:4259"
+            "ebay:4080"
           ],
           "last_verified_at": "2026-10-28T04:44:21.255814+08:00"
         }
       },
-      "last_verified_at": "2026-10-28T04:44:21.255814+08:00",
-      "reason": "缺少主题：佣金、保证金、履约、禁售"
+      "last_verified_at": "2026-10-29T05:07:00.304722+08:00",
+      "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   },
   "platform_status": {
@@ -5199,11 +5197,11 @@
       "label": "部分接入",
       "rule_count": 9,
       "topics": [
-        "fee",
         "penalty",
         "settlement"
       ],
       "missing_topics": [
+        "fee",
         "commission",
         "deposit",
         "fulfillment",
@@ -5211,13 +5209,11 @@
       ],
       "dimensions": {
         "fee": {
-          "status": "connected",
-          "label": "已接入",
-          "record_count": 1,
-          "source_record_ids": [
-            "ebay:4259"
-          ],
-          "last_verified_at": "2026-10-28T04:44:21.255814+08:00"
+          "status": "not_connected",
+          "label": "未接入",
+          "record_count": 0,
+          "source_record_ids": [],
+          "last_verified_at": null
         },
         "commission": {
           "status": "not_connected",
@@ -5260,16 +5256,15 @@
         "penalty": {
           "status": "connected",
           "label": "已接入",
-          "record_count": 2,
+          "record_count": 1,
           "source_record_ids": [
-            "ebay:4080",
-            "ebay:4259"
+            "ebay:4080"
           ],
           "last_verified_at": "2026-10-28T04:44:21.255814+08:00"
         }
       },
-      "last_verified_at": "2026-10-28T04:44:21.255814+08:00",
-      "reason": "缺少主题：佣金、保证金、履约、禁售"
+      "last_verified_at": "2026-10-29T05:07:00.304722+08:00",
+      "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   }
 }
