@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-05T08:56:21.429625+08:00",
+  "updated_at": "2026-11-05T20:23:22.910028+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -1525,7 +1525,7 @@
       "source_id_method": "url_query",
       "source_id_is_official": true,
       "title": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need to update your details from the Payments tab in Seller Hub, or from Payments in My eBay. 2 min article",
-      "summary": "",
+      "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Express payouts to your debit card Changing to a business account As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need ...",
       "platform": "eBay",
       "platform_key": "ebay",
       "market": "US",
@@ -1540,8 +1540,8 @@
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-11-05T08:56:21.429625+08:00",
-      "collected_at": "2026-11-05T08:56:21.429625+08:00",
+      "verified_at": "2026-11-05T20:23:22.910028+08:00",
+      "collected_at": "2026-11-05T20:23:22.910028+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "settlement",
@@ -1549,7 +1549,7 @@
       "rule_dimensions": {
         "settlement": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up t"
       },
-      "rule_version": "65",
+      "rule_version": "66",
       "effective_from": "2026-11-05",
       "changed_fields": [
         "summary"
@@ -1558,34 +1558,10 @@
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-11-05T08:56:21.429625+08:00",
+      "retrieved_at": "2026-11-05T20:23:22.910028+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
       "evidence_hash": "7cdac448440c1d0b609eb2b9afd8fc483745a0950bcdbe892e49afbd0c3220df",
       "version_history": [
-        {
-          "id": "r20261020-e1109ba2",
-          "rule_key": "ebay:4796",
-          "rule_version": "45",
-          "title": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need to update your details from the Payments tab in Seller Hub, or from Payments in My eBay. 2 min article",
-          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page Express payouts to your debit card Changing to a business account As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need ...",
-          "rule_dimensions": {
-            "settlement": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up t"
-          },
-          "source_url": "https://www.ebay.com/help/selling/fees-credits-invoices/setting-changing-automatic-payment-method/updating-checking-account-details-payouts?id=4796",
-          "published_at": "2026-10-20",
-          "effective_from": "2026-10-20",
-          "source_record_id": "ebay:4796",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "21945eb3551a26ce4a69cb3e54724745092b33e7ad2402a434589fb34a4c7da4",
-          "collected_at": "2026-10-20T05:05:20.379650+08:00",
-          "verified_at": "2026-10-20T05:05:20.379650+08:00",
-          "changed_fields": [
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：published_at、effective_from"
-        },
         {
           "id": "r20261021-e1109ba2",
           "rule_key": "ebay:4796",
@@ -2041,9 +2017,32 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：summary、published_at、effective_from"
+        },
+        {
+          "id": "r20261105-e1109ba2",
+          "rule_key": "ebay:4796",
+          "rule_version": "65",
+          "title": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up to date, or if you want to receive payouts to a different account, you'll need to update your details from the Payments tab in Seller Hub, or from Payments in My eBay. 2 min article",
+          "summary": "",
+          "rule_dimensions": {
+            "settlement": "Updating your checking account details for payouts As an eBay seller, you’ll receive your payouts to your linked checking account or debit card. If your account details aren’t up t"
+          },
+          "source_url": "https://www.ebay.com/help/selling/fees-credits-invoices/setting-changing-automatic-payment-method/updating-checking-account-details-payouts?id=4796",
+          "published_at": "2026-11-05",
+          "effective_from": "2026-11-05",
+          "source_record_id": "ebay:4796",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "7cdac448440c1d0b609eb2b9afd8fc483745a0950bcdbe892e49afbd0c3220df",
+          "collected_at": "2026-11-05T08:56:21.429625+08:00",
+          "verified_at": "2026-11-05T08:56:21.429625+08:00",
+          "changed_fields": [
+            "summary"
+          ],
+          "change_summary": "规则字段变化：summary"
         }
       ],
-      "previous_version": "64",
+      "previous_version": "65",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -4695,7 +4694,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-11-05T08:56:21.429625+08:00",
+  "last_checked_at": "2026-11-05T20:23:22.910028+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4975,7 +4974,7 @@
             "ebay:4795",
             "ebay:4796"
           ],
-          "last_verified_at": "2026-11-05T08:56:21.429625+08:00"
+          "last_verified_at": "2026-11-05T20:23:22.910028+08:00"
         },
         "penalty": {
           "status": "connected",
@@ -4987,7 +4986,7 @@
           "last_verified_at": "2026-11-05T08:56:21.429625+08:00"
         }
       },
-      "last_verified_at": "2026-11-05T08:56:21.429625+08:00",
+      "last_verified_at": "2026-11-05T20:23:22.910028+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   },
@@ -5264,7 +5263,7 @@
             "ebay:4795",
             "ebay:4796"
           ],
-          "last_verified_at": "2026-11-05T08:56:21.429625+08:00"
+          "last_verified_at": "2026-11-05T20:23:22.910028+08:00"
         },
         "penalty": {
           "status": "connected",
@@ -5276,7 +5275,7 @@
           "last_verified_at": "2026-11-05T08:56:21.429625+08:00"
         }
       },
-      "last_verified_at": "2026-11-05T08:56:21.429625+08:00",
+      "last_verified_at": "2026-11-05T20:23:22.910028+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   }
