@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-05T20:23:22.910028+08:00",
+  "updated_at": "2026-11-06T06:01:22.036937+08:00",
   "source_count": 2,
   "versioning": {
     "identity_field": "rule_key",
@@ -4047,7 +4047,7 @@
       "publication_status": "eligible"
     },
     {
-      "id": "r20261105-5cf1bbf5",
+      "id": "r20261106-5cf1bbf5",
       "rule_key": "ebay:4259",
       "source_record_id": "ebay:4259",
       "source_id_method": "url_query",
@@ -4062,58 +4062,32 @@
       ],
       "category": "policy",
       "impact_level": "medium",
-      "effective_date": "2026-11-05",
-      "published_at": "2026-11-05",
+      "effective_date": "2026-11-06",
+      "published_at": "2026-11-06",
       "source_url": "https://www.ebay.com/help/policies/member-behaviour-policies/user-agreement?id=4259",
       "source_kind": "official",
       "source_type": "platform",
       "verification_status": "verified",
-      "verified_at": "2026-11-05T08:56:21.429625+08:00",
-      "collected_at": "2026-11-05T08:56:21.429625+08:00",
+      "verified_at": "2026-11-06T06:01:22.036937+08:00",
+      "collected_at": "2026-11-06T06:01:22.036937+08:00",
       "market_code": "US",
       "source": "eBay",
       "topic": "other",
       "rule_dimensions": {},
-      "rule_version": "66",
-      "effective_from": "2026-11-05",
+      "rule_version": "67",
+      "effective_from": "2026-11-06",
       "changed_fields": [
-        "summary",
-        "fee",
-        "penalty"
+        "published_at",
+        "effective_from"
       ],
-      "change_summary": "规则字段变化：summary、费用、处罚",
+      "change_summary": "规则字段变化：published_at、effective_from",
       "platform_keys": [
         "ebay"
       ],
-      "retrieved_at": "2026-11-05T08:56:21.429625+08:00",
+      "retrieved_at": "2026-11-06T06:01:22.036937+08:00",
       "verification_notes": "由采集器来源规则初步核验；正式使用前仍应复核原文。",
-      "evidence_hash": "63d3ef0d3e7547b1b74790fd37de9647e148c9496959f370dd6b3057bff562ff",
+      "evidence_hash": "f330913b888ae9ab063fcf388fd8e11ed2b581f77edb45d054b11105611a9083",
       "version_history": [
-        {
-          "id": "r20261023-5cf1bbf5",
-          "rule_key": "ebay:4259",
-          "rule_version": "46",
-          "title": "User Agreement",
-          "summary": "This is search service rlogid:Search service rlogid = Suggested Articles Suggested queries Suggested queries The more details you provide, the better i can understand and assist you, Need more help?Go to Help home On this page 1. Introduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims of Intellectual Property Violati...",
-          "rule_dimensions": {
-            "fee": "y 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. Notice for Claims o",
-            "penalty": "roduction 2. About eBay 3. Using eBay 4. Vehicle Purchases & Sales 5. Policy Enforcement 6. Fees and Taxes 7. Listing Conditions 8. Purchase Conditions 9. International Buying and Selling; Translation 10. Content 11. N"
-          },
-          "source_url": "https://www.ebay.com/help/policies/member-behaviour-policies/user-agreement?id=4259",
-          "published_at": "2026-10-23",
-          "effective_from": "2026-10-23",
-          "source_record_id": "ebay:4259",
-          "source_id_method": "url_query",
-          "source_id_is_official": true,
-          "evidence_hash": "2dc6256f2e021424cb1530c2edbac087400e5046adf685ae753d157202b90a9a",
-          "collected_at": "2026-10-23T04:09:54.935946+08:00",
-          "verified_at": "2026-10-23T04:09:54.935946+08:00",
-          "changed_fields": [
-            "published_at",
-            "effective_from"
-          ],
-          "change_summary": "规则字段变化：published_at、effective_from"
-        },
         {
           "id": "r20261024-5cf1bbf5",
           "rule_key": "ebay:4259",
@@ -4598,9 +4572,32 @@
             "effective_from"
           ],
           "change_summary": "规则字段变化：summary、费用、处罚、published_at、effective_from"
+        },
+        {
+          "id": "r20261105-5cf1bbf5",
+          "rule_key": "ebay:4259",
+          "rule_version": "66",
+          "title": "User Agreement",
+          "summary": "",
+          "rule_dimensions": {},
+          "source_url": "https://www.ebay.com/help/policies/member-behaviour-policies/user-agreement?id=4259",
+          "published_at": "2026-11-05",
+          "effective_from": "2026-11-05",
+          "source_record_id": "ebay:4259",
+          "source_id_method": "url_query",
+          "source_id_is_official": true,
+          "evidence_hash": "63d3ef0d3e7547b1b74790fd37de9647e148c9496959f370dd6b3057bff562ff",
+          "collected_at": "2026-11-05T08:56:21.429625+08:00",
+          "verified_at": "2026-11-05T08:56:21.429625+08:00",
+          "changed_fields": [
+            "summary",
+            "fee",
+            "penalty"
+          ],
+          "change_summary": "规则字段变化：summary、费用、处罚"
         }
       ],
-      "previous_version": "65",
+      "previous_version": "66",
       "source_key": "platform-official",
       "source_category": "platform_announcement",
       "authorization_status": "not_required",
@@ -4694,7 +4691,7 @@
       "publication_status": "eligible"
     }
   ],
-  "last_checked_at": "2026-11-05T20:23:22.910028+08:00",
+  "last_checked_at": "2026-11-06T06:01:22.036937+08:00",
   "source_checks": {
     "amazon_rules": "degraded",
     "tiktok_shop_rules": "degraded",
@@ -4986,7 +4983,7 @@
           "last_verified_at": "2026-11-05T08:56:21.429625+08:00"
         }
       },
-      "last_verified_at": "2026-11-05T20:23:22.910028+08:00",
+      "last_verified_at": "2026-11-06T06:01:22.036937+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   },
@@ -5275,7 +5272,7 @@
           "last_verified_at": "2026-11-05T08:56:21.429625+08:00"
         }
       },
-      "last_verified_at": "2026-11-05T20:23:22.910028+08:00",
+      "last_verified_at": "2026-11-06T06:01:22.036937+08:00",
       "reason": "缺少主题：费用、佣金、保证金、履约、禁售"
     }
   }
