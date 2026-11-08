@@ -1,20 +1,20 @@
 [
   [
-    "cpsc-cat-20261108-c5d9b1c0",
+    "cpsc-cat-20261109-40ca8b0c",
     "policy",
     "high",
     "⚠️ 电子产品品类: 近90天74起中国产品召回",
     "美国",
     "CPSC",
     "过去90天内，电子产品品类有74起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
-    "2026-11-08",
+    "2026-11-09",
     false,
     {
       "source": "CPSC 数据分析",
       "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
       "source_kind": "derived",
       "source_type": "derived",
-      "source_record_id": "cpsc-cat-source-20261108-c5d9b1c0",
+      "source_record_id": "cpsc-cat-source-20261109-40ca8b0c",
       "verification_status": "verified",
       "published_at": "2026-11-05",
       "collected_at": "2026-11-06T06:01:48.972043+08:00",
@@ -476,36 +476,36 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "34fcdbfc8460b0670a1d26ddbd91201d68d7b6965998394b4331bd55fb923e24",
-      "dataset_snapshot_at": "2026-11-08T15:15:42.026216+00:00",
+      "dataset_snapshot_id": "e2af186bcfe641818e0960f6ba153311870099d27d93f307659b6fc5339e8313",
+      "dataset_snapshot_at": "2026-11-08T20:32:33.511946+00:00",
       "dataset_record_count": 212,
-      "window_start": "2026-08-10",
-      "window_end": "2026-11-08",
+      "window_start": "2026-08-11",
+      "window_end": "2026-11-09",
       "input_record_count": 103,
       "matched_record_count": 74,
       "aggregate_count": 74,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "625252f184d5883b3a4ed7a649b5f44158aadc38e6e93650a299ea54a19d4d26"
+      "evidence_hash": "fdbf1836e6293262a21f4de382d2d5d51a41032877fe0706d758c4934993b919"
     }
   ],
   [
-    "cpsc-cat-20261108-bf06d9cf",
+    "cpsc-cat-20261109-692c282f",
     "policy",
     "high",
     "⚠️ 服装品类: 近90天20起中国产品召回",
     "美国",
     "CPSC",
     "过去90天内，服装品类有20起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
-    "2026-11-08",
+    "2026-11-09",
     false,
     {
       "source": "CPSC 数据分析",
       "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
       "source_kind": "derived",
       "source_type": "derived",
-      "source_record_id": "cpsc-cat-source-20261108-bf06d9cf",
+      "source_record_id": "cpsc-cat-source-20261109-692c282f",
       "verification_status": "verified",
       "published_at": "2026-11-05",
       "collected_at": "2026-11-06T06:01:48.972043+08:00",
@@ -643,36 +643,36 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "34fcdbfc8460b0670a1d26ddbd91201d68d7b6965998394b4331bd55fb923e24",
-      "dataset_snapshot_at": "2026-11-08T15:15:42.026216+00:00",
+      "dataset_snapshot_id": "e2af186bcfe641818e0960f6ba153311870099d27d93f307659b6fc5339e8313",
+      "dataset_snapshot_at": "2026-11-08T20:32:33.511946+00:00",
       "dataset_record_count": 212,
-      "window_start": "2026-08-10",
-      "window_end": "2026-11-08",
+      "window_start": "2026-08-11",
+      "window_end": "2026-11-09",
       "input_record_count": 103,
       "matched_record_count": 20,
       "aggregate_count": 20,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "146107f942d86f2bbe07ff04db27ae5a0213e68e4ef2b09d285028ea64e08c21"
+      "evidence_hash": "aa20a06be2319501f7cd6e5f37a63994346e1e3a038d001dac24cdcda7e51554"
     }
   ],
   [
-    "cpsc-cat-20261108-2bf71473",
+    "cpsc-cat-20261109-82a3f21b",
     "policy",
     "high",
     "⚠️ 家居产品品类: 近90天7起中国产品召回",
     "美国",
     "CPSC",
     "过去90天内，家居产品品类有7起涉及中国产品的召回记录。建议检查产品合规性，确保符合 CPSC 安全标准。",
-    "2026-11-08",
+    "2026-11-09",
     false,
     {
       "source": "CPSC 数据分析",
       "source_url": "https://www.saferproducts.gov/RestWebServices/Recall",
       "source_kind": "derived",
       "source_type": "derived",
-      "source_record_id": "cpsc-cat-source-20261108-2bf71473",
+      "source_record_id": "cpsc-cat-source-20261109-82a3f21b",
       "verification_status": "verified",
       "published_at": "2026-10-15",
       "collected_at": "2026-10-16T03:57:47.125790+08:00",
@@ -732,18 +732,18 @@
       ],
       "lineage_type": "aggregate",
       "input_dataset": "data/us_market/cpsc_recalls.json",
-      "dataset_snapshot_id": "34fcdbfc8460b0670a1d26ddbd91201d68d7b6965998394b4331bd55fb923e24",
-      "dataset_snapshot_at": "2026-11-08T15:15:42.026216+00:00",
+      "dataset_snapshot_id": "e2af186bcfe641818e0960f6ba153311870099d27d93f307659b6fc5339e8313",
+      "dataset_snapshot_at": "2026-11-08T20:32:33.511946+00:00",
       "dataset_record_count": 212,
-      "window_start": "2026-08-10",
-      "window_end": "2026-11-08",
+      "window_start": "2026-08-11",
+      "window_end": "2026-11-09",
       "input_record_count": 103,
       "matched_record_count": 7,
       "aggregate_count": 7,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "eb2d0ba0c3a41048563add7cf2361cab02de5b740e76f6b07ef36e79eec4cd64"
+      "evidence_hash": "b13ec9a76d166e5f9496b585ffe116b198f068695d8fd455b37204260f9d90c0"
     }
   ],
   [
@@ -1357,7 +1357,7 @@
     }
   ],
   [
-    "pol-20261108-48a94b95",
+    "pol-20261109-48a94b95",
     "policy",
     "high",
     "政策更新：中华人民共和国某些镁碳砖：反补贴税令加速第三次日落复审最终结果",
@@ -1393,18 +1393,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "02916d988272971071353a6d8ac6d9f8d5aaa2170dc16805134db0c3039de978",
-      "dataset_snapshot_at": "2026-11-06T23:57:49.018188+08:00",
+      "dataset_snapshot_id": "1ddfd28701df33f5d6bf6006232e19980de3118082ec39cab6e0b3edcacbf217",
+      "dataset_snapshot_at": "2026-11-09T04:31:27.531078+08:00",
       "dataset_record_count": 400,
-      "window_start": "2026-10-09",
-      "window_end": "2026-11-08",
+      "window_start": "2026-10-10",
+      "window_end": "2026-11-09",
       "input_record_count": 400,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "c742c84bd3823b9c0e43b3009cda4e3de0ef226da8598447d3b14db54bea82c7"
+      "evidence_hash": "ffcb4029d4ff57b8aa52e7cd8c5575f04c886234c77e701f22ef90633071bfe7"
     }
   ],
   [
@@ -2090,7 +2090,7 @@
     }
   ],
   [
-    "pol-20261108-98018a49",
+    "pol-20261109-98018a49",
     "policy",
     "high",
     "政策更新：来自摩洛哥王国的磷肥：反补贴税令首次全面日落复审最终结果",
@@ -2126,22 +2126,22 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "02916d988272971071353a6d8ac6d9f8d5aaa2170dc16805134db0c3039de978",
-      "dataset_snapshot_at": "2026-11-06T23:57:49.018188+08:00",
+      "dataset_snapshot_id": "1ddfd28701df33f5d6bf6006232e19980de3118082ec39cab6e0b3edcacbf217",
+      "dataset_snapshot_at": "2026-11-09T04:31:27.531078+08:00",
       "dataset_record_count": 400,
-      "window_start": "2026-10-09",
-      "window_end": "2026-11-08",
+      "window_start": "2026-10-10",
+      "window_end": "2026-11-09",
       "input_record_count": 400,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "ee725fdc97ff2d0a7713cb67684d0478b816d5539db4c83883944facc3970806"
+      "evidence_hash": "dcd4827abcd8dc14c788b5d32826b6ae096fd9a990e8dc63ee753c1ac5fe1695"
     }
   ],
   [
-    "pol-20261108-1f018a89",
+    "pol-20261109-1f018a89",
     "policy",
     "high",
     "政策更新：来自马来西亚的公用事业规模风力发电塔：反补贴税令加速首次日落复审最终结果",
@@ -2177,18 +2177,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "02916d988272971071353a6d8ac6d9f8d5aaa2170dc16805134db0c3039de978",
-      "dataset_snapshot_at": "2026-11-06T23:57:49.018188+08:00",
+      "dataset_snapshot_id": "1ddfd28701df33f5d6bf6006232e19980de3118082ec39cab6e0b3edcacbf217",
+      "dataset_snapshot_at": "2026-11-09T04:31:27.531078+08:00",
       "dataset_record_count": 400,
-      "window_start": "2026-10-09",
-      "window_end": "2026-11-08",
+      "window_start": "2026-10-10",
+      "window_end": "2026-11-09",
       "input_record_count": 400,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "925d40d3c12a2a74897c23121793cc032aec9be909d3fd34a460bb8a326ecc4d"
+      "evidence_hash": "d31b4bb2e4cfd667246c704eed5114a01de0e1c4b31b6a88c86ad3124b80a0bf"
     }
   ],
   [
@@ -3299,7 +3299,7 @@
     }
   ],
   [
-    "pol-20261108-26ae0b8b",
+    "pol-20261109-26ae0b8b",
     "policy",
     "high",
     "政策更新：中华人民共和国某些99cc至225cc小型垂直轴发动机及其部件：反倾销和反补贴税令的继续",
@@ -3335,22 +3335,22 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "02916d988272971071353a6d8ac6d9f8d5aaa2170dc16805134db0c3039de978",
-      "dataset_snapshot_at": "2026-11-06T23:57:49.018188+08:00",
+      "dataset_snapshot_id": "1ddfd28701df33f5d6bf6006232e19980de3118082ec39cab6e0b3edcacbf217",
+      "dataset_snapshot_at": "2026-11-09T04:31:27.531078+08:00",
       "dataset_record_count": 400,
-      "window_start": "2026-10-09",
-      "window_end": "2026-11-08",
+      "window_start": "2026-10-10",
+      "window_end": "2026-11-09",
       "input_record_count": 400,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "71541fa4cfb1f78d0241bb4a61b0ec3fe9646cbdbfa36fb1626f7c89a4ebe2de"
+      "evidence_hash": "d01c34771adae351526880a7837b4e27e178ca35d75e38daf3b686685435c182"
     }
   ],
   [
-    "pol-20261108-9bc2b325",
+    "pol-20261109-9bc2b325",
     "policy",
     "high",
     "政策更新：来自印度的焊接不锈钢压力管：反倾销税行政复审最终结果；2023-2024",
@@ -3386,18 +3386,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "02916d988272971071353a6d8ac6d9f8d5aaa2170dc16805134db0c3039de978",
-      "dataset_snapshot_at": "2026-11-06T23:57:49.018188+08:00",
+      "dataset_snapshot_id": "1ddfd28701df33f5d6bf6006232e19980de3118082ec39cab6e0b3edcacbf217",
+      "dataset_snapshot_at": "2026-11-09T04:31:27.531078+08:00",
       "dataset_record_count": 400,
-      "window_start": "2026-10-09",
-      "window_end": "2026-11-08",
+      "window_start": "2026-10-10",
+      "window_end": "2026-11-09",
       "input_record_count": 400,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "781025d9dff0548c1b1c39a65a2a7f30455c5a53b10b854cdfb3bf7004c47549"
+      "evidence_hash": "cbcf1143b4bd84c5a17c2d0e9e7ec2b577204dff71af23e3770aeefd46816b76"
     }
   ],
   [
@@ -3928,7 +3928,7 @@
     }
   ],
   [
-    "pol-20261108-8baa4648",
+    "pol-20261109-8baa4648",
     "policy",
     "high",
     "政策更新：实施《2026年林赛·O·格雷厄姆制裁俄罗斯和伊朗法案》",
@@ -3964,18 +3964,18 @@
       ],
       "lineage_type": "record",
       "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "02916d988272971071353a6d8ac6d9f8d5aaa2170dc16805134db0c3039de978",
-      "dataset_snapshot_at": "2026-11-06T23:57:49.018188+08:00",
+      "dataset_snapshot_id": "1ddfd28701df33f5d6bf6006232e19980de3118082ec39cab6e0b3edcacbf217",
+      "dataset_snapshot_at": "2026-11-09T04:31:27.531078+08:00",
       "dataset_record_count": 400,
-      "window_start": "2026-10-09",
-      "window_end": "2026-11-08",
+      "window_start": "2026-10-10",
+      "window_end": "2026-11-09",
       "input_record_count": 400,
       "matched_record_count": 1,
       "aggregate_count": null,
       "schema_version": "2.1",
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
-      "evidence_hash": "5d595ac8ae79281246f82bc3968fc144eb2adf486250089fb78b099baf5b8b46"
+      "evidence_hash": "2d4c81103306e027a47b12c27a987af1f0db65d12ace2a16dd96217656aeda55"
     }
   ],
   [
@@ -10413,57 +10413,6 @@
       "display_locale": "zh-CN",
       "generator_version": "2026.09.08.1",
       "evidence_hash": "e20c22dbd5aa1defe31690aa31a11f106001128f2269a3c366f7e7c03b6a2109"
-    }
-  ],
-  [
-    "pol-20260908-659f27e3",
-    "policy",
-    "high",
-    "政策更新：启动反倾销和反补贴税行政审查",
-    "美国",
-    "tariff",
-    "美国商务部(Commerce)收到了对各种反倾销税(AD)和反补贴税(CVD)令进行行政审查的请求,日期为6月. 根据商业条例,我们正在启动这些行政审查。",
-    "2026-08-10",
-    false,
-    {
-      "source": "Federal Register / 政策分析",
-      "source_url": "https://www.federalregister.gov/documents/2026/08/10/2026-16265/initiation-of-antidumping-and-countervailing-duty-administrative-reviews",
-      "source_kind": "derived",
-      "source_type": "derived",
-      "source_record_id": "p20260808-a71ce885",
-      "verification_status": "verified",
-      "published_at": "2026-08-10",
-      "collected_at": "2026-08-08T18:04:29.468918+08:00",
-      "verified_at": "2026-08-08T18:04:29.468918+08:00",
-      "verification_notes": "由已核验来源生成的动态预警；正文事实应回溯到 source_record_id。",
-      "category_codes": [],
-      "source_record_ids": [
-        "p20260808-a71ce885"
-      ],
-      "upstream_evidence_hash": "8b7f83a4a788ecd376c35da7ba14e9a54cc7e95806c2ce27dde8c33185c54b16",
-      "upstream_evidence_hashes": [
-        "8b7f83a4a788ecd376c35da7ba14e9a54cc7e95806c2ce27dde8c33185c54b16"
-      ],
-      "source_record_evidence": [
-        {
-          "source_record_id": "p20260808-a71ce885",
-          "evidence_hash": "8b7f83a4a788ecd376c35da7ba14e9a54cc7e95806c2ce27dde8c33185c54b16"
-        }
-      ],
-      "lineage_type": "record",
-      "input_dataset": "data/policies.json",
-      "dataset_snapshot_id": "a5da5a0c0c89ce16f92d807dd2fa2278193ad323b5144ea90a5b33a1a5127ff6",
-      "dataset_snapshot_at": "2026-09-03T10:51:38.476417+08:00",
-      "dataset_record_count": 280,
-      "window_start": "2026-08-09",
-      "window_end": "2026-09-08",
-      "input_record_count": 280,
-      "matched_record_count": 1,
-      "aggregate_count": null,
-      "schema_version": "2.1",
-      "display_locale": "zh-CN",
-      "generator_version": "2026.09.08.1",
-      "evidence_hash": "60ba4034368dde93e4219872d850363b7ba79249dd049a970536547b8f32d0b2"
     }
   ]
 ]
