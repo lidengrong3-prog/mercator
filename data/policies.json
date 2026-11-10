@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-10T20:41:43.011406+08:00",
+  "updated_at": "2026-11-11T05:50:16.677943+08:00",
   "source_count": 1,
   "items": [
     {
@@ -13522,41 +13522,6 @@
       "source_category": "official_policy",
       "authorization_status": "not_required",
       "publication_status": "eligible"
-    },
-    {
-      "id": "p20260730-0999a421",
-      "title": "Medicare Program; Updates to the Master List of Items Potentially Subject to Face-to-Face Encounter and Written Order Prior to Delivery and/or Prior Authorization Requirements; Updates to the Required Face-to-Face Encounter and Written Order Prior to Delivery List; and Updates to the Required Prior Authorization List",
-      "summary": "This document announces updates to the Healthcare Common Procedure Coding System (HCPCS) codes on the Master List. It also announces updates to the HCPCS codes on the Required Face-to-Face Encounter and Written Order Prior to Delivery List and the Required Prior Authorization List.",
-      "source": "Federal Register (Trade Representative Office)",
-      "source_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15446/medicare-program-updates-to-the-master-list-of-items-potentially-subject-to-face-to-face-encounter",
-      "region": "US",
-      "category": "regulation",
-      "impact_level": "medium",
-      "published_at": "2026-07-30",
-      "collected_at": "2026-07-30T17:43:35.580544+08:00",
-      "title_zh": "医疗保健方案; 可能需在交付前面对面和书面命令以及/或事先授权要求的总清单更新; 交付前面对面和书面要求更新清单; 所需事先授权清单更新",
-      "summary_zh": "该文件宣布了在总清单中更新保健共同程序编码系统编码。 它还宣布了对HCPCS编码的更新,该编码是关于规定在交货前面对面和书面命令以及规定事先批准清单。",
-      "translation": {
-        "source_language": "auto",
-        "target_language": "zh-CN",
-        "status": "translated",
-        "provider": "argos-offline",
-        "model": "translate-en_zh-1.9",
-        "translated_at": "2026-08-31T06:32:48.257033+00:00",
-        "source_hash": "d3a7069c0896309686e61845261e12856da5abca18af8caa22206e529915e76f",
-        "human_reviewed": false
-      },
-      "source_record_id": "p20260730-0999a421",
-      "verification_notes": "基于官方来源页面的记录级核验；使用前应复核原文。",
-      "source_kind": "official",
-      "source_type": "government",
-      "verification_status": "verified",
-      "verified_at": "2026-07-30T17:43:35.580544+08:00",
-      "evidence_hash": "346d973288551383992b7c80fa5c4329ecaab9b8bf612e780cdf03f17b8c0a75",
-      "source_key": "federal-register",
-      "source_category": "official_policy",
-      "authorization_status": "not_required",
-      "publication_status": "eligible"
     }
   ],
   "language_contract": {
@@ -13571,7 +13536,7 @@
     "target_language": "zh-CN",
     "translation_metadata_field": "translation"
   },
-  "last_checked_at": "2026-11-10T20:41:43.011406+08:00",
+  "last_checked_at": "2026-11-11T05:50:16.677943+08:00",
   "source_checks": {
     "federal_register": "succeeded",
     "ustr": "failed",
